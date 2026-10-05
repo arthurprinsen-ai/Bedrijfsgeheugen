@@ -12,7 +12,20 @@ test('trusted Supabase baseline capture remains default-branch only and read-onl
   assert.match(workflow, /supabase migration list --linked/);
   assert.doesNotMatch(workflow, /pg_catalog/i);
   assert.doesNotMatch(workflow, /information_schema/i);
-  assert.match(workflow, /production_write:false/);
-  assert.match(workflow, /hand_built_catalog_dump:false/);
+    assert.match(workflow, /hand_built_catalog_dump:false/);
+  assert.match(workflow, /supabase migration repair/);
+  assert.match(workflow, /20260920101150/);
+  assert.match(workflow, /20260920102450/);
+  assert.match(workflow, /20260925080500/);
+  assert.match(workflow, /PRE_REPAIR_PARITY_NOT_EXACT/);
+  assert.match(workflow, /POST_REPAIR_PARITY_DRIFT/);
+  assert.match(workflow, /sql_reexecuted:false/);
   assert.match(workflow, /--force-with-lease="refs\/heads\/\$TARGET_BRANCH:\$EXPECTED_HEAD"/);
+});
+
+
+test('baseline capture dynamically selects one highest canonical recovery and pins CLI', () => {
+  assert.match(workflow, /supabase-migration-history-canonical-v/);
+  assert.match(workflow, /Multiple open canonical recoveries share highest version/);
+  assert.match(workflow, /version: 2\.119\.0/);
 });
