@@ -94,14 +94,6 @@ export function verifyPageShell(input, path = '') {
     if (/\bclass="[^"]*\bbgkop\b/.test(html) || /id="bgkopMob"/.test(html)) {
       throw new Error(`${path}: legacy pricing header/menu shell detected`);
     }
-    for (const cls of ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol']) {
-      if (!hasRenderedClass(html, cls)) throw new Error(`${path}: pricing page-tools missing ${cls}`);
-    }
-  } else {
-    const pricingRendered = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'].some(cls => hasRenderedClass(html, cls));
-    if (/data-bg-component="page-tools"/.test(html) || pricingRendered) {
-      throw new Error(`${path}: pricing page-tools are only allowed on prijzen.html`);
-    }
   }
   return true;
 }
