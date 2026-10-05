@@ -20,3 +20,7 @@ Public/relationship evidence → semantic relevance → sales play → psycholog
 ## Knowledge sources consolidated
 
 Existing Notion sources remain knowledge authority for SPIN, Challenger, trigger outreach, commitment close, objection handling, reciprocity, reactance reduction, loss awareness, mere exposure, category-entry moments, tone of voice and channel formulas. This change moves those principles into runtime decision labels and learning instead of leaving them as documentation only.
+
+## Runtime drift closure
+
+The live canonical composer and `powerhouse_persuasion_revenue_optimizer_v1` are repository-canonical as well. The optimizer selects evidence-bounded persuasion principles from existing commercial evidence. Sensitive-trait targeting, fabricated social proof, unsupported fear, hidden commitment and generic pressure remain forbidden. Live Supabase and GitHub must not diverge on this path.
