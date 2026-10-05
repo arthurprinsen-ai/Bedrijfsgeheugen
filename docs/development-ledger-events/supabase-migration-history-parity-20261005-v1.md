@@ -23,3 +23,7 @@ Productie was meerdere keren rechtstreeks vooruit gemigreerd zonder dat alle cor
 ## Invariant
 
 Geen productie-Supabase-migratie mag terminal delivery bereiken zolang de canonical repository history die remote versie niet reproduceerbaar bevat.
+
+## Closure refresh
+
+Candidate: `5375bafbf4f60bc7005c530d69edbc19bcad9250`. Integration-bundle closure is re-materialized after main synchronization so Brain learning, human change documentation, and development-ledger evidence remain part of the same exact-head delivery candidate.

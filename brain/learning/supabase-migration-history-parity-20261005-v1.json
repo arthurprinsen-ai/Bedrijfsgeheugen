@@ -29,8 +29,10 @@
     "remote_only_after_recovery": 0,
     "required_merge_check": "Supabase Preview",
     "initial_recovery_commit": "fcef1fe7ea65ff65e88f25a367df9034e73e4daa",
-    "latest_mirrored_remote_version": "20261005144606"
+    "latest_mirrored_remote_version": "20261005144606",
+    "closure_refresh_head": "5375bafbf4f60bc7005c530d69edbc19bcad9250",
+    "preview_replay_status": "IDEMPOTENT_PATCHED_PENDING_EXACT_HEAD_RERUN"
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 2
+  "revision": 3
 }
