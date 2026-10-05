@@ -8,6 +8,8 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  checks: read
+  statuses: read
 
 concurrency:
   group: obligation-terminalizer-${{ github.event.pull_request.number }}
@@ -71,6 +73,60 @@ jobs:
             writer_lease:result.lease
           },null,2));
           NODE
+
+      - name: Re-verify exact candidate full commit check set
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          terminal=false
+          for attempt in $(seq 1 36); do
+            gh api "repos/${GITHUB_REPOSITORY}/commits/${CANDIDATE_SHA}/check-runs?per_page=100" > /tmp/terminal-check-runs.json
+            gh api "repos/${GITHUB_REPOSITORY}/commits/${CANDIDATE_SHA}/status?per_page=100" > /tmp/terminal-status.json
+            CANDIDATE_SHA="$CANDIDATE_SHA" node --input-type=module - <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          import { evaluateFullCommitCheckSet } from './tools/delivery/github-delivery-state-machine.mjs';
+          const runs=JSON.parse(readFileSync('/tmp/terminal-check-runs.json','utf8')).check_runs||[];
+          const statuses=JSON.parse(readFileSync('/tmp/terminal-status.json','utf8')).statuses||[];
+          const result=evaluateFullCommitCheckSet({
+            checkRuns:runs.map(x=>({
+              name:x.name||'unknown',
+              status:x.status||'unknown',
+              conclusion:x.conclusion||'',
+              app:x.app?.slug||x.app?.name||'unknown',
+              details_url:x.details_url||x.html_url||''
+            })),
+            legacyStatuses:statuses.map(x=>({
+              context:x.context||'unknown',
+              state:x.state||'unknown',
+              target_url:x.target_url||''
+            }))
+          });
+          const evidence={
+            state:result.ok?'EXACT_HEAD_CHECKSET_GREEN':'EXACT_HEAD_CHECKSET_BLOCKED',
+            candidate_head_sha:process.env.CANDIDATE_SHA,
+            ...result
+          };
+          writeFileSync('.artifacts/exact-head-checkset.json',JSON.stringify(evidence,null,2));
+          console.log(JSON.stringify(evidence,null,2));
+          if(result.ok) process.exit(0);
+          const pendingOnly=result.reasons.length>0 && result.reasons.every(r=>r.startsWith('CHECK_RUNS_PENDING:')||r.startsWith('LEGACY_STATUSES_PENDING:'));
+          process.exit(pendingOnly?75:78);
+          NODE
+            rc=$?
+            if [ "$rc" -eq 0 ]; then
+              terminal=true
+              break
+            fi
+            if [ "$rc" -eq 78 ]; then
+              echo "::error::POST_MERGE_EXACT_HEAD_CHECKSET_NOT_GREEN:${CANDIDATE_SHA}"
+              exit 78
+            fi
+            sleep 10
+          done
+          [ "$terminal" = true ] || { echo "::error::POST_MERGE_EXACT_HEAD_CHECKSET_TIMEOUT:${CANDIDATE_SHA}"; exit 1; }
 
       - name: Verify production promotion and runtime readback
         id: production
@@ -146,6 +202,8 @@ jobs:
           import { readFileSync, writeFileSync } from 'node:fs';
           const lineage=JSON.parse(readFileSync('.artifacts/terminal-lineage.json','utf8'));
           const preflight=JSON.parse(readFileSync('/tmp/chat-learning-preflight.json','utf8'));
+          const checkset=JSON.parse(readFileSync('.artifacts/exact-head-checkset.json','utf8'));
+          if(checkset?.state!=='EXACT_HEAD_CHECKSET_GREEN' || checkset?.ok!==true) throw new Error('EXACT_HEAD_FULL_CHECKSET_NOT_GREEN');
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -155,7 +213,13 @@ jobs:
             candidate_head_sha:process.env.CANDIDATE_SHA,
             merge_sha:process.env.MERGE_SHA,
             production_sha:process.env.PRODUCTION_SHA,
+            checkset_observed:{
+              check_runs:Number(checkset.observedCheckRuns||0),
+              legacy_statuses:Number(checkset.observedLegacyStatuses||0)
+            },
             checks:{
+              exact_head_full_checkset:true,
+              security_checkset:true,
               merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
               deploy_promotion_readback:true,
               runtime_function_readback:true,
@@ -176,6 +240,7 @@ jobs:
           name: obligation-terminal-evidence-${{ github.event.pull_request.number }}
           path: |
             .artifacts/terminal-lineage.json
+            .artifacts/exact-head-checkset.json
             .artifacts/obligation-terminal-evidence.json
           if-no-files-found: error
           retention-days: 90
