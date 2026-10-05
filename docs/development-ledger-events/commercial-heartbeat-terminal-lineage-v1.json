@@ -1,0 +1,18 @@
+{
+  "obligation_id": "commercial-heartbeat-terminal-lineage-v1",
+  "date": "2026-10-05",
+  "change": "Canonical commercial heartbeat, terminal outcome lineage and fail-closed regression gate",
+  "evidence": [
+    "commercial heartbeat regression workflow",
+    "delivery path classification",
+    "exact-head writer lease",
+    "material closure artifacts"
+  ],
+  "terminal_target": {
+    "canonical_scheduler_owners": 1,
+    "direct_secondary_scheduler_owners": 0,
+    "forbidden_v2_functions": 0,
+    "terminal_missing_outcome": 0,
+    "terminal_coverage_pct": 100
+  }
+}
