@@ -155,8 +155,11 @@ with b as (
 select
  c.action_id,c.dedupe_key,c.subject_key,c.person_key,c.company_key,c.person_name,c.company_name,c.role,c.action_type,c.channel,c.channel_norm,
  c.status,c.priority,c.reason,c.message_draft,c.source_url,c.evidence,c.opportunity_key,c.content_key,c.topic_key,c.campaign_key,c.expected_value_eur,
- c.relationship_warmth,c.decision_influence,c.company_intent_score,c.events_30d,c.actions_30d,c.actions_90d,c.positive_outcomes,c.meetings,c.proposals,c.won_outcomes,
- c.last_relevant_at,c.stage_hint,c.buying_state_hint,c.predicted_problem,c.predicted_buying_trigger,c.predicted_objection,c.has_verified_trigger,
+ -- CREATE OR REPLACE VIEW retains existing column positions and types.
+ c.stage_hint,c.buying_state_hint,c.predicted_problem,c.predicted_buying_trigger,c.predicted_objection,
+ coalesce(c.company_intent_score,0::numeric) intent_hint,
+ coalesce(c.relationship_warmth,0::numeric) warmth_hint,
+ c.has_verified_trigger,
  p.play_key,p.play_name,p.objective,p.psychology,p.message_structure,p.cta_style,p.tone_rules,p.prohibited,
  coalesce((p.max_words->>c.channel_norm)::int,(p.max_words->>'linkedin_dm')::int,(p.max_words->>'email')::int,100) max_words,
  jsonb_build_object(
@@ -175,7 +178,10 @@ select
      'hypotheses_labeled',true,'humanity_required',true,'generic_compliment_forbidden',true,'reply_guilt_forbidden',true
    ),
    'learning_key',p.play_key||':'||c.channel_norm||':'||coalesce(nullif(c.stage_hint,''),'unknown')
- ) message_plan
+ ) message_plan,
+ -- New intelligence is appended so existing dependent views remain valid.
+ c.relationship_warmth,c.decision_influence,c.company_intent_score,c.events_30d,c.actions_30d,c.actions_90d,
+ c.positive_outcomes,c.meetings,c.proposals,c.won_outcomes,c.last_relevant_at
 from c
 join public.powerhouse_sales_playbook_v1 p on p.play_key=c.play_key and p.active;
 revoke all on public.powerhouse_commercial_message_plan_v1 from public, anon, authenticated;

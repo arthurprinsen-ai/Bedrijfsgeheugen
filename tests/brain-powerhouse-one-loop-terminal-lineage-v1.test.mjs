@@ -53,6 +53,16 @@ test('channel capability replay preserves the private provider evidence contract
   assert.equal(contracts.surfaces.find(item=>item.id==='table:public.powerhouse_channel_capabilities_v1')?.required,true);
 });
 
+test('orchestrator replay preserves existing message-plan view columns before appending intelligence',async()=>{
+  const source=await readFile('supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql','utf8');
+  const view=source.slice(source.indexOf('create or replace view public.powerhouse_commercial_message_plan_v1'),source.indexOf('revoke all on public.powerhouse_commercial_message_plan_v1'));
+  const projection=view.slice(view.lastIndexOf('\nselect\n')).replace(/--[^\n]*/g,'');
+  assert.match(projection,/c\.expected_value_eur,\s*c\.stage_hint/);
+  assert.match(projection,/c\.predicted_objection,\s*coalesce\(c\.company_intent_score,0::numeric\) intent_hint,\s*coalesce\(c\.relationship_warmth,0::numeric\) warmth_hint,\s*c\.has_verified_trigger/);
+  assert.match(projection,/\) message_plan,\s*c\.relationship_warmth/);
+  assert.doesNotMatch(view,/drop view/i,'dependent consumers must be retained');
+});
+
 test('all legacy commercial loop versions are compatibility aliases to the one canonical v1 owner',()=>{
   for(const version of [2,3,4,5,6]){
     assert.match(sql,new RegExp(`create or replace function public\\.powerhouse_commercial_closed_loop_v${version}`,'i'));

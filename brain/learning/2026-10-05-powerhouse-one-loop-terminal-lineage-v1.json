@@ -110,5 +110,14 @@
       "Production schema readback: eight columns, capability_key PK, four-state CHECK, RLS and service_role grants",
       "Regression failed before schema repair; no capability rows synthesized"
     ]
+  },
+  "message_plan_view_replay_recovery": {
+    "root_cause": "Orchestrator CREATE OR REPLACE VIEW inserted relationship columns into existing projection; PostgreSQL rejects renaming stage_hint with 42P16.",
+    "prevention": "Preserve the full existing column prefix and types; append intelligence columns without dropping dependent consumers.",
+    "evidence": [
+      "Supabase Preview 1e90b02 failed 42P16 at orchestrator statement14",
+      "Regression fails before projection repair",
+      "Explicit-view projection audit isolates the remaining post-preview incompatible replacement"
+    ]
   }
 }
