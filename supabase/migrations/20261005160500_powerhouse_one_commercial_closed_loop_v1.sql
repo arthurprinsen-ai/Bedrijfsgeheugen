@@ -588,3 +588,26 @@ SELECT now() AS measured_at,
 
 revoke all on public.powerhouse_one_commercial_loop_health_v1 from public,anon,authenticated;
 grant select on public.powerhouse_one_commercial_loop_health_v1 to service_role;
+
+
+-- Fail-closed execution boundary for SECURITY DEFINER functions.
+-- Browser/public roles never receive direct EXECUTE; trusted server execution stays on service_role.
+revoke execute on function public.powerhouse_commercial_intelligence_heartbeat_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_dispatch_relationship_public_research_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_materialize_command_center_actions_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_one_commercial_closed_loop_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_prepare_autonomous_outreach_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_prepare_linkedin_sales_machine_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_promote_research_to_social_v1() from public, anon, authenticated;
+revoke execute on function public.powerhouse_reconcile_no_response_outcomes_v1(timestamp with time zone) from public, anon, authenticated;
+revoke execute on function public.powerhouse_refresh_connection_enrichment_batch_v1(date, integer) from public, anon, authenticated;
+
+grant execute on function public.powerhouse_commercial_intelligence_heartbeat_v1(date) to service_role;
+grant execute on function public.powerhouse_dispatch_relationship_public_research_v1(date) to service_role;
+grant execute on function public.powerhouse_materialize_command_center_actions_v1(date) to service_role;
+grant execute on function public.powerhouse_one_commercial_closed_loop_v1(date) to service_role;
+grant execute on function public.powerhouse_prepare_autonomous_outreach_v1(date) to service_role;
+grant execute on function public.powerhouse_prepare_linkedin_sales_machine_v1(date) to service_role;
+grant execute on function public.powerhouse_promote_research_to_social_v1() to service_role;
+grant execute on function public.powerhouse_reconcile_no_response_outcomes_v1(timestamp with time zone) to service_role;
+grant execute on function public.powerhouse_refresh_connection_enrichment_batch_v1(date, integer) to service_role;
