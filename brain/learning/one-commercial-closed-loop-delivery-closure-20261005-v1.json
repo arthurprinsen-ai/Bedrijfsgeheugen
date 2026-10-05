@@ -1,37 +1,57 @@
 {
   "fingerprint": "one-commercial-closed-loop-delivery-closure-20261005-v1",
   "status": "ACTIVE_PREVENTION",
-  "problem": "A production/runtime commercial-loop migration could be functionally correct while the canonical delivery gate remained nonterminal because repository closure evidence was absent.",
-  "root_cause": "The material R4 Supabase change was committed without the three repository closure surfaces required by the Integration Bundle: brain learning, development ledger evidence, and human-readable change documentation.",
+  "problem": "A commercial-loop runtime change could be functionally correct while delivery truth or provider truth remained nonterminal.",
+  "root_cause": "Two gaps had to be closed together: material R4 Supabase delivery requires repository closure evidence, and provider transport success must never be mistaken for semantic execution success.",
   "prevention": [
-    "Every material Supabase/brain-runtime delivery must include repository closure evidence in the same candidate before terminal merge evaluation.",
+    "Every material Supabase/brain-runtime delivery must include brain learning, development ledger evidence and human-readable change documentation in the same candidate.",
     "Exact-HEAD evaluation is authoritative; successful sibling workflows never override an incomplete Integration Bundle.",
-    "Writer lease metadata must be rebound to the final exact HEAD after closure artifacts are added.",
-    "A downstream test failure caused by preflight closure is not retried blindly; the missing closure evidence is added first.",
+    "Writer lease metadata must be rebound to the final exact HEAD after the candidate changes.",
+    "No external outreach becomes terminal without current source URL/context, consent/capability eligibility, pressure/cooldown eligibility, dedupe proof, exact-message-hash quality proof, semantic provider acknowledgement and terminal outcome/readback.",
+    "HTTP 200 alone is transport evidence and never provider success.",
+    "CONCRETE_POST_CONTEXT_REQUIRED remains fail-closed; the action stays nonterminal and provider acknowledgement remains zero.",
+    "Heavy identity/research/learning work remains bounded or independently scheduled and cannot block the canonical heartbeat.",
+    "No-response is an observation for learning, never a fabricated rejection.",
     "Merge and production readback remain blocked until the complete exact-HEAD check-run set is terminally acceptable."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
-    "shadow": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
-    "canary": ["tests/brain-integration-bundle-compiler-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs",
+      "tests/supabase-powerhouse-commercial-closed-loop.test.mjs",
+      "tests/brain-terminal-provider-durable-evidence.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-human-commercial-message-os-v1.test.mjs",
+      "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-provider-health-preflight-v1.test.mjs",
+      "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
+    ]
   },
   "test_evidence": [
     "tests/brain-integration-bundle-compiler-v1.test.mjs",
-    "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs",
+    "tests/supabase-powerhouse-commercial-closed-loop.test.mjs",
+    "tests/brain-terminal-provider-durable-evidence.test.mjs"
   ],
   "evidence": {
     "pull_request": 3739,
     "failed_gate": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
+    "provider_semantic_failure": "CONCRETE_POST_CONTEXT_REQUIRED",
+    "provider_transport_status": 200,
+    "provider_acknowledgement": 0,
     "required_closure_artifacts": ["brain_learning", "activity_ledger", "human_documentation"],
-    "material_runtime_path": "supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql"
+    "material_runtime_path": "supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql",
+    "external_execution_state": "NOT_CLAIMED_TERMINAL"
   },
-  "skill_targets": ["continuity", "delivery", "brain-runtime", "supabase-security"],
+  "skill_targets": ["continuity", "delivery", "brain-runtime", "supabase-security", "commercial-execution"],
   "compiler": {
-    "failure_class": "DELIVERY_CLOSURE_EVIDENCE_MISSING",
+    "failure_class": "DELIVERY_AND_PROVIDER_TERMINAL_TRUTH_GAP",
     "scope": "ONE_COMMERCIAL_CLOSED_LOOP_V2",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "revision": 1
+  "revision": 2
 }
