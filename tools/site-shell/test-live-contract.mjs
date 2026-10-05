@@ -19,6 +19,15 @@ const content = shell();
 assert.equal(readReleaseMarker(home), COMMIT);
 assert.doesNotThrow(() => verifyLiveSite({ home, pricing, content, expectedCommit: COMMIT }));
 
+assert.throws(() => verifyLiveSite({ home, pricing: shell(), content, expectedCommit: COMMIT }), /pricing-tool ontbreekt/i);
+assert.doesNotThrow(() => verifyLiveSite({
+  home,
+  pricing: shell(),
+  content,
+  expectedCommit: COMMIT,
+  verifyPricingSemantics: false
+}));
+
 assert.throws(() => verifyLiveSite({
   home: shell({ extraBeforeFooter: '<a href="mailto:arthur@bedrijfsgeheugen.nl">bovenaan</a>' }),
   pricing,

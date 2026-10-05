@@ -18,13 +18,13 @@ function beforeFooter(html) {
   return i < 0 ? String(html) : String(html).slice(0, i);
 }
 
-function verifyOne(html, path, expectedCommit, pricing = false) {
+function verifyOne(html, path, expectedCommit, { pricing = false, verifyPricingSemantics = true } = {}) {
   assert.equal(readReleaseMarker(html), expectedCommit, `${path}: release marker wijkt af van productiecommit`);
   for (const text of TRUST) assert.ok(html.includes(text), `${path}: trustbalk mist “${text}”`);
   for (const text of MOBILE) assert.ok(html.includes(text), `${path}: mobiel menu mist “${text}”`);
   for (const token of CONTACT) assert.ok(!beforeFooter(html).includes(token), `${path}: contactgegeven staat buiten footer: ${token}`);
 
-  if (pricing) {
+  if (pricing && verifyPricingSemantics) {
     for (const cls of PRICING) assert.ok(hasClassElement(html, cls), `${path}: pricing-tool ontbreekt: ${cls}`);
     assert.ok(!/id="bgkopMob"/i.test(html), `${path}: legacy pricing mobile menu staat live`);
     assert.ok(!/class="[^"]*\bbgkop\b/i.test(html), `${path}: legacy pricing header staat live`);
@@ -39,13 +39,13 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
     assert.ok(html.includes('data-yearly="€ 14.950"'), `${path}: Control jaarprijs ontbreekt live`);
     assert.ok(html.includes('data-yearly="€ 24.950"'), `${path}: Scale jaarprijs ontbreekt live`);
     assert.ok(html.includes('data-yearly="vanaf € 49.950"'), `${path}: Enterprise jaarprijs ontbreekt live`);
-  } else {
+  } else if (!pricing) {
     for (const cls of PRICING) assert.ok(!hasClassElement(html, cls), `${path}: pricing-tool staat buiten prijzen: ${cls}`);
   }
   verifyPageShell(html, path);
 }
 
-export function verifyLiveSite({ home, pricing, content, expectedCommit }) {
+export function verifyLiveSite({ home, pricing, content, expectedCommit, verifyPricingSemantics = true }) {
   assert.ok(expectedCommit && expectedCommit !== 'local', 'expectedCommit is verplicht voor live readback');
   const pages = [
     { path: 'index.html', html: String(home), pricing: false },
@@ -53,7 +53,7 @@ export function verifyLiveSite({ home, pricing, content, expectedCommit }) {
     { path: 'over-ons.html', html: String(content), pricing: false }
   ];
 
-  for (const p of pages) verifyOne(p.html, p.path, expectedCommit, p.pricing);
+  for (const p of pages) verifyOne(p.html, p.path, expectedCommit, { pricing: p.pricing, verifyPricingSemantics });
 
   const base = new Map();
   for (const p of pages) {

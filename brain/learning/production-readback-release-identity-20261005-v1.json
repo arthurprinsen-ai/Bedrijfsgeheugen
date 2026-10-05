@@ -1,0 +1,53 @@
+{
+  "learningId": "production-readback-release-identity-20261005-v1",
+  "fingerprint": "production-readback-release-identity-coupled-pricing-semantics-v1",
+  "status": "PROVEN",
+  "observedAt": "2026-10-05T19:00:00+02:00",
+  "problem": "The post-merge production readback remained in the exact-deploy wait even though Netlify production, release.json and live HTML all exposed the exact merge SHA.",
+  "rootCause": "The exact release-identity polling step called the full live-site contract, which also enforced stale pricing semantics. Unrelated pricing markup drift therefore prevented deploy identity from becoming ready.",
+  "root_cause": "The exact release-identity polling step called the full live-site contract, which also enforced stale pricing semantics. Unrelated pricing markup drift therefore prevented deploy identity from becoming ready.",
+  "preventionRule": "Release-identity polling proves exact production SHA plus canonical shell only; pricing semantics remain fail-closed in their dedicated pricing/browser gates.",
+  "prevention": [
+    "Keep exact merge SHA, production context and Netlify deploy id mandatory.",
+    "Keep the canonical shell contract mandatory during release-identity polling.",
+    "Do not couple release identity to page-specific pricing semantics.",
+    "Keep pricing semantics strict by default in the live contract.",
+    "Retain dedicated browser and pricing gates for content and interaction proof."
+  ],
+  "evidence": {
+    "implementation": [
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/check-live-production.mjs"
+    ],
+    "regression": [
+      "tools/site-shell/test-live-contract.mjs",
+      "tests/production-readback-release-identity-v1.test.mjs"
+    ],
+    "liveObservation": {
+      "merge_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
+      "netlify_deploy_id": "6ac3d4bbc857e90008998389",
+      "production_context": "production"
+    }
+  },
+  "invariants": {
+    "exactShaRequired": true,
+    "exactDeployIdRequired": true,
+    "canonicalShellRequired": true,
+    "pricingSemanticsStillFailClosed": true,
+    "dedicatedPricingProofRetained": true,
+    "noManualGreen": true
+  },
+  "compiler": {
+    "failure_class": "CROSS_CONCERN_PRODUCTION_READBACK_COUPLING",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/production-readback-release-identity-v1.test.mjs"
+    ],
+    "expected": "A valid exact production release can clear identity polling independently of pricing semantics, while the default pricing contract still fails closed when its required semantics are absent."
+  }
+}
