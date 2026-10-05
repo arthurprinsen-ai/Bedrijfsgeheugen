@@ -19,6 +19,19 @@ function beforeFooter(html) {
   const i = String(html).search(/<footer\b/i);
   return i < 0 ? String(html) : String(html).slice(0, i);
 }
+function encodeHtmlText(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function hasHeadingText(html, tag, text) {
+  const raw = `<${tag}>${text}</${tag}>`;
+  const encoded = `<${tag}>${encodeHtmlText(text)}</${tag}>`;
+  return String(html).includes(raw) || String(html).includes(encoded);
+}
 
 function verifyOne(html, path, expectedCommit, pricing = false) {
   assert.equal(readReleaseMarker(html), expectedCommit, `${path}: release marker wijkt af van productiecommit`);
@@ -43,7 +56,7 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
       assert.ok(html.includes(token) || html.includes(token.replace(' ',' ')), `${path}: canonieke SaaS-prijs ontbreekt live: ${token}`);
     }
     for (const service of ['Frisse Blik', 'Directie & AI Workshop', 'Bedrijfsgeheugen Scan', 'Build Sprint', 'Transformation / Fractional Lead']) {
-      assert.ok(html.includes(`<h3>${service}</h3>`), `${path}: canonieke consulting-propositie ontbreekt live: ${service}`);
+      assert.ok(hasHeadingText(html, 'h3', service), `${path}: canonieke consulting-propositie ontbreekt live: ${service}`);
     }
     for (const id of ['pkgSize', 'pkgGoal', 'pkgMode', 'pkgGo']) {
       assert.ok(hasId(html, id), `${path}: canonieke pakketadvies-control ontbreekt live: #${id}`);
