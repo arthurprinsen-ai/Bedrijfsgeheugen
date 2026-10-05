@@ -89,7 +89,7 @@
       "id": "function:powerhouse-commercial-message-composer",
       "type": "function",
       "authority": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
-      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -138,7 +138,7 @@
       "id": "function:powerhouse-human-sales-composer",
       "type": "function",
       "authority": "supabase/functions/powerhouse-human-sales-composer/index.ts",
-      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -604,10 +604,24 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_assert_outbound_message_quality_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_commercial_closed_loop_v6",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_commercial_message_candidates_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
-      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -709,6 +723,27 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_outbound_copy_gate_assurance_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_outbound_message_quality_ready_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_persuasion_revenue_optimizer_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928152400_powerhouse_persuasion_revenue_optimizer_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_prepare_autonomous_outreach_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql",
@@ -768,7 +803,7 @@
       "id": "rpc:powerhouse_refresh_message_plans_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
-      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -776,6 +811,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260928103246_powerhouse_relationship_revenue_engine_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_refresh_sales_play_learnings_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -797,6 +839,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260925080700_global_post_uniqueness_v1.sql",
       "evidence_contract": "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_sales_outcome_message_lineage_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -1055,7 +1104,7 @@
       "id": "table:public.powerhouse_message_quality_v1",
       "type": "table",
       "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
-      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -1210,6 +1259,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
       "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
+      "id": "view:public.powerhouse_sales_play_performance_v1",
+      "type": "view",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
       "required": true
     }
   ]
