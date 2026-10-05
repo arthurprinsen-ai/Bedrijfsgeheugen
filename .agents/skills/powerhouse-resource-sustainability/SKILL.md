@@ -60,3 +60,24 @@ Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`
 GitHub runner minutes and queue slots are governed resources. Before material repository writes or dispatches, record current pressure and projected run fan-out. Soft pressure is 12 active / 10 queued; hard pressure is 20 active / 20 queued; projected fan-out above 6 from one action must be reduced before execution.
 
 Prefer one atomic commit for one borging package, path-scoped gates and existing exact-head work. Under hard pressure, optional and recovery fan-out is forbidden until backlog is reduced. A recovery mechanism that consumes more runner capacity than it releases is a RESOURCE_REGRESSION.
+
+## Universal connected-app cost governor — mandatory inheritance
+
+Fingerprint: `powerhouse|universal-connected-app-cost-governor|v1`.
+
+This rule applies to **every current and future chat, agent, workflow, connector and app** attached to Powerhouse/ONE BRAIN. A connector is not exempt because it is new or absent from the explicit platform list.
+
+Before any material external read/write or compute-heavy action:
+1. apply `config/brain-cost-policy.json`;
+2. identify measurable provider meters and current/recent usage when available;
+3. compare equivalent execution routes and choose the **cheapest sufficient route** that preserves or improves quality, reliability, security, evidence and outcome;
+4. reuse -> cache/readback -> dedupe -> batch -> incremental/delta -> bounded query -> smallest sufficient capability -> execute once -> verify once;
+5. record actual usage/cost where measurable and cost-per-verified-outcome;
+6. feed material savings/regressions into the existing resource optimization and learning loop.
+
+New connected apps are auto-enrolled under `universalPlatformDefault` until a platform-specific policy exists. Their first material use must register meters and optimization levers; creating a parallel budget/cost store is forbidden.
+
+Cost optimization covers both variable usage and subscription efficiency. Agents may autonomously reduce waste, calls, builds, storage growth, egress, retries, generations and duplicate work. Agents may **not** autonomously upgrade/downgrade/cancel paid plans, accept a new billing contract, or buy capacity; those remain a human financial boundary.
+
+A cheaper route is forbidden when it lowers truth, outcome quality, reliability, security, privacy, compliance, readback evidence or required freshness. The optimization target is total resource cost per verified useful outcome, not lowest nominal unit price.
+
