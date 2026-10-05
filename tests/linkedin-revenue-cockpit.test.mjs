@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
 const pagePath = new URL('../intern/linkedin-revenue/index.html', import.meta.url);
 const scriptPath = new URL('../intern/linkedin-revenue/cockpit.js', import.meta.url);
 const functionPath = new URL('../netlify/functions/linkedin-revenue-cockpit.mjs', import.meta.url);
 const runtimePath = new URL('../supabase/functions/powerhouse-runtime/index.ts', import.meta.url);
-const migrationPath = new URL('../supabase/migrations/20260909131127_powerhouse_revenue_command_center.sql', import.meta.url);
 
 test('Revenue Command Center is execution-first and bounded to 15 actions', () => {
   const html = fs.readFileSync(pagePath, 'utf8');
@@ -52,9 +52,8 @@ test('Netlify adapter uses canonical Supabase core with Notion only as enrichmen
 });
 
 test('Supabase runtime exposes explainable revenue-first opportunity ranking', () => {
-  assert.equal(fs.existsSync(migrationPath), true, 'Revenue Command Center migration must exist');
   const runtime = fs.readFileSync(runtimePath, 'utf8');
-  const sql = fs.readFileSync(migrationPath, 'utf8');
+  const sql = readMigrationHistorySync('20260909131127_powerhouse_revenue_command_center.sql');
   assert.match(runtime, /expected_revenue_value/);
   assert.match(runtime, /score_components/);
   assert.match(runtime, /powerhouse_opportunities/);
