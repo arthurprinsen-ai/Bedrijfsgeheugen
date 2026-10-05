@@ -20,7 +20,8 @@
       "tools/site-shell/live-contract.mjs",
       "tools/site-shell/test-live-contract.mjs"
     ],
-    "observedProduction": "<h3>Directie &amp; AI Workshop</h3>"
+    "observedProduction": "<h3>Directie &amp; AI Workshop</h3>",
+    "regression": "tests/brain-production-readback-html-entity-heading-v1.test.mjs"
   },
   "compiler": {
     "failure_class": "PRODUCTION_READBACK",
@@ -31,10 +32,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tools/site-shell/test-live-contract.mjs"
+      "tests/brain-production-readback-html-entity-heading-v1.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/test-live-contract.mjs"
+      "tests/brain-production-readback-html-entity-heading-v1.test.mjs"
     ],
     "expected": "Encoded and unencoded semantic heading text both satisfy the same required consulting-proposition invariant."
   }
