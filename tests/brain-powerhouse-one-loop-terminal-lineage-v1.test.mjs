@@ -40,6 +40,19 @@ test('outbound lineage replay defines the private reply evidence table before co
   assert.equal(surface?.evidence_contract,'tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs');
 });
 
+test('channel capability replay preserves the private provider evidence contract',async()=>{
+  const source=await readFile('supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql','utf8');
+  assert.match(source,/create table if not exists public\.powerhouse_channel_capabilities_v1\b/i);
+  assert.ok(source.indexOf('create table if not exists public.powerhouse_channel_capabilities_v1')<source.indexOf('create or replace view public.powerhouse_next_best_action_contract_v1'));
+  assert.match(source,/capability_key text primary key/i);
+  assert.match(source,/check\s*\(status in\s*\('AVAILABLE','DEGRADED','UNAVAILABLE','CONFIG_REQUIRED'\)\)/i);
+  assert.match(source,/alter table public\.powerhouse_channel_capabilities_v1 enable row level security/i);
+  assert.match(source,/revoke all on public\.powerhouse_channel_capabilities_v1 from public,anon,authenticated/i);
+  assert.match(source,/grant all on public\.powerhouse_channel_capabilities_v1 to service_role/i);
+  const contracts=JSON.parse(await readFile('config/powerhouse-quality-surface-contracts.json','utf8'));
+  assert.equal(contracts.surfaces.find(item=>item.id==='table:public.powerhouse_channel_capabilities_v1')?.required,true);
+});
+
 test('all legacy commercial loop versions are compatibility aliases to the one canonical v1 owner',()=>{
   for(const version of [2,3,4,5,6]){
     assert.match(sql,new RegExp(`create or replace function public\\.powerhouse_commercial_closed_loop_v${version}`,'i'));

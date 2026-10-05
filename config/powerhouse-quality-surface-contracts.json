@@ -947,6 +947,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_channel_capabilities_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_compliance_evidence_v1",
       "type": "table",
       "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",

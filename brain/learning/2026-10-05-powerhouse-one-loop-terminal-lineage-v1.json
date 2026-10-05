@@ -101,5 +101,14 @@
       "old_gate_owner_count": 0,
       "truth_boundary": "Old daily-owner gate does not classify the newer five-minute heartbeat scheduler; canonical current commercial gate is healthy, old owner gate remains visibly stale."
     }
+  },
+  "channel_capability_replay_recovery": {
+    "root_cause": "Production-only channel capabilities schema omitted from migration history; fresh preview fails the NBA consumer with 42P01.",
+    "prevention": "Project exact private schema before its first view consumer, require quality registration and preserve provider-evidence-only state.",
+    "evidence": [
+      "Fresh Supabase Preview failed 42P01 on af2a158",
+      "Production schema readback: eight columns, capability_key PK, four-state CHECK, RLS and service_role grants",
+      "Regression failed before schema repair; no capability rows synthesized"
+    ]
   }
 }
