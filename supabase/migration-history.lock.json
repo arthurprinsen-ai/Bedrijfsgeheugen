@@ -2748,5 +2748,19 @@
     "rejected_pr": 3741,
     "preserve_remote_history": true,
     "remote_history_repair": false
-  }
+  },
+  "repository_name_mismatch_archived": [
+    {
+      "version": "20260915102500",
+      "production_name": "powerhouse_revenue_flywheel_v1_state_fix",
+      "archived_name": "content_publication_watchdog_dst_safe",
+      "path": "supabase/migration-history/repository-only/20260915102500_content_publication_watchdog_dst_safe.sql"
+    },
+    {
+      "version": "20260916053500",
+      "production_name": "powerhouse_public_rls_regression_guard",
+      "archived_name": "harden_bg_klik_vastleggen_execute",
+      "path": "supabase/migration-history/repository-only/20260916053500_harden_bg_klik_vastleggen_execute.sql"
+    }
+  ]
 }

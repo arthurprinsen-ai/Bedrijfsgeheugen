@@ -33,3 +33,15 @@ test('every migration SQL file is non-empty after trimming', async () => {
   assert.deepEqual(empty, [], `Empty or whitespace-only migration SQL is forbidden:
 ${empty.join('\n')}`);
 });
+
+
+test('repository name-mismatch historical variants stay outside executable migration lane', () => {
+  const leaked = (lock.repository_name_mismatch_archived || []).filter(item =>
+    files.includes(`${item.version}_${item.archived_name}.sql`)
+  );
+  assert.deepEqual(
+    leaked,
+    [],
+    `Repository name-mismatch history leaked back into supabase/migrations:\n${leaked.map(item => `${item.version} ${item.archived_name}`).join('\n')}`
+  );
+});
