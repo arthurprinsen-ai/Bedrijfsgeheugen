@@ -281,6 +281,22 @@ end $$;
 revoke execute on function public.powerhouse_refresh_revenue_attribution_snapshot_v1() from public,anon,authenticated;
 grant execute on function public.powerhouse_refresh_revenue_attribution_snapshot_v1() to service_role;
 
+-- Replay the existing production provider-capability schema before the NBA consumer.
+-- Capability rows are provider evidence; migrations never fabricate AVAILABLE state.
+create table if not exists public.powerhouse_channel_capabilities_v1 (
+  capability_key text primary key,
+  provider text not null,
+  channel text not null,
+  status text not null check (status in ('AVAILABLE','DEGRADED','UNAVAILABLE','CONFIG_REQUIRED')),
+  checked_at timestamptz not null default now(),
+  expires_at timestamptz,
+  evidence jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table public.powerhouse_channel_capabilities_v1 enable row level security;
+revoke all on public.powerhouse_channel_capabilities_v1 from public,anon,authenticated;
+grant all on public.powerhouse_channel_capabilities_v1 to service_role;
+
 create or replace view public.powerhouse_next_best_action_contract_v1 with(security_invoker=true) as
 select n.*,coalesce(ci.intent_score,pi.intent_score,0) canonical_intent_score,
  coalesce(ci.intent_confidence,pi.intent_confidence,0) canonical_intent_confidence,

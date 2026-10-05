@@ -280,7 +280,8 @@ begin
     'play_key',v_play,
     'persuasion_authority',v_persuasion
   );
-end $function$
+end;
+$function$;
 
 revoke execute on function public.powerhouse_apply_message_plan_v1(uuid) from public,anon,authenticated;
 grant execute on function public.powerhouse_apply_message_plan_v1(uuid) to service_role;
@@ -312,7 +313,8 @@ begin
     'planned_actions',v_n,
     'executed_at',now()
   );
-end $function$
+end;
+$function$;
 
 revoke execute on function public.powerhouse_refresh_message_plans_v1(integer) from public,anon,authenticated;
 grant execute on function public.powerhouse_refresh_message_plans_v1(integer) to service_role;
@@ -329,7 +331,7 @@ AS $function$
     and (p_action_ids is null or cardinality(p_action_ids)=0 or p.action_id = any(p_action_ids))
   order by p.priority desc, p.action_id
   limit greatest(1,least(coalesce(p_limit,10),200))
-$function$
+$function$;
 
 revoke execute on function public.powerhouse_commercial_message_candidates_v1(integer,text[],uuid[]) from public,anon,authenticated;
 grant execute on function public.powerhouse_commercial_message_candidates_v1(integer,text[],uuid[]) to service_role;

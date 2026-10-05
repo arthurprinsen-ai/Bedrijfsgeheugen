@@ -1,6 +1,34 @@
 -- powerhouse-source-backed-all-channels-lineage-v1
 -- One auditable lineage across LinkedIn personal/company, blog, Instagram, email and LinkedIn DM.
 
+-- Production reply evidence must exist before the first lineage/assurance consumer.
+-- This is schema parity only: no synthetic replies, public access or provider sends.
+create table if not exists public.powerhouse_email_reply_events (
+  reply_event_id uuid primary key default gen_random_uuid(),
+  action_id uuid not null references public.powerhouse_sales_actions(action_id) on delete cascade,
+  provider text not null default 'gmail',
+  provider_message_id text not null,
+  provider_thread_id text,
+  sender_email text not null,
+  subject text not null default '',
+  reply_text text not null default '',
+  reply_class text not null,
+  objection_code text,
+  intent_score numeric not null default 0 check (intent_score >= -1 and intent_score <= 1),
+  next_action text not null default 'none',
+  occurred_at timestamptz not null,
+  classification_evidence jsonb not null default '{}'::jsonb,
+  created_at timestamptz not null default now(),
+  unique (provider, provider_message_id)
+);
+alter table public.powerhouse_email_reply_events enable row level security;
+revoke all on table public.powerhouse_email_reply_events from public, anon, authenticated;
+grant all on table public.powerhouse_email_reply_events to service_role;
+create index if not exists powerhouse_email_reply_events_action_idx
+  on public.powerhouse_email_reply_events(action_id, occurred_at desc);
+create index if not exists powerhouse_email_reply_events_class_idx
+  on public.powerhouse_email_reply_events(reply_class, occurred_at desc);
+
 create table if not exists public.powerhouse_outbound_source_lineage_v1 (
   lineage_key text primary key,
   run_date date not null,

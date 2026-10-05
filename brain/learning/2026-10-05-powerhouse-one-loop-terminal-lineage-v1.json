@@ -1,0 +1,140 @@
+{
+  "fingerprint": "powerhouse|one-loop-terminal-lineage|required-closure|v1",
+  "contract": "POWERHOUSE-ONE-LOOP-TERMINAL-LINEAGE-v1",
+  "date": "2026-10-05",
+  "status": "canonical",
+  "compiler": {
+    "failure_class": "MATERIAL_WRITEBACK_CLOSURE_MISSING"
+  },
+  "problem": "Production commercial runtime had canonical v1 orchestration but retained legacy v2-v6 function bodies, historical terminal actions without explicit lifecycle lineage, repository drift versus the applied Supabase state, and the delivery candidate initially lacked the mandatory same-lineage writeback artifacts.",
+  "root_cause": [
+    "runtime evolution created compatibility versions without a permanent alias-only regression invariant",
+    "terminal action lifecycle and observed business outcomes were conflated in assurance",
+    "production migration state could advance before repository writeback became terminal",
+    "material delivery was initially proposed without all mandatory learning, ledger and human-readable closure evidence being part of the changed-path set"
+  ],
+  "decision": "Use one canonical commercial loop owner, turn legacy versions into aliases, enforce explicit terminal lineage without synthesising business outcomes, keep unresolved observed-outcome obligations open, and fail closed unless the same delivery lineage contains all mandatory writeback evidence.",
+  "prevention": {
+    "rule": "Every material Powerhouse candidate must include canonical Brain learning, an activity/development ledger event and human-readable change/learning documentation in the exact candidate scope before merge readiness.",
+    "regression_contract": "Required test remains fail-closed for missing writeback evidence; observed commercial outcomes may only close from real evidence and open obligations must stay explicit."
+  },
+  "invariants": [
+    "exactly_one_full_loop_scheduler_owner",
+    "legacy_v2_v6_alias_only",
+    "split_stage_owners_absent",
+    "terminal_action_lineage_required",
+    "business_outcomes_observed_only",
+    "bounded_skip_locked_backfill",
+    "repo_migration_required_for_terminal_delivery",
+    "material_writeback_closure_required_before_merge"
+  ],
+  "evidence": {
+    "failed_exact_head": "5511a006c876593835c176d6502ee6306abf033a",
+    "required_test_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
+    "regression_test": "tests/brain-integration-bundle-compiler-v1.test.mjs"
+  },
+  "production_readback": {
+    "canonical_scheduler_owner_count": 1,
+    "active_split_stage_scheduler_count": 0,
+    "non_alias_legacy_loop_count": 0,
+    "unaccounted_terminal_action_count": 0,
+    "open_observed_outcome_obligations": 10,
+    "regression_gate_healthy": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+    ]
+  },
+  "outcome": "One loop, one owner and one lineage remain canonical; delivery now also carries mandatory learning, ledger and human-readable closure evidence without fabricating external outcomes.",
+  "next_decision_rule": "Any future change that creates a second full-loop scheduler owner, independent legacy loop logic, a terminal action without lineage, fabricated observed outcomes, or a material candidate without closure artifacts must fail CI before terminal completion can be claimed.",
+  "preview_recovery": {
+    "fingerprint": "supabase|migration-replay|truncated-dollar-quote|v1",
+    "failed_exact_head": "fac9ed5d042732372003509252f5dd2c77620225",
+    "provider_check_id": 111809536595,
+    "sqlstate": "42601",
+    "root_cause": "Historical migration source contained truncated PostgreSQL dollar quote delimiters; source-only preview contract did not parse SQL bodies.",
+    "fix": "Restore three $$ delimiters in historical persuasion/uniqueness migrations and terminate the three function definitions and two PL/pgSQL END statements in the commercial persuasion runtime migration.",
+    "prevention": "Required test scans every migration for truncated dollar quote boundaries before merge. Hosted Supabase Preview remains an independent mandatory runtime replay gate.",
+    "red_green_evidence": {
+      "before": {
+        "tests": 7,
+        "passed": 6,
+        "failed": 1,
+        "invalid_boundaries": 3
+      },
+      "after": {
+        "tests": 27,
+        "passed": 27,
+        "failed": 0
+      }
+    },
+    "regression_test": "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs",
+    "runtime_replay_verified": false,
+    "additional_parser_evidence": {
+      "parser": "pglast / PostgreSQL grammar",
+      "migration_files": 420,
+      "before_errors": 1,
+      "after_errors": 0
+    },
+    "schema_parity_recovery": {
+      "failed_exact_head": "a26043128f950208e2d6f31d0d0807ce3334603e",
+      "sqlstate": "42P01",
+      "missing_relation": "public.powerhouse_email_reply_events",
+      "root_cause": "Production-only reply evidence schema was referenced by September outbound assurance migrations without a replayable CREATE TABLE.",
+      "fix": "Define the exact readback schema, constraints, indexes, RLS and service-only grants in the first consuming lineage migration.",
+      "production_schema_readback_verified": true,
+      "production_table_mutated": false,
+      "regression": "private reply evidence table definition must precede its first assurance consumer",
+      "tests_passed": 28,
+      "security_self_test_passed": true,
+      "quality_surface_contract_registered": true,
+      "replay_resume_rule": "Supabase Git integration only pushes unapplied migrations; after repairing an already-applied historical source migration, rebuild the disposable PR preview via the documented close/reopen lifecycle. Do not weaken the hosted preview gate."
+    },
+    "production_current_readback": {
+      "canonical_commercial_gate_healthy": true,
+      "canonical_scheduler_owners": 1,
+      "direct_secondary_scheduler_owners": 0,
+      "terminal_coverage_pct": 100,
+      "historical_backfill_updated": 464,
+      "old_gate_unaccounted_terminal_action_count_after": 0,
+      "old_gate_owner_count": 0,
+      "truth_boundary": "Old daily-owner gate does not classify the newer five-minute heartbeat scheduler; canonical current commercial gate is healthy, old owner gate remains visibly stale."
+    }
+  },
+  "channel_capability_replay_recovery": {
+    "root_cause": "Production-only channel capabilities schema omitted from migration history; fresh preview fails the NBA consumer with 42P01.",
+    "prevention": "Project exact private schema before its first view consumer, require quality registration and preserve provider-evidence-only state.",
+    "evidence": [
+      "Fresh Supabase Preview failed 42P01 on af2a158",
+      "Production schema readback: eight columns, capability_key PK, four-state CHECK, RLS and service_role grants",
+      "Regression failed before schema repair; no capability rows synthesized"
+    ]
+  },
+  "message_plan_view_replay_recovery": {
+    "root_cause": "Orchestrator CREATE OR REPLACE VIEW inserted relationship columns into existing projection; PostgreSQL rejects renaming stage_hint with 42P16.",
+    "prevention": "Preserve the full existing column prefix and types; append intelligence columns without dropping dependent consumers.",
+    "evidence": [
+      "Supabase Preview 1e90b02 failed 42P16 at orchestrator statement14",
+      "Regression fails before projection repair",
+      "Explicit-view projection audit isolates the remaining post-preview incompatible replacement"
+    ]
+  },
+  "canonical_alias_replay_recovery": {
+    "root_cause": "SQL aliases in 140000 resolve canonical implementation added by 160500 during CREATE; clean replay fails 42883.",
+    "prevention": "Use direct PL/pgSQL delegation with no exception fallback; runtime remains fail-closed if the full migration sequence is missing.",
+    "evidence": [
+      "Supabase Preview 5838f1a reached version135000 then failed42883",
+      "Regression failed on SQL aliases before direct PL/pgSQL repair"
+    ]
+  },
+  "health_quality_gate_replay_recovery": {
+    "root_cause": "Health view in160500 references SQL quality gate first defined later in161500; fresh replay fails42883.",
+    "prevention": "Project byte-identical final content-bound implementation before first view use; preserve exact message hash and persisted passed-quality evidence.",
+    "evidence": [
+      "Preview481ba8d fails at160500 health view",
+      "CREATE VIEW function-dependency audit finds no other missing gates",
+      "Regression failed before exact quality function projection"
+    ]
+  }
+}
