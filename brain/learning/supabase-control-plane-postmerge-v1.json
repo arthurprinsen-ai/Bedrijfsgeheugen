@@ -24,8 +24,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Trusted-main repair run 37350898932 resolved canonical PR #3766, validated the exact four-version allowlist and production-effect evidence, then failed before provider mutation because production credentials were empty.",
-      "Supabase Preview Applicability run 37350462739 failed before provider-state evaluation with OS Argument list too long while passing full check-runs JSON via an environment variable."
+      "tests/supabase-preview-applicability-bounded-payload.test.mjs",
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
     ]
   },
   "evidence": {
