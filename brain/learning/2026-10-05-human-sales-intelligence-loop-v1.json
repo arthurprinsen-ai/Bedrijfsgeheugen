@@ -1,0 +1,27 @@
+{
+  "fingerprint": "human-sales-intelligence-loop-v1",
+  "date": "2026-10-05",
+  "domain": "commercial-intelligence",
+  "problem": "Sales psychology, sales methods, tone of voice and message-quality knowledge existed across Notion and runtime, but message_strategy was usually unlabeled and generic outreach could reach execution.",
+  "root_cause": "Commercial intelligence selected who/when/channel but did not require a canonical sales-play and quality proof immediately before provider execution.",
+  "change": [
+    "Canonical playbook with value-first, SPIN, Challenger, trigger outreach, follow-up, graceful close, commitment close, objection response and value-comment plays.",
+    "Human Sales Composer chooses/uses play context and performs deterministic quality checks.",
+    "Gmail and SalesRobot execution are fail-closed unless quality_passed=true on the actual current draft.",
+    "Strategy labels persist in sales action evidence so existing strategy performance/outcome learning can compare plays."
+  ],
+  "guardrails": [
+    "facts only",
+    "label hypotheses",
+    "one primary problem",
+    "max one CTA/question",
+    "no fake urgency",
+    "no reply guilt",
+    "no generic compliments",
+    "no invented personalization"
+  ],
+  "historical_replay": [
+    "tests/brain-human-sales-intelligence-loop-v1.test.mjs"
+  ],
+  "expected_effect": "Every executable outbound message is context-specific, human, channel-bounded and learning-addressable by sales play."
+}
