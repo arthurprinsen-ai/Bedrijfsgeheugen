@@ -2291,6 +2291,17 @@
         "has_exact_media_sha256": true,
         "rls_enabled": true
       }
+    },
+    {
+      "version": "20261005133951",
+      "name": "outbound_message_quality_ready_replay_baseline_v1",
+      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "production_effect_readback": {
+        "function": "public.powerhouse_outbound_message_quality_ready_v1(uuid)",
+        "exists": true,
+        "deterministic_search_path": true,
+        "execute_revoked_from_browser_roles": true
+      }
     }
   ],
   "forbidden_repository_only_versions": [
