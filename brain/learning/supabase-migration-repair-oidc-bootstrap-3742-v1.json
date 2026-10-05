@@ -1,0 +1,12 @@
+{
+  "id": "supabase-migration-repair-oidc-bootstrap-3742-v1",
+  "issue": 3742,
+  "observed_deadlock": "The OIDC transport PR also changed supabase/**, making its merge depend on hosted fresh replay before the migration-history repair it exists to enable.",
+  "resolution": "Bootstrap the already-active OIDC-locked production bridge from GitHub-only trusted workflow code. After official tracking repair advances #3766 and makes the canonical migration lane replayable, canonicalize the bridge source/config under the normal Supabase Preview gate.",
+  "runtime_bridge": {
+    "slug": "supabase-migration-repair-bridge",
+    "status": "ACTIVE",
+    "trust": "GitHub OIDC repository + refs/heads/main + exact workflow_ref + exact SHA"
+  },
+  "invariant": "No direct supabase_migrations write; only pinned Supabase CLI migration repair --status applied --db-url after exact allowlist and effect-evidence checks."
+}
