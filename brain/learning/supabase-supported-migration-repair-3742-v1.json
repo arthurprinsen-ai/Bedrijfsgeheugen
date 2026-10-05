@@ -31,5 +31,10 @@
     "failure_class": "DATABASE_INTEGRITY",
     "scope": "DELIVERY_CONTROL_PLANE",
     "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-supported-migration-repair-3742-v1.test.mjs"
+    ]
   }
 }
