@@ -1,0 +1,17 @@
+{
+  "contract": "brain-learning-v1",
+  "obligation_id": "human-commercial-persuasion-runtime-20261005-v1",
+  "title": "Human commercial persuasion runtime",
+  "problem": "Commercial knowledge existed across persuasion, sales and copy layers, but was not consistently runtime-decisive before outbound execution.",
+  "decision": "Reuse the existing persuasion optimizer as the canonical psychology authority, combine it with channel-specific sales plays, evidence-bound human copy generation, deterministic quality gates, executor fail-closed behavior and outcome performance learning.",
+  "invariant": "No outbound message may rely on fabricated evidence, fake urgency, hidden commitment, sensitive-trait profiling or generic bot copy. Persuasion changes framing, never truth.",
+  "evidence": [
+    "17/17 pending commercial actions strategy-labeled",
+    "17/17 pending commercial actions persuasion-labeled after backfill",
+    "representative trigger DM quality score 1.0",
+    "representative follow-up quality score 1.0"
+  ],
+  "historical_replay": [
+    "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs"
+  ]
+}
