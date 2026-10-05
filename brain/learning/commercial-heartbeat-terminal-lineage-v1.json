@@ -13,5 +13,18 @@
     "unclassified delivery path",
     "writer lease head drift after commit",
     "integration bundle closure incomplete"
-  ]
+  ],
+  "fingerprint": "commercial-heartbeat-terminal-lineage-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ]
+  }
 }
