@@ -1,7 +1,7 @@
 # Historical reconciliation lane scope
 
-Historical terminal reconciliation is a delivery-control-plane workflow. It does not change website, portal or automation runtime surfaces.
+Historical terminal reconciliation is a backend delivery-control-plane concern. It does not change website, portal or automation runtime surfaces.
 
-Before this change, the workflow path matched the generic `.github/workflows/` shared-path rule and therefore activated every delivery lane. That caused unnecessary Netlify build and browser assurance work. With branch protection requiring an up-to-date branch, the long unrelated website fan-out repeatedly allowed moving `main` to invalidate an otherwise fully green recovery candidate.
+Before this change, both `.github/workflows/historical-terminal-reconciliation.yml` and `config/historical-terminal-reconciliation.json` could fall through generic shared-path classification. That caused Required test to fan a backend-only recovery into unrelated product lanes, including full Netlify/browser assurance. Under strict up-to-date branch protection, the unnecessary delay repeatedly allowed moving `main` to invalidate an otherwise green candidate.
 
-The workflow is now explicitly mapped to the backend lane, matching other control-plane workflows. Backend and shared control-plane checks remain mandatory; portal and website lanes do not run unless another changed path independently requires them.
+Both the workflow and its registry are now explicitly mapped to the backend lane. Shared admission/preflight and backend contracts remain mandatory; portal, website and automation lanes only run when another changed path independently requires them.
