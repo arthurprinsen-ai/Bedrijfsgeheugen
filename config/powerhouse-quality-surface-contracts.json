@@ -1052,6 +1052,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_retired_story_families_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261002074500_powerhouse_retired_story_family_negative_evidence_v7.sql",
+      "evidence_contract": "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_seo_keyword_intelligence_v1",
       "type": "table",
       "authority": "supabase/migrations/20260930113000_powerhouse_bilingual_seo_revenue_v1.sql",
