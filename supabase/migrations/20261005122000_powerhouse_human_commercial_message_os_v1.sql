@@ -224,7 +224,7 @@ create or replace function public.powerhouse_apply_message_plan_v1(p_action_id u
 returns jsonb
 language plpgsql
 security definer
-set search_path='pg_catalog','public'
+set search_path = pg_catalog, public
 as $function$
 declare v_plan jsonb; v_play text;
 begin
@@ -249,7 +249,7 @@ create or replace function public.powerhouse_refresh_message_plans_v1(p_limit in
 returns jsonb
 language plpgsql
 security definer
-set search_path='pg_catalog','public'
+set search_path = pg_catalog, public
 as $function$
 declare v_n int:=0;
 begin
@@ -285,7 +285,7 @@ create or replace function public.powerhouse_commercial_message_candidates_v1(
 )
 returns setof public.powerhouse_commercial_message_plan_v1
 language sql
-set search_path='public','pg_catalog'
+set search_path = public, pg_catalog
 as $function$
   select p.*
   from public.powerhouse_commercial_message_plan_v1 p
