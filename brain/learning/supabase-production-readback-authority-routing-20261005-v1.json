@@ -1,0 +1,14 @@
+{
+  "obligation_id": "supabase-production-readback-authority-routing-20261005-v1",
+  "fingerprint": "powerhouse|production-readback|authority-routing|v1",
+  "observed_failure": "Supabase migration-history parity recovery was classified as requiring a Netlify production marker because GitHub control-plane files participated in runtime lane classification and the terminalizer treated every non-governance change as Netlify-hosted runtime.",
+  "root_cause": "Production verification authority was not routed by deployment/runtime owner. Repository parity recovery, Supabase runtime, and Netlify runtime shared one terminal path.",
+  "prevention": [
+    ".github/** is governance-only for runtime lane classification.",
+    "Supabase migration-history recovery is explicitly bounded and terminalized as runtime-not-applicable only when its non-governance scope is limited to canonical parity-recovery surfaces.",
+    "Non-Netlify runtime without a dedicated production readback fails closed with UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+    "Terminal evidence records readback_mode and cannot claim deployment readback when it was not performed."
+  ],
+  "regression_test": "tests/brain-production-readback-authority-routing-v1.test.mjs",
+  "status": "IMPLEMENTED"
+}
