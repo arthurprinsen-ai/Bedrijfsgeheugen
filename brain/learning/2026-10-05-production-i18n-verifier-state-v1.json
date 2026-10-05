@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|production-i18n-verifier-state|v1",
+  "observed_at": "2026-10-05T10:04:33Z",
+  "type": "DELIVERY_VERIFICATION",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "The production locale verifier required a classical Playwright navigation event even though the public language control can complete through client-side routing/state changes. The live /en/prijzen route and translated content were valid, but waitForURL timed out.",
+  "decision": "Verify locale switching by the resulting canonical pathname plus document.documentElement.lang after activating the visible language control, rather than coupling proof to a navigation event.",
+  "prevention": [
+    "treat URL state plus html lang as the user-visible locale contract",
+    "support link and select language controls",
+    "retain translated-content assertions after the state transition",
+    "do not weaken live production assertions or bypass locale routing"
+  ],
+  "id": "production-i18n-verifier-state-20261005-v1",
+  "date": "2026-10-05",
+  "source": "production-source-snapshot-run-37293840886",
+  "failure_class": "BROWSER_VERIFIER_NAVIGATION_EVENT_COUPLING",
+  "evidence": {
+    "failed_job": "111710934469",
+    "live_route": "https://www.bedrijfsgeheugen.nl/en/prijzen",
+    "production_sha": "1cc8807b7afa1f69d72287d26bcedeba92d786e3",
+    "production_deploy": "6ac3756b265f4f0008ad8f8b",
+    "verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "regression": "tests/brain-production-i18n-verifier-state-v1.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "BROWSER_VERIFIER_NAVIGATION_EVENT_COUPLING",
+    "scope": "WEBSITE_PRODUCTION_ASSURANCE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "canary": [
+      "Production Source Snapshot pricing/i18n browser proof"
+    ],
+    "historical_replay": [
+      "tests/brain-production-i18n-verifier-state-v1.test.mjs"
+    ]
+  }
+}

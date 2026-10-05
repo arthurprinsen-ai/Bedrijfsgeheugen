@@ -55,17 +55,23 @@ async function getVisibleMobileLanguageControl(page, locale) {
 
 async function switchPublicLocale(page, locale, expectedPath) {
   const control = await getVisibleMobileLanguageControl(page, locale);
-  const navigation = page.waitForURL(url => {
-    const path = new URL(url).pathname.replace(/\/$/, '') || '/';
-    const expected = expectedPath.replace(/\/$/, '') || '/';
-    return path === expected;
-  }, { timeout:30_000, waitUntil:'domcontentloaded' });
 
   if (control.kind === 'link') {
-    await Promise.all([navigation, control.locator.click()]);
+    await control.locator.click();
   } else {
-    await Promise.all([navigation, control.locator.selectOption(locale)]);
+    await control.locator.selectOption(locale);
   }
+
+  const expected = expectedPath.replace(/\/$/, '') || '/';
+  await page.waitForFunction(
+    ({ expectedPathname, expectedLocale }) => {
+      const path = location.pathname.replace(/\/$/, '') || '/';
+      const expected = expectedPathname;
+      return path === expected && document.documentElement.lang === expectedLocale;
+    },
+    { expectedPathname: expected, expectedLocale: locale },
+    { timeout:30_000 }
+  );
 
   await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
   await page.waitForTimeout(300);
