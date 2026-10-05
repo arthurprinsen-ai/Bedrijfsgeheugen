@@ -17,3 +17,5 @@ All material workflow integration must preserve existing protected `test`, secur
 Terminal delivery may only declare a candidate green/merge-ready from the complete GitHub check-run set for the exact candidate SHA plus legacy commit statuses. Required branch-protection checks are a subset, not the source of truth.
 
 The gate is fail-closed for pending or failed checks and for neutral security checks (including GitHub Advanced Security / CodeQL). Informational neutral checks from non-security providers may remain terminal evidence. This prevents a normal workflow CodeQL run from masking a separate Advanced Security check.
+
+The post-merge obligation terminalizer independently re-reads the complete check-run set and legacy statuses for the original exact candidate SHA before it may materialize `LIVE_BEWEZEN`. This prevents a manual or alternate merge path from bypassing the same security/checkset invariant. Pending checks are retried within a bounded window; hard failures fail closed.
