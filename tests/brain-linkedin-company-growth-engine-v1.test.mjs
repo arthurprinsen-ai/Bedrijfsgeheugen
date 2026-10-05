@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
-const migration = readMigrationHistorySync('20261004133000_linkedin_company_growth_engine_v1.sql');
+const migration = readMigrationHistorySync('20261004114640_linkedin_company_growth_engine_v1.sql');
 const policy = JSON.parse(fs.readFileSync('config/linkedin-company-growth-v1.json','utf8'));
 const skill = fs.readFileSync('.agents/skills/powerhouse-linkedin-company-growth/SKILL.md','utf8');
 const learning = JSON.parse(fs.readFileSync('brain/learning/2026-10-04-linkedin-company-page-growth-v1.json','utf8'));
