@@ -611,6 +611,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_commercial_closed_loop_v6",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-loop-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_commercial_message_candidates_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
