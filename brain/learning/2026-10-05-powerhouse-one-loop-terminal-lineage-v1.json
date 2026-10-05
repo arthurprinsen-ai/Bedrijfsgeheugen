@@ -119,5 +119,13 @@
       "Regression fails before projection repair",
       "Explicit-view projection audit isolates the remaining post-preview incompatible replacement"
     ]
+  },
+  "canonical_alias_replay_recovery": {
+    "root_cause": "SQL aliases in 140000 resolve canonical implementation added by 160500 during CREATE; clean replay fails 42883.",
+    "prevention": "Use direct PL/pgSQL delegation with no exception fallback; runtime remains fail-closed if the full migration sequence is missing.",
+    "evidence": [
+      "Supabase Preview 5838f1a reached version135000 then failed42883",
+      "Regression failed on SQL aliases before direct PL/pgSQL repair"
+    ]
   }
 }

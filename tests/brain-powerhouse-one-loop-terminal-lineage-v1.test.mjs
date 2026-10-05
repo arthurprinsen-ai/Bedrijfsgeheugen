@@ -72,6 +72,14 @@ test('all legacy commercial loop versions are compatibility aliases to the one c
   assert.match(sql,/non_alias_legacy_loop_count/i);
 });
 
+test('compatibility aliases can replay before the later canonical implementation',()=>{
+  const aliases=sql.slice(0,sql.indexOf('-- 2. Every terminal action'));
+  assert.doesNotMatch(aliases,/language sql/i,'SQL aliases resolve the later function during CREATE and break fresh replay');
+  assert.equal((aliases.match(/language plpgsql/gi)||[]).length,5);
+  assert.equal((aliases.match(/return \(select public\.powerhouse_one_commercial_closed_loop_v1\(p_run_date\)\);/gi)||[]).length,5);
+  assert.doesNotMatch(aliases,/check_function_bodies|exception when|return ['"]?\{['"]?/i,'missing implementation must remain a runtime error');
+});
+
 test('terminal action lineage is automatic and does not fabricate observed business outcomes',()=>{
   assert.match(sql,/create trigger trg_powerhouse_sales_action_terminal_lineage_v1/i);
   assert.match(sql,/business_outcome_state/i);

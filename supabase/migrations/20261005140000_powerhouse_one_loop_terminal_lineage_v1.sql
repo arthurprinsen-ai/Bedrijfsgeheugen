@@ -4,54 +4,66 @@
 
 -- 1. Legacy commercial closed-loop versions remain compatibility aliases only.
 -- They may not contain independent business logic.
+-- PL/pgSQL resolves the later canonical implementation at invocation, not CREATE.
+-- Missing implementation still raises; no stub or fallback outcome is introduced.
 create or replace function public.powerhouse_commercial_closed_loop_v2(
   p_run_date date default (now() at time zone 'Europe/Amsterdam')::date
 ) returns jsonb
-language sql
+language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
-  select public.powerhouse_one_commercial_closed_loop_v1(p_run_date);
+begin
+  return (select public.powerhouse_one_commercial_closed_loop_v1(p_run_date));
+end
 $$;
 
 create or replace function public.powerhouse_commercial_closed_loop_v3(
   p_run_date date default (now() at time zone 'Europe/Amsterdam')::date
 ) returns jsonb
-language sql
+language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
-  select public.powerhouse_one_commercial_closed_loop_v1(p_run_date);
+begin
+  return (select public.powerhouse_one_commercial_closed_loop_v1(p_run_date));
+end
 $$;
 
 create or replace function public.powerhouse_commercial_closed_loop_v4(
   p_run_date date default (now() at time zone 'Europe/Amsterdam')::date
 ) returns jsonb
-language sql
+language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
-  select public.powerhouse_one_commercial_closed_loop_v1(p_run_date);
+begin
+  return (select public.powerhouse_one_commercial_closed_loop_v1(p_run_date));
+end
 $$;
 
 create or replace function public.powerhouse_commercial_closed_loop_v5(
   p_run_date date default (now() at time zone 'Europe/Amsterdam')::date
 ) returns jsonb
-language sql
+language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
-  select public.powerhouse_one_commercial_closed_loop_v1(p_run_date);
+begin
+  return (select public.powerhouse_one_commercial_closed_loop_v1(p_run_date));
+end
 $$;
 
 create or replace function public.powerhouse_commercial_closed_loop_v6(
   p_run_date date default (now() at time zone 'Europe/Amsterdam')::date
 ) returns jsonb
-language sql
+language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
-  select public.powerhouse_one_commercial_closed_loop_v1(p_run_date);
+begin
+  return (select public.powerhouse_one_commercial_closed_loop_v1(p_run_date));
+end
 $$;
 
 revoke execute on function public.powerhouse_commercial_closed_loop_v2(date) from public, anon, authenticated;
