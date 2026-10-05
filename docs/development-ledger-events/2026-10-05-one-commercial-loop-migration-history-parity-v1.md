@@ -9,3 +9,5 @@
 - Correction: rename the repository migration to `supabase/migrations/20261005144606_powerhouse_one_commercial_closed_loop_v2.sql` without reapplying DDL.
 - Safety: no production data mutation; this is repository-history canonicalization only.
 - Terminal rule: exact-HEAD checkset → merge → repository/main readback. Production runtime was already verified post-merge.
+
+- Workflow registration: the recovery is not terminal until a synchronize event registers the full exact-HEAD GitHub Actions checkset; Supabase Preview alone is insufficient.
