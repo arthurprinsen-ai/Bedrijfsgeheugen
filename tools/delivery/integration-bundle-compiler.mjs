@@ -34,23 +34,26 @@ function requireSha(value, code) {
   return normalized;
 }
 
-export function compileClosurePlan({ changedPaths = [], policy } = {}) {
+export function compileClosurePlan({ changedPaths = [], policy, obligationId = '' } = {}) {
   const paths = unique(changedPaths);
   const closureOnly = policy?.closureOnly || [];
   const materialPaths = paths.filter(path => !matchesPrefix(path, closureOnly));
   const material = materialPaths.length > 0;
+  const runtimePrefixes = policy?.runtimeClosureObligationPrefixes || [];
+  const runtimeClosed = runtimePrefixes.some(prefix => String(obligationId || '').startsWith(prefix));
   const evidence = {};
   const missing = [];
   for (const [id, patterns] of Object.entries(policy?.closureArtifacts || {})) {
     evidence[id] = paths.filter(path => matchesPrefix(path, patterns));
-    if (material && evidence[id].length === 0) missing.push(id);
+    if (material && !runtimeClosed && evidence[id].length === 0) missing.push(id);
   }
   return Object.freeze({
     material,
     materialPaths: Object.freeze(materialPaths),
     evidence: Object.freeze(evidence),
     missing: Object.freeze(missing.sort()),
-    ready: missing.length === 0
+    ready: missing.length === 0,
+    authority: runtimeClosed ? 'canonical-runtime-obligation' : 'repository-artifacts'
   });
 }
 
@@ -93,7 +96,7 @@ export function compileIntegrationBundle({
     ...adaptiveBase,
     tests: Object.freeze(unique([...(adaptiveBase.tests || []), ...(patternMemory.tests || [])]))
   });
-  const closure = compileClosurePlan({ changedPaths: paths, policy: integrationPolicy });
+  const closure = compileClosurePlan({ changedPaths: paths, policy: integrationPolicy, obligationId: metadata.obligationId });
   const canonicalMetadata = Object.freeze({
     obligationId: String(metadata.obligationId || '').trim(),
     deliveryLane: String(metadata.deliveryLane || '').trim().toLowerCase(),
