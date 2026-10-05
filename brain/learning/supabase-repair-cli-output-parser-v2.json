@@ -1,0 +1,47 @@
+{
+  "id": "supabase-repair-cli-output-parser-v2",
+  "date": "2026-10-05",
+  "obligation_id": "supabase-repair-cli-output-parser-v2",
+  "issue": 3742,
+  "finding": "The trusted Supabase repair correctly acquired OIDC database transport, but its migration-list parser discarded backtick-rendered CLI version cells and falsely observed zero drift.",
+  "root_cause": "supabase migration list --db-url renders table cells with backticks; the guard matched only bare 14-digit strings before normalizing CLI presentation characters.",
+  "structural_fix": [
+    "strip backticks before splitting and validating migration-list cells",
+    "retain exact four-version repair allowlist",
+    "retain OIDC database transport",
+    "retain supported supabase migration repair --status applied --db-url semantics",
+    "regression-test db-url parsing"
+  ],
+  "prevention": [
+    "parse provider CLI output after presentation normalization",
+    "fail closed on unexpected pre-repair drift",
+    "prove zero post-repair drift",
+    "never bypass supported provider repair semantics"
+  ],
+  "compiler": {
+    "failure_class": "DELIVERY_CONTROL_PLANE",
+    "scope": "SUPABASE_MIGRATION_REPAIR",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
+    ]
+  },
+  "fingerprint": "powerhouse|supabase-repair-cli-output-parser|backtick-normalization|3742|v2",
+  "evidence": {
+    "failed_run_id": 37354534547,
+    "failed_job_id": 111914773692,
+    "observed_error": "UNEXPECTED_PRE_REPAIR_DRIFT:[]",
+    "observed_cli_local_only_versions": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ],
+    "workflow": ".github/workflows/supabase-supported-migration-repair-3742.yml",
+    "regression_test": "tests/supabase-supported-migration-repair-3742.test.mjs",
+    "oidc_transport_preserved": true,
+    "direct_supabase_migrations_writes_forbidden": true
+  }
+}
