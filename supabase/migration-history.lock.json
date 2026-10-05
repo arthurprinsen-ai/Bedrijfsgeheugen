@@ -2747,6 +2747,40 @@
     "issue": 3742,
     "rejected_pr": 3741,
     "preserve_remote_history": true,
-    "remote_history_repair": false
-  }
+    "remote_history_repair": true,
+    "repair_method": "supabase migration repair --status applied",
+    "repair_scope": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500"
+    ],
+    "repair_sql_execution": false,
+    "merge_blocked_until_repair_readback": true
+  },
+  "repair_required_replay_baselines": [
+    {
+      "version": "20260920101150",
+      "name": "p0_proof_replay_baseline_v1",
+      "path": "supabase/migrations/20260920101150_p0_proof_replay_baseline_v1.sql",
+      "repair_status": "APPLIED_REQUIRED",
+      "sql_execution_required": false,
+      "production_effect_verified": true
+    },
+    {
+      "version": "20260920102450",
+      "name": "instagram_daily_winner_table_replay_baseline_v1",
+      "path": "supabase/migrations/20260920102450_instagram_daily_winner_table_replay_baseline_v1.sql",
+      "repair_status": "APPLIED_REQUIRED",
+      "sql_execution_required": false,
+      "production_effect_verified": true
+    },
+    {
+      "version": "20260925080500",
+      "name": "instagram_media_reserve_replay_baseline_v1",
+      "path": "supabase/migrations/20260925080500_instagram_media_reserve_replay_baseline_v1.sql",
+      "repair_status": "APPLIED_REQUIRED",
+      "sql_execution_required": false,
+      "production_effect_verified": true
+    }
+  ]
 }
