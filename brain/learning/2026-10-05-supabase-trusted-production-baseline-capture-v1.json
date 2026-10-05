@@ -11,5 +11,6 @@
     "no production schema/data mutation",
     "exact-head force-with-lease before writing baseline evidence",
     "fresh replay and parity remain independently required"
-  ]
+  ],
+  "failure_class": "SECRET_EXPOSURE"
 }
