@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const sql = await readFile('supabase/migrations/20261005140000_powerhouse_one_commercial_heartbeat_terminal_lineage_v1.sql','utf8');
+const sql = await readFile('supabase/migrations/20261005135948_powerhouse_one_commercial_heartbeat_terminal_lineage_v1_retry.sql','utf8');
 
 test('commercial heartbeat is the single scheduler owner', () => {
   assert.match(sql, /powerhouse-one-commercial-heartbeat-v1/);
