@@ -1,9 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import { readSupabaseMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
-const migrationPath='supabase/migrations/20260915090000_powerhouse_revenue_calibration_closure.sql';
-const sql=await readFile(migrationPath,'utf8');
+const sql=await readSupabaseMigrationHistory('20260915090000_powerhouse_revenue_calibration_closure.sql');
 
 test('canonical Brain revenue learning projects into existing Powerhouse tables only',()=>{
   assert.match(sql,/AFTER INSERT ON public\.brain_records/i);
