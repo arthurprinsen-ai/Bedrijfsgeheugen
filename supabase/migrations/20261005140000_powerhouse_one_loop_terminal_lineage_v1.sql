@@ -233,7 +233,7 @@ begin
   from pg_proc p
   join pg_namespace n on n.oid=p.pronamespace
   where n.nspname='public'
-    and p.proname ~ '^powerhouse_commercial_closed_loop_v[2-9][0-9]*$'
+    and p.proname in ('powerhouse_commercial_closed_loop_v2','powerhouse_commercial_closed_loop_v3','powerhouse_commercial_closed_loop_v4','powerhouse_commercial_closed_loop_v5','powerhouse_commercial_closed_loop_v6')
     and position('powerhouse_one_commercial_closed_loop_v1' in p.prosrc)=0;
 
   select count(*)::int into v_unaccounted_terminal
