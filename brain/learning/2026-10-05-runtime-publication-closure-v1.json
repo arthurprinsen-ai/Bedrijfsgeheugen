@@ -1,0 +1,29 @@
+{
+  "fingerprint": "content-publication-runtime-closure-double-truth-20261005-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Canonical daily blog publication PRs were blocked by the engineering integration bundle because repository learning/ledger/docs were required even though the publication obligation and lineage already live canonically in Supabase.",
+  "root_cause": "The closure compiler classified every material repository delta identically and had no explicit runtime-closure authority for content-publication obligations.",
+  "failed_approach": "Require engineering writeback artifacts for generated publication output, creating a second truth and blocking protected merge.",
+  "fix": [
+    "Add an explicit policy allowlist for canonical runtime-closure obligation prefixes.",
+    "Only content-publication:* is runtime-closed; ordinary material code/config changes still require repository learning, ledger and human documentation.",
+    "Expose closure authority in the immutable integration bundle.",
+    "Regression-test generated blog scope as material but closed by canonical-runtime-obligation."
+  ],
+  "test_evidence": [
+    "tests/brain-integration-bundle-compiler-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "website",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "RUNTIME_PUBLICATION_DUPLICATE_CLOSURE_AUTHORITY",
+    "scope": "CONTENT_PUBLICATION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
