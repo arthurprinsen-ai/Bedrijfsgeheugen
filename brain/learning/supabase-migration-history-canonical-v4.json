@@ -29,5 +29,15 @@
     "failure_class": "DATABASE_INTEGRITY",
     "scope": "DATABASE",
     "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/content-growth-unified-content-operations.test.mjs",
+      "tests/brain-autonomous-improvement-production-cycle.test.mjs",
+      "tests/brain-autonomous-improvement-runtime.test.mjs",
+      "tests/seo-growth-bilingual-revenue-intelligence-v1.test.mjs",
+      "tests/powerhouse-revenue-calibration-persistence-contract.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ]
   }
 }
