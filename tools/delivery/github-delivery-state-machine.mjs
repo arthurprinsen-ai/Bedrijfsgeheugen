@@ -78,12 +78,71 @@ export function evaluateTestWorkflowCoverage({changedPaths=[],classifiedLanes=[]
 
 function conclusionOk(v){return ['success','neutral','skipped'].includes(normalize(v).toLowerCase());}
 
+const SECURITY_CHECK_APPS=new Set(['github-advanced-security']);
+const HARD_FAILURE_CONCLUSIONS=new Set(['failure','cancelled','timed_out','action_required','startup_failure','stale']);
+
+export function evaluateFullCommitCheckSet({checkRuns=[],legacyStatuses=[]}={}){
+  const reasons=[];
+  const normalizedRuns=Array.isArray(checkRuns)?checkRuns:[];
+  const normalizedStatuses=Array.isArray(legacyStatuses)?legacyStatuses:[];
+  if(!normalizedRuns.length) reasons.push('FULL_CHECK_RUN_SET_EMPTY');
+
+  const pendingRuns=[];
+  const failedRuns=[];
+  const securityNeutralRuns=[];
+  for(const run of normalizedRuns){
+    const name=normalize(run?.name)||'unknown';
+    const app=normalize(run?.app||run?.appSlug||run?.provider).toLowerCase();
+    const status=normalize(run?.status).toLowerCase();
+    const conclusion=normalize(run?.conclusion).toLowerCase();
+    if(status!=='completed'){
+      pendingRuns.push(`${app||'unknown'}/${name}`);
+      continue;
+    }
+    if(HARD_FAILURE_CONCLUSIONS.has(conclusion) || !conclusion){
+      failedRuns.push(`${app||'unknown'}/${name}:${conclusion||'missing'}`);
+      continue;
+    }
+    if(conclusion==='neutral' && (SECURITY_CHECK_APPS.has(app) || /codeql|security|secret|dependency/i.test(name))){
+      securityNeutralRuns.push(`${app||'unknown'}/${name}`);
+    }
+  }
+
+  const pendingStatuses=[];
+  const failedStatuses=[];
+  for(const status of normalizedStatuses){
+    const context=normalize(status?.context||status?.name)||'unknown';
+    const state=normalize(status?.state||status?.conclusion).toLowerCase();
+    if(['pending','queued','in_progress','waiting','requested'].includes(state)) pendingStatuses.push(context);
+    else if(state && state!=='success' && state!=='neutral') failedStatuses.push(`${context}:${state}`);
+  }
+
+  if(pendingRuns.length) reasons.push(`CHECK_RUNS_PENDING:${pendingRuns.join(',')}`);
+  if(failedRuns.length) reasons.push(`CHECK_RUNS_NOT_GREEN:${failedRuns.join(',')}`);
+  if(securityNeutralRuns.length) reasons.push(`SECURITY_CHECKS_NEUTRAL:${securityNeutralRuns.join(',')}`);
+  if(pendingStatuses.length) reasons.push(`LEGACY_STATUSES_PENDING:${pendingStatuses.join(',')}`);
+  if(failedStatuses.length) reasons.push(`LEGACY_STATUSES_NOT_GREEN:${failedStatuses.join(',')}`);
+
+  return Object.freeze({
+    ok:reasons.length===0,
+    reasons,
+    observedCheckRuns:normalizedRuns.length,
+    observedLegacyStatuses:normalizedStatuses.length,
+    pendingRuns,
+    failedRuns,
+    securityNeutralRuns,
+    pendingStatuses,
+    failedStatuses,
+  });
+}
+
 export function evaluateTerminalMergeGuard({
   body='',policy={},candidateNumber=0,candidateHeadSha='',validatedHeadSha='',currentMainSha='',behindBy=null,mergeable=null,
-  requiredChecks=[],openCandidates=[]
+  requiredChecks=[],fullCheckRuns=[],legacyStatuses=[],openCandidates=[]
 }={}){
   const contract=validateMachineReadablePrBody({body,candidateHeadSha,currentMainSha,policy,enforceCurrentMainEpoch:true});
-  const reasons=[...contract.errors];
+  const fullCheckSet=evaluateFullCommitCheckSet({checkRuns:fullCheckRuns,legacyStatuses});
+  const reasons=[...contract.errors,...fullCheckSet.reasons];
   if(!contract.terminal) reasons.push('TERMINAL_WRITER_LEASE_REQUIRED');
   if(normalize(candidateHeadSha).toLowerCase()!==normalize(validatedHeadSha).toLowerCase()) reasons.push('VALIDATED_HEAD_DRIFT');
   if(Number(behindBy)!==0) reasons.push('BEHIND_MAIN');
@@ -102,7 +161,7 @@ export function evaluateTerminalMergeGuard({
   const identity=contract.metadata.obligationId && SHA40.test(normalize(candidateHeadSha)) && SHA40.test(normalize(currentMainSha))
     ? createCandidateIdentity({obligationId:contract.metadata.obligationId,headSha:candidateHeadSha,mainEpochSha:currentMainSha})
     : null;
-  return Object.freeze({ok:reasons.length===0,state:reasons.length?'BLOCKED_TERMINAL_MERGE':'TERMINAL_MERGE_ADMITTED',reasons,identity,contract,failedChecks:failed});
+  return Object.freeze({ok:reasons.length===0,state:reasons.length?'BLOCKED_TERMINAL_MERGE':'TERMINAL_MERGE_ADMITTED',reasons,identity,contract,fullCheckSet,failedChecks:failed});
 }
 
 function arg(name){const i=process.argv.indexOf(name);return i>=0?process.argv[i+1]:'';}
