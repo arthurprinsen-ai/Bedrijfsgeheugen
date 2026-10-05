@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql';
+const migrationPath = 'supabase/migrations/20260917094812_powerhouse_resource_intelligence_v1.sql';
 const configPath = 'config/powerhouse-resource-intelligence-v1.json';
 const workflowPath = '.github/workflows/powerhouse-resource-intelligence.yml';
 const auditPath = 'scripts/brain/resource-intelligence-audit.mjs';
