@@ -175,6 +175,17 @@ jobs:
           git commit -m "Capture official Supabase production baseline for #3742"
           git push --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_HEAD" origin "HEAD:refs/heads/$TARGET_BRANCH"
 
+          new_head="$(git rev-parse HEAD)"
+          pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${TARGET_PR}" --jq '.body')"
+          updated_body="$(PR_BODY="$pr_body" NEW_HEAD="$new_head" node --input-type=module - <<'NODE'
+          const body=process.env.PR_BODY || '';
+          const head=process.env.NEW_HEAD || '';
+          if (!head || !/^Writer-Lease-Head:.*$/m.test(body)) process.exit(78);
+          process.stdout.write(body.replace(/^Writer-Lease-Head:.*$/m, `Writer-Lease-Head: ${head}`));
+          NODE
+          )"
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${TARGET_PR}" -f body="$updated_body" >/dev/null
+
       - name: Record provider evidence on recovery PR
         env:
           GH_TOKEN: ${{ github.token }}
