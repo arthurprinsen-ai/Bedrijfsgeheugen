@@ -4,7 +4,7 @@ import { readFile } from 'node:fs/promises';
 
 test('production readback excludes GitHub control-plane files from runtime lane classification', async () => {
   const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
-  assert.match(workflow, /governanceOnlyPrefixes=\['docs\/',\.agents\/',\'tests\/',\'.github\/'/);
+  assert.ok(workflow.includes("const governanceOnlyPrefixes=['docs/','.agents/','tests/','.github/','brain/learning/','brain/policies/','tools/delivery/'];"));
 });
 
 test('terminalizer routes migration-history recovery without a fake Netlify dependency', async () => {
@@ -27,4 +27,5 @@ test('terminal evidence distinguishes performed runtime readback from not-applic
   assert.match(workflow, /readback_mode:process\.env\.READBACK_MODE/);
   assert.match(workflow, /deploy_promotion_readback:process\.env\.READBACK_MODE==='netlify_runtime'/);
   assert.match(workflow, /production_readback_not_applicable:\['non_runtime','supabase_history_parity_recovery'\]/);
+  assert.match(workflow, /TERMINAL_PRODUCTION_READBACK_MODE_UNPROVEN/);
 });
