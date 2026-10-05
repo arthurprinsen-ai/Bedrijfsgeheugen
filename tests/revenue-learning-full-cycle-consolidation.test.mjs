@@ -1,10 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
-const read=(p)=>fs.existsSync(p)?fs.readFileSync(p,'utf8'):'';
-const migration=read('supabase/migrations/20260915145008_powerhouse_full_cycle_consolidation_v1.sql');
-const proof=read('supabase/migrations/20260915140053_powerhouse_full_cycle_status_normalization_v1.sql');
+const migration=readMigrationHistorySync('20260915145008_powerhouse_full_cycle_consolidation_v1.sql');
+const proof=readMigrationHistorySync('20260915140053_powerhouse_full_cycle_status_normalization_v1.sql');
 
 const requiredLineage=[
   'powerhouse_forecasts',
