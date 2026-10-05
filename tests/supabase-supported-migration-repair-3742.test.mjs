@@ -20,11 +20,12 @@ test('repair is allowlisted to exactly the four proven replay baselines', () => 
   assert.match(workflow, /EFFECT_VERIFIED_REPAIR_REQUIRED/);
   assert.match(workflow, /MISSING_PRODUCTION_EFFECT_EVIDENCE/);
   assert.match(workflow, /UNEXPECTED_PRE_REPAIR_DRIFT/);
+  assert.match(workflow, /replace\(\/`\/g,''\)/, 'CLI table parser must strip backticks before version matching');
 });
 
 test('provider repair updates tracking only and proves post-repair parity', () => {
   assert.match(workflow, /supabase migration repair[\s\S]*--status applied/);
-  assert.match(workflow, /supabase migration list --linked/);
+  assert.match(workflow, /supabase migration list --db-url/);
   assert.doesNotMatch(workflow, /insert\s+into\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /update\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /delete\s+from\s+supabase_migrations/i);
