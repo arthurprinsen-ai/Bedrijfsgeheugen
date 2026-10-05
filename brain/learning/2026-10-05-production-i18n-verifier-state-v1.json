@@ -22,7 +22,7 @@
     "production_sha": "1cc8807b7afa1f69d72287d26bcedeba92d786e3",
     "production_deploy": "6ac3756b265f4f0008ad8f8b",
     "verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
-    "regression": "tests/site-production-i18n-verifier-state-v1.test.mjs"
+    "regression": "tests/site-shell-production-i18n-verifier-state-v1.test.mjs"
   },
   "compiler": {
     "failure_class": "BROWSER_VERIFIER_NAVIGATION_EVENT_COUPLING",
@@ -36,7 +36,7 @@
       "Production Source Snapshot pricing/i18n browser proof"
     ],
     "historical_replay": [
-      "tests/site-production-i18n-verifier-state-v1.test.mjs"
+      "tests/site-shell-production-i18n-verifier-state-v1.test.mjs"
     ]
   }
 }
