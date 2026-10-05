@@ -12,5 +12,18 @@
     "exact-head force-with-lease before writing baseline evidence",
     "fresh replay and parity remain independently required"
   ],
-  "failure_class": "SECRET_EXPOSURE"
+  "failure_class": "SECRET_EXPOSURE",
+  "fingerprint": "powerhouse|supabase-production-baseline-capture|trusted-default-branch|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-production-baseline-capture-v1.test.mjs"
+    ]
+  }
 }
