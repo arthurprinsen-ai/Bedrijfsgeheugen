@@ -35,3 +35,14 @@ test('repair remains exactly allowlisted and fail-closed', () => {
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
   assert.match(workflow, /--force-with-lease="refs\/heads\/\$TARGET_BRANCH:\$EXPECTED_HEAD"/);
 });
+
+
+test('migration-list parser normalizes Supabase CLI markdown backticks before drift comparison', () => {
+  const normalizerOccurrences = workflow.match(/trim\(\)\.replace\(\/\^\\\`\|\\\`\$\/g,''\)/g) || [];
+  assert.equal(normalizerOccurrences.length, 2);
+  const sample = '  \`20260920101150\` | \` \` | \`2026-09-20 10:11:50\` ';
+  const cells = sample.split(/[|│]/).map(x => x.trim().replace(/^\`|\`$/g,''));
+  assert.equal(cells[0], '20260920101150');
+  assert.equal(cells[1], ' ');
+  assert.match(cells[0], /^\d{14}$/);
+});
