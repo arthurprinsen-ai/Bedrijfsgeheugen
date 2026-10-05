@@ -14,3 +14,7 @@ This change separates production proof by authority:
 - Terminal evidence records `readback_mode` and distinguishes performed runtime readback from explicitly not-applicable recovery.
 
 This prevents both failure modes: waiting forever for an irrelevant Netlify marker and falsely claiming a production readback that never occurred.
+
+## Provider recovery evidence
+
+A stale failed Supabase preview branch owned by superseded PR #3748 was removed after that PR was closed. This frees hosted preview capacity without touching the active #3757 parity-recovery branch and allows the current authority-routing PR to request its own provider preview on synchronize.
