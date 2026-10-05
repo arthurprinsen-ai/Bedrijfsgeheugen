@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createCandidateIdentity, validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage, evaluateTerminalMergeGuard } from '../tools/delivery/github-delivery-state-machine.mjs';
+import { createCandidateIdentity, validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage, evaluateFullCommitCheckSet, evaluateTerminalMergeGuard } from '../tools/delivery/github-delivery-state-machine.mjs';
 import policy from '../config/powerhouse-delivery-hygiene-v1.json' with { type: 'json' };
 
 const A='a'.repeat(40), B='b'.repeat(40);
@@ -45,20 +45,44 @@ test('cheap static gates fail closed on branch and secret leakage',()=>{
   assert.equal(evaluateTestWorkflowCoverage({changedPaths:['tests/x.test.mjs'],classifiedLanes:['backend']}).ok,true);
 });
 
+test('full exact-head commit check set includes Advanced Security and fails closed on security-neutral or pending checks',()=>{
+  const green=evaluateFullCommitCheckSet({
+    checkRuns:[
+      {name:'Required test',status:'completed',conclusion:'success',app:'github-actions'},
+      {name:'Pages changed',status:'completed',conclusion:'neutral',app:'netlify'},
+      {name:'CodeQL',status:'completed',conclusion:'success',app:'github-advanced-security'},
+    ],
+    legacyStatuses:[{context:'netlify/bedrijfsgeheugen/deploy-preview',state:'success'}],
+  });
+  assert.equal(green.ok,true);
+
+  const securityNeutral=evaluateFullCommitCheckSet({
+    checkRuns:[{name:'CodeQL',status:'completed',conclusion:'neutral',app:'github-advanced-security'}],
+  });
+  assert.equal(securityNeutral.ok,false);
+  assert.match(securityNeutral.reasons.join(','),/SECURITY_CHECKS_NEUTRAL/);
+
+  const pending=evaluateFullCommitCheckSet({
+    checkRuns:[{name:'CodeQL',status:'in_progress',conclusion:'',app:'github-advanced-security'}],
+  });
+  assert.equal(pending.ok,false);
+  assert.match(pending.reasons.join(','),/CHECK_RUNS_PENDING/);
+});
+
 test('terminal merge requires current epoch, exact validated head, green required checks and no successor',()=>{
-  const ok=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[]});
+  const ok=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],fullCheckRuns:[{name:'Required',status:'completed',conclusion:'success',app:'github-actions'}],legacyStatuses:[],openCandidates:[]});
   assert.equal(ok.ok,true);
   const staleEpochBody=body().replace(`Writer-Lease-Main-Epoch: ${A}`,`Writer-Lease-Main-Epoch: ${'c'.repeat(40)}`);
-  const staleEpoch=evaluateTerminalMergeGuard({body:staleEpochBody,policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[]});
+  const staleEpoch=evaluateTerminalMergeGuard({body:staleEpochBody,policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],fullCheckRuns:[{name:'Required',status:'completed',conclusion:'success',app:'github-actions'}],legacyStatuses:[],openCandidates:[]});
   assert.equal(staleEpoch.ok,false);
   assert.ok(staleEpoch.reasons.includes('WRITER_LEASE_MAIN_EPOCH_DRIFT'));
-  const behind=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:1,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[]});
+  const behind=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:1,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],fullCheckRuns:[{name:'Required',status:'completed',conclusion:'success',app:'github-actions'}],legacyStatuses:[],openCandidates:[]});
   assert.equal(behind.ok,false);
   assert.ok(behind.reasons.includes('BEHIND_MAIN'));
-  const unresolved=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[]});
+  const unresolved=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,requiredChecks:[{name:'Required',conclusion:'success'}],fullCheckRuns:[{name:'Required',status:'completed',conclusion:'success',app:'github-actions'}],legacyStatuses:[],openCandidates:[]});
   assert.equal(unresolved.ok,false);
   assert.ok(unresolved.reasons.includes('MERGEABILITY_UNRESOLVED'));
-  const successor=evaluateTerminalMergeGuard({body:body(),policy,candidateNumber:12,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[{number:13,body:body()}]});
+  const successor=evaluateTerminalMergeGuard({body:body(),policy,candidateNumber:12,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],fullCheckRuns:[{name:'Required',status:'completed',conclusion:'success',app:'github-actions'}],legacyStatuses:[],openCandidates:[{number:13,body:body()}]});
   assert.equal(successor.ok,false);
   assert.match(successor.reasons.join(','),/CANONICAL_SUCCESSOR_EXISTS/);
 });
