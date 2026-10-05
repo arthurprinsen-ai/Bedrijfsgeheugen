@@ -709,6 +709,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_persuasion_revenue_optimizer_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005151500_powerhouse_persuasion_revenue_optimizer_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-message-os-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_prepare_autonomous_outreach_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql",
