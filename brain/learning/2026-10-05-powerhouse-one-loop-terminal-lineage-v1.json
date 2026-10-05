@@ -47,5 +47,35 @@
     ]
   },
   "outcome": "One loop, one owner and one lineage remain canonical; delivery now also carries mandatory learning, ledger and human-readable closure evidence without fabricating external outcomes.",
-  "next_decision_rule": "Any future change that creates a second full-loop scheduler owner, independent legacy loop logic, a terminal action without lineage, fabricated observed outcomes, or a material candidate without closure artifacts must fail CI before terminal completion can be claimed."
+  "next_decision_rule": "Any future change that creates a second full-loop scheduler owner, independent legacy loop logic, a terminal action without lineage, fabricated observed outcomes, or a material candidate without closure artifacts must fail CI before terminal completion can be claimed.",
+  "preview_recovery": {
+    "fingerprint": "supabase|migration-replay|truncated-dollar-quote|v1",
+    "failed_exact_head": "fac9ed5d042732372003509252f5dd2c77620225",
+    "provider_check_id": 111809536595,
+    "sqlstate": "42601",
+    "root_cause": "Historical migration source contained truncated PostgreSQL dollar quote delimiters; source-only preview contract did not parse SQL bodies.",
+    "fix": "Restore three $$ delimiters in historical persuasion/uniqueness migrations and terminate the three function definitions and two PL/pgSQL END statements in the commercial persuasion runtime migration.",
+    "prevention": "Required test scans every migration for truncated dollar quote boundaries before merge. Hosted Supabase Preview remains an independent mandatory runtime replay gate.",
+    "red_green_evidence": {
+      "before": {
+        "tests": 7,
+        "passed": 6,
+        "failed": 1,
+        "invalid_boundaries": 3
+      },
+      "after": {
+        "tests": 27,
+        "passed": 27,
+        "failed": 0
+      }
+    },
+    "regression_test": "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs",
+    "runtime_replay_verified": false,
+    "additional_parser_evidence": {
+      "parser": "pglast / PostgreSQL grammar",
+      "migration_files": 420,
+      "before_errors": 1,
+      "after_errors": 0
+    }
+  }
 }

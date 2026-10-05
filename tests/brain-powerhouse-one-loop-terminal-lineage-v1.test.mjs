@@ -1,11 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 
 const migrationPath='supabase/migrations/20261005140000_powerhouse_one_loop_terminal_lineage_v1.sql';
 const sql=await readFile(migrationPath,'utf8');
 const workflow=await readFile('.github/workflows/whole-brain-canonical-loop-v2.yml','utf8');
 const canon=JSON.parse(await readFile('brain/contracts/powerhouse-operating-canon-v1.json','utf8'));
+
+test('migration replay rejects truncated PostgreSQL dollar quote delimiters',async()=>{
+  const invalid=[];
+  for(const file of await readdir('supabase/migrations')){
+    if(!file.endsWith('.sql')) continue;
+    const source=await readFile(`supabase/migrations/${file}`,'utf8');
+    source.split(/\r?\n/).forEach((line,index)=>{
+      if(/^\s*(?:as\s+\$|\$;)\s*$/i.test(line)) invalid.push(`${file}:${index+1}`);
+    });
+  }
+  assert.deepEqual(invalid,[],'PostgreSQL dollar quotes require $$ or matching $tag$ delimiters');
+});
+
+test('persuasion runtime function definitions terminate before privilege statements',async()=>{
+  const source=await readFile('supabase/migrations/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql','utf8');
+  assert.doesNotMatch(source,/end\s+\$function\$/i,'PL/pgSQL END requires a semicolon inside the function body');
+  assert.doesNotMatch(source,/\$function\$\s*\n\s*(?:revoke|grant|create)\b/i,'CREATE FUNCTION requires a semicolon after its quoted body');
+});
 
 test('all legacy commercial loop versions are compatibility aliases to the one canonical v1 owner',()=>{
   for(const version of [2,3,4,5,6]){

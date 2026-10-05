@@ -165,7 +165,7 @@ create or replace function public.powerhouse_trigger_based_mkb_acquisition_cycle
 language plpgsql
 security definer
 set search_path = pg_catalog, public
-as $
+as $$
 declare
   v_relationship jsonb;
   v_existing_research jsonb;
@@ -208,8 +208,7 @@ begin
     'executed_at',now()
   );
 end;
-$;
+$$;
 
 revoke execute on function public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date) from public,anon,authenticated;
 grant execute on function public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date) to service_role;
-
