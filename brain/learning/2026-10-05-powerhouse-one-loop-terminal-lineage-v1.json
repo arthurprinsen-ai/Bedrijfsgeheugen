@@ -1,0 +1,30 @@
+{
+  "contract": "POWERHOUSE-ONE-LOOP-TERMINAL-LINEAGE-v1",
+  "date": "2026-10-05",
+  "status": "canonical",
+  "problem": "Production commercial runtime had canonical v1 orchestration but retained legacy v2-v6 function bodies, historical terminal actions without explicit lifecycle lineage, and repository drift versus the applied Supabase state.",
+  "root_cause": [
+    "runtime evolution created compatibility versions without a permanent alias-only regression invariant",
+    "terminal action lifecycle and observed business outcomes were conflated in assurance",
+    "production migration state could advance before repository writeback became terminal"
+  ],
+  "decision": "Use one canonical commercial loop owner, turn legacy versions into aliases, enforce explicit terminal lineage without synthesising business outcomes, keep unresolved observed-outcome obligations open, and gate the invariant in Required test.",
+  "invariants": [
+    "exactly_one_full_loop_scheduler_owner",
+    "legacy_v2_v6_alias_only",
+    "split_stage_owners_absent",
+    "terminal_action_lineage_required",
+    "business_outcomes_observed_only",
+    "bounded_skip_locked_backfill",
+    "repo_migration_required_for_terminal_delivery"
+  ],
+  "production_readback": {
+    "canonical_scheduler_owner_count": 1,
+    "active_split_stage_scheduler_count": 0,
+    "non_alias_legacy_loop_count": 0,
+    "unaccounted_terminal_action_count": 0,
+    "open_observed_outcome_obligations": 10,
+    "regression_gate_healthy": true
+  },
+  "next_decision_rule": "Any future change that creates a second full-loop scheduler owner, independent legacy loop logic, or a terminal action without lineage must fail CI and runtime regression before terminal completion can be claimed."
+}
