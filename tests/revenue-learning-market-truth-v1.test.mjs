@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
-const migrationPath = 'supabase/migrations/20260915165700_powerhouse_market_truth_learning_v1.sql';
+const migrationName = '20260915165700_powerhouse_market_truth_learning_v1.sql';
 
 const stores = [
   'powerhouse_experiment_assignments',
@@ -18,7 +18,7 @@ const views = [
 ];
 
 test('market-truth persistence is first-class and idempotent', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   for (const name of stores) {
     assert.match(sql, new RegExp(`create\\s+table\\s+if\\s+not\\s+exists\\s+public\\.${name}`, 'i'), `${name} missing`);
     assert.match(sql, new RegExp(`alter\\s+table\\s+public\\.${name}\\s+enable\\s+row\\s+level\\s+security`, 'i'), `${name} must enable RLS`);
@@ -35,7 +35,7 @@ test('market-truth persistence is first-class and idempotent', async () => {
 });
 
 test('causal readiness is prospective and fail-closed', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /powerhouse_assign_experiment_v1/i);
   assert.match(sql, /powerhouse_causal_experiment_readiness_v1/i);
   assert.match(sql, /assignment_before_treatment/i);
@@ -47,7 +47,7 @@ test('causal readiness is prospective and fail-closed', async () => {
 });
 
 test('market-truth views are service-role only', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   for (const name of views) {
     assert.match(sql, new RegExp(`create\\s+or\\s+replace\\s+view\\s+public\\.${name}`, 'i'), `${name} missing`);
     assert.match(sql, new RegExp(`alter\\s+view\\s+public\\.${name}\\s+set\\s*\\(security_invoker\\s*=\\s*true\\)`, 'i'), `${name} must be security_invoker`);
@@ -57,7 +57,7 @@ test('market-truth views are service-role only', async () => {
 });
 
 test('daily function preserves historical errors and writes resolution evidence', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /powerhouse_market_truth_daily_v1/i);
   assert.match(sql, /source_health_resolved/i);
   assert.match(sql, /ga4-analytics/i);
