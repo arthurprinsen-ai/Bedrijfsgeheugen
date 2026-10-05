@@ -24,9 +24,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-resource-intelligence-contract.test.mjs",
-      "tests/powerhouse-resource-intelligence-portal-telemetry.test.mjs",
-      "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs"
+      "tests/brain-resource-intelligence-tenant-isolation-recovery-v1.test.mjs"
     ]
   },
   "evidence": {
