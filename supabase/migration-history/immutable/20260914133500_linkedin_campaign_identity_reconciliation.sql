@@ -119,11 +119,9 @@ update public.social_posts
 set updated_at = now()
 where published_at is not null
   and (published_at at time zone 'Europe/Amsterdam')::date between date '2026-09-14' and date '2026-12-31'
-  -- Historical replay must never synthesize or advance personal LinkedIn truth.
-  -- Personal rows are deliberately left untouched here; verified personal truth is
-  -- reconciled only by later canonical truth-gated flows.
   and (
-    channel_kind in ('linkedin_company','instagram')
+    channel_kind in ('linkedin_personal','linkedin_company','instagram')
+    or source_campaign_id like 'li-personal-%'
     or source_campaign_id like 'li-company-%'
     or lower(coalesce(platform,'')) = 'instagram'
   );

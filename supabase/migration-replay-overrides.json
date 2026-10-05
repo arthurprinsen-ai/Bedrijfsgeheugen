@@ -1,0 +1,16 @@
+{
+  "version": "SUPABASE-MIGRATION-DUAL-LANE-v1",
+  "invariant": "Remote-applied SQL remains immutable evidence; replay-safe executable divergence is allowed only through an explicit exact-blob override.",
+  "overrides": [
+    {
+      "migration_version": "20260914133500",
+      "production_name": "linkedin_campaign_identity_reconciliation",
+      "immutable_path": "supabase/migration-history/immutable/20260914133500_linkedin_campaign_identity_reconciliation.sql",
+      "immutable_git_blob_sha": "dbf19420c0f97ca635497a458891fb63d00976d6",
+      "executable_path": "supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql",
+      "reason": "Fresh preview replay of the historical bulk UPDATE activates the fail-closed LinkedIn personal truth gate. Personal historical backfill must remain skipped rather than bypassing or weakening the gate.",
+      "permitted_divergence": "Only exclude linkedin_personal / li-personal historical reconciliation rows; company and Instagram reconciliation remains executable.",
+      "production_mutation": false
+    }
+  ]
+}

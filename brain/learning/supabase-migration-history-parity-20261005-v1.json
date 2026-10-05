@@ -16,7 +16,9 @@
     "Require the Supabase Preview check on protected main in addition to Required test and CodeQL.",
     "Treat any remote-only Supabase migration version as a release-blocking repository parity failure.",
     "Recover missing migration files from supabase_migrations.schema_migrations statements rather than creating placeholders.",
-    "Keep production runtime readback and repository migration-history readback in the same terminal delivery lineage."
+    "Keep production runtime readback and repository migration-history readback in the same terminal delivery lineage.",
+    "Keep remote-applied migration SQL as immutable production history evidence. If fresh replay requires different behavior, preserve the exact applied blob under supabase/migration-history/immutable and allow executable divergence only through supabase/migration-replay-overrides.json.",
+    "Never bypass or disable a current safety/truth trigger to make historical replay pass; narrow the historical side effect fail-closed instead."
   ],
   "evaluation": {
     "historical_replay": [
@@ -29,8 +31,11 @@
     "remote_only_after_recovery": 0,
     "required_merge_check": "Supabase Preview",
     "initial_recovery_commit": "fcef1fe7ea65ff65e88f25a367df9034e73e4daa",
-    "latest_mirrored_remote_version": "20261005144606"
+    "latest_mirrored_remote_version": "20261005144606",
+    "replay_dual_lane": "SUPABASE-MIGRATION-DUAL-LANE-v1",
+    "first_override_version": "20260914133500",
+    "immutable_history_path": "supabase/migration-history/immutable/20260914133500_linkedin_campaign_identity_reconciliation.sql"
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 2
+  "revision": 3
 }
