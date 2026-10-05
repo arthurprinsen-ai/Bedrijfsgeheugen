@@ -9,7 +9,7 @@ create or replace function public.powerhouse_outbound_message_quality_ready_v1(p
 returns boolean
 language sql
 stable
-set search_path='public','pg_catalog','extensions'
+set search_path = public, pg_catalog, extensions
 as $$
   select coalesce((
     select case
