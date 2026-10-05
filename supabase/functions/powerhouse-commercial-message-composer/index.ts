@@ -11,6 +11,7 @@ function normalize(v:string){return clean(v).toLowerCase().normalize('NFKD').rep
 function extractJson(text:string){const t=clean(text);try{return JSON.parse(t);}catch{}const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1));}catch{}}throw new Error('AI_JSON_INVALID');}
 const banned=[/ik zag (je|jouw) profiel/i,/we zijn al een tijd verbonden/i,/just following up/i,/even opvolgen/i,/heb je mijn (mail|bericht)/i,/ik heb nog niets gehoord/i,/in het huidige digitale landschap/i,/revolutionair/i,/game.?changer/i,/mis deze kans niet/i,/laatste kans/i,/synergie/i,/boek (hier|nu).*(agenda|meeting|afspraak)/i,/calendly\.com/i];
 function numberClaims(text:string){return [...text.matchAll(/\b\d+(?:[.,]\d+)?%?\b/g)].map(x=>x[0]);}
+function canonicalNumber(v:string){const raw=clean(v).replace('%','').replace(',','.');const n=Number(raw);return Number.isFinite(n)?String(n)+(clean(v).endsWith('%')?'%':''):normalize(v);}
 function quality(action:any,plan:any,out:any){
   const msg=clean(out?.message),subject=clean(out?.subject),anchor=clean(out?.personalization_anchor);
   const max=Number(plan?.max_words||100),channel=clean(action.channel_norm);
@@ -21,22 +22,42 @@ function quality(action:any,plan:any,out:any){
     public_source_evidence:ev?.public_source_evidence,
     public_headline:pub?.headline,public_summary:pub?.summary,
     inbound_message:ev?.inbound?.message,reply_text:ev?.reply_text,last_message:ev?.last_message,
+    action_reason:action.reason,
     relationship_evidence:ev?.relationship_evidence
   };
   const context=normalize(JSON.stringify(humanContext));
-  const contextNumbers=new Set(numberClaims(JSON.stringify(humanContext)).map(normalize));
-  const machineTerms=['ai_data_digitalisation','buy_sell_ma','erp_afas_change','hot_trigger','commercial_buying_window'];const machineHits=machineTerms.filter(x=>normalize(msg).includes(x)); const humanLabelHits=[/\\btrigger\\b/i,/hot.?trigger/i,/buying.?window/i,/taxonom/i,/intent.?score/i,/commercial.?state/i].filter(r=>r.test(msg)).map(r=>'internal:'+String(r));const qCount=questions(msg),bannedHits=[...banned.filter(r=>r.test(msg)).map(r=>String(r)),...machineHits.map(x=>'machine:'+x),...humanLabelHits],nums=numberClaims(msg).filter(n=>!context.includes(normalize(n)));
-  const anchorNormalized=normalize(anchor); const anchorMachine=!anchor||anchor.includes('_')||machineTerms.includes(anchorNormalized)||/\\b(trigger|buying window|intent score|commercial state)\\b/i.test(anchor); const anchorOk=!!anchor&&!anchorMachine&&context.includes(anchorNormalized);
+  const contextNumbers=new Set(numberClaims(JSON.stringify(humanContext)).map(canonicalNumber));
+  const machineTerms=['ai_data_digitalisation','buy_sell_ma','erp_afas_change','hot_trigger','commercial_buying_window'];const machineHits=machineTerms.filter(x=>normalize(msg).includes(x)); const humanLabelHits=[/\\btrigger\\b/i,/hot.?trigger/i,/buying.?window/i,/taxonom/i,/intent.?score/i,/commercial.?state/i].filter(r=>r.test(msg)).map(r=>'internal:'+String(r));const qCount=questions(msg),bannedHits=[...banned.filter(r=>r.test(msg)).map(r=>String(r)),...machineHits.map(x=>'machine:'+x),...humanLabelHits],nums=numberClaims(msg).filter(n=>!contextNumbers.has(canonicalNumber(n)));
+  const anchorNormalized=normalize(anchor);
+  const anchorMachine=!anchor||anchor.includes('_')||machineTerms.includes(anchorNormalized)||/\\b(trigger|buying window|intent score|commercial state)\\b/i.test(anchor);
+  const anchorTokens=anchorNormalized.split(/\\s+/).filter(x=>x.length>=3);
+  const anchorTokenHits=anchorTokens.filter(x=>context.includes(x)).length;
+  const anchorOk=!!anchor&&!anchorMachine&&(context.includes(anchorNormalized)||(anchorTokens.length>=2&&anchorTokenHits/anchorTokens.length>=0.8));
+  const reasonNormalized=normalize(action.reason);
+  const messageTokens=normalize(msg).split(/\s+/).filter((x:string)=>x.length>=4);
+  const reasonEvidenceHits=messageTokens.filter((x:string)=>reasonNormalized.includes(x)).length;
+  const followupEvidenceOk=plan?.play_key==='followup_new_angle'&&reasonNormalized.length>20&&reasonEvidenceHits>=3;
   const oneQuestion=plan?.cta_style==='no_question'?qCount===0:qCount<=1;
   const lengthOk=words(msg)>=8&&words(msg)<=max;
   const subjectOk=!['email','e-mail','reply_email'].includes(channel)||(words(subject)>=2&&words(subject)<=8);
   const triggerReadableOk=plan?.play_key!=='trigger_outreach'||plan?.human_readable_context===true;
-  const specificOk=(plan?.play_key==='value_comment'||anchorOk)&&triggerReadableOk;
+  const specificOk=(plan?.play_key==='value_comment'||anchorOk||followupEvidenceOk)&&triggerReadableOk;
   const factsOk=nums.length===0,noBanned=bannedHits.length===0;
-  const checks:any={length_ok:lengthOk,word_count:words(msg),max_words:max,question_count:qCount,question_rule_ok:oneQuestion,banned_ok:noBanned,banned_hits:bannedHits,subject_ok:subjectOk,personalization_anchor_ok:specificOk,personalization_anchor:anchor,personalization_anchor_human:!anchorMachine,trigger_human_readable_context_ok:triggerReadableOk,unsupported_numeric_claims:nums,facts_ok:factsOk,one_primary_problem_declared:clean(out?.primary_problem).length>0,micro_commitment_present:plan?.cta_style==='no_question'||clean(out?.micro_commitment).length>0,human_reason_present:clean(out?.human_reason).length>0};
-  const vals=[checks.length_ok,checks.question_rule_ok,checks.banned_ok,checks.subject_ok,checks.personalization_anchor_ok,checks.personalization_anchor_human,checks.trigger_human_readable_context_ok,checks.facts_ok,checks.one_primary_problem_declared,checks.micro_commitment_present,checks.human_reason_present];
+  const predictedTrigger=clean(action?.predicted_buying_trigger).toLowerCase();
+  const irrelevantTrigger=plan?.source_trigger_relevance===false;
+  let topicLeak=false;
+  if(irrelevantTrigger&&/buy_sell_ma/.test(predictedTrigger)){
+    const topic=/\b(m&a|merger|acquisit|overname|overnemen|verkooptraject|bedrijf verkopen|deal-readiness|due diligence)\b/i;
+    topicLeak=topic.test(msg)&&!topic.test(context);
+  }
+  if(irrelevantTrigger&&/ai_data_digitalisation/.test(predictedTrigger)){
+    const topic=/\b(ai[- /]?data|data governance|data-governance|use[- ]?cases?|governance|ai[- ]?initiatief|ai project|artificial intelligence|machine learning)\b/i;
+    topicLeak=topic.test(msg)&&!topic.test(context);
+  }
+  const checks:any={length_ok:lengthOk,word_count:words(msg),max_words:max,question_count:qCount,question_rule_ok:oneQuestion,banned_ok:noBanned,banned_hits:bannedHits,subject_ok:subjectOk,personalization_anchor_ok:specificOk,followup_evidence_match:followupEvidenceOk,personalization_anchor:anchor,personalization_anchor_human:!anchorMachine,trigger_human_readable_context_ok:triggerReadableOk,semantic_topic_leak_free:!topicLeak,unsupported_numeric_claims:nums,facts_ok:factsOk,one_primary_problem_declared:clean(out?.primary_problem).length>0,micro_commitment_present:plan?.cta_style==='no_question'||clean(out?.micro_commitment).length>0,human_reason_present:clean(out?.human_reason).length>0};
+  const vals=[checks.length_ok,checks.question_rule_ok,checks.banned_ok,checks.subject_ok,checks.personalization_anchor_ok,checks.personalization_anchor_human,checks.trigger_human_readable_context_ok,checks.semantic_topic_leak_free,checks.facts_ok,checks.one_primary_problem_declared,checks.micro_commitment_present,checks.human_reason_present];
   const score=vals.filter(Boolean).length/vals.length;
-  const passed=score>=0.90&&lengthOk&&oneQuestion&&noBanned&&subjectOk&&specificOk&&!anchorMachine&&factsOk;
+  const passed=score>=0.90&&lengthOk&&oneQuestion&&noBanned&&subjectOk&&specificOk&&!anchorMachine&&factsOk&&!topicLeak;
   return {passed,score:Number(score.toFixed(4)),checks};
 }
 
