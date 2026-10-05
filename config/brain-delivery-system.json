@@ -31,7 +31,8 @@
     "docs/growth-revenue-os-architecture.md",
     "docs/learning/",
     "docs/self-healing-agents.md",
-    "docs/superpowers/skills/"
+    "docs/superpowers/skills/",
+    "tests/helpers/"
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
