@@ -218,7 +218,13 @@ begin
       jobname='powerhouse-one-commercial-loop-daily-v1'
       or command ilike '%powerhouse_one_commercial_decision_loop_v1(%'
       or command ilike '%powerhouse_one_commercial_closed_loop_v1(%'
-      or command ~* 'powerhouse_commercial_closed_loop_v[2-9][0-9]*[[:space:]]*\\('
+      or (
+         command ilike '%powerhouse_commercial_closed_loop_v2(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v3(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v4(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v5(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v6(%'
+       )
     );
 
   select count(*)::int into v_split_owner_count
@@ -292,7 +298,13 @@ begin
       'powerhouse-one-commercial-loop-daily-v1'
     )
        or (
-         command ~* 'powerhouse_commercial_closed_loop_v[2-9][0-9]*[[:space:]]*\\('
+         (
+         command ilike '%powerhouse_commercial_closed_loop_v2(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v3(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v4(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v5(%'
+         or command ilike '%powerhouse_commercial_closed_loop_v6(%'
+       )
        )
   loop
     perform cron.unschedule(r.jobid);
