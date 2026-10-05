@@ -1,23 +1,29 @@
-# One commercial closed loop — delivery closure evidence
+# One commercial closed loop — delivery and provider closure evidence
 
 Date: 2026-10-05  
 PR: #3739  
 Obligation: `one-commercial-closed-loop-v2`
 
-## Event
+## Events
 
-The exact-head Required test correctly failed closed with `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE`. Hygiene/admission itself was green, but the material R4 Supabase candidate contained no repository closure artifacts.
+The exact-head Required test correctly failed closed with `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE` because the material R4 Supabase candidate initially lacked repository closure artifacts.
 
-## Root cause
-
-The runtime migration was canonicalized first, while the Integration Bundle policy requires three evidence surfaces in the same candidate: `brain/learning/`, a development-ledger event, and human-readable change documentation.
+Separately, a LinkedIn provider call returned HTTP 200 while the semantic response was `CONCRETE_POST_CONTEXT_REQUIRED`. The action correctly remained nonterminal and provider acknowledgement stayed 0.
 
 ## Structural correction
 
-This candidate now carries all three closure surfaces alongside the runtime migration. The Required test remains the canonical gate and must re-evaluate the full exact-head candidate. No prior sibling workflow success, stale HEAD, or mergeable PR state is accepted as terminal evidence.
+The candidate now carries all three repository closure surfaces alongside the runtime migration and keeps the provider boundary fail-closed.
+
+Provider execution requires current source context, consent/capability eligibility, pressure/cooldown eligibility, dedupe proof, exact-message-hash quality proof, semantic provider acknowledgement and terminal outcome/readback. HTTP status alone cannot mark an action done.
+
+Heavy identity, research and learning work remains bounded or independently scheduled so it cannot block the canonical heartbeat. No-response remains observation-only learning evidence.
 
 ## Terminal invariant
 
-`runtime change -> repository closure evidence -> exact-HEAD full checkset -> merge -> production readback -> terminal closure`
+`runtime change → repository closure evidence → exact-HEAD full checkset → merge → production readback → terminal closure`
 
-No merge or LIVE_BEWEZEN claim is permitted before the chain above is complete.
+and, for external outreach:
+
+`candidate → context/source → consent/pressure/dedupe → exact message proof → provider semantic ack → terminal outcome → attribution → learning`
+
+No merge or LIVE_BEWEZEN claim is permitted before the relevant chain is complete.
