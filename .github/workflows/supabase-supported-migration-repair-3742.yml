@@ -85,7 +85,8 @@ jobs:
           const expected=[
             ['20260920101150','p0_proof_replay_baseline_v1'],
             ['20260920102450','instagram_daily_winner_table_replay_baseline_v1'],
-            ['20260925080500','instagram_media_reserve_replay_baseline_v1']
+            ['20260925080500','instagram_media_reserve_replay_baseline_v1'],
+            ['20261005133951','outbound_message_quality_ready_replay_baseline_v1']
           ];
           const rows=lock.replay_baselines_pending_repair || [];
           if (rows.length !== expected.length) throw new Error('REPAIR_ALLOWLIST_CARDINALITY_DRIFT');
@@ -128,7 +129,7 @@ jobs:
             .filter(x=>x.length>=2 && (/^\d{14}$/.test(x[0]) || /^\d{14}$/.test(x[1])))
             .map(x=>({local:x[0]||'',remote:x[1]||''}));
           const drift=rows.filter(x=>x.local!==x.remote);
-          const expected=['20260920101150','20260920102450','20260925080500'];
+          const expected=['20260920101150','20260920102450','20260925080500','20261005133951'];
           const actual=drift.map(x=>x.local).sort();
           if (JSON.stringify(actual)!==JSON.stringify(expected)) {
             throw new Error('UNEXPECTED_PRE_REPAIR_DRIFT:'+JSON.stringify(drift));
@@ -136,7 +137,7 @@ jobs:
           if (drift.some(x=>x.remote)) throw new Error('REMOTE_ONLY_OR_IDENTITY_DRIFT');
           NODE
 
-          supabase migration repair             20260920101150             20260920102450             20260925080500             --status applied
+          supabase migration repair             20260920101150             20260920102450             20260925080500             20261005133951             --status applied
 
           supabase migration list --linked | tee ../repair-evidence/after.txt
 
@@ -171,7 +172,8 @@ jobs:
           const expected=[
             ['20260920101150','p0_proof_replay_baseline_v1'],
             ['20260920102450','instagram_daily_winner_table_replay_baseline_v1'],
-            ['20260925080500','instagram_media_reserve_replay_baseline_v1']
+            ['20260925080500','instagram_media_reserve_replay_baseline_v1'],
+            ['20261005133951','outbound_message_quality_ready_replay_baseline_v1']
           ];
           const repaired=new Set(expected.map(x=>x[0]));
           for (const row of lock.replay_baselines_pending_repair || []) {
@@ -204,10 +206,10 @@ jobs:
           let body=process.env.PR_BODY || '';
           const head=process.env.NEW_HEAD || '';
           body=body.replace(/^Writer-Lease-Head:.*$/m, 'Writer-Lease-Head: '+head);
-          body=body.replace(/- production ledger: 564 applied versions;/, '- production ledger after supported repair: 567 applied versions;');
-          body=body.replace(/- executable local-only reduced to exactly 3 replay-compatibility baselines:/, '- executable local-only after supported repair: 0; repaired replay baselines:');
-          body=body.replace(/- migration-history\.lock\.json refreshed from the live 564-entry production ledger;/, '- migration-history.lock.json refreshed from the live 567-entry production ledger;');
-          body += '\n\nProvider repair evidence: supported Supabase CLI migration repair --status applied completed for the three allowlisted replay baselines and migration list readback proved zero local/remote drift. This does not itself prove fresh replay, exact-HEAD gates, protected merge, or post-merge production readback.';
+          body=body.replace(/- production ledger: 564 applied versions;/, '- production ledger after supported repair: 568 applied versions;');
+          body=body.replace(/- executable local-only reduced to exactly 4 replay-compatibility baselines:/, '- executable local-only after supported repair: 0; repaired replay baselines:');
+          body=body.replace(/- migration-history\.lock\.json refreshed from the live 564-entry production ledger;/, '- migration-history.lock.json refreshed from the live 568-entry production ledger;');
+          body += '\n\nProvider repair evidence: supported Supabase CLI migration repair --status applied completed for the four allowlisted replay baselines and migration list readback proved zero local/remote drift. This does not itself prove fresh replay, exact-HEAD gates, protected merge, or post-merge production readback.';
           process.stdout.write(body);
           NODE
           )"
