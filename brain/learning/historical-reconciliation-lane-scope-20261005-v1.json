@@ -1,0 +1,31 @@
+{
+  "id": "historical-reconciliation-lane-scope-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "historical-reconciliation-merge-starvation",
+  "fingerprint": "powerhouse|delivery-routing|historical-reconciliation|backend-only|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A backend-only control-plane workflow inherited the generic shared workflow classification and activated unrelated website/browser lanes, extending exact-head validation long enough for moving main to repeatedly make the candidate behind.",
+  "prevention": [
+    "Explicitly classify control-plane workflows on their owned lane.",
+    "Do not activate website or portal gates without a changed path owned by those lanes.",
+    "Retain shared and backend controls for historical terminal reconciliation."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ]
+  },
+  "evidence": {
+    "workflow": ".github/workflows/historical-terminal-reconciliation.yml",
+    "starved_prs": [3797, 3804]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
