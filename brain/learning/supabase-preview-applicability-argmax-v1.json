@@ -1,0 +1,13 @@
+{
+  "id": "supabase-preview-applicability-argmax-v1",
+  "date": "2026-10-05",
+  "failure_class": "DELIVERY_CONTROL_PLANE_PAYLOAD_SIZE",
+  "symptom": "Supabase Preview Applicability failed with /usr/local/bin/node: Argument list too long on large exact-head check-run sets.",
+  "root_cause": "The complete GitHub check-runs JSON response was injected into an environment variable before invoking Node, exceeding process ARG_MAX.",
+  "fix": "Persist the provider response to RUNNER_TEMP and parse it from a file while preserving exact provider-name/app/conclusion proof semantics.",
+  "prevention": [
+    "Do not pass unbounded API payloads through environment variables or argv.",
+    "Keep provider proof fail-closed: exact Supabase app, exact check name, success only."
+  ],
+  "scope": ".github/workflows/supabase-preview-applicability.yml"
+}
