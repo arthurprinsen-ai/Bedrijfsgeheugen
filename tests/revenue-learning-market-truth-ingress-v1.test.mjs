@@ -55,7 +55,7 @@ test('maturity helper only matures eligible expired assignments and remains serv
 
 test('edge runtime version and daily evidence include market-truth maturity/readback', async () => {
   const src = await read(edgePath);
-  assert.match(src, /version:'1\.3\.0'/);
+  assert.match(src, /version:'1\\.4\\.0'/);
   assert.match(src, /powerhouse_mature_experiment_assignments_v1/i);
   assert.match(src, /market_truth_learning/i);
 });
