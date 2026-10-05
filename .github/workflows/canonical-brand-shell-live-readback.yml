@@ -78,7 +78,8 @@ jobs:
                   "tools/site-shell/contracts.mjs",
                   "tools/site-shell/test-shell-components.mjs",
                   "tools/site-shell/live-contract.mjs",
-                  "tools/site-shell/test-live-contract.mjs"
+                  "tools/site-shell/test-live-contract.mjs",
+                  "tools/site-shell/production-supersession.mjs"
                 ]);
                 const ok=paths.every(p=>exact.has(p)||prefixes.some(prefix=>p.startsWith(prefix)));
                 process.stdout.write(String(ok));

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { evaluateSafeProductionSupersession, VERIFIER_ONLY_EXACT } from '../tools/site-shell/production-supersession.mjs';
+import { evaluateSafeProductionSupersession, NON_PRODUCTION_EXACT } from '../tools/site-shell/production-supersession.mjs';
 
 test('verifier-only main advances do not require a new Netlify deploy', async () => {
   const [release,snapshot,contract] = await Promise.all([
@@ -15,12 +15,13 @@ test('verifier-only main advances do not require a new Netlify deploy', async ()
     'tools/site-shell/test-shell-components.mjs',
     'tools/site-shell/live-contract.mjs',
     'tools/site-shell/test-live-contract.mjs',
+    'tools/site-shell/production-supersession.mjs',
     'brain/contracts/production-readback-v1.json',
   ]) {
     assert.ok(release.includes(path), `release classifier misses ${path}`);
     assert.ok(snapshot.includes(path), `snapshot ignore misses ${path}`);
     assert.ok(contract.productionTruth.verifierOnlyPaths.includes(path), `contract misses ${path}`);
-    assert.ok(VERIFIER_ONLY_EXACT.has(path), `production supersession misses verifier-only path ${path}`);
+    assert.ok(NON_PRODUCTION_EXACT.has(path), `production supersession misses verifier-only path ${path}`);
   }
 
   assert.match(release,/readbackControlPlaneOnly=changedPaths\.length>0 && runtimeChangedPaths\.length===0/);

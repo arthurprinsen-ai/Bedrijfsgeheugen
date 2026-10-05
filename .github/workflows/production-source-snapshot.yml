@@ -49,6 +49,7 @@ on:
       - 'tools/site-shell/test-shell-components.mjs'
       - 'tools/site-shell/live-contract.mjs'
       - 'tools/site-shell/test-live-contract.mjs'
+      - 'tools/site-shell/production-supersession.mjs'
       - 'brain/contracts/production-readback-v1.json'
       - 'tools/delivery/**'
       - 'brain/policies/**'
