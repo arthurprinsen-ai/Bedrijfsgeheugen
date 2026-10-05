@@ -24,9 +24,9 @@ test('projection is idempotent, evidence preserving and decision/prediction link
   assert.match(sql,/brier_component/i);
 });
 
-test('no-Make production architecture is part of the same Powerhouse guardrail',()=>{
-  assert.match(sql,/powerhouse-no-make-production-v1/i);
-  assert.match(sql,/channel-identity-hard-gate-v2/i);
-  assert.match(sql,/growth-revenue-os-1m-2027-v1/i);
+test('canonical revenue projection remains provider-neutral and does not introduce a parallel persistence authority',()=>{
   assert.doesNotMatch(sql,/BG169_HANDOFF_URL|transport="make"|make_accepted/i);
+  assert.doesNotMatch(sql,/CREATE\s+TABLE/i);
+  assert.match(sql,/drop trigger if exists trg_powerhouse_project_brain_revenue_learning/i);
+  assert.match(sql,/after insert on public\.brain_records/i);
 });
