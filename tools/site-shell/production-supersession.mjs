@@ -1,4 +1,5 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 
 export const NON_PRODUCTION_PREFIXES = Object.freeze([
@@ -9,17 +10,17 @@ export const NON_PRODUCTION_PREFIXES = Object.freeze([
   'brain/learning/',
 ]);
 
-export const VERIFIER_ONLY_EXACT = Object.freeze(new Set([
-  'tools/site-shell/contracts.mjs',
-  'tools/site-shell/test-shell-components.mjs',
-  'tools/site-shell/live-contract.mjs',
-  'tools/site-shell/test-live-contract.mjs',
-  'brain/contracts/production-readback-v1.json',
-]));
+function verifierOnlyPaths() {
+  const url=new URL('../../brain/contracts/production-readback-v1.json',import.meta.url);
+  const contract=JSON.parse(readFileSync(url,'utf8'));
+  return Array.isArray(contract?.productionTruth?.verifierOnlyPaths)
+    ? contract.productionTruth.verifierOnlyPaths.map(String)
+    : [];
+}
 
 export const NON_PRODUCTION_EXACT = Object.freeze(new Set([
   'config/delivery-prevention-rules.json',
-  ...VERIFIER_ONLY_EXACT,
+  ...verifierOnlyPaths(),
 ]));
 
 export function isNonProductionPath(path = '') {
