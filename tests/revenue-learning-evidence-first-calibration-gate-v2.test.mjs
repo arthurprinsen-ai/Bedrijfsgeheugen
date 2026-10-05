@@ -1,13 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readdir, readFile } from 'node:fs/promises';
+import { findMigrationHistoryBySuffix } from './helpers/read-supabase-migration-history.mjs';
 
 async function migrationSql() {
-  const dir = 'supabase/migrations';
-  const files = await readdir(dir);
-  const name = files.find((file) => file.endsWith('_powerhouse_evidence_first_market_learning_calibration_gate_v2.sql'));
-  assert.ok(name, 'evidence-first market learning v2 migration missing');
-  return readFile(`${dir}/${name}`, 'utf8');
+  return findMigrationHistoryBySuffix('_powerhouse_evidence_first_market_learning_calibration_gate_v2.sql');
 }
 
 test('experiment learning v2 requires prospective treatment and holdout evidence before promotion', async () => {
