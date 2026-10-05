@@ -15,3 +15,5 @@
 - Runtime proof: human message health and technique-performance views.
 
 - Canonical delivery lane: `backend`; immutable base: `aa863705e1fbe2d843aa3dfce146ff74011f25ee`.
+
+- Follow-up hardening: irrelevant forecast fields are stripped from composer input and deterministic semantic-topic leakage blocks prospect copy when source-trigger relevance is false.

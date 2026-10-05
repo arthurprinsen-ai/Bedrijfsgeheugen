@@ -39,3 +39,11 @@ test('external executors fail closed on unproven human copy',()=>{
     assert.match(src,/quality_passed/);
   }
 });
+
+test('semantic topic leakage is fail-closed when machine trigger is irrelevant',()=>{
+  assert.match(composer,/safeEvidence/);
+  assert.match(composer,/if\(triggerRelevant\)/);
+  assert.match(composer,/semantic_topic_leak_free/);
+  assert.match(composer,/topicLeak/);
+  assert.match(composer,/predicted_problem:triggerRelevant\?action\.predicted_problem:null/);
+});

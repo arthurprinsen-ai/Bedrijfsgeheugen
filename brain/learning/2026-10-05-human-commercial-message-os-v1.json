@@ -13,7 +13,8 @@
     "predicted objections cannot self-promote to observed objections",
     "recruitment is not M&A evidence and supplier directories are not AI buying-trigger evidence",
     "Gmail and SalesRobot fail closed unless the canonical composer quality proof passes",
-    "outcomes and revenue are measured by channel, sales play, psychology and CTA"
+    "outcomes and revenue are measured by channel, sales play, psychology and CTA",
+    "irrelevant machine forecasts are removed from composer input and semantic topic leakage is deterministically rejected"
   ],
   "canonical_authorities": [
     "public.powerhouse_sales_actions",
@@ -53,7 +54,8 @@
       "quality_passed": 8,
       "drafts_without_quality": 0,
       "actions_without_strategy": 0
-    }
+    },
+    "semantic_leakage_regression": "tests/brain-human-commercial-message-os-v1.test.mjs"
   },
   "compiler": {
     "failure_class": "COMMERCIAL_KNOWLEDGE_RUNTIME_LINEAGE_FRAGMENTATION",
