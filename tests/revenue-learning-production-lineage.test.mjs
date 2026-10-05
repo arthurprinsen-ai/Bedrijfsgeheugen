@@ -1,18 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
-const healthPath = new URL('../supabase/migrations/20260915142423_powerhouse_health_run_identity_clock_timestamp_v1.sql', import.meta.url);
-const revenuePath = new URL('../supabase/migrations/20260915142504_powerhouse_revenue_calibration_projection_v1.sql', import.meta.url);
 const healthAlias = new URL('../supabase/migrations/20260915162400_powerhouse_health_run_identity_clock_timestamp_v1.sql', import.meta.url);
 const revenueAlias = new URL('../supabase/migrations/20260915162500_powerhouse_revenue_calibration_projection_v1.sql', import.meta.url);
 
-const health = fs.readFileSync(healthPath, 'utf8');
-const revenue = fs.readFileSync(revenuePath, 'utf8');
+const health = readMigrationHistorySync('20260915142423_powerhouse_health_run_identity_clock_timestamp_v1.sql');
+const revenue = readMigrationHistorySync('20260915142504_powerhouse_revenue_calibration_projection_v1.sql');
 
 test('GitHub mirrors the exact production migration identities without semantic timestamp aliases', () => {
-  assert.ok(fs.existsSync(healthPath));
-  assert.ok(fs.existsSync(revenuePath));
+  assert.ok(health.length > 0);
+  assert.ok(revenue.length > 0);
   assert.equal(fs.existsSync(healthAlias), false, 'semantic timestamp alias must not become a second migration identity');
   assert.equal(fs.existsSync(revenueAlias), false, 'semantic timestamp alias must not become a second migration identity');
 });
