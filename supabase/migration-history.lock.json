@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-05T17:10:00Z",
+  "captured_at": "2026-10-05T17:13:00Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2264,17 +2264,33 @@
     {
       "version": "20260920101150",
       "name": "p0_proof_replay_baseline_v1",
-      "status": "APPLIED_REQUIRED"
+      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "production_effect_readback": {
+        "rows": 1,
+        "max_version": 2,
+        "artifact_version": "production-truth-proof-20260831-v1-retired"
+      }
     },
     {
       "version": "20260920102450",
       "name": "instagram_daily_winner_table_replay_baseline_v1",
-      "status": "APPLIED_REQUIRED"
+      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "production_effect_readback": {
+        "table": "public.powerhouse_instagram_daily_winners_v1",
+        "column_count": 9,
+        "recommendation_fk": true
+      }
     },
     {
       "version": "20260925080500",
       "name": "instagram_media_reserve_replay_baseline_v1",
-      "status": "APPLIED_REQUIRED"
+      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "production_effect_readback": {
+        "table": "public.powerhouse_instagram_media_reserve_v1",
+        "column_count": 14,
+        "has_exact_media_sha256": true,
+        "rls_enabled": true
+      }
     }
   ],
   "forbidden_repository_only_versions": [
@@ -2435,7 +2451,7 @@
   "recovery_governance": {
     "mode": "fail-closed",
     "issue": 3742,
-    "candidate_pr": 3763,
+    "candidate_pr": 3766,
     "remote_history_repair": false,
     "direct_schema_migrations_writes_forbidden": true
   }
