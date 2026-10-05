@@ -45,7 +45,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs",
       "tests/brain-terminal-provider-durable-evidence.test.mjs"
     ],
     "shadow": [
