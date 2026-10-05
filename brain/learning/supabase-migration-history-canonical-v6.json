@@ -1,0 +1,31 @@
+{
+  "id": "supabase-migration-history-canonical-v6",
+  "date": "2026-10-05",
+  "obligation_id": "supabase-migration-history-canonical-v6",
+  "issue": 3742,
+  "learning": "Production migration history, executable replay history, and repository-only historical evidence are different authorities and must be reconciled explicitly rather than inferred from filenames.",
+  "proven": {
+    "production_ledger_before_repair": 564,
+    "fresh_replay_migrations": 568,
+    "remote_only": 0,
+    "version_name_mismatches": 0,
+    "replay_baselines_pending_supported_tracking_repair": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ]
+  },
+  "prevention": [
+    "archive repository-only timestamp aliases outside supabase/migrations",
+    "preserve exact production-backed version+name identities",
+    "require fresh disposable Supabase replay",
+    "require supported migration repair --status applied for replay-only baselines",
+    "fail closed until production ledger readback and exact-head gates are green"
+  ],
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true
+  }
+}
