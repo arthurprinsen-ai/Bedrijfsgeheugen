@@ -1,14 +1,23 @@
 {
+  "fingerprint": "powerhouse|one-loop-terminal-lineage|required-closure|v1",
   "contract": "POWERHOUSE-ONE-LOOP-TERMINAL-LINEAGE-v1",
   "date": "2026-10-05",
   "status": "canonical",
-  "problem": "Production commercial runtime had canonical v1 orchestration but retained legacy v2-v6 function bodies, historical terminal actions without explicit lifecycle lineage, and repository drift versus the applied Supabase state.",
+  "compiler": {
+    "failure_class": "MATERIAL_WRITEBACK_CLOSURE_MISSING"
+  },
+  "problem": "Production commercial runtime had canonical v1 orchestration but retained legacy v2-v6 function bodies, historical terminal actions without explicit lifecycle lineage, repository drift versus the applied Supabase state, and the delivery candidate initially lacked the mandatory same-lineage writeback artifacts.",
   "root_cause": [
     "runtime evolution created compatibility versions without a permanent alias-only regression invariant",
     "terminal action lifecycle and observed business outcomes were conflated in assurance",
-    "production migration state could advance before repository writeback became terminal"
+    "production migration state could advance before repository writeback became terminal",
+    "material delivery was initially proposed without all mandatory learning, ledger and human-readable closure evidence being part of the changed-path set"
   ],
-  "decision": "Use one canonical commercial loop owner, turn legacy versions into aliases, enforce explicit terminal lineage without synthesising business outcomes, keep unresolved observed-outcome obligations open, and gate the invariant in Required test.",
+  "decision": "Use one canonical commercial loop owner, turn legacy versions into aliases, enforce explicit terminal lineage without synthesising business outcomes, keep unresolved observed-outcome obligations open, and fail closed unless the same delivery lineage contains all mandatory writeback evidence.",
+  "prevention": {
+    "rule": "Every material Powerhouse candidate must include canonical Brain learning, an activity/development ledger event and human-readable change/learning documentation in the exact candidate scope before merge readiness.",
+    "regression_contract": "Required test remains fail-closed for missing writeback evidence; observed commercial outcomes may only close from real evidence and open obligations must stay explicit."
+  },
   "invariants": [
     "exactly_one_full_loop_scheduler_owner",
     "legacy_v2_v6_alias_only",
@@ -16,8 +25,14 @@
     "terminal_action_lineage_required",
     "business_outcomes_observed_only",
     "bounded_skip_locked_backfill",
-    "repo_migration_required_for_terminal_delivery"
+    "repo_migration_required_for_terminal_delivery",
+    "material_writeback_closure_required_before_merge"
   ],
+  "evidence": {
+    "failed_exact_head": "5511a006c876593835c176d6502ee6306abf033a",
+    "required_test_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
+    "regression_test": "tests/powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+  },
   "production_readback": {
     "canonical_scheduler_owner_count": 1,
     "active_split_stage_scheduler_count": 0,
@@ -26,5 +41,16 @@
     "open_observed_outcome_obligations": 10,
     "regression_gate_healthy": true
   },
-  "next_decision_rule": "Any future change that creates a second full-loop scheduler owner, independent legacy loop logic, or a terminal action without lineage must fail CI and runtime regression before terminal completion can be claimed."
+  "evaluation": {
+    "historical_replay": [
+      {
+        "candidate_head": "5511a006c876593835c176d6502ee6306abf033a",
+        "expected": "BLOCK",
+        "observed": "BLOCK",
+        "reason": "mandatory same-lineage writeback artifacts were incomplete"
+      }
+    ]
+  },
+  "outcome": "One loop, one owner and one lineage remain canonical; delivery now also carries mandatory learning, ledger and human-readable closure evidence without fabricating external outcomes.",
+  "next_decision_rule": "Any future change that creates a second full-loop scheduler owner, independent legacy loop logic, a terminal action without lineage, fabricated observed outcomes, or a material candidate without closure artifacts must fail CI before terminal completion can be claimed."
 }
