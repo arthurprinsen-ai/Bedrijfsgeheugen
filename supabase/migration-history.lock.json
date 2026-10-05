@@ -2298,7 +2298,9 @@
       "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
       "production_effect_readback": {
         "function": "public.powerhouse_outbound_message_quality_ready_v1(uuid)",
-        "exists": true,
+        "function_exists": true,
+        "table": "public.powerhouse_message_quality_v1",
+        "table_column_count": 11,
         "deterministic_search_path": true,
         "execute_revoked_from_browser_roles": true
       }
