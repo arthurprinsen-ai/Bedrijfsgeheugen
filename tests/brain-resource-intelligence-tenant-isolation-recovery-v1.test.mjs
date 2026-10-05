@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = 'supabase/migrations/20261005154500_resource_intelligence_tenant_isolation_recovery_v1.sql';
+const migrationPath = 'supabase/migrations/20261005160410_resource_intelligence_tenant_isolation_recovery_v1.sql';
 
 test('resource intelligence tenant isolation recovery adds database tenant authority and bounded generation', async () => {
   const sql = await readFile(migrationPath, 'utf8');
