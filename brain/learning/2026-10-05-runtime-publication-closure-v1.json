@@ -31,7 +31,9 @@
     "tests": [
       "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ],
-    "historical_replay": "Replay the 2026-10-05 content-publication obligation: generated blog paths are material, closure authority is canonical-runtime-obligation, missing repository closure artifacts are not required for that runtime obligation; ordinary material engineering changes remain repository-artifact closed.",
+    "historical_replay": [
+      "Replay the 2026-10-05 content-publication obligation: generated blog paths are material, closure authority is canonical-runtime-obligation, missing repository closure artifacts are not required for that runtime obligation; ordinary material engineering changes remain repository-artifact closed."
+    ],
     "expected": "Daily content publication passes closure without creating a second source of truth; engineering changes remain fail-closed."
   },
   "prevention": {
