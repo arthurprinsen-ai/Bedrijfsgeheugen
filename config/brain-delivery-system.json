@@ -270,6 +270,7 @@
         "tests/direct-main-postwrite-",
         "tests/event-retention-",
         "tests/growth-intelligence-",
+        "tests/helpers/read-supabase-migration-history.mjs",
         "tests/make-agent-learning-",
         "tests/make-agent-resume-",
         "tests/make-cost-",
