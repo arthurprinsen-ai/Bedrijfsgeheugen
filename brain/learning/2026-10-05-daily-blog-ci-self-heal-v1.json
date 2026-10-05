@@ -25,5 +25,17 @@
   ],
   "observed_pr": 3711,
   "observed_head_sha": "bd6aff16df0a569736d9d4fc811e99d644dd2135",
-  "revision": 1
+  "revision": 1,
+  "compiler": {
+    "failure_class": "DAILY_BLOG_REQUIRED_CHECK_RECURSION_GAP",
+    "scope": "CONTENT_AND_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "delivery",
+    "website",
+    "continuity"
+  ]
 }
