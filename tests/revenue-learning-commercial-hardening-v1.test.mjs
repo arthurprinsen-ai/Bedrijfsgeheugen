@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
-const migrationPath = 'supabase/migrations/20260915162839_powerhouse_commercial_learning_hardening_v1.sql';
+const migrationName = '20260915162839_powerhouse_commercial_learning_hardening_v1.sql';
 
 const requiredViews = [
   'powerhouse_counterfactual_candidate_v1',
@@ -20,7 +20,7 @@ const requiredViews = [
 ];
 
 test('commercial learning hardening migration exists with all canonical views', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   for (const view of requiredViews) {
     assert.match(sql, new RegExp(`create\\s+or\\s+replace\\s+view\\s+public\\.${view}`, 'i'), `${view} missing`);
     assert.match(sql, new RegExp(`alter\\s+view\\s+public\\.${view}\\s+set\\s*\\(security_invoker\\s*=\\s*true\\)`, 'i'), `${view} must be security_invoker`);
@@ -30,27 +30,27 @@ test('commercial learning hardening migration exists with all canonical views', 
 });
 
 test('counterfactual candidates are explicitly prospective and not causal proof', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /prospective_holdout_candidate/i);
   assert.match(sql, /causal_status/i);
   assert.match(sql, /not_proven/i);
 });
 
 test('revenue truth separates forecast, attribution and realized revenue', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /forecast_revenue_eur/i);
   assert.match(sql, /attributed_revenue_eur/i);
   assert.match(sql, /realized_revenue_eur/i);
 });
 
 test('human feedback treats skipped or cancelled recommendations as learnable evidence', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /status\s+in\s*\(\s*'skipped'\s*,\s*'cancelled'\s*\)/i);
   assert.match(sql, /human_feedback_state/i);
 });
 
 test('existing freshness capability is reused and pricing remains the canonical pre-existing pricing view', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /powerhouse_source_freshness_v1/i);
   assert.doesNotMatch(sql, /create\s+or\s+replace\s+view\s+public\.powerhouse_offer_pricing_learning_v1/i);
 });
