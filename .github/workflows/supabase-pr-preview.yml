@@ -67,9 +67,15 @@ jobs:
               versions.setdefault(match.group(1), []).append(path.name)
 
           duplicates = {version: names for version, names in versions.items() if len(names) > 1}
+          empty = []
+          for path in sorted((root / 'migrations').glob('*.sql')):
+              if not path.read_text(encoding='utf-8').strip():
+                  empty.append(path.name)
+
           assert not malformed, f'malformed migration filenames: {malformed}'
           assert not duplicates, f'duplicate migration versions: {duplicates}'
-          print(f'Validated config plus {len(versions)} uniquely-versioned migration files.')
+          assert not empty, f'empty migration files are forbidden because they can mask remote/local history drift: {empty}'
+          print(f'Validated config plus {len(versions)} uniquely-versioned, non-empty migration files.')
           PY
 
           python scripts/brain/check_powerhouse_supabase_security.py --self-test
