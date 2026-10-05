@@ -2257,13 +2257,12 @@
     }
   ],
   "recovery_governance": {
-    "mode": "fail-closed",
+    "mode": "scope-broad-approved",
+    "reason": "close #3742 by canonicalizing active repository migration history to exact production ledger",
     "issue": 3742,
-    "status": "OPEN",
     "preserve_remote_history": true,
     "remote_history_repair": false,
-    "empty_placeholder_migrations_forbidden": true,
-    "closure_requires_reproducible_replay": true,
-    "closure_requires_remote_local_parity": true
+    "exact_remote_local_version_parity_required": true,
+    "non_empty_sql_required": true
   }
 }
