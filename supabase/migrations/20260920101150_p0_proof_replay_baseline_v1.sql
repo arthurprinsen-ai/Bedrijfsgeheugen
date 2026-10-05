@@ -4,7 +4,7 @@
 -- Existing retired production state is preserved verbatim; unexpected drift fails closed.
 do $do$
 declare
-  v_row public.brain_desired_states;
+  v_row record;
   v_baseline jsonb := '{"mode":"ACTIVE","healthy":true}'::jsonb;
   v_retired jsonb := jsonb_build_object(
     'mode','ACTIVE',
@@ -14,6 +14,13 @@ declare
     'retired_at','2026-09-20T08:10:00Z'
   );
 begin
+  -- This replay compatibility migration may run before the historical desired-state
+  -- subsystem exists in a fresh preview. In that case there is nothing to reconcile yet.
+  if to_regclass('public.brain_desired_states') is null
+     or to_regprocedure('public.brain_register_desired_state(text,text,text,jsonb,text,integer)') is null then
+    return;
+  end if;
+
   select * into v_row
   from public.brain_desired_states
   where subject_type='P0_PROOF'
