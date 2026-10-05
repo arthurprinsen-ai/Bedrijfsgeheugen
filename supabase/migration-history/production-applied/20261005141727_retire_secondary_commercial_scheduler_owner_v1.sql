@@ -1,5 +1,3 @@
--- Retire duplicate commercial scheduler ownership.
--- Production migration applied first and mirrored here verbatim for repository parity.
 
 do $$
 begin
