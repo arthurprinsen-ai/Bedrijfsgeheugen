@@ -96,10 +96,12 @@ jobs:
           PR_LABELS_JSON: ${{ inputs.pr_labels_json || toJson(github.event.pull_request.labels.*.name) }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           MERGE_GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
+          GITHUB_REPOSITORY_NAME: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
-          import { readFile, appendFile } from 'node:fs/promises';
+          import { readFile, appendFile, writeFile } from 'node:fs/promises';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
@@ -123,9 +125,26 @@ jobs:
               } : undefined,
             },
           });
+          let canonicalPrBody=process.env.PR_BODY || '';
+          let canonicalLabels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
+          if(process.env.EVENT_NAME === 'pull_request' && context.prNumber) {
+            const response=await fetch(`https://api.github.com/repos/${process.env.GITHUB_REPOSITORY_NAME}/pulls/${context.prNumber}`,{
+              headers:{
+                authorization:`Bearer ${process.env.GH_TOKEN}`,
+                accept:'application/vnd.github+json',
+                'x-github-api-version':'2022-11-28',
+              },
+            });
+            if(!response.ok) throw new Error(`LIVE_PR_METADATA_READBACK_FAILED status=${response.status}`);
+            const livePr=await response.json();
+            if(livePr?.head?.sha !== context.changeHeadSha) throw new Error(`PR_HEAD_MOVED_DURING_PREFLIGHT expected=${context.changeHeadSha} actual=${livePr?.head?.sha || 'missing'}`);
+            canonicalPrBody=livePr.body || '';
+            canonicalLabels=(livePr.labels || []).map(label=>label.name).filter(Boolean);
+          }
+          await writeFile('.delivery-live-pr-body.txt',canonicalPrBody,'utf8');
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
           const metadataAuthority=resolveDeliveryMetadataAuthority({
-            prBody: process.env.PR_BODY || '',
+            prBody: canonicalPrBody,
             manifest: oneLoopPolicy.deliveryCandidate,
           });
           const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
@@ -135,7 +154,7 @@ jobs:
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
           const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
+          const labels=canonicalLabels;
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles};
           const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/'];
           const netlifyBuildExact=new Set(['netlify.toml','_redirects','_headers','index.html','klantportaal.html','package.json','package-lock.json']);
@@ -154,7 +173,9 @@ jobs:
         env:
           PR_BODY: ${{ inputs.pr_body || github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ steps.scope.outputs.pr_number }}
-        run: node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
+        run: |
+          export PR_BODY="$(cat .delivery-live-pr-body.txt)"
+          node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify adaptive and integration compiler regressions
         run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs
       - name: Fail fast on incomplete integration closure
