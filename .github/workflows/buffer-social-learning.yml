@@ -1,4 +1,4 @@
-name: Buffer Social Learning
+name: Retired Buffer Telemetry Compatibility
 
 on:
   pull_request:
@@ -38,7 +38,7 @@ permissions:
   contents: read
 
 jobs:
-  buffer-social-learning:
+  retired-buffer-telemetry-compatibility:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -47,5 +47,5 @@ jobs:
           node-version: '22'
       - name: Install runtime dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
-      - name: Verify Buffer-first collector and publish identity contracts
-        run: node --test tests/social-learning-buffer-collector.test.mjs tests/social-learning-buffer-schedule.test.mjs tests/social-learning-buffer-content-chain.test.mjs tests/social-learning-buffer-channel-identity-gate.test.mjs tests/social-learning-buffer-instagram-media-gate.test.mjs tests/social-learning-instagram-media-provider-routing-v1.test.mjs tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs tests/social-learning-buffer-delivery-guarantee-regression.test.mjs tests/social-learning-buffer-rate-limit-regression.test.mjs
+      - name: Verify retired Buffer telemetry compatibility and canonical provider identity contracts
+        run: node --test tests/social-learning-buffer-collector.test.mjs tests/social-learning-buffer-content-chain.test.mjs tests/social-learning-buffer-channel-identity-gate.test.mjs tests/social-learning-buffer-instagram-media-gate.test.mjs tests/social-learning-instagram-media-provider-routing-v1.test.mjs tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs tests/social-learning-buffer-delivery-guarantee-regression.test.mjs tests/social-learning-buffer-rate-limit-regression.test.mjs
