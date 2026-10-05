@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-05T15:46:00Z",
+  "captured_at": "2026-10-05T16:52:00Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2254,6 +2254,10 @@
     {
       "version": "20261005144606",
       "name": "powerhouse_one_commercial_closed_loop_v2"
+    },
+    {
+      "version": "20261005160410",
+      "name": "resource_intelligence_tenant_isolation_recovery_v1"
     }
   ],
   "forbidden_rewritten_versions": [
