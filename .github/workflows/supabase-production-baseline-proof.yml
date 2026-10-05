@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       candidate_ref:
-        description: 'Exact recovery candidate SHA or ref; blank auto-selects the open #3742 recovery PR'
+        description: 'Exact recovery candidate SHA or ref; blank uses canonical recovery PR #3763'
         required: false
         type: string
   push:
@@ -55,9 +55,18 @@ jobs:
           if [ -n "$INPUT_REF" ]; then
             sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/$INPUT_REF" --jq '.sha')"
           else
-            pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" --jq '[.[] | select((.title | contains("#3742")) or ((.body // "") | contains("supabase-migration-history-parity")))][0].number // empty')"
-            test -n "$pr" || { echo "::error::No open #3742 recovery candidate found"; exit 78; }
-            sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$pr" --jq '.head.sha')"
+            pr="3763"
+            pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$pr")"
+            state="$(jq -r '.state' <<<"$pr_json")"
+            merged="$(jq -r '.merged' <<<"$pr_json")"
+            obligation="$(jq -r '.body // ""' <<<"$pr_json" | sed -n 's/^Obligation-ID: //p' | head -n1)"
+            test "$state" = "open" || { echo "::error::Canonical recovery PR #$pr is not open"; exit 78; }
+            test "$merged" = "false" || { echo "::error::Canonical recovery PR #$pr is already merged"; exit 78; }
+            test "$obligation" = "supabase-migration-history-canonical-v5" || {
+              echo "::error::Unexpected canonical recovery obligation: $obligation"
+              exit 78
+            }
+            sha="$(jq -r '.head.sha' <<<"$pr_json")"
           fi
           [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Candidate did not resolve to an immutable SHA: $sha"; exit 78; }
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
