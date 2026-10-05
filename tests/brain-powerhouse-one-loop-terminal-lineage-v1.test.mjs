@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
 
-const migrationPath='supabase/migrations/20261005140000_powerhouse_one_loop_terminal_lineage_v1.sql';
+const migrationPath='supabase/migration-history/repository-only/20261005140000_powerhouse_one_loop_terminal_lineage_v1.sql';
 const sql=await readFile(migrationPath,'utf8');
 const workflow=await readFile('.github/workflows/whole-brain-canonical-loop-v2.yml','utf8');
 const canon=JSON.parse(await readFile('brain/contracts/powerhouse-operating-canon-v1.json','utf8'));
@@ -20,13 +20,13 @@ test('migration replay rejects truncated PostgreSQL dollar quote delimiters',asy
 });
 
 test('persuasion runtime function definitions terminate before privilege statements',async()=>{
-  const source=await readFile('supabase/migrations/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql','utf8');
+  const source=await readFile('supabase/migration-history/repository-only/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql','utf8');
   assert.doesNotMatch(source,/end\s+\$function\$/i,'PL/pgSQL END requires a semicolon inside the function body');
   assert.doesNotMatch(source,/\$function\$\s*\n\s*(?:revoke|grant|create)\b/i,'CREATE FUNCTION requires a semicolon after its quoted body');
 });
 
 test('outbound lineage replay defines the private reply evidence table before consuming it',async()=>{
-  const source=await readFile('supabase/migrations/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql','utf8');
+  const source=await readFile('supabase/migration-history/repository-only/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql','utf8');
   assert.match(source,/create table if not exists public\.powerhouse_email_reply_events\b/i);
   assert.match(source,/unique\s*\(provider,\s*provider_message_id\)/i,'provider replies must remain idempotent');
   assert.match(source,/references public\.powerhouse_sales_actions\(action_id\) on delete cascade/i);
@@ -41,7 +41,7 @@ test('outbound lineage replay defines the private reply evidence table before co
 });
 
 test('channel capability replay preserves the private provider evidence contract',async()=>{
-  const source=await readFile('supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql','utf8');
+  const source=await readFile('supabase/migration-history/repository-only/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql','utf8');
   assert.match(source,/create table if not exists public\.powerhouse_channel_capabilities_v1\b/i);
   assert.ok(source.indexOf('create table if not exists public.powerhouse_channel_capabilities_v1')<source.indexOf('create or replace view public.powerhouse_next_best_action_contract_v1'));
   assert.match(source,/capability_key text primary key/i);
@@ -54,7 +54,7 @@ test('channel capability replay preserves the private provider evidence contract
 });
 
 test('orchestrator replay preserves existing message-plan view columns before appending intelligence',async()=>{
-  const source=await readFile('supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql','utf8');
+  const source=await readFile('supabase/migration-history/repository-only/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql','utf8');
   const view=source.slice(source.indexOf('create or replace view public.powerhouse_commercial_message_plan_v1'),source.indexOf('revoke all on public.powerhouse_commercial_message_plan_v1'));
   const projection=view.slice(view.lastIndexOf('\nselect\n')).replace(/--[^\n]*/g,'');
   assert.match(projection,/c\.expected_value_eur,\s*c\.stage_hint/);
@@ -81,7 +81,7 @@ test('compatibility aliases can replay before the later canonical implementation
 });
 
 test('commercial health replay defines the exact content-bound quality gate before its view',async()=>{
-  const source=await readFile('supabase/migrations/20261005160500_powerhouse_one_commercial_closed_loop_v1.sql','utf8');
+  const source=await readFile('supabase/migration-history/repository-only/20261005160500_powerhouse_one_commercial_closed_loop_v1.sql','utf8');
   const canonical=await readFile('supabase/migrations/20261005144606_powerhouse_one_commercial_closed_loop_v2.sql','utf8');
   const start='CREATE OR REPLACE FUNCTION public.powerhouse_outbound_message_quality_ready_v1';
   const end='GRANT EXECUTE ON FUNCTION public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid) TO service_role;';
