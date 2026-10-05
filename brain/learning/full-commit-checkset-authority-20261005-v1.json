@@ -1,0 +1,60 @@
+{
+  "id": "full-commit-checkset-authority-20261005-v1",
+  "fingerprint": "delivery|exact-head|full-commit-checkset|terminal-authority|v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "github-delivery+pr-3729+pr-3735",
+  "failure_class": "DELIVERY_PARTIAL_CHECKSET_FALSE_GREEN",
+  "symptom": [
+    "A delivery candidate could be considered merge-ready after the normal workflow checks were green while separate GitHub App checks on the same head commit were still pending or non-successful.",
+    "GitHub Advanced Security can publish an independent CodeQL check-run that is not represented by the normal Powerhouse workflow result."
+  ],
+  "root_cause": [
+    "Terminal delivery authority previously reasoned from a required-check subset instead of the full check-run and legacy-status set attached to the exact candidate head SHA.",
+    "Security-provided neutral results were not distinguished from informational neutral results."
+  ],
+  "prevention": [
+    "Bind terminal delivery to the exact candidate head SHA.",
+    "Read the complete commit check-run set and legacy commit statuses before merge.",
+    "Block on queued, in_progress, pending, failure, cancelled, timed_out, action_required or stale evidence.",
+    "Treat neutral/skipped security checks as blocking unless explicitly proven terminal-safe by policy; informational non-security neutral checks may remain evidence.",
+    "Keep required checks as a mandatory subset, never as the complete delivery truth.",
+    "Re-read exact head, current main epoch, full checkset and mergeability immediately before terminal merge.",
+    "After merge, require production/readback terminalization before the obligation can become green."
+  ],
+  "failed_approaches": [
+    "Using the normal Required test / workflow outcome as a proxy for all checks attached to a commit.",
+    "Declaring merge readiness before GitHub Advanced Security and provider checks had reached a terminal policy-accepted state."
+  ],
+  "evidence": {
+    "state_machine": "tools/delivery/github-delivery-state-machine.mjs",
+    "workflow": ".github/workflows/unified-brain-delivery.yml",
+    "tests": [
+      "tests/github-delivery-state-machine.test.mjs",
+      "tests/github-delivery-state-machine-workflow.test.mjs"
+    ],
+    "pr": 3735,
+    "source_head_sha": "191835b4433ae6a52a9729c0465dbff4fa4beb0b"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/github-delivery-state-machine.test.mjs",
+      "tests/github-delivery-state-machine-workflow.test.mjs"
+    ],
+    "canary": [
+      "tests/github-delivery-state-machine.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY_PARTIAL_CHECKSET_FALSE_GREEN",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
