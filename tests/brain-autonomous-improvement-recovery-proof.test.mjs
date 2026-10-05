@@ -2,10 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
-const migration = await readFile(
-  'supabase/migrations/20260916144312_autonomous_improvement_recovery_proof_hardening_v1.sql',
-  'utf8'
-);
+const migration = await readMigrationHistory('20260916144312_autonomous_improvement_recovery_proof_hardening_v1.sql');
 
 test('safe chaos requires fault retry readback and idempotency proof', () => {
   assert.match(migration, /for v_attempt in 1\.\.2 loop/i);
