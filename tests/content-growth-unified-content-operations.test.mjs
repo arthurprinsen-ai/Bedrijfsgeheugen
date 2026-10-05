@@ -6,7 +6,7 @@ const migrationPath = 'supabase/migrations/20260914100133_unified_content_public
 const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
 const singleTenantMigrationPath = 'supabase/migrations/20260914105642_single_content_operations_tenant.sql';
 const singleTenantMigration = fs.existsSync(singleTenantMigrationPath) ? fs.readFileSync(singleTenantMigrationPath, 'utf8') : '';
-const linkedinReconcileMigrationPath = 'supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql';
+const linkedinReconcileMigrationPath = 'supabase/migrations/20260914084630_powerhouse_social_delivery_reconciliation_v1.sql';
 const linkedinReconcileMigration = fs.existsSync(linkedinReconcileMigrationPath) ? fs.readFileSync(linkedinReconcileMigrationPath, 'utf8') : '';
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
@@ -93,15 +93,14 @@ test('existing blog delivery remains candidate-only and never pushes direct to m
   assert.doesNotMatch(workflow, /gh\s+pr\s+merge/);
 });
 
-test('LinkedIn publication reconciliation uses deterministic campaign identity without guessing legacy rows', () => {
-  assert.match(linkedinReconcileMigration, /source_campaign_id\s+like\s+'li-personal-%'/i);
-  assert.match(linkedinReconcileMigration, /source_campaign_id\s+like\s+'li-company-%'/i);
-  assert.match(linkedinReconcileMigration, /then\s+'linkedin_personal'/i);
-  assert.match(linkedinReconcileMigration, /then\s+'linkedin_company'/i);
-  assert.match(linkedinReconcileMigration, /legacy LinkedIn row without deterministic identity/i);
-  assert.match(linkedinReconcileMigration, /perform public\.record_content_publication_state/i);
-  assert.match(linkedinReconcileMigration, /source_campaign_id/i);
-  assert.match(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
+test('LinkedIn publication reconciliation uses canonical delivery identity from production history', () => {
+  assert.match(linkedinReconcileMigration, /join public\.social_posts s on s\.external_post_id=d\.delivery_ref/i);
+  assert.match(linkedinReconcileMigration, /d\.channel in \('linkedin_personal','linkedin_company','instagram_company'\)/i);
+  assert.match(linkedinReconcileMigration, /d\.decision='publish'/i);
+  assert.match(linkedinReconcileMigration, /d\.state in \('scheduled','content_ready'\)/i);
+  assert.match(linkedinReconcileMigration, /set state='published'/i);
+  assert.match(linkedinReconcileMigration, /provider_readback/i);
+  assert.match(operationsWorkflow, /20260914084630_powerhouse_social_delivery_reconciliation_v1\.sql/);
 });
 
 const publicationWatchdogMigrationPath = 'supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql';
