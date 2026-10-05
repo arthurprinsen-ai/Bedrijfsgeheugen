@@ -1,12 +1,9 @@
--- Historical relationship public research scheduler introduction v1.
--- This migration was superseded in the same lineage by single-scheduler v1 below.
+
 do $$
 begin
-  if exists(select 1 from cron.job where jobname='powerhouse-relationship-public-research-hourly') then
-    perform cron.unschedule('powerhouse-relationship-public-research-hourly');
-  end if;
-end
-$$;
+  perform cron.unschedule('powerhouse-relationship-public-research-hourly');
+exception when others then null;
+end $$;
 
 select cron.schedule(
   'powerhouse-relationship-public-research-hourly',
