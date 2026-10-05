@@ -46,6 +46,8 @@ test('supported migration repair is bounded by candidate evidence and exact trac
   assert.match(workflow, /CANDIDATE_REPAIR_SET_NOT_EXACT/);
   assert.match(workflow, /P0_PROOF_EFFECT_NOT_VERIFIED/);
   assert.match(workflow, /OUTBOUND_QUALITY_FUNCTION_NOT_VERIFIED/);
+  assert.match(workflow, /MESSAGE_QUALITY_RLS_NOT_VERIFIED/);
+  assert.match(workflow, /MESSAGE_QUALITY_PRIVILEGE_CONTRACT_NOT_VERIFIED/);
   assert.match(workflow, /supabase db query --linked/);
   assert.match(workflow, /REPAIRED_APPLIED_VERIFIED/);
   assert.match(workflow, /history-data\.sql/);
