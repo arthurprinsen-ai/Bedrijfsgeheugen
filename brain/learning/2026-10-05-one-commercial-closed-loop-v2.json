@@ -45,7 +45,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-powerhouse-commercial-closed-loop.test.mjs",
+      "tests/brain-human-commercial-orchestrator-v1.test.mjs",
       "tests/brain-terminal-provider-durable-evidence.test.mjs"
     ],
     "shadow": [
@@ -59,7 +59,11 @@
   },
   "delivery_closure": {
     "pr": 3739,
-    "required_evidence": ["brain_learning", "activity_ledger", "human_documentation"],
+    "required_evidence": [
+      "brain_learning",
+      "activity_ledger",
+      "human_documentation"
+    ],
     "rule": "Material one-loop changes may merge only on exact-head checks plus repository closure evidence; production/live status requires post-merge runtime readback."
   }
 }
