@@ -39,10 +39,17 @@ jobs:
 
           echo "Supabase source changed; waiting for the provider-owned Supabase Preview check on exact head $HEAD_SHA."
           for attempt in $(seq 1 48); do
-            payload="$(curl --fail --silent --show-error               -H "Authorization: Bearer $GH_TOKEN"               -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: 2022-11-28"               "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100")"
+            payload_file="$RUNNER_TEMP/supabase-preview-check-runs.json"
+            curl --fail --silent --show-error \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
+              -o "$payload_file"
 
-            state="$(PAYLOAD="$payload" node --input-type=module - <<'NODE'
-          const payload=JSON.parse(process.env.PAYLOAD||'{}');
+            state="$(node --input-type=module "$payload_file" <<'NODE'
+          import fs from 'node:fs';
+          const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8')||'{}');
           const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
           const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
           if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
