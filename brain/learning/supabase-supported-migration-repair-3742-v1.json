@@ -36,5 +36,20 @@
     "historical_replay": [
       "tests/brain-supabase-supported-migration-repair-3742-v1.test.mjs"
     ]
+  },
+  "fingerprint": "powerhouse|supabase-supported-migration-repair|trusted-main|3742|v1",
+  "evidence": {
+    "repair_versions": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ],
+    "workflow": ".github/workflows/supabase-supported-migration-repair-3742.yml",
+    "contract_test": "tests/supabase-supported-migration-repair-3742.test.mjs",
+    "historical_replay_test": "tests/brain-supabase-supported-migration-repair-3742-v1.test.mjs",
+    "production_mutation_contract": "provider migration-history tracking only via supabase migration repair --status applied",
+    "direct_supabase_migrations_writes_forbidden": true,
+    "replay_sql_execution_in_production_forbidden": true
   }
 }
