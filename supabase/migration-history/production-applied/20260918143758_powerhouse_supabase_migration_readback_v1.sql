@@ -1,4 +1,6 @@
-create or replace function public.powerhouse_supabase_migration_readback_v1(p_expected jsonb)
+create or replace function public.powerhouse_supabase_migration_readback_v1(
+  p_expected jsonb
+)
 returns jsonb
 language plpgsql
 security definer

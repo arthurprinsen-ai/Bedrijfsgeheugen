@@ -1,6 +1,3 @@
--- Evidence-source freshness may only be mandatory when a governed ACTIVE provider/owner exists.
--- Do not fabricate heartbeats for unsupported providers just to make full-cycle proof green.
-
 update public.powerhouse_evidence_sources
 set required=false,
     notes=case source_key

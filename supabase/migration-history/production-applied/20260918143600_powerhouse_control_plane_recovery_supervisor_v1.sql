@@ -278,7 +278,6 @@ grant execute on function public.powerhouse_reconciliation_worker_v2(text,intege
 comment on function public.powerhouse_reconciliation_worker_v2(text,integer) is
   'Canonical recovery worker. Automatic replay is allowed only after readback proves side_effect_state=NOT_STARTED and safe_replay=true. All uncertain side-effect states fail closed.';
 
-
 -- Promote the canonical reconciliation scheduler to worker v2. Keep one scheduler authority.
 do $$
 declare

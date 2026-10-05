@@ -197,48 +197,20 @@ revoke execute on function public.powerhouse_terminal_autonomous_reconcile_v1(ti
 grant execute on function public.powerhouse_terminal_autonomous_reconcile_v1(timestamptz) to service_role;
 
 -- Explicitly retire the expired 31-August P0 proof. Preserve its stale truth as historical evidence.
--- Replay-safe optimistic registration: never guess the current state version.
-do $retire_p0_proof$
-declare
-  v_current public.brain_desired_states;
-  v_desired jsonb := jsonb_build_object(
+select public.brain_register_desired_state(
+  'P0_PROOF',
+  'production-truth-proof-20260831-v1',
+  'production',
+  jsonb_build_object(
     'mode','ACTIVE',
     'healthy',true,
     'lifecycle','RETIRED',
     'retired_reason','HISTORICAL_TIMEBOXED_PROOF_EXPIRED',
     'retired_at','2026-09-20T08:10:00Z'
-  );
-  v_artifact_version text := 'production-truth-proof-20260831-v1-retired';
-begin
-  select * into v_current
-  from public.brain_desired_states
-  where subject_type='P0_PROOF'
-    and subject_id='production-truth-proof-20260831-v1'
-    and environment='production'
-  for update;
-
-  if not found then
-    perform public.brain_register_desired_state(
-      'P0_PROOF',
-      'production-truth-proof-20260831-v1',
-      'production',
-      v_desired,
-      v_artifact_version,
-      0
-    );
-  elsif v_current.desired_state is distinct from v_desired
-     or v_current.artifact_version is distinct from v_artifact_version then
-    perform public.brain_register_desired_state(
-      'P0_PROOF',
-      'production-truth-proof-20260831-v1',
-      'production',
-      v_desired,
-      v_artifact_version,
-      v_current.version
-    );
-  end if;
-end
-$retire_p0_proof$;
+  ),
+  'production-truth-proof-20260831-v1-retired',
+  1
+);
 
 comment on view public.powerhouse_terminal_control_plane_health_v1 is
 'Fail-closed current control-plane health. Explicitly retired historical proof is counted separately and cannot make current runtime green or red.';

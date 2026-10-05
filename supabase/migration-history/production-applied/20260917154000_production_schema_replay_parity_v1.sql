@@ -309,5 +309,4 @@ $function$;
 revoke execute on function public.offerte_akkoord(uuid,text,text) from public, anon;
 grant execute on function public.offerte_akkoord(uuid,text,text) to authenticated, service_role;
 
--- Fresh replay still carried an obsolete overload that production no longer has.
 drop function if exists public.bg_uitkomst_vastleggen(text,text,numeric,text,text,text,jsonb);

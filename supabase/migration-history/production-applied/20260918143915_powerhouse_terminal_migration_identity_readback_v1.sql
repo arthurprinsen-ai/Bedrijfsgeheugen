@@ -21,4 +21,4 @@ revoke execute on function public.powerhouse_verify_migration_identity_v1(text,t
 grant execute on function public.powerhouse_verify_migration_identity_v1(text,text) to service_role;
 
 comment on function public.powerhouse_verify_migration_identity_v1(text,text) is
-  'Compatibility verifier retained as production-ledger history. Canonical control-plane authority is powerhouse_supabase_migration_readback_v1(jsonb).';
+  'Fail-closed production migration-ledger identity verifier for terminal control-plane evidence.';

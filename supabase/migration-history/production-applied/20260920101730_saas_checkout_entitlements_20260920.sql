@@ -1,3 +1,4 @@
+
 create table if not exists public.saas_plans (
   code text primary key,
   name text not null,
@@ -61,11 +62,7 @@ alter table public.saas_checkout_intents enable row level security;
 alter table public.saas_subscriptions enable row level security;
 alter table public.saas_usage_counters enable row level security;
 
-revoke all on table public.saas_plans from anon, authenticated;
-revoke all on table public.saas_plan_entitlements from anon, authenticated;
-revoke all on table public.saas_checkout_intents from anon, authenticated;
-revoke all on table public.saas_subscriptions from anon, authenticated;
-revoke all on table public.saas_usage_counters from anon, authenticated;
+revoke all on public.saas_plans, public.saas_plan_entitlements, public.saas_checkout_intents, public.saas_subscriptions, public.saas_usage_counters from anon, authenticated;
 grant select, insert, update, delete on public.saas_plans, public.saas_plan_entitlements, public.saas_checkout_intents, public.saas_subscriptions, public.saas_usage_counters to service_role;
 
 insert into public.saas_plans(code,name,monthly_price_cents,currency,direct_checkout,active,sort_order)
@@ -94,6 +91,7 @@ insert into public.saas_plan_entitlements(plan_code,entitlement_key,entitlement_
  ('control','sso','false'::jsonb),
  ('control','audit_trail','false'::jsonb),
  ('control','senior_advisory_minutes_month','60'::jsonb),
+
  ('scale','intelligence_core','true'::jsonb),
  ('scale','data_sources','15'::jsonb),
  ('scale','refresh_minutes','60'::jsonb),
@@ -105,6 +103,7 @@ insert into public.saas_plan_entitlements(plan_code,entitlement_key,entitlement_
  ('scale','sso','false'::jsonb),
  ('scale','audit_trail','true'::jsonb),
  ('scale','senior_advisory_minutes_month','120'::jsonb),
+
  ('enterprise','intelligence_core','true'::jsonb),
  ('enterprise','data_sources','999'::jsonb),
  ('enterprise','refresh_minutes','0'::jsonb),
@@ -118,16 +117,21 @@ insert into public.saas_plan_entitlements(plan_code,entitlement_key,entitlement_
  ('enterprise','senior_advisory_minutes_month','240'::jsonb)
 on conflict (plan_code,entitlement_key) do update set entitlement_value=excluded.entitlement_value;
 
-create or replace view public.saas_active_entitlements with (security_invoker = true) as
-select s.organisation_id,s.plan_code,s.status,p.name as plan_name,p.monthly_price_cents,
-       jsonb_object_agg(e.entitlement_key,e.entitlement_value order by e.entitlement_key) as entitlements
+create or replace view public.saas_active_entitlements as
+select
+  s.organisation_id,
+  s.plan_code,
+  s.status,
+  p.name as plan_name,
+  p.monthly_price_cents,
+  jsonb_object_agg(e.entitlement_key,e.entitlement_value order by e.entitlement_key) as entitlements
 from public.saas_subscriptions s
 join public.saas_plans p on p.code=s.plan_code
 join public.saas_plan_entitlements e on e.plan_code=s.plan_code
 where s.status in ('trialing','active','past_due')
 group by s.organisation_id,s.plan_code,s.status,p.name,p.monthly_price_cents;
 
-revoke all on table public.saas_active_entitlements from public, anon, authenticated;
+revoke all on public.saas_active_entitlements from anon, authenticated;
 grant select on public.saas_active_entitlements to service_role;
 
 comment on table public.saas_plan_entitlements is 'Canonical server-side SaaS capability limits. Core intelligence remains available in every paid plan; tiers differ by scale, freshness, automation and governance.';

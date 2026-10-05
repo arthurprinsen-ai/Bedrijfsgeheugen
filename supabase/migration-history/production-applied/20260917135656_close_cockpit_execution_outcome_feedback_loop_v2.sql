@@ -1,7 +1,3 @@
--- Final production fix for cockpit execution -> outcome -> human-feedback writeback.
--- Runtime always sends revenueEur (0 when absent). Validate only positive realized revenue,
--- while keeping revenue_eur non-null in the canonical outcome table.
-
 create or replace function public.powerhouse_record_outcome(
   p_action_id uuid,
   p_dedupe_key text,
