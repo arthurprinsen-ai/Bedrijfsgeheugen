@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|human-commercial-message-loop|v1",
+  "observed_at": "2026-10-05T12:52:00Z",
+  "type": "SALES_INTELLIGENCE",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Sales psychology, sales plays, brand voice and copy rules existed, but were not consistently runtime-mandatory before outbound execution and were not fully attributed back to observed business outcomes.",
+  "decision": "Wire sales play selection, persuasion, human copy generation, exact message-quality proof, provider execution, outcome lineage and revenue learning into the existing canonical commercial loop instead of creating a parallel sales machine.",
+  "prevention": [
+    "no outbound email or LinkedIn DM without exact quality-passed message hash",
+    "no internal taxonomy labels as prospect-facing personalization",
+    "trigger outreach requires human-readable source context and semantic source match",
+    "no generic openings, reply guilt, fake urgency or unsupported claims",
+    "sent/delivered/queued do not count as business outcomes",
+    "strategy promotion requires observed business outcomes and remains evidence-gated",
+    "reuse existing sales actions, outcomes, attribution, NBA, provider and learning authorities"
+  ],
+  "canonical_authorities": [
+    "public.powerhouse_sales_actions",
+    "public.powerhouse_sales_outcomes",
+    "public.powerhouse_sales_playbook_v1",
+    "public.powerhouse_message_quality_v1",
+    "public.powerhouse_sales_play_performance_v1",
+    "public.powerhouse_commercial_closed_loop_v6",
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+    "supabase/functions/powerhouse-linkedin-sales-machine/index.ts"
+  ],
+  "id": "human-commercial-message-loop-20261005-v1",
+  "date": "2026-10-05",
+  "source": "user-request+notion-sales-playbook+runtime-audit+production-readback",
+  "failure_class": "SALES_COPY_INTELLIGENCE_NOT_RUNTIME_MANDATORY",
+  "evidence": {
+    "migration": "supabase/migrations/20261005125100_powerhouse_human_commercial_message_loop_v1.sql",
+    "regression": "tests/brain-human-commercial-message-loop-v1.test.mjs",
+    "production_readback": {
+      "closed_loop_healthy": true,
+      "required_intelligence_layers_wired": "20/20",
+      "pending_actions": 37,
+      "planned_actions": 37,
+      "actions_without_strategy": 0,
+      "drafts_without_quality": 0,
+      "quality_passed_open_drafts": 20,
+      "executed_labeled_30d": 31,
+      "strategies_seen": 3,
+      "mature_strategy_winners": 0
+    }
+  },
+  "compiler": {
+    "failure_class": "SALES_COPY_INTELLIGENCE_NOT_RUNTIME_MANDATORY",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-human-commercial-message-loop-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-human-commercial-message-loop-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-human-commercial-message-loop-v1.test.mjs"
+    ]
+  },
+  "delivery_closure": {
+    "declared_scope_budget": 8,
+    "required_evidence": [
+      "brain_learning",
+      "activity_ledger",
+      "human_documentation"
+    ],
+    "runtime_readback": "closed_loop_v6 healthy=true; copy gate assurance healthy=true"
+  }
+}
