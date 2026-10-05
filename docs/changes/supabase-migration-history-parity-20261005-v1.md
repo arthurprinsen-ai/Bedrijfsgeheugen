@@ -14,3 +14,7 @@ Actuele readback: remote-only migratieversies = 0.
 Daarnaast is `Supabase Preview` nu een verplichte branch-protection check op `main`, naast `test` en `CodeQL javascript-typescript`. Daardoor blokkeert dezelfde driftklasse voortaan de merge in plaats van pas post-merge zichtbaar te worden.
 
 Preview recovery: de mislukte disposable Supabase preview branch voor PR #3741 is na de replay-idempotence fix gereset. De volgende PR synchronize moet de volledige migration history opnieuw vanaf een schone preview database afspelen.
+
+## Closure refresh
+
+Exact candidate `5375bafbf4f60bc7005c530d69edbc19bcad9250` retains the recovery evidence after the latest main synchronization. Remote-only migration parity remains 0 and the historically context-sensitive autonomy trigger patch is replay-idempotent: old call is replaced, already-patched state is accepted, every other state fails closed.
