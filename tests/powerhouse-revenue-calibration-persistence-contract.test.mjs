@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 
-const migrationPath='supabase/migrations/20260915090000_powerhouse_revenue_calibration_closure.sql';
+const migrationPath='supabase/migrations/20260915142504_powerhouse_revenue_calibration_projection_v1.sql';
 const sql=await readFile(migrationPath,'utf8');
 
 test('canonical Brain revenue learning projects into existing Powerhouse tables only',()=>{
@@ -25,9 +25,10 @@ test('projection is idempotent, evidence preserving and decision/prediction link
   assert.match(sql,/brier_component/i);
 });
 
-test('no-Make production architecture is part of the same Powerhouse guardrail',()=>{
-  assert.match(sql,/powerhouse-no-make-production-v1/i);
-  assert.match(sql,/channel-identity-hard-gate-v2/i);
-  assert.match(sql,/growth-revenue-os-1m-2027-v1/i);
+test('canonical projection remains service-role only and deterministic',()=>{
+  assert.match(sql,/security definer/i);
+  assert.match(sql,/set search_path = public/i);
+  assert.match(sql,/revoke execute on function public\.powerhouse_project_brain_revenue_learning\(\) from public,anon,authenticated/i);
+  assert.match(sql,/grant execute on function public\.powerhouse_project_brain_revenue_learning\(\) to service_role/i);
   assert.doesNotMatch(sql,/BG169_HANDOFF_URL|transport="make"|make_accepted/i);
 });
