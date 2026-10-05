@@ -17,5 +17,18 @@
     "source_pr": 3737
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 2,
+  "fingerprint": "powerhouse|commercial-scheduler-owner|single-owner|required|v1",
+  "compiler": {
+    "failure_class": "COMMERCIAL_SECONDARY_SCHEDULER_OWNER",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-scheduler-owner-v1.test.mjs"
+    ]
+  }
 }
