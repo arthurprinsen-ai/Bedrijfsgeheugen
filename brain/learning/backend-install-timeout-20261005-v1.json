@@ -1,0 +1,28 @@
+{
+  "id": "backend-install-timeout-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "required-test-backend-runner-hang",
+  "fingerprint": "powerhouse|backend-lane|dependency-install-timeout|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The backend reusable workflow allowed npm install to run without a bounded duration, so a runner or network stall could hold the protected Required test indefinitely even when other gates were green.",
+  "prevention": [
+    "Bound backend dependency installation with an operating-system timeout.",
+    "Bound the complete backend job with timeout-minutes.",
+    "Keep npm install semantics because this lane has no lockfile.",
+    "Keep npm output visible so failures remain diagnosable."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-backend-install-timeout-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
