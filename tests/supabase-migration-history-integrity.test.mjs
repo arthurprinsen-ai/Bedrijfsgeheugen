@@ -16,3 +16,15 @@ test('known timestamp-rewritten migration variants never return', () => {
   const rewritten = lock.forbidden_rewritten_versions.filter(version => versions.has(version));
   assert.deepEqual(rewritten, [], `Timestamp-rewritten migration versions must be removed: ${rewritten.join(', ')}`);
 });
+
+
+test('every migration SQL file is non-empty after trimming', async () => {
+  const sqlFiles = files.filter(name => name.endsWith('.sql'));
+  const empty = [];
+  for (const name of sqlFiles) {
+    const content = await readFile(new URL(`../supabase/migrations/${name}`, import.meta.url), 'utf8');
+    if (!content.trim()) empty.push(name);
+  }
+  assert.deepEqual(empty, [], `Empty or whitespace-only migration SQL is forbidden:
+${empty.join('\n')}`);
+});

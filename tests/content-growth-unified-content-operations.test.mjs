@@ -104,7 +104,7 @@ test('LinkedIn publication reconciliation uses deterministic campaign identity w
   assert.match(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
 });
 
-const publicationWatchdogMigrationPath = 'supabase/migrations/20260915101500_content_publication_daily_watchdog.sql';
+const publicationWatchdogMigrationPath = 'supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql';
 const publicationWatchdogMigration = fs.existsSync(publicationWatchdogMigrationPath) ? fs.readFileSync(publicationWatchdogMigrationPath, 'utf8') : '';
 
 test('daily publication invariant has an explicit no-publish terminal state', () => {
