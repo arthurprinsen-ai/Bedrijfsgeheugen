@@ -71,5 +71,16 @@
       "public.powerhouse_revenue_event_spine_health_v1",
       "public.powerhouse_runtime_events:rocket-revenue-spine:2026-10-05"
     ]
+  },
+  "delivery_closure": {
+    "pr": 3719,
+    "declared_scope_budget": 8,
+    "required_evidence": [
+      "brain_learning",
+      "activity_ledger",
+      "human_documentation"
+    ],
+    "runtime_readback": "actioned/VERIFIED/confidence=1",
+    "rule": "Material revenue-intelligence changes must carry all three closure artifacts in the same candidate before merge."
   }
 }
