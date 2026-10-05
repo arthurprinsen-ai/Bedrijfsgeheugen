@@ -44,6 +44,17 @@ const content = shell();
 assert.equal(readReleaseMarker(home), COMMIT);
 assert.doesNotThrow(() => verifyLiveSite({ home, pricing, content, expectedCommit: COMMIT }));
 
+const entityEncodedPricing = pricing.replace(
+  '<h3>Directie & AI Workshop</h3>',
+  '<h3>Directie &amp; AI Workshop</h3>'
+);
+assert.doesNotThrow(() => verifyLiveSite({
+  home,
+  pricing: entityEncodedPricing,
+  content,
+  expectedCommit: COMMIT
+}));
+
 assert.throws(() => verifyLiveSite({
   home: shell({ extraBeforeFooter: '<a href="mailto:arthur@bedrijfsgeheugen.nl">bovenaan</a>' }),
   pricing,
