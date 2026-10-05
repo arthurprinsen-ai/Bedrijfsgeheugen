@@ -13,8 +13,8 @@ test('repair control plane is trusted-main-only and pinned', () => {
   assert.match(workflow, /environment: production/);
 });
 
-test('repair is allowlisted to exactly the three proven replay baselines', () => {
-  for (const version of ['20260920101150','20260920102450','20260925080500']) {
+test('repair is allowlisted to exactly the four proven replay baselines', () => {
+  for (const version of ['20260920101150','20260920102450','20260925080500','20261005133951']) {
     assert.match(workflow, new RegExp(version));
   }
   assert.match(workflow, /EFFECT_VERIFIED_REPAIR_REQUIRED/);
