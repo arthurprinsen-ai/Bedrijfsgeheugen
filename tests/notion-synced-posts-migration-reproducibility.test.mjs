@@ -1,9 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
 test('historical Notion staging migration bootstraps before altering notion_synced_posts', async () => {
-  const sql = await readFile(new URL('../supabase/migrations/20260909181648_notion_post_feature_staging.sql', import.meta.url), 'utf8');
+  const sql = await readMigrationHistory('20260909181648_notion_post_feature_staging.sql');
   assert.match(sql, /create\s+table\s+if\s+not\s+exists\s+public\.notion_synced_posts/i);
   assert.match(sql, /post_id\s+text\s+primary\s+key/i);
   assert.match(sql, /alter\s+table\s+public\.notion_synced_posts/i);
