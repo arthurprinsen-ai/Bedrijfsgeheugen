@@ -35,3 +35,11 @@ test('terminal health view evolution preserves the v1 column prefix', async () =
   }
   assert.ok(view.indexOf(' as blocked_obligations') > previous, 'new columns must append after the v1 prefix');
 });
+
+
+test('terminal health v2 uses current desired-state version during replay', async () => {
+  const sql = await readFile('supabase/migrations/20260920101200_terminal_health_lifecycle_v2.sql','utf8');
+  assert.match(sql,/v_current\.version/);
+  assert.match(sql,/if not found then[\s\S]*?v_artifact_version,[\s\S]*?0/);
+  assert.doesNotMatch(sql,/production-truth-proof-20260831-v1-retired',[\s\S]*?\n\s*1\s*\n\);/);
+});
