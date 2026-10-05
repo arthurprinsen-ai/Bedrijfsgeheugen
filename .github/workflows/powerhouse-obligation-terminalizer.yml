@@ -33,6 +33,9 @@ jobs:
           CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          DEPLOY_READBACK: ${{ steps.production.outputs.deploy_readback }}
+          RUNTIME_READBACK: ${{ steps.production.outputs.runtime_readback }}
+          OUTCOME_EVIDENCE: ${{ steps.production.outputs.outcome_evidence }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
@@ -100,6 +103,9 @@ jobs:
               exit 78
             }
             echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
+            echo "deploy_readback=true" >> "$GITHUB_OUTPUT"
+            echo "runtime_readback=not_applicable" >> "$GITHUB_OUTPUT"
+            echo "outcome_evidence=not_applicable" >> "$GITHUB_OUTPUT"
             echo "PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME:$MERGE_SHA:$observed"
             exit 0
           fi
@@ -120,7 +126,11 @@ jobs:
                 git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
                 if git merge-base --is-ancestor "$MERGE_SHA" "$observed" && [ -s /tmp/runtime.html ]; then
                   echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
-                  exit 0
+                  echo "deploy_readback=true" >> "$GITHUB_OUTPUT"
+                  echo "runtime_readback=false" >> "$GITHUB_OUTPUT"
+                  echo "outcome_evidence=false" >> "$GITHUB_OUTPUT"
+                  echo "::error::POST_MERGE_RUNTIME_READBACK_NOT_PROVEN:$MERGE_SHA:$observed"
+                  exit 79
                 fi
               fi
             fi
@@ -146,6 +156,8 @@ jobs:
           import { readFileSync, writeFileSync } from 'node:fs';
           const lineage=JSON.parse(readFileSync('.artifacts/terminal-lineage.json','utf8'));
           const preflight=JSON.parse(readFileSync('/tmp/chat-learning-preflight.json','utf8'));
+          const runtimeReadback=process.env.RUNTIME_READBACK==='true' ? true : process.env.RUNTIME_READBACK==='not_applicable' ? 'not_applicable' : false;
+          const outcomeEvidence=process.env.OUTCOME_EVIDENCE==='true' ? true : process.env.OUTCOME_EVIDENCE==='not_applicable' ? 'not_applicable' : false;
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -157,14 +169,17 @@ jobs:
             production_sha:process.env.PRODUCTION_SHA,
             checks:{
               merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
-              deploy_promotion_readback:true,
-              runtime_function_readback:true,
-              outcome_evidence:true,
+              deploy_promotion_readback:process.env.DEPLOY_READBACK==='true',
+              runtime_function_readback:runtimeReadback,
+              outcome_evidence:outcomeEvidence,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
             }
           };
           if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
+          if(!evidence.checks.deploy_promotion_readback) throw new Error('DEPLOY_PROMOTION_READBACK_NOT_PROVEN');
+          if(evidence.checks.runtime_function_readback===false) throw new Error('RUNTIME_FUNCTION_READBACK_NOT_PROVEN');
+          if(evidence.checks.outcome_evidence===false) throw new Error('OUTCOME_EVIDENCE_NOT_PROVEN');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));
