@@ -1,0 +1,18 @@
+{
+  "id": "supabase-migration-repair-cli-list-parser-3742-v1",
+  "date": "2026-10-05",
+  "issue": 3742,
+  "evidence": {
+    "workflow_run_id": 37354534547,
+    "attempt": 3,
+    "failure": "UNEXPECTED_PRE_REPAIR_DRIFT:[]"
+  },
+  "finding": "Supabase CLI 2.119.0 renders migration-list version cells with surrounding backticks. The exact-drift parser accepted only bare 14-digit cells, so valid rows were discarded before any production mutation.",
+  "fix": "Normalize surrounding backticks and whitespace before parsing local/remote migration versions.",
+  "invariants": [
+    "Pre-repair drift must remain exactly the four reviewed local-only replay baselines.",
+    "Remote-only or identity drift remains fail-closed.",
+    "Post-repair drift must be zero.",
+    "Only official supabase migration repair --status applied --db-url may mutate production migration tracking."
+  ]
+}

@@ -24,7 +24,7 @@ test('repair is allowlisted to exactly the four proven replay baselines', () => 
 
 test('provider repair updates tracking only and proves post-repair parity', () => {
   assert.match(workflow, /supabase migration repair[\s\S]*--status applied/);
-  assert.match(workflow, /supabase migration list --linked/);
+  assert.match(workflow, /supabase migration list --db-url/);
   assert.doesNotMatch(workflow, /insert\s+into\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /update\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /delete\s+from\s+supabase_migrations/i);
@@ -35,4 +35,12 @@ test('recovery branch advancement is exact-head leased and remains pre-terminal'
   assert.match(workflow, /--force-with-lease="refs\/heads\/\$TARGET_BRANCH:\$EXPECTED_HEAD"/);
   assert.match(workflow, /REPAIRED_APPLIED_VERIFIED/);
   assert.match(workflow, /does not itself prove fresh replay, exact-HEAD gates, protected merge, or post-merge production readback/);
+});
+
+test('normalizes Supabase CLI migration-list backticks before exact drift checks', () => {
+  const marker = "replace(/^`+|`+$/g,'')";
+  assert.equal(workflow.split(marker).length - 1, 2, 'pre- and post-repair parsers must both normalize surrounding backticks');
+  assert.match(workflow, /const expected=\['20260920101150','20260920102450','20260925080500','20261005133951'\]/);
+  assert.match(workflow, /UNEXPECTED_PRE_REPAIR_DRIFT/);
+  assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
 });
