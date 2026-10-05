@@ -145,7 +145,6 @@ jobs:
           git checkout -B "$TARGET_BRANCH" "$EXPECTED_HEAD"
           mkdir -p supabase/production-baseline
           cp /tmp/bg3742-baseline/schema.sql supabase/production-baseline/schema.sql
-          cp supabase/production-baseline/roles.sql
           cp /tmp/bg3742-baseline/history-schema.sql supabase/production-baseline/history-schema.sql
           cp /tmp/bg3742-baseline/history-data.sql supabase/production-baseline/history-data.sql
           cp /tmp/bg3742-baseline/migration-list.txt supabase/production-baseline/migration-list.txt
