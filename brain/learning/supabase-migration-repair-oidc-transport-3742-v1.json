@@ -20,5 +20,14 @@
     "Quality surface registry binds the bridge to its evidence contract.",
     "Trusted repair still requires exact four-version drift allowlist and post-repair zero drift."
   ],
-  "failure_class": "PRODUCTION_CREDENTIAL_TRANSPORT"
+  "failure_class": "PRODUCTION_CREDENTIAL_TRANSPORT",
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-supported-migration-repair-oidc-transport.test.mjs"
+    ],
+    "canary": [
+      "tests/supabase-supported-migration-repair-oidc-transport.test.mjs"
+    ],
+    "expected": "OIDC transport remains exact-workflow scoped, secret-independent, DB URL masked, official Supabase CLI repair only, and direct migration-table writes remain absent."
+  }
 }
