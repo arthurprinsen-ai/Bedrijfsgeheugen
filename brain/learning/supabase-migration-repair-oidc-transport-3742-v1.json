@@ -1,0 +1,23 @@
+{
+  "fingerprint": "delivery-failure|supabase|migration-repair|github-secrets-absent-oidc-transport",
+  "type": "FailureClass",
+  "learned_at": "2026-10-05",
+  "obligation_id": "supabase-migration-repair-oidc-transport-3742-v1",
+  "trigger": {
+    "pr": 3768,
+    "run_id": 37350898932,
+    "failure": "SUPABASE_ACCESS_TOKEN missing before provider mutation"
+  },
+  "invariant": "Production Supabase repair credentials must not depend on undeclared GitHub secrets. Trusted-main repair transport is obtained only after exact repository/ref/workflow/SHA GitHub OIDC validation.",
+  "correction": [
+    "Use GitHub OIDC id-token from trusted main workflow.",
+    "Validate repository, refs/heads/main, workflow_ref and exact SHA in the Supabase bridge.",
+    "Expose only platform-injected SUPABASE_DB_URL after validation and mask it on the runner.",
+    "Use pinned Supabase CLI migration list/repair with --db-url; never write supabase_migrations directly."
+  ],
+  "verification": [
+    "OIDC transport contract test rejects secret-based auth regression.",
+    "Quality surface registry binds the bridge to its evidence contract.",
+    "Trusted repair still requires exact four-version drift allowlist and post-repair zero drift."
+  ]
+}

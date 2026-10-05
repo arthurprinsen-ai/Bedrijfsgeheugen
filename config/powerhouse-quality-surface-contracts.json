@@ -254,6 +254,13 @@
       "required": true
     },
     {
+      "id": "function:supabase-migration-repair-bridge",
+      "type": "function",
+      "authority": "supabase/functions/supabase-migration-repair-bridge/index.ts",
+      "evidence_contract": "tests/supabase-supported-migration-repair-oidc-transport.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:ai-modelwijzer-lead",
       "type": "netlify_function",
       "authority": "netlify/functions/ai-modelwijzer-lead.mjs",
