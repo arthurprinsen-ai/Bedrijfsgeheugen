@@ -23,6 +23,8 @@ test('terminal action lineage is automatic and does not fabricate observed busin
   assert.match(sql,/observed_business_outcome/i);
   assert.match(sql,/Lifecycle closure is not an observed business outcome/i);
   assert.doesNotMatch(sql,/insert\s+into\s+public\.powerhouse_sales_outcomes/i);
+  assert.match(sql,/for update skip locked/i);
+  assert.match(sql,/powerhouse_backfill_terminal_lineage_v1/i);
 });
 
 test('exactly one full commercial scheduler owner is canonicalised and split-stage legacy owners are disabled',()=>{
