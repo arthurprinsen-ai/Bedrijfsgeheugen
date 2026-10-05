@@ -43,7 +43,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
     ]
   },
   "outcome": "One loop, one owner and one lineage remain canonical; delivery now also carries mandatory learning, ledger and human-readable closure evidence without fabricating external outcomes.",
