@@ -1,0 +1,35 @@
+{
+  "contract": "supabase-migration-history-parity-v1",
+  "issue": 3742,
+  "project_ref": "adhjwmvyoixzjtmiroln",
+  "state": "OPEN",
+  "terminal_green_allowed": false,
+  "invariant": {
+    "remote_local_versions_equal": true,
+    "remote_local_names_equal": true,
+    "all_active_migration_files_non_empty": true,
+    "migration_versions_unique": true,
+    "fresh_replay_required": true,
+    "skipped_preview_is_not_proof": true,
+    "production_history_mutation_without_reproducible_baseline_forbidden": true,
+    "empty_placeholder_migrations_forbidden": true
+  },
+  "latest_observed": {
+    "branch": "fix/3742-migration-history-parity",
+    "remote_migrations": 563,
+    "local_active_migrations": 427,
+    "remote_only": 293,
+    "local_only": 157,
+    "name_mismatches": 2,
+    "observed_head": "4fa27c52a68faa0ca988fa6471ecd38f4459a09e"
+  },
+  "closure_requires": [
+    "remote_only=0",
+    "local_only=0",
+    "name_mismatches=0",
+    "empty_active_migrations=0",
+    "fresh_replay=PASS",
+    "supabase_preview=PASS",
+    "exact_head_checks=PASS"
+  ]
+}
