@@ -1180,3 +1180,4 @@ begin
 end $function$;
 REVOKE EXECUTE ON FUNCTION public.powerhouse_promote_research_to_social_v1() FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_promote_research_to_social_v1() TO service_role;
+

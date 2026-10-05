@@ -1,0 +1,35 @@
+{
+  "fingerprint": "one-commercial-loop-migration-history-parity-20261005-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The production runtime and GitHub SQL were functionally identical, but Supabase migration history registered the one-loop migration as version 20261005144606 while the repository filename used 20261005161500.",
+  "root_cause": "The production DDL was applied through the Supabase migration API before the repository migration artifact was canonicalized, so the runtime received a server-generated migration version that did not match the later GitHub filename.",
+  "prevention": [
+    "Migration identity is part of production parity; repository filename/version must match the applied Supabase migration version when the SQL and migration name are identical.",
+    "Never reapply an already-live idempotent migration just to repair history when production definitions and post-merge readback already match.",
+    "Repair repository migration identity by renaming the canonical migration artifact to the exact applied production version.",
+    "Keep exact-HEAD checks, merge and post-merge production readback as the terminal closure chain."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
+    "shadow": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
+    "canary": ["tests/brain-integration-bundle-compiler-v1.test.mjs"]
+  },
+  "evidence": {
+    "production_migration_version": "20261005144606",
+    "production_migration_name": "powerhouse_one_commercial_closed_loop_v2",
+    "old_repository_path": "supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql",
+    "canonical_repository_path": "supabase/migrations/20261005144606_powerhouse_one_commercial_closed_loop_v2.sql",
+    "runtime_contract": "powerhouse-one-commercial-closed-loop-v2",
+    "runtime_state": "actioned",
+    "runtime_data_quality": "VERIFIED",
+    "runtime_confidence": 1
+  },
+  "compiler": {
+    "failure_class": "SUPABASE_MIGRATION_HISTORY_VERSION_DRIFT",
+    "scope": "ONE_COMMERCIAL_CLOSED_LOOP_V2",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}

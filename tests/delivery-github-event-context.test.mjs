@@ -38,7 +38,25 @@ test('merge group event uses the merge-group head as both change and candidate i
   });
 });
 
-test('workflow dispatch uses checked out SHA as both change and candidate identity', () => {
+test('workflow dispatch binds explicit PR identity and immutable PR refs when provided', () => {
+  assert.deepEqual(normalizeGitHubDeliveryEvent({
+    eventName: 'workflow_dispatch',
+    event: { pull_request: { number: 3741, base: { sha: sha('1') }, head: { sha: sha('f') } } },
+    githubSha: sha('f'),
+    runId: '789',
+    fallbackBaseSha: sha('2'),
+  }), {
+    mode: 'workflow_dispatch',
+    changeId: 'dispatch-pr-3741',
+    baseSha: sha('1'),
+    changeHeadSha: sha('f'),
+    candidateSha: sha('f'),
+    headSha: sha('f'),
+    prNumber: '3741',
+  });
+});
+
+test('workflow dispatch without PR identity never treats the workflow run id as a PR number', () => {
   assert.deepEqual(normalizeGitHubDeliveryEvent({
     eventName: 'workflow_dispatch',
     event: {},
@@ -52,7 +70,7 @@ test('workflow dispatch uses checked out SHA as both change and candidate identi
     changeHeadSha: sha('f'),
     candidateSha: sha('f'),
     headSha: sha('f'),
-    prNumber: '789',
+    prNumber: null,
   });
 });
 
