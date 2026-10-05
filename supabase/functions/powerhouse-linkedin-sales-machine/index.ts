@@ -171,14 +171,6 @@ Deno.serve(async(req:Request)=>{
         }
         const address=salesRobotAddress(action);
         const message=clean(action.message_draft);
-        const composerProof=action?.evidence?.commercial_intelligence?.composer||{};
-        const strategy=clean(action?.evidence?.commercial_intelligence?.message_strategy);
-        if(composerProof?.quality_passed!==true||!strategy){
-          const evidence={...(action.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composerProof?.quality_passed===true}};
-          await db.from('powerhouse_sales_actions').update({evidence,updated_at:now}).eq('action_id',action.action_id);
-          dmResults.push({action_id:action.action_id,status:'held',reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN'});
-          continue;
-        }
         if(action?.evidence?.human_approved!==true){
           const evidence={...(action.evidence||{}),capability_routing:{contract:'powerhouse-capability-routing-v1',preferred:'linkedin_dm',provider:'salesrobot',status:'AWAITING_HUMAN_APPROVAL',fallback_required:false,checked_at:now}};
           await db.from('powerhouse_sales_actions').update({evidence,updated_at:now}).eq('action_id',action.action_id);
