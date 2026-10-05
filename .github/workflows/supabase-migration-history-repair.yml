@@ -1,0 +1,87 @@
+name: Supabase migration-history repair
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize]
+    paths:
+      - 'supabase/migrations/**'
+      - 'supabase/migration-history.lock.json'
+      - '.github/workflows/supabase-migration-history-repair.yml'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: supabase-migration-history-repair-3742
+  cancel-in-progress: false
+
+jobs:
+  repair-production-history:
+    if: >-
+      github.event.pull_request.number == 3766 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'fix/3742-migration-parity-canonical-v6'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PROJECT_REF: adhjwmvyoixzjtmiroln
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Verify exact repair obligation and production effects contract
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test -n "$SUPABASE_ACCESS_TOKEN"
+          test -n "$SUPABASE_DB_PASSWORD"
+          printf '%s' "$PR_BODY" | grep -F 'Obligation-ID: supabase-migration-history-canonical-v6'
+          printf '%s' "$PR_BODY" | grep -F "Writer-Lease-Head: $HEAD_SHA"
+          node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const lock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
+          const expected=[
+            '20260920101150',
+            '20260920102450',
+            '20260925080500',
+            '20261005133951',
+          ];
+          const pending=lock.replay_baselines_pending_repair||[];
+          if(pending.length!==expected.length) throw new Error('unexpected replay repair obligation count');
+          for(const version of expected){
+            const item=pending.find(x=>x.version===version);
+            if(!item) throw new Error('missing repair obligation '+version);
+            if(item.status!=='EFFECT_VERIFIED_REPAIR_REQUIRED') throw new Error('repair is not effect-verified '+version);
+            if(!item.production_effect_readback) throw new Error('production effect readback missing '+version);
+          }
+          NODE
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link production without applying schema SQL
+        run: |
+          set -euo pipefail
+          supabase link --project-ref "$PROJECT_REF" --password "$SUPABASE_DB_PASSWORD"
+
+      - name: Repair migration tracking only
+        run: |
+          set -euo pipefail
+          supabase migration repair             20260920101150             20260920102450             20260925080500             20261005133951             --status applied
+
+      - name: Verify repaired migration history
+        run: |
+          set -euo pipefail
+          supabase migration list | tee /tmp/migration-list.txt
+          for version in 20260920101150 20260920102450 20260925080500 20261005133951; do
+            grep -F "$version" /tmp/migration-list.txt
+          done
