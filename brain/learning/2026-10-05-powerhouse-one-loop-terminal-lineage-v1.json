@@ -31,7 +31,7 @@
   "evidence": {
     "failed_exact_head": "5511a006c876593835c176d6502ee6306abf033a",
     "required_test_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
-    "regression_test": "tests/powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+    "regression_test": "tests/brain-integration-bundle-compiler-v1.test.mjs"
   },
   "production_readback": {
     "canonical_scheduler_owner_count": 1,
@@ -43,12 +43,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "candidate_head": "5511a006c876593835c176d6502ee6306abf033a",
-        "expected": "BLOCK",
-        "observed": "BLOCK",
-        "reason": "mandatory same-lineage writeback artifacts were incomplete"
-      }
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ]
   },
   "outcome": "One loop, one owner and one lineage remain canonical; delivery now also carries mandatory learning, ledger and human-readable closure evidence without fabricating external outcomes.",
