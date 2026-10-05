@@ -1,0 +1,20 @@
+{
+  "id": "supabase-executable-history-parity-v2",
+  "date": "2026-10-05",
+  "issue": 3742,
+  "rejected_pr": 3741,
+  "finding": {
+    "production_migration_versions": 563,
+    "repository_executable_versions_before": 657,
+    "remote_only": 0,
+    "repository_only_executable": 94
+  },
+  "rule": "Executable Supabase migration history must be production-backed; repository-only historical SQL is immutable evidence, not an executable migration.",
+  "terminal_green_requires": [
+    "exact-head checks",
+    "hosted preview/replay",
+    "merge",
+    "production readback",
+    "post-merge parity"
+  ]
+}

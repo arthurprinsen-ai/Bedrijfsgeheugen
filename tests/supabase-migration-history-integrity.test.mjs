@@ -17,6 +17,11 @@ test('known timestamp-rewritten migration variants never return', () => {
   assert.deepEqual(rewritten, [], `Timestamp-rewritten migration versions must be removed: ${rewritten.join(', ')}`);
 });
 
+test('repository-only historical variants stay outside executable migration lane', () => {
+  const leaked = (lock.repository_only_archived || []).filter(item => versions.has(item.version));
+  assert.deepEqual(leaked, [], `Repository-only migration history leaked back into supabase/migrations:\n${leaked.map(item => `${item.version} ${item.path}`).join('\n')}`);
+});
+
 
 test('every migration SQL file is non-empty after trimming', async () => {
   const sqlFiles = files.filter(name => name.endsWith('.sql'));

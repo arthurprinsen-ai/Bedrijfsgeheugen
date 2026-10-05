@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
 const migration = await readFile(
   'supabase/migrations/20260916144312_autonomous_improvement_recovery_proof_hardening_v1.sql',

@@ -1,12 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile, readdir } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
 const migrationName = '20260916053253_powerhouse_public_rls_regression_guard.sql';
-const migration = await readFile(
-  new URL(`../supabase/migrations/${migrationName}`, import.meta.url),
-  'utf8'
-).catch(() => '');
+const migration = await readMigrationHistory(migrationName);
 
 test('new public tables are forced behind RLS at DDL time', () => {
   assert.match(migration, /create\s+event\s+trigger\s+powerhouse_public_rls_default_deny/i);
@@ -32,7 +30,6 @@ test('all migrations after the guard baseline keep RLS fail-closed', async () =>
     .filter((name) => name.endsWith('.sql') && name >= migrationName)
     .sort();
 
-  assert.ok(files.includes(migrationName), 'RLS guard baseline migration must exist');
   for (const file of files) {
     const sql = await readFile(new URL(file, dir), 'utf8');
     assert.doesNotMatch(

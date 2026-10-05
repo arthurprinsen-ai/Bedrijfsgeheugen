@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-09-12T19:14:51Z",
+  "captured_at": "2026-10-05T15:46:00Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -578,6 +578,1682 @@
     {
       "version": "20260912164438",
       "name": "instagram_growth_research_corpus_v1"
+    },
+    {
+      "version": "20260912194000",
+      "name": "notion_synced_posts_reproducibility"
+    },
+    {
+      "version": "20260913133014",
+      "name": "channel_identity_hard_gate_v3_contract"
+    },
+    {
+      "version": "20260913133026",
+      "name": "arthur_personal_linkedin_identity_v4_contract"
+    },
+    {
+      "version": "20260913133209",
+      "name": "arthur_personal_identity_v4_runtime_recovery_obligation"
+    },
+    {
+      "version": "20260914074356",
+      "name": "powerhouse_channel_decisions_v1"
+    },
+    {
+      "version": "20260914074405",
+      "name": "powerhouse_execution_status_v1"
+    },
+    {
+      "version": "20260914074413",
+      "name": "powerhouse_completion_gate_v1"
+    },
+    {
+      "version": "20260914074427",
+      "name": "powerhouse_execution_guard_v1"
+    },
+    {
+      "version": "20260914074434",
+      "name": "powerhouse_execution_guard_cron_v1"
+    },
+    {
+      "version": "20260914074504",
+      "name": "powerhouse_completion_gate_compatible_v2"
+    },
+    {
+      "version": "20260914074533",
+      "name": "powerhouse_content_artifacts_v1"
+    },
+    {
+      "version": "20260914074617",
+      "name": "powerhouse_content_orchestrator_cron_v1"
+    },
+    {
+      "version": "20260914074656",
+      "name": "powerhouse_orchestrator_timeout_v2"
+    },
+    {
+      "version": "20260914075107",
+      "name": "powerhouse_social_publisher_cron_v1"
+    },
+    {
+      "version": "20260914075546",
+      "name": "powerhouse_execution_guard_promote_v2"
+    },
+    {
+      "version": "20260914075848",
+      "name": "powerhouse_blog_queue_cron_v1"
+    },
+    {
+      "version": "20260914080058",
+      "name": "disable_inaccessible_powerhouse_blog_queue_cron_v1"
+    },
+    {
+      "version": "20260914081052",
+      "name": "predictive_intelligence_first_mover_v1"
+    },
+    {
+      "version": "20260914081911",
+      "name": "predictive_first_mover_contract_v1_hardening"
+    },
+    {
+      "version": "20260914082435",
+      "name": "predictive_first_mover_obligations_and_guard_v1"
+    },
+    {
+      "version": "20260914082625",
+      "name": "predictive_first_mover_daily_schedule_v1"
+    },
+    {
+      "version": "20260914084525",
+      "name": "powerhouse_execution_status_due_time_guard_v1"
+    },
+    {
+      "version": "20260914084630",
+      "name": "powerhouse_social_delivery_reconciliation_v1"
+    },
+    {
+      "version": "20260914093117",
+      "name": "powerhouse_cockpit_outcome_lineage_v1"
+    },
+    {
+      "version": "20260914100133",
+      "name": "unified_content_publication_operations"
+    },
+    {
+      "version": "20260914100150",
+      "name": "content_publication_state_truthful_timestamps"
+    },
+    {
+      "version": "20260914100205",
+      "name": "content_publication_reconciliation"
+    },
+    {
+      "version": "20260914105642",
+      "name": "single_content_operations_tenant"
+    },
+    {
+      "version": "20260915082029",
+      "name": "content_publication_daily_watchdog_20260915101500"
+    },
+    {
+      "version": "20260915082107",
+      "name": "content_publication_watchdog_dst_safe_20260915"
+    },
+    {
+      "version": "20260915091805",
+      "name": "powerhouse_publication_live_proof_guard"
+    },
+    {
+      "version": "20260915094213",
+      "name": "linkedin_personal_identity_hard_gate_v3"
+    },
+    {
+      "version": "20260915100715",
+      "name": "powerhouse_internal_rls_hardening"
+    },
+    {
+      "version": "20260915101047",
+      "name": "harden_security_definer_views_and_internal_rpcs"
+    },
+    {
+      "version": "20260915101246",
+      "name": "pin_function_search_paths"
+    },
+    {
+      "version": "20260915102437",
+      "name": "powerhouse_revenue_flywheel_v1"
+    },
+    {
+      "version": "20260915102500",
+      "name": "powerhouse_revenue_flywheel_v1_state_fix"
+    },
+    {
+      "version": "20260915102747",
+      "name": "powerhouse_revenue_flywheel_v1_schedule"
+    },
+    {
+      "version": "20260915102851",
+      "name": "powerhouse_autonomous_growth_revenue_v1"
+    },
+    {
+      "version": "20260915102925",
+      "name": "powerhouse_autonomous_growth_revenue_v1"
+    },
+    {
+      "version": "20260915103324",
+      "name": "powerhouse_autonomous_growth_revenue_trigger_fix"
+    },
+    {
+      "version": "20260915103331",
+      "name": "powerhouse_autonomous_growth_revenue_bootstrap_after_trigger_fix"
+    },
+    {
+      "version": "20260915103758",
+      "name": "powerhouse_autonomy_rpc_security_hardening"
+    },
+    {
+      "version": "20260915104421",
+      "name": "powerhouse_signal_forecast_materialization"
+    },
+    {
+      "version": "20260915104431",
+      "name": "powerhouse_autonomous_growth_revenue_bootstrap_after_signal_forecasts"
+    },
+    {
+      "version": "20260915104619",
+      "name": "powerhouse_linkedin_sales_intelligence_v1"
+    },
+    {
+      "version": "20260915104823",
+      "name": "powerhouse_linkedin_sales_prediction_activation_v1"
+    },
+    {
+      "version": "20260915105139",
+      "name": "powerhouse_autonomous_gap_closer_v1"
+    },
+    {
+      "version": "20260915105255",
+      "name": "powerhouse_internal_view_security_hardening"
+    },
+    {
+      "version": "20260915105319",
+      "name": "powerhouse_flywheel_health_semantics_v2b"
+    },
+    {
+      "version": "20260915105833",
+      "name": "powerhouse_autonomous_gap_closer_security_hardening_v1"
+    },
+    {
+      "version": "20260915105917",
+      "name": "powerhouse_gap_register_security_invoker_v1"
+    },
+    {
+      "version": "20260915110131",
+      "name": "powerhouse_gap_register_security_hardening"
+    },
+    {
+      "version": "20260915110214",
+      "name": "powerhouse_gap_register_security_hardening"
+    },
+    {
+      "version": "20260915110826",
+      "name": "powerhouse_data_intake_health_v1"
+    },
+    {
+      "version": "20260915110904",
+      "name": "powerhouse_data_intake_health_v1_status_fix"
+    },
+    {
+      "version": "20260915111057",
+      "name": "powerhouse_data_intake_health_v1_forecast_timestamp_fix"
+    },
+    {
+      "version": "20260915111142",
+      "name": "powerhouse_data_intake_health_v1_runtime_state_fix"
+    },
+    {
+      "version": "20260915111737",
+      "name": "powerhouse_data_intake_health_v1_execute_hardening"
+    },
+    {
+      "version": "20260915111957",
+      "name": "offertes_akkoord_op_replay_baseline"
+    },
+    {
+      "version": "20260915111958",
+      "name": "powerhouse_commercial_learning_v1"
+    },
+    {
+      "version": "20260915112209",
+      "name": "powerhouse_commercial_learning_feedback_views_v1"
+    },
+    {
+      "version": "20260915112241",
+      "name": "external_feed_async_cron_split_v1"
+    },
+    {
+      "version": "20260915112519",
+      "name": "external_feed_health_bridge_v1"
+    },
+    {
+      "version": "20260915112611",
+      "name": "powerhouse_commercial_learning_explicit_view_security_v1"
+    },
+    {
+      "version": "20260915114556",
+      "name": "powerhouse_commercial_closed_loop_v2"
+    },
+    {
+      "version": "20260915123725",
+      "name": "powerhouse_full_cycle_production_proof_v1"
+    },
+    {
+      "version": "20260915130251",
+      "name": "ga4_auth_failover_v1"
+    },
+    {
+      "version": "20260915135825",
+      "name": "powerhouse_full_cycle_health_status_fix_v1"
+    },
+    {
+      "version": "20260915140053",
+      "name": "powerhouse_full_cycle_status_normalization_v1"
+    },
+    {
+      "version": "20260915140402",
+      "name": "powerhouse_forecast_calibrator_hourly_v1"
+    },
+    {
+      "version": "20260915140800",
+      "name": "powerhouse_forecast_calibrator_timing_gap_fix_v1"
+    },
+    {
+      "version": "20260915142423",
+      "name": "powerhouse_health_run_identity_clock_timestamp_v1"
+    },
+    {
+      "version": "20260915142504",
+      "name": "powerhouse_revenue_calibration_projection_v1"
+    },
+    {
+      "version": "20260915143908",
+      "name": "powerhouse_revenue_intelligence_loop_v1"
+    },
+    {
+      "version": "20260915144231",
+      "name": "powerhouse_revenue_intelligence_loop_runtime_v1"
+    },
+    {
+      "version": "20260915144447",
+      "name": "powerhouse_revenue_intelligence_health_v1"
+    },
+    {
+      "version": "20260915144916",
+      "name": "powerhouse_revenue_intelligence_health_perf_v2"
+    },
+    {
+      "version": "20260915144949",
+      "name": "powerhouse_execution_learning_closure_v1"
+    },
+    {
+      "version": "20260915145008",
+      "name": "powerhouse_full_cycle_consolidation_v1"
+    },
+    {
+      "version": "20260915145138",
+      "name": "powerhouse_revenue_intelligence_snapshot_v1"
+    },
+    {
+      "version": "20260915145749",
+      "name": "powerhouse_revenue_intelligence_snapshot_fast_v2"
+    },
+    {
+      "version": "20260915151655",
+      "name": "powerhouse_revenue_intelligence_security_hardening"
+    },
+    {
+      "version": "20260915151924",
+      "name": "powerhouse_full_cycle_health_status_canonicalization_v1"
+    },
+    {
+      "version": "20260915152009",
+      "name": "powerhouse_full_cycle_health_status_canonicalization_v1"
+    },
+    {
+      "version": "20260915152117",
+      "name": "powerhouse_revenue_snapshot_forecast_lineage"
+    },
+    {
+      "version": "20260915152705",
+      "name": "powerhouse_revenue_intelligence_health_truth_v3"
+    },
+    {
+      "version": "20260915153015",
+      "name": "powerhouse_commercial_progression_forecast_bridge_v1"
+    },
+    {
+      "version": "20260915153617",
+      "name": "powerhouse_forecast_lineage_sequencing_v1"
+    },
+    {
+      "version": "20260915154107",
+      "name": "powerhouse_outcome_readback_health_semantics_v1"
+    },
+    {
+      "version": "20260915161019",
+      "name": "brain_transition_obligation_atomic_cas_v2"
+    },
+    {
+      "version": "20260915161322",
+      "name": "brain_transition_obligation_atomic_cas_v2_security_contract"
+    },
+    {
+      "version": "20260915162839",
+      "name": "powerhouse_commercial_learning_hardening_v1"
+    },
+    {
+      "version": "20260915163110",
+      "name": "brain_transition_obligation_cas_v3_column_qualification"
+    },
+    {
+      "version": "20260915163520",
+      "name": "brain_transition_obligation_cas_v4_rowcount"
+    },
+    {
+      "version": "20260915163840",
+      "name": "brain_transition_obligation_cas_v5_no_returning"
+    },
+    {
+      "version": "20260915164121",
+      "name": "brain_transition_obligation_cas_v6_direct_parameters"
+    },
+    {
+      "version": "20260915165017",
+      "name": "powerhouse_tenant_identity_hardening_v1"
+    },
+    {
+      "version": "20260915165700",
+      "name": "powerhouse_market_truth_learning_v1"
+    },
+    {
+      "version": "20260915170207",
+      "name": "powerhouse_market_truth_economics_execution_guard_v1"
+    },
+    {
+      "version": "20260915181119",
+      "name": "powerhouse_canonical_scan_loop_v1"
+    },
+    {
+      "version": "20260915181636",
+      "name": "powerhouse_market_truth_ingress_v1"
+    },
+    {
+      "version": "20260915182506",
+      "name": "powerhouse_canonical_scan_loop_v1_security"
+    },
+    {
+      "version": "20260915183418",
+      "name": "resource_factor_registry"
+    },
+    {
+      "version": "20260915183554",
+      "name": "resource_factor_provenance_fields"
+    },
+    {
+      "version": "20260915183603",
+      "name": "resource_impact_projection_v1"
+    },
+    {
+      "version": "20260915183620",
+      "name": "resource_impact_view_security_invoker"
+    },
+    {
+      "version": "20260915183656",
+      "name": "resource_impact_exclude_retired_make"
+    },
+    {
+      "version": "20260915184510",
+      "name": "resource_usage_canonical_ingest_v1"
+    },
+    {
+      "version": "20260915184535",
+      "name": "powerhouse_evidence_first_calibration_gate_v1"
+    },
+    {
+      "version": "20260915184616",
+      "name": "powerhouse_evidence_maturity_empty_state_fix_v1"
+    },
+    {
+      "version": "20260915184725",
+      "name": "resource_usage_canonical_ingest_digest_fix"
+    },
+    {
+      "version": "20260915185211",
+      "name": "powerhouse_evidence_first_view_public_revoke_v1"
+    },
+    {
+      "version": "20260915185355",
+      "name": "powerhouse_evidence_first_guard_search_path_v1"
+    },
+    {
+      "version": "20260915190607",
+      "name": "powerhouse_portal_unified_projection_v1_base"
+    },
+    {
+      "version": "20260915190629",
+      "name": "powerhouse_portal_unified_projection_v1_rpc"
+    },
+    {
+      "version": "20260915190635",
+      "name": "powerhouse_portal_unified_projection_v1_privileges"
+    },
+    {
+      "version": "20260915190726",
+      "name": "powerhouse_portal_unified_projection_v1_evidence"
+    },
+    {
+      "version": "20260915192118",
+      "name": "powerhouse_evidence_collector_experiment_orchestrator_v1"
+    },
+    {
+      "version": "20260915192219",
+      "name": "powerhouse_evidence_orchestrator_guards_promotion_v1"
+    },
+    {
+      "version": "20260915193138",
+      "name": "scan_submission_key_unique_constraint"
+    },
+    {
+      "version": "20260915193307",
+      "name": "powerhouse_resource_business_value_v1"
+    },
+    {
+      "version": "20260915193501",
+      "name": "powerhouse_evidence_source_coverage_and_full_cycle_proof_v1"
+    },
+    {
+      "version": "20260915193618",
+      "name": "powerhouse_full_cycle_proof_contract_cutover_fix_v2"
+    },
+    {
+      "version": "20260915193953",
+      "name": "powerhouse_evidence_source_requirement_semantics_v1"
+    },
+    {
+      "version": "20260915194225",
+      "name": "powerhouse_evidence_source_security_hardening_v1"
+    },
+    {
+      "version": "20260915194309",
+      "name": "powerhouse_evidence_coverage_reconciliation_v1"
+    },
+    {
+      "version": "20260915194311",
+      "name": "fix_scan_benchmark_refresh_delete_guard"
+    },
+    {
+      "version": "20260915194807",
+      "name": "powerhouse_evidence_first_market_learning_calibration_gate_v2"
+    },
+    {
+      "version": "20260915194953",
+      "name": "powerhouse_evidence_observation_integrity_v1"
+    },
+    {
+      "version": "20260915195130",
+      "name": "powerhouse_evidence_coverage_runtime_delta_v1"
+    },
+    {
+      "version": "20260915201346",
+      "name": "resource_business_value_views_service_role_select_only"
+    },
+    {
+      "version": "20260916053253",
+      "name": "powerhouse_public_rls_regression_guard"
+    },
+    {
+      "version": "20260916053300",
+      "name": "harden_bg_klik_vastleggen_execute"
+    },
+    {
+      "version": "20260916053500",
+      "name": "powerhouse_public_rls_regression_guard"
+    },
+    {
+      "version": "20260916071237",
+      "name": "powerhouse_observability_outcome_calibration_closure_v1"
+    },
+    {
+      "version": "20260916071512",
+      "name": "powerhouse_observability_views_service_role_select_only"
+    },
+    {
+      "version": "20260916090824",
+      "name": "powerhouse_structure_hygiene_v1"
+    },
+    {
+      "version": "20260916091505",
+      "name": "powerhouse_structure_hygiene_v2"
+    },
+    {
+      "version": "20260916092402",
+      "name": "powerhouse_structure_hygiene_v3_server_only_grants"
+    },
+    {
+      "version": "20260916092613",
+      "name": "powerhouse_structure_hygiene_v4_drop_unused_growth_attribution_index"
+    },
+    {
+      "version": "20260916123944",
+      "name": "powerhouse_autonomy_rpc_replay_hardening"
+    },
+    {
+      "version": "20260916123957",
+      "name": "powerhouse_internal_view_replay_hardening"
+    },
+    {
+      "version": "20260916130010",
+      "name": "social_delivery_identity_readback_guard_v1"
+    },
+    {
+      "version": "20260916131217",
+      "name": "autonomous_improvement_production_cycle_v1"
+    },
+    {
+      "version": "20260916132201",
+      "name": "autonomous_improvement_brain_taxonomy_fix_v1"
+    },
+    {
+      "version": "20260916133208",
+      "name": "fix_autonomous_improvement_record_kind_v1"
+    },
+    {
+      "version": "20260916144238",
+      "name": "autonomous_improvement_completion_runtime_v1"
+    },
+    {
+      "version": "20260916144252",
+      "name": "autonomous_improvement_pgcrypto_search_path_fix_v1"
+    },
+    {
+      "version": "20260916144312",
+      "name": "autonomous_improvement_recovery_proof_hardening_v1"
+    },
+    {
+      "version": "20260916161635",
+      "name": "autonomous_improvement_currentstate_record_type_fix_v1"
+    },
+    {
+      "version": "20260916172554",
+      "name": "content_operations_cockpit_projection_repair_v1"
+    },
+    {
+      "version": "20260916190120",
+      "name": "powerhouse_security_operations_hardening_v1"
+    },
+    {
+      "version": "20260916190521",
+      "name": "reconcile_daily_sales_action_set_v1"
+    },
+    {
+      "version": "20260916190733",
+      "name": "reconcile_daily_sales_action_set_v1_status_fix"
+    },
+    {
+      "version": "20260916190848",
+      "name": "reconcile_daily_sales_action_set_v1_atomic_batch"
+    },
+    {
+      "version": "20260916190951",
+      "name": "reconcile_daily_sales_action_set_v1_immutable_selection"
+    },
+    {
+      "version": "20260916194336",
+      "name": "daily_sales_reconciler_security"
+    },
+    {
+      "version": "20260916194803",
+      "name": "legacy_make_learning_to_canonical_supabase"
+    },
+    {
+      "version": "20260916195037",
+      "name": "powerhouse_closure_a_f"
+    },
+    {
+      "version": "20260916195048",
+      "name": "powerhouse_closure_strict_cycle"
+    },
+    {
+      "version": "20260916195056",
+      "name": "powerhouse_closure_legacy_learning_seed"
+    },
+    {
+      "version": "20260917070302",
+      "name": "linkedin_company_daily_delivery_guard_v1"
+    },
+    {
+      "version": "20260917083113",
+      "name": "powerhouse_daily_autonomy_guards_v1"
+    },
+    {
+      "version": "20260917084456",
+      "name": "instagram_daily_delivery_guard_v1"
+    },
+    {
+      "version": "20260917084841",
+      "name": "powerhouse_execution_resilience_v1"
+    },
+    {
+      "version": "20260917085200",
+      "name": "powerhouse_execution_resilience_watchdog_schedule_v1"
+    },
+    {
+      "version": "20260917085739",
+      "name": "instagram_exact_final_media_evidence_contract_v1"
+    },
+    {
+      "version": "20260917094812",
+      "name": "powerhouse_resource_intelligence_v1"
+    },
+    {
+      "version": "20260917094941",
+      "name": "powerhouse_resource_intelligence_v1"
+    },
+    {
+      "version": "20260917102906",
+      "name": "content_closed_loop_reconciliation"
+    },
+    {
+      "version": "20260917102917",
+      "name": "content_closed_loop_scheduler"
+    },
+    {
+      "version": "20260917102926",
+      "name": "autonomous_improvement_immutable_identity_fix"
+    },
+    {
+      "version": "20260917102940",
+      "name": "content_closed_loop_runtime_schedule"
+    },
+    {
+      "version": "20260917123749",
+      "name": "powerhouse_canonical_truth_closure_v1"
+    },
+    {
+      "version": "20260917134324",
+      "name": "close_execution_reconciliation_worker_gap_v1"
+    },
+    {
+      "version": "20260917135620",
+      "name": "close_cockpit_execution_outcome_feedback_loop_v1"
+    },
+    {
+      "version": "20260917135656",
+      "name": "close_cockpit_execution_outcome_feedback_loop_v2"
+    },
+    {
+      "version": "20260917140600",
+      "name": "evidence_source_capability_requirement_v1"
+    },
+    {
+      "version": "20260917140619",
+      "name": "offers_evidence_source_heartbeat_v1"
+    },
+    {
+      "version": "20260917140857",
+      "name": "full_cycle_gmail_canonical_evidence_source_v1"
+    },
+    {
+      "version": "20260917142022",
+      "name": "enforce_instagram_exact_final_media_gate_v1"
+    },
+    {
+      "version": "20260917142220",
+      "name": "prevent_content_ready_state_regression_v1"
+    },
+    {
+      "version": "20260917142802",
+      "name": "linkedin_personal_verified_truth_schedule_guard"
+    },
+    {
+      "version": "20260917150525",
+      "name": "universal_control_plane_binding_v1"
+    },
+    {
+      "version": "20260917150551",
+      "name": "universal_control_plane_binding_digest_fix_v1"
+    },
+    {
+      "version": "20260917154000",
+      "name": "production_schema_replay_parity_v1"
+    },
+    {
+      "version": "20260917181939",
+      "name": "restrict_security_definer_rpc_execute_v1"
+    },
+    {
+      "version": "20260918053605",
+      "name": "powerhouse_daily_content_no_gap_fallback_v1"
+    },
+    {
+      "version": "20260918053949",
+      "name": "powerhouse_completion_layer_v1"
+    },
+    {
+      "version": "20260918054428",
+      "name": "recover_completion_calibration_identity_v1"
+    },
+    {
+      "version": "20260918060214",
+      "name": "secure_bg_roep_functie_powerhouse_token_v1"
+    },
+    {
+      "version": "20260918073620",
+      "name": "media_proof_least_privilege_v1"
+    },
+    {
+      "version": "20260918074213",
+      "name": "runtime_health_truth_v1"
+    },
+    {
+      "version": "20260918074222",
+      "name": "runtime_health_truth_v1"
+    },
+    {
+      "version": "20260918074243",
+      "name": "media_proof_service_role_only_v1"
+    },
+    {
+      "version": "20260918080443",
+      "name": "powerhouse_structural_gap_closure_v2"
+    },
+    {
+      "version": "20260918080444",
+      "name": "powerhouse_structural_gap_closure_v2"
+    },
+    {
+      "version": "20260918080447",
+      "name": "powerhouse_unified_data_intelligence_spine_v1"
+    },
+    {
+      "version": "20260918080451",
+      "name": "powerhouse_dataforseo_intelligence_schedule_v1"
+    },
+    {
+      "version": "20260918080502",
+      "name": "powerhouse_structural_gap_closure_v2"
+    },
+    {
+      "version": "20260918080504",
+      "name": "powerhouse_unified_data_intelligence_spine_v1"
+    },
+    {
+      "version": "20260918080506",
+      "name": "powerhouse_unified_data_intelligence_spine_v1"
+    },
+    {
+      "version": "20260918080511",
+      "name": "powerhouse_dataforseo_intelligence_schedule_v1"
+    },
+    {
+      "version": "20260918080513",
+      "name": "powerhouse_dataforseo_intelligence_schedule_v1"
+    },
+    {
+      "version": "20260918081343",
+      "name": "powerhouse_data_spine_heartbeat_truth_v1"
+    },
+    {
+      "version": "20260918081532",
+      "name": "powerhouse_data_spine_heartbeat_truth_v1"
+    },
+    {
+      "version": "20260918081657",
+      "name": "instagram_media_provider_router_v1"
+    },
+    {
+      "version": "20260918082002",
+      "name": "instagram_reserve_vision_proof_v1"
+    },
+    {
+      "version": "20260918082934",
+      "name": "structural_gap_production_reconcile_v1"
+    },
+    {
+      "version": "20260918083118",
+      "name": "instagram_media_job_materializer_v1"
+    },
+    {
+      "version": "20260918083216",
+      "name": "instagram_media_job_materializer_v1"
+    },
+    {
+      "version": "20260918085059",
+      "name": "sales_action_signal_cycle_materializer_v1"
+    },
+    {
+      "version": "20260918085708",
+      "name": "tenant_identity_review_semantics_v2"
+    },
+    {
+      "version": "20260918090310",
+      "name": "legacy_growth_outcome_reconciler_v1"
+    },
+    {
+      "version": "20260918091355",
+      "name": "action_evidence_obligations_v1"
+    },
+    {
+      "version": "20260918094500",
+      "name": "media_proof_least_privilege_v1"
+    },
+    {
+      "version": "20260918095007",
+      "name": "prospective_autonomous_commercial_experiment_v1"
+    },
+    {
+      "version": "20260918095032",
+      "name": "prospective_autonomous_commercial_experiment_v1"
+    },
+    {
+      "version": "20260918095500",
+      "name": "media_proof_service_role_only_v1"
+    },
+    {
+      "version": "20260918100014",
+      "name": "forecast_calibration_health_due_v1"
+    },
+    {
+      "version": "20260918101248",
+      "name": "action_learning_production_truth_v1"
+    },
+    {
+      "version": "20260918101333",
+      "name": "bg_opdrachtenradar_nightly_v1"
+    },
+    {
+      "version": "20260918103000",
+      "name": "instagram_reserve_vision_proof_v1"
+    },
+    {
+      "version": "20260918111500",
+      "name": "instagram_media_provider_router_v1"
+    },
+    {
+      "version": "20260918142616",
+      "name": "powerhouse_control_plane_monotonic_terminal_v1"
+    },
+    {
+      "version": "20260918142628",
+      "name": "powerhouse_control_plane_monotonic_terminal_v1"
+    },
+    {
+      "version": "20260918142630",
+      "name": "powerhouse_control_plane_monotonic_terminal_v1"
+    },
+    {
+      "version": "20260918143600",
+      "name": "powerhouse_control_plane_recovery_supervisor_v1"
+    },
+    {
+      "version": "20260918143758",
+      "name": "powerhouse_supabase_migration_readback_v1"
+    },
+    {
+      "version": "20260918143915",
+      "name": "powerhouse_terminal_migration_identity_readback_v1"
+    },
+    {
+      "version": "20260918152825",
+      "name": "powerhouse_control_plane_learning_cockpit_v1"
+    },
+    {
+      "version": "20260918175027",
+      "name": "powerhouse_learning_compiler_precedence_v2"
+    },
+    {
+      "version": "20260918175138",
+      "name": "powerhouse_learning_compiler_recovery_precedence_v1"
+    },
+    {
+      "version": "20260918181638",
+      "name": "powerhouse_policy_canonicalization_guard_v1"
+    },
+    {
+      "version": "20260918183426",
+      "name": "regulatory_evidence_sources_v1"
+    },
+    {
+      "version": "20260918184525",
+      "name": "powerhouse_source_observation_immutable_v1"
+    },
+    {
+      "version": "20260918194500",
+      "name": "powerhouse_source_observation_immutable_v1"
+    },
+    {
+      "version": "20260918201000",
+      "name": "regulatory_evidence_sources_v1"
+    },
+    {
+      "version": "20260919123853",
+      "name": "restrict_capture_trigger_execute_v1"
+    },
+    {
+      "version": "20260920070814",
+      "name": "powerhouse_one_brain_reconciliation_worker_v2_health_contract_v1"
+    },
+    {
+      "version": "20260920073022",
+      "name": "instagram_mira_visual_reel_only_v2"
+    },
+    {
+      "version": "20260920073025",
+      "name": "social_publication_authority_v1"
+    },
+    {
+      "version": "20260920073119",
+      "name": "bg_roep_functie_request_log_idempotency_v1"
+    },
+    {
+      "version": "20260920080740",
+      "name": "terminal_autonomous_reconciler_v1"
+    },
+    {
+      "version": "20260920080742",
+      "name": "autonomous_improvement_floor_terminal_v1"
+    },
+    {
+      "version": "20260920091107",
+      "name": "instagram_daily_winner_lineage_v1"
+    },
+    {
+      "version": "20260920094808",
+      "name": "powerhouse_live_system_map_v1"
+    },
+    {
+      "version": "20260920101200",
+      "name": "terminal_health_lifecycle_v2"
+    },
+    {
+      "version": "20260920101730",
+      "name": "saas_checkout_entitlements_20260920"
+    },
+    {
+      "version": "20260920102211",
+      "name": "social_publisher_dispatching_state_contract"
+    },
+    {
+      "version": "20260920102646",
+      "name": "publication_authority_pgcrypto_qualification"
+    },
+    {
+      "version": "20260920102825",
+      "name": "saas_checkout_entitlements_security_hardening_20260920"
+    },
+    {
+      "version": "20260920112118",
+      "name": "admin_composio_key_onboarding"
+    },
+    {
+      "version": "20260920112436",
+      "name": "admin_composio_key_onboarding"
+    },
+    {
+      "version": "20260921084834",
+      "name": "instagram_mira_reel_only_v3"
+    },
+    {
+      "version": "20260921121500",
+      "name": "meta_instagram_direct_credentials"
+    },
+    {
+      "version": "20260921195716",
+      "name": "instagram_meta_oauth_onboarding_v1"
+    },
+    {
+      "version": "20260922072213",
+      "name": "publication_authority_extension_qualification_recovery_v2"
+    },
+    {
+      "version": "20260922073123",
+      "name": "prevent_personal_linkedin_fallback_source_reuse_v1"
+    },
+    {
+      "version": "20260922074434",
+      "name": "social_publication_daily_channel_fence_v1"
+    },
+    {
+      "version": "20260922082541",
+      "name": "instagram_mira_reel_recommendation_normalization_v1"
+    },
+    {
+      "version": "20260924073218",
+      "name": "powerhouse_seo_opportunity_resolver_v1"
+    },
+    {
+      "version": "20260924130052",
+      "name": "netlify_mcp_oidc_bridge_v1"
+    },
+    {
+      "version": "20260924132746",
+      "name": "trigger_based_mkb_acquisition_runtime_v1"
+    },
+    {
+      "version": "20260925074007",
+      "name": "composio_content_fallback_governance_v1"
+    },
+    {
+      "version": "20260925075318",
+      "name": "powerhouse_supabase_migration_readback_unique_name_reconcile_v2"
+    },
+    {
+      "version": "20260925075655",
+      "name": "mira_continuous_human_video_v1"
+    },
+    {
+      "version": "20260925080635",
+      "name": "close_powerhouse_decision_loops_v2"
+    },
+    {
+      "version": "20260925080744",
+      "name": "close_powerhouse_channel_loops_v1"
+    },
+    {
+      "version": "20260925080801",
+      "name": "canonical_social_provider_observations_v1"
+    },
+    {
+      "version": "20260925081605",
+      "name": "global_post_uniqueness_v1"
+    },
+    {
+      "version": "20260925082601",
+      "name": "global_post_story_uniqueness_v2"
+    },
+    {
+      "version": "20260925083651",
+      "name": "story_fingerprint_authority_v3"
+    },
+    {
+      "version": "20260925084112",
+      "name": "story_fingerprint_authority_v3"
+    },
+    {
+      "version": "20260925104622",
+      "name": "powerhouse_supabase_migration_readback_name_reconcile_v2"
+    },
+    {
+      "version": "20260925122944",
+      "name": "terminal_migration_unique_name_reconciliation_v1"
+    },
+    {
+      "version": "20260928103246",
+      "name": "powerhouse_relationship_revenue_engine_v1"
+    },
+    {
+      "version": "20260928104333",
+      "name": "powerhouse_relationship_research_auto_enrichment_v1"
+    },
+    {
+      "version": "20260928105310",
+      "name": "powerhouse_relationship_public_research_dispatch_v1"
+    },
+    {
+      "version": "20260928105443",
+      "name": "powerhouse_relationship_public_research_schedule_v1"
+    },
+    {
+      "version": "20260928105737",
+      "name": "powerhouse_relationship_public_research_single_scheduler_v1"
+    },
+    {
+      "version": "20260928110153",
+      "name": "powerhouse_relationship_research_status_contract_fix_v1"
+    },
+    {
+      "version": "20260928110707",
+      "name": "workshop_scan_preprovision_customer_portal"
+    },
+    {
+      "version": "20260928112442",
+      "name": "powerhouse_autonomous_relationship_outreach_v1"
+    },
+    {
+      "version": "20260928112732",
+      "name": "powerhouse_autonomous_relationship_outreach_fix_v1"
+    },
+    {
+      "version": "20260928112923",
+      "name": "powerhouse_autonomous_relationship_outreach_canonical_fix_v3"
+    },
+    {
+      "version": "20260928113356",
+      "name": "powerhouse_autonomous_outreach_evidence_quality_v1"
+    },
+    {
+      "version": "20260928114939",
+      "name": "powerhouse_linkedin_sales_machine_v1"
+    },
+    {
+      "version": "20260928114942",
+      "name": "powerhouse_linkedin_sales_machine_cycle_v1"
+    },
+    {
+      "version": "20260928115519",
+      "name": "powerhouse_linkedin_sales_machine_bounded_query_v1"
+    },
+    {
+      "version": "20260928115753",
+      "name": "powerhouse_linkedin_comment_relevance_hardening_v1"
+    },
+    {
+      "version": "20260928121547",
+      "name": "social_provider_write_terminal_reconcile_v1"
+    },
+    {
+      "version": "20260928121746",
+      "name": "instagram_terminal_provider_side_effect_trigger_v1"
+    },
+    {
+      "version": "20260928122221",
+      "name": "social_provider_write_terminal_security_v1"
+    },
+    {
+      "version": "20260928122435",
+      "name": "social_provider_write_terminal_security_explicit_v2"
+    },
+    {
+      "version": "20260928123530",
+      "name": "powerhouse_growth_swarm_v1"
+    },
+    {
+      "version": "20260928124135",
+      "name": "powerhouse_growth_swarm_activation_v1"
+    },
+    {
+      "version": "20260928124604",
+      "name": "powerhouse_growth_swarm_activation_v1"
+    },
+    {
+      "version": "20260928133343",
+      "name": "powerhouse_persuasion_revenue_optimizer_v1"
+    },
+    {
+      "version": "20260928135412",
+      "name": "powerhouse_persuasion_growth_optimizer_v1"
+    },
+    {
+      "version": "20260928135627",
+      "name": "powerhouse_persuasion_growth_optimizer_v1"
+    },
+    {
+      "version": "20260928135950",
+      "name": "powerhouse_growth_play_action_executor_v1"
+    },
+    {
+      "version": "20260928140526",
+      "name": "powerhouse_all_20_growth_plays_v3"
+    },
+    {
+      "version": "20260928140907",
+      "name": "powerhouse_growth_plays_20of20_persuasion_extension_v1"
+    },
+    {
+      "version": "20260928141405",
+      "name": "bg_vandaag_manual_dm_handoff_v1"
+    },
+    {
+      "version": "20260928142227",
+      "name": "bg_vandaag_manual_dm_handoff_security_v1"
+    },
+    {
+      "version": "20260928153301",
+      "name": "powerhouse_relationship_external_intelligence_v1"
+    },
+    {
+      "version": "20260928155538",
+      "name": "powerhouse_daily_full_connection_enrichment_v1"
+    },
+    {
+      "version": "20260928160019",
+      "name": "powerhouse_daily_full_connection_enrichment_v2"
+    },
+    {
+      "version": "20260928160452",
+      "name": "powerhouse_daily_full_connection_enrichment_v3"
+    },
+    {
+      "version": "20260928172712",
+      "name": "powerhouse_growth_plays_20of20_repo_parity_v2"
+    },
+    {
+      "version": "20260928175205",
+      "name": "powerhouse_company_intelligence_os_v1"
+    },
+    {
+      "version": "20260928182014",
+      "name": "powerhouse_self_improvement_layer_v1"
+    },
+    {
+      "version": "20260928183018",
+      "name": "powerhouse_self_improvement_orchestrator_nonblocking_v1"
+    },
+    {
+      "version": "20260928184410",
+      "name": "powerhouse_foresight_prediction_intelligence_v2"
+    },
+    {
+      "version": "20260928184504",
+      "name": "powerhouse_foresight_prediction_intelligence_v2"
+    },
+    {
+      "version": "20260929084144",
+      "name": "powerhouse_daily_compound_learning_v1"
+    },
+    {
+      "version": "20260929121710",
+      "name": "schedule_daily_autonomous_outreach_chain"
+    },
+    {
+      "version": "20260929133241",
+      "name": "retire_buffer_as_powerhouse_green_gate"
+    },
+    {
+      "version": "20260929133338",
+      "name": "workshop_portal_intake_phone"
+    },
+    {
+      "version": "20260929134317",
+      "name": "provider_neutral_data_spine_and_notion_writeback"
+    },
+    {
+      "version": "20260929134340",
+      "name": "health_truth_optional_sources_nonblocking"
+    },
+    {
+      "version": "20260929134439",
+      "name": "use_provider_neutral_external_intelligence_health"
+    },
+    {
+      "version": "20260929134548",
+      "name": "warnings_nonblocking_and_retire_legacy_external_signals_health"
+    },
+    {
+      "version": "20260929141537",
+      "name": "powerhouse_one_million_revenue_operating_contract_v1"
+    },
+    {
+      "version": "20260929142230",
+      "name": "powerhouse_one_million_revenue_operating_contract_v1"
+    },
+    {
+      "version": "20260929142718",
+      "name": "powerhouse_email_reply_learning_loop_v1"
+    },
+    {
+      "version": "20260929142832",
+      "name": "linkedin_sales_bounded_prep_v1"
+    },
+    {
+      "version": "20260929143015",
+      "name": "powerhouse_email_reply_learning_refresh_v1"
+    },
+    {
+      "version": "20260929143018",
+      "name": "linkedin_sales_prep_supporting_indexes_v1"
+    },
+    {
+      "version": "20260929143336",
+      "name": "schedule_powerhouse_email_reply_loop_v1"
+    },
+    {
+      "version": "20260929145201",
+      "name": "growth_swarm_bounded_refresh_v1"
+    },
+    {
+      "version": "20260929145830",
+      "name": "powerhouse_email_suppression_hard_guard_v1"
+    },
+    {
+      "version": "20260929150415",
+      "name": "relationship_revenue_bounded_refresh_v1"
+    },
+    {
+      "version": "20260929152922",
+      "name": "instagram_canonical_mira_identity_guard_v1"
+    },
+    {
+      "version": "20260929183956",
+      "name": "powerhouse_mira_public_complaint_source_loop_v1"
+    },
+    {
+      "version": "20260929184112",
+      "name": "mira_human_problem_source_loop_v1"
+    },
+    {
+      "version": "20260929184429",
+      "name": "mira_problem_loop_canonicalize_end_to_end_v1"
+    },
+    {
+      "version": "20260929184650",
+      "name": "powerhouse_mira_public_problem_source_contract_v3"
+    },
+    {
+      "version": "20260929185313",
+      "name": "powerhouse_source_backed_all_channels_lineage_v1"
+    },
+    {
+      "version": "20260929185643",
+      "name": "powerhouse_source_backed_channel_selection_v1"
+    },
+    {
+      "version": "20260929185944",
+      "name": "powerhouse_direct_outreach_source_gate_status_fix_v1"
+    },
+    {
+      "version": "20260929190328",
+      "name": "powerhouse_loop_assurance_v2"
+    },
+    {
+      "version": "20260929191156",
+      "name": "powerhouse_loop_assurance_receipt_bridge_v3"
+    },
+    {
+      "version": "20260929191227",
+      "name": "powerhouse_loop_assurance_receipt_bridge_v3_fix"
+    },
+    {
+      "version": "20260929191307",
+      "name": "powerhouse_loop_assurance_obligation_identity_fix_v3"
+    },
+    {
+      "version": "20260929191618",
+      "name": "powerhouse_loop_assurance_v3_security_hardening"
+    },
+    {
+      "version": "20260929192523",
+      "name": "powerhouse_source_backed_outbound_loop_assurance_v1"
+    },
+    {
+      "version": "20260929192529",
+      "name": "powerhouse_source_backed_outbound_loop_assurance_v1"
+    },
+    {
+      "version": "20260929192550",
+      "name": "powerhouse_source_backed_outbound_loop_assurance_v1"
+    },
+    {
+      "version": "20260929192739",
+      "name": "powerhouse_source_backed_blog_semantic_coherence_v1"
+    },
+    {
+      "version": "20260929192803",
+      "name": "powerhouse_source_backed_blog_semantic_coherence_v1"
+    },
+    {
+      "version": "20260929193045",
+      "name": "powerhouse_autonomous_outreach_loop_assurance_v1"
+    },
+    {
+      "version": "20260930051015",
+      "name": "enforce_story_family_duplicate_guard_v2"
+    },
+    {
+      "version": "20260930051107",
+      "name": "harden_global_post_uniqueness_overlap_v3"
+    },
+    {
+      "version": "20260930061259",
+      "name": "powerhouse_story_family_overlap_guard_v6_security_closure"
+    },
+    {
+      "version": "20260930113737",
+      "name": "powerhouse_bilingual_seo_revenue_v1"
+    },
+    {
+      "version": "20261001093824",
+      "name": "linkedin_webhook_event_fields"
+    },
+    {
+      "version": "20261001101003",
+      "name": "add_linkedin_company_platform_publisher_trigger"
+    },
+    {
+      "version": "20261001103950",
+      "name": "linkedin_leadmagnet_100_webhook_router"
+    },
+    {
+      "version": "20261001122400",
+      "name": "improve_powerhouse_outreach_specificity_v2"
+    },
+    {
+      "version": "20261001122503",
+      "name": "make_autonomous_outreach_specific_at_creation_v2"
+    },
+    {
+      "version": "20261001123911",
+      "name": "unified_outbound_copy_reply_learning_v1"
+    },
+    {
+      "version": "20261001124049",
+      "name": "unified_outbound_copy_reply_learning_v2"
+    },
+    {
+      "version": "20261001124228",
+      "name": "unified_outbound_copy_reply_learning_v3"
+    },
+    {
+      "version": "20261002054509",
+      "name": "powerhouse_retired_story_family_negative_evidence_v7"
+    },
+    {
+      "version": "20261002100754",
+      "name": "powerhouse_email_reply_followup_trigger_v1"
+    },
+    {
+      "version": "20261002141746",
+      "name": "fix_cycle_signal_replay_idempotency"
+    },
+    {
+      "version": "20261002142307",
+      "name": "loop_assurance_guard_truth_gate"
+    },
+    {
+      "version": "20261002142500",
+      "name": "add_regression_stage_evidence_bridge"
+    },
+    {
+      "version": "20261002142652",
+      "name": "fix_seo_assurance_output_basis"
+    },
+    {
+      "version": "20261002152823",
+      "name": "linkedin_org_reauth_request_wrapper"
+    },
+    {
+      "version": "20261003072503",
+      "name": "signal_taxonomy_self_heal_v1"
+    },
+    {
+      "version": "20261003072536",
+      "name": "signal_taxonomy_self_heal_promotion_v2"
+    },
+    {
+      "version": "20261003075431",
+      "name": "publication_proof_accept_verified_provider_terminal"
+    },
+    {
+      "version": "20261003075748",
+      "name": "powerhouse_portal_visual_assurance_github_sync_v1"
+    },
+    {
+      "version": "20261003083859",
+      "name": "exclude_derived_loop_assurance_from_one_brain_runtime_errors"
+    },
+    {
+      "version": "20261003084014",
+      "name": "linkedin_personal_no_gap_observational_v1"
+    },
+    {
+      "version": "20261003151427",
+      "name": "linkedin_personal_obligation_dual_truth_gate_v1"
+    },
+    {
+      "version": "20261003151956",
+      "name": "linkedin_personal_artifact_dual_truth_gate_v1"
+    },
+    {
+      "version": "20261004095531",
+      "name": "powerhouse_email_execution_watchdog_v1"
+    },
+    {
+      "version": "20261004100422",
+      "name": "structural_email_provider_preflight_and_assurance"
+    },
+    {
+      "version": "20261004114640",
+      "name": "linkedin_company_growth_engine_v1"
+    },
+    {
+      "version": "20261004125007",
+      "name": "salesrobot_capability_routing_v1"
+    },
+    {
+      "version": "20261004125303",
+      "name": "salesrobot_capability_routing_v1_security_hardening"
+    },
+    {
+      "version": "20261004125402",
+      "name": "salesrobot_capability_resolver_invoker_security"
+    },
+    {
+      "version": "20261005071257",
+      "name": "commercial_action_closure_v2"
+    },
+    {
+      "version": "20261005071612",
+      "name": "commercial_output_assurance_v1_lightweight"
+    },
+    {
+      "version": "20261005120215",
+      "name": "one_brain_single_learning_owner_v1"
+    },
+    {
+      "version": "20261005120431",
+      "name": "relationship_identity_expression_indexes_v1"
+    },
+    {
+      "version": "20261005120706",
+      "name": "one_brain_runtime_authority_gate_v1"
+    },
+    {
+      "version": "20261005123127",
+      "name": "bounded_commercial_intelligence_heartbeat_v1"
+    },
+    {
+      "version": "20261005123347",
+      "name": "bounded_commercial_intelligence_stages_v2"
+    },
+    {
+      "version": "20261005133952",
+      "name": "powerhouse_one_commercial_closed_loop_v1"
+    },
+    {
+      "version": "20261005134327",
+      "name": "powerhouse_bounded_commercial_enrichment_v1"
+    },
+    {
+      "version": "20261005134654",
+      "name": "powerhouse_one_commercial_decision_loop_v1"
+    },
+    {
+      "version": "20261005134658",
+      "name": "powerhouse_commercial_read_model_runtime_v1"
+    },
+    {
+      "version": "20261005134824",
+      "name": "powerhouse_one_commercial_scheduler_owner_v1"
+    },
+    {
+      "version": "20261005135004",
+      "name": "powerhouse_revenue_snapshot_nba_v5_pending_response_v1"
+    },
+    {
+      "version": "20261005135606",
+      "name": "powerhouse_single_commercial_candidate_owner_v1"
+    },
+    {
+      "version": "20261005135738",
+      "name": "powerhouse_materializer_source_url_not_null_fix_v1"
+    },
+    {
+      "version": "20261005135921",
+      "name": "powerhouse_materializer_source_url_not_null_fix_v2"
+    },
+    {
+      "version": "20261005135948",
+      "name": "powerhouse_one_commercial_heartbeat_terminal_lineage_v1_retry"
+    },
+    {
+      "version": "20261005140225",
+      "name": "powerhouse_bounded_identity_spine_v1"
+    },
+    {
+      "version": "20261005140306",
+      "name": "powerhouse_deadlock_free_critical_path_and_provider_outcomes_v2"
+    },
+    {
+      "version": "20261005140426",
+      "name": "powerhouse_forecast_topic_key_fix_v1"
+    },
+    {
+      "version": "20261005140505",
+      "name": "powerhouse_provider_lineage_scope_v1"
+    },
+    {
+      "version": "20261005140527",
+      "name": "powerhouse_one_loop_terminal_lineage_v1"
+    },
+    {
+      "version": "20261005140633",
+      "name": "powerhouse_fresh_research_promotion_v1"
+    },
+    {
+      "version": "20261005140648",
+      "name": "powerhouse_provider_fresh_social_scope_v1"
+    },
+    {
+      "version": "20261005141025",
+      "name": "powerhouse_canonical_social_composer_fallback_v1"
+    },
+    {
+      "version": "20261005141046",
+      "name": "powerhouse_closed_loop_comment_composer_route_v1"
+    },
+    {
+      "version": "20261005141131",
+      "name": "powerhouse_social_daily_pressure_cap_v1"
+    },
+    {
+      "version": "20261005141555",
+      "name": "powerhouse_verified_linkedin_post_context_gate_v1"
+    },
+    {
+      "version": "20261005141727",
+      "name": "retire_secondary_commercial_scheduler_owner_v1"
+    },
+    {
+      "version": "20261005142034",
+      "name": "powerhouse_exact_message_hash_and_linkedin_dedupe_v1"
+    },
+    {
+      "version": "20261005142118",
+      "name": "powerhouse_social_exact_hash_two_phase_v2"
+    },
+    {
+      "version": "20261005144606",
+      "name": "powerhouse_one_commercial_closed_loop_v2"
     }
   ],
   "forbidden_rewritten_versions": [
@@ -593,10 +2269,483 @@
     "20260912154500",
     "20260912181000"
   ],
+  "repository_only_archived": [
+    {
+      "version": "20260914133500",
+      "path": "supabase/migration-history/repository-only/20260914133500_linkedin_campaign_identity_reconciliation.sql",
+      "source_blob_sha": "dbf19420c0f97ca635497a458891fb63d00976d6"
+    },
+    {
+      "version": "20260915090000",
+      "path": "supabase/migration-history/repository-only/20260915090000_powerhouse_revenue_calibration_closure.sql",
+      "source_blob_sha": "b80f2b155b49173cfc337936d723aeb5eb2f7cb6"
+    },
+    {
+      "version": "20260915101500",
+      "path": "supabase/migration-history/repository-only/20260915101500_content_publication_daily_watchdog.sql",
+      "source_blob_sha": "20673f17b2270777c319123bbdac43c284c8df26"
+    },
+    {
+      "version": "20260916144500",
+      "path": "supabase/migration-history/repository-only/20260916144500_autonomous_improvement_production_cycle_v1.sql",
+      "source_blob_sha": "6aa699b516bc24cf02f63b22feaf6c6b7b835f2f"
+    },
+    {
+      "version": "20260916152000",
+      "path": "supabase/migration-history/repository-only/20260916152000_autonomous_improvement_brain_taxonomy_fix_v1.sql",
+      "source_blob_sha": "e9eb6ceb900bea29a7596aed0205f810481655ea"
+    },
+    {
+      "version": "20260918095000",
+      "path": "supabase/migration-history/repository-only/20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql",
+      "source_blob_sha": "b8f754c43c6d872232148a2dee07e3c11c32b8aa"
+    },
+    {
+      "version": "20260918100000",
+      "path": "supabase/migration-history/repository-only/20260918100000_powerhouse_dataforseo_intelligence_schedule_v1.sql",
+      "source_blob_sha": "716cdf257c9017aeaaeb5533a0cdbc6bd1b18ec5"
+    },
+    {
+      "version": "20260918101000",
+      "path": "supabase/migration-history/repository-only/20260918101000_forecast_calibration_health_due_v1.sql",
+      "source_blob_sha": "4828bd5facf452f579b530e2b4332133d978ef7a"
+    },
+    {
+      "version": "20260918102000",
+      "path": "supabase/migration-history/repository-only/20260918102000_powerhouse_data_spine_heartbeat_truth_v1.sql",
+      "source_blob_sha": "7d292f0c897f14b8b5bedb06ed786b8f0055a222"
+    },
+    {
+      "version": "20260918103100",
+      "path": "supabase/migration-history/repository-only/20260918103100_action_evidence_obligations_v1.sql",
+      "source_blob_sha": "8e48ff68d930f2d33d94092baaa255d2e36d8ca0"
+    },
+    {
+      "version": "20260918104500",
+      "path": "supabase/migration-history/repository-only/20260918104500_sales_action_signal_cycle_materializer_v1.sql",
+      "source_blob_sha": "024fa031562eb1f374da17f00bed9735c13bb2ff"
+    },
+    {
+      "version": "20260918105000",
+      "path": "supabase/migration-history/repository-only/20260918105000_tenant_identity_review_semantics_v2.sql",
+      "source_blob_sha": "322fee022b78584346f1970e290e7cf763a1147a"
+    },
+    {
+      "version": "20260918110000",
+      "path": "supabase/migration-history/repository-only/20260918110000_legacy_growth_outcome_reconciler_v1.sql",
+      "source_blob_sha": "e84bde6ba753e773e4d74cfb39f226dde9e068e3"
+    },
+    {
+      "version": "20260918113000",
+      "path": "supabase/migration-history/repository-only/20260918113000_prospective_autonomous_commercial_experiment_v1.sql",
+      "source_blob_sha": "8bd6f9423ab1665d8e9a0771f51f28c9d3a61ec9"
+    },
+    {
+      "version": "20260918130000",
+      "path": "supabase/migration-history/repository-only/20260918130000_bg_opdrachtenradar_nightly_v1.sql",
+      "source_blob_sha": "e64b532c5ddda5c7d46b8024d061dd8e886e697c"
+    },
+    {
+      "version": "20260918131000",
+      "path": "supabase/migration-history/repository-only/20260918131000_action_learning_production_truth_v1.sql",
+      "source_blob_sha": "0712bedcf5b12aed3b12e4a732c0361c9ec5c57a"
+    },
+    {
+      "version": "20260918141000",
+      "path": "supabase/migration-history/repository-only/20260918141000_powerhouse_control_plane_monotonic_terminal_v1.sql",
+      "source_blob_sha": "d005ca4d3d0aeef45ffe4efe06a414f9377d8bf3"
+    },
+    {
+      "version": "20260919123730",
+      "path": "supabase/migration-history/repository-only/20260919123730_restrict_capture_trigger_execute_v1.sql",
+      "source_blob_sha": "6121995f1ca3727d47fa96e0e5b67817d745fc31"
+    },
+    {
+      "version": "20260920095500",
+      "path": "supabase/migration-history/repository-only/20260920095500_terminal_autonomous_reconciler_v1.sql",
+      "source_blob_sha": "bc0cbe3c7a830c13872cf5bc4cb1f858c37f0a32"
+    },
+    {
+      "version": "20260920095700",
+      "path": "supabase/migration-history/repository-only/20260920095700_autonomous_improvement_floor_terminal_v1.sql",
+      "source_blob_sha": "de5bc791c06080d2da3da8cc21c52bb808eebdad"
+    },
+    {
+      "version": "20260920101150",
+      "path": "supabase/migration-history/repository-only/20260920101150_p0_proof_replay_baseline_v1.sql",
+      "source_blob_sha": "48e3492a04a1fbb04f6c51f284353d9ee01f893f"
+    },
+    {
+      "version": "20260920102000",
+      "path": "supabase/migration-history/repository-only/20260920102000_social_publisher_dispatching_state_contract.sql",
+      "source_blob_sha": "60743f2e201e8c1523ca421fefbe36ba5a44a543"
+    },
+    {
+      "version": "20260920102450",
+      "path": "supabase/migration-history/repository-only/20260920102450_instagram_daily_winner_table_replay_baseline_v1.sql",
+      "source_blob_sha": "c66f7ff926ac474df95e5e4c0180b08fd0828e7e"
+    },
+    {
+      "version": "20260920102500",
+      "path": "supabase/migration-history/repository-only/20260920102500_publication_authority_pgcrypto_qualification.sql",
+      "source_blob_sha": "f7a8b15e73b629012271190d3098ca04d90556cf"
+    },
+    {
+      "version": "20260920110000",
+      "path": "supabase/migration-history/repository-only/20260920110000_instagram_daily_winner_lineage_v1.sql",
+      "source_blob_sha": "d66c4119fe0e75a4622f35fd7d420f31bd7dadf8"
+    },
+    {
+      "version": "20260920113500",
+      "path": "supabase/migration-history/repository-only/20260920113500_powerhouse_live_system_map_v1.sql",
+      "source_blob_sha": "5e80963fe1bebc06b4eda6db4a6ee32868580315"
+    },
+    {
+      "version": "20260921090000",
+      "path": "supabase/migration-history/repository-only/20260921090000_instagram_mira_reel_only_v3.sql",
+      "source_blob_sha": "e15ad83e7d967c9f2ec672343f79a54afb61bca7"
+    },
+    {
+      "version": "20260921152000",
+      "path": "supabase/migration-history/repository-only/20260921152000_instagram_meta_oauth_onboarding_v1.sql",
+      "source_blob_sha": "afc8f481ac1a8b1f5884ae6944064da2e09e7f00"
+    },
+    {
+      "version": "20260922080500",
+      "path": "supabase/migration-history/repository-only/20260922080500_social_publication_daily_channel_fence_v1.sql",
+      "source_blob_sha": "26fe2989875a10465a284b9e985efa6fb884ba88"
+    },
+    {
+      "version": "20260922082500",
+      "path": "supabase/migration-history/repository-only/20260922082500_instagram_mira_reel_recommendation_normalization_v1.sql",
+      "source_blob_sha": "82d52485760f2dbe7ddbf514c37d18b9095bbf2a"
+    },
+    {
+      "version": "20260924072500",
+      "path": "supabase/migration-history/repository-only/20260924072500_powerhouse_seo_opportunity_resolver_v1.sql",
+      "source_blob_sha": "6a9ba57a8a97edf16fee5c21f243ac6729962d40"
+    },
+    {
+      "version": "20260924131500",
+      "path": "supabase/migration-history/repository-only/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
+      "source_blob_sha": "a6037047760fe281ab24298f9f7d94c62cc95695"
+    },
+    {
+      "version": "20260925080500",
+      "path": "supabase/migration-history/repository-only/20260925080500_instagram_media_reserve_replay_baseline_v1.sql",
+      "source_blob_sha": "3929233a50e0f882c52af066c9398ee4f761850b"
+    },
+    {
+      "version": "20260925080700",
+      "path": "supabase/migration-history/repository-only/20260925080700_global_post_uniqueness_v1.sql",
+      "source_blob_sha": "710f6cd8c57bd841b7d7e73ae2d546a58a203f94"
+    },
+    {
+      "version": "20260925081000",
+      "path": "supabase/migration-history/repository-only/20260925081000_linkedin_personal_source_dedupe_current_main_v1.sql",
+      "source_blob_sha": "8fb940d57fe29aaa8ed9025c71039f3688bcbffb"
+    },
+    {
+      "version": "20260925081800",
+      "path": "supabase/migration-history/repository-only/20260925081800_global_post_story_uniqueness_v2.sql",
+      "source_blob_sha": "5e25c456fb6f2bac5fdb91601c3332f0f1ffaa80"
+    },
+    {
+      "version": "20260925083200",
+      "path": "supabase/migration-history/repository-only/20260925083200_story_fingerprint_authority_v3.sql",
+      "source_blob_sha": "6153eeb70003d3c4b3df490914d55d53a4dbeebe"
+    },
+    {
+      "version": "20260925124500",
+      "path": "supabase/migration-history/repository-only/20260925124500_powerhouse_supabase_migration_readback_name_reconcile_v2.sql",
+      "source_blob_sha": "c0e370e325ef3d3275803a8e9e2f861b5b50da95"
+    },
+    {
+      "version": "20260927153500",
+      "path": "supabase/migration-history/repository-only/20260927153500_social_daily_self_healing_v1.sql",
+      "source_blob_sha": "e8ccb9f9ad7d225428520841df25d0a3ebab6ed7"
+    },
+    {
+      "version": "20260928105800",
+      "path": "supabase/migration-history/repository-only/20260928105800_powerhouse_relationship_public_research_single_scheduler_v1.sql",
+      "source_blob_sha": "551054dde09ea85ce99295a7b48a41141f095029"
+    },
+    {
+      "version": "20260928112500",
+      "path": "supabase/migration-history/repository-only/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql",
+      "source_blob_sha": "59a914ea1e98c7090c1094c6fcd6a9dbb1c65ba7"
+    },
+    {
+      "version": "20260928112800",
+      "path": "supabase/migration-history/repository-only/20260928112800_powerhouse_autonomous_relationship_outreach_fix_v1.sql",
+      "source_blob_sha": "59a914ea1e98c7090c1094c6fcd6a9dbb1c65ba7"
+    },
+    {
+      "version": "20260928113300",
+      "path": "supabase/migration-history/repository-only/20260928113300_powerhouse_autonomous_outreach_evidence_quality_v1.sql",
+      "source_blob_sha": "59a914ea1e98c7090c1094c6fcd6a9dbb1c65ba7"
+    },
+    {
+      "version": "20260928114500",
+      "path": "supabase/migration-history/repository-only/20260928114500_powerhouse_linkedin_sales_machine_v1.sql",
+      "source_blob_sha": "4b56a5333818c81b7e074341182460d3dc45a992"
+    },
+    {
+      "version": "20260928115000",
+      "path": "supabase/migration-history/repository-only/20260928115000_powerhouse_linkedin_sales_machine_cycle_v1.sql",
+      "source_blob_sha": "5507619ad8dd309010e12e02eda8c3e1c00a024f"
+    },
+    {
+      "version": "20260928115300",
+      "path": "supabase/migration-history/repository-only/20260928115300_powerhouse_linkedin_sales_machine_bounded_query_v1.sql",
+      "source_blob_sha": "ca4f733be4dfc81e7e85a7ab5ff6540d15c49717"
+    },
+    {
+      "version": "20260928115800",
+      "path": "supabase/migration-history/repository-only/20260928115800_powerhouse_linkedin_comment_relevance_hardening_v1.sql",
+      "source_blob_sha": "69ddbd0baed0253a98720e577b8d7448e1133222"
+    },
+    {
+      "version": "20260928121500",
+      "path": "supabase/migration-history/repository-only/20260928121500_provider_write_terminal_reconciler_v1.sql",
+      "source_blob_sha": "63a808cfe5568ea7d44af598ea91ae14675740c6"
+    },
+    {
+      "version": "20260928122000",
+      "path": "supabase/migration-history/repository-only/20260928122000_social_provider_write_terminal_reconcile_v1.sql",
+      "source_blob_sha": "92d198eb4f1d3b473a1f495fe226a6813095ac6d"
+    },
+    {
+      "version": "20260928123500",
+      "path": "supabase/migration-history/repository-only/20260928123500_powerhouse_growth_swarm_v1.sql",
+      "source_blob_sha": "e0e34c92aa5f622f6e4d9441f5b79f462eea3e3e"
+    },
+    {
+      "version": "20260928124000",
+      "path": "supabase/migration-history/repository-only/20260928124000_powerhouse_growth_swarm_activation_v1.sql",
+      "source_blob_sha": "2b842dc2aa3d2b17ea437b453af3bfef71fdb876"
+    },
+    {
+      "version": "20260928130500",
+      "path": "supabase/migration-history/repository-only/20260928130500_workshop_scan_preprovision_customer_portal.sql",
+      "source_blob_sha": "0e223b726367b44e3b56a956e9ca94c8e6269da6"
+    },
+    {
+      "version": "20260928152400",
+      "path": "supabase/migration-history/repository-only/20260928152400_powerhouse_persuasion_revenue_optimizer_v1.sql",
+      "source_blob_sha": "c8f354fb6b070964d60112b0de796b8d0b08a53b"
+    },
+    {
+      "version": "20260928161000",
+      "path": "supabase/migration-history/repository-only/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
+      "source_blob_sha": "409e3836129733c6443d6f27a59ad148a634220f"
+    },
+    {
+      "version": "20260928162500",
+      "path": "supabase/migration-history/repository-only/20260928162500_bg_vandaag_manual_dm_handoff_v1.sql",
+      "source_blob_sha": "157128be1e3ff485117bf1507abe11341e171d01"
+    },
+    {
+      "version": "20260928162600",
+      "path": "supabase/migration-history/repository-only/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+      "source_blob_sha": "fa911898c56c6f02cd24a85091c69d92c0ec4123"
+    },
+    {
+      "version": "20260928173100",
+      "path": "supabase/migration-history/repository-only/20260928173100_powerhouse_relationship_external_intelligence_v1.sql",
+      "source_blob_sha": "ce3e9d346de8274d8356a6ee841c67ad3229e5e0"
+    },
+    {
+      "version": "20260928175500",
+      "path": "supabase/migration-history/repository-only/20260928175500_powerhouse_daily_full_connection_enrichment_v1.sql",
+      "source_blob_sha": "c62e125ca13776a639c5c2669ba51743887ca587"
+    },
+    {
+      "version": "20260928180500",
+      "path": "supabase/migration-history/repository-only/20260928180500_powerhouse_daily_full_connection_enrichment_v2.sql",
+      "source_blob_sha": "1c6fd89c076f453fae07cb58ed096621600221a1"
+    },
+    {
+      "version": "20260928193000",
+      "path": "supabase/migration-history/repository-only/20260928193000_powerhouse_company_intelligence_os_v1.sql",
+      "source_blob_sha": "a4758905425f0964338371247343192e3ed4cd73"
+    },
+    {
+      "version": "20260928194500",
+      "path": "supabase/migration-history/repository-only/20260928194500_powerhouse_self_improvement_layer_v1.sql",
+      "source_blob_sha": "b62f3195c2f16e20e5be8f6fbb22a19e39dfeee2"
+    },
+    {
+      "version": "20260928203000",
+      "path": "supabase/migration-history/repository-only/20260928203000_powerhouse_self_improvement_orchestrator_nonblocking_v1.sql",
+      "source_blob_sha": "c3d66f36cd4420810a119ae6bc0661bb3dd61c25"
+    },
+    {
+      "version": "20260928203500",
+      "path": "supabase/migration-history/repository-only/20260928203500_powerhouse_foresight_prediction_intelligence_v2.sql",
+      "source_blob_sha": "8df66b2788d2a391b191502efa3879d1f7246dd7"
+    },
+    {
+      "version": "20260929150500",
+      "path": "supabase/migration-history/repository-only/20260929150500_workshop_portal_intake_phone.sql",
+      "source_blob_sha": "9fb74017776e5b28754107d05f28f185f37861e1"
+    },
+    {
+      "version": "20260929161500",
+      "path": "supabase/migration-history/repository-only/20260929161500_powerhouse_one_million_revenue_operating_contract_v1.sql",
+      "source_blob_sha": "0a52106e65eac8a93ec5f3df94091ad6a371fae4"
+    },
+    {
+      "version": "20260929162000",
+      "path": "supabase/migration-history/repository-only/20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql",
+      "source_blob_sha": "f37aa930e2f2b89602a6878fc4714a88c5e46392"
+    },
+    {
+      "version": "20260929163500",
+      "path": "supabase/migration-history/repository-only/20260929163500_linkedin_sales_bounded_prep_v1.sql",
+      "source_blob_sha": "f11c4728dd5c119f709bf9352fe47e04ab6d8b5b"
+    },
+    {
+      "version": "20260929165000",
+      "path": "supabase/migration-history/repository-only/20260929165000_growth_swarm_bounded_refresh_v1.sql",
+      "source_blob_sha": "f047bb08723eea926a07a30e6c1b19735d0137b3"
+    },
+    {
+      "version": "20260929171000",
+      "path": "supabase/migration-history/repository-only/20260929171000_relationship_revenue_bounded_refresh_v1.sql",
+      "source_blob_sha": "43ec6e009c56abdfddfd2ff6bd1a29397f91ec01"
+    },
+    {
+      "version": "20260929173500",
+      "path": "supabase/migration-history/repository-only/20260929173500_instagram_canonical_mira_identity_guard_v1.sql",
+      "source_blob_sha": "257863756f3014551f0e2e07cde087e1eb4599cc"
+    },
+    {
+      "version": "20260929201000",
+      "path": "supabase/migration-history/repository-only/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
+      "source_blob_sha": "6ab85e51ace240c555b012e1c0a85c39c1625f03"
+    },
+    {
+      "version": "20260929205000",
+      "path": "supabase/migration-history/repository-only/20260929205000_powerhouse_mira_public_problem_source_contract_v3.sql",
+      "source_blob_sha": "7a1747ed630cccdea5c96f72b76d429f70fa6a1b"
+    },
+    {
+      "version": "20260929211000",
+      "path": "supabase/migration-history/repository-only/20260929211000_powerhouse_loop_assurance_v2.sql",
+      "source_blob_sha": "93bd0b61e2038454242ef21aa44c46623d9ffd1c"
+    },
+    {
+      "version": "20260929211500",
+      "path": "supabase/migration-history/repository-only/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql",
+      "source_blob_sha": "a7f944e3258ef15a7d0cf27cc184642082a490f2"
+    },
+    {
+      "version": "20260929212500",
+      "path": "supabase/migration-history/repository-only/20260929212500_powerhouse_loop_assurance_v3.sql",
+      "source_blob_sha": "0a3eeaa971e3acd2fbac58087019fc8244102036"
+    },
+    {
+      "version": "20260929214500",
+      "path": "supabase/migration-history/repository-only/20260929214500_powerhouse_source_backed_channel_selection_v1.sql",
+      "source_blob_sha": "38093d030c3c5197f9eff36b33eb2e26f673845f"
+    },
+    {
+      "version": "20260929215500",
+      "path": "supabase/migration-history/repository-only/20260929215500_powerhouse_direct_outreach_source_gate_status_fix_v1.sql",
+      "source_blob_sha": "2ca48623ebcce9dec3157d38677b272db8e95498"
+    },
+    {
+      "version": "20260929222500",
+      "path": "supabase/migration-history/repository-only/20260929222500_powerhouse_source_backed_outbound_loop_assurance_v1.sql",
+      "source_blob_sha": "80c21cfc812e2a692fe8ba0caa3a7b2184432116"
+    },
+    {
+      "version": "20260929223000",
+      "path": "supabase/migration-history/repository-only/20260929223000_powerhouse_source_backed_blog_semantic_coherence_v1.sql",
+      "source_blob_sha": "b5d06d77f576fe66aa05b124320680a5658c0438"
+    },
+    {
+      "version": "20260929223500",
+      "path": "supabase/migration-history/repository-only/20260929223500_powerhouse_autonomous_outreach_loop_assurance_v1.sql",
+      "source_blob_sha": "32f28c48b570419caed523e8d61901b1b03059ec"
+    },
+    {
+      "version": "20260930071500",
+      "path": "supabase/migration-history/repository-only/20260930071500_powerhouse_story_family_overlap_guard_v6.sql",
+      "source_blob_sha": "dc08fc57edccc3b7c3a8c4de01971d76a7dc33d4"
+    },
+    {
+      "version": "20260930113000",
+      "path": "supabase/migration-history/repository-only/20260930113000_powerhouse_bilingual_seo_revenue_v1.sql",
+      "source_blob_sha": "0ae5dd518ccef9151785a7174a6f3a67b1d00442"
+    },
+    {
+      "version": "20260930202000",
+      "path": "supabase/migration-history/repository-only/20260930202000_powerhouse_need_discovery_v1.sql",
+      "source_blob_sha": "90c466274bcbf1b368e361e461231530efda3570"
+    },
+    {
+      "version": "20261002180500",
+      "path": "supabase/migration-history/repository-only/20261002180500_canonical_cms_website_portal_v1.sql",
+      "source_blob_sha": "4060800aee5db4eafad2f7e8197d1c30a0f70cf2"
+    },
+    {
+      "version": "20261003104500",
+      "path": "supabase/migration-history/repository-only/20261003104500_linkedin_personal_no_gap_observational_v1.sql",
+      "source_blob_sha": "e7812c12e84d124968ff496ef88c25cf3eebac49"
+    },
+    {
+      "version": "20261003105500",
+      "path": "supabase/migration-history/repository-only/20261003105500_linkedin_personal_no_gap_observational_v2.sql",
+      "source_blob_sha": "25f6c217a51136474074d25e13036ae3e01f384b"
+    },
+    {
+      "version": "20261003152500",
+      "path": "supabase/migration-history/repository-only/20261003152500_linkedin_personal_dual_truth_terminal_v1.sql",
+      "source_blob_sha": "19911ee195c38b0f06373cac3064c08b4680fb56"
+    },
+    {
+      "version": "20261004133000",
+      "path": "supabase/migration-history/repository-only/20261004133000_linkedin_company_growth_engine_v1.sql",
+      "source_blob_sha": "068bf7a4fc58aa0e7b668091143a68b8105ea0fb"
+    },
+    {
+      "version": "20261005113000",
+      "path": "supabase/migration-history/repository-only/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "source_blob_sha": "ec95d7199b06974bb0e3cbe31c1c74407024e292"
+    },
+    {
+      "version": "20261005122000",
+      "path": "supabase/migration-history/repository-only/20261005122000_powerhouse_human_commercial_message_os_v1.sql",
+      "source_blob_sha": "3cf4e765b227c8f76539de2a1d120bb39cd81057"
+    },
+    {
+      "version": "20261005123000",
+      "path": "supabase/migration-history/repository-only/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql",
+      "source_blob_sha": "be9eedb6f07075c31426b6b3c5fc6a29b9f6a870"
+    },
+    {
+      "version": "20261005135000",
+      "path": "supabase/migration-history/repository-only/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+      "source_blob_sha": "18876bf5a51efe00d948f6652899477535b910a4"
+    },
+    {
+      "version": "20261005140000",
+      "path": "supabase/migration-history/repository-only/20261005140000_powerhouse_one_loop_terminal_lineage_v1.sql",
+      "source_blob_sha": "1bfa975be7a45247b12ab4830a6ec912b4b017fd"
+    },
+    {
+      "version": "20261005160500",
+      "path": "supabase/migration-history/repository-only/20261005160500_powerhouse_one_commercial_closed_loop_v1.sql",
+      "source_blob_sha": "e57c01595664b243c43fa5edf2e3827707e8c419"
+    }
+  ],
   "recovery_governance": {
     "mode": "scope-broad-approved",
-    "reason": "restore 67 missing remote-applied migration versions and remove 11 timestamp-rewritten duplicates",
-    "pr": 1444,
+    "reason": "separate 94 repository-only migration variants from the production-backed executable lane while preserving immutable SQL evidence",
+    "issue": 3742,
+    "rejected_pr": 3741,
     "preserve_remote_history": true,
     "remote_history_repair": false
   }

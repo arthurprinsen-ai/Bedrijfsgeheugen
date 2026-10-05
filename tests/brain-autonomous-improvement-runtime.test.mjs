@@ -16,6 +16,7 @@ import {
   buildAutonomousImprovementPacket
 } from '../scripts/brain/continuous-improvement/autonomous-runtime.mjs';
 import { validateAutonomousImprovementRuntime } from '../scripts/brain/continuous-improvement/run-autonomous-improvement.mjs';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
 test('runtime contract remains integrated with continuous improvement authority', async () => {
   const contract = JSON.parse(await readFile(new URL('../config/powerhouse-autonomous-improvement-runtime.json', import.meta.url), 'utf8'));
@@ -118,7 +119,7 @@ test('read-only probe is executable while production scheduling stays in Supabas
 });
 
 test('production adapter uses only canonical Brain record taxonomy', async () => {
-  const migration = await readFile(new URL('../supabase/migrations/20260916152000_autonomous_improvement_brain_taxonomy_fix_v1.sql', import.meta.url), 'utf8');
+  const migration = await readMigrationHistory('20260916152000_autonomous_improvement_brain_taxonomy_fix_v1.sql');
   assert.match(migration, /'CurrentState','current_state'/);
   assert.match(migration, /record_type='CurrentState'/);
   assert.match(migration, /record_kind='current_state'/);
