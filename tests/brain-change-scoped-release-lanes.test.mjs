@@ -280,3 +280,18 @@ test('historical terminal reconciliation stays backend-only and never fans out i
     shared:true, backend:true, portal:false, website:false, automation:false
   });
 });
+
+test('historical terminal reconciliation bundle stays backend-only', () => {
+  const suites = suitesFor([
+    '.github/workflows/historical-terminal-reconciliation.yml',
+    'config/historical-terminal-reconciliation.json',
+    'tools/delivery/historical-terminal-reconcile.mjs',
+    'tests/brain-historical-terminal-reconciliation-v1.test.mjs',
+    'docs/changes/historical-terminal-reconciliation-20261005-v1.md',
+    'docs/development-ledger-events/historical-terminal-reconciliation-20261005-v1.md',
+    'brain/learning/historical-terminal-reconciliation-20261005-v1.json'
+  ]);
+  assert.deepEqual(suites, {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
