@@ -22,3 +22,12 @@ test('production locale verifier retains translated-content and round-trip asser
   assert.match(src,/switchPublicLocale\(page, 'en'/);
   assert.match(src,/switchPublicLocale\(page, 'nl'/);
 });
+
+test('production locale verifier handles the public cookie overlay before language interaction', async () => {
+  const src=await readFile(verifierPath,'utf8');
+  assert.match(src,/async function dismissCookieOverlay/);
+  assert.match(src,/#bgCookie/);
+  assert.match(src,/#bgCookieDeny/);
+  assert.match(src,/await dismissCookieOverlay\(page\)/);
+  assert.match(src,/state:'hidden'/);
+});
