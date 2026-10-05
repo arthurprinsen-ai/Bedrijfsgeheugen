@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
-const sql = await readMigrationHistory('20260916144500_autonomous_improvement_production_cycle_v1.sql');
+const sql = await readMigrationHistory('20260916131217_autonomous_improvement_production_cycle_v1.sql');
 
 test('production cycle reuses canonical Brain authority and existing scheduler', () => {
   assert.match(sql, /powerhouse_autonomous_improvement_cycle_v1/);
