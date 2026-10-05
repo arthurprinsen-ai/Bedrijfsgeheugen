@@ -38,11 +38,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/github-delivery-state-machine.test.mjs",
-      "tests/github-delivery-state-machine-workflow.test.mjs"
+      "tests/brain-full-commit-checkset-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-full-commit-checkset-authority-v1.test.mjs"
     ],
     "canary": [
-      "tests/github-delivery-state-machine.test.mjs"
+      "tests/brain-full-commit-checkset-authority-v1.test.mjs"
     ]
   },
   "compiler": {
