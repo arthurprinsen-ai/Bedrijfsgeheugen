@@ -3,14 +3,16 @@
   "date": "2026-10-05",
   "obligation_issue": 3742,
   "failure_mode": "A recovery PR cannot safely generate an official production baseline when production credentials would be exposed to PR-controlled workflow code.",
-  "structural_fix": "Generate the official Supabase CLI baseline from trusted default-branch workflow code and lease the write to the exact recovery PR head.",
+  "structural_fix": "Generate the official Supabase CLI baseline from trusted default-branch workflow code; for the exact candidate-declared, effect-verified replay baselines, reconcile tracking with supported `supabase migration repair --status applied`, read the remote ledger back, and lease the resulting evidence to the exact recovery PR head.",
   "invariants": [
     "no pull_request trigger on the production baseline capture workflow",
     "official supabase db dump and migration list only",
     "no hand-built pg_catalog schema dump",
-    "no production schema/data mutation",
     "exact-head force-with-lease before writing baseline evidence",
-    "fresh replay and parity remain independently required"
+    "fresh replay and parity remain independently required",
+    "no production schema/data DDL/DML mutation; only bounded supported migration-history tracking repair",
+    "repair set must equal the exact effect-verified replay baselines and remote readback must prove each repaired version",
+    "recovery lock may become REPAIRED_APPLIED_VERIFIED only after official remote migration-history dump proves exact version/name identities"
   ],
   "failure_class": "SECRET_EXPOSURE",
   "fingerprint": "powerhouse|supabase-production-baseline-capture|trusted-default-branch|v1",
