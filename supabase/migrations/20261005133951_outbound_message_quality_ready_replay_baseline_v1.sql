@@ -1,9 +1,29 @@
--- Replay baseline for a production function that pre-existed its first captured migration.
--- Production readback proves public.powerhouse_outbound_message_quality_ready_v1(uuid)
--- exists with this contract. This baseline exists only so fresh reconstruction can
--- satisfy historical migration 20261005133952 before 20261005142034 re-captures it.
--- Production must reconcile this timestamp with supported Supabase migration repair
--- --status applied; its SQL must not be re-executed in production.
+-- Replay baseline for production state that pre-existed its first ledger-complete capture.
+-- The table shape is copied from repository-only commercial runtime SQL already reflected in production.
+-- The function contract is copied from production migration 20261005142034.
+-- Production must reconcile this timestamp with supported Supabase migration repair --status applied.
+-- Its SQL must not be re-executed in production.
+
+create table if not exists public.powerhouse_message_quality_v1 (
+  quality_id uuid primary key default gen_random_uuid(),
+  action_id uuid not null references public.powerhouse_sales_actions(action_id) on delete cascade,
+  composer_version text not null,
+  play_key text not null,
+  channel text not null,
+  message_hash text not null,
+  passed boolean not null,
+  score numeric(8,4) not null check(score between 0 and 1),
+  checks jsonb not null default '{}'::jsonb,
+  evidence jsonb not null default '{}'::jsonb,
+  evaluated_at timestamptz not null default now(),
+  unique(action_id,message_hash)
+);
+alter table public.powerhouse_message_quality_v1 enable row level security;
+revoke all on public.powerhouse_message_quality_v1 from public,anon,authenticated;
+grant select,insert,update,delete on public.powerhouse_message_quality_v1 to service_role;
+drop policy if exists powerhouse_message_quality_service_v1 on public.powerhouse_message_quality_v1;
+create policy powerhouse_message_quality_service_v1 on public.powerhouse_message_quality_v1
+for all to service_role using(true) with check(true);
 
 create or replace function public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid)
 returns boolean
