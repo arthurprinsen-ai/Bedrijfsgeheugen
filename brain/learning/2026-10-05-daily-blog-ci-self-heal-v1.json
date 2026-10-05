@@ -11,7 +11,8 @@
     "If required test is missing or terminally non-success, dispatch the existing required-test workflow on the exact candidate branch with immutable PR identity.",
     "If required test is queued/in_progress/success, do not duplicate it.",
     "Keep branch protection and auto-merge intact; never bypass required checks.",
-    "Production Source Snapshot and Production Release Readback failures now get a bounded workflow_run recovery: reconcile live SHA first, then re-run only failed jobs, maximum three attempts."
+    "Production Source Snapshot and Production Release Readback failures now get a bounded workflow_run recovery: reconcile live SHA first, then re-run only failed jobs, maximum three attempts.",
+    "Production pricing browser proof now follows the current #saas/#expertise anchor UX instead of obsolete data-tab/data-panel selectors, preventing stale-test false failures after a legitimate pricing redesign."
   ],
   "terminal_verification": [
     "required check test must attach to the exact candidate head SHA",
@@ -21,7 +22,8 @@
   "prevention_scope": [
     "powerhouse-daily-blog.yml",
     "required-test.yml",
-    "production-delivery-self-heal.yml"
+    "production-delivery-self-heal.yml",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
   ],
   "observed_pr": 3711,
   "observed_head_sha": "bd6aff16df0a569736d9d4fc811e99d644dd2135",
