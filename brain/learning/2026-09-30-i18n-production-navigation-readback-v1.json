@@ -1,33 +1,43 @@
 {
-  "fingerprint":"i18n-production-navigation-readback-20260930-v1",
-  "date":"2026-09-30",
-  "type":"PRODUCTION_READBACK_RECOVERY",
-  "failure_class":"PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
-  "root_cause":[
-    "The production locale verifier waited for the full browser load event after a correct locale navigation.",
-    "Non-critical resources could keep the full load event open even though the target route and localized DOM were already correct."
+  "fingerprint": "i18n-production-navigation-readback-20260930-v1",
+  "date": "2026-09-30",
+  "type": "PRODUCTION_READBACK_RECOVERY",
+  "failure_class": "PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
+  "root_cause": [
+    "The production locale verifier originally waited for the full browser load event after a correct locale navigation.",
+    "The first prevention reduced this to DOMContentLoaded, but production proved that even DOMContentLoaded can exceed the bounded timeout while the target route, static localized document and provider identity are already correct.",
+    "Navigation success and document lifecycle completion are separate proofs; the locale verifier must fail on a wrong route or wrong localized DOM, not on a non-essential lifecycle delay."
   ],
-  "evidence":{
-    "production_sha":"936ca60ad5c2415ff2372880a61aea5b1d690875",
-    "provider_identity_proven":true,
-    "pricing_content_proven":true,
-    "readback_failure":"page.waitForURL timeout while waiting for load",
-    "verifier":"tools/site-shell/verify-pricing-i18n-production.mjs"
+  "evidence": {
+    "production_sha": "1cc8807b7afa1f69d72287d26bcedeba92d786e3",
+    "provider_identity_proven": true,
+    "pricing_content_proven": true,
+    "readback_failure": "page.waitForURL timeout while waiting for domcontentloaded after the locale click",
+    "verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "repeated_on": "2026-10-05",
+    "netlify_deploy": "6ac3756b265f4f0008ad8f8b",
+    "english_route_proven": true,
+    "remediation": "wait for exact pathname at navigation commit, then prove visible body, html lang and localized content"
   },
-  "prevention":[
-    "Locale navigation waits for exact pathname with waitUntil=domcontentloaded.",
-    "After navigation, the verifier still requires html[lang], localized visible content and absence of visible translation failure.",
-    "Do not classify a full-load timeout as a locale defect when DOM-ready route evidence is correct."
+  "prevention": [
+    "Locale navigation must be click-driven and must prove the exact expected pathname at navigation commit.",
+    "After the navigation commit, independently require a visible body, the expected html[lang], localized visible content and absence of visible translation failure.",
+    "Do not couple locale correctness to full load or DOMContentLoaded lifecycle completion when route commit and semantic DOM proof are available.",
+    "Keep static /en/* routes and real language-anchor hrefs as the public locale authority."
   ],
-  "evaluation":{
-    "historical_replay":["tests/brain-i18n-production-navigation-readback-v2.test.mjs"],
-    "canary":["tests/brain-i18n-production-navigation-readback-v2.test.mjs"]
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-production-navigation-readback-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-production-navigation-readback-v2.test.mjs"
+    ]
   },
-  "compiler":{
-    "failure_class":"PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
-    "scope":"RUNTIME",
-    "machine_enforceable":true,
-    "security_sensitive":false
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false
   },
-  "status":"ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION"
 }
