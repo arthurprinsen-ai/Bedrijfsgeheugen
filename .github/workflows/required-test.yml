@@ -157,6 +157,8 @@ jobs:
         run: node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify adaptive and integration compiler regressions
         run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs
+      - name: Enforce Powerhouse one-loop runtime invariants
+        run: node --test tests/powerhouse-one-loop-terminal-lineage-v1.test.mjs
       - name: Fail fast on incomplete integration closure
         if: steps.integration.outputs.closure_ready != 'true'
         run: |
