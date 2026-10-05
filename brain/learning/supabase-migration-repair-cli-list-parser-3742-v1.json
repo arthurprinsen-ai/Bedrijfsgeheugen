@@ -1,18 +1,45 @@
 {
   "id": "supabase-migration-repair-cli-list-parser-3742-v1",
   "date": "2026-10-05",
+  "obligation_id": "supabase-migration-repair-cli-list-parser-3742-v1",
   "issue": 3742,
+  "failure_class": "provider-cli-output-parser",
+  "root_cause": "Supabase CLI 2.119.0 renders migration-list version cells with surrounding backticks while the trusted repair parser accepted only bare fourteen-digit values, causing valid rows to be discarded before any production mutation.",
+  "prevention_rule": "Normalize only presentation delimiters before exact migration identity comparison; retain the exact four-version allowlist, forbid remote-only drift, and require zero post-repair drift.",
+  "regression_test": "tests/supabase-supported-migration-repair-3742.test.mjs",
+  "finding": "Trusted-main OIDC and IPv4 Supavisor transport were healthy; the repair stopped because migration-list rendering was parsed too narrowly.",
+  "structural_fix": [
+    "strip surrounding backticks and whitespace from local/remote migration-list cells",
+    "apply identical normalization to pre-repair and post-repair readback",
+    "keep exact version comparison and official migration repair semantics unchanged"
+  ],
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
+    ]
+  },
+  "fingerprint": "supabase|migration-repair|cli-list-backtick-parser|3742|v1",
   "evidence": {
     "workflow_run_id": 37354534547,
-    "attempt": 3,
-    "failure": "UNEXPECTED_PRE_REPAIR_DRIFT:[]"
-  },
-  "finding": "Supabase CLI 2.119.0 renders migration-list version cells with surrounding backticks. The exact-drift parser accepted only bare 14-digit cells, so valid rows were discarded before any production mutation.",
-  "fix": "Normalize surrounding backticks and whitespace before parsing local/remote migration versions.",
-  "invariants": [
-    "Pre-repair drift must remain exactly the four reviewed local-only replay baselines.",
-    "Remote-only or identity drift remains fail-closed.",
-    "Post-repair drift must be zero.",
-    "Only official supabase migration repair --status applied --db-url may mutate production migration tracking."
-  ]
+    "run_attempt": 3,
+    "failure": "UNEXPECTED_PRE_REPAIR_DRIFT:[]",
+    "oidc_transport": "success",
+    "supavisor_session_ipv4": "success",
+    "migration_list": "success",
+    "production_mutation_started": false,
+    "production_ledger_count_after_failure": 564,
+    "repair_versions": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ]
+  }
 }
