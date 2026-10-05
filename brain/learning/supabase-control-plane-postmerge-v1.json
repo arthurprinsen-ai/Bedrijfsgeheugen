@@ -24,12 +24,12 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-preview-applicability-bounded-payload.test.mjs",
-      "tests/supabase-supported-migration-repair-3742.test.mjs"
+      "tests/brain-supabase-control-plane-postmerge-v1.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
+      "tests/brain-supabase-control-plane-postmerge-v1.test.mjs",
       "tests/supabase-preview-applicability-bounded-payload.test.mjs",
       "tests/supabase-supported-migration-repair-3742.test.mjs"
     ],
