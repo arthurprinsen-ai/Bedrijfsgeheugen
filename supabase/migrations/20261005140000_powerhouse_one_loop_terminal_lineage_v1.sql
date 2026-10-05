@@ -130,41 +130,74 @@ on public.powerhouse_sales_actions
 for each row
 execute function public.powerhouse_sales_action_terminal_lineage_guard_v1();
 
--- Backfill existing terminal lifecycle state without synthesising business outcomes.
-update public.powerhouse_sales_actions a
-set evidence = coalesce(a.evidence,'{}'::jsonb)
-  || jsonb_build_object(
-    'terminal_lineage',
-    jsonb_build_object(
-      'contract','powerhouse-one-loop-terminal-lineage-v1',
-      'action_terminal',true,
-      'action_status',a.status,
-      'business_outcome_state',
-        case
-          when a.outcome_id is not null then 'OBSERVED'
-          when lower(coalesce(a.channel,'')) in ('internal','internal_research')
-               or a.action_type='research_enrichment'
-               or a.status in ('expired','skipped','failed','cancelled')
-            then 'NOT_APPLICABLE'
-          else 'PENDING_OBSERVATION'
-        end,
-      'outcome_obligation',
-        case
-          when a.outcome_id is not null
-               or lower(coalesce(a.channel,'')) in ('internal','internal_research')
-               or a.action_type='research_enrichment'
-               or a.status in ('expired','skipped','failed','cancelled')
-            then 'CLOSED'
-          else 'OPEN'
-        end,
-      'observed_business_outcome',a.outcome_id is not null,
-      'recorded_at',now(),
-      'truth_rule','Lifecycle closure is not an observed business outcome. Revenue/outcome truth still requires explicit observed evidence.'
-    )
-  ),
-  updated_at = now()
-where a.status in ('done','expired','skipped','failed','cancelled')
-  and not (coalesce(a.evidence,'{}'::jsonb) ? 'terminal_lineage');
+-- Historical repair is intentionally bounded: active production writers are never blocked
+-- by one monolithic UPDATE. Replays are idempotent and skip rows currently owned elsewhere.
+create or replace function public.powerhouse_backfill_terminal_lineage_v1(
+  p_limit integer default 500
+) returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_catalog
+as $$
+declare
+  v_updated int:=0;
+begin
+  with candidates as (
+    select a.action_id
+    from public.powerhouse_sales_actions a
+    where a.status in ('done','expired','skipped','failed','cancelled')
+      and not (coalesce(a.evidence,'{}'::jsonb) ? 'terminal_lineage')
+    order by a.updated_at nulls first, a.action_id
+    for update skip locked
+    limit greatest(1,least(coalesce(p_limit,500),1000))
+  )
+  update public.powerhouse_sales_actions a
+  set evidence = coalesce(a.evidence,'{}'::jsonb)
+    || jsonb_build_object(
+      'terminal_lineage',
+      jsonb_build_object(
+        'contract','powerhouse-one-loop-terminal-lineage-v1',
+        'action_terminal',true,
+        'action_status',a.status,
+        'business_outcome_state',
+          case
+            when a.outcome_id is not null then 'OBSERVED'
+            when lower(coalesce(a.channel,'')) in ('internal','internal_research')
+                 or a.action_type='research_enrichment'
+                 or a.status in ('expired','skipped','failed','cancelled')
+              then 'NOT_APPLICABLE'
+            else 'PENDING_OBSERVATION'
+          end,
+        'outcome_obligation',
+          case
+            when a.outcome_id is not null
+                 or lower(coalesce(a.channel,'')) in ('internal','internal_research')
+                 or a.action_type='research_enrichment'
+                 or a.status in ('expired','skipped','failed','cancelled')
+              then 'CLOSED'
+            else 'OPEN'
+          end,
+        'observed_business_outcome',a.outcome_id is not null,
+        'recorded_at',now(),
+        'truth_rule','Lifecycle closure is not an observed business outcome. Revenue/outcome truth still requires explicit observed evidence.'
+      )
+    ),
+    updated_at = now()
+  from candidates c
+  where a.action_id=c.action_id;
+  get diagnostics v_updated=row_count;
+
+  return jsonb_build_object(
+    'contract','powerhouse-one-loop-terminal-lineage-v1',
+    'updated',v_updated,
+    'bounded_limit',greatest(1,least(coalesce(p_limit,500),1000)),
+    'executed_at',now()
+  );
+end
+$$;
+
+revoke execute on function public.powerhouse_backfill_terminal_lineage_v1(integer) from public, anon, authenticated;
+grant execute on function public.powerhouse_backfill_terminal_lineage_v1(integer) to service_role;
 
 create or replace view public.powerhouse_action_terminal_lineage_v1
 with (security_invoker=true) as
