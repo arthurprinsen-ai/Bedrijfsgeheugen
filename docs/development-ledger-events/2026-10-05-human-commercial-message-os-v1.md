@@ -13,3 +13,5 @@
   6. executor copy-quality proof path and composer proof path diverged.
 - Regression: `tests/brain-human-commercial-message-os-v1.test.mjs`.
 - Runtime proof: human message health and technique-performance views.
+
+- Canonical delivery lane: `backend`; immutable base: `aa863705e1fbe2d843aa3dfce146ff74011f25ee`.
