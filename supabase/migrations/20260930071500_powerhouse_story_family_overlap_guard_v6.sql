@@ -284,7 +284,7 @@ begin
     'best_historical_match',v_best_key
   );
 end;
-$;
+$$;
 
 REVOKE EXECUTE ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric,text) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric,text) TO service_role;
