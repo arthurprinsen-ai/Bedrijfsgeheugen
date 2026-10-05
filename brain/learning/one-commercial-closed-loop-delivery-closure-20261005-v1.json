@@ -1,0 +1,37 @@
+{
+  "fingerprint": "one-commercial-closed-loop-delivery-closure-20261005-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "A production/runtime commercial-loop migration could be functionally correct while the canonical delivery gate remained nonterminal because repository closure evidence was absent.",
+  "root_cause": "The material R4 Supabase change was committed without the three repository closure surfaces required by the Integration Bundle: brain learning, development ledger evidence, and human-readable change documentation.",
+  "prevention": [
+    "Every material Supabase/brain-runtime delivery must include repository closure evidence in the same candidate before terminal merge evaluation.",
+    "Exact-HEAD evaluation is authoritative; successful sibling workflows never override an incomplete Integration Bundle.",
+    "Writer lease metadata must be rebound to the final exact HEAD after closure artifacts are added.",
+    "A downstream test failure caused by preflight closure is not retried blindly; the missing closure evidence is added first.",
+    "Merge and production readback remain blocked until the complete exact-HEAD check-run set is terminally acceptable."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
+    "shadow": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
+    "canary": ["tests/brain-integration-bundle-compiler-v1.test.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-integration-bundle-compiler-v1.test.mjs",
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+  ],
+  "evidence": {
+    "pull_request": 3739,
+    "failed_gate": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
+    "required_closure_artifacts": ["brain_learning", "activity_ledger", "human_documentation"],
+    "material_runtime_path": "supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql"
+  },
+  "skill_targets": ["continuity", "delivery", "brain-runtime", "supabase-security"],
+  "compiler": {
+    "failure_class": "DELIVERY_CLOSURE_EVIDENCE_MISSING",
+    "scope": "ONE_COMMERCIAL_CLOSED_LOOP_V2",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
