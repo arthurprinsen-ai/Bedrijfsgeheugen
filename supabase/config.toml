@@ -19,3 +19,9 @@ entrypoint = "./functions/bg-notion-sync/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-opdrachtenradar/index.ts"
+
+
+[functions.supabase-migration-repair-credential-bridge]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/supabase-migration-repair-credential-bridge/index.ts"
