@@ -20,6 +20,10 @@ Every terminal sales action now records explicit lifecycle lineage. This does **
 
 Historical repair is bounded with `FOR UPDATE SKIP LOCKED` so active production writers are not blocked.
 
+## Delivery closure
+
+A material Powerhouse candidate is not merge-ready unless the exact candidate scope also carries all mandatory writeback evidence: canonical Brain learning, an activity/development ledger event and human-readable change/learning documentation. The first exact head `5511a006c876593835c176d6502ee6306abf033a` correctly failed the Required test because that closure evidence was incomplete. This is treated as a fail-closed delivery invariant, not as a reason to weaken the gate.
+
 ## Regression prevention
 
 The invariant is enforced in both Whole Brain Canonical Loop and the canonical Required test. Runtime readback also exposes scheduler ownership, legacy alias drift, unaccounted terminal actions and open observed-outcome obligations.
@@ -33,4 +37,4 @@ Production readback after migration:
 - open observed-outcome obligations: 10
 - runtime regression gate: healthy
 
-Open outcome obligations remain intentionally visible until real evidence arrives.
+Open outcome obligations remain intentionally visible until real evidence arrives. Terminal green still requires the exact current head to pass every mandatory GitHub gate and subsequent production/readback evidence where applicable.
