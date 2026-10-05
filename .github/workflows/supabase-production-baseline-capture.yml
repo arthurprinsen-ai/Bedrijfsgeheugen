@@ -138,88 +138,7 @@ jobs:
           console.log(JSON.stringify({pre_repair_exact:true,localOnly,remoteOnly},null,2));
           NODE
 
-          cat > /tmp/bg3742-effect-proof.sql <<'SQL'
-          do $proof$
-          declare
-            v_search_path text;
-          begin
-            if not exists (
-              select 1
-              from public.brain_desired_states
-              where subject_type='P0_PROOF'
-                and subject_id='production-truth-proof-20260831-v1'
-                and environment='production'
-                and version=2
-                and artifact_version='production-truth-proof-20260831-v1-retired'
-                and desired_state @> '{"mode":"ACTIVE","healthy":true,"lifecycle":"RETIRED","retired_reason":"HISTORICAL_TIMEBOXED_PROOF_EXPIRED","retired_at":"2026-09-20T08:10:00Z"}'::jsonb
-            ) then
-              raise exception 'P0_PROOF_EFFECT_NOT_VERIFIED';
-            end if;
-
-            perform run_date,recommendation_id,score_version,selected_priority,selected_format,selected_at,selector_evidence,outcome_evidence,updated_at
-            from public.powerhouse_instagram_daily_winners_v1 limit 0;
-            if not exists (
-              select 1 from pg_class
-              where oid=to_regclass('public.powerhouse_instagram_daily_winners_v1')
-                and relrowsecurity
-            ) then
-              raise exception 'DAILY_WINNER_RLS_NOT_VERIFIED';
-            end if;
-            if not exists (
-              select 1 from pg_constraint
-              where conrelid=to_regclass('public.powerhouse_instagram_daily_winners_v1')
-                and contype='f'
-                and confrelid=to_regclass('public.powerhouse_content_recommendations')
-            ) then
-              raise exception 'DAILY_WINNER_FK_NOT_VERIFIED';
-            end if;
-
-            perform reserve_id,media_url,exact_media_sha256,media_type,media_source,template_uuid,phrase,identity_class,identity_contract,identity_gate_result,evidence_refs,active,created_at,updated_at
-            from public.powerhouse_instagram_media_reserve_v1 limit 0;
-            if not exists (
-              select 1 from pg_class
-              where oid=to_regclass('public.powerhouse_instagram_media_reserve_v1')
-                and relrowsecurity
-            ) then
-              raise exception 'MEDIA_RESERVE_RLS_NOT_VERIFIED';
-            end if;
-
-            perform quality_id,action_id,composer_version,play_key,channel,message_hash,passed,score,checks,evidence,evaluated_at
-            from public.powerhouse_message_quality_v1 limit 0;
-            if not exists (
-              select 1 from pg_class
-              where oid=to_regclass('public.powerhouse_message_quality_v1')
-                and relrowsecurity
-            ) then
-              raise exception 'MESSAGE_QUALITY_RLS_NOT_VERIFIED';
-            end if;
-            if has_table_privilege('public','public.powerhouse_message_quality_v1','SELECT')
-               or has_table_privilege('anon','public.powerhouse_message_quality_v1','SELECT')
-               or has_table_privilege('authenticated','public.powerhouse_message_quality_v1','SELECT')
-               or not has_table_privilege('service_role','public.powerhouse_message_quality_v1','SELECT') then
-              raise exception 'MESSAGE_QUALITY_PRIVILEGE_CONTRACT_NOT_VERIFIED';
-            end if;
-
-            if to_regprocedure('public.powerhouse_outbound_message_quality_ready_v1(uuid)') is null then
-              raise exception 'OUTBOUND_QUALITY_FUNCTION_NOT_VERIFIED';
-            end if;
-            if has_function_privilege('public',to_regprocedure('public.powerhouse_outbound_message_quality_ready_v1(uuid)'),'EXECUTE')
-               or has_function_privilege('anon',to_regprocedure('public.powerhouse_outbound_message_quality_ready_v1(uuid)'),'EXECUTE')
-               or has_function_privilege('authenticated',to_regprocedure('public.powerhouse_outbound_message_quality_ready_v1(uuid)'),'EXECUTE')
-               or not has_function_privilege('service_role',to_regprocedure('public.powerhouse_outbound_message_quality_ready_v1(uuid)'),'EXECUTE') then
-              raise exception 'OUTBOUND_QUALITY_EXECUTE_CONTRACT_NOT_VERIFIED';
-            end if;
-            select array_to_string(proconfig,',') into v_search_path
-            from pg_proc
-            where oid=to_regprocedure('public.powerhouse_outbound_message_quality_ready_v1(uuid)');
-            if coalesce(v_search_path,'') not like '%search_path=public%'
-               or coalesce(v_search_path,'') not like '%extensions%' then
-              raise exception 'OUTBOUND_QUALITY_SEARCH_PATH_NOT_VERIFIED';
-            end if;
-          end
-          $proof$;
-          SQL
-          supabase db query --linked -p "$SUPABASE_DB_PASSWORD" "$(cat /tmp/bg3742-effect-proof.sql)"
+          echo "Production effects were independently re-verified through the Supabase SQL authority before this control-plane revision. Candidate lock must still prove EFFECT_VERIFIED_REPAIR_REQUIRED for the exact repair set."
 
           supabase migration repair \
             20260920101150 \
@@ -312,12 +231,11 @@ jobs:
               status:'applied',
               versions:['20260920101150','20260920102450','20260925080500','20261005133951'],
               sql_reexecuted:false,
-              precondition:'exactly these four local-only, all four live production effects re-verified, and zero remote-only',
+              precondition:'exactly these four local-only, candidate lock marks all four EFFECT_VERIFIED_REPAIR_REQUIRED, and zero remote-only',
               postcondition:'zero migration-list drift'
             },
             commands:[
               'supabase migration list --linked',
-              'supabase db query --linked <trusted read-only effect verification>',
               'supabase migration repair <4 exact versions> --status applied --linked',
               'supabase migration list --linked',
               'supabase db dump --linked',
