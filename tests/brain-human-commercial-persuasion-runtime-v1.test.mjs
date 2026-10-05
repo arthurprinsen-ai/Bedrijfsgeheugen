@@ -15,6 +15,10 @@ test('canonical composer uses existing persuasion authority and quality gate',()
   assert.match(composer,/canonical_persuasion/);
 });
 
+test('canonical number normalization removes every percent sign',()=>{
+  assert.match(composer,/replace\(\/\%\/g,' '\)|replace\(\/\%\/g,''\)/);
+});
+
 test('compat composer delegates to canonical composer',()=>{
   assert.match(compat,/powerhouse-commercial-message-composer/);
   assert.match(compat,/quality_passed/);
