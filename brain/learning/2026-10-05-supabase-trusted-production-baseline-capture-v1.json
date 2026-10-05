@@ -28,13 +28,14 @@
       "tests/brain-supabase-production-baseline-capture-v1.test.mjs"
     ]
   },
-  "root_cause": "Migration-history parity had three replay-baseline files whose production effects were already verified, but their versions were absent from the remote migration ledger. Re-executing their SQL would be unsafe, direct writes to supabase_migrations are forbidden, and PR-controlled code must not receive production credentials.",
+  "root_cause": "Migration-history parity had four replay-baseline files whose production effects were already verified, but their versions were absent from the remote migration ledger. Re-executing their SQL would be unsafe, direct writes to supabase_migrations are forbidden, and PR-controlled code must not receive production credentials.",
   "prevention": [
     "Perform migration-history reconciliation only from trusted default-branch workflow code.",
-    "Require the pre-repair drift set to equal exactly 20260920101150, 20260920102450 and 20260925080500 with zero remote-only migrations.",
+    "Require the pre-repair drift set to equal exactly 20260920101150, 20260920102450, 20260925080500 and 20261005133951 with zero remote-only migrations.",
     "Use only the supported Supabase CLI migration repair status-applied operation so no migration SQL is re-executed.",
     "Require post-repair migration list drift to be zero before capturing or writing baseline evidence.",
-    "Advance the recovery lock to REPAIRED_APPLIED_VERIFIED only after official migration-history readback and exact-head lease checks."
+    "Advance the recovery lock to REPAIRED_APPLIED_VERIFIED only after official migration-history readback and exact-head lease checks.",
+    "Re-verify all reviewed replay-baseline effects with trusted read-only production-effect probes before migration repair; never execute candidate-supplied SQL against production."
   ],
   "evidence": {
     "canonical_recovery_pr": 3766,
@@ -42,7 +43,8 @@
     "exact_repair_versions": [
       "20260920101150",
       "20260920102450",
-      "20260925080500"
+      "20260925080500",
+      "20261005133951"
     ],
     "production_effects_verified": true,
     "supported_repair_command": "supabase migration repair <versions> --status applied",
