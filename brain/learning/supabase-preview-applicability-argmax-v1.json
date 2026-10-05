@@ -9,5 +9,16 @@
     "Do not pass unbounded API payloads through environment variables or argv.",
     "Keep provider proof fail-closed: exact Supabase app, exact check name, success only."
   ],
-  "scope": ".github/workflows/supabase-preview-applicability.yml"
+  "scope": ".github/workflows/supabase-preview-applicability.yml",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-applicability-argmax-v1.test.mjs"
+    ]
+  }
 }
