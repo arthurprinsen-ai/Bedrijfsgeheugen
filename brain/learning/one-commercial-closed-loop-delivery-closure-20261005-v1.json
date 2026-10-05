@@ -17,7 +17,6 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-integration-bundle-compiler-v1.test.mjs",
-      "tests/supabase-powerhouse-commercial-closed-loop.test.mjs",
       "tests/brain-terminal-provider-durable-evidence.test.mjs"
     ],
     "shadow": [
@@ -32,7 +31,6 @@
   "test_evidence": [
     "tests/brain-integration-bundle-compiler-v1.test.mjs",
     "tests/brain-adaptive-delivery-engine-v1.test.mjs",
-    "tests/supabase-powerhouse-commercial-closed-loop.test.mjs",
     "tests/brain-terminal-provider-durable-evidence.test.mjs"
   ],
   "evidence": {
@@ -41,11 +39,21 @@
     "provider_semantic_failure": "CONCRETE_POST_CONTEXT_REQUIRED",
     "provider_transport_status": 200,
     "provider_acknowledgement": 0,
-    "required_closure_artifacts": ["brain_learning", "activity_ledger", "human_documentation"],
+    "required_closure_artifacts": [
+      "brain_learning",
+      "activity_ledger",
+      "human_documentation"
+    ],
     "material_runtime_path": "supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql",
     "external_execution_state": "NOT_CLAIMED_TERMINAL"
   },
-  "skill_targets": ["continuity", "delivery", "brain-runtime", "supabase-security", "commercial-execution"],
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "brain-runtime",
+    "supabase-security",
+    "commercial-execution"
+  ],
   "compiler": {
     "failure_class": "DELIVERY_AND_PROVIDER_TERMINAL_TRUTH_GAP",
     "scope": "ONE_COMMERCIAL_CLOSED_LOOP_V2",
