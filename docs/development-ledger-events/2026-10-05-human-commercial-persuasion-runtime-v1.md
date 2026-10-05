@@ -10,3 +10,5 @@
 - Revenue remains 0 until a real won/revenue outcome is recorded; this is not treated as a technical success signal.
 
 - Lineage closure: PR #3727 is already merged into main; PR #3729 is a distinct follow-up obligation and does not supersede the merged delivery.
+
+- v2 hardening: live composer v18, autonomous outreach v16 and LinkedIn sales machine v13 synchronized to source control; executors now pin the current composer-v2 proof and source-specific personalization gate.
