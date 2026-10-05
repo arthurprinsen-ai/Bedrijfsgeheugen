@@ -20,5 +20,11 @@
     "historical_replay": [
       "tests/brain-supabase-preview-applicability-argmax-v1.test.mjs"
     ]
-  }
+  },
+  "fingerprint": "powerhouse-supabase-preview-applicability-argmax-v1",
+  "evidence": [
+    ".github/workflows/supabase-preview-applicability.yml",
+    "tests/brain-supabase-preview-applicability-argmax-v1.test.mjs",
+    "PR #3766 Supabase Preview Applicability run failed with /usr/local/bin/node: Argument list too long while provider-owned Supabase Preview succeeded"
+  ]
 }
