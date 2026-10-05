@@ -53,7 +53,18 @@ async function getVisibleMobileLanguageControl(page, locale) {
   throw new Error('visible mobile language control is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
 }
 
+async function dismissCookieOverlay(page) {
+  const dialog = page.locator('#bgCookie').first();
+  if (!await dialog.count()) return;
+  if (!await dialog.isVisible().catch(()=>false)) return;
+  const deny = page.locator('#bgCookieDeny').first();
+  if (!await deny.count()) throw new Error('visible cookie dialog is missing #bgCookieDeny');
+  await deny.click();
+  await dialog.waitFor({ state:'hidden', timeout:10_000 });
+}
+
 async function switchPublicLocale(page, locale, expectedPath) {
+  await dismissCookieOverlay(page);
   const control = await getVisibleMobileLanguageControl(page, locale);
 
   if (control.kind === 'link') {

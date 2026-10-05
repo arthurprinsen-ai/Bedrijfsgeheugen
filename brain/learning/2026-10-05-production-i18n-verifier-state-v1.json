@@ -10,7 +10,8 @@
     "treat URL state plus html lang as the user-visible locale contract",
     "support link and select language controls",
     "retain translated-content assertions after the state transition",
-    "do not weaken live production assertions or bypass locale routing"
+    "do not weaken live production assertions or bypass locale routing",
+    "dismiss the canonical cookie dialog through its visible deny control before exercising language navigation in production browser proof"
   ],
   "id": "production-i18n-verifier-state-20261005-v1",
   "date": "2026-10-05",
@@ -22,7 +23,10 @@
     "production_sha": "1cc8807b7afa1f69d72287d26bcedeba92d786e3",
     "production_deploy": "6ac3756b265f4f0008ad8f8b",
     "verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
-    "regression": "tests/brain-production-i18n-verifier-state-v1.test.mjs"
+    "regression": "tests/brain-production-i18n-verifier-state-v1.test.mjs",
+    "cookie_overlay_selector": "#bgCookie",
+    "cookie_deny_selector": "#bgCookieDeny",
+    "production_failure": "cookie dialog intercepted pointer events on the visible English language link"
   },
   "compiler": {
     "failure_class": "BROWSER_VERIFIER_NAVIGATION_EVENT_COUPLING",
