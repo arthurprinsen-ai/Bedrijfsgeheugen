@@ -28,7 +28,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-github-event-context.test.mjs"
+      "tests/brain-workflow-dispatch-pr-identity-v1.test.mjs"
     ]
   }
 }
