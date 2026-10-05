@@ -47,9 +47,9 @@ jobs:
               "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
               -o "$payload_file"
 
-            state="$(node --input-type=module "$payload_file" <<'NODE'
+            state="$(node --input-type=module - "$payload_file" <<'NODE'
           import fs from 'node:fs';
-          const payload=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));
+          const payload=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
           const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
           const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
           if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
