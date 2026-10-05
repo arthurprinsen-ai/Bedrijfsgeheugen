@@ -23,3 +23,7 @@ A PR being mergeable is not sufficient evidence. Merge is allowed only after the
 ## Regression prevention
 
 Future material Supabase or brain-runtime candidates that omit any required closure surface fail before release lanes can be treated as green. Provider HTTP success without semantic acknowledgement likewise remains fail-closed.
+## Required-check trigger parity
+
+Branch protection requires `CodeQL javascript-typescript`. The Powerhouse CodeQL workflow therefore runs on every pull request, even when the candidate changes only SQL or documentation. Pushes to main retain the JS/TS path filter. This prevents a required check from becoming permanently absent on non-JavaScript PRs.
+
