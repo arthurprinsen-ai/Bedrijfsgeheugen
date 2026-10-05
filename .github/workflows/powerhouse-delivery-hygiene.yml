@@ -77,9 +77,10 @@ jobs:
           import { validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage } from './tools/delivery/github-delivery-state-machine.mjs';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
 
-          const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8'}).trim();
+          const LOCAL_COMMAND_MAX_BUFFER = 64 * 1024 * 1024;
+          const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8',maxBuffer:LOCAL_COMMAND_MAX_BUFFER}).trim();
           const transientApiFailure = error => /HTTP\s+(?:502|503|504)\b|upstream connect error|connection (?:refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up/i.test(`${error?.message || ''}\n${error?.stderr || ''}\n${error?.stdout || ''}`);
-          const GH_MAX_BUFFER = 64 * 1024 * 1024;
+          const GH_MAX_BUFFER = LOCAL_COMMAND_MAX_BUFFER;
           const gh = async path => {
             const delays = [250, 500, 1000];
             for (let attempt = 0; attempt <= delays.length; attempt += 1) {

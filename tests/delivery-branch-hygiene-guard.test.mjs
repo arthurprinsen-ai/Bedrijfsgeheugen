@@ -52,3 +52,39 @@ test('herkenning van verificatie-artefacten', () => {
   assert.equal(isVerificationArtifact('.github/workflows/lane-website.yml'), false);
   assert.equal(isVerificationArtifact('tools/bouw-v18-views.mjs'), false);
 });
+
+
+test('gecontroleerde Supabase recovery mag boven de harde cap zonder gewone PR-cap te verzwakken', () => {
+  const metadata = parseScopeMetadata([
+    'Obligation-ID: supabase-parity-recovery',
+    'Delivery-Lane: backend',
+    'Candidate-Type: recovery',
+    'Base-SHA: 0123456789abcdef0123456789abcdef01234567',
+    'Supersedes: none',
+    'Change-Scope: supabase/migrations/**, docs/changes/recovery.md',
+    'Scope-Budget: 61',
+  ].join('\n'));
+  const changedPaths = [
+    ...Array.from({ length: 60 }, (_, i) => `supabase/migrations/20261005${String(i).padStart(6, '0')}_recovered.sql`),
+    'docs/changes/recovery.md',
+    'tests/recovery.test.mjs',
+  ];
+  const result = evaluateBranchHygiene({ changedPaths, metadata });
+  assert.equal(result.ok, true);
+  assert.equal(result.state, 'SCOPE_CLEAN_BULK_RECOVERY');
+  assert.equal(result.bulkRecoveryApproved, true);
+});
+
+test('bulk recovery uitzondering geldt niet zonder recovery-identiteit en Supabase migration scope', () => {
+  const changedPaths = Array.from({ length: 45 }, (_, i) => `tools/file-${i}.mjs`);
+  const result = evaluateBranchHygiene({
+    changedPaths,
+    metadata: {
+      expectedPaths: ['tools/**'],
+      maxFiles: 45,
+      delivery: { candidateType: 'implementation' },
+    },
+  });
+  assert.equal(result.ok, false);
+  assert.equal(result.state, 'HARD_SCOPE_LIMIT_EXCEEDED');
+});

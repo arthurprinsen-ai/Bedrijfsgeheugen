@@ -92,7 +92,8 @@ jobs:
           PR_BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha }}
           PR_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
-          PR_BODY: ${{ inputs.pr_body || github.event.pull_request.body }}
+          PR_BODY_INPUT: ${{ inputs.pr_body || '' }}
+          GH_TOKEN: ${{ github.token }}
           PR_LABELS_JSON: ${{ inputs.pr_labels_json || toJson(github.event.pull_request.labels.*.name) }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
           MERGE_GROUP_HEAD_SHA: ${{ github.event.merge_group.head_sha }}
@@ -112,7 +113,7 @@ jobs:
             runId: process.env.RUN_ID,
             fallbackBaseSha,
             event: {
-              pull_request: process.env.EVENT_NAME === 'pull_request' ? {
+              pull_request: process.env.PR_NUMBER ? {
                 number: process.env.PR_NUMBER,
                 base: { sha: process.env.PR_BASE_SHA },
                 head: { sha: process.env.PR_HEAD_SHA },
@@ -123,9 +124,12 @@ jobs:
               } : undefined,
             },
           });
+          const livePrBody = process.env.PR_BODY_INPUT || (context.prNumber
+            ? JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${context.prNumber}`],{encoding:'utf8'})).body || ''
+            : '');
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
           const metadataAuthority=resolveDeliveryMetadataAuthority({
-            prBody: process.env.PR_BODY || '',
+            prBody: livePrBody,
             manifest: oneLoopPolicy.deliveryCandidate,
           });
           const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
@@ -136,7 +140,7 @@ jobs:
           }
           const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
-          const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles};
+          const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
           const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/'];
           const netlifyBuildExact=new Set(['netlify.toml','_redirects','_headers','index.html','klantportaal.html','package.json','package-lock.json']);
           const netlifyBuildRequired=changedPaths.some(path=>netlifyBuildExact.has(path)||netlifyBuildPrefixes.some(prefix=>path.startsWith(prefix)));

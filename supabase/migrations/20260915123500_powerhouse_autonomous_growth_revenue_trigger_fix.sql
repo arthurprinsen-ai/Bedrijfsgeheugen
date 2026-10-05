@@ -59,7 +59,7 @@ begin
 
   v_after := regexp_replace(
     v_before,
-    'perform[[:space:]]+public\.powerhouse_sync_forecast_calibration_obligation\(\);',
+    'perform[[:space:]]+public[.]powerhouse_sync_forecast_calibration_obligation[[:space:]]*[(][[:space:]]*[)][[:space:]]*;?',
     'perform public.powerhouse_refresh_forecast_calibration_obligations();',
     'i'
   );

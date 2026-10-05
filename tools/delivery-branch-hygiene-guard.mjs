@@ -46,9 +46,17 @@ export function evaluateBranchHygiene({ changedPaths = [], metadata = {}, labels
   const broadApproved = labelSet.has('scope-broad-approved');
   const expectedPaths = Array.isArray(metadata.expectedPaths) ? metadata.expectedPaths.map(normalizePath).filter(Boolean) : [];
   const maxFiles = Number.isInteger(metadata.maxFiles) && metadata.maxFiles > 0 ? metadata.maxFiles : null;
+  const candidateType = String(metadata?.delivery?.candidateType || '').trim().toLowerCase();
 
   const verificationPaths = paths.filter(isVerificationArtifact);
   const deliveryPaths = paths.filter(path => !isVerificationArtifact(path));
+  const migrationPaths = deliveryPaths.filter(path => path.startsWith('supabase/migrations/'));
+  const bulkRecoveryApproved = candidateType === 'recovery'
+    && expectedPaths.includes('supabase/migrations/**')
+    && maxFiles !== null
+    && deliveryPaths.length <= maxFiles
+    && migrationPaths.length > hardMaxFiles
+    && (deliveryPaths.length - migrationPaths.length) <= hardMaxFiles;
 
   const unexpectedPaths = expectedPaths.length
     ? deliveryPaths.filter(path => !expectedPaths.some(pattern => globMatches(path, pattern)))
@@ -75,7 +83,7 @@ export function evaluateBranchHygiene({ changedPaths = [], metadata = {}, labels
     });
   }
 
-  if (!broadApproved && paths.length > hardMaxFiles) {
+  if (!broadApproved && paths.length > hardMaxFiles && !bulkRecoveryApproved) {
     return Object.freeze({
       ok: false,
       state: 'HARD_SCOPE_LIMIT_EXCEEDED',
@@ -88,8 +96,9 @@ export function evaluateBranchHygiene({ changedPaths = [], metadata = {}, labels
 
   return Object.freeze({
     ok: true,
-    state: 'SCOPE_CLEAN',
+    state: bulkRecoveryApproved ? 'SCOPE_CLEAN_BULK_RECOVERY' : 'SCOPE_CLEAN',
     changedFileCount: deliveryPaths.length,
+    bulkRecoveryApproved,
     unexpectedPaths: [],
     verificationPaths,
   });

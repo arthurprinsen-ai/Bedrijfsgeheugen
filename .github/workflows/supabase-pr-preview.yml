@@ -59,17 +59,21 @@ jobs:
 
           versions = {}
           malformed = []
+          empty_or_whitespace = []
           for path in sorted((root / 'migrations').glob('*.sql')):
               match = re.match(r'^(\d{14})_(.+)\.sql$', path.name)
               if not match:
                   malformed.append(path.name)
                   continue
+              if not path.read_text(encoding='utf-8').strip():
+                  empty_or_whitespace.append(path.name)
               versions.setdefault(match.group(1), []).append(path.name)
 
           duplicates = {version: names for version, names in versions.items() if len(names) > 1}
           assert not malformed, f'malformed migration filenames: {malformed}'
           assert not duplicates, f'duplicate migration versions: {duplicates}'
-          print(f'Validated config plus {len(versions)} uniquely-versioned migration files.')
+          assert not empty_or_whitespace, f'empty or whitespace-only migration SQL is forbidden: {empty_or_whitespace}'
+          print(f'Validated config plus {len(versions)} uniquely-versioned, non-empty migration files.')
           PY
 
           python scripts/brain/check_powerhouse_supabase_security.py --self-test

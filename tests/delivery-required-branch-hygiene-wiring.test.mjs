@@ -16,7 +16,10 @@ test('Required preflight enforces exact-head versioned branch hygiene before lan
   assert.match(workflow, /powerhouse-one-loop-v1\.json/);
   assert.match(workflow, /github\.event\.pull_request\.head\.sha \|\| github\.sha/);
   assert.match(workflow, /evaluateBranchHygiene/);
-  assert.match(workflow, /PR_BODY:/);
+  assert.match(workflow, /PR_BODY_INPUT:/);
+  assert.match(workflow, /GH_TOKEN:/);
+  assert.match(workflow, /repos\/\$\{process\.env\.GITHUB_REPOSITORY\}\/pulls\/\$\{context\.prNumber\}/);
+  assert.match(workflow, /prBody:\s*livePrBody/);
   assert.match(workflow, /PR_LABELS_JSON:/);
   assert.match(workflow, /VERSIONED_BASE_SHA_MISMATCH/);
   assert.match(workflow, /if\s*\(!hygiene\.ok\)\s*throw new Error/);
