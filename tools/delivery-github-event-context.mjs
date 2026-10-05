@@ -47,12 +47,14 @@ export function normalizeGitHubDeliveryEvent({
     prNumber = safeRunId;
     changeId = `merge-group-${String(candidateSha || '').slice(0, 12)}`;
   } else if (eventName === 'workflow_dispatch') {
+    const dispatchPr = event.pull_request || {};
+    const explicitPrNumber = String(dispatchPr.number || '').trim();
     mode = 'workflow_dispatch';
-    baseSha = fallbackBaseSha;
-    changeHeadSha = githubSha;
+    baseSha = dispatchPr.base?.sha || fallbackBaseSha;
+    changeHeadSha = dispatchPr.head?.sha || githubSha;
     candidateSha = githubSha;
-    prNumber = safeRunId;
-    changeId = `dispatch-${safeRunId}`;
+    prNumber = explicitPrNumber || null;
+    changeId = explicitPrNumber ? `dispatch-pr-${explicitPrNumber}` : `dispatch-${safeRunId}`;
   } else {
     throw new Error(`unsupported GitHub delivery event: ${eventName || 'unknown'}`);
   }
