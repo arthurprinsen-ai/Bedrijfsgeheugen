@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const migration = await readFile(
-  'supabase/migrations/20260916154700_autonomous_improvement_recovery_proof_hardening_v1.sql',
+  'supabase/migrations/20260916144312_autonomous_improvement_recovery_proof_hardening_v1.sql',
   'utf8'
 );
 

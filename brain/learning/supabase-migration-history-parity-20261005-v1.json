@@ -1,0 +1,36 @@
+{
+  "id": "supabase-migration-history-parity-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "post-merge-readback-pr-3740",
+  "fingerprint": "powerhouse|supabase-migration-history|remote-repo-parity|required|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Production contained Supabase migration versions that were not represented by SQL files in the canonical GitHub migration directory, so the Supabase Preview integration failed after merge with remote migration versions not found locally.",
+  "prevention": [
+    "Require the Supabase Preview check on protected main in addition to Required test and CodeQL.",
+    "Treat any remote-only Supabase migration version as a release-blocking repository parity failure.",
+    "Recover missing migration files from supabase_migrations.schema_migrations statements rather than creating placeholders.",
+    "Keep production runtime readback and repository migration-history readback in the same terminal delivery lineage."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-history-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 3740,
+    "recovered_remote_only_versions": 297,
+    "remote_only_after_recovery": 0,
+    "required_merge_check": "Supabase Preview",
+    "initial_recovery_commit": "fcef1fe7ea65ff65e88f25a367df9034e73e4daa",
+    "latest_mirrored_remote_version": "20261005144606"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 2
+}
