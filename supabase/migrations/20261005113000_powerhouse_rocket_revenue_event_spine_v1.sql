@@ -70,7 +70,7 @@ create policy powerhouse_identity_graph_service_v1 on public.powerhouse_identity
 for all to service_role using(true) with check(true);
 
 create or replace function public.powerhouse_sync_identity_graph_v1()
-returns jsonb language plpgsql security definer set search_path=pg_catalog,public as $$
+returns jsonb language plpgsql security definer set search_path = pg_catalog, public as $$
 declare v_contacts int:=0; v_opps int:=0; v_events int:=0; v_now timestamptz:=now();
 begin
   with raw as (
@@ -265,7 +265,7 @@ create policy powerhouse_revenue_attribution_snapshot_service_v1 on public.power
 for all to service_role using(true) with check(true);
 
 create or replace function public.powerhouse_refresh_revenue_attribution_snapshot_v1()
-returns jsonb language plpgsql security definer set search_path=pg_catalog,public as $$
+returns jsonb language plpgsql security definer set search_path = pg_catalog, public as $$
 declare v_rows int:=0; v_now timestamptz:=now();
 begin
  truncate table public.powerhouse_revenue_attribution_snapshot_v1;
@@ -313,7 +313,7 @@ revoke all on public.powerhouse_revenue_event_spine_health_v1 from public,anon,a
 grant select on public.powerhouse_revenue_event_spine_health_v1 to service_role;
 
 create or replace function public.powerhouse_revenue_event_spine_cycle_v1(p_run_date date default(now() at time zone 'Europe/Amsterdam')::date)
-returns jsonb language plpgsql security definer set search_path=pg_catalog,public as $$
+returns jsonb language plpgsql security definer set search_path = pg_catalog, public as $$
 declare v_identity jsonb;v_attribution jsonb;v_health jsonb;v_result jsonb;
 begin
  v_identity:=public.powerhouse_sync_identity_graph_v1();
