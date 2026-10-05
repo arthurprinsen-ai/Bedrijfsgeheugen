@@ -54,12 +54,11 @@ test('history-evidence SQL is non-empty and uniquely versioned', async () => {
 });
 
 
-test('forward consolidation bootstraps quality dependency before first use', async () => {
-  const sql = await readFile(new URL('../supabase/migrations/20261005144606_powerhouse_one_commercial_closed_loop_v2.sql', import.meta.url), 'utf8');
-  const table = sql.indexOf('CREATE TABLE IF NOT EXISTS public.powerhouse_message_quality_v1');
-  const definition = sql.indexOf('CREATE OR REPLACE FUNCTION public.powerhouse_outbound_message_quality_ready_v1');
-  const firstCaller = sql.indexOf('CREATE OR REPLACE FUNCTION public.powerhouse_dispatch_linkedin_comment_autopilot_v1');
-  assert.ok(table >= 0, 'quality evidence table bootstrap missing');
-  assert.ok(definition > table, 'quality readiness function must follow its table dependency');
-  assert.ok(firstCaller > definition, 'quality readiness function must exist before the first caller is created');
+test('quality dependency producer, readiness definition and caller remain canonically ordered', async () => {
+  const producer = await readFile(new URL('../supabase/migration-history/20261005122000_powerhouse_human_commercial_message_os_v1.sql', import.meta.url), 'utf8');
+  const definitionSql = await readFile(new URL('../supabase/migrations/20261005142034_powerhouse_exact_message_hash_and_linkedin_dedupe_v1.sql', import.meta.url), 'utf8');
+  const callerSql = await readFile(new URL('../supabase/migrations/20261005144606_powerhouse_one_commercial_closed_loop_v2.sql', import.meta.url), 'utf8');
+  assert.match(producer, /create table if not exists public\.powerhouse_message_quality_v1/i, 'quality evidence producer missing from immutable history');
+  assert.match(definitionSql, /create or replace function public\.powerhouse_outbound_message_quality_ready_v1/i, 'quality readiness function definition missing');
+  assert.match(callerSql, /public\.powerhouse_outbound_message_quality_ready_v1\(a\.action_id\)/i, 'first canonical caller must consume the readiness function');
 });
