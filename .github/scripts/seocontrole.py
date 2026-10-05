@@ -27,7 +27,7 @@ CLUSTERS = {
         '/afmaakindex', '/frisse-blik', '/systemen-koppelen', '/due-diligence',
         '/ai-adoptie', '/begrippen'],
     '/blog/systemen-koppelen-mkb/': [
-        '/blog/afas-exact-koppelen/', '/blog/afas-koppeling/',
+        '/blog/afas-exact-koppelen/',
         '/blog/wat-kost-een-afas-koppeling/', '/blog/wat-kost-een-afas-partner/',
         '/blog/planning-in-excel-vervangen/', '/blog/offertes-opvolgen-zonder-crm/',
         '/connect', '/systemen-koppelen'],
@@ -150,7 +150,7 @@ GEEN_BALK = {'klantportaal', 'klantportaal-demo', 'index-oud', 'index', 'prototy
 
 MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
-GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact'}
+GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact', 'cms'}
 SLECHTE_ANKERS = {'lees meer', 'klik hier', 'meer info', 'hier', 'lees verder', 'meer'}
 
 
