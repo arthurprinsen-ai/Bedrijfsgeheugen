@@ -19,3 +19,6 @@ Terminal delivery may only declare a candidate green/merge-ready from the comple
 The gate is fail-closed for pending or failed checks and for neutral security checks (including GitHub Advanced Security / CodeQL). Informational neutral checks from non-security providers may remain terminal evidence. This prevents a normal workflow CodeQL run from masking a separate Advanced Security check.
 
 The post-merge obligation terminalizer independently re-reads the complete check-run set and legacy statuses for the original exact candidate SHA before it may materialize `LIVE_BEWEZEN`. This prevents a manual or alternate merge path from bypassing the same security/checkset invariant. Pending checks are retried within a bounded window; hard failures fail closed.
+
+
+Live PR metadata is re-read from GitHub during required preflight for pull-request runs. The webhook payload is not authoritative for mutable delivery metadata such as Change-Scope, Scope-Budget or labels. The preflight also binds that live metadata readback to the exact candidate head SHA and fails closed if the PR head moved before classification. The same canonical body is then reused by the integration bundle compiler, preventing a stale event snapshot from producing a false scope-contamination or false-green result.
