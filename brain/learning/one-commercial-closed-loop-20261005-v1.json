@@ -30,5 +30,20 @@
     "runtime_contract": "powerhouse-one-commercial-closed-loop-v2"
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
+    ]
+  }
 }
