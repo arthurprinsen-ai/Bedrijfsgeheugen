@@ -10,6 +10,9 @@ test('trusted Supabase baseline capture remains default-branch only and read-onl
   assert.doesNotMatch(workflow, /pull_request:/);
   assert.match(workflow, /supabase db dump --linked/);
   assert.match(workflow, /supabase migration list --linked/);
+  assert.match(workflow, /supabase migration repair --linked --status applied/);
+  assert.match(workflow, /EFFECT_VERIFIED_REPAIR_REQUIRED/);
+  assert.match(workflow, /REPAIRED_APPLIED_VERIFIED/);
   assert.doesNotMatch(workflow, /pg_catalog/i);
   assert.doesNotMatch(workflow, /information_schema/i);
     assert.match(workflow, /hand_built_catalog_dump:false/);
