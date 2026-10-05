@@ -8,3 +8,5 @@
 - No duplicate CRM, action engine or persuasion authority introduced.
 - Production proof: strategy 17/17, persuasion 17/17, quality-passed drafts 15, executed actions 31/30d, observed outcomes 24/30d, provider acknowledgements 14/30d.
 - Revenue remains 0 until a real won/revenue outcome is recorded; this is not treated as a technical success signal.
+
+- Supersession closure: PR #3727 is closed; PR #3729 is the single canonical candidate for this obligation.
