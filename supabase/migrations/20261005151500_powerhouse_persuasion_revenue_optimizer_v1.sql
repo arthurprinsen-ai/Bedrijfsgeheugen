@@ -100,5 +100,5 @@ begin
 end;
 $function$;
 
-revoke all on function public.powerhouse_persuasion_revenue_optimizer_v1(text,text,text,text) from public,anon,authenticated;
+revoke execute on function public.powerhouse_persuasion_revenue_optimizer_v1(text,text,text,text) from public, anon, authenticated;
 grant execute on function public.powerhouse_persuasion_revenue_optimizer_v1(text,text,text,text) to service_role;
