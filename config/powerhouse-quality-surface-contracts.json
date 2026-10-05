@@ -180,7 +180,7 @@
       "id": "function:powerhouse-revenue-intelligence",
       "type": "function",
       "authority": "supabase/functions/powerhouse-revenue-intelligence/index.ts",
-      "evidence_contract": "tests/powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
@@ -432,21 +432,21 @@
       "id": "permission:powerhouse_identity_graph_service_v1",
       "type": "permission",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
-      "evidence_contract": "tests/powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
       "id": "permission:powerhouse_revenue_attribution_snapshot_service_v1",
       "type": "permission",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
-      "evidence_contract": "tests/powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
       "id": "permission:powerhouse_revenue_event_types_service_v1",
       "type": "permission",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
-      "evidence_contract": "tests/powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
@@ -936,7 +936,7 @@
       "id": "table:public.powerhouse_identity_graph_v1",
       "type": "table",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
-      "evidence_contract": "tests/powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
@@ -1090,14 +1090,14 @@
       "id": "table:public.powerhouse_revenue_attribution_snapshot_v1",
       "type": "table",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
-      "evidence_contract": "tests/powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
       "id": "table:public.powerhouse_revenue_event_types_v1",
       "type": "table",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
-      "evidence_contract": "tests/powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
