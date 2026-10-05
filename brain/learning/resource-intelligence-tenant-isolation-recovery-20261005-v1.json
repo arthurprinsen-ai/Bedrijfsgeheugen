@@ -1,0 +1,43 @@
+{
+  "id": "resource-intelligence-tenant-isolation-recovery-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "pr-3749-exact-head-backend-validation",
+  "fingerprint": "powerhouse|resource-intelligence|tenant-isolation|portal-schema-parity|required|v1",
+  "compiler": {
+    "failure_class": "RESOURCE_INTELLIGENCE_TENANT_ISOLATION_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Portal Resource Intelligence queries were tenant-scoped, but powerhouse_compliance_evidence_v1 and powerhouse_optimization_candidate_v1 did not carry tenant_id in the live database authority. Historical tests also referenced removed duplicate migration aliases instead of canonical production timestamps.",
+  "proven_fix": [
+    "Add a forward migration that introduces tenant_id on both Resource Intelligence authorities, backfills legacy rows to canonical, and adds tenant indexes.",
+    "Generate new optimization candidates only from exact single-tenant business-value authority or the observed resource tenant.",
+    "Bind regression tests to canonical production migration timestamps instead of stale duplicate aliases."
+  ],
+  "prevention": [
+    "Portal tenant filters and database tenant columns must evolve in the same delivery candidate.",
+    "A removed duplicate migration alias must never be reintroduced merely to satisfy a regression test; the test must bind to canonical authority unless the removed file owns unique functionality.",
+    "Material Supabase recovery changes require exact-head backend, security, closure evidence and production readback before terminal green."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-resource-intelligence-tenant-isolation-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-resource-intelligence-tenant-isolation-recovery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-resource-intelligence-tenant-isolation-recovery-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 3749,
+    "migration": "supabase/migrations/20261005160410_resource_intelligence_tenant_isolation_recovery_v1.sql",
+    "pre_fix_production_tenant_columns": 0
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
