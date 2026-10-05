@@ -1,0 +1,13 @@
+{
+  "contract": "POWERHOUSE-HISTORICAL-TERMINAL-RECONCILIATION-v1",
+  "entries": [
+    {
+      "pr_number": 3741,
+      "obligation_id": "supabase-migration-history-parity-20261005-v1",
+      "expected_merge_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
+      "supersedes_terminalizer_run_id": 37343578647,
+      "stale_readback_run_id": 37343578411,
+      "reason": "Legacy terminalizer hardcoded runtime/outcome proof and the old Production Release Readback remains in_progress after authority routing was corrected by PR #3758."
+    }
+  ]
+}

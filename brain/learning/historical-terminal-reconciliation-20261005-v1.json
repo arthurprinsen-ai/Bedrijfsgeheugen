@@ -1,0 +1,36 @@
+{
+  "id": "historical-terminal-reconciliation-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "post-merge-readback-pr-3741",
+  "fingerprint": "powerhouse|historical-terminal-reconciliation|current-authority|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A historical merged obligation retained two contradictory legacy signals: a stale Production Release Readback remained in_progress while the old terminalizer had already emitted fabricated positive runtime and outcome booleans.",
+  "prevention": [
+    "Reconcile historical terminal state with the current production-readback authority rather than trusting stale workflow state.",
+    "Pin reconciliation to exact PR number, obligation id and merge SHA.",
+    "Keep stale workflow runs and legacy terminal artifacts as historical evidence but mark them non-authoritative.",
+    "Never convert runtime-not-applicable into deploy, runtime-function or outcome proof.",
+    "Fail closed for historical runtime paths without a dedicated readback authority."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-historical-terminal-reconciliation-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 3741,
+    "source_merge_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
+    "legacy_terminalizer_run_id": 37343578647,
+    "stale_readback_run_id": 37343578411,
+    "forward_authority_pr": 3758
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
