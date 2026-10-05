@@ -5,14 +5,16 @@ import { readReleaseMarker } from './release-marker.mjs';
 const TRUST = ['Vaste prijs, geen uurtje-factuurtje', 'In twee weken draaiend', 'Voor het Nederlandse mkb'];
 const MOBILE = ['Oplossingen', 'Platform', 'Prijzen', 'Kennis', 'Over ons', 'Meer'];
 const CONTACT = ['mailto:arthur@bedrijfsgeheugen.nl', 'tel:+31627483345', 'ma–vr 08:00–18:00'];
-const PRICING = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'];
 
 function esc(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-function hasClassElement(html, cls) {
-  const re = new RegExp(`<[^>]+class=(?:"[^"]*\\b${esc(cls)}\\b[^"]*"|'[^']*\\b${esc(cls)}\\b[^']*')[^>]*>`, 'i');
+function hasAttrValue(html, attr, value) {
+  const re = new RegExp(`<[^>]+\\b${esc(attr)}=(?:"${esc(value)}"|'${esc(value)}')[^>]*>`, 'i');
   return re.test(String(html));
 }
-
+function hasId(html, id) {
+  const re = new RegExp(`<[^>]+\\bid=(?:"${esc(id)}"|'${esc(id)}')[^>]*>`, 'i');
+  return re.test(String(html));
+}
 function beforeFooter(html) {
   const i = String(html).search(/<footer\b/i);
   return i < 0 ? String(html) : String(html).slice(0, i);
@@ -25,22 +27,34 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
   for (const token of CONTACT) assert.ok(!beforeFooter(html).includes(token), `${path}: contactgegeven staat buiten footer: ${token}`);
 
   if (pricing) {
-    for (const cls of PRICING) assert.ok(hasClassElement(html, cls), `${path}: pricing-tool ontbreekt: ${cls}`);
-    assert.ok(!/id="bgkopMob"/i.test(html), `${path}: legacy pricing mobile menu staat live`);
-    assert.ok(!/class="[^"]*\bbgkop\b/i.test(html), `${path}: legacy pricing header staat live`);
-    assert.ok(html.includes('<h3>Build</h3>'), `${path}: canoniek Build-pakket ontbreekt live`);
-    assert.ok(html.includes('Wat moet het opleveren om zichzelf terug te verdienen?'), `${path}: waarde/terugverdienbewijs ontbreekt live`);
-    assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: legacy Transform-pakket staat live`);
-    assert.ok(!html.includes('2 maanden gratis'), `${path}: legacy jaar-korting staat live`);
-    assert.ok(!/class=["'][^"']*\bjr\b/i.test(html), `${path}: legacy verborgen jaarprijs staat live`);
-    assert.ok(html.includes('data-bg-billing="monthly"'), `${path}: maandtoggle ontbreekt live`);
-    assert.ok(html.includes('data-bg-billing="yearly"'), `${path}: jaartoggle ontbreekt live`);
-    assert.ok(html.includes('2 maanden voordeel'), `${path}: jaarvoordeel-label ontbreekt live`);
-    assert.ok(html.includes('data-yearly="€ 14.950"'), `${path}: Control jaarprijs ontbreekt live`);
-    assert.ok(html.includes('data-yearly="€ 24.950"'), `${path}: Scale jaarprijs ontbreekt live`);
-    assert.ok(html.includes('data-yearly="vanaf € 49.950"'), `${path}: Enterprise jaarprijs ontbreekt live`);
+    for (const [attr, value] of [
+      ['data-tab', 'saas'],
+      ['data-tab', 'consulting'],
+      ['data-panel', 'saas'],
+      ['data-panel', 'consulting'],
+    ]) {
+      assert.ok(hasAttrValue(html, attr, value), `${path}: canonieke pricing-tab/panel ontbreekt: ${attr}=${value}`);
+    }
+    for (const plan of ['Starter', 'Pro', 'Groei', 'Enterprise']) {
+      assert.ok(html.includes(`<h3>${plan}</h3>`), `${path}: canoniek SaaS-pakket ontbreekt live: ${plan}`);
+    }
+    for (const token of ['€ 99', '€ 299', '€ 749', 'Op maat']) {
+      assert.ok(html.includes(token), `${path}: canonieke SaaS-prijs ontbreekt live: ${token}`);
+    }
+    for (const service of ['Frisse Blik', 'Directie & AI Workshop', 'Bedrijfsgeheugen Scan', 'Build Sprint', 'Transformation / Fractional Lead']) {
+      assert.ok(html.includes(`<h3>${service}</h3>`), `${path}: canonieke consulting-propositie ontbreekt live: ${service}`);
+    }
+    for (const id of ['fitSize', 'fitGoal', 'fitMode', 'fitGo', 'fitResult']) {
+      assert.ok(hasId(html, id), `${path}: pricing-keuzehulp ontbreekt live: #${id}`);
+    }
+    assert.ok(!html.includes('data-bg-billing="monthly"'), `${path}: retired billing-toggle contract staat live`);
+    assert.ok(!html.includes('data-bg-billing="yearly"'), `${path}: retired billing-toggle contract staat live`);
+    assert.ok(!html.includes('<h3>Build</h3>'), `${path}: retired Build-pakket staat live`);
+    assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: retired Transform-pakket staat live`);
   } else {
-    for (const cls of PRICING) assert.ok(!hasClassElement(html, cls), `${path}: pricing-tool staat buiten prijzen: ${cls}`);
+    for (const value of ['saas', 'consulting']) {
+      assert.ok(!hasAttrValue(html, 'data-panel', value), `${path}: pricing-panel staat buiten prijzen: ${value}`);
+    }
   }
   verifyPageShell(html, path);
 }
