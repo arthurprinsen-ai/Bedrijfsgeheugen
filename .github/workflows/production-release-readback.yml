@@ -62,6 +62,11 @@ jobs:
             'platform/system-map/canonical-system-map.mjs',
             'tools/brain-delivery-system.mjs',
             'tools/site-shell/verify-targeted-website-routes.mjs',
+            'tools/site-shell/contracts.mjs',
+            'tools/site-shell/test-shell-components.mjs',
+            'tools/site-shell/live-contract.mjs',
+            'tools/site-shell/test-live-contract.mjs',
+            'brain/contracts/production-readback-v1.json',
           ]);
           const runtimeChangedPaths=changedPaths.filter(path =>
             !governanceOnlyExact.has(path) &&
@@ -78,7 +83,7 @@ jobs:
             'tests/brain-production-promotion-observability.test.mjs',
             'tools/site-shell/verify-production-release.mjs',
           ]);
-          const readbackControlPlaneOnly=changedPaths.length>0 && changedPaths.every(path => readbackControlPlanePaths.has(path));
+          const readbackControlPlaneOnly=changedPaths.length>0 && runtimeChangedPaths.length===0;
           const readbackWorkflowChanged=changedPaths.includes('.github/workflows/production-release-readback.yml');
           const manualReadback=process.env.EVENT_NAME === 'workflow_dispatch';
           const websiteRequired=readbackControlPlaneOnly ? false : suites.website === true;
