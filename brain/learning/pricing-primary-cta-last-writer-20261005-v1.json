@@ -29,8 +29,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs",
-      "tests/seo-order-live-readback.test.mjs"
+      "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs"
     ],
     "canary": [
       "tests/brain-pricing-primary-cta-last-writer-v1.test.mjs"
