@@ -107,31 +107,37 @@ do $$
 declare v_before text; v_after text;
 begin
   select pg_get_functiondef('public.powerhouse_autonomous_growth_revenue_cycle(date)'::regprocedure) into v_before;
-  v_after:=v_before;
-  v_after:=regexp_replace(v_after,
-    'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.72[[:space:]]+and[[:space:]]+e\.person_key[[:space:]]+is[[:space:]]+not[[:space:]]+null[[:space:]]+then[[:space:]]+''direct_personal_outreach''',
-    'when e.expected_value_eur>0 and e.buying_window>=0.72 and e.person_key is not null then ''direct_personal_outreach''','g');
-  v_after:=regexp_replace(v_after,
-    'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.58[[:space:]]+then[[:space:]]+''warm_account_activation''',
-    'when e.expected_value_eur>0 and e.buying_window>=0.58 then ''warm_account_activation''','g');
-  v_after:=regexp_replace(v_after,
-    'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.72[[:space:]]+and[[:space:]]+e\.person_key[[:space:]]+is[[:space:]]+not[[:space:]]+null[[:space:]]+then[[:space:]]+''linkedin''',
-    'when e.expected_value_eur>0 and e.buying_window>=0.72 and e.person_key is not null then ''linkedin''','g');
-  v_after:=regexp_replace(v_after,
-    'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.58[[:space:]]+and[[:space:]]+e\.person_key[[:space:]]+is[[:space:]]+not[[:space:]]+null[[:space:]]+then[[:space:]]+''email''',
-    'when e.expected_value_eur>0 and e.buying_window>=0.58 and e.person_key is not null then ''email''','g');
-  v_after:=regexp_replace(v_after,
-    'where[[:space:]]+o\.status=''open''[[:space:]]+and[[:space:]]+o\.expected_revenue_value[[:space:]]*>[[:space:]]*0',
-    'where o.status=''open'' and (o.expected_revenue_value>0 or (o.probability*o.confidence)>=0.20)','g');
-
-  if v_after=v_before then raise exception 'autonomy safe-zero-value patch did not match current function body'; end if;
-  if position('expected_revenue_value>0 or (o.probability*o.confidence)>=0.20' in v_after)=0 then
-    raise exception 'autonomy safe-zero-value ranking patch missing';
+  if position('expected_revenue_value>0 or (o.probability*o.confidence)>=0.20' in v_before)>0
+     and position('expected_value_eur>0 and e.buying_window>=0.72' in v_before)>0 then
+    -- Replay-safe: the canonical target state is already present.
+    v_after:=v_before;
+  else
+      v_after:=v_before;
+      v_after:=regexp_replace(v_after,
+        'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.72[[:space:]]+and[[:space:]]+e\.person_key[[:space:]]+is[[:space:]]+not[[:space:]]+null[[:space:]]+then[[:space:]]+''direct_personal_outreach''',
+        'when e.expected_value_eur>0 and e.buying_window>=0.72 and e.person_key is not null then ''direct_personal_outreach''','g');
+      v_after:=regexp_replace(v_after,
+        'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.58[[:space:]]+then[[:space:]]+''warm_account_activation''',
+        'when e.expected_value_eur>0 and e.buying_window>=0.58 then ''warm_account_activation''','g');
+      v_after:=regexp_replace(v_after,
+        'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.72[[:space:]]+and[[:space:]]+e\.person_key[[:space:]]+is[[:space:]]+not[[:space:]]+null[[:space:]]+then[[:space:]]+''linkedin''',
+        'when e.expected_value_eur>0 and e.buying_window>=0.72 and e.person_key is not null then ''linkedin''','g');
+      v_after:=regexp_replace(v_after,
+        'when[[:space:]]+e\.buying_window[[:space:]]*>=[[:space:]]*0\.58[[:space:]]+and[[:space:]]+e\.person_key[[:space:]]+is[[:space:]]+not[[:space:]]+null[[:space:]]+then[[:space:]]+''email''',
+        'when e.expected_value_eur>0 and e.buying_window>=0.58 and e.person_key is not null then ''email''','g');
+      v_after:=regexp_replace(v_after,
+        'where[[:space:]]+o\.status=''open''[[:space:]]+and[[:space:]]+o\.expected_revenue_value[[:space:]]*>[[:space:]]*0',
+        'where o.status=''open'' and (o.expected_revenue_value>0 or (o.probability*o.confidence)>=0.20)','g');
+    
+      if v_after=v_before then raise exception 'autonomy safe-zero-value patch did not match current function body'; end if;
+      if position('expected_revenue_value>0 or (o.probability*o.confidence)>=0.20' in v_after)=0 then
+        raise exception 'autonomy safe-zero-value ranking patch missing';
+      end if;
+      if position('expected_value_eur>0 and e.buying_window>=0.72' in v_after)=0 then
+        raise exception 'autonomy zero-value outbound guard patch missing';
+      end if;
+      execute v_after;
   end if;
-  if position('expected_value_eur>0 and e.buying_window>=0.72' in v_after)=0 then
-    raise exception 'autonomy zero-value outbound guard patch missing';
-  end if;
-  execute v_after;
 end
 $$;
 
