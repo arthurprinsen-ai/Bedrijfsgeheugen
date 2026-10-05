@@ -27,7 +27,7 @@ CLUSTERS = {
         '/afmaakindex', '/frisse-blik', '/systemen-koppelen', '/due-diligence',
         '/ai-adoptie', '/begrippen'],
     '/blog/systemen-koppelen-mkb/': [
-        '/blog/afas-exact-koppelen/', '/blog/afas-koppeling/',
+        '/blog/afas-exact-koppelen/',
         '/blog/wat-kost-een-afas-koppeling/', '/blog/wat-kost-een-afas-partner/',
         '/blog/planning-in-excel-vervangen/', '/blog/offertes-opvolgen-zonder-crm/',
         '/connect', '/systemen-koppelen'],
