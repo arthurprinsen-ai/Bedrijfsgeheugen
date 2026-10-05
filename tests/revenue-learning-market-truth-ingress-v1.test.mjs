@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
 const edgePath = 'supabase/functions/powerhouse-revenue-intelligence/index.ts';
-const migrationPath = 'supabase/migrations/20260915181636_powerhouse_market_truth_ingress_v1.sql';
+const migrationName = '20260915181636_powerhouse_market_truth_ingress_v1.sql';
 
 const read = (path) => readFile(path, 'utf8');
 
@@ -40,7 +41,7 @@ test('economics and feedback ingress validate observed truth before RPC writes',
 });
 
 test('maturity helper only matures eligible expired assignments and remains server-only', async () => {
-  const sql = await read(migrationPath);
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /powerhouse_mature_experiment_assignments_v1/i);
   assert.match(sql, /measurement_horizon_end\s*<=/i);
   assert.match(sql, /assignment_arm\s*=\s*'holdout'/i);
