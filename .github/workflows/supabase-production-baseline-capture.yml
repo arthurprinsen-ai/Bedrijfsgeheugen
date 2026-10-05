@@ -229,6 +229,26 @@ jobs:
             --status applied \
             --linked
 
+          cat > /tmp/bg3742-repair-readback.sql <<'SQL'
+          do $proof$
+          begin
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20260920101150' and name='p0_proof_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20260920101150';
+            end if;
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20260920102450' and name='instagram_daily_winner_table_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20260920102450';
+            end if;
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20260925080500' and name='instagram_media_reserve_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20260925080500';
+            end if;
+            if not exists (select 1 from supabase_migrations.schema_migrations where version='20261005133951' and name='outbound_message_quality_ready_replay_baseline_v1') then
+              raise exception 'SUPPORTED_MIGRATION_REPAIR_NOT_VISIBLE:20261005133951';
+            end if;
+          end
+          $proof$;
+          SQL
+          supabase db query --linked -p "$SUPABASE_DB_PASSWORD" "$(cat /tmp/bg3742-repair-readback.sql)"
+
           supabase migration list --linked > /tmp/bg3742-baseline/migration-list.txt
 
           node --input-type=module - <<'NODE'
