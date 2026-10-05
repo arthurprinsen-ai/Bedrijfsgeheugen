@@ -40,7 +40,21 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20260917135620_close_cockpit_execution_outcome_feedback_loop_v1.sql": "f1742f1c57136f4c02e2dd36a5881e2ba008fd41",
     "supabase/migrations/20260917135656_close_cockpit_execution_outcome_feedback_loop_v2.sql": "a50a209bf8ff6eeef412b069a962324e3e363d8c",
     "supabase/migrations/20260917140700_offers_evidence_source_heartbeat_v1.sql": "1fe448278b7b9d1c4525c92d2f6f78655dba365e",
-    "supabase/migrations/20260917140900_full_cycle_gmail_canonical_evidence_source_v1.sql": "80547faa8053cf8d4f105f2979ac329ebe6e737b",
+    "supabase/migrations/20260917140900_full_cycle_gmail_canonical_evidence_source_v1.sql": "80547faa8053cf8d4f105f2979ac329ebe6e737b",    "supabase/migrations/20260914074427_powerhouse_execution_guard_v1.sql": "1d9f896f97a724612cd79b5154c1ec343c8549b1",
+    "supabase/migrations/20260914075546_powerhouse_execution_guard_promote_v2.sql": "4741e329b9299086f4a244c9dd994ebde39ccfc4",
+    "supabase/migrations/20260914093117_powerhouse_cockpit_outcome_lineage_v1.sql": "e9c0e218d0198b721ac04f1e6121422195fc02b7",
+    "supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql": "20673f17b2270777c319123bbdac43c284c8df26",
+    "supabase/migrations/20260915102500_powerhouse_revenue_flywheel_v1_state_fix.sql": "815ec70987f4b9cf530e56a94ba695861a2536de",
+    "supabase/migrations/20260915105139_powerhouse_autonomous_gap_closer_v1.sql": "d3ae491edef5e4513726562060a81a6e06e212da",
+    "supabase/migrations/20260915105319_powerhouse_flywheel_health_semantics_v2b.sql": "1b5626a19e6802a472579b20862bad7b64c0488c",
+    "supabase/migrations/20260915110826_powerhouse_data_intake_health_v1.sql": "59b9a41c796f7d0fdd6360f2e04f14af56cce4de",
+    "supabase/migrations/20260915110904_powerhouse_data_intake_health_v1_status_fix.sql": "b06d8beafc6ac56338f97c5201598f0b3d395f8c",
+    "supabase/migrations/20260915111057_powerhouse_data_intake_health_v1_forecast_timestamp_fix.sql": "aa87352af0c8733040701f325209ae7395baa63a",
+    "supabase/migrations/20260915111142_powerhouse_data_intake_health_v1_runtime_state_fix.sql": "d3e09d71b0832ccdfac9af2c8f14c05c28e4b3ea",
+    "supabase/migrations/20260915112241_external_feed_async_cron_split_v1.sql": "fa9f2c7b2dd89d8e43202325400ebee8489bb44f",
+    "supabase/migrations/20260915112519_external_feed_health_bridge_v1.sql": "747b8b11bbfa9af5808074e54587f83a0736ad47",
+    "supabase/migrations/20260915161019_brain_transition_obligation_atomic_cas_v2.sql": "c0169e7f2c4ef7687237d29feeb5f4f824fdbbf0",
+
 }
 
 
