@@ -17,3 +17,5 @@
 - Canonical delivery lane: `backend`; immutable base: `aa863705e1fbe2d843aa3dfce146ff74011f25ee`.
 
 - Runtime drift closure: live `powerhouse-commercial-message-composer` synced back to GitHub and `powerhouse_persuasion_revenue_optimizer_v1` persisted as a migration with service-role-only execution.
+
+- Drift-closure immutable base: `44f673622a4f227cfb868bb74f1e5deee7b5bf23`; PR admission metadata mirrors this base exactly.
