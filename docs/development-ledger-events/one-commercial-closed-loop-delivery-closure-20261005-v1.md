@@ -27,3 +27,7 @@ and, for external outreach:
 `candidate → context/source → consent/pressure/dedupe → exact message proof → provider semantic ack → terminal outcome → attribution → learning`
 
 No merge or LIVE_BEWEZEN claim is permitted before the relevant chain is complete.
+## Required-check trigger closure
+
+The candidate exposed a CI deadlock: branch protection requires `CodeQL javascript-typescript`, while the Powerhouse CodeQL PR trigger previously excluded SQL/documentation-only changes. The PR trigger is now unconditional for main-targeting pull requests, so every candidate can emit the required check. Main-push path filtering remains unchanged.
+
