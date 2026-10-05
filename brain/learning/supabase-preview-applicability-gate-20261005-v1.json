@@ -24,5 +24,26 @@
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "evidence": {
+    "source_pr": 3765,
+    "blocked_head_sha": "99b43d4e204efee9ea48bc2a1cf3d9e729dad54a",
+    "previous_required_check": {
+      "context": "Supabase Preview",
+      "app_id": 330661,
+      "observed_conclusion": "skipped"
+    },
+    "replacement_required_check": {
+      "context": "Supabase Preview Applicability",
+      "app_id": 15368
+    },
+    "branch_protection_readback": {
+      "strict": true,
+      "required_contexts": [
+        "test",
+        "CodeQL javascript-typescript",
+        "Supabase Preview Applicability"
+      ]
+    }
+  }
 }
