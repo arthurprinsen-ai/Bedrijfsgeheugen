@@ -7,7 +7,7 @@
 - Candidate type: recovery
 - Authority: trusted default-branch GitHub Actions workflow
 - Production schema/data mutation: none
-- Production migration-history tracking mutation: bounded supported repair of exactly three effect-verified versions
+- Production migration-history tracking mutation: bounded supported repair of exactly four effect-verified versions
 
 ## Change
 
@@ -18,7 +18,7 @@ The candidate resolver selects exactly one highest-version open `supabase-migrat
 ## Invariants
 
 - Production credentials are available only to trusted main workflow code.
-- Production schema/data is read-only; only supported migration-history tracking repair for the exact reviewed three versions is permitted.
+- Production schema/data is read-only; only supported migration-history tracking repair for the exact reviewed four versions is permitted.
 - No direct SQL write to `supabase_migrations`; tracking reconciliation uses only `supabase migration repair --status applied`.
 - No hand-built `pg_catalog` reconstruction.
 - Recovery write uses exact-head `--force-with-lease`.
@@ -26,5 +26,8 @@ The candidate resolver selects exactly one highest-version open `supabase-migrat
 - Baseline evidence alone does not close #3742.
 - Fresh replay, exact-head gates, protected merge, and post-merge production readback remain mandatory.
 
-- Pre-repair drift must be exactly the three replay baselines and zero remote-only.
+- Pre-repair drift must be exactly the four replay baselines and zero remote-only.
 - Post-repair `supabase migration list --linked` must have zero drift before evidence writeback.
+
+- Reviewed repair set: `20260920101150`, `20260920102450`, `20260925080500`, `20261005133951`.
+- Trusted workflow re-verifies each production effect before any tracking repair; candidate code never supplies executable production SQL.
