@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|human-commercial-conversion-engine|v1",
+  "observed_at": "2026-10-05T13:20:00Z",
+  "type": "COMMERCIAL_QUALITY",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Powerhouse already contained strong sales, persuasion, brand-voice, objection and follow-up knowledge, but runtime actions could still reach execution with generic templates or weak personalization because message strategy and copy quality were not a mandatory canonical gate.",
+  "decision": "Promote the existing commercial knowledge into one canonical message plan, persuasion authority, human composer and fail-closed quality gate before Gmail or SalesRobot execution.",
+  "prevention": [
+    "every external commercial action receives an explicit message strategy and ethical psychology contract",
+    "specific public/inbound context is required for personalization; role or company name alone is insufficient",
+    "generic praise, generic outreach openings, unsupported generalizations, fake urgency and reply guilt are blocked",
+    "Gmail and SalesRobot require composer v2 quality proof before execution",
+    "message strategy and persuasion labels remain attached to actions so outcomes and revenue can train strategy performance",
+    "composer processing is bounded and scheduled every fifteen minutes"
+  ],
+  "id": "human-commercial-conversion-engine-20261005-v1",
+  "date": "2026-10-05",
+  "source": "runtime-audit-notion-sales-playbook-and-supabase-sales-actions",
+  "failure_class": "DOCUMENTED_SALES_INTELLIGENCE_NOT_RUNTIME_ENFORCED",
+  "evidence": {
+    "regression": "tests/brain-human-commercial-conversion-engine-v1.test.mjs",
+    "composer": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "email_executor": "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+    "linkedin_executor": "supabase/functions/powerhouse-linkedin-sales-machine/index.ts",
+    "migration": "supabase/migrations/20261005152000_powerhouse_human_commercial_conversion_engine_v1.sql"
+  },
+  "compiler": {
+    "failure_class": "DOCUMENTED_SALES_INTELLIGENCE_NOT_RUNTIME_ENFORCED",
+    "scope": "COMMERCIAL_REVENUE_ENGINE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "canary": [
+      "powerhouse_human_sales_message_health_v1",
+      "powerhouse-human-sales-composer-v2 cron"
+    ],
+    "historical_replay": [
+      "tests/brain-human-commercial-conversion-engine-v1.test.mjs"
+    ]
+  }
+}
