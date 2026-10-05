@@ -87,7 +87,9 @@
       "production_table_mutated": false,
       "regression": "private reply evidence table definition must precede its first assurance consumer",
       "tests_passed": 28,
-      "security_self_test_passed": true
+      "security_self_test_passed": true,
+      "quality_surface_contract_registered": true,
+      "replay_resume_rule": "Supabase Git integration only pushes unapplied migrations; after repairing an already-applied historical source migration, rebuild the disposable PR preview via the documented close/reopen lifecycle. Do not weaken the hosted preview gate."
     },
     "production_current_readback": {
       "canonical_commercial_gate_healthy": true,

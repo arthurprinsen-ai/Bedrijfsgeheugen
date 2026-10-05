@@ -34,6 +34,10 @@ test('outbound lineage replay defines the private reply evidence table before co
   assert.match(source,/revoke all on (?:table )?public\.powerhouse_email_reply_events from public,\s*anon,\s*authenticated/i);
   assert.match(source,/grant all on (?:table )?public\.powerhouse_email_reply_events to service_role/i);
   assert.ok(source.indexOf('create table if not exists public.powerhouse_email_reply_events')<source.indexOf('from public.powerhouse_email_reply_events'),'schema must precede its first assurance consumer');
+  const contracts=JSON.parse(await readFile('config/powerhouse-quality-surface-contracts.json','utf8'));
+  const surface=contracts.surfaces.find(item=>item.id==='table:public.powerhouse_email_reply_events');
+  assert.equal(surface?.required,true,'reply evidence must have a mandatory quality surface contract');
+  assert.equal(surface?.evidence_contract,'tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs');
 });
 
 test('all legacy commercial loop versions are compatibility aliases to the one canonical v1 owner',()=>{

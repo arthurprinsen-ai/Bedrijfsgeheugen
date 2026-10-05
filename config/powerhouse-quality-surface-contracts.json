@@ -968,6 +968,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_email_reply_events",
+      "type": "table",
+      "authority": "supabase/migrations/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_growth_play_catalog_v1",
       "type": "table",
       "authority": "supabase/migrations/20260928124000_powerhouse_growth_swarm_activation_v1.sql",
