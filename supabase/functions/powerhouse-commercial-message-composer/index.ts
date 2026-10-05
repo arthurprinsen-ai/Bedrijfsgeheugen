@@ -11,7 +11,7 @@ function normalize(v:string){return clean(v).toLowerCase().normalize('NFKD').rep
 function extractJson(text:string){const t=clean(text);try{return JSON.parse(t);}catch{}const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1));}catch{}}throw new Error('AI_JSON_INVALID');}
 const banned=[/ik zag (je|jouw) profiel/i,/we zijn al een tijd verbonden/i,/just following up/i,/even opvolgen/i,/heb je mijn (mail|bericht)/i,/ik heb nog niets gehoord/i,/in het huidige digitale landschap/i,/revolutionair/i,/game.?changer/i,/mis deze kans niet/i,/laatste kans/i,/synergie/i,/boek (hier|nu).*(agenda|meeting|afspraak)/i,/calendly\.com/i,/\b(inspirerend|indrukwekkend|geweldig|fantastisch|super interessant|mooi om te zien|goed om te zien|gaaf om te zien)\b[!.]?/i,/\bveel (bedrijven|organisaties|founders|ondernemers|teams|mkb.?bedrijven)\b/i,/\bals (founder|oprichter|directeur|eigenaar|mede.?oprichter) merk ik\b/i];
 function numberClaims(text:string){return [...text.matchAll(/\b\d+(?:[.,]\d+)?%?\b/g)].map(x=>x[0]);}
-function canonicalNumber(v:string){const raw=clean(v).replace('%','').replace(',','.');const n=Number(raw);return Number.isFinite(n)?String(n)+(clean(v).endsWith('%')?'%':''):normalize(v);}
+function canonicalNumber(v:string){const raw=clean(v).replace(/%/g,'').replace(',','.');const n=Number(raw);return Number.isFinite(n)?String(n)+(clean(v).endsWith('%')?'%':''):normalize(v);}
 function quality(action:any,plan:any,out:any){
   const msg=clean(out?.message),subject=clean(out?.subject),anchor=clean(out?.personalization_anchor);
   const max=Number(plan?.max_words||100),channel=clean(action.channel_norm);
