@@ -65,8 +65,9 @@ async function switchPublicLocale(page, locale, expectedPath) {
   const expected = expectedPath.replace(/\/$/, '') || '/';
   await page.waitForFunction(
     ({ expectedPathname, expectedLocale }) => {
-      const pathname = location.pathname.replace(/\/$/, '') || '/';
-      return pathname === expectedPathname && document.documentElement.lang === expectedLocale;
+      const path = location.pathname.replace(/\/$/, '') || '/';
+      const expected = expectedPathname;
+      return path === expected && document.documentElement.lang === expectedLocale;
     },
     { expectedPathname: expected, expectedLocale: locale },
     { timeout:30_000 }
