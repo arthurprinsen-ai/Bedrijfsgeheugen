@@ -30,3 +30,7 @@ Heavy relationship, learning, experiment and snapshot engines keep their existin
 
 Production readback on 2026-10-05 confirmed 23,784 identity entities, 47,725 identifiers, 33 multi-touch attribution rows, 422 existing NBA snapshot rows, balanced observed attribution, and runtime evidence marked `actioned / VERIFIED / confidence 1`.
 
+
+## Delivery closure
+
+Brain learning, development ledger and regression evidence are versioned in the same candidate scope so the material backend change is reproducible and auditable.
