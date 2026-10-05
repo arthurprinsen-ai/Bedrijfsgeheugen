@@ -261,6 +261,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:buffer-social-collect",
+      "type": "netlify_function",
+      "authority": "netlify/functions/buffer-social-collect.mjs",
+      "evidence_contract": "tests/social-learning-buffer-collector.test.mjs",
+      "required": false
+    },
+    {
       "id": "netlify_function:checkout-create",
       "type": "netlify_function",
       "authority": "netlify/functions/checkout-create.mjs",
