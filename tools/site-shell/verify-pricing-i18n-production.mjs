@@ -87,27 +87,28 @@ async function run() {
   try {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
     await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
-    await page.locator('[data-tab="saas"]').waitFor({state:'visible',timeout:20_000});
+    const saasPanel=page.locator('#saas').first();
+    const consultingPanel=page.locator('#expertise').first();
+    await saasPanel.waitFor({state:'visible',timeout:20_000});
+    await expectVisible(consultingPanel,'consulting pricing section');
     const body = await page.locator('body').innerText();
     for (const token of ['Powerhouse SaaS','Starter','Pro','Groei','Enterprise']) {
       if (!body.includes(token)) throw new Error('pricing SaaS token missing: '+token);
     }
-    const saasPanel=page.locator('[data-panel="saas"]').first();
-    const consultingPanel=page.locator('[data-panel="consulting"]').first();
-    await expectVisible(saasPanel,'SaaS pricing panel');
-
-    await page.locator('[data-tab="consulting"]').click();
-    await page.waitForTimeout(150);
-    await expectVisible(consultingPanel,'consulting pricing panel after click');
-    if (await saasPanel.isVisible().catch(()=>false)) throw new Error('SaaS panel stayed visible after selecting consulting');
     const consultingText=await consultingPanel.innerText();
-    for (const token of ['Directie & AI Workshop','Bedrijfsgeheugen Scan','Build Sprint','Transformation / Fractional Lead','Combineer zonder dubbel te betalen']) {
+    for (const token of ['Directie & AI Workshop','Bedrijfsgeheugen Scan','Build Sprint','Transformation / Fractional Lead']) {
       if (!consultingText.includes(token)) throw new Error('consulting pricing token missing: '+token);
     }
+    if (!body.includes('Combineer zonder dubbel te betalen')) throw new Error('pricing bundle rule missing');
 
-    await page.locator('[data-tab="saas"]').click();
-    await page.waitForTimeout(150);
-    await expectVisible(saasPanel,'SaaS pricing panel after return');
+    const expertiseLink=page.locator('a[href="#expertise"]').first();
+    const saasLink=page.locator('a[href="#saas"]').first();
+    await expectVisible(expertiseLink,'consulting pricing anchor');
+    await expectVisible(saasLink,'SaaS pricing anchor');
+    await expertiseLink.click();
+    await page.waitForFunction(() => location.hash === '#expertise');
+    await saasLink.click();
+    await page.waitForFunction(() => location.hash === '#saas');
 
     await switchPublicLocale(page, 'en', '/en/prijzen');
     const pricingEnglish = await page.locator('body').innerText();
@@ -128,7 +129,7 @@ async function run() {
     }
 
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
-    console.log(JSON.stringify({status:'COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN',url:page.url(),pricingTabs:'saas-consulting',locale:'nl',roundtrip:'nl-en-nl'}));
+    console.log(JSON.stringify({status:'COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN',url:page.url(),pricingNavigation:'saas-expertise-anchors',locale:'nl',roundtrip:'nl-en-nl'}));
   } finally {
     await browser.close();
   }
