@@ -127,5 +127,14 @@
       "Supabase Preview 5838f1a reached version135000 then failed42883",
       "Regression failed on SQL aliases before direct PL/pgSQL repair"
     ]
+  },
+  "health_quality_gate_replay_recovery": {
+    "root_cause": "Health view in160500 references SQL quality gate first defined later in161500; fresh replay fails42883.",
+    "prevention": "Project byte-identical final content-bound implementation before first view use; preserve exact message hash and persisted passed-quality evidence.",
+    "evidence": [
+      "Preview481ba8d fails at160500 health view",
+      "CREATE VIEW function-dependency audit finds no other missing gates",
+      "Regression failed before exact quality function projection"
+    ]
   }
 }

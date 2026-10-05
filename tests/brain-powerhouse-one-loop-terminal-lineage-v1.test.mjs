@@ -80,6 +80,17 @@ test('compatibility aliases can replay before the later canonical implementation
   assert.doesNotMatch(aliases,/check_function_bodies|exception when|return ['"]?\{['"]?/i,'missing implementation must remain a runtime error');
 });
 
+test('commercial health replay defines the exact content-bound quality gate before its view',async()=>{
+  const source=await readFile('supabase/migrations/20261005160500_powerhouse_one_commercial_closed_loop_v1.sql','utf8');
+  const canonical=await readFile('supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql','utf8');
+  const start='CREATE OR REPLACE FUNCTION public.powerhouse_outbound_message_quality_ready_v1';
+  const end='GRANT EXECUTE ON FUNCTION public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid) TO service_role;';
+  assert.ok(source.indexOf(start)>=0,'fresh replay requires the actual quality function, not a stub');
+  assert.ok(source.indexOf(start)<source.indexOf('create or replace view public.powerhouse_one_commercial_loop_health_v1'));
+  const definition=text=>text.slice(text.indexOf(start),text.indexOf(end)+end.length);
+  assert.equal(definition(source),definition(canonical),'preserve the exact hash and persisted evidence gate');
+});
+
 test('terminal action lineage is automatic and does not fabricate observed business outcomes',()=>{
   assert.match(sql,/create trigger trg_powerhouse_sales_action_terminal_lineage_v1/i);
   assert.match(sql,/business_outcome_state/i);
