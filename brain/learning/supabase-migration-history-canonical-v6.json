@@ -32,5 +32,24 @@
     "historical_replay": [
       "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
     ]
+  },
+  "fingerprint": "powerhouse|supabase-migration-history-canonical|fresh-replay-and-provider-parity|3742|v6",
+  "root_cause": "Production schema state and provider migration-history tracking were not a complete replay-equivalent projection of repository history: repository-only timestamp aliases coexisted with production-backed migrations, and four replay-compatible effects existed in production without corresponding provider ledger identities.",
+  "evidence": {
+    "production_ledger_before_repair": 564,
+    "fresh_replay_migration_count": 568,
+    "production_remote_only_after_canonicalization": 0,
+    "production_version_name_mismatches_after_canonicalization": 0,
+    "pending_supported_repair_versions": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ],
+    "fresh_preview_proof": "Supabase Preview fresh reconstruction succeeded with Database, Services, APIs, Configurations, Migrations, Seeding and Edge Functions green",
+    "integrity_test": "tests/supabase-migration-history-integrity.test.mjs",
+    "historical_runtime_test": "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs",
+    "direct_supabase_migrations_writes_forbidden": true,
+    "replay_sql_execution_in_production_forbidden": true
   }
 }
