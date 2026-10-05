@@ -76,6 +76,28 @@
       "migration_files": 420,
       "before_errors": 1,
       "after_errors": 0
+    },
+    "schema_parity_recovery": {
+      "failed_exact_head": "a26043128f950208e2d6f31d0d0807ce3334603e",
+      "sqlstate": "42P01",
+      "missing_relation": "public.powerhouse_email_reply_events",
+      "root_cause": "Production-only reply evidence schema was referenced by September outbound assurance migrations without a replayable CREATE TABLE.",
+      "fix": "Define the exact readback schema, constraints, indexes, RLS and service-only grants in the first consuming lineage migration.",
+      "production_schema_readback_verified": true,
+      "production_table_mutated": false,
+      "regression": "private reply evidence table definition must precede its first assurance consumer",
+      "tests_passed": 28,
+      "security_self_test_passed": true
+    },
+    "production_current_readback": {
+      "canonical_commercial_gate_healthy": true,
+      "canonical_scheduler_owners": 1,
+      "direct_secondary_scheduler_owners": 0,
+      "terminal_coverage_pct": 100,
+      "historical_backfill_updated": 464,
+      "old_gate_unaccounted_terminal_action_count_after": 0,
+      "old_gate_owner_count": 0,
+      "truth_boundary": "Old daily-owner gate does not classify the newer five-minute heartbeat scheduler; canonical current commercial gate is healthy, old owner gate remains visibly stale."
     }
   }
 }

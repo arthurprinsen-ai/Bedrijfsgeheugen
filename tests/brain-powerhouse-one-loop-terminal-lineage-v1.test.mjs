@@ -25,6 +25,17 @@ test('persuasion runtime function definitions terminate before privilege stateme
   assert.doesNotMatch(source,/\$function\$\s*\n\s*(?:revoke|grant|create)\b/i,'CREATE FUNCTION requires a semicolon after its quoted body');
 });
 
+test('outbound lineage replay defines the private reply evidence table before consuming it',async()=>{
+  const source=await readFile('supabase/migrations/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql','utf8');
+  assert.match(source,/create table if not exists public\.powerhouse_email_reply_events\b/i);
+  assert.match(source,/unique\s*\(provider,\s*provider_message_id\)/i,'provider replies must remain idempotent');
+  assert.match(source,/references public\.powerhouse_sales_actions\(action_id\) on delete cascade/i);
+  assert.match(source,/alter table public\.powerhouse_email_reply_events enable row level security/i);
+  assert.match(source,/revoke all on (?:table )?public\.powerhouse_email_reply_events from public,\s*anon,\s*authenticated/i);
+  assert.match(source,/grant all on (?:table )?public\.powerhouse_email_reply_events to service_role/i);
+  assert.ok(source.indexOf('create table if not exists public.powerhouse_email_reply_events')<source.indexOf('from public.powerhouse_email_reply_events'),'schema must precede its first assurance consumer');
+});
+
 test('all legacy commercial loop versions are compatibility aliases to the one canonical v1 owner',()=>{
   for(const version of [2,3,4,5,6]){
     assert.match(sql,new RegExp(`create or replace function public\\.powerhouse_commercial_closed_loop_v${version}`,'i'));
