@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
 const cfg=JSON.parse(fs.readFileSync('config/social-channel-identity-contract.json','utf8'));
-const sql=fs.readFileSync('supabase/migrations/20260920073022_instagram_mira_visual_reel_only_v2.sql','utf8');
+const sql=readMigrationHistorySync('20260920073022_instagram_mira_visual_reel_only_v2.sql');
 const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
 const contentLoop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
 
@@ -77,7 +78,7 @@ test('materialized provider asset cannot regress to waiting-provider-connection'
 
 
 test('media router uses the frozen winner job format before recommendation metadata', () => {
-  const winnerMigration = fs.readFileSync('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql', 'utf8');
+  const winnerMigration = readMigrationHistorySync('20260920110000_instagram_daily_winner_lineage_v1.sql');
   assert.match(router, /inferType\(input\.postType,job\?\.post_type/);
   assert.match(router, /generation_evidence\?\.daily_winner_format/);
   assert.match(winnerMigration, /powerhouse_ensure_instagram_media_job_v1/);
