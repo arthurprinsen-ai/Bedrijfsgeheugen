@@ -1,11 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
 const files=async()=>Promise.all([
   readFile('netlify/functions/monitor.mjs','utf8'),
   readFile('netlify/functions/_commercial-lead.mjs','utf8'),
-  readFile('supabase/migrations/20260906115346_commercial_lead_capture.sql','utf8'),
+  readMigrationHistory('20260906115346_commercial_lead_capture.sql'),
   readFile('supabase/functions/commercial-lead-ingest/index.ts','utf8')
 ]);
 
