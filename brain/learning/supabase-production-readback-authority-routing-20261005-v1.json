@@ -1,0 +1,34 @@
+{
+  "id": "supabase-production-readback-authority-routing-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "post-merge-readback-pr-3741",
+  "fingerprint": "powerhouse|production-readback|authority-routing|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Supabase migration-history parity recovery was routed through a Netlify production marker because GitHub control-plane files participated in runtime lane classification and the terminalizer treated every non-governance change as Netlify-hosted runtime.",
+  "prevention": [
+    ".github/** is governance-only for runtime lane classification.",
+    "Bounded Supabase migration-history recovery is runtime-not-applicable only when its non-governance scope is limited to canonical parity-recovery surfaces.",
+    "Non-Netlify runtime without a dedicated production readback fails closed with UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+    "Terminal evidence records readback_mode and cannot claim deployment readback when it was not performed."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-authority-routing-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 3741,
+    "source_main_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
+    "observed_blocker": "production-readback waited for exact Netlify release identity although the obligation was Supabase migration-history parity recovery",
+    "external_supabase_preview_state": "SKIPPED_NO_ASSOCIATED_SUPABASE_BRANCH"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

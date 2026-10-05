@@ -54,7 +54,7 @@ jobs:
 
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const governanceOnlyPrefixes=['docs/','.agents/','tests/','brain/learning/','brain/policies/','tools/delivery/'];
+          const governanceOnlyPrefixes=['docs/','.agents/','tests/','.github/','brain/learning/','brain/policies/','tools/delivery/'];
           const governanceOnlyExact=new Set([
             'AGENTS.md',
             'config/delivery-prevention-rules.json',

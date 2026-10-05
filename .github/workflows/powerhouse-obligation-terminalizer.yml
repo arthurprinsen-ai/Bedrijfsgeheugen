@@ -76,36 +76,95 @@ jobs:
         id: production
         env:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags
-          changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
-          governance_only=true
-          while IFS= read -r path; do
-            [ -z "$path" ] && continue
-            case "$path" in
+          changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" || true)"
+
+          is_governance_path() {
+            case "$1" in
               docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json)
+                return 0
                 ;;
               *)
-                governance_only=false
-                break
+                return 1
                 ;;
             esac
-          done <<< "$changed_paths"
+          }
 
-          if [ "$governance_only" = true ]; then
-            observed="$(git rev-parse origin/main)"
+          observed="$(git rev-parse origin/main)"
+          prove_main_containment() {
             git merge-base --is-ancestor "$MERGE_SHA" "$observed" || {
               echo "::error::POST_MERGE_MAIN_CONTAINMENT_FAILED:$MERGE_SHA:$observed"
               exit 78
             }
             echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
+          }
+
+          governance_only=true
+          non_governance_paths=""
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            if is_governance_path "$path"; then
+              continue
+            fi
+            governance_only=false
+            non_governance_paths="${non_governance_paths}${path}"$'\n'
+          done <<< "$changed_paths"
+
+          if [ "$governance_only" = true ]; then
+            prove_main_containment
+            echo "readback_mode=non_runtime" >> "$GITHUB_OUTPUT"
             echo "PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME:$MERGE_SHA:$observed"
             exit 0
           fi
 
+          parity_recovery=false
+          if grep -q '^Candidate-Type: recovery$' <<< "$PR_BODY" \
+             && grep -q '^Obligation-ID: supabase-migration-history-parity-' <<< "$PR_BODY"; then
+            parity_recovery=true
+          fi
+
+          if [ "$parity_recovery" = true ]; then
+            invalid_recovery_path=false
+            while IFS= read -r path; do
+              [ -z "$path" ] && continue
+              case "$path" in
+                supabase/migrations/*|scripts/brain/check_powerhouse_supabase_security.py|scripts/brain/quality/*|config/powerhouse-quality-surface-contracts.json)
+                  ;;
+                *)
+                  invalid_recovery_path=true
+                  echo "::error::SUPABASE_PARITY_RECOVERY_CONTAINS_RUNTIME_PATH:$path"
+                  ;;
+              esac
+            done <<< "$non_governance_paths"
+            [ "$invalid_recovery_path" = false ] || exit 78
+            prove_main_containment
+            echo "readback_mode=supabase_history_parity_recovery" >> "$GITHUB_OUTPUT"
+            echo "SUPABASE_HISTORY_PARITY_RECOVERY_RUNTIME_NOT_APPLICABLE:$MERGE_SHA:$observed"
+            exit 0
+          fi
+
+          netlify_required=false
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              netlify/functions/*|platform/api/*|platform/saas/*|platform/connectors/*|platform/read-models/*|components/*|assets/*|pages/*|site/*|blog/*|kennis/*|portal/*|portal-next/*|portal-v2/*|netlify.toml|_redirects|_headers|index.html|klantportaal.html)
+                netlify_required=true
+                ;;
+            esac
+          done <<< "$non_governance_paths"
+
+          if [ "$netlify_required" != true ]; then
+            echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
+            printf '%s' "$non_governance_paths"
+            exit 78
+          fi
+
           for attempt in $(seq 1 36); do
-            if curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/release.json -o /tmp/release.json               && curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/ -o /tmp/runtime.html; then
+            if curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/release.json -o /tmp/release.json \
+              && curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/ -o /tmp/runtime.html; then
               observed="$(node --input-type=module - <<'NODE'
           import { readFileSync } from 'node:fs';
           const release=JSON.parse(readFileSync('/tmp/release.json','utf8'));
@@ -120,6 +179,7 @@ jobs:
                 git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
                 if git merge-base --is-ancestor "$MERGE_SHA" "$observed" && [ -s /tmp/runtime.html ]; then
                   echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
+                  echo "readback_mode=netlify_runtime" >> "$GITHUB_OUTPUT"
                   exit 0
                 fi
               fi
@@ -138,6 +198,7 @@ jobs:
       - name: Materialize terminal outcome evidence
         env:
           PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
+          READBACK_MODE: ${{ steps.production.outputs.readback_mode }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -155,10 +216,12 @@ jobs:
             candidate_head_sha:process.env.CANDIDATE_SHA,
             merge_sha:process.env.MERGE_SHA,
             production_sha:process.env.PRODUCTION_SHA,
+            readback_mode:process.env.READBACK_MODE,
             checks:{
               merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
-              deploy_promotion_readback:true,
-              runtime_function_readback:true,
+              deploy_promotion_readback:process.env.READBACK_MODE==='netlify_runtime',
+              runtime_function_readback:process.env.READBACK_MODE==='netlify_runtime',
+              production_readback_not_applicable:['non_runtime','supabase_history_parity_recovery'].includes(process.env.READBACK_MODE),
               outcome_evidence:true,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
@@ -166,6 +229,9 @@ jobs:
           };
           if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
+          if(!evidence.checks.deploy_promotion_readback && !evidence.checks.production_readback_not_applicable) {
+            throw new Error('TERMINAL_PRODUCTION_READBACK_MODE_UNPROVEN');
+          }
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));
           NODE
