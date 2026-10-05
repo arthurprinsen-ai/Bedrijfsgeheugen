@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|universal-connected-app-cost-governor|v1",
+  "observed_at": "2026-10-05T04:19:00Z",
+  "type": "RESOURCE_SAVING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "root_cause": "Cost governance existed for named platforms but did not explicitly guarantee auto-enrollment and a universal default for every current/future connected app.",
+  "decision": "Extend the existing ONE BRAIN resource authority instead of creating a parallel cost system.",
+  "prevention": [
+    "all current and future chats/agents/workflows/connectors inherit central cost policy",
+    "unknown/new connectors use universal default until platform-specific policy exists",
+    "cheapest sufficient route must preserve quality reliability security evidence and outcome",
+    "usage waste may be optimized autonomously but paid plan/billing changes require human approval",
+    "material cost/resource outcomes write back to existing Brain resource intelligence and learning"
+  ],
+  "canonical_authorities": [
+    "config/brain-cost-policy.json",
+    ".agents/skills/powerhouse-resource-sustainability/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "public.brain_budget_usage",
+    "public.brain_cost_by_operation",
+    "public.powerhouse_resource_intelligence_daily_v1",
+    "public.powerhouse_resource_optimization_queue_v1"
+  ],
+  "skill_targets": [
+    "powerhouse-resource-sustainability",
+    "powerhouse-toolchain-authority",
+    "powerhouse-continuity"
+  ]
+}
