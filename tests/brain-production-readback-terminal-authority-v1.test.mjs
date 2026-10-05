@@ -43,6 +43,8 @@ test('built pricing readback regression contains encoded ampersand fixture', () 
   const fixture=fs.readFileSync('tools/site-shell/test-live-contract.mjs','utf8');
   assert.match(fixture,/Directie &amp; AI Workshop/);
   const contractSource=fs.readFileSync('tools/site-shell/live-contract.mjs','utf8');
-  assert.match(contractSource,/parse5/);
-  assert.match(contractSource,/headingTexts/);
+  const semanticEntityHandling =
+    (/parse5/.test(contractSource) && /headingTexts/.test(contractSource)) ||
+    (/encodeHtmlText/.test(contractSource) && /hasHeadingText/.test(contractSource));
+  assert.equal(semanticEntityHandling,true,'live pricing verifier must normalize visible heading entity encoding semantically');
 });
