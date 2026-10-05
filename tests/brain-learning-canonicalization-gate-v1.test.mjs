@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { compileLearningEvaluationPlan, validateEvaluationContract } from '../scripts/brain/learning-canonicalization-gate.mjs';
+import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
 test('all material learning requires historical replay before canonicalization',()=>{
   const plan=compileLearningEvaluationPlan({failure_class:'CI',scope:'GITHUB',machine_enforceable:true,repeat_count:1});
@@ -66,7 +67,7 @@ test('skill projection workflow gates canonicalization before projection',()=>{
 
 
 test('SQL compiler keeps recovery class above generic runtime scope',()=>{
-  const sql=fs.readFileSync('supabase/migrations/20260918175027_powerhouse_learning_compiler_precedence_v2.sql','utf8');
+  const sql=readMigrationHistorySync('20260918175027_powerhouse_learning_compiler_precedence_v2.sql');
   const recovery=sql.indexOf("v_class in ('TIMEOUT','WORKER_LOST','RECOVERY','CONNECTOR_FAILURE','QUEUE_STALL')");
   const runtime=sql.indexOf("v_class in ('PRODUCTION_READBACK','RUNTIME_INVARIANT','FALSE_GREEN','FALSE_SUCCESS')");
   assert.ok(recovery>0 && runtime>recovery);
@@ -75,7 +76,7 @@ test('SQL compiler keeps recovery class above generic runtime scope',()=>{
 
 
 test('repository and production compiler keep identical recovery precedence',()=>{
-  const sql=fs.readFileSync('supabase/migrations/20260918175138_powerhouse_learning_compiler_recovery_precedence_v1.sql','utf8');
+  const sql=readMigrationHistorySync('20260918175138_powerhouse_learning_compiler_recovery_precedence_v1.sql');
   const recovery=sql.indexOf("v_class in ('TIMEOUT','WORKER_LOST','RECOVERY'");
   const runtime=sql.indexOf("v_class in ('PRODUCTION_READBACK','RUNTIME_INVARIANT','FALSE_GREEN','FALSE_SUCCESS') or v_scope='RUNTIME'");
   assert.ok(recovery>0 && runtime>recovery);
