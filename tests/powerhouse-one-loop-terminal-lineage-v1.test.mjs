@@ -30,7 +30,8 @@ test('exactly one full commercial scheduler owner is canonicalised and split-sta
   assert.match(sql,/powerhouse_one_commercial_decision_loop_v1/i);
   assert.match(sql,/powerhouse-commercial-context-daily-v1/i);
   assert.match(sql,/powerhouse-commercial-actions-daily-v1/i);
-  assert.match(sql,/active=false/i);
+  assert.match(sql,/cron\.unschedule/i);
+  assert.doesNotMatch(sql,/update\s+cron\.job/i);
 });
 
 test('runtime regression gate proves scheduler alias and terminal lineage invariants',()=>{
