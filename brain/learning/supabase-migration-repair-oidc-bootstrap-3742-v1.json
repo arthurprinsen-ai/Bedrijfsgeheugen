@@ -17,5 +17,23 @@
     "historical_replay": [
       "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs"
     ]
+  },
+  "fingerprint": "supabase|migration-repair|oidc-bootstrap-cycle|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "failed_trusted_run": "github-actions-run:37350898932",
+    "superseded_provider_pr": "#3777",
+    "bootstrap_pr": "#3782",
+    "runtime_bridge": "supabase-migration-repair-bridge:ACTIVE",
+    "regression_tests": [
+      "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs",
+      "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs"
+    ]
   }
 }
