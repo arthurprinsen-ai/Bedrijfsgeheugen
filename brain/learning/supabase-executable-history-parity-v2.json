@@ -16,5 +16,17 @@
     "merge",
     "production readback",
     "post-merge parity"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ]
+  }
 }
