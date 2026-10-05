@@ -15,6 +15,7 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tests/brain-predictive-multi-agent-delivery-scheduler-v1.test.mjs': 'automation',
   'config/powerhouse-agent-delivery-scheduler-v1.json': 'automation',
   'config/brain-delivery-system.json': 'backend',
+  'config/historical-terminal-reconciliation.json': 'backend',
   'scripts/brain/autonomous-engineering-fabric-v3.mjs': 'automation',
   'config/powerhouse-autonomous-engineering-fabric-v3.json': 'automation',
   'config/powerhouse-engineering-tuning.json': 'automation',
@@ -43,6 +44,7 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/regelgeving-bijwerken.yml': 'automation',
   '.github/workflows/regulatory-source-watch.yml': 'automation',
   '.github/workflows/required-test.yml': 'backend',
+  '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/powerhouse-daily-self-evolution.yml': 'automation',
   '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml': 'automation'
