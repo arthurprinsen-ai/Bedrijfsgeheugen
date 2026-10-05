@@ -3,7 +3,7 @@
   "fingerprint": "powerhouse|universal-connected-app-cost-governor|v1",
   "observed_at": "2026-10-05T04:19:00Z",
   "type": "RESOURCE_SAVING",
-  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "status": "ACTIVE_PREVENTION",
   "root_cause": "Cost governance existed for named platforms but did not explicitly guarantee auto-enrollment and a universal default for every current/future connected app.",
   "decision": "Extend the existing ONE BRAIN resource authority instead of creating a parallel cost system.",
   "prevention": [
@@ -26,5 +26,37 @@
     "powerhouse-resource-sustainability",
     "powerhouse-toolchain-authority",
     "powerhouse-continuity"
-  ]
+  ],
+  "id": "universal-connected-app-cost-governor-20261005-v1",
+  "date": "2026-10-05",
+  "source": "user-request+github+supabase-runtime-readback",
+  "failure_class": "RESOURCE_GOVERNANCE_CONNECTOR_SCOPE_GAP",
+  "symptom": [
+    "Existing resource policy named several platforms but did not explicitly guarantee universal auto-enrollment for every current and future connected app.",
+    "The runtime optimization queue had no current candidates despite canonical cost/resource tables already existing."
+  ],
+  "failed_approaches": [
+    "Maintain only an explicit named-platform list and rely on future agents to remember to extend it manually.",
+    "Create a separate connector-specific cost store instead of extending the existing ONE BRAIN resource authority."
+  ],
+  "evidence": {
+    "policy": "config/brain-cost-policy.json",
+    "skill": ".agents/skills/powerhouse-resource-sustainability/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "regression": "tests/brain-universal-connected-app-cost-governor-v1.test.mjs",
+    "runtime_tables": [
+      "public.brain_budget_usage",
+      "public.brain_cost_by_operation",
+      "public.powerhouse_resource_intelligence_daily_v1",
+      "public.powerhouse_resource_optimization_queue_v1",
+      "public.powerhouse_resource_impact_v1"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RESOURCE_GOVERNANCE_CONNECTOR_SCOPE_GAP",
+    "scope": "RESOURCE_SUSTAINABILITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
