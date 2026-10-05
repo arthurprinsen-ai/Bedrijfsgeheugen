@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const hygiene=fs.readFileSync('.github/workflows/powerhouse-delivery-hygiene.yml','utf8');
 const unified=fs.readFileSync('.github/workflows/unified-brain-delivery.yml','utf8');
 const terminalizer=fs.readFileSync('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+const requiredTest=fs.readFileSync('.github/workflows/required-test.yml','utf8');
 const policy=JSON.parse(fs.readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
 const stateMachine=JSON.parse(fs.readFileSync('config/powerhouse-github-delivery-state-machine-v1.json','utf8'));
 
@@ -49,4 +50,13 @@ test('product WIP and canonical policy match the desired steady state',()=>{
   assert.equal(stateMachine.wip.maxTerminalWritersPerObligation,1);
   assert.equal(stateMachine.wip.maintenanceQueueSeparate,true);
   assert.deepEqual(stateMachine.identity.primary,['obligation_id','candidate_head_sha','main_epoch_sha']);
+});
+
+
+test('required preflight uses live PR metadata and fails closed on head drift',()=>{
+  assert.match(requiredTest,/LIVE_PR_METADATA_READBACK_FAILED/);
+  assert.match(requiredTest,/PR_HEAD_MOVED_DURING_PREFLIGHT/);
+  assert.match(requiredTest,/api\.github\.com\/repos\/\$\{process\.env\.GITHUB_REPOSITORY_NAME\}\/pulls/);
+  assert.match(requiredTest,/\.delivery-live-pr-body\.txt/);
+  assert.match(requiredTest,/export PR_BODY="\$\(cat \.delivery-live-pr-body\.txt\)"/);
 });
