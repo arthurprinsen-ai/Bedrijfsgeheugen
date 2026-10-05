@@ -9,8 +9,17 @@ export const NON_PRODUCTION_PREFIXES = Object.freeze([
   'brain/learning/',
 ]);
 
+export const VERIFIER_ONLY_EXACT = Object.freeze(new Set([
+  'tools/site-shell/contracts.mjs',
+  'tools/site-shell/test-shell-components.mjs',
+  'tools/site-shell/live-contract.mjs',
+  'tools/site-shell/test-live-contract.mjs',
+  'brain/contracts/production-readback-v1.json',
+]));
+
 export const NON_PRODUCTION_EXACT = Object.freeze(new Set([
   'config/delivery-prevention-rules.json',
+  ...VERIFIER_ONLY_EXACT,
 ]));
 
 export function isNonProductionPath(path = '') {
