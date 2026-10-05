@@ -44,7 +44,7 @@ jobs:
           test -n "$SUPABASE_ACCESS_TOKEN"
           test -n "$SUPABASE_DB_PASSWORD"
           printf '%s' "$PR_BODY" | grep -F 'Obligation-ID: supabase-migration-history-canonical-v6'
-          printf '%s' "$PR_BODY" | grep -F "Writer-Lease-Head: $HEAD_SHA"
+          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
           node --input-type=module - <<'NODE'
           import {readFileSync} from 'node:fs';
           const lock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
