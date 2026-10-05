@@ -6,7 +6,7 @@
   "failure_class": "provider-cli-output-parser",
   "root_cause": "Supabase CLI 2.119.0 renders migration-list version cells with surrounding backticks while the trusted repair parser accepted only bare fourteen-digit values, causing valid rows to be discarded before any production mutation.",
   "prevention_rule": "Normalize only presentation delimiters before exact migration identity comparison; retain the exact four-version allowlist, forbid remote-only drift, and require zero post-repair drift.",
-  "regression_test": "tests/supabase-supported-migration-repair-3742.test.mjs",
+  "regression_test": "tests/brain-supabase-migration-repair-cli-list-parser-3742-v1.test.mjs",
   "finding": "Trusted-main OIDC and IPv4 Supavisor transport were healthy; the repair stopped because migration-list rendering was parsed too narrowly.",
   "structural_fix": [
     "strip surrounding backticks and whitespace from local/remote migration-list cells",
@@ -22,7 +22,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-supported-migration-repair-3742.test.mjs"
+      "tests/brain-supabase-migration-repair-cli-list-parser-3742-v1.test.mjs"
     ]
   },
   "fingerprint": "supabase|migration-repair|cli-list-backtick-parser|3742|v1",
@@ -40,6 +40,10 @@
       "20260920102450",
       "20260925080500",
       "20261005133951"
+    ],
+    "regression_tests": [
+      "tests/brain-supabase-migration-repair-cli-list-parser-3742-v1.test.mjs",
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
     ]
   }
 }
