@@ -1,15 +1,13 @@
 name: Supabase Preview Applicability
-# Required branch-protection producer for conditional hosted Supabase preview.
 
 on:
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
-  pull-requests: read
   checks: read
+  pull-requests: read
 
 concurrency:
   group: supabase-preview-applicability-${{ github.event.pull_request.number }}
@@ -19,66 +17,64 @@ jobs:
   applicability:
     name: Supabase Preview Applicability
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 12
     steps:
-      - name: Classify Supabase applicability
-        id: scope
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Decide applicability and verify provider-owned preview
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        shell: bash
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
         run: |
           set -euo pipefail
-          files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
-          if grep -Eq '^supabase/' <<<"$files"; then
-            echo "required=true" >> "$GITHUB_OUTPUT"
-            echo "SUPABASE_PREVIEW_APPLICABLE=true"
-          else
-            echo "required=false" >> "$GITHUB_OUTPUT"
-            echo "SUPABASE_PREVIEW_APPLICABLE=false"
+          git fetch origin "$BASE_SHA" "$HEAD_SHA" --no-tags
+          changed="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+          if ! grep -q '^supabase/' <<< "$changed"; then
+            echo "SUPABASE_PREVIEW_NOT_APPLICABLE: no supabase/** changes on exact head $HEAD_SHA"
+            exit 0
           fi
 
-      - name: Non-Supabase change is not applicable
-        if: steps.scope.outputs.required != 'true'
-        run: |
-          echo "No supabase/** changes; provider preview is correctly not applicable."
+          echo "Supabase source changed; waiting for the provider-owned Supabase Preview check on exact head $HEAD_SHA."
+          for attempt in $(seq 1 48); do
+            payload="$(curl --fail --silent --show-error               -H "Authorization: Bearer $GH_TOKEN"               -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: 2022-11-28"               "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100")"
 
-      - name: Require successful provider Supabase Preview
-        if: steps.scope.outputs.required == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          for attempt in $(seq 1 60); do
-            checks="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/check-runs?per_page=100")"
-            provider="$(jq -c '[.check_runs[] | select(.name=="Supabase Preview" and .app.id==330661)] | sort_by(.started_at) | last // empty' <<<"$checks")"
+            state="$(PAYLOAD="$payload" node --input-type=module - <<'NODE'
+          const payload=JSON.parse(process.env.PAYLOAD||'{}');
+          const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
+          const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
+          if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
+          provider.sort((a,b)=>String(b.completed_at||b.started_at||'').localeCompare(String(a.completed_at||a.started_at||'')));
+          const check=provider[0];
+          if(check.status!=='completed'){ process.stdout.write('pending'); process.exit(0); }
+          process.stdout.write(String(check.conclusion||'unknown'));
+          NODE
+            )"
 
-            if [ -z "$provider" ]; then
-              echo "Provider Supabase Preview not registered yet; attempt $attempt/60"
-              sleep 10
-              continue
-            fi
-
-            status="$(jq -r '.status' <<<"$provider")"
-            conclusion="$(jq -r '.conclusion // ""' <<<"$provider")"
-            details="$(jq -r '.details_url // ""' <<<"$provider")"
-            echo "Provider Supabase Preview status=$status conclusion=$conclusion details=$details"
-
-            if [ "$status" != "completed" ]; then
-              sleep 10
-              continue
-            fi
-
-            if [ "$conclusion" = "success" ]; then
-              echo "SUPABASE_PREVIEW_PROVIDER_PROVEN=true"
-              exit 0
-            fi
-
-            echo "::error::Supabase Preview is required for supabase/** changes but completed with conclusion=$conclusion"
-            exit 78
+            case "$state" in
+              success)
+                echo "SUPABASE_PREVIEW_PROVIDER_VERIFIED:$HEAD_SHA"
+                exit 0
+                ;;
+              failure|cancelled|timed_out|action_required|stale|startup_failure)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_FAILED:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              skipped|neutral)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_PROOF:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              missing|pending)
+                sleep 10
+                ;;
+              *)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_UNKNOWN_STATE:$state:$HEAD_SHA"
+                exit 1
+                ;;
+            esac
           done
 
-          echo "::error::Supabase Preview did not reach terminal success within bounded wait"
-          exit 78
+          echo "::error::SUPABASE_PREVIEW_PROVIDER_TIMEOUT:$HEAD_SHA"
+          exit 1
