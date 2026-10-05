@@ -8,5 +8,9 @@
     "status": "ACTIVE",
     "trust": "GitHub OIDC repository + refs/heads/main + exact workflow_ref + exact SHA"
   },
-  "invariant": "No direct supabase_migrations write; only pinned Supabase CLI migration repair --status applied --db-url after exact allowlist and effect-evidence checks."
+  "invariant": "No direct supabase_migrations write; only pinned Supabase CLI migration repair --status applied --db-url after exact allowlist and effect-evidence checks.",
+  "failure_class": "delivery-bootstrap-cycle",
+  "root_cause": "A prerequisite that changed supabase/** was itself forced through the hosted fresh-replay gate whose failure the prerequisite existed to repair.",
+  "prevention_rule": "Separate trusted control-plane bootstrap from provider-source canonicalization whenever the latter depends on the recovery enabled by the former; keep the runtime bridge exact-main/SHA OIDC locked and canonicalize provider source only after replay recovery.",
+  "regression_test": "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs"
 }
