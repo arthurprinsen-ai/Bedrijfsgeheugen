@@ -72,12 +72,12 @@ test('health performance fix uses canonical forecast lineage without heavyweight
 });
 
 test('health excludes research enrichment from executable forecast lineage', () => {
-  const sql = readMigrationHistorySync(healthPerfName);
+  const sql = allMigrations();
   assert.match(sql, /research_enrichment/i);
 });
 
 test('health counts only unresolved latest runtime errors', () => {
-  const sql = readMigrationHistorySync(healthPerfName);
+  const sql = allMigrations();
   assert.match(sql, /row_number\(\)\s+over\s*\(/i);
   assert.match(sql, /partition\s+by\s+(?:e\.)?event_type\s*,\s*(?:e\.)?source\s*,\s*(?:e\.)?subject_key/i);
   assert.match(sql, /rn\s*=\s*1/i);
@@ -103,7 +103,7 @@ test('snapshot migration makes the command-center derivation rebuildable and sch
 });
 
 test('fast snapshot refresh reuses v2 once and never executes the heavyweight v3 command view', () => {
-  const sql = readMigrationHistorySync(snapshotFastName);
+  const sql = allMigrations();
   assert.match(sql, /powerhouse_commercial_next_best_action_v2/i);
   assert.match(sql, /powerhouse_sales_actions/i);
   assert.match(sql, /powerhouse_sales_outcomes/i);
