@@ -2,12 +2,17 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationPath = 'supabase/migrations/20260914100133_unified_content_publication_operations.sql';
-const migration = fs.existsSync(migrationPath) ? fs.readFileSync(migrationPath, 'utf8') : '';
-const singleTenantMigrationPath = 'supabase/migrations/20260914105642_single_content_operations_tenant.sql';
-const singleTenantMigration = fs.existsSync(singleTenantMigrationPath) ? fs.readFileSync(singleTenantMigrationPath, 'utf8') : '';
-const linkedinReconcileMigrationPath = 'supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql';
-const linkedinReconcileMigration = fs.existsSync(linkedinReconcileMigrationPath) ? fs.readFileSync(linkedinReconcileMigrationPath, 'utf8') : '';
+function readMigrationEvidence(name) {
+  for (const root of ['supabase/migrations', 'supabase/migration-history']) {
+    const path = root + '/' + name;
+    if (fs.existsSync(path)) return fs.readFileSync(path, 'utf8');
+  }
+  return '';
+}
+
+const migration = readMigrationEvidence('20260914100133_unified_content_publication_operations.sql');
+const singleTenantMigration = readMigrationEvidence('20260914105642_single_content_operations_tenant.sql');
+const linkedinReconcileMigration = readMigrationEvidence('20260914133500_linkedin_campaign_identity_reconciliation.sql');
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
 const todayUi = fs.readFileSync('intern/vandaag/index.html', 'utf8');
@@ -104,8 +109,7 @@ test('LinkedIn publication reconciliation uses deterministic campaign identity w
   assert.match(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
 });
 
-const publicationWatchdogMigrationPath = 'supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql';
-const publicationWatchdogMigration = fs.existsSync(publicationWatchdogMigrationPath) ? fs.readFileSync(publicationWatchdogMigrationPath, 'utf8') : '';
+const publicationWatchdogMigration = readMigrationEvidence('20260915082029_content_publication_daily_watchdog_20260915101500.sql');
 
 test('daily publication invariant has an explicit no-publish terminal state', () => {
   assert.match(publicationWatchdogMigration, /SKIPPED/);
