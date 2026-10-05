@@ -380,6 +380,18 @@ jobs:
             behindBy:Number(compare.behind_by),
             mergeable:pr.mergeable===true,
             requiredChecks,
+            fullCheckRuns:runs.map(x=>({
+              name:x.name||'unknown',
+              status:x.status||'unknown',
+              conclusion:x.conclusion||'',
+              app:x.app?.slug||x.app?.name||'unknown',
+              details_url:x.details_url||x.html_url||''
+            })),
+            legacyStatuses:statuses.map(x=>({
+              context:x.context||'unknown',
+              state:x.state||'unknown',
+              target_url:x.target_url||''
+            })),
             openCandidates:open.map(x=>({number:x.number,body:x.body||''})),
           };
           writeFileSync('/tmp/bg169-terminal-guard.json',JSON.stringify(payload,null,2));
