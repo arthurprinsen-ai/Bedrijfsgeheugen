@@ -658,3 +658,4 @@ grant select on public.powerhouse_one_brain_capability_inventory_v1 to service_r
 
 comment on view public.powerhouse_one_brain_capability_inventory_v1 is
 'Derived capability catalogue: explicit models, decision engines, learning loops and agents mapped to their canonical runtime authority. No independent state.';
+
