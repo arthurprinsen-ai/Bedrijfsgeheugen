@@ -20,30 +20,25 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD }}
-      SUPABASE_PROJECT_ID: ${{ secrets.PRODUCTION_PROJECT_ID }}
+      SUPABASE_PROJECT_ID: 'adhjwmvyoixzjtmiroln'
       TARGET_PR: '3763'
     steps:
+      - name: Enforce trusted default-branch execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main" || {
+            echo "::error::Production baseline capture may execute only from trusted main workflow code"
+            exit 78
+          }
+
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
       - uses: supabase/setup-cli@v1
         with:
-          version: latest
-
-      - name: Fail closed unless production CLI credentials are present
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "${SUPABASE_ACCESS_TOKEN:-}" || { echo "::error::SUPABASE_ACCESS_TOKEN missing"; exit 78; }
-          test -n "${SUPABASE_DB_PASSWORD:-}" || { echo "::error::PRODUCTION_DB_PASSWORD missing"; exit 78; }
-          test -n "${SUPABASE_PROJECT_ID:-}" || { echo "::error::PRODUCTION_PROJECT_ID missing"; exit 78; }
-          test "$SUPABASE_PROJECT_ID" = "adhjwmvyoixzjtmiroln" || {
-            echo "::error::Unexpected production project ref: $SUPABASE_PROJECT_ID"
-            exit 78
-          }
+          version: 2.119.0
 
       - name: Resolve live recovery candidate
         id: candidate
@@ -69,15 +64,21 @@ jobs:
 
       - name: Capture official production baseline with Supabase CLI
         shell: bash
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD }}
+          CANDIDATE_HEAD_SHA: ${{ steps.candidate.outputs.head_sha }}
         run: |
           set -euo pipefail
+          : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN missing}"
+          : "${SUPABASE_DB_PASSWORD:?PRODUCTION_DB_PASSWORD or SUPABASE_DB_PASSWORD missing}"
+          test "$SUPABASE_PROJECT_ID" = "adhjwmvyoixzjtmiroln"
           rm -rf /tmp/bg3742-baseline
           mkdir -p /tmp/bg3742-baseline
 
           supabase link --project-ref "$SUPABASE_PROJECT_ID"
 
           supabase db dump --linked -f /tmp/bg3742-baseline/schema.sql
-          supabase db dump --linked -f /tmp/bg3742-baseline/roles.sql --role-only
           supabase db dump --linked -f /tmp/bg3742-baseline/history-schema.sql --schema supabase_migrations
           supabase db dump --linked -f /tmp/bg3742-baseline/history-data.sql --use-copy --data-only --schema supabase_migrations
           supabase migration list --linked > /tmp/bg3742-baseline/migration-list.txt
@@ -87,7 +88,7 @@ jobs:
           test -s /tmp/bg3742-baseline/history-data.sql
           test -s /tmp/bg3742-baseline/migration-list.txt
 
-          sha256sum /tmp/bg3742-baseline/schema.sql                     /tmp/bg3742-baseline/roles.sql                     /tmp/bg3742-baseline/history-schema.sql                     /tmp/bg3742-baseline/history-data.sql                     /tmp/bg3742-baseline/migration-list.txt             > /tmp/bg3742-baseline/SHA256SUMS
+          sha256sum /tmp/bg3742-baseline/schema.sql                     /tmp/bg3742-baseline/history-schema.sql                     /tmp/bg3742-baseline/history-data.sql                     /tmp/bg3742-baseline/migration-list.txt             > /tmp/bg3742-baseline/SHA256SUMS
 
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
@@ -110,7 +111,6 @@ jobs:
             files:sums,
             commands:[
               'supabase db dump --linked',
-              'supabase db dump --linked --role-only',
               'supabase db dump --linked --schema supabase_migrations',
               'supabase db dump --linked --data-only --schema supabase_migrations',
               'supabase migration list --linked'
@@ -120,8 +120,9 @@ jobs:
           };
           await writeFile('/tmp/bg3742-baseline/manifest.json', JSON.stringify(manifest,null,2)+'\n');
           NODE
-        env:
-          CANDIDATE_HEAD_SHA: ${{ steps.candidate.outputs.head_sha }}
+
+          # Do not carry linked-project state into the later recovery-branch checkout.
+          rm -rf supabase/.temp .supabase
 
       - name: Write immutable baseline to exact recovery branch head
         env:
@@ -144,7 +145,7 @@ jobs:
           git checkout -B "$TARGET_BRANCH" "$EXPECTED_HEAD"
           mkdir -p supabase/production-baseline
           cp /tmp/bg3742-baseline/schema.sql supabase/production-baseline/schema.sql
-          cp /tmp/bg3742-baseline/roles.sql supabase/production-baseline/roles.sql
+          cp supabase/production-baseline/roles.sql
           cp /tmp/bg3742-baseline/history-schema.sql supabase/production-baseline/history-schema.sql
           cp /tmp/bg3742-baseline/history-data.sql supabase/production-baseline/history-data.sql
           cp /tmp/bg3742-baseline/migration-list.txt supabase/production-baseline/migration-list.txt
