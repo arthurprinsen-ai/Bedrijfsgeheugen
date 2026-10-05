@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
+import fs from 'node:fs';
 
 test('bilingual SEO revenue migration keeps locale and market in canonical identity',async()=>{
   const sql=await readFile('supabase/migrations/20260930113000_powerhouse_bilingual_seo_revenue_v1.sql','utf8');
