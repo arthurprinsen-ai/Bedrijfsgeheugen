@@ -174,7 +174,7 @@ revoke all on public.powerhouse_commercial_message_plan_v1 from public,anon,auth
 grant select on public.powerhouse_commercial_message_plan_v1 to service_role;
 
 create or replace function public.powerhouse_apply_message_plan_v1(p_action_id uuid)
-returns jsonb language plpgsql security definer set search_path='pg_catalog','public' as $$
+returns jsonb language plpgsql security definer SET search_path TO 'pg_catalog', 'public' as $$
 declare v_plan jsonb; v_play text;
 begin
  select message_plan,play_key into v_plan,v_play from public.powerhouse_commercial_message_plan_v1 where action_id=p_action_id;
@@ -189,7 +189,7 @@ revoke execute on function public.powerhouse_apply_message_plan_v1(uuid) from pu
 grant execute on function public.powerhouse_apply_message_plan_v1(uuid) to service_role;
 
 create or replace function public.powerhouse_refresh_message_plans_v1(p_limit int default 100)
-returns jsonb language plpgsql security definer set search_path='pg_catalog','public' as $$
+returns jsonb language plpgsql security definer SET search_path TO 'pg_catalog', 'public' as $$
 declare v_id uuid; v_n int:=0;
 begin
  for v_id in
@@ -215,7 +215,7 @@ create or replace function public.powerhouse_commercial_message_candidates_v1(
   p_action_ids uuid[] default null::uuid[]
 )
 returns setof public.powerhouse_commercial_message_plan_v1
-language sql set search_path='public','pg_catalog' as $$
+language sql SET search_path TO 'public', 'pg_catalog' as $$
   select p.*
   from public.powerhouse_commercial_message_plan_v1 p
   where p.status in ('prepared','suggested','waiting')
@@ -268,7 +268,7 @@ revoke all on public.powerhouse_human_sales_message_health_v1 from public,anon,a
 grant select on public.powerhouse_human_sales_message_health_v1 to service_role;
 
 create or replace function public.powerhouse_dispatch_human_sales_composer_v2(p_limit int default 5)
-returns jsonb language plpgsql security definer set search_path='pg_catalog','public' as $$
+returns jsonb language plpgsql security definer SET search_path TO 'pg_catalog', 'public' as $$
 declare v_token text; v_request_id bigint; v_pending int:=0;
 begin
   select count(*)::int into v_pending
