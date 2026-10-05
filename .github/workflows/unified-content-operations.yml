@@ -3,11 +3,11 @@ name: Unified Content Operations
 on:
   pull_request:
     paths:
-      - 'supabase/migrations/20260914093000_unified_content_publication_operations.sql'
-      - 'supabase/migrations/20260914094000_content_publication_state_truthful_timestamps.sql'
-      - 'supabase/migrations/20260914094500_content_publication_reconciliation.sql'
-      - 'supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql'
-      - 'supabase/migrations/20260915101500_content_publication_daily_watchdog.sql'
+      - 'supabase/migrations/20260914100133_unified_content_publication_operations.sql'
+      - 'supabase/migrations/20260914100150_content_publication_state_truthful_timestamps.sql'
+      - 'supabase/migrations/20260914100205_content_publication_reconciliation.sql'
+      - 'supabase/migrations/20260914084630_powerhouse_social_delivery_reconciliation_v1.sql'
+      - 'supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql'
       - 'supabase/functions/content-operations/**'
       - 'supabase/functions/bg-dagoverzicht/**'
       - 'intern/vandaag/**'
@@ -18,11 +18,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'supabase/migrations/20260914093000_unified_content_publication_operations.sql'
-      - 'supabase/migrations/20260914094000_content_publication_state_truthful_timestamps.sql'
-      - 'supabase/migrations/20260914094500_content_publication_reconciliation.sql'
-      - 'supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql'
-      - 'supabase/migrations/20260915101500_content_publication_daily_watchdog.sql'
+      - 'supabase/migrations/20260914100133_unified_content_publication_operations.sql'
+      - 'supabase/migrations/20260914100150_content_publication_state_truthful_timestamps.sql'
+      - 'supabase/migrations/20260914100205_content_publication_reconciliation.sql'
+      - 'supabase/migrations/20260914084630_powerhouse_social_delivery_reconciliation_v1.sql'
+      - 'supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql'
       - 'supabase/functions/content-operations/**'
       - 'supabase/functions/bg-dagoverzicht/**'
       - 'intern/vandaag/**'
