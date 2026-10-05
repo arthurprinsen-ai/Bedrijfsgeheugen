@@ -7,7 +7,7 @@ async function secret(db:any,name:string){const e=Deno.env.get(name);if(e)return
 async function sha256(v:string){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');}
 function words(v:string){return clean(v).split(/\s+/).filter(Boolean).length;}
 function questions(v:string){return (v.match(/\?/g)||[]).length;}
-function normalize(v:string){return clean(v).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'');}
+function normalize(v:string){return clean(v).toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[‐‑‒–—―]/g,'-').replace(/[^a-z0-9%€$£@._+\-\s]/g,' ').replace(/\s+/g,' ').trim();}
 function extractJson(text:string){const t=clean(text);try{return JSON.parse(t);}catch{}const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a>=0&&b>a){try{return JSON.parse(t.slice(a,b+1));}catch{}}throw new Error('AI_JSON_INVALID');}
 const banned=[/ik zag (je|jouw) profiel/i,/we zijn al een tijd verbonden/i,/just following up/i,/even opvolgen/i,/heb je mijn (mail|bericht)/i,/ik heb nog niets gehoord/i,/in het huidige digitale landschap/i,/revolutionair/i,/game.?changer/i,/mis deze kans niet/i,/laatste kans/i,/synergie/i,/boek (hier|nu).*(agenda|meeting|afspraak)/i,/calendly\.com/i];
 function numberClaims(text:string){return [...text.matchAll(/\b\d+(?:[.,]\d+)?%?\b/g)].map(x=>x[0]);}
@@ -17,10 +17,14 @@ function quality(action:any,plan:any,out:any){
   const ev=action?.evidence||{},pub=ev?.public_source_evidence?.evidence||{};
   const humanContext={
     person_name:action.person_name,company_name:action.company_name,role:action.role,source_url:action.source_url,
-    headline:ev?.headline,summary:ev?.summary,public_headline:pub?.headline,public_summary:pub?.summary,
-    inbound_message:ev?.inbound?.message,reply_text:ev?.reply_text,relationship_evidence:ev?.relationship_evidence
+    headline:ev?.headline,summary:ev?.summary,
+    public_source_evidence:ev?.public_source_evidence,
+    public_headline:pub?.headline,public_summary:pub?.summary,
+    inbound_message:ev?.inbound?.message,reply_text:ev?.reply_text,last_message:ev?.last_message,
+    relationship_evidence:ev?.relationship_evidence
   };
   const context=normalize(JSON.stringify(humanContext));
+  const contextNumbers=new Set(numberClaims(JSON.stringify(humanContext)).map(normalize));
   const machineTerms=['ai_data_digitalisation','buy_sell_ma','erp_afas_change','hot_trigger','commercial_buying_window'];const machineHits=machineTerms.filter(x=>normalize(msg).includes(x)); const humanLabelHits=[/\\btrigger\\b/i,/hot.?trigger/i,/buying.?window/i,/taxonom/i,/intent.?score/i,/commercial.?state/i].filter(r=>r.test(msg)).map(r=>'internal:'+String(r));const qCount=questions(msg),bannedHits=[...banned.filter(r=>r.test(msg)).map(r=>String(r)),...machineHits.map(x=>'machine:'+x),...humanLabelHits],nums=numberClaims(msg).filter(n=>!context.includes(normalize(n)));
   const anchorNormalized=normalize(anchor); const anchorMachine=!anchor||anchor.includes('_')||machineTerms.includes(anchorNormalized)||/\\b(trigger|buying window|intent score|commercial state)\\b/i.test(anchor); const anchorOk=!!anchor&&!anchorMachine&&context.includes(anchorNormalized);
   const oneQuestion=plan?.cta_style==='no_question'?qCount===0:qCount<=1;
@@ -65,7 +69,23 @@ async function groqGenerate(composioKey:string,system:string,allowed:any){
 async function generate(db:any,anthropicKey:string,anthropicModel:string,action:any){
   const plan=action.message_plan||{};
   const triggerRelevant=plan?.source_trigger_relevance===true;
-  const allowed={person_name:action.person_name,company_name:action.company_name,role:action.role,channel:action.channel_norm,action_type:action.action_type,source_url:action.source_url,predicted_problem:triggerRelevant?action.predicted_problem:null,predicted_buying_trigger:triggerRelevant?action.predicted_buying_trigger:null,predicted_objection:action.predicted_objection,action_reason:action.reason,evidence:action.evidence,play:{play_key:plan.play_key,play_name:plan.play_name,objective:plan.objective,psychology:plan.psychology,message_structure:plan.message_structure,cta_style:plan.cta_style,tone_rules:plan.tone_rules,prohibited:plan.prohibited,max_words:plan.max_words,source_trigger_relevance:triggerRelevant},brand_voice:plan.brand_voice,quality_contract:plan.quality_contract};
+  const rawEvidence=action?.evidence||{};
+  const safeEvidence:any={
+    headline:rawEvidence?.headline||null,
+    summary:rawEvidence?.summary||null,
+    source_url:rawEvidence?.source_url||action.source_url||null,
+    public_source_evidence:rawEvidence?.public_source_evidence||null,
+    relationship_evidence:rawEvidence?.relationship_evidence||null,
+    inbound:rawEvidence?.inbound||null,
+    reply_text:rawEvidence?.reply_text||null,
+    touch_number:rawEvidence?.touch_number||null
+  };
+  if(triggerRelevant){
+    safeEvidence.predictive_brief=rawEvidence?.predictive_brief||null;
+    safeEvidence.trigger_key=rawEvidence?.trigger_key||null;
+    safeEvidence.trigger_type=rawEvidence?.trigger_type||null;
+  }
+  const allowed={person_name:action.person_name,company_name:action.company_name,role:action.role,channel:action.channel_norm,action_type:action.action_type,source_url:action.source_url,predicted_problem:triggerRelevant?action.predicted_problem:null,predicted_buying_trigger:triggerRelevant?action.predicted_buying_trigger:null,predicted_objection:action.predicted_objection,action_reason:action.reason,evidence:safeEvidence,play:{play_key:plan.play_key,play_name:plan.play_name,objective:plan.objective,psychology:plan.psychology,message_structure:plan.message_structure,cta_style:plan.cta_style,tone_rules:plan.tone_rules,prohibited:plan.prohibited,max_words:plan.max_words,source_trigger_relevance:triggerRelevant},brand_voice:plan.brand_voice,quality_contract:plan.quality_contract};
   const system='Je bent de Human Commercial Composer van Bedrijfsgeheugen. Gebruik alleen leesbare prospectcontext zoals een echte headline, samenvatting, concreet openbaar feit, eerder gesprek of relatiecontext. Toon nooit interne taxonomylabels, snake_case, scores, source keys of het woord trigger als intern systeembegrip. Schrijf als een slimme, sympathieke Nederlandse ondernemer; niet als een salesbot. Gebruik ALLEEN aangeleverde feiten. Verzin nooit persoonsdetails, gebeurtenissen, cijfers, urgentie, bewijs of problemen. Een hypothese moet hoorbaar als hypothese klinken (kan, mogelijk, ik vraag me af of). Externe AI-content of een AI-product is nooit automatisch bewijs van een intern data-, governance- of implementatieprobleem. Als source_trigger_relevance false is, negeer voorspelde problemen/triggers volledig en schrijf alleen vanuit de leesbare bron- of relatiecontext. Doel: de kleinste logische commitment, niet meteen een afspraak. Pas exact de gekozen sales play en psychologische mechanismen toe zonder manipulatief te worden. Menselijk: korte zinnen, spreektaal, concreet, warm, licht droge humor alleen als die vanzelf past. Nooit humor ten koste van de prospect. Verboden: generieke complimenten/openingen, dienstencatalogus, AI-hype, corporate jargon, nep-schaarste, schuldgevoel bij geen reactie, agendalink, meerdere CTAs. LinkedIn-DM: maximaal 80 woorden. E-mail: maximaal het opgegeven maximum. Eén vraag maximaal. Follow-up: altijd nieuwe invalshoek; nooit even opvolgen, heb je mijn mail gezien of verwijt. Graceful close: geen vraag. DMs mogen niet eindigen als reclame voor Bedrijfsgeheugen. Geef uitsluitend JSON met keys: subject, message, personalization_anchor, fact_used, hypothesis_used, primary_problem, micro_commitment, predicted_objection, objection_response, human_reason. personalization_anchor moet een KORTE LETTERLIJKE frase zijn uit de aangeleverde context die de tekst werkelijk uniek maakt.';
   let generated:any=null,primaryError='';
   try{
