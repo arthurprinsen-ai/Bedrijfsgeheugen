@@ -11,11 +11,12 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "A backend-only control-plane workflow inherited the generic shared workflow classification and activated unrelated website/browser lanes, extending exact-head validation long enough for moving main to repeatedly make the candidate behind.",
+  "root_cause": "The historical reconciliation workflow and registry were unscoped shared executable paths, so a backend-only control-plane recovery activated unrelated portal, website/browser and automation lanes. The longer exact-head validation window repeatedly allowed moving main to make a green candidate behind.",
   "prevention": [
     "Explicitly classify control-plane workflows on their owned lane.",
-    "Do not activate website or portal gates without a changed path owned by those lanes.",
-    "Retain shared and backend controls for historical terminal reconciliation."
+    "Explicitly classify control-plane configuration on its owned lane.",
+    "Regression-test the complete change bundle, not just individual files.",
+    "Do not activate website, portal or automation gates without a changed path owned by those lanes."
   ],
   "evaluation": {
     "historical_replay": [
@@ -24,7 +25,8 @@
   },
   "evidence": {
     "workflow": ".github/workflows/historical-terminal-reconciliation.yml",
-    "starved_prs": [3797, 3804]
+    "registry": "config/historical-terminal-reconciliation.json",
+    "starved_prs": [3765, 3785, 3797, 3804]
   },
   "status": "ACTIVE_PREVENTION",
   "revision": 1
