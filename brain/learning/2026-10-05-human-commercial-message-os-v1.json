@@ -13,7 +13,8 @@
     "predicted objections cannot self-promote to observed objections",
     "recruitment is not M&A evidence and supplier directories are not AI buying-trigger evidence",
     "Gmail and SalesRobot fail closed unless the canonical composer quality proof passes",
-    "outcomes and revenue are measured by channel, sales play, psychology and CTA"
+    "outcomes and revenue are measured by channel, sales play, psychology and CTA",
+    "live composer and persuasion optimizer must be repository-canonical"
   ],
   "canonical_authorities": [
     "public.powerhouse_sales_actions",
@@ -24,7 +25,8 @@
     "public.powerhouse_sales_technique_performance_v1",
     "supabase/functions/powerhouse-commercial-message-composer/index.ts",
     "supabase/functions/powerhouse-autonomous-outreach/index.ts",
-    "supabase/functions/powerhouse-linkedin-sales-machine/index.ts"
+    "supabase/functions/powerhouse-linkedin-sales-machine/index.ts",
+    "public.powerhouse_persuasion_revenue_optimizer_v1"
   ],
   "id": "human-commercial-message-os-20261005-v1",
   "date": "2026-10-05",
@@ -53,7 +55,9 @@
       "quality_passed": 8,
       "drafts_without_quality": 0,
       "actions_without_strategy": 0
-    }
+    },
+    "persuasion_migration": "supabase/migrations/20261005151500_powerhouse_persuasion_revenue_optimizer_v1.sql",
+    "runtime_drift_closed": true
   },
   "compiler": {
     "failure_class": "COMMERCIAL_KNOWLEDGE_RUNTIME_LINEAGE_FRAGMENTATION",
