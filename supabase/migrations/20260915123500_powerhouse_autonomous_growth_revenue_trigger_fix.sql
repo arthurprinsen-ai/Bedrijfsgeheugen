@@ -57,18 +57,22 @@ begin
   select pg_get_functiondef('public.powerhouse_autonomous_growth_revenue_cycle(date)'::regprocedure)
     into v_before;
 
-  v_after := regexp_replace(
-    v_before,
-    'perform[[:space:]]+public[.]powerhouse_sync_forecast_calibration_obligation[[:space:]]*[(][[:space:]]*[)][[:space:]]*;?',
-    'perform public.powerhouse_refresh_forecast_calibration_obligations();',
-    'i'
-  );
+  -- Replay-safe: a reconstructed migration history may execute this migration
+  -- after a later canonical function body already contains the normal helper.
+  if position('powerhouse_refresh_forecast_calibration_obligations' in v_before) = 0 then
+    v_after := regexp_replace(
+      v_before,
+      'perform[[:space:]]+public[.]powerhouse_sync_forecast_calibration_obligation[[:space:]]*[(][[:space:]]*[)][[:space:]]*;?',
+      'perform public.powerhouse_refresh_forecast_calibration_obligations();',
+      'i'
+    );
 
-  if v_after = v_before then
-    raise exception 'autonomy calibration trigger-call patch did not match current function body';
+    if v_after = v_before then
+      raise exception 'autonomy calibration trigger-call patch did not match current function body';
+    end if;
+
+    execute v_after;
   end if;
-
-  execute v_after;
 end
 $$;
 
