@@ -64,6 +64,7 @@ jobs:
               if not match:
                   malformed.append(path.name)
                   continue
+              assert path.read_text(encoding='utf-8').strip(), f'empty migration SQL is forbidden: {path.name}'
               versions.setdefault(match.group(1), []).append(path.name)
 
           duplicates = {version: names for version, names in versions.items() if len(names) > 1}
