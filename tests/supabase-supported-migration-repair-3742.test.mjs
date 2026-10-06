@@ -39,7 +39,14 @@ test('recovery branch advancement is exact-head leased and remains pre-terminal'
 
 
 test('normalizes Supabase CLI migration-list backticks before parity comparison', () => {
-  assert.match(workflow, /replace\(\/\^\\`\|\\`\$\/g,''\)/);
+  assert.match(workflow, /replace\(\/\^\\`\+\|\\`\+\$\/g,''\)\.trim\(\)/);
   assert.match(workflow, /UNEXPECTED_PRE_REPAIR_DRIFT/);
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
+});
+
+
+test('blank remote cells become empty after backtick normalization', () => {
+  const normalize = value => value.trim().replace(/^`+|`+$/g,'').trim();
+  assert.equal(normalize('` `'), '');
+  assert.equal(normalize('`20260920101150`'), '20260920101150');
 });
