@@ -41,8 +41,14 @@ test('sitemap generator includes English pages and hreflang alternates', async()
   assert.match(source,/alternateLinks/);
 });
 
-test('production build runs SEO revenue enrichment and validation before locale generation', async()=>{
-  const netlify=await readFile('netlify.toml','utf8');
-  const prod='node tools/seo-order-engine/apply.mjs && node tools/seo-order-engine/validate.mjs && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs';
-  assert.ok(netlify.includes(prod));
+test('canonical production build runs SEO revenue enrichment and validation before locale generation', async()=>{
+  const runner=await readFile('tools/ci/netlify-build-entry.mjs','utf8');
+  const order=[
+    "['seo-apply','tools/seo-order-engine/apply.mjs']",
+    "['seo-validate','tools/seo-order-engine/validate.mjs']",
+    "['i18n-assets','tools/site-shell/apply-i18n.mjs']",
+    "['localized-routes','tools/site-shell/build-localized-routes.mjs']",
+  ].map(token=>runner.indexOf(token));
+  assert.ok(order.every(index=>index>=0),'canonical runner must own every SEO/i18n phase');
+  assert.ok(order.every((index,i)=>i===0||index>order[i-1]),'canonical runner must preserve SEO -> i18n ordering');
 });

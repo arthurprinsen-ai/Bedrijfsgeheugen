@@ -183,3 +183,20 @@ Required SEO proof for bilingual money/support pages includes:
 A JS-rendered title that differs from raw HTML is a runtime SEO defect, not a successful readback. Legacy SPA title mutators such as `#bg-tabtitel` may not overwrite static localized canonical titles.
 
 When a native browser is blocked but ZenRows succeeds, the ZenRows result is valid independent public-browser evidence and must be used instead of claiming that public readback is unavailable.
+
+
+## Build-once tree-addressed production reuse
+
+Fingerprint: `netlify|build-once|tree-addressed-prebuilt-reuse|v1`.
+
+For Netlify-hosted website/portal/runtime changes:
+- the canonical deterministic transform order lives only in `tools/ci/netlify-build-entry.mjs`; production, deploy-preview and exact-local fallback delegate to it;
+- Required may publish a prebuilt bundle only after the exact candidate build and artifact contracts are green;
+- artifact identity is the Git **tree SHA**, not a commit SHA, so a squash/merge commit may reuse output only when its complete source tree is byte-equivalent to the proven candidate;
+- production reuse requires a non-expired artifact from a successful same-repository `Required test` run, matching manifest tree SHA and archive SHA-256;
+- verified reuse still travels through the authorized Netlify Build API path so Functions/Edge packaging remains Netlify-owned;
+- the provider build may skip deterministic site transforms only after the verified marker is present; it must restamp final main `commit_ref`, production context and actual deploy id;
+- missing, stale, cross-repository, failed-run, tree-mismatched or hash-mismatched artifacts are cache misses, never deploy authority: fall back to the full canonical build;
+- static localized-route render caching must be content-addressed and include source HTML (with release identity normalized), translation cache, public-route topology, SEO locale map and builder implementation.
+
+Regression: `tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs`.

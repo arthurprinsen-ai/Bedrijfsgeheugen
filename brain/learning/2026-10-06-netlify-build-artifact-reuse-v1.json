@@ -1,0 +1,41 @@
+{
+  "version": "NETLIFY-BUILD-ARTIFACT-REUSE-v1",
+  "date": "2026-10-06",
+  "fingerprint": "netlify|build-once|tree-addressed-prebuilt-reuse|v1",
+  "obligation_id": "netlify-build-artifact-reuse-20261006-v1",
+  "root_cause": {
+    "repeated_build": "The same deterministic website build was recomputed in Required and again by Netlify after merge.",
+    "expensive_phase": "Static locale rendering repeatedly parsed and serialized the same 100+ route corpus; cache identity was not persisted across runners/builds.",
+    "drift": "Production, deploy-preview and local fallback carried duplicated command lists that could diverge.",
+    "shallow_checkout": "Required preflight uses a bounded shallow checkout while material-writeback closure previously depended on BASE...HEAD merge-base ancestry."
+  },
+  "prevention": {
+    "command_authority": "One tools/ci/netlify-build-entry.mjs owns the canonical build phase order.",
+    "route_cache": "Static locale output is content-addressed by normalized source, translation cache, topology, SEO map and builder implementation and is persisted through GitHub Actions/NETLIFY_CACHE_DIR.",
+    "bounded_parallelism": "Fail-closed static locale rendering may use bounded route workers; network translation remains forbidden inside shards.",
+    "artifact_reuse": "Required uploads a successful built workspace keyed by the immutable Git tree SHA; production reuses it only after run-authority, tree and SHA-256 verification.",
+    "fallback": "Missing, expired or invalid reuse evidence falls back to the canonical full Netlify build.",
+    "shallow_safe_closure": "Material-writeback closure compares the two immutable trees directly with git diff BASE HEAD and does not require a merge base."
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_DUPLICATE_BUILD_AND_UNCACHED_ROUTE_RENDER",
+    "scope": "CI_PRODUCTION",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs",
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs",
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/tabbladen.test.mjs"
+    ]
+  },
+  "evidence": {
+    "material_writeback_diff": "git diff --name-only BASE HEAD",
+    "route_worker_ceiling": 4,
+    "required_route_workers": 2,
+    "network_translation_in_shards": "forbidden"
+  },
+  "status": "ACTIVE_PREVENTION"
+}
