@@ -146,7 +146,12 @@ jobs:
             if (process.env.EXPECTED_HEAD_SHA && headSha !== process.env.EXPECTED_HEAD_SHA) {
               throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
             }
-            const eventLease = parseWriterLease(process.env.EVENT_PR_BODY || '');
+            const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
+            if (String(pr.head?.sha || '') !== headSha) {
+              throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
+            }
+            const livePrBody = String(pr.body || process.env.EVENT_PR_BODY || '');
+            const eventLease = parseWriterLease(livePrBody);
             const rerun = Number(process.env.RUN_ATTEMPT || '1') > 1;
             const synchronize = process.env.EVENT_NAME === 'pull_request'
               && process.env.EVENT_ACTION === 'synchronize';
@@ -185,7 +190,6 @@ jobs:
                 throw new Error(`INVALID_MAIN_SYNC_COMMIT:${expectedPreviousHead || 'missing'}:${expectedMainTarget || 'missing'}:${headSha}`);
               }
             }
-            const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
             const open = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
             const mainRef = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/ref/heads/main`);
             currentMainSha = String(mainRef?.object?.sha || '').trim();
