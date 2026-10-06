@@ -160,6 +160,7 @@ jobs:
           HEAD_SHA: ${{ inputs.change_head_sha }}
           REPOSITORY: ${{ github.repository }}
           PR_NUMBER: ${{ inputs.pr_number }}
+          EVENT_NAME: ${{ github.event_name }}
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: |
           node --input-type=module - <<'NODE'
@@ -168,6 +169,11 @@ jobs:
           const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.HEAD_SHA}/status`;
           const previewBase=`https://deploy-preview-${process.env.PR_NUMBER}--bedrijfsgeheugen.netlify.app`;
           const routes=JSON.parse(process.env.ROUTES_JSON||'[]');
+          if(process.env.EVENT_NAME==='merge_group' || !process.env.PR_NUMBER){
+            await appendFile(process.env.GITHUB_OUTPUT,'preview_mode=local-exact-candidate\nbase_url=http://127.0.0.1:4173\n');
+            console.log('Merge-group assurance uses the exact local candidate; no external preview polling.');
+            process.exit(0);
+          }
           const deadline=Date.now()+30*1000;
           async function routeReady(route){
             const target=`${previewBase}${route==='/'?'/':route}`;
