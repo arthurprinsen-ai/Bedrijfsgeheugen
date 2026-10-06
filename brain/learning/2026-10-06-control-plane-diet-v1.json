@@ -75,5 +75,16 @@
   "compiler": {
     "failure_class": "EXCESS_DIRECT_PULL_REQUEST_AUTHORITY_FANOUT",
     "machine_enforceable": true
+  },
+  "terminal_readback_recovery": {
+    "predecessor_pr": 3984,
+    "successor_pr": 4020,
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "misclassified_paths": [
+      "config/netlify-project-registry.json",
+      "tools/netlify/ephemeral-janitor.mjs"
+    ],
+    "root_cause": "Netlify delivery-control-plane files were outside verifierOnlyPaths, so post-merge terminalization treated them as unknown runtime without a provider readback.",
+    "prevention": "Keep Netlify registry/janitor control-plane files in the canonical production-readback verifier-only authority and regression-test that real Netlify runtime paths still require deployment/readback."
   }
 }
