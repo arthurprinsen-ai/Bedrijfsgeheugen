@@ -120,19 +120,43 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const failureRate = failed / jobs;
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
+  const requiredQueueP95 = Number(metrics.required_queue_wait_seconds_p95 ?? queueP95);
+  const requiredTotalP95 = Number(metrics.required_total_seconds_p95 ?? executionP95);
+  const directPrWorkflowCount = Number(metrics.direct_pull_request_workflow_count ?? 0);
+  const duplicateWorkflowRuns = Number(metrics.duplicate_workflow_runs_7d ?? 0);
+  const duplicateOpenObligations = Number(metrics.duplicate_open_obligations ?? 0);
+  const retiredPrChurn = Number(metrics.retired_pr_churn_7d ?? 0);
 
   const calibrationRecommendations = Array.isArray(calibration?.recommendations) ? calibration.recommendations : [];
   const highCalibrationWarnings = calibrationRecommendations.filter(item => item?.priority === 'high');
   const calibrationVeto = highCalibrationWarnings.length > 0;
-  const runnerPressure = queueP95 > 120 || cancelled > 8;
-  const orchestrationWaste = fanoutP95 > 10 || skippedRate > 0.45;
+  const runnerPressure = requiredQueueP95 > 30 || queueP95 > 120 || cancelled > 8;
+  const fastGateSloBreach = requiredTotalP95 > 120;
+  const orchestrationWaste = fanoutP95 > 5 || skippedRate > 0.35 || duplicateWorkflowRuns > 0 || duplicateOpenObligations > 0;
 
-  if (runnerPressure || orchestrationWaste) {
+  const ci = { ...(current.ci ?? {}) };
+  const targetDirectPr = 2;
+  const priorDirectBudget = Number(ci.direct_pr_workflow_budget ?? Math.max(targetDirectPr, directPrWorkflowCount || targetDirectPr));
+  ci.direct_pr_workflow_target = targetDirectPr;
+  ci.direct_pr_workflow_budget = directPrWorkflowCount > 0
+    ? Math.max(targetDirectPr, Math.min(priorDirectBudget, directPrWorkflowCount))
+    : priorDirectBudget;
+  ci.max_pr_workflows_per_head = 5;
+  ci.required_queue_p95_slo_seconds = 30;
+  ci.required_total_p95_slo_seconds = 120;
+  ci.agent_external_wait_budget_seconds = 30;
+  ci.unchanged_state_no_repoll_seconds = 120;
+  ci.architecture_attention_required = directPrWorkflowCount > targetDirectPr || fanoutP95 > 5 || duplicateWorkflowRuns > 0 || duplicateOpenObligations > 0 || retiredPrChurn > 2;
+  if (ci.direct_pr_workflow_budget < priorDirectBudget) decisions.push('ratchet-direct-pr-workflow-budget-down');
+  if (directPrWorkflowCount > priorDirectBudget) decisions.push('direct-pr-workflow-budget-regression-observed');
+  if (fastGateSloBreach) decisions.push('required-fast-gate-slo-breach');
+
+  if (runnerPressure || orchestrationWaste || fastGateSloBreach) {
     const before=Number(next.max_parallel_packages ?? 4);
     next.max_parallel_packages=clamp(before-1,2,8);
     next.candidate_batch_window_seconds=clamp(Number(next.candidate_batch_window_seconds ?? 20)+(orchestrationWaste?10:5),10,60);
     decisions.push(orchestrationWaste?'reduce-fanout-and-batch-more':'reduce-runner-pressure-and-batch-more');
-  } else if (!calibrationVeto && queueP95 < 30 && fanoutP95 <= 6 && failureRate < 0.05 && skippedRate < 0.25) {
+  } else if (!calibrationVeto && requiredQueueP95 < 30 && requiredTotalP95 <= 120 && queueP95 < 30 && fanoutP95 <= 5 && failureRate < 0.05 && skippedRate < 0.25) {
     next.max_parallel_packages=clamp(Number(next.max_parallel_packages ?? 4)+1,2,8);
     decisions.push('increase-safe-parallelism');
   }
@@ -143,20 +167,28 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   if (failureRate > 0.15) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)+0.05,0.6,0.95);
     decisions.push('raise-speculation-confidence-threshold');
-  } else if (!calibrationVeto && failureRate < 0.03 && queueP95 < 60 && fanoutP95 <= 6) {
+  } else if (!calibrationVeto && failureRate < 0.03 && requiredQueueP95 < 30 && queueP95 < 60 && fanoutP95 <= 5) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)-0.02,0.6,0.95);
     decisions.push('allow-more-safe-speculation');
   }
   const signals=Object.freeze({
     queue_wait_seconds_p95:queueP95,
     execution_seconds_p95:executionP95,
+    required_queue_wait_seconds_p95:requiredQueueP95,
+    required_total_seconds_p95:requiredTotalP95,
     workflow_fanout_per_sha_p95:fanoutP95,
+    direct_pull_request_workflow_count:directPrWorkflowCount,
+    direct_pr_workflow_budget:ci.direct_pr_workflow_budget,
+    duplicate_workflow_runs_7d:duplicateWorkflowRuns,
+    duplicate_open_obligations:duplicateOpenObligations,
+    retired_pr_churn_7d:retiredPrChurn,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
     calibration_mode:String(calibration?.mode || 'NONE'),
     calibration_high_priority_recommendations:Object.freeze(highCalibrationWarnings.map(item => String(item.id || '')).filter(Boolean))
   });
-  next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true };
+  next.ci=ci;
+  next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true, autonomous_gate_weakening_forbidden:true };
   return Object.freeze({ changed:JSON.stringify(next)!==JSON.stringify(current), decisions:Object.freeze(decisions), signals, tuning:Object.freeze(next) });
 }
 
@@ -173,7 +205,14 @@ export async function validateAutonomousEngineeringFabricV3() {
   if(policy.closure_compiler?.late_bound!==true) errors.push('closure must be late bound');
   if(policy.daily_optimizer?.enabled!==true) errors.push('daily optimizer required');
   if(policy.daily_optimizer?.auto_merge_only_after_protected_gates!==true) errors.push('protected-gate auto merge required');
-  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity','autonomous_gate_weakening_forbidden']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  if(Number(tuning.ci?.direct_pr_workflow_target ?? 0)!==2) errors.push('direct PR workflow target must be 2');
+  if(Number(tuning.ci?.direct_pr_workflow_budget ?? 0)<2) errors.push('direct PR workflow budget cannot drop below Required + CodeQL');
+  if(Number(tuning.ci?.max_pr_workflows_per_head ?? 0)!==5) errors.push('PR workflow head budget must remain 5');
+  if(Number(tuning.ci?.required_queue_p95_slo_seconds ?? 0)!==30) errors.push('Required queue p95 SLO must remain 30s');
+  if(Number(tuning.ci?.required_total_p95_slo_seconds ?? 0)!==120) errors.push('Required total p95 SLO must remain 120s');
+  if(Number(tuning.ci?.agent_external_wait_budget_seconds ?? 0)!==30) errors.push('agent external wait budget must remain 30s');
+  if(Number(tuning.ci?.unchanged_state_no_repoll_seconds ?? 0)!==120) errors.push('unchanged-state no-repoll budget must remain 120s');
   return { ok:errors.length===0, errors, fingerprint:policy.fingerprint };
 }
 
@@ -197,7 +236,10 @@ async function main(){
     const out={...result,observed_at:new Date().toISOString(),source_metrics:metricsDoc.metrics};
     await mkdir(path.join(repoRoot,'artifacts/engineering-optimizer'),{recursive:true});
     await writeFile(path.join(repoRoot,'artifacts/engineering-optimizer/latest.json'),JSON.stringify(out,null,2)+'\n');
-    await writeFile(path.join(repoRoot,'artifacts/engineering-optimizer/proposed-tuning.json'),JSON.stringify({...result.tuning,updated_at:new Date().toISOString(),source:'daily-autonomous-optimizer'},null,2)+'\n');
+    const proposed = result.changed
+      ? {...result.tuning,updated_at:new Date().toISOString(),source:'daily-autonomous-optimizer'}
+      : current;
+    await writeFile(path.join(repoRoot,'artifacts/engineering-optimizer/proposed-tuning.json'),JSON.stringify(proposed,null,2)+'\n');
     console.log(JSON.stringify(out,null,2));
     return;
   }
