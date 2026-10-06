@@ -230,3 +230,106 @@ export function buildResumableCheckpoint({
     terminal:false
   });
 }
+
+
+export const WORKFLOW_OBSERVATION_DEFAULTS = Object.freeze({
+  maxTopLevelSnapshotsPerCycle: 1,
+  maxFailureDrilldownsPerCycle: 1,
+  sameSnapshotCooldownSeconds: 120,
+  maxObservationToolCallsPerCycle: 3,
+  maxObservationWallSeconds: 30
+});
+
+const OBSERVATION_ACTIVE = new Set(['queued','in_progress','waiting','requested','pending']);
+const OBSERVATION_FAILED = new Set(['failure','cancelled','timed_out','action_required','startup_failure']);
+
+function workflowSnapshotKey(headSha='', workflowRuns=[]){
+  const rows=(workflowRuns||[]).map(run=>[
+    String(run?.id??''),
+    String(run?.name??''),
+    String(run?.status??''),
+    String(run?.conclusion??''),
+    String(run?.updated_at??'')
+  ].join(':')).sort();
+  return [String(headSha||'').toLowerCase(),...rows].join('|');
+}
+
+export function planWorkflowObservation({
+  headSha='',
+  workflowRuns=[],
+  previousObservation=null,
+  topLevelSnapshotsUsed=0,
+  failureDrilldownsUsed=0,
+  observationToolCallsUsed=0,
+  observationWallSeconds=0,
+  now=Date.now(),
+  limits=WORKFLOW_OBSERVATION_DEFAULTS
+}={}){
+  const snapshotKey=workflowSnapshotKey(headSha,workflowRuns);
+  const previousAt=Date.parse(previousObservation?.observedAt||'');
+  const unchanged=Boolean(previousObservation?.snapshotKey && previousObservation.snapshotKey===snapshotKey);
+  const withinCooldown=unchanged && Number.isFinite(previousAt) &&
+    Math.max(0,(Number(now)-previousAt)/1000) < limits.sameSnapshotCooldownSeconds;
+
+  if(observationToolCallsUsed>=limits.maxObservationToolCallsPerCycle || observationWallSeconds>=limits.maxObservationWallSeconds){
+    return Object.freeze({
+      state:'OBSERVATION_BUDGET_EXHAUSTED',
+      action:'CHECKPOINT_AND_CONTINUE_INDEPENDENT_WORK',
+      shouldReadTopLevel:false,
+      shouldDrillDownFailure:false,
+      shouldPoll:false,
+      snapshotKey
+    });
+  }
+  if(topLevelSnapshotsUsed>=limits.maxTopLevelSnapshotsPerCycle || withinCooldown){
+    return Object.freeze({
+      state:withinCooldown?'UNCHANGED_SNAPSHOT_COOLDOWN':'TOP_LEVEL_SNAPSHOT_BUDGET_EXHAUSTED',
+      action:'CHECKPOINT_AND_CONTINUE_INDEPENDENT_WORK',
+      shouldReadTopLevel:false,
+      shouldDrillDownFailure:false,
+      shouldPoll:false,
+      snapshotKey,
+      nextEligibleObservationAt:withinCooldown
+        ? new Date(previousAt + limits.sameSnapshotCooldownSeconds*1000).toISOString()
+        : null
+    });
+  }
+
+  const failed=(workflowRuns||[]).find(run=>run?.status==='completed' && OBSERVATION_FAILED.has(run?.conclusion));
+  if(failed){
+    const mayDrill=failureDrilldownsUsed<limits.maxFailureDrilldownsPerCycle;
+    return Object.freeze({
+      state:'TERMINAL_FAILURE',
+      action:mayDrill?'DRILL_DOWN_FIRST_FAILED_WORKFLOW_JOB_STEP_THEN_REPAIR':'CHECKPOINT_AND_CONTINUE_INDEPENDENT_WORK',
+      shouldReadTopLevel:true,
+      shouldDrillDownFailure:mayDrill,
+      shouldPoll:false,
+      failedRunId:failed.id??null,
+      failedRunName:failed.name??null,
+      snapshotKey
+    });
+  }
+
+  const active=(workflowRuns||[]).filter(run=>OBSERVATION_ACTIVE.has(run?.status));
+  if(active.length){
+    return Object.freeze({
+      state:'REMOTE_WORKFLOW_ACTIVE',
+      action:'CHECKPOINT_AND_CONTINUE_INDEPENDENT_WORK',
+      shouldReadTopLevel:true,
+      shouldDrillDownFailure:false,
+      shouldPoll:false,
+      activeRunIds:active.map(run=>run?.id).filter(Boolean),
+      snapshotKey,
+      nextEligibleObservationAt:new Date(Number(now)+limits.sameSnapshotCooldownSeconds*1000).toISOString()
+    });
+  }
+
+  return Object.freeze({
+    state:'TOP_LEVEL_TERMINAL',
+    action:'USE_TOP_LEVEL_RESULT_WITHOUT_ENUMERATING_SIBLING_JOBS',
+    shouldReadTopLevel:true,
+    shouldDrillDownFailure:false,
+    shouldPoll:false,
+    snapshotKey
+  });
+}

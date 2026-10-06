@@ -1036,3 +1036,17 @@ Voor alle huidige en toekomstige chats, agents, recovery-workers en tools geldt:
 - ontbrekende provider-check, provider failure, onbekende function scope of nieuwere Supabase-runtimewijziging op `main` is fail-closed;
 - break-glass providerdeploy is alleen toegestaan na expliciete menselijke noodautorisatie en verplicht onmiddellijke source-projectie + protected-main reconciliation;
 - een production Edge-versie zonder protected-main lineage is `RUNTIME_AUTHORITY_DRIFT`, nooit nieuwe source authority en nooit reden om een stale PR te laten inhalen.
+
+
+## Bounded workflow observation — inherited
+
+Fingerprint: `github|workflow-observation|bounded-single-snapshot|v1`.
+
+Voor alle huidige en toekomstige chats/agents die GitHub Actions of andere remote workflowstatus observeren geldt:
+- neem per observatiecyclus exact één top-level snapshot van de exacte candidate HEAD;
+- drill daarna maximaal één mislukte workflow door tot de eerste mislukte job/stap wanneer er een terminale failure is;
+- bij dezelfde HEAD en ongewijzigde `queued`, `pending`, `waiting`, `requested` of `in_progress` status wordt minimaal 120 seconden niet opnieuw dezelfde workflowstatus gelezen zonder nieuwe evidence;
+- gebruik per observatiecyclus maximaal 3 status-toolreads en 30 seconden wall-clock observatietijd;
+- succesvolle of skipped sibling jobs worden niet steeds opnieuw uitgelezen;
+- een actieve workflow wordt gecheckpoint en de agent gaat door met onafhankelijk werk; een chat/toolketen mag nooit openstaan uitsluitend voor polling;
+- remote CI, auto-merge en protected gates blijven zelfstandig doorlopen; snelheid wordt nooit verkregen door Required, CodeQL, exact-HEAD identity, branch protection of provider-readback te verzwakken.
