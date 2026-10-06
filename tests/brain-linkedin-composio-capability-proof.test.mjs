@@ -159,3 +159,16 @@ test('durable fresh OAuth proof wins over stale candidate state',()=>{
   assert.match(setup,/accountId===proofAccountId/);
   assert.match(setup,/freshProof\?\.admin_acl_verified===true/);
 });
+
+
+test('company OAuth principal is derived from verified setup state, not a legacy hardcoded person id',()=>{
+  assert.match(publisher,/companyExpectedPersonUrn=clean\(state\?\.personal_author_urn\)/);
+  assert.match(publisher,/companyExpectedPersonId=companyExpectedPersonUrn\.replace/);
+  assert.match(publisher,/findExpectedLinkedInPersonId\(me\?\.data\|\|me,companyExpectedPersonId\)/);
+  assert.match(publisher,/LINKEDIN_COMPANY_OAUTH_PRINCIPAL_MISMATCH/);
+  assert.match(publisher,/message\.includes\('OAUTH_PRINCIPAL'\)/);
+  const companyStart=publisher.indexOf('async function composioLinkedInCompanyContext');
+  const companyEnd=publisher.indexOf('async function preflightLinkedInCompanyComposio',companyStart);
+  const companyBlock=publisher.slice(companyStart,companyEnd);
+  assert.doesNotMatch(companyBlock,/N1twnCNCrD/);
+});
