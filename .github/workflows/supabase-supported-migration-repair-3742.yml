@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/supabase-supported-migration-repair-3742.yml'
+      - 'supabase/config.toml'
+      - 'supabase/functions/supabase-migration-repair-bridge/**'
+      - 'tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs'
       - 'tests/supabase-supported-migration-repair-3742.test.mjs'
 
 permissions:
