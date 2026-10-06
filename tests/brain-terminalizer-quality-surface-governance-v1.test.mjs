@@ -11,3 +11,14 @@ test('terminalizer treats quality surface registry as governance instead of unkn
   assert.match(governanceBlock,/config\/powerhouse-quality-surface-contracts\.json/);
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
 });
+
+
+test('terminalizer treats tools/ci as governance while unknown runtime stays fail-closed', async()=>{
+  const workflow=await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  const governanceStart=workflow.indexOf('is_governance_path()');
+  const runtimeStart=workflow.indexOf('runtime_classes=', governanceStart);
+  assert.ok(governanceStart>=0 && runtimeStart>governanceStart);
+  const governanceBlock=workflow.slice(governanceStart,runtimeStart);
+  assert.match(governanceBlock,/tools\/ci\/\*/);
+  assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
+});
