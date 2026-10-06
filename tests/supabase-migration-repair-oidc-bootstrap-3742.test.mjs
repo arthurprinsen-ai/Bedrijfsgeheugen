@@ -41,7 +41,7 @@ test('repair remains exactly allowlisted and fail-closed', () => {
 
 test('trusted repair is structurally pinned to Supavisor session-mode IPv4', () => {
   assert.match(workflow, /transport.*supavisor-session-ipv4/);
-  assert.ok(workflow.includes('aws-0-eu-central-1.pooler.supabase.com'));
+  assert.match(workflow, /^\s*const expectedHost = 'aws-0-eu-central-1\.pooler\.supabase\.com';\s*$/m);
   assert.match(workflow, /SESSION_POOLER_PORT_REQUIRED/);
   assert.match(workflow, /SESSION_POOLER_USERNAME_REQUIRED/);
   assert.match(workflow, /DIRECT_IPV6_ROUTE_FORBIDDEN/);
