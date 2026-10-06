@@ -1,0 +1,28 @@
+{
+  "version": "DELIVERY-CONTROL-PLANE-LANE-PRECISION-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|delivery|lane-precision|control-plane|browser-fanout",
+  "obligation_id": "delivery-control-plane-lane-precision-20261006-v1",
+  "compiler": {
+    "failure_class": "CONTROL_PLANE_CHANGE_ESCALATED_TO_WEBSITE_BROWSER"
+  },
+  "root_cause": "Known GitHub delivery workflows, .github scripts and material-writeback control-plane code were still classified through broad shared/website path rules. A CI-only change therefore activated backend, portal, website and automation and launched browser assurance despite having no public website artifact.",
+  "prevention": "Assign known delivery-control-plane files to backend or automation before shared-path expansion, treat .github/scripts as automation, and mark the same non-runtime files as website non-artifacts. Unknown paths remain fail-closed.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-control-plane-lane-precision-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed": "PR #3980 classified only workflows/scripts/tests/docs but still produced requires_preview=true and launched website/browser.",
+    "tests": [
+      "tests/brain-delivery-control-plane-lane-precision-v1.test.mjs"
+    ]
+  },
+  "safety": {
+    "unknown_paths_fail_closed": true,
+    "real_website_artifacts_still_require_preview": true,
+    "release_gates_removed": false
+  },
+  "status": "ACTIVE_PREVENTION"
+}

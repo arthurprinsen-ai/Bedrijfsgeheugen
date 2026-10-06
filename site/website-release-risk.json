@@ -19,7 +19,13 @@
     "brain/policies/",
     ".agents/skills/",
     "tools/delivery/",
-    "tools/ci/"
+    "tools/ci/",
+    ".github/scripts/",
+    "scripts/brain/material-writeback-closure-guard.mjs",
+    "scripts/brain/test-writer-verification-modes.mjs",
+    "tests/delivery-",
+    "tests/repository-writer-",
+    "tests/repo-writer-"
   ],
   "highRiskPaths": [
     "netlify.toml",

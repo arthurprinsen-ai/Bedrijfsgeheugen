@@ -21,6 +21,8 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'config/powerhouse-autonomous-engineering-fabric-v3.json': 'automation',
   'config/powerhouse-engineering-tuning.json': 'automation',
   'scripts/brain/powerhouse-ci-intelligence.mjs': 'backend',
+  'scripts/brain/material-writeback-closure-guard.mjs': 'backend',
+  'scripts/brain/test-writer-verification-modes.mjs': 'automation',
   'config/powerhouse-ci-calibration-v1.json': 'backend',
   'tools/delivery/ci-calibration-engine.mjs': 'backend',
   'tests/brain-autonomous-engineering-fabric-v3.test.mjs': 'automation',
@@ -45,6 +47,14 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/regelgeving-bijwerken.yml': 'automation',
   '.github/workflows/regulatory-source-watch.yml': 'automation',
   '.github/workflows/required-test.yml': 'backend',
+  '.github/workflows/powerhouse-delivery-hygiene.yml': 'backend',
+  '.github/workflows/repo-writer-operational-verification.yml': 'automation',
+  '.github/workflows/repo-writer-candidate-shadow.yml': 'automation',
+  '.github/workflows/pr-janitor.yml': 'automation',
+  '.github/workflows/required-gate-watchdog.yml': 'automation',
+  '.github/workflows/seo-controle.yml': 'automation',
+  '.github/workflows/paginacontrole.yml': 'automation',
+  '.github/workflows/weekblog.yml': 'automation',
   '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/powerhouse-daily-self-evolution.yml': 'automation',
@@ -86,6 +96,9 @@ const REGULATORY_AUTOMATION_PATHS = Object.freeze([
   'tools/regulatory-',
   'tests/regulatory-'
 ]);
+const GITHUB_AUTOMATION_PATHS = Object.freeze([
+  '.github/scripts/'
+]);
 const DELIVERY_CONTROL_PLANE_BACKEND_PATHS = Object.freeze([
   '.github/workflows/obligation-terminal-closure.yml',
   '.github/workflows/production-release-readback.yml',
@@ -105,6 +118,7 @@ function scopedLaneForPath(path) {
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
   if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
   if (matches(path, REGULATORY_AUTOMATION_PATHS)) return 'automation';
+  if (matches(path, GITHUB_AUTOMATION_PATHS)) return 'automation';
   if (matches(path, DELIVERY_CONTROL_PLANE_BACKEND_PATHS)) return 'backend';
   return null;
 }
