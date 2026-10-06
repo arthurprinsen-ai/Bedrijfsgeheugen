@@ -169,18 +169,17 @@ test('Portal evidence is post-admission while production push readback remains i
 test('Powerhouse CodeQL is the single PR CodeQL authority for JS/TS and Python', () => {
   const source = readFileSync('.github/workflows/codeql.yml', 'utf8');
   assert.match(source, /^  pull_request:/m);
-  assert.ok(source.includes('run_js:'));
-  assert.ok(source.includes('run_python:'));
-  assert.ok(source.includes('languages: javascript-typescript'));
-  assert.ok(source.includes('languages: python'));
-  assert.ok(source.includes("category: '/language:python'"));
+  assert.match(source, /^  merge_group:/m);
+  assert.ok(source.includes('language: [javascript-typescript, python]'));
+  assert.ok(source.includes('languages: ${{ matrix.language }}'));
+  assert.ok(source.includes('category: /language:${{ matrix.language }}'));
 });
 
 
-test('consolidated CodeQL workflow has one scope and one job per language', () => {
+test('consolidated CodeQL workflow has one matrix authority for both languages', () => {
   const source = readFileSync('.github/workflows/codeql.yml', 'utf8');
-  assert.equal((source.match(/^  scope:/gm) || []).length, 1);
   assert.equal((source.match(/^  analyze:/gm) || []).length, 1);
+  assert.doesNotMatch(source, /^  scope:/m);
   assert.doesNotMatch(source, /^  analyze_python:/m);
   assert.ok(source.includes('matrix:'));
   assert.ok(source.includes('language: [javascript-typescript, python]'));

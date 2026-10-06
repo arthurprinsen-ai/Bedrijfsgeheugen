@@ -75,5 +75,5 @@ test('consolidated CodeQL owns PR security and path-scoped main pushes', async (
   assert.match(push,/paths:/);
   assert.match(push,/\*\*\/\*\.py/);
   assert.match(push,/\*\*\/\*\.mjs/);
-  assert.match(push,/\.github\/workflows\/powerhouse-codeql\.yml/);
+  assert.match(push,/\.github\/workflows\/codeql\.yml/);
 });
