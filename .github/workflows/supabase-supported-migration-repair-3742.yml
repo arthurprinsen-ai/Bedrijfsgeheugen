@@ -55,19 +55,37 @@ jobs:
           merged="$(jq -r '.merged' <<<"$pr_json")"
           head_ref="$(jq -r '.head.ref' <<<"$pr_json")"
           head_sha="$(jq -r '.head.sha' <<<"$pr_json")"
+          merge_sha="$(jq -r '.merge_commit_sha // ""' <<<"$pr_json")"
           body="$(jq -r '.body // ""' <<<"$pr_json")"
 
-          test "$state" = "open"
-          test "$merged" = "false"
+          mode="repair"
+          if [ "$state" = "closed" ] && [ "$merged" = "true" ]; then
+            mode="readback"
+          fi
+
           test "$head_ref" = "fix/3742-migration-parity-canonical-v6"
           [[ "$head_sha" =~ ^[0-9a-f]{40}$ ]]
           grep -qx 'Writer-Lease-Owner: supabase-migration-history-canonical-v6' <<<"$body"
           grep -qx "Writer-Lease-Head: $head_sha" <<<"$body"
           grep -qx 'Writer-Lease-NonOwner-Action: READBACK_ONLY' <<<"$body"
 
+          if [ "$mode" = "repair" ]; then
+            test "$state" = "open"
+            test "$merged" = "false"
+          else
+            [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]]
+            git fetch origin main --no-tags
+            git merge-base --is-ancestor "$merge_sha" "$GITHUB_SHA" || {
+              echo "::error::POST_MERGE_RECOVERY_NOT_CONTAINED:$merge_sha:$GITHUB_SHA"
+              exit 78
+            }
+          fi
+
           echo "pr=3766" >> "$GITHUB_OUTPUT"
           echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
           echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "merge_sha=$merge_sha" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact recovery head without production credentials
         uses: actions/checkout@v5
@@ -77,6 +95,8 @@ jobs:
           path: candidate
 
       - name: Prove repair allowlist and effect evidence
+        env:
+          READBACK_MODE: ${{ steps.candidate.outputs.mode }}
         shell: bash
         run: |
           set -euo pipefail
@@ -91,15 +111,21 @@ jobs:
           ];
           const rows=lock.replay_baselines_pending_repair || [];
           if (rows.length !== expected.length) throw new Error('REPAIR_ALLOWLIST_CARDINALITY_DRIFT');
+          const readback=process.env.READBACK_MODE==='readback';
           for (const [version,name] of expected) {
             const row=rows.find(x=>x.version===version);
-            if (!row || row.name!==name || row.status!=='EFFECT_VERIFIED_REPAIR_REQUIRED') {
-              throw new Error('REPAIR_ALLOWLIST_OR_STATUS_DRIFT:'+version);
+            const expectedStatus=readback?'REPAIRED_APPLIED_VERIFIED':'EFFECT_VERIFIED_REPAIR_REQUIRED';
+            if (!row || row.name!==name || row.status!==expectedStatus) {
+              throw new Error('REPAIR_ALLOWLIST_OR_STATUS_DRIFT:'+version+':'+String(row?.status||''));
             }
             if (!row.production_effect_readback || Object.keys(row.production_effect_readback).length===0) {
               throw new Error('MISSING_PRODUCTION_EFFECT_EVIDENCE:'+version);
             }
+            if (readback && (!row.repair_readback || row.repair_readback.provider!=='supabase-cli')) {
+              throw new Error('MISSING_PROVIDER_REPAIR_READBACK:'+version);
+            }
           }
+          if (readback && Number(lock.production_ledger_count)!==568) throw new Error('LOCK_LEDGER_COUNT_DRIFT');
           NODE
 
           mkdir -p parity/supabase repair-evidence
@@ -125,6 +151,9 @@ jobs:
           printf 'SUPABASE_DB_URL=%s\n' "$db_url" >> "$GITHUB_ENV"
 
       - name: Repair production migration tracking with supported Supabase CLI
+        env:
+          READBACK_MODE: ${{ steps.candidate.outputs.mode }}
+          SOURCE_MERGE_SHA: ${{ steps.candidate.outputs.merge_sha }}
         working-directory: parity
         shell: bash
         run: |
@@ -203,9 +232,29 @@ jobs:
             .map(x=>({local:x[0]||'',remote:x[1]||''}));
           const drift=rows.filter(x=>x.local!==x.remote);
           if (!rows.length || drift.length) throw new Error('POST_REPAIR_PARITY_FAILED:'+JSON.stringify(drift));
+          if (process.env.READBACK_MODE==='readback') {
+            const lock=JSON.parse(fs.readFileSync('../candidate/supabase/migration-history.lock.json','utf8'));
+            const expectedCount=Number(lock.production_ledger_count||0);
+            if (expectedCount!==568) throw new Error('POST_MERGE_LOCK_LEDGER_COUNT_DRIFT:'+expectedCount);
+            if (rows.length!==expectedCount) throw new Error('POST_MERGE_LEDGER_COUNT_DRIFT:'+rows.length+':'+expectedCount);
+            const targets=['20260920101150','20260920102450','20260925080500','20261005133951'];
+            for (const version of targets) {
+              if (!rows.some(row=>row.local===version && row.remote===version)) throw new Error('POST_MERGE_TARGET_MISSING:'+version);
+            }
+            fs.writeFileSync('../repair-evidence/post-merge-readback.json',JSON.stringify({
+              contract:'SUPABASE-MIGRATION-HISTORY-POSTMERGE-READBACK-v1',
+              source_pr:3766,
+              source_merge_sha:process.env.SOURCE_MERGE_SHA||'',
+              observed_main_sha:process.env.GITHUB_SHA||'',
+              ledger_count:rows.length,
+              drift_count:drift.length,
+              targets
+            },null,2)+'\n');
+          }
           NODE
 
       - name: Advance exact recovery lock to provider-readback state
+        if: steps.candidate.outputs.mode != 'readback'
         shell: bash
         env:
           TARGET_BRANCH: ${{ steps.candidate.outputs.head_ref }}
