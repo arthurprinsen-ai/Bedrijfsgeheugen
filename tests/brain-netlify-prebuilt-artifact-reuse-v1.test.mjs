@@ -52,8 +52,12 @@ test('prebuilt deployment only restamps release identity',async()=>{
   assert.doesNotMatch(restamp,/applyCanonicalShell|build-localized-routes|seo-order-engine/);
 });
 
-test('static locale rendering uses content-addressed persistent cache',async()=>{
-  const builder=await read('tools/site-shell/build-localized-routes.mjs');
+test('static locale rendering uses content-addressed persistent cache and bounded workers',async()=>{
+  const [builder,workflow,toml]=await Promise.all([
+    read('tools/site-shell/build-localized-routes.mjs'),
+    read('.github/workflows/required-test.yml'),
+    read('netlify.toml'),
+  ]);
   assert.match(builder,/STATIC_I18N_BUILD_CACHE_DIR/);
   assert.match(builder,/NETLIFY_CACHE_DIR/);
   assert.match(builder,/createHash\('sha256'\)/);
@@ -64,6 +68,8 @@ test('static locale rendering uses content-addressed persistent cache',async()=>
   assert.match(builder,/STATIC_I18N_PARALLEL_START/);
   assert.match(builder,/Math\.min\(4/);
   assert.match(builder,/STATIC_I18N_SHARD_NETWORK_FORBIDDEN/);
+  assert.match(workflow,/STATIC_I18N_ROUTE_WORKERS:\s*'2'/);
+  assert.match(toml,/STATIC_I18N_ROUTE_WORKERS\s*=\s*"2"/);
 });
 
 test('tabbladen regression is classified with its website implementation',async()=>{
