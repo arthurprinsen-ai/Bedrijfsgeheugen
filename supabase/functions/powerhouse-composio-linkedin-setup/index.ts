@@ -306,8 +306,9 @@ Deno.serve(async(req:Request)=>{
       company_live_proven_eligible:false,
       toolkit_version_policy:'latest'
     };
-    if(action==='resume'&&personalReady){
+    if(action==='resume'&&companyReady){
       if(!expected)return json({ok:false,error:'SCHEDULER_AUTH_REQUIRED'},503);
+      await writeState(db,'ACTIVE',result);
       const publisherResponse=await fetch(url+'/functions/v1/powerhouse-social-publisher',{
         method:'POST',
         headers:{'content-type':'application/json','x-powerhouse-token':expected},
