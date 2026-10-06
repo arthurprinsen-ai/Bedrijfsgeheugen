@@ -420,6 +420,7 @@ jobs:
           node tools/site-shell/test-shell-components.mjs
           node --test tests/site-shell-compare-slider-physical-edges.test.mjs
           node --test tests/content-growth-*.test.mjs
+          node --test tests/portal-native-legacy-batch-*.test.mjs
           node tools/content-growth/validate-policy.mjs
           node --test tests/brain-linkedin-company-growth-engine-v1.test.mjs
           node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs

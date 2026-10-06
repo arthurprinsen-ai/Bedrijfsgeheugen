@@ -2,7 +2,7 @@
   "version": 1,
   "measured_at": "2026-10-06",
   "mode": "ratchet",
-  "directPullRequestWorkflowCount": 44,
+  "directPullRequestWorkflowCount": 43,
   "canonicalTarget": [
     "required-test.yml"
   ],
@@ -19,7 +19,6 @@
     "hero-media-production-verify.yml",
     "obligation-terminal-closure.yml",
     "paginacontrole-debug.yml",
-    "portal-native-regression-tests.yml",
     "portal-v2-live-preview.yml",
     "portal-v2-production-dom-readback.yml",
     "portal-visual-density.yml",

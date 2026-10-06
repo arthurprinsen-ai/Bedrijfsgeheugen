@@ -8,6 +8,8 @@ const retired = [
   '.github/workflows/business-os-trust.yml',
   '.github/workflows/homepage-hero-video-verify.yml',
   '.github/workflows/portal-v2-tests.yml',
+  '.github/workflows/portal-parity.yml',
+  '.github/workflows/portal-native-regression-tests.yml',
 ];
 
 test('fourth specialist batch no longer fans out directly on pull_request', () => {
@@ -27,6 +29,9 @@ test('Required merge_group preserves fourth-batch assurance', () => {
     'tests/read-models.test.mjs',
     'tests/foundation-registry-eventstore.test.mjs',
     'tests/monitor-brain-ingest.test.mjs',
+    'tests/portal-native-legacy-batch-*.test.mjs',
+    'tests/portal-parity-source-contract.py',
+    'tests/portal-modular-legacy-capability-parity.test.mjs',
     '.github/scripts/portal_parity.py',
     'tests/homepage-hero-video.test.mjs',
     'portal-v2',
