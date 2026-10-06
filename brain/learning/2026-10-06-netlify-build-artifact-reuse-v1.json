@@ -1,0 +1,25 @@
+{
+  "version": "NETLIFY-BUILD-ARTIFACT-REUSE-v1",
+  "date": "2026-10-06",
+  "fingerprint": "netlify|build-once|tree-addressed-prebuilt-reuse|v1",
+  "obligation_id": "netlify-build-artifact-reuse-20261006-v1",
+  "root_cause": "[object Object] Required preflight uses a bounded fetch-depth 2 checkout, but material-writeback closure still used BASE...HEAD and therefore required a merge base that is not part of the exact-tree closure contract.",
+  "prevention": "[object Object] Material-writeback closure must compare the two immutable trees directly with git diff BASE HEAD, never require merge-base ancestry.",
+  "compiler": {
+    "failure_class": "NETLIFY_DUPLICATE_BUILD_AND_UNCACHED_ROUTE_RENDER",
+    "scope": "CI_PRODUCTION",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs",
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs",
+      "tests/tabbladen.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "evidence": {
+    "material_writeback_diff": "git diff --name-only BASE HEAD"
+  }
+}
