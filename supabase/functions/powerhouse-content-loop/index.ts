@@ -289,6 +289,10 @@ Deno.serve(async (req) => {
     ]);
     stepResults.push(socialDispatch, blogDispatch);
 
+    // Commercial engagement is a separate non-publication lane: preserve cockpit automation
+    // without putting Composio comment execution back onto the publication critical path.
+    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'cockpit_autopilot' }));
+
     // Buffer is legacy telemetry only and is deliberately absent from the critical path.
     stepResults.push({ name:'bg-buffer-sync', ok:true, skipped:true, non_blocking:true, linkedin_authority:'composio', reason:'LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH' });
 
