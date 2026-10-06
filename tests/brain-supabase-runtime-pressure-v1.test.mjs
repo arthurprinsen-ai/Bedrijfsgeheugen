@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const migration = fs.readFileSync('supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql','utf8');
+const telemetry = fs.readFileSync('supabase/functions/bg-interactie/index.ts','utf8');
+const bridge = fs.readFileSync('supabase/functions/supabase-migration-repair-bridge/index.ts','utf8');
+
+test('trusted Supabase repair transport remains IPv4 Supavisor session mode', () => {
+  assert.match(bridge, /aws-0-eu-central-1\.pooler\.supabase\.com/);
+  assert.match(bridge, /url\.port = "5432"/);
+  assert.match(bridge, /url\.username = "postgres\." \+ projectRef/);
+  assert.match(bridge, /transport: "supavisor-session-ipv4"/);
+  assert.match(bridge, /db\." \+ projectRef \+ "\.supabase\.co"/);
+});
+
+test('cron pressure recovery uses stable job names and removes deterministic fan-out', () => {
+  assert.match(migration, /CRON_PRESSURE_CONTRACT_JOB_MISSING/);
+  assert.match(migration, /cron\.alter_job/);
+  assert.doesNotMatch(migration, /update\s+cron\.job/i);
+
+  const rows = [...migration.matchAll(/\('([^']+)',\s*'([^']+)'\)/g)].map((m) => ({ name:m[1], schedule:m[2] }));
+  assert.equal(rows.length, 26);
+
+  const recurring = rows.filter(({schedule}) => schedule.split(/\s+/)[1] === '*');
+  const countAtMinute = (minute) => recurring.filter(({schedule}) => {
+    const field = schedule.split(/\s+/)[0];
+    return field.split(',').map(Number).includes(minute);
+  }).length;
+
+  const maxTargetFanout = Math.max(...Array.from({length:60}, (_, minute) => countAtMinute(minute)));
+  assert.ok(maxTargetFanout <= 2, 'staggered recurring pressure jobs must add at most two starts in one minute');
+  assert.ok(maxTargetFanout + 2 <= 4, 'including the two intentional every-minute workers, planned recurring fanout must stay <= 4');
+});
+
+test('interaction telemetry cannot amplify a PostgREST outage', () => {
+  assert.match(telemetry, /TELEMETRY_DB_TIMEOUT_MS = 2_500/);
+  assert.match(telemetry, /TELEMETRY_BREAKER_MS = 30_000/);
+  assert.match(telemetry, /DATA_API_CIRCUIT_OPEN/);
+  assert.match(telemetry, /DATA_API_UNAVAILABLE/);
+  assert.match(telemetry, /status: 202/);
+  assert.match(telemetry, /AbortSignal\.timeout\(TELEMETRY_DB_TIMEOUT_MS\)/);
+  assert.doesNotMatch(telemetry, /status:\s*500/);
+});
