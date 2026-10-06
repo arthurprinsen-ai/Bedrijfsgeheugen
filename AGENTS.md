@@ -1024,15 +1024,17 @@ Website, posts, blogs, e-mail, echte LinkedIn-DM, verkoopgesprekken en Portal V2
 
 ## Supabase Edge production authority — protected main only
 
-Fingerprint: `supabase-edge|production-promotion|protected-main-git-integration-attestation|v2`.
+Fingerprint: `supabase-edge|production-promotion|protected-main-cli-single-writer-byte-readback|v3`.
 
 Voor alle huidige en toekomstige chats, agents, recovery-workers en tools geldt:
-- productieproject `adhjwmvyoixzjtmiroln` mag voor `supabase/functions/**` **niet rechtstreeks** via een chat/agent/provider deploy worden gemuteerd;
-- `mcp__Supabase__deploy_edge_function`, dashboard editor-deploys en lokale/CI-CLI-deploys naar productie zijn geen geldige normale delivery-route;
+- productieproject `adhjwmvyoixzjtmiroln` mag voor `supabase/functions/**` **niet rechtstreeks** via een chat/agent/provider/dashboard/local CLI worden gemuteerd;
 - source gaat eerst naar Git, door exact-HEAD gates en protected merge naar `main`;
-- de Supabase GitHub Integration met `Deploy to production` is de enige normale provider-deployer voor Edge Functions vanaf protected `main`;
-- `.github/workflows/supabase-edge-production-authority.yml` is single-flight en **attestation-only**: hij wacht op de nieuwste Supabase GitHub App-check op exact dezelfde main-SHA, vereist twee stabiele success-observaties en bewaart immutable source-tree hashes;
-- GitHub Actions gebruikt hiervoor geen `SUPABASE_ACCESS_TOKEN`, geen `supabase functions deploy` en geen tweede production-writer;
-- ontbrekende provider-check, provider failure, onbekende function scope of nieuwere Supabase-runtimewijziging op `main` is fail-closed;
-- break-glass providerdeploy is alleen toegestaan na expliciete menselijke noodautorisatie en verplicht onmiddellijke source-projectie + protected-main reconciliation;
-- een production Edge-versie zonder protected-main lineage is `RUNTIME_AUTHORITY_DRIFT`, nooit nieuwe source authority en nooit reden om een stale PR te laten inhalen.
+- `.github/workflows/supabase-edge-production-authority.yml` is de enige normale production-writer en gebruikt de pinned Supabase CLI uitsluitend vanaf protected-main lineage;
+- de workflow gebruikt `SUPABASE_ACCESS_TOKEN`; bij voorkeur een project-scoped PAT voor exact dit project met **Edge Functions: Read-write**. Een classic PAT is alleen tijdelijke compatibility wanneer scoped PATs voor het account nog niet beschikbaar zijn en wordt als groter security-risico gemarkeerd;
+- de Supabase GitHub App-check is alleen advisory: een groene check zonder provider-source-identiteit is nooit deployment-truth;
+- na iedere production deploy downloadt dezelfde authority de providerbron opnieuw en vereist hij voor ieder bestand exact dezelfde fileset, bytes en deterministische tree-SHA-256 als protected `main`;
+- `powerhouse-social-publisher` en `social-recovery-runner` vormen één gekoppelde deployment-unit: als één verandert, worden beide vanaf dezelfde protected-main source gepromoveerd en teruggelezen;
+- ontbrekende credential, onbekende function scope, provider download/readback drift of een nieuwere Supabase-runtimewijziging op `main` is fail-closed;
+- `mcp__Supabase__deploy_edge_function`, dashboard editor-deploys en andere CLI-routes blijven verboden buiten expliciete break-glass;
+- break-glass vereist expliciete menselijke noodautorisatie plus onmiddellijke source-projectie en protected-main reconciliation;
+- een production Edge-versie zonder protected-main lineage of zonder byte-readback is `RUNTIME_AUTHORITY_DRIFT`, nooit nieuwe source authority.
