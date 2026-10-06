@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|daily-blog-material-writeback-closure|2026-10-06",
+  "compiler": {
+    "failure_class": "daily_blog_candidate_missing_required_material_closure_evidence"
+  },
+  "root_cause": {
+    "summary": "The canonical daily blog publisher created the four public website artifacts but did not materialize the mandatory Brain learning, activity ledger event, and human documentation required for every material candidate.",
+    "technical": [
+      "powerhouse-daily-blog.yml committed only the generated blog page, blog index, RSS and sitemap.",
+      "The material-writeback closure guard correctly rejected that incomplete candidate before merge.",
+      "The blog artifact itself was generated correctly from powerhouse_content_artifacts; the defect was missing delivery evidence in the Git lineage."
+    ]
+  },
+  "prevention_rule": [
+    "Every material daily-blog candidate must include Brain learning, a development-ledger event, and human-readable change documentation in the same protected PR lineage before merge."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"
+    ],
+    "production_readback": {
+      "business_date": "2026-10-06",
+      "slug": "circular-plastics-nl-cpnl-subsidie-40-miljoen-budget-en-deadline-6-okt",
+      "content_id": "blog:circular-plastics-nl-cpnl-subsidie-40-miljoen-budget-en-deadline-6-okt",
+      "source": "powerhouse_content_artifacts",
+      "candidate_head_before_closure": "032a1503d4cee245e515c53a976385a7e56cef45"
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"
+    ]
+  }
+}
