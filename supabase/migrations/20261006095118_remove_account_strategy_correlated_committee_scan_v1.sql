@@ -59,3 +59,7 @@ WITH committee AS (
    FROM powerhouse_company_intelligence_v1 c
      LEFT JOIN committee k ON k.company_key = c.company_key
      LEFT JOIN windows w ON w.company_key = c.company_key;;
+
+-- Internal view remains server-only on fresh replay.
+revoke all on public.powerhouse_account_strategy_v1 from public, anon, authenticated;
+grant select on public.powerhouse_account_strategy_v1 to service_role;
