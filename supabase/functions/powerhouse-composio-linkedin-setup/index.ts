@@ -94,7 +94,7 @@ Deno.serve(async(req:Request)=>{
     const proofScopes=Array.isArray(freshProof?.granted_scopes)?freshProof.granted_scopes.map(clean).filter(Boolean):[];
     const priorRequestedScopes=Array.isArray(priorState?.requested_company_scopes)?priorState.requested_company_scopes.map(clean).filter(Boolean):[];
     const expectedCompanyScopes=proofScopes.length?proofScopes:(priorRequestedScopes.length?priorRequestedScopes:COMPANY_OAUTH_SCOPES);
-    const boundOauthAccountId=clean(priorState?.oauth_candidate_connection_id||priorState?.company_oauth_connection_id||proofAccountId);
+    const boundOauthAccountId=clean(proofAccountId||priorState?.company_oauth_connection_id||priorState?.oauth_candidate_connection_id);
 
     if(action==='create_link'){
       const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&show_disabled=false&limit=50');
@@ -143,9 +143,23 @@ Deno.serve(async(req:Request)=>{
       await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result});
     }
 
+    const accountsToCheck=proofAccountId
+      ? accounts.filter((candidate:any)=>clean(candidate?.id||candidate?.connected_account_id)===proofAccountId)
+      : accounts;
+    if(proofAccountId&&accountsToCheck.length!==1){
+      const result={
+        ready:false,state:'BLOCKED_FRESH_PROOF_ACCOUNT',reason:'COMPOSIO_LINKEDIN_FRESH_PROOF_ACCOUNT_NOT_ACTIVE',
+        api_key_present:true,active_accounts:accounts.length,healthy_accounts:0,
+        fresh_oauth_proof_record:COMPANY_PROOF_RECORD,proof_account_id:proofAccountId,
+        personal_ready:false,company_ready:false
+      };
+      await writeState(db,'BLOCKED_FRESH_PROOF_ACCOUNT',result);
+      return json({ok:true,...result},409);
+    }
+
     const healthy:any[]=[];
     const rejected:any[]=[];
-    for(const candidate of accounts){
+    for(const candidate of accountsToCheck){
       const candidateAccountId=clean(candidate?.id||candidate?.connected_account_id);
       const candidateUserId=clean(candidate?.user_id);
       if(!candidateAccountId||!candidateUserId){rejected.push({account_id:candidateAccountId||null,reason:'MISSING_ACCOUNT_OR_USER_ID'});continue;}
@@ -174,7 +188,7 @@ Deno.serve(async(req:Request)=>{
         ready:false,state:'BLOCKED_AMBIGUOUS',reason,api_key_present:true,
         active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,
         personal_ready:false,company_ready:false,
-        oauth_candidate_connection_id:boundOauthAccountId||null,
+        oauth_candidate_connection_id:proofAccountId||boundOauthAccountId||null,
         fresh_oauth_proof_record:proofFresh?COMPANY_PROOF_RECORD:null
       };
       await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
@@ -218,9 +232,13 @@ Deno.serve(async(req:Request)=>{
     const requestedLinkBound=!!clean(priorState?.oauth_candidate_connection_id)
       &&accountId===clean(priorState?.oauth_candidate_connection_id)
       &&!!clean(priorState?.oauth_requested_at);
-    const companyOauthFreshVerified=(proofBound||requestedLinkBound)&&adminAclVerified&&hasOrgAdminScope&&hasOrgWriteScope;
+    const proofHasOrgAdminScope=proofScopes.includes('r_organization_admin')||proofScopes.includes('rw_organization_admin');
+    const proofHasOrgWriteScope=proofScopes.includes('w_organization_social')||proofScopes.includes('w_organization_social_feed');
+    const organizationAdminScopeAuthorized=hasOrgAdminScope||(proofBound&&proofHasOrgAdminScope);
+    const organizationWriteScopeAuthorized=hasOrgWriteScope||(proofBound&&proofHasOrgWriteScope);
+    const companyOauthFreshVerified=(proofBound||requestedLinkBound)&&adminAclVerified&&organizationAdminScopeAuthorized&&organizationWriteScopeAuthorized;
     const personalReadbackReady=personalReady&&hasMemberReadScope;
-    const companyAdminReadReady=adminAclVerified&&hasOrgAdminScope;
+    const companyAdminReadReady=adminAclVerified&&organizationAdminScopeAuthorized;
     const companyReady=personalReady&&companyOauthFreshVerified&&companyAdminReadReady;
     const companyReadbackReady=companyReady&&hasOrgReadScope;
     const companyState=companyReady?'ACTIVE':personalReady?'COMPANY_AUTH_REQUIRED':'CAPABILITY_UNVERIFIED';
@@ -253,6 +271,8 @@ Deno.serve(async(req:Request)=>{
       company_admin_read_scope_required:companyAdminReadReady?null:'r_organization_admin',
       company_admin_scope_present:hasOrgAdminScope,
       company_write_scope_present:hasOrgWriteScope,
+      organization_admin_scope_authorized:organizationAdminScopeAuthorized,
+      organization_write_scope_authorized:organizationWriteScopeAuthorized,
       company_author_source:adminAclVerified?'live_org_acl':'unverified',
       company_readback_ready:companyReadbackReady,
       company_read_scope_present:hasOrgReadScope,
@@ -263,12 +283,13 @@ Deno.serve(async(req:Request)=>{
       oauth_requested_at:clean(priorState?.oauth_requested_at||proofCreatedAt)||null,
       company_oauth_fresh_verified:companyOauthFreshVerified,
       linkedin_company_admin_oauth_proven:companyReady,
-      organization_write_scope_verified:companyReady&&hasOrgWriteScope,
+      organization_write_scope_verified:false,
+      company_publish_eligible:companyReady,
       company_oauth_connection_id:companyReady?accountId:null,
       company_oauth_verified_at:companyOauthVerifiedAt,
       company_oauth_fresh_proof_record:proofBound?COMPANY_PROOF_RECORD:null,
       company_oauth_account_created_at:accountCreatedAt||null,
-      company_live_proven_eligible:companyReady&&companyReadbackReady,
+      company_live_proven_eligible:false,
       toolkit_version_policy:'latest'
     };
     if(action==='resume'&&personalReady){
