@@ -146,11 +146,24 @@ jobs:
               throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
             }
             const eventLease = parseWriterLease(process.env.EVENT_PR_BODY || '');
-            const terminalSynchronize = process.env.EVENT_NAME === 'pull_request'
-              && process.env.EVENT_ACTION === 'synchronize'
-              && eventLease.state === 'TERMINAL_DELIVERY';
-            if (terminalSynchronize) {
+            const synchronize = process.env.EVENT_NAME === 'pull_request'
+              && process.env.EVENT_ACTION === 'synchronize';
+            if (synchronize && eventLease.state === 'TERMINAL_DELIVERY') {
               throw new Error(`TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION:${eventLease.headSha || 'missing'}:${headSha}`);
+            }
+            if (synchronize && eventLease.state === 'MAIN_SYNC') {
+              const syncCommit = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/commits/${headSha}`);
+              const syncParents = (syncCommit?.parents || []).map(parent => String(parent?.sha || '').toLowerCase());
+              const expectedPreviousHead = String(eventLease.headSha || '').toLowerCase();
+              const expectedMainTarget = String(eventLease.mainEpochSha || '').toLowerCase();
+              const validMainSync = /^[0-9a-f]{40}$/.test(expectedPreviousHead)
+                && /^[0-9a-f]{40}$/.test(expectedMainTarget)
+                && syncParents.length >= 2
+                && syncParents.includes(expectedPreviousHead)
+                && syncParents.includes(expectedMainTarget);
+              if (!validMainSync) {
+                throw new Error(`INVALID_MAIN_SYNC_COMMIT:${expectedPreviousHead || 'missing'}:${expectedMainTarget || 'missing'}:${headSha}`);
+              }
             }
             const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
             const open = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
