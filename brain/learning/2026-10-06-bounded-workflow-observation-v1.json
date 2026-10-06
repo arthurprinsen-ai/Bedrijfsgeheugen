@@ -1,0 +1,39 @@
+{
+  "version": "BOUNDED-WORKFLOW-OBSERVATION-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|workflow-observation|bounded-single-snapshot|v1",
+  "obligation_id": "bounded-workflow-observation-20261006-v1",
+  "root_cause": {
+    "escaped_defect": "Agents could remain inside long tool chains repeatedly checking required workflow jobs even when the exact-head workflow state had not changed.",
+    "observed_pattern": "The UI stayed on 'Controleren van vereiste workflowjobs' while successful/skipped siblings or unchanged queued/in-progress runs were re-read without new evidence."
+  },
+  "prevention": {
+    "single_snapshot": "Take at most one exact-head top-level workflow snapshot per observation cycle.",
+    "failure_drilldown": "On a terminal non-success, inspect only the first failed workflow/job/step once, then repair the cause.",
+    "unchanged_active": "Queued or in-progress state is checkpointed; the same head/run/status fingerprint is not re-read for 120 seconds without new evidence.",
+    "sibling_reads": "Successful or skipped sibling jobs are not repeatedly enumerated.",
+    "tool_budget": "Each workflow observation cycle is capped at 3 status-tool reads and 30 wall-clock seconds; budget exhaustion forces checkpoint + independent work.",
+    "executable_guard": "tools/delivery/predictive-controller.mjs#planWorkflowObservation converts active remote CI into CHECKPOINT_AND_CONTINUE_INDEPENDENT_WORK, forbids polling, and enforces the same snapshot/drilldown/tool/wall-clock budgets."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bounded-workflow-observation-v1.test.mjs"
+    ],
+    "expected": "One exact-head workflow snapshot is sufficient for unchanged queued/in-progress state; the executable planner returns no-poll checkpoint behavior for active CI, terminal failures permit one failed workflow/job/step drilldown, and successful/skipped siblings are not repeatedly polled."
+  },
+  "evidence": {
+    "policy": "brain/policies/powerhouse-agent-continuity-v1.json#workflow_observation_rule",
+    "regression": "tests/brain-bounded-workflow-observation-v1.test.mjs",
+    "operational_proof": "Auto-merge remains armed while active gates continue independently; chat execution does not wait on repeated job enumeration.",
+    "historical_observations": [
+      "PR #3913 Required test run 37467204634 was diagnosable from one top-level snapshot plus one failed preflight drilldown.",
+      "PR #3917 and #3916 were observed with one exact-head workflow snapshot each while active gates continued independently."
+    ],
+    "agent_entrypoint": "AGENTS.md#Workflowstatus observeren — nooit meer blijven hangen",
+    "executable_guard": "tools/delivery/predictive-controller.mjs#planWorkflowObservation"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "UNBOUNDED_WORKFLOW_OBSERVATION_WAIT"
+  }
+}
