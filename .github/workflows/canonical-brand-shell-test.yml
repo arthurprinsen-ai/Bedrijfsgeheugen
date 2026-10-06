@@ -8,6 +8,7 @@ on:
       - 'assets/**'
       - 'pages/**'
       - 'site/**'
+      - '!site/website-release-risk.json'
       - 'blog/**'
       - 'kennis/**'
       - '*.html'
