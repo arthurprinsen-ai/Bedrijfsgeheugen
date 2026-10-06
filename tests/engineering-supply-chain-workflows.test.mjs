@@ -20,10 +20,11 @@ test('supply-chain PR work is dependency-scoped while provenance remains main-on
   assert.match(yml, /push:\s*\n\s+branches: \[main\]/);
 });
 
-test('CodeQL workflow is present with security-events permission', () => {
-  const yml = read('.github/workflows/codeql.yml');
+test('consolidated Powerhouse CodeQL is present with security-events permission', () => {
+  const yml = read('.github/workflows/powerhouse-codeql.yml');
   assert.match(yml, /security-events:\s*write/);
   assert.match(yml, /github\/codeql-action\/analyze@/);
+  assert.match(yml, /^  pull_request:/m);
 });
 
 test('duplicate governance PR fanout is routed through Required while supply-chain security stays narrow', () => {
