@@ -21,5 +21,12 @@
     "profile_artifact": "netlify-build-profile-<candidate-sha>",
     "reuse_artifact": "netlify-build-reuse-<candidate-sha>",
     "regression": "tests/brain-netlify-build-acceleration-v1.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-build-acceleration-v1.test.mjs",
+      "tests/seo-locale-revenue-nl-en-v1.test.mjs",
+      "tests/seo-order-locale-revenue-v1.test.mjs"
+    ]
   }
 }
