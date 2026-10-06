@@ -1,0 +1,30 @@
+{
+  "id": "netlify-build-artifact-reuse-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|exact-tree-prebuilt-reuse|canonical-build-runner-v1",
+  "compiler": {
+    "failure_class": "DUPLICATE_BUILD_AND_DEPLOY_LATENCY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-build-artifact-reuse-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Required proved the complete Netlify production build before merge, but production deployment rebuilt the same source tree again. The build command was also duplicated across Netlify production, deploy-preview and Required, so optimization and ordering drifted independently.",
+  "prevention": "Use one canonical measured build runner, cache its exact source-tree output, publish that output as a short-lived immutable GitHub artifact, and allow production to reuse it only when a successful Required run and the current main tree SHA match exactly. Production executes only release-identity stamping before provider packaging; any mismatch falls back to the canonical source build.",
+  "evidence": {
+    "baseline_seconds": "69-117 observed build/deploy critical path",
+    "artifact_identity": "git tree SHA",
+    "fallback": "canonical source build",
+    "safe_parallel_phases": [
+      "pricing + bedrijfslek capture",
+      "pricing + bedrijfslek restore"
+    ],
+    "regression": "tests/brain-netlify-build-artifact-reuse-v1.test.mjs"
+  }
+}
