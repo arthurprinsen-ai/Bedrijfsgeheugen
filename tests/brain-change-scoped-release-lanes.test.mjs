@@ -321,3 +321,21 @@ test('latency control-plane workflows stay backend-only and avoid website browse
     }, path);
   }
 });
+
+
+test('generic workflow definitions default to backend control-plane instead of all product lanes', () => {
+  for (const path of [
+    '.github/workflows/powerhouse-ci-intelligence.yml',
+    '.github/workflows/future-unregistered-control-plane.yml'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:true, portal:false, website:false, automation:false
+    }, path);
+  }
+});
+
+test('explicit website workflow ownership overrides the generic workflow control-plane fallback', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/website-cross-browser-screenshot-assurance.yml']), {
+    shared:true, backend:false, portal:false, website:true, automation:false
+  });
+});

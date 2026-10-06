@@ -108,11 +108,11 @@ test('heavy read-only specialists moved from pull_request to merge_group', () =>
 });
 
 
-test('retired duplicate admission workflows are removed after consolidation', () => {
-  for (const path of [
-    '.github/workflows/business-os-live-preview.yml',
-    '.github/workflows/supabase-pr-preview.yml',
-  ]) assert.throws(() => readFileSync(path, 'utf8'));
+test('retired duplicate Business OS workflow is removed and Supabase contract is reusable-only', () => {
+  assert.throws(() => readFileSync('.github/workflows/business-os-live-preview.yml', 'utf8'));
+  const supabase = readFileSync('.github/workflows/supabase-pr-preview.yml', 'utf8');
+  assert.match(supabase, /^  workflow_call:/m);
+  assert.doesNotMatch(supabase, /^  pull_request:/m);
 });
 
 test('portal preview owns consolidated Business OS preview assurance', () => {

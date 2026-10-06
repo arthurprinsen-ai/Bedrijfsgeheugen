@@ -29,7 +29,7 @@
   },
   "baseline": {
     "github": {
-      "workflowFiles": 123,
+      "workflowFiles": 124,
       "openPullRequests": 78,
       "directPrTriggerWorkflows": [
         "codeql.yml",

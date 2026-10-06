@@ -592,8 +592,16 @@ jobs:
         run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
 
 
-  supabase_preview:
+  supabase_source_contract:
     needs: preflight
+    if: needs.preflight.outputs.supabase_preview_required == 'true'
+    uses: ./.github/workflows/supabase-pr-preview.yml
+    with:
+      base_sha: ${{ needs.preflight.outputs.base_sha }}
+      head_sha: ${{ needs.preflight.outputs.change_head_sha }}
+
+  supabase_preview:
+    needs: [preflight, supabase_source_contract]
     if: needs.preflight.outputs.supabase_preview_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 12
@@ -602,178 +610,6 @@ jobs:
       checks: read
       pull-requests: read
     steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ needs.preflight.outputs.candidate_sha }}
-          fetch-depth: 0
-      - name: Validate canonical Supabase source and migration security contract
-        env:
-          BASE_SHA: ${{ needs.preflight.outputs.base_sha }}
-          HEAD_SHA: ${{ needs.preflight.outputs.change_head_sha }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -f supabase/config.toml
-          test -d supabase/migrations
-          python3 - <<'PY'
-          from pathlib import Path
-          import re, tomllib
-          root=Path('supabase')
-          config=tomllib.loads((root/'config.toml').read_text(encoding='utf-8'))
-          assert str(config.get('project_id','')).strip(), 'supabase/config.toml project_id is required'
-          for name,function in sorted((config.get('functions') or {}).items()):
-              assert isinstance(function,dict), f'functions.{name} must be a table'
-              entrypoint=function.get('entrypoint')
-              if entrypoint:
-                  target=root/str(entrypoint).removeprefix('./')
-                  assert target.is_file(), f'functions.{name}.entrypoint does not exist: {target}'
-          versions={}; malformed=[]; empty=[]
-          for path in sorted((root/'migrations').glob('*.sql')):
-              match=re.match(r'^(\d{14})_(.+)\.sql        env:
-          GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ needs.preflight.outputs.change_head_sha }}
-          REPO: ${{ github.repository }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          stable_provider_success_id=""
-          for attempt in $(seq 1 48); do
-            curl --fail --silent --show-error \
-              -H "Authorization: Bearer $GH_TOKEN" \
-              -H "Accept: application/vnd.github+json" \
-              -H "X-GitHub-Api-Version: 2022-11-28" \
-              "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
-              > /tmp/supabase-preview-check-runs.json
-
-            state="$(node --input-type=module - <<'NODE'
-          import { readFileSync } from 'node:fs';
-          const payload=JSON.parse(readFileSync('/tmp/supabase-preview-check-runs.json','utf8'));
-          const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
-          const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
-          if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
-          provider.sort((a,b)=>(Number(b.id||0)-Number(a.id||0)) || String(b.started_at||'').localeCompare(String(a.started_at||'')));
-          const check=provider[0];
-          const id=String(check.id||'unknown');
-          if(check.status!=='completed'){ process.stdout.write(`pending:${id}`); process.exit(0); }
-          process.stdout.write(`${String(check.conclusion||'unknown')}:${id}`);
-          NODE
-            )"
-
-            case "$state" in
-              success:*)
-                provider_id="${state#success:}"
-                if [ "$stable_provider_success_id" = "$provider_id" ]; then
-                  echo "SUPABASE_PREVIEW_PROVIDER_VERIFIED:$HEAD_SHA:$provider_id"
-                  exit 0
-                fi
-                stable_provider_success_id="$provider_id"
-                sleep 5
-                ;;
-              failure:*|cancelled:*|timed_out:*|action_required:*|stale:*|startup_failure:*|skipped:*|neutral:*)
-                echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_SUCCESS:$state:$HEAD_SHA"
-                exit 1
-                ;;
-              missing|pending:*)
-                stable_provider_success_id=""
-                sleep 5
-                ;;
-              *)
-                echo "::error::SUPABASE_PREVIEW_PROVIDER_UNKNOWN_STATE:$state:$HEAD_SHA"
-                exit 1
-                ;;
-            esac
-          done
-          echo "::error::SUPABASE_PREVIEW_PROVIDER_TIMEOUT:$HEAD_SHA"
-          exit 1
-
-  backend:
-    needs: preflight
-    if: needs.preflight.outputs.backend == 'true'
-    uses: ./.github/workflows/lane-backend.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
-
-  portal:
-    needs: preflight
-    if: needs.preflight.outputs.portal == 'true'
-    uses: ./.github/workflows/lane-portal.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
-
-  automation:
-    needs: preflight
-    if: needs.preflight.outputs.automation == 'true'
-    uses: ./.github/workflows/lane-automation.yml
-    with:
-      head_sha: ${{ needs.preflight.outputs.candidate_sha }}
-
-  website:
-    needs: preflight
-    if: needs.preflight.outputs.website == 'true'
-    uses: ./.github/workflows/lane-website.yml
-    with:
-      base_sha: ${{ needs.preflight.outputs.base_sha }}
-      change_head_sha: ${{ needs.preflight.outputs.change_head_sha }}
-      candidate_sha: ${{ needs.preflight.outputs.candidate_sha }}
-      pr_number: ${{ needs.preflight.outputs.pr_number }}
-
-  test:
-    name: test
-    if: always()
-    needs: [hygiene, preflight, merge_specialist_node24, netlify_build_parity, supabase_preview, backend, portal, automation, website]
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    env:
-      HYGIENE: ${{ needs.hygiene.result }}
-      ADMITTED: ${{ needs.hygiene.outputs.admitted }}
-      PREFLIGHT: ${{ needs.preflight.result }}
-      MERGE_SPECIALIST_NODE24: ${{ needs.merge_specialist_node24.result }}
-      EVENT_NAME: ${{ github.event_name }}
-      SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
-      SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
-      SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
-      SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
-      SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
-      SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
-      NETLIFY_BUILD_REQUIRED: ${{ needs.preflight.outputs.netlify_build_required }}
-      NETLIFY_BUILD: ${{ needs.netlify_build_parity.result }}
-      BACKEND: ${{ needs.backend.result }}
-      PORTAL: ${{ needs.portal.result }}
-      AUTOMATION: ${{ needs.automation.result }}
-      WEBSITE: ${{ needs.website.result }}
-    steps:
-      - name: Confirm canonical single-flight aggregate gate
-        run: |
-          echo "Required test is the canonical PR gate; selected lanes are evaluated below without polling sibling workflows."
-
-      - name: Aggregate admission and selected lane results
-        run: |
-          set -euo pipefail
-          test "$HYGIENE" = success
-          test "$ADMITTED" = true
-          test "$PREFLIGHT" = success
-          [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST_NODE24" = success ]
-          [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
-          [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
-          [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
-          [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
-          [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
-          [ "$SELECT_WEBSITE" != true ] || [ "$WEBSITE" = success ]
-          echo "Delivery hygiene and selected release lanes are green."
-,path.name)
-              if not match:
-                  malformed.append(path.name); continue
-              if not path.read_text(encoding='utf-8').strip(): empty.append(path.name)
-              versions.setdefault(match.group(1),[]).append(path.name)
-          duplicates={v:n for v,n in versions.items() if len(n)>1}
-          assert not malformed, f'malformed migration filenames: {malformed}'
-          assert not duplicates, f'duplicate migration versions: {duplicates}'
-          assert not empty, f'empty or whitespace-only migration SQL is forbidden: {empty}'
-          print(f'Validated config plus {len(versions)} uniquely-versioned, non-empty migration files.')
-          PY
-          python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
-          python3 scripts/brain/check_powerhouse_supabase_security.py "$BASE_SHA" "$HEAD_SHA"
-          node --test tests/candidate-environment.test.mjs
       - name: Verify provider-owned Supabase Preview on exact candidate head
         env:
           GH_TOKEN: ${{ github.token }}
@@ -866,7 +702,7 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, merge_specialist_node24, netlify_build_parity, supabase_preview, backend, portal, automation, website]
+    needs: [hygiene, preflight, merge_specialist_node24, netlify_build_parity, supabase_source_contract, supabase_preview, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -876,6 +712,7 @@ jobs:
       MERGE_SPECIALIST_NODE24: ${{ needs.merge_specialist_node24.result }}
       EVENT_NAME: ${{ github.event_name }}
       SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
+      SUPABASE_SOURCE_CONTRACT: ${{ needs.supabase_source_contract.result }}
       SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
@@ -900,6 +737,7 @@ jobs:
           test "$PREFLIGHT" = success
           [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST_NODE24" = success ]
           [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
+          [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_SOURCE_CONTRACT" = success ]
           [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
