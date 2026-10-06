@@ -8,6 +8,31 @@
       "supersedes_terminalizer_run_id": 37343578647,
       "stale_readback_run_id": 37343578411,
       "reason": "Legacy terminalizer hardcoded runtime/outcome proof and the old Production Release Readback remains in_progress after authority routing was corrected by PR #3758."
+    },
+    {
+      "pr_number": 3890,
+      "obligation_id": "linkedin-company-fresh-org-oauth-terminal-20261006",
+      "expected_merge_sha": "22d57fdcb0e7344914288091a75319c1198a73ef",
+      "supersedes_terminalizer_run_id": 37458182329,
+      "stale_readback_run_id": null,
+      "reason": "Post-merge terminalizer failed only because config/powerhouse-quality-surface-contracts.json was misclassified as runtime before the already-proven Supabase Edge provider readbacks could be evaluated.",
+      "supabase_provider_readbacks": [
+        {
+          "function": "powerhouse-composio-linkedin-setup",
+          "version": 23,
+          "runtime_sha256": "999f1ee8e1ecedc1e54eb709613e7dedc76f62db9d1fbaba6b53bbc77eb37bb3"
+        },
+        {
+          "function": "powerhouse-content-loop",
+          "version": 31,
+          "runtime_sha256": "480980c112c71375d82edec7b2b92ac71d466539c79bf5517bc244d57ced764f"
+        },
+        {
+          "function": "powerhouse-social-publisher",
+          "version": 115,
+          "runtime_sha256": "bcb12595d92267841cced8fca0a2e564b65df0f77ad2694e77d35e1aa42b7d71"
+        }
+      ]
     }
   ],
   "revalidation": {
@@ -22,6 +47,8 @@
     ],
     "migration_history_closure_pr": 3824,
     "migration_history_closure_merge_sha": "908e4f03084ac0f446299aa70fcf43cc6e48ef1e",
-    "requested_on": "2026-10-06"
+    "requested_on": "2026-10-06",
+    "linkedin_company_terminal_pr": 3890,
+    "linkedin_company_terminal_merge_sha": "22d57fdcb0e7344914288091a75319c1198a73ef"
   }
 }
