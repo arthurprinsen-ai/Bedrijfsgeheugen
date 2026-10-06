@@ -10,3 +10,7 @@ Proven before this candidate:
 - terminalizer routing was corrected and the restored workflow from #3822 terminalized successfully.
 
 This candidate performs no production DDL/DML and no migration-history repair. Its purpose is to bind those proofs to one fresh exact-head delivery candidate. Closure still requires this candidate's Supabase Preview, Required/CodeQL gates, protected merge and post-merge terminalizer to complete successfully.
+
+## v8 exact-head correction
+
+PR #3824 merged before the skill-projection check was green and is therefore not accepted as terminal proof. The v8 successor moves the historical replay regression into the canonical `tests/brain-*` namespace, fixes its JavaScript regex literals, and requires the complete exact-head checkset before auto-merge is enabled.
