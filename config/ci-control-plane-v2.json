@@ -15,13 +15,15 @@
     ".github/workflows/powerhouse-codeql.yml"
   ],
   "background_workflows_forbidden_on_pull_request": [
+    ".github/workflows/chat-learning-preflight-pr.yml",
+    ".github/workflows/engineering-os-learning.yml",
+    ".github/workflows/error-learning-contract.yml",
+    ".github/workflows/portal-visual-density.yml",
     ".github/workflows/powerhouse-autonomous-engineering-optimizer.yml",
     ".github/workflows/powerhouse-daily-self-evolution.yml",
-    ".github/workflows/engineering-os-learning.yml",
     ".github/workflows/powerhouse-foresight-autonomy.yml",
-    ".github/workflows/portal-visual-density.yml",
-    ".github/workflows/revenue-content-intelligence.yml",
-    ".github/workflows/regelgeving-actueel.yml"
+    ".github/workflows/regelgeving-actueel.yml",
+    ".github/workflows/revenue-content-intelligence.yml"
   ],
   "transition": {
     "current_mode": "safe-transition",

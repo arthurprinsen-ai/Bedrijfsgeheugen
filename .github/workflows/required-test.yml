@@ -183,6 +183,12 @@ jobs:
         run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs
       - name: Enforce Powerhouse one-loop runtime invariants
         run: node --test tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs
+      - name: Run canonical chat and error-learning preflight
+        run: |
+          node --test tests/brain-chat-learning-fast-development-v2.test.mjs
+          node scripts/brain/test-chat-learning-preflight-compiler.mjs
+          node scripts/brain/chat-learning-preflight.mjs
+          node tests/brain-error-learning-contract.test.mjs
       - name: Fail fast on incomplete integration closure
         if: steps.integration.outputs.closure_ready != 'true'
         run: |
