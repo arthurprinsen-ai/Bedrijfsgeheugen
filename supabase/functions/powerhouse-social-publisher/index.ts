@@ -995,37 +995,44 @@ Deno.serve(async (req) => {
   const runDate = clean(body.runDate) || today();
   const mode = clean(body.mode) || 'run';
   if (mode === 'cockpit_autopilot') return json({ ok: true, runDate, cockpit_autopilot: await runLinkedInCockpitAutopilot(db) });
+  const publishOnly = mode === 'publish_only';
+  const allChannels = ['linkedin_personal','linkedin_company','instagram_company'];
+  const requestedChannels = Array.isArray(body.channels)
+    ? [...new Set(body.channels.map((value:any)=>clean(value)).filter((value:string)=>allChannels.includes(value)))]
+    : [];
+  const channels = requestedChannels.length ? requestedChannels : allChannels;
   const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
   const bufferToken = clean(integration?.token) || null;
 
   let bufferCircuit = await readBufferCircuit(db);
-  let containment_sweep:any = { skipped:false };
+  let containment_sweep:any = publishOnly ? { skipped:true, reason:'PUBLISH_ONLY' } : { skipped:false };
   let provider_reconciliation:any[] = [];
 
-  // LinkedIn/Composio reconciliation is independent from Buffer health.
-  // A Buffer cooldown may defer only Buffer-owned audit work, never exact LinkedIn URN reconciliation.
-  provider_reconciliation = await reconcileExistingProviderTruth(
-    db,
-    !bufferCircuit.active && bufferToken ? bufferToken : null,
-    runDate
-  );
+  if (!publishOnly) {
+    // LinkedIn/Composio reconciliation is independent from Buffer health.
+    // A Buffer cooldown may defer only Buffer-owned audit work, never exact LinkedIn URN reconciliation.
+    provider_reconciliation = await reconcileExistingProviderTruth(
+      db,
+      !bufferCircuit.active && bufferToken ? bufferToken : null,
+      runDate
+    );
 
-  if (!bufferCircuit.active && bufferToken) {
-    try {
-      containment_sweep = await containmentSweepInstagram(db, bufferToken);
-    } catch (error) {
-      if (error instanceof BufferHttpError && error.status === 429) {
-        bufferCircuit = await openBufferCircuit(db,error.retryAfter,'provider-audit');
-        containment_sweep = { skipped:true, reason:'BUFFER_RATE_LIMITED', retry_at:bufferCircuit.retry_at };
-      } else throw error;
+    if (!bufferCircuit.active && bufferToken) {
+      try {
+        containment_sweep = await containmentSweepInstagram(db, bufferToken);
+      } catch (error) {
+        if (error instanceof BufferHttpError && error.status === 429) {
+          bufferCircuit = await openBufferCircuit(db,error.retryAfter,'provider-audit');
+          containment_sweep = { skipped:true, reason:'BUFFER_RATE_LIMITED', retry_at:bufferCircuit.retry_at };
+        } else throw error;
+      }
+    } else {
+      containment_sweep = { skipped:true, reason:bufferToken?'BUFFER_RATE_LIMIT_CIRCUIT_OPEN':'BUFFER_TOKEN_UNAVAILABLE_NON_BLOCKING', retry_at:bufferCircuit.retry_at };
     }
-  } else {
-    containment_sweep = { skipped:true, reason:bufferToken?'BUFFER_RATE_LIMIT_CIRCUIT_OPEN':'BUFFER_TOKEN_UNAVAILABLE_NON_BLOCKING', retry_at:bufferCircuit.retry_at };
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const cockpit_autopilot = await runLinkedInCockpitAutopilot(db);
-  const channels = ['linkedin_personal','linkedin_company','instagram_company'];
+  const cockpit_autopilot = publishOnly ? [] : await runLinkedInCockpitAutopilot(db);
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
       .select('channel,scheduled_for,delivery_evidence,priority')
