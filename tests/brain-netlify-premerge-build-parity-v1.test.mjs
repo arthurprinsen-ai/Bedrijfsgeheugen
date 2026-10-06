@@ -20,7 +20,7 @@ test('Netlify deterministic build defects are blocked once before merge', async(
   assert.match(workflow,/^  netlify_build_parity:/m);
   assert.ok(workflow.includes('Run exact Netlify production build command once'));
   assert.ok(workflow.includes("netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}"));
-  assert.ok(workflow.includes("if: needs.preflight.outputs.netlify_build_required == 'true'"));
+  assert.ok(workflow.includes("full_assurance: ${{ steps.scope.outputs.full_assurance }}"));\n  assert.ok(workflow.includes("if: needs.preflight.outputs.full_assurance == 'true' && needs.preflight.outputs.netlify_build_required == 'true'"));
   assert.ok(workflow.includes("const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/']"));
   assert.ok(workflow.includes("STATIC_I18N_REQUIRE_CACHE: '1'"));
   assert.ok(skill.includes('netlify-premerge-build-parity-test-ownership-v1'));

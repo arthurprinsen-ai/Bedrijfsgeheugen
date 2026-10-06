@@ -109,3 +109,11 @@ test('Supabase provider preview is change-scoped inside the canonical Required g
   assert.match(required, /SUPABASE_PREVIEW_PROVIDER_VERIFIED/);
   assert.match(required, /!path\.startsWith\('supabase\/functions\/'\)/);
 });
+
+
+test('legacy global Supabase applicability runner stays retired', async () => {
+  await assert.rejects(
+    () => read('.github/workflows/supabase-preview-applicability.yml'),
+    error => error?.code === 'ENOENT'
+  );
+});
