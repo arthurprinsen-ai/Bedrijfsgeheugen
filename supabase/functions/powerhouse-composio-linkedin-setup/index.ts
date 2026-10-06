@@ -71,9 +71,14 @@ Deno.serve(async(req:Request)=>{
     }
 
     const {data:priorStateRow}=await db.from('brain_records').select('status,result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
+    const {data:freshProofRow}=await db.from('brain_records').select('status,result').eq('tenant_id','canonical').eq('record_id','linkedin-company-oauth-fresh-proof-v1').maybeSingle();
     const priorState=jsonObject(priorStateRow?.result);
-    const priorRequestedScopes=Array.isArray(priorState?.requested_company_scopes)?priorState.requested_company_scopes.map(clean).filter(Boolean):[];
-    const boundOauthAccountId=clean(priorState?.oauth_candidate_connection_id||priorState?.company_oauth_connection_id);
+    const freshProof=jsonObject(freshProofRow?.result);
+    const proofScopes=Array.isArray(freshProof?.granted_scopes)?freshProof.granted_scopes.map(clean).filter(Boolean):[];
+    const stateRequestedScopes=Array.isArray(priorState?.requested_company_scopes)?priorState.requested_company_scopes.map(clean).filter(Boolean):[];
+    const priorRequestedScopes=stateRequestedScopes.length?stateRequestedScopes:proofScopes;
+    const provenFreshAccountId=freshProof?.verified===true&&freshProof?.fresh_oauth_verified===true?clean(freshProof?.connected_account_id):'';
+    const boundOauthAccountId=clean(priorState?.oauth_candidate_connection_id||priorState?.company_oauth_connection_id||provenFreshAccountId);
 
     if(action==='create_link'){
       const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&is_composio_managed=true&show_disabled=false&limit=50');
@@ -173,7 +178,15 @@ Deno.serve(async(req:Request)=>{
     const personalReady=!!personAuthor;
     const hasMemberReadScope=grantedScopes.includes('r_member_social');
     const adminAclVerified=!companyError&&discoveredOrgUrns.includes(configuredOrg);
-    const freshOauthBound=!!boundOauthAccountId&&accountId===boundOauthAccountId&&!!clean(priorState?.oauth_requested_at);
+    const accountCreatedAt=clean(account?.created_at);
+    const proofCreatedAt=clean(freshProof?.account_created_at);
+    const proofBound=!!provenFreshAccountId
+      &&accountId===provenFreshAccountId
+      &&freshProof?.admin_acl_verified===true
+      &&clean(freshProof?.organization_urn)===configuredOrg
+      &&(!proofCreatedAt||!accountCreatedAt||proofCreatedAt===accountCreatedAt);
+    const requestedLinkBound=!!boundOauthAccountId&&accountId===boundOauthAccountId&&!!clean(priorState?.oauth_requested_at);
+    const freshOauthBound=proofBound||requestedLinkBound;
     const requestedOrgAdmin=freshOauthBound&&(priorRequestedScopes.includes('r_organization_admin')||priorRequestedScopes.includes('rw_organization_admin'));
     const requestedOrgWrite=freshOauthBound&&priorRequestedScopes.includes('w_organization_social');
     const requestedOrgRead=freshOauthBound&&priorRequestedScopes.includes('r_organization_social');
@@ -199,11 +212,13 @@ Deno.serve(async(req:Request)=>{
       health_verified:true,
       canonical_alias_selected:clean(account?.alias)===ALIAS,
       connected_account_id:accountId,
-      auth_config_id:clean(priorState?.auth_config_id)||null,
+      auth_config_id:clean(priorState?.auth_config_id||freshProof?.auth_config_id)||null,
       oauth_candidate_connection_id:boundOauthAccountId||null,
       requested_company_scopes:priorRequestedScopes,
-      oauth_requested_at:clean(priorState?.oauth_requested_at)||null,
+      oauth_requested_at:clean(priorState?.oauth_requested_at||freshProof?.account_created_at)||null,
       company_oauth_fresh_verified:companyOauthFreshVerified,
+      company_oauth_fresh_proof_record:proofBound?'linkedin-company-oauth-fresh-proof-v1':null,
+      company_oauth_account_created_at:accountCreatedAt||null,
       user_id:userId,
       alias:clean(account?.alias),
       granted_scopes:grantedScopes,
