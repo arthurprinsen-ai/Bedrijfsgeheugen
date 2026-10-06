@@ -27,7 +27,7 @@ async function clickStableTab(selector) {
 }
 
 try {
-  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle', timeout: 90000 });
+  await page.goto(`${baseUrl}/`, { waitUntil: 'domcontentloaded', timeout: 45000 });
   await page.waitForSelector('#homepage-expertise-tab', { state: 'visible', timeout: 30000 });
 
   await clickStableTab('#homepage-expertise-tab');

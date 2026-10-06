@@ -37,7 +37,13 @@ jobs:
             exit 0
           fi
 
-          echo "Supabase source changed; waiting for the provider-owned Supabase Preview check on exact head $HEAD_SHA."
+          non_function_supabase="$(grep '^supabase/' <<< "$changed" | grep -v '^supabase/functions/' || true)"
+          if [ -z "$non_function_supabase" ]; then
+            echo "SUPABASE_PREVIEW_NOT_APPLICABLE: Edge Function-only Supabase changes on exact head $HEAD_SHA; provider database preview does not evaluate this surface"
+            exit 0
+          fi
+
+          echo "Database-relevant Supabase source changed; waiting for the provider-owned Supabase Preview check on exact head $HEAD_SHA."
           for attempt in $(seq 1 48); do
             curl --fail --silent --show-error \
               -H "Authorization: Bearer $GH_TOKEN" \

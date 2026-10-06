@@ -17,8 +17,15 @@ test('non-Supabase changes terminalize explicitly as not applicable success', as
   assert.match(workflow,/grep -q '\^supabase\/'/);
 });
 
-test('Supabase changes require the provider-owned check on exact PR head', async () => {
+test('Edge Function-only Supabase changes terminalize as explicit not-applicable success', async () => {
   const workflow=await readFile(workflowPath,'utf8');
+  assert.match(workflow,/grep -v '\^supabase\/functions\/'/);
+  assert.match(workflow,/Edge Function-only Supabase changes/);
+});
+
+test('non-function Supabase changes require the provider-owned check on exact PR head', async () => {
+  const workflow=await readFile(workflowPath,'utf8');
+  assert.match(workflow,/non_function_supabase/);
   assert.match(workflow,/github\.event\.pull_request\.head\.sha/);
   assert.match(workflow,/c\?\.name==='Supabase Preview'/);
   assert.match(workflow,/c\?\.app\?\.slug==='supabase'/);
