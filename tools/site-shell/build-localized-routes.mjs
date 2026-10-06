@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { parse, serialize } from 'parse5';
+import { spawn } from 'node:child_process';
 
 const ROOT = process.cwd();
 const MODEL = 'claude-haiku-4-5-20251001';
@@ -701,14 +702,75 @@ const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(ro
 const aliases = routeAliases(files);
 if (!files.length) throw new Error('No public HTML files selected for localized build');
 console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length}));
-const allStrings = new Set();
 
+function buildLocalizedFiles(selectedFiles,translations,productionTranslationRequired){
+  let translatedRoutes=0;
+  let partialRoutes=0;
+  let untranslatedRefs=0;
+  for (const file of selectedFiles) {
+    const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
+    const route = routeFor(file);
+
+    const nlDoc = parse(sourceHtml);
+    enforceStaticLocaleTitleOwnership(nlDoc);
+    rewriteLinks(nlDoc,file,'nl',aliases);
+    rewriteLanguageSwitchers(nlDoc,route,'nl');
+    setLocaleMetadata(nlDoc,'nl',route,true);
+    applyLocaleRevenueMetadata(nlDoc,'nl',route);
+    localizeStructuredData(nlDoc,'nl',route,translations);
+    const nlOut = outputPath('nl',file);
+    ensureDir(nlOut);
+    const nlSerialized=serialize(nlDoc);
+    fs.writeFileSync(nlOut,nlSerialized);
+    fs.writeFileSync(path.join(ROOT,file),nlSerialized);
+
+    const enDoc = parse(sourceHtml);
+    enforceStaticLocaleTitleOwnership(enDoc);
+    const enRefs = collectTranslatables(enDoc);
+    const missingForRoute = translations
+      ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
+      : enRefs.map(ref=>ref.source);
+    untranslatedRefs += missingForRoute.length;
+    if (missingForRoute.length) partialRoutes++;
+    else translatedRoutes++;
+    rewriteLinks(enDoc,file,'en',aliases);
+    rewriteLanguageSwitchers(enDoc,route,'en');
+    setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
+    applyLocaleRevenueMetadata(enDoc,'en',route);
+    localizeStructuredData(enDoc,'en',route,translations);
+    const enOut = outputPath('en',file);
+    ensureDir(enOut);
+    fs.writeFileSync(enOut,serialize(enDoc));
+  }
+  return {files:selectedFiles.length,translatedRoutes,partialRoutes,untranslatedRefs};
+}
+
+const shardArg=process.argv.find(arg=>arg.startsWith('--route-shard='));
+if(shardArg){
+  const match=shardArg.match(/^--route-shard=(\d+)\/(\d+)$/);
+  if(!match) throw new Error('STATIC_I18N_SHARD_INVALID: '+shardArg);
+  const shardIndex=Number(match[1]);
+  const shardTotal=Number(match[2]);
+  if(!Number.isInteger(shardIndex)||!Number.isInteger(shardTotal)||shardTotal<1||shardIndex<0||shardIndex>=shardTotal){
+    throw new Error('STATIC_I18N_SHARD_INVALID: '+shardArg);
+  }
+  const cache=loadCache();
+  const translations=new Map(Object.entries(cache).filter(([,value])=>typeof value==='string'&&value.trim()));
+  const productionTranslationRequired=String(process.env.STATIC_I18N_REQUIRE_CACHE||'').trim()==='1'||String(process.env.STATIC_I18N_NETWORK||'').trim()==='1';
+  const selected=files.filter((_,index)=>index%shardTotal===shardIndex);
+  const result=buildLocalizedFiles(selected,translations,productionTranslationRequired);
+  fs.mkdirSync(path.join(ROOT,'.artifacts'),{recursive:true});
+  fs.writeFileSync(path.join(ROOT,'.artifacts',`static-i18n-shard-${shardIndex}.json`),JSON.stringify(result,null,2)+'\n');
+  console.log('STATIC_I18N_SHARD_DONE',JSON.stringify({shard:shardIndex,total:shardTotal,...result}));
+  process.exit(0);
+}
+
+const allStrings = new Set();
 for (const file of files) {
   const html = fs.readFileSync(path.join(ROOT,file),'utf8');
   const doc = parse(html,{sourceCodeLocationInfo:false});
   const refs = collectTranslatables(doc);
   refs.forEach(ref=>allStrings.add(ref.source));
-  // Do not retain parse5 document trees across routes: 100+ full DOM trees can exceed the Netlify build memory limit.
 }
 
 const cacheValidationOnly = process.argv.includes('--validate-cache');
@@ -728,56 +790,43 @@ const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CAC
 if (productionTranslationRequired && !translations) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
-let translatedRoutes = 0;
-let partialRoutes = 0;
-let untranslatedRefs = 0;
-for (const file of files) {
-  const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
-  const route = routeFor(file);
 
-  const nlDoc = parse(sourceHtml);
-  enforceStaticLocaleTitleOwnership(nlDoc);
-  rewriteLinks(nlDoc,file,'nl',aliases);
-  rewriteLanguageSwitchers(nlDoc,route,'nl');
-  setLocaleMetadata(nlDoc,'nl',route,true);
-  applyLocaleRevenueMetadata(nlDoc,'nl',route);
-  localizeStructuredData(nlDoc,'nl',route,translations);
-  const nlOut = outputPath('nl',file);
-  ensureDir(nlOut);
-  const nlSerialized=serialize(nlDoc);
-  fs.writeFileSync(nlOut,nlSerialized);
-  // Dutch is canonically served on the unprefixed route. Write the finalized
-  // NL locale metadata back to that public source so the actual canonical page,
-  // not only the legacy /nl artifact, carries reciprocal hreflang and locale SEO.
-  fs.writeFileSync(path.join(ROOT,file),nlSerialized);
+const configuredWorkers=Math.max(1,Math.min(4,Number(process.env.STATIC_I18N_ROUTE_WORKERS||1)||1));
+const routeWorkers=Math.min(configuredWorkers,files.length);
+let aggregate={files:0,translatedRoutes:0,partialRoutes:0,untranslatedRefs:0};
 
-  const enDoc = parse(sourceHtml);
-  enforceStaticLocaleTitleOwnership(enDoc);
-  const enRefs = collectTranslatables(enDoc);
-  const missingForRoute = translations
-    ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
-    : enRefs.map(ref=>ref.source);
-  untranslatedRefs += missingForRoute.length;
-  if (missingForRoute.length) partialRoutes++;
-  else translatedRoutes++;
-  rewriteLinks(enDoc,file,'en',aliases);
-  rewriteLanguageSwitchers(enDoc,route,'en');
-  setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
-  applyLocaleRevenueMetadata(enDoc,'en',route);
-  localizeStructuredData(enDoc,'en',route,translations);
-  const enOut = outputPath('en',file);
-  ensureDir(enOut);
-  fs.writeFileSync(enOut,serialize(enDoc));
+if(routeWorkers===1){
+  aggregate=buildLocalizedFiles(files,translations,productionTranslationRequired);
+}else{
+  fs.mkdirSync(path.join(ROOT,'.artifacts'),{recursive:true});
+  const runShard=shardIndex=>new Promise((resolve,reject)=>{
+    const child=spawn(process.execPath,[process.argv[1],`--route-shard=${shardIndex}/${routeWorkers}`],{
+      cwd:ROOT,
+      stdio:'inherit',
+      env:{...process.env,STATIC_I18N_ROUTE_WORKERS:'1'}
+    });
+    child.on('error',reject);
+    child.on('exit',code=>code===0?resolve():reject(new Error(`STATIC_I18N_SHARD_FAILED:${shardIndex}:${code}`)));
+  });
+  await Promise.all(Array.from({length:routeWorkers},(_,index)=>runShard(index)));
+  for(let index=0;index<routeWorkers;index++){
+    const shard=JSON.parse(fs.readFileSync(path.join(ROOT,'.artifacts',`static-i18n-shard-${index}.json`),'utf8'));
+    aggregate.files+=Number(shard.files||0);
+    aggregate.translatedRoutes+=Number(shard.translatedRoutes||0);
+    aggregate.partialRoutes+=Number(shard.partialRoutes||0);
+    aggregate.untranslatedRefs+=Number(shard.untranslatedRefs||0);
+  }
 }
 
 console.log('STATIC_I18N_ROUTES',JSON.stringify({
-  files:files.length,
+  files:aggregate.files,
   strings:allStrings.size,
   nl:true,
   en:true,
   staticEnglish:Boolean(translations?.size),
-  translatedRoutes,
-  partialRoutes,
-  untranslatedRefs,
-  runtimeFallback:!translations || untranslatedRefs > 0
+  translatedRoutes:aggregate.translatedRoutes,
+  partialRoutes:aggregate.partialRoutes,
+  untranslatedRefs:aggregate.untranslatedRefs,
+  routeWorkers,
+  runtimeFallback:!translations || aggregate.untranslatedRefs > 0
 }));
