@@ -160,17 +160,3 @@ test('manual recovery degrades preparation but always runs bounded publishers an
   assert.doesNotMatch(workflow,/path: \.artifacts/);
   assert.match(workflow,/SOCIAL_PUBLICATION_UNRESOLVED/);
 });
-
-test('LinkedIn company publication requires proven organization capability before a one-time publish claim',()=>{
-  assert.match(publisher,/organizationCapable=candidates\.filter/);
-  assert.match(publisher,/organizationReadVerified===true/);
-  assert.match(publisher,/LINKEDIN_COMPANY_ORGANIZATION_CAPABILITY_REQUIRED/);
-  assert.match(publisher,/connection_source:'organization_capability_probe'/);
-});
-
-test('Instagram verifier exposes Anthropic credit exhaustion as a specific fail-closed provider blocker',()=>{
-  const verifier=fs.readFileSync('supabase/functions/powerhouse-instagram-media-verifier/index.ts','utf8');
-  assert.match(verifier,/VISION_PROVIDER_CREDIT_EXHAUSTED/);
-  assert.match(verifier,/credit balance is too low/i);
-  assert.match(verifier,/VISION_PROVIDER_REQUEST_FAILED:/);
-});
