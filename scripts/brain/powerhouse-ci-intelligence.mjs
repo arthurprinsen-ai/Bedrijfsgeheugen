@@ -1,4 +1,4 @@
-import { mkdir, writeFile, appendFile, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, appendFile, readFile, readdir } from 'node:fs/promises';
 import { calibrateCi } from '../../tools/delivery/ci-calibration-engine.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
@@ -27,6 +27,18 @@ const requiredMergeGroupRuns = mergeGroupRuns.filter(run => run.name === 'Requir
 const requiredMergeGroupSuccesses = requiredMergeGroupRuns.filter(run => run.status === 'completed' && run.conclusion === 'success').length;
 const requiredMergeGroupFailures = requiredMergeGroupRuns.filter(run => run.status === 'completed' && run.conclusion && run.conclusion !== 'success' && run.conclusion !== 'cancelled' && run.conclusion !== 'skipped').length;
 const mergeGroupReady = requiredMergeGroupSuccesses >= 3 && requiredMergeGroupFailures === 0;
+
+const workflowFiles = (await readdir('.github/workflows')).filter(name => /\.ya?ml$/.test(name)).sort();
+const directPullRequestWorkflows = [];
+for (const name of workflowFiles) {
+  const source = await readFile(`.github/workflows/${name}`, 'utf8');
+  const match = source.match(/\n  pull_request:\s*\n([\s\S]*?)(?=\n  [A-Za-z0-9_-]+:|\n[A-Za-z][A-Za-z0-9_-]*:|$)/);
+  if (!match) continue;
+  const block = match[1] || '';
+  const closedOnly = /types:\s*\[\s*closed\s*\]/.test(block);
+  if (!closedOnly) directPullRequestWorkflows.push(name);
+}
+
 const sample = runs.slice(0, 50);
 const jobRows = [];
 
@@ -89,7 +101,11 @@ const metrics = {
   merge_group_required_failures_7d: requiredMergeGroupFailures,
   merge_group_ready: mergeGroupReady,
   active_nonterminal_runs: runs.filter(run => ['queued','pending','in_progress','waiting','requested'].includes(run.status)).length,
+  direct_pull_request_workflow_count: directPullRequestWorkflows.length,
 };
+
+const engineeringTuning = JSON.parse(await readFile('config/powerhouse-engineering-tuning.json','utf8'));
+const directPrWorkflowBudget = Number(engineeringTuning.ci?.direct_pr_workflow_budget ?? 100);
 
 const baseReport = {
   version: 'powerhouse-ci-intelligence-v2',
@@ -108,6 +124,8 @@ const baseReport = {
     required_total_target_met: metrics.required_total_seconds_p95 <= 120,
     merge_group_observed: metrics.merge_group_runs_7d > 0,
     merge_group_ready: metrics.merge_group_ready === true,
+    direct_pull_request_workflow_budget: directPrWorkflowBudget,
+    direct_pull_request_workflow_target_met: metrics.direct_pull_request_workflow_count <= directPrWorkflowBudget,
   },
   optimization_policy: {
     stale_same_pr_runs_cancelled: true,
@@ -120,6 +138,7 @@ const baseReport = {
     background_learning_off_pr_fastlane: true,
     fast_pr_requires_merge_group_evidence: true,
   },
+  direct_pull_request_workflows: directPullRequestWorkflows,
   jobs: jobRows,
 };
 
@@ -134,5 +153,5 @@ console.log(JSON.stringify(report.metrics, null, 2));
 if (process.env.GITHUB_STEP_SUMMARY) {
   const m = report.metrics;
   await appendFile(process.env.GITHUB_STEP_SUMMARY,
-    `## Powerhouse CI Intelligence v2\n\n- Queue avg / p95: **${m.queue_wait_seconds_avg}s / ${m.queue_wait_seconds_p95}s**\n- Required queue p95: **${m.required_queue_wait_seconds_p95}s**\n- Required total p95: **${m.required_total_seconds_p95}s**\n- Fan-out per SHA avg / p95: **${m.workflow_fanout_per_sha_avg} / ${m.workflow_fanout_per_sha_p95}**\n- Pull-request / merge-group runs (7d): **${m.pull_request_runs_7d} / ${m.merge_group_runs_7d}**\n- Merge-group Required success / failure / ready: **${m.merge_group_required_successes_7d} / ${m.merge_group_required_failures_7d} / ${m.merge_group_ready}**\n- Failed / cancelled / skipped jobs: **${m.failed_jobs} / ${m.cancelled_jobs} / ${m.skipped_jobs}**\n- Calibration recommendations: **${report.calibration.recommendations.length}** (mode: ${report.calibration.mode})\n`);
+    `## Powerhouse CI Intelligence v2\n\n- Queue avg / p95: **${m.queue_wait_seconds_avg}s / ${m.queue_wait_seconds_p95}s**\n- Required queue p95: **${m.required_queue_wait_seconds_p95}s**\n- Required total p95: **${m.required_total_seconds_p95}s**\n- Fan-out per SHA avg / p95: **${m.workflow_fanout_per_sha_avg} / ${m.workflow_fanout_per_sha_p95}**\n- Pull-request / merge-group runs (7d): **${m.pull_request_runs_7d} / ${m.merge_group_runs_7d}**\n- Merge-group Required success / failure / ready: **${m.merge_group_required_successes_7d} / ${m.merge_group_required_failures_7d} / ${m.merge_group_ready}**\n- Direct PR workflows / budget: **${m.direct_pull_request_workflow_count} / ${directPrWorkflowBudget}**\n- Failed / cancelled / skipped jobs: **${m.failed_jobs} / ${m.cancelled_jobs} / ${m.skipped_jobs}**\n- Calibration recommendations: **${report.calibration.recommendations.length}** (mode: ${report.calibration.mode})\n`);
 }

@@ -126,6 +126,7 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const mergeGroupReady = metrics.merge_group_ready === true && mergeGroupSuccesses >= 3 && mergeGroupFailures === 0;
   const requiredQueueP95 = Number(metrics.required_queue_wait_seconds_p95 ?? queueP95);
   const requiredTotalP95 = Number(metrics.required_total_seconds_p95 ?? executionP95);
+  const directPrWorkflowCount = Number(metrics.direct_pull_request_workflow_count ?? 0);
 
   const calibrationRecommendations = Array.isArray(calibration?.recommendations) ? calibration.recommendations : [];
   const highCalibrationWarnings = calibrationRecommendations.filter(item => item?.priority === 'high');
@@ -154,6 +155,12 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     decisions.push('allow-more-safe-speculation');
   }
   const ci = { ...(current.ci ?? {}) };
+  const currentDirectPrBudget = Number(ci.direct_pr_workflow_budget ?? 100);
+  ci.direct_pr_workflow_target = 2;
+  ci.direct_pr_workflow_budget = directPrWorkflowCount > 0
+    ? Math.max(2, Math.min(currentDirectPrBudget, directPrWorkflowCount))
+    : currentDirectPrBudget;
+  if (directPrWorkflowCount > 0 && ci.direct_pr_workflow_budget < currentDirectPrBudget) decisions.push('ratchet-direct-pr-workflow-budget-down');
   ci.max_pr_workflows_per_head = clamp(Number(ci.max_pr_workflows_per_head ?? 5), 2, 5);
   ci.fast_gate_queue_p95_target_seconds = clamp(Number(ci.fast_gate_queue_p95_target_seconds ?? 30), 10, 30);
   ci.fast_gate_total_p95_target_seconds = clamp(Number(ci.fast_gate_total_p95_target_seconds ?? 120), 30, 120);
@@ -185,6 +192,8 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     merge_group_required_failures_7d:mergeGroupFailures,
     merge_group_ready:mergeGroupReady,
     ci_mode:ci.mode,
+    direct_pull_request_workflow_count:directPrWorkflowCount,
+    direct_pr_workflow_budget:ci.direct_pr_workflow_budget,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
     calibration_mode:String(calibration?.mode || 'NONE'),
@@ -214,6 +223,8 @@ export async function validateAutonomousEngineeringFabricV3() {
   if(tuning.ci?.mode==='fast-pr-full-merge-group' && tuning.ci?.pr_full_assurance!==false) errors.push('fast PR mode must disable duplicate PR full assurance');
   if(Number(tuning.ci?.max_pr_workflows_per_head ?? 999)>5) errors.push('PR workflow fan-out target must be <=5');
   if(Number(tuning.ci?.agent_external_wait_budget_seconds ?? 999)>30) errors.push('external wait budget must be <=30s');
+  if(Number(tuning.ci?.direct_pr_workflow_target ?? 0)!==2) errors.push('canonical direct PR workflow target must be 2');
+  if(Number(tuning.ci?.direct_pr_workflow_budget ?? 0)<2) errors.push('direct PR workflow budget cannot be below canonical Required + CodeQL authorities');
   return { ok:errors.length===0, errors, fingerprint:policy.fingerprint };
 }
 

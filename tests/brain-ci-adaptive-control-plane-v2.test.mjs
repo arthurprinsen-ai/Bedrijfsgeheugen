@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { optimizeDailyTuning } from '../scripts/brain/autonomous-engineering-fabric-v3.mjs';
 
 const read = path => readFile(path,'utf8');
@@ -54,7 +54,7 @@ test('optimizer cannot move full assurance off PR before real merge-group eviden
 
 test('CI intelligence measures the SLOs that drive architecture selection', async () => {
   const source=await read('scripts/brain/powerhouse-ci-intelligence.mjs');
-  for (const metric of ['required_queue_wait_seconds_p95','required_total_seconds_p95','workflow_fanout_per_sha_p95','merge_group_runs_7d','merge_group_required_successes_7d','merge_group_required_failures_7d','merge_group_ready','active_nonterminal_runs']) {
+  for (const metric of ['required_queue_wait_seconds_p95','required_total_seconds_p95','workflow_fanout_per_sha_p95','merge_group_runs_7d','merge_group_required_successes_7d','merge_group_required_failures_7d','merge_group_ready','active_nonterminal_runs','direct_pull_request_workflow_count']) {
     assert.match(source,new RegExp(metric));
   }
   assert.match(source,/run\.status === 'completed' && run\.updated_at/);
@@ -85,4 +85,36 @@ test('skill projection contract is absorbed into Required without a separate PR 
   assert.match(required,/brain-powerhouse-universal-agent-learning-writeback\.test\.mjs/);
   assert.doesNotMatch(workflow,/\n  pull_request:/);
   assert.match(workflow,/\n  push:/);
+});
+
+
+test('direct PR workflow budget ratchets down and never auto-expands', () => {
+  const current={
+    max_parallel_packages:4,
+    candidate_batch_window_seconds:20,
+    fast_path_target_seconds:45,
+    speculative_execution_threshold:0.75,
+    ci:{pr_full_assurance:true,merge_group_full_assurance:true,max_pr_workflows_per_head:5,direct_pr_workflow_budget:100,direct_pr_workflow_target:2},
+    safety:{required_release_gate:true,security_gate:true,production_readback:true,protected_merge:true,exact_sha_identity:true,merge_group_proof_required_before_fast_pr:true}
+  };
+  const reduced=optimizeDailyTuning({metrics:{sampled_jobs:50,failed_jobs:0,skipped_jobs:0,queue_wait_seconds_p95:10,execution_seconds_p95:60,workflow_fanout_per_sha_p95:4,merge_group_runs_7d:0,direct_pull_request_workflow_count:17},current});
+  assert.equal(reduced.tuning.ci.direct_pr_workflow_budget,17);
+  assert.ok(reduced.decisions.includes('ratchet-direct-pr-workflow-budget-down'));
+  const regression=optimizeDailyTuning({metrics:{sampled_jobs:50,failed_jobs:0,skipped_jobs:0,queue_wait_seconds_p95:10,execution_seconds_p95:60,workflow_fanout_per_sha_p95:4,merge_group_runs_7d:0,direct_pull_request_workflow_count:19},current:{...current,ci:{...current.ci,direct_pr_workflow_budget:17}}});
+  assert.equal(regression.tuning.ci.direct_pr_workflow_budget,17);
+});
+
+test('current direct PR workflow count cannot exceed the monotonic tuning budget', async () => {
+  const tuning=JSON.parse(await read('config/powerhouse-engineering-tuning.json'));
+  const files=(await readdir('.github/workflows')).filter(name=>/\.ya?ml$/.test(name));
+  const direct=[];
+  for(const name of files){
+    const source=await read(`.github/workflows/${name}`);
+    const match=source.match(/\n  pull_request:\s*\n([\s\S]*?)(?=\n  [A-Za-z0-9_-]+:|\n[A-Za-z][A-Za-z0-9_-]*:|$)/);
+    if(!match) continue;
+    const closedOnly=/types:\s*\[\s*closed\s*\]/.test(match[1]||'');
+    if(!closedOnly) direct.push(name);
+  }
+  assert.ok(direct.length<=tuning.ci.direct_pr_workflow_budget,`direct PR fan-out regression: ${direct.length} > ${tuning.ci.direct_pr_workflow_budget}`);
+  assert.equal(tuning.ci.direct_pr_workflow_target,2);
 });

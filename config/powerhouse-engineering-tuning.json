@@ -27,6 +27,8 @@
     "fast_pr_requires_merge_group_evidence": true,
     "merge_group_min_successful_required_runs": 3,
     "merge_group_max_required_failures": 0,
-    "merge_group_evidence_window_days": 7
+    "merge_group_evidence_window_days": 7,
+    "direct_pr_workflow_budget": 100,
+    "direct_pr_workflow_target": 2
   }
 }
