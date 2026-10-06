@@ -12,3 +12,8 @@ The deterministic website build still consumed roughly a minute per execution an
 - Static NL/EN route output uses a content-addressed cache shared through GitHub Actions and Netlify's build cache.
 
 Regression: `tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs`.
+
+## Performance acceptance
+- Warm Required builds report phase timings and cache-hit counts instead of relying on elapsed-run guesses.
+- When the merged main tree equals the proven candidate tree, production promotion must not execute the deterministic ~69-second site-transform chain again.
+- When the tree differs or proof is unavailable, correctness wins: run the complete canonical build and record the fallback reason.
