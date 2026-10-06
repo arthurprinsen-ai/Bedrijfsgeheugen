@@ -31,6 +31,9 @@
     ],
     "shadow": [
       "tests/brain-linkedin-company-scoped-oauth-current-main-20261006.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-scoped-oauth-current-main-20261006.test.mjs"
     ]
   }
 }
