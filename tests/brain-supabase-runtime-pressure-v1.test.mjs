@@ -6,6 +6,7 @@ const migration = fs.readFileSync('supabase/migrations/20261006085416_stagger_cr
 const telemetry = fs.readFileSync('supabase/functions/bg-interactie/index.ts','utf8');
 const bridge = fs.readFileSync('supabase/functions/supabase-migration-repair-bridge/index.ts','utf8');
 const contentLoop = fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+const orchestrator = fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
 
 test('trusted Supabase repair transport remains IPv4 Supavisor session mode', () => {
   assert.ok(bridge.includes('aws-0-eu-central-1.pooler.supabase.com'));
@@ -64,4 +65,11 @@ test('runtime event writers use only canonical lifecycle states', () => {
   assert.ok(stateMigration.includes('powerhouse_revenue_event_spine_cycle_v1'));
   assert.equal((stateMigration.match(/else 'error' end/g) || []).length, 3);
   assert.equal((stateMigration.match(/else 'degraded' end/g) || []).length, 0);
+});
+
+test('orchestrator avoids blocking nested Edge Function preflight on the critical path', () => {
+  assert.doesNotMatch(orchestrator, /runDailyCoreStages/);
+  assert.doesNotMatch(orchestrator, /powerhouse-blog-readback/);
+  assert.match(orchestrator, /powerhouse_materialize_source_backed_channel_candidates_v1/);
+  assert.match(orchestrator, /powerhouse_daily_runs/);
 });
