@@ -1,19 +1,7 @@
 name: Powerhouse Quality Intelligence Surface Gate
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'site/**'
-      - 'portal-v2/**'
-      - 'public/**'
-      - 'netlify/functions/**'
-      - 'supabase/**'
-      - 'contracts/openapi/**'
-      - 'config/powerhouse-quality-surface-contracts.json'
-      - 'scripts/brain/quality/surface-discovery*.mjs'
-      - '.github/workflows/powerhouse-quality-surface-gate.yml'
-
+  workflow_dispatch:
 concurrency:
   group: powerhouse-quality-surface-gate-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
