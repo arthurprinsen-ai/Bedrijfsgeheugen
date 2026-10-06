@@ -16,6 +16,13 @@
       "required": true
     },
     {
+      "id": "function:bg-interactie",
+      "type": "function",
+      "authority": "supabase/functions/bg-interactie/index.ts",
+      "evidence_contract": "tests/brain-supabase-runtime-pressure-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:bg-notion-sync",
       "type": "function",
       "authority": "supabase/functions/bg-notion-sync/index.ts",
