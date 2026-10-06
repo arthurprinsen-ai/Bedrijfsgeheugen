@@ -44,11 +44,14 @@ test('CMS runtime and admin surface are wired into the build',()=>{
   const runtime=read('assets/cms-runtime.js');
   const admin=read('assets/cms-admin.js');
   const toml=read('netlify.toml');
+  const runner=read('tools/ci/run-netlify-production-build.mjs');
   assert.match(runtime,/\/api\/cms-public/);
   assert.match(runtime,/sanitizeHtml/);
   assert.match(admin,/\/api\/cms-admin/);
   assert.match(admin,/startPick/);
-  assert.match(toml,/apply-cms-runtime\.mjs/);
+  assert.match(runner,/apply-cms-runtime\.mjs/);
+  assert.match(toml,/\[build\][\s\S]*command = "node tools\/ci\/run-netlify-production-build\.mjs"/);
+  assert.match(toml,/\[context\.deploy-preview\][\s\S]*command = "node tools\/ci\/run-netlify-production-build\.mjs"/);
 });
 
 test('CMS admin route is excluded from public shell projection',()=>{
