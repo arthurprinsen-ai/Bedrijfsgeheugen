@@ -38,6 +38,9 @@ const retired = [
   '.github/workflows/repo-writer-parity-rollback.yml',
   '.github/workflows/repo-writer-cheap-canary.yml',
   '.github/workflows/portal-v2-production-dom-readback.yml',
+  '.github/workflows/portal-v2-live-preview.yml',
+  '.github/workflows/repo-writer-operational-verification.yml',
+  '.github/workflows/engineering-supply-chain-trust.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -92,6 +95,7 @@ test('Required merge_group preserves sixth-batch assurance', () => {
     'scripts/security-operations-proof.mjs --check',
     'scripts/brain/check_powerhouse_supabase_security.py',
     'tests/candidate-environment.test.mjs',
+    'Verify dependency supply-chain risk',
   ]) assert.ok(required.includes(marker), marker);
 });
 
@@ -118,9 +122,11 @@ test('retired duplicate Business OS workflow is removed and Supabase contract is
   assert.doesNotMatch(supabase, /^  pull_request:/m);
 });
 
-test('portal preview owns consolidated Business OS preview assurance', () => {
+test('portal preview preserves consolidated Business OS evidence after Required admission', () => {
   const source = readFileSync('.github/workflows/portal-v2-live-preview.yml', 'utf8');
-  assert.ok(source.includes("'portal-next/**'"));
+  assert.match(source, /^  workflow_run:/m);
+  assert.match(source, /workflows:\s*\['Required test'\]/);
+  assert.doesNotMatch(source, /^  pull_request:/m);
   assert.ok(source.includes("Verify canonical Business OS redirect and input compatibility"));
   assert.ok(source.includes("readLegacyPortalBusinessInputs"));
 });
@@ -131,7 +137,9 @@ test('writer PR fan-out is consolidated behind one operational router', () => {
   const cheap = readFileSync('.github/workflows/repo-writer-cheap-canary.yml', 'utf8');
   const parity = readFileSync('.github/workflows/repo-writer-parity-rollback.yml', 'utf8');
   const shadow = readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
-  assert.match(router, /^  pull_request:/m);
+  assert.doesNotMatch(router, /^  pull_request:/m);
+  assert.match(router, /^  workflow_run:/m);
+  assert.match(router, /workflows:\s*\['Required test'\]/);
   assert.ok(router.includes('route-cheap-canary:'));
   assert.ok(router.includes('route-parity-rollback:'));
   assert.ok(router.includes('gh workflow run repo-writer-cheap-canary.yml'));
@@ -144,15 +152,18 @@ test('writer PR fan-out is consolidated behind one operational router', () => {
 });
 
 
-test('Portal PR assurance is consolidated while production push readback remains independent', () => {
+test('Portal evidence is post-admission while production push readback remains independent', () => {
   const preview = readFileSync('.github/workflows/portal-v2-live-preview.yml', 'utf8');
   const production = readFileSync('.github/workflows/portal-v2-production-dom-readback.yml', 'utf8');
-  assert.match(preview, /^  pull_request:/m);
+  assert.match(preview, /^  workflow_run:/m);
+  assert.doesNotMatch(preview, /^  pull_request:/m);
   assert.ok(preview.includes('Verify production DOM suite on immutable PR deploy'));
-  assert.ok(preview.includes('visual-baseline-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}'));
+  assert.ok(preview.includes('visual-baseline-pr-${{ github.event.workflow_run.pull_requests[0].number }}-${{ github.event.workflow_run.pull_requests[0].head.sha }}'));
+  assert.ok(preview.includes('run-name: portal-preview-pr-'));
   assert.doesNotMatch(production, /^  pull_request:/m);
   assert.match(production, /^  push:/m);
-  assert.ok(production.includes('portal-v2-live-preview.yml/runs?event=pull_request'));
+  assert.ok(production.includes('portal-v2-live-preview.yml/runs?event=workflow_run'));
+  assert.ok(production.includes('expected_title="portal-preview-pr-${pr_number}-${pr_head_sha}"'));
 });
 
 test('Powerhouse CodeQL is the single PR CodeQL authority for JS/TS and Python', () => {
@@ -174,4 +185,11 @@ test('consolidated CodeQL workflow has one scope and one job per language', () =
   assert.equal((source.match(/^  analyze_python:/gm) || []).length, 1);
   assert.ok(source.includes("if: needs.scope.outputs.run_js == 'true'"));
   assert.ok(source.includes("if: needs.scope.outputs.run_python == 'true'"));
+});
+
+test('PR admission baseline is exactly Required plus Powerhouse CodeQL', () => {
+  const baseline = JSON.parse(readFileSync('config/pr-trigger-baseline.json', 'utf8'));
+  assert.equal(baseline.admissionPullRequestWorkflowCount, 2);
+  assert.equal(baseline.directPullRequestWorkflowCount, 7);
+  assert.deepEqual([...baseline.admissionPullRequestWorkflows].sort(), ['powerhouse-codeql.yml','required-test.yml']);
 });
