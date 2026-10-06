@@ -11,7 +11,6 @@ const CANDIDATE_WORKFLOWS = [
   '.github/workflows/shared-agent-memory-tests.yml',
   '.github/workflows/bg168-materiality-promotion-tests.yml',
   '.github/workflows/learning-contract-delivery-classifier-tests.yml',
-  '.github/workflows/codeql.yml',
   '.github/workflows/powerhouse-codeql.yml',
   '.github/workflows/engineering-intelligence-trust.yml',
   '.github/workflows/engineering-supply-chain-trust.yml',
