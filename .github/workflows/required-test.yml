@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
@@ -107,7 +107,7 @@ jobs:
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
           import { evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
-          const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const fallbackBaseSha=(process.env.PR_BASE_SHA || process.env.MERGE_GROUP_BASE_SHA || process.env.GITHUB_SHA_VALUE || '').trim();
           const context=normalizeGitHubDeliveryEvent({
             eventName: process.env.EVENT_NAME,
             githubSha: process.env.GITHUB_SHA_VALUE,
@@ -139,7 +139,12 @@ jobs:
           if(metadataAuthority.source === 'versioned-manifest' && metadataAuthority.delivery.baseSha !== context.baseSha) {
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
-          const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          if (comparisonBaseSha && comparisonBaseSha !== context.changeHeadSha) {
+            execFileSync('git',['fetch','--no-tags','--depth=1','origin',comparisonBaseSha],{stdio:'pipe'});
+          }
+          const changedPaths=comparisonBaseSha && comparisonBaseSha !== context.changeHeadSha
+            ? execFileSync('git',['diff','--name-only',comparisonBaseSha,context.changeHeadSha],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean)
+            : [];
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
           const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/'];
