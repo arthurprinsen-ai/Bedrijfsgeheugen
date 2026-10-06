@@ -73,3 +73,13 @@ test('production workflows ignore control-plane-only paths', async () => {
     }
   }
 });
+
+
+test('portal production readback only auto-runs for deployable portal runtime changes', async () => {
+  const source = await workflow('portal-v2-production-dom-readback.yml');
+  const triggerBlock = source.split(/\nconcurrency:/, 1)[0];
+  assert.match(triggerBlock, /- 'portal-v2\/\*\*'/);
+  assert.doesNotMatch(triggerBlock, /tests\/integration\/portal-v2-/);
+  assert.doesNotMatch(triggerBlock, /\.github\/workflows\/portal-v2-production-dom-readback\.yml/);
+  assert.match(triggerBlock, /workflow_dispatch:/);
+});
