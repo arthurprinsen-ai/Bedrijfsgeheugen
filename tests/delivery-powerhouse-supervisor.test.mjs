@@ -24,6 +24,22 @@ test('completed green Required on a behind-main head becomes same-lineage main-d
   assert.equal(r.behindBy,1);
 });
 
+test('cancelled Required on a behind-main head is main-drift recovery, not a failed-gate dead end',()=>{
+  const runs=[{name:'Required test',status:'completed',conclusion:'cancelled',updated_at:'2026-10-06T16:00:00Z'}];
+  const r=classifyRecovery({mergeable:true,behindBy:2,workflowRuns:runs,headUpdatedAt:'2026-10-06T15:59:00Z',now:Date.parse('2026-10-06T16:00:10Z')});
+  assert.equal(r.state,'MAIN_DRIFT_RECOVERY');
+  assert.equal(r.action,'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN');
+  assert.equal(r.behindBy,2);
+  assert.equal(r.recoveryCause,'CANCELLED_REQUIRED_ON_STALE_MAIN');
+});
+
+test('real Required failure stays fail-closed even when main has moved',()=>{
+  const runs=[{name:'Required test',status:'completed',conclusion:'failure',updated_at:'2026-10-06T16:00:00Z'}];
+  const r=classifyRecovery({mergeable:true,behindBy:2,workflowRuns:runs,headUpdatedAt:'2026-10-06T15:59:00Z',now:Date.parse('2026-10-06T16:00:10Z')});
+  assert.equal(r.state,'FAILED_GATE_RECOVERY');
+  assert.match(r.action,/READ_FIRST_CURRENT_FAILURE/);
+});
+
 test('behind-main never refreshes while canonical Required is still active',()=>{
   const runs=[{name:'Required test',status:'in_progress',updated_at:'2026-10-06T15:40:00Z'}];
   const r=classifyRecovery({mergeable:true,behindBy:1,workflowRuns:runs,headUpdatedAt:'2026-10-06T15:39:00Z',now:Date.parse('2026-10-06T15:40:10Z')});
