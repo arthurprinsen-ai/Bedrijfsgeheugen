@@ -32,6 +32,29 @@ test('automation-only work blocks only shared and automation required suites', (
   assert.deepEqual(suitesFor(['automation/contracts/customer-sync.json']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });
 
+test('canonical writer control plane is automation-only and never fans out to product lanes', () => {
+  const writerWorkflows = [
+    '.github/workflows/menu-balk-fix.yml',
+    '.github/workflows/regelgeving-bijwerken.yml',
+    '.github/workflows/seo-controle.yml',
+    '.github/workflows/paginacontrole.yml',
+    '.github/workflows/approved-central-blog.yml',
+    '.github/workflows/blog-bijwerken.yml',
+    '.github/workflows/weekblog.yml',
+    '.github/workflows/repo-writer-candidate-shadow.yml',
+    '.github/workflows/repo-writer-operational-verification.yml',
+    '.github/workflows/repo-writer-gate-dispatch.yml',
+    '.github/workflows/repo-writer-cheap-canary.yml',
+    '.github/workflows/repo-writer-parity-rollback.yml',
+    '.github/workflows/writer-certification-reconcile.yml',
+    '.github/workflows/writer-production-reconcile.yml',
+    '.github/workflows/powerhouse-terminal-writer-lease-closure-guard.yml',
+  ];
+  const expected = { shared:true, backend:false, portal:false, website:false, automation:true };
+  for (const path of writerWorkflows) assert.deepEqual(suitesFor([path]), expected, path);
+  assert.deepEqual(suitesFor(writerWorkflows), expected);
+});
+
 test('approved central blog workflow is automation-only and does not require a website preview', () => {
   assert.deepEqual(suitesFor(['.github/workflows/approved-central-blog.yml']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });

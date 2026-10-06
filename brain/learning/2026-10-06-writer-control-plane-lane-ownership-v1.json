@@ -1,0 +1,25 @@
+{
+  "version": "WRITER-CONTROL-PLANE-LANE-OWNERSHIP-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|writer-control-plane|lane-overclassification|v1",
+  "obligation_id": "writer-control-plane-lane-ownership-20261006-v1",
+  "root_cause": "The broad executable shared path .github/workflows/ caused any unscoped writer workflow definition to set sharedExecutable=true in createDeliveryPlan. That activated backend, portal, website and automation lanes even when the adaptive integration bundle classified the same change as R1 delivery-control-plane work.",
+  "prevention": "Every canonical repository-writer workflow has an explicit SCOPED_WORKFLOW_LANES owner of automation. Specific lane ownership therefore wins before the broad .github/workflows/ shared-path fallback, preventing product-lane fan-out for writer-control-plane-only changes.",
+  "compiler": {
+    "failure_class": "WRITER_CONTROL_PLANE_ALL_LANE_FANOUT",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_failure": "PR #3963 preflight reported lanes automation, backend, portal and website for writer-control-plane-only changed paths while the adaptive compiler reported R1, capabilities brain-runtime + delivery-control-plane, fullSharedSuite=false.",
+    "regression": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "proof_boundary": "The canonical writer workflow bundle resolves to shared=true, automation=true, backend=false, portal=false, website=false."
+  },
+  "status": "ACTIVE_PREVENTION"
+}
