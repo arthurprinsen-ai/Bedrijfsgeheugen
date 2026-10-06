@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'site/**'
+      - '!site/website-release-risk.json'
       - 'portal-v2/**'
       - 'public/**'
       - 'netlify/functions/**'
