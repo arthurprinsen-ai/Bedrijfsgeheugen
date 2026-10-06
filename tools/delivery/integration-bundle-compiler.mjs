@@ -40,7 +40,11 @@ export function compileClosurePlan({ changedPaths = [], policy, obligationId = '
   const materialPaths = paths.filter(path => !matchesPrefix(path, closureOnly));
   const material = materialPaths.length > 0;
   const runtimePrefixes = policy?.runtimeClosureObligationPrefixes || [];
-  const runtimeClosed = runtimePrefixes.some(prefix => String(obligationId || '').startsWith(prefix));
+  const runtimePathPrefixes = policy?.runtimeClosurePathPrefixes || [];
+  const runtimeObligation = runtimePrefixes.some(prefix => String(obligationId || '').startsWith(prefix));
+  const runtimeClosed = runtimeObligation
+    && materialPaths.length > 0
+    && materialPaths.every(path => matchesPrefix(path, runtimePathPrefixes));
   const evidence = {};
   const missing = [];
   for (const [id, patterns] of Object.entries(policy?.closureArtifacts || {})) {
@@ -181,6 +185,7 @@ async function main() {
       `tests_json=${JSON.stringify(bundle.adaptive.tests)}\n` +
       `capabilities_json=${JSON.stringify(bundle.adaptive.capabilities)}\n` +
       `closure_ready=${bundle.closure.ready}\n` +
+      `closure_authority=${bundle.closure.authority}\n` +
       `bundle_hash=${bundle.bundleHash}\n` +
       `bundle_path=${artifactPath}\n` +
       `writer_mode=${bundle.writerIntent.mode}\n` +

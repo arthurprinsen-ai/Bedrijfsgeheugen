@@ -195,17 +195,22 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npx --yes @lhci/cli@0.15.x collect --url="http://127.0.0.1:8000/blog/${{ steps.slug.outputs.slug }}/" --numberOfRuns=1 --settings.chromeFlags='--no-sandbox --headless' --outputPath=./.lighthouseci
-          report=$(find .lighthouseci -name 'lhr-*.json' | head -n1)
-          test -n "$report"
-          python3 - "$report" <<'PY'
-          import json,sys
-          r=json.load(open(sys.argv[1]))
-          c=r['categories']
-          scores={k:round(v['score']*100) for k,v in c.items() if k in ('seo','performance','accessibility','best-practices')}
-          print('Lighthouse:',scores)
-          assert scores.get('seo',0)==100, f"Lighthouse SEO moet 100 zijn, nu {scores.get('seo')}"
-          assert scores.get('performance',0)>=90, f"Performance moet >=90 zijn, nu {scores.get('performance')}"
-          assert scores.get('accessibility',0)>=95, f"Accessibility moet >=95 zijn, nu {scores.get('accessibility')}"
-          assert scores.get('best-practices',0)>=95, f"Best Practices moet >=95 zijn, nu {scores.get('best-practices')}"
+          rm -rf .lighthouseci
+          npx --yes @lhci/cli@0.15.x collect --url="http://127.0.0.1:8000/blog/${{ steps.slug.outputs.slug }}/" --numberOfRuns=3 --settings.chromeFlags='--no-sandbox --headless' --outputPath=./.lighthouseci
+          mapfile -t reports < <(find .lighthouseci -name 'lhr-*.json' | sort)
+          test "${#reports[@]}" -eq 3
+          python3 - "${reports[@]}" <<'PY'
+          import json,statistics,sys
+          runs=[]
+          for path in sys.argv[1:]:
+              r=json.load(open(path))
+              c=r['categories']
+              runs.append({k:round(v['score']*100) for k,v in c.items() if k in ('seo','performance','accessibility','best-practices')})
+          median={k:round(statistics.median(run[k] for run in runs)) for k in ('seo','performance','accessibility','best-practices')}
+          print('Lighthouse runs:',runs)
+          print('Lighthouse median:',median)
+          assert median.get('seo',0)==100, f"Lighthouse SEO median moet 100 zijn, nu {median.get('seo')}"
+          assert median.get('performance',0)>=90, f"Performance median moet >=90 zijn, nu {median.get('performance')}"
+          assert median.get('accessibility',0)>=95, f"Accessibility median moet >=95 zijn, nu {median.get('accessibility')}"
+          assert median.get('best-practices',0)>=95, f"Best Practices median moet >=95 zijn, nu {median.get('best-practices')}"
           PY

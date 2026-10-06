@@ -245,13 +245,13 @@ def main():
     canonical = data["canonical_url"]
     template = TEMPLATE.read_text(encoding="utf-8")
     # Daily blog pages are static-first: no third-party font or analytics requests are needed for render-critical delivery.
-    template = re.sub(r'<!-- Google tag \\(gtag\\.js\\) -->.*?</script>(?=<meta name="viewport")', '', template, count=1, flags=re.S)
-    template = re.sub(r'<link rel="preconnect" href="https://fonts\\.googleapis\\.com">\\n?', '', template)
-    template = re.sub(r'<link rel="preconnect" href="https://fonts\\.gstatic\\.com" crossorigin>\\n?', '', template)
-    template = re.sub(r'<link rel="preload" as="style" href="https://fonts\\.googleapis\\.com[^"]*">\\n?', '', template)
-    template = re.sub(r'<link href="https://fonts\\.googleapis\\.com[^"]*" rel="stylesheet">\\n?', '', template)
-    template = re.sub(r'<script data-goatcounter="[^"]+" async src="https://gc\\.zgo\\.at/count\\.js"></script>\\n?', '', template)
-    template = re.sub(r'<script src="/assets/stijl\\.js" defer></script>\\n?', '', template)
+    template = re.sub(r'<!-- Google tag \(gtag\.js\) -->.*?</script>\s*(?=<meta name="viewport")', '', template, count=1, flags=re.S)
+    template = re.sub(r'<link rel="preconnect" href="https://fonts\.googleapis\.com">\s*', '', template)
+    template = re.sub(r'<link rel="preconnect" href="https://fonts\.gstatic\.com" crossorigin>\s*', '', template)
+    template = re.sub(r'<link rel="preload" as="style" href="https://fonts\.googleapis\.com[^"]*">\s*', '', template)
+    template = re.sub(r'<link href="https://fonts\.googleapis\.com[^"]*" rel="stylesheet">\s*', '', template)
+    template = re.sub(r'<script data-goatcounter="[^"]+" async src="https://gc\.zgo\.at/count\.js"></script>\s*', '', template)
+    template = re.sub(r'<script src="/assets/stijl\.js" defer></script>\s*', '', template)
     template = template.replace(
         '<span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>',
         '<span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/gebruiksvoorwaarden">Algemene gebruiksvoorwaarden</a><a href="/privacy">Privacyverklaring</a><a href="/cookiebeleid">Cookiebeleid</a><a href="/systeemstatus">Systeemstatus</a><a href="/contact">Contact</a></span>'

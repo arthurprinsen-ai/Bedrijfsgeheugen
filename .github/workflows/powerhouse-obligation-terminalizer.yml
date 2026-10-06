@@ -27,12 +27,68 @@ jobs:
         with:
           node-version: '22'
 
+      - id: target
+        name: Resolve immutable terminalization target
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_PR_BODY: ${{ github.event.pull_request.body }}
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+          EVENT_MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          controller_body="${EVENT_PR_BODY:-}"
+          replay_pr="$(printf '%s\n' "$controller_body" | sed -nE 's/^Terminal-Replay-PR:[[:space:]]*([0-9]+)[[:space:]]*$/\1/p' | tail -n1)"
+          pr_number="$EVENT_PR_NUMBER"
+          candidate_sha="$EVENT_CANDIDATE_SHA"
+          merge_sha="$EVENT_MERGE_SHA"
+          pr_body="$controller_body"
+          mode="current"
+
+          if [ -n "$replay_pr" ]; then
+            [ "$replay_pr" != "$EVENT_PR_NUMBER" ] || {
+              echo "::error::TERMINAL_REPLAY_SELF_REFERENCE:$replay_pr"
+              exit 78
+            }
+            target_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$replay_pr")"
+            state="$(jq -r '.state' <<<"$target_json")"
+            merged_at="$(jq -r '.merged_at // ""' <<<"$target_json")"
+            merged="$(jq -r '.merged' <<<"$target_json")"
+            [ "$state" = "closed" ] && [ "$merged" = "true" ] && [ -n "$merged_at" ] || {
+              echo "::error::TERMINAL_REPLAY_TARGET_NOT_MERGED:$replay_pr:$state:$merged"
+              exit 78
+            }
+            pr_number="$replay_pr"
+            candidate_sha="$(jq -r '.head.sha // ""' <<<"$target_json")"
+            merge_sha="$(jq -r '.merge_commit_sha // ""' <<<"$target_json")"
+            pr_body="$(jq -r '.body // ""' <<<"$target_json")"
+            mode="replay"
+          fi
+
+          [[ "$pr_number" =~ ^[1-9][0-9]*$ ]]
+          [[ "$candidate_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]]
+          grep -q '^Writer-Lease-State: TERMINAL_DELIVERY$' <<<"$pr_body" || {
+            echo "::error::TERMINAL_REPLAY_TARGET_NOT_TERMINAL:$pr_number"
+            exit 78
+          }
+
+          echo "pr_number=$pr_number" >> "$GITHUB_OUTPUT"
+          echo "candidate_sha=$candidate_sha" >> "$GITHUB_OUTPUT"
+          echo "merge_sha=$merge_sha" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          {
+            echo 'pr_body<<__TERMINAL_PR_BODY__'
+            printf '%s\n' "$pr_body"
+            echo '__TERMINAL_PR_BODY__'
+          } >> "$GITHUB_OUTPUT"
+
       - name: Validate canonical merged lineage
         env:
-          PR_BODY: ${{ github.event.pull_request.body }}
-          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BODY: ${{ steps.target.outputs.pr_body }}
+          CANDIDATE_SHA: ${{ steps.target.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts
@@ -75,8 +131,8 @@ jobs:
       - name: Verify production promotion and runtime readback
         id: production
         env:
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          PR_BODY: ${{ github.event.pull_request.body }}
+          MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
+          PR_BODY: ${{ steps.target.outputs.pr_body }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags
@@ -91,7 +147,7 @@ jobs:
 
           is_governance_path() {
             case "$1" in
-              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json)
+              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json|config/powerhouse-quality-surface-contracts.json)
                 return 0
                 ;;
             esac
@@ -246,9 +302,11 @@ jobs:
         env:
           PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
           READBACK_MODE: ${{ steps.production.outputs.readback_mode }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
-          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
+          CANDIDATE_SHA: ${{ steps.target.outputs.candidate_sha }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          CONTROLLER_PR_NUMBER: ${{ github.event.pull_request.number }}
+          TERMINALIZATION_MODE: ${{ steps.target.outputs.mode }}
         run: |
           node --input-type=module - <<'NODE'
           import { existsSync, readFileSync, writeFileSync } from 'node:fs';
@@ -264,6 +322,8 @@ jobs:
             terminal_status:'LIVE_BEWEZEN',
             obligation_id:lineage.obligation_id,
             pr_number:Number(process.env.PR_NUMBER),
+            controller_pr_number:Number(process.env.CONTROLLER_PR_NUMBER),
+            terminalization_mode:process.env.TERMINALIZATION_MODE||'current',
             candidate_head_sha:process.env.CANDIDATE_SHA,
             merge_sha:process.env.MERGE_SHA,
             production_sha:process.env.PRODUCTION_SHA,
@@ -295,7 +355,7 @@ jobs:
       - name: Upload terminal evidence
         uses: actions/upload-artifact@v4
         with:
-          name: obligation-terminal-evidence-${{ github.event.pull_request.number }}
+          name: obligation-terminal-evidence-${{ steps.target.outputs.pr_number }}
           path: |
             .artifacts/terminal-lineage.json
             .artifacts/obligation-terminal-evidence.json
