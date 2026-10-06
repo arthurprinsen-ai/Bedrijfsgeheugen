@@ -80,7 +80,7 @@ test('repository-writer verification cancels superseded candidate work instead o
   assert.match(dispatch, /group: repo-writer-gates-\$\{\{ inputs\.pr_number \}\}/);
   assert.doesNotMatch(dispatch, /group: repo-writer-gates-.*inputs\.head_sha/);
   assert.match(dispatch, /cancel-in-progress:\s*true/);
-  assert.match(operational, /group: repo-writer-operational-\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.match(operational, /group: repo-writer-operational-\$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.number \|\| github\.event\.workflow_run\.id \}\}/);
   assert.match(operational, /cancel-in-progress:\s*true/);
 });
 
