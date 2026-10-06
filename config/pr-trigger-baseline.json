@@ -2,7 +2,7 @@
   "version": 1,
   "measured_at": "2026-10-06",
   "mode": "ratchet",
-  "directPullRequestWorkflowCount": 59,
+  "directPullRequestWorkflowCount": 57,
   "canonicalTarget": [
     "required-test.yml"
   ],
@@ -27,7 +27,6 @@
     "fresh-device-autonomy-canary.yml",
     "hero-media-production-verify.yml",
     "homepage-hero-video-verify.yml",
-    "linkedin-revenue-cockpit-tests.yml",
     "obligation-terminal-closure.yml",
     "paginacontrole-debug.yml",
     "portal-native-regression-tests.yml",
@@ -44,7 +43,6 @@
     "powerhouse-foresight-autonomy.yml",
     "powerhouse-merged-branch-cleanup.yml",
     "powerhouse-obligation-terminalizer.yml",
-    "powerhouse-public-rls-regression-guard.yml",
     "powerhouse-quality-surface-gate.yml",
     "powerhouse-security-operations-closure.yml",
     "powerhouse-supabase-security-contract.yml",
