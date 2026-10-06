@@ -98,3 +98,14 @@ test('Netlify skips only known governance-only commits and fails open for runtim
   assert.match(ignore, /\.github\//);
   assert.doesNotMatch(ignore, /netlify\/functions\//);
 });
+
+
+test('Supabase provider preview is change-scoped inside the canonical Required gate', async () => {
+  const required = await read('.github/workflows/required-test.yml');
+  assert.match(required, /supabase_preview_required/);
+  assert.match(required, /^  supabase_preview:/m);
+  assert.match(required, /Verify provider-owned Supabase Preview on exact candidate head/);
+  assert.match(required, /SELECT_SUPABASE_PREVIEW/);
+  assert.match(required, /SUPABASE_PREVIEW_PROVIDER_VERIFIED/);
+  assert.match(required, /!path\.startsWith\('supabase\/functions\/'\)/);
+});
