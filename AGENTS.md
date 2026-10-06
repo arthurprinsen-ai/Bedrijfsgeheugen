@@ -9,6 +9,9 @@ Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacit
 Iedere chat/agent voorspelt vóór een repository- of providerwrite wat de write raakt en hoeveel werk hij veroorzaakt via `tools/delivery/predictive-controller.mjs#planConcurrentAgentWork`.
 
 - één obligation = één actieve writer/candidate-head; andere agents muteren die head niet;
+- zodra `Writer-Lease-State: TERMINAL_DELIVERY` is gezet, is de candidate-branch inhoudelijk immutable: geen commit/tree/ref-rewrite meer op die PR; alleen metadata/readback mag nog wijzigen;
+- iedere pre-terminale branchwrite is compare-and-swap: de writer moet zowel de verwachte huidige head-SHA als de vastgelegde main-epoch opnieuw lezen en exact matchen vóór de write;
+- bij head-drift of main-epoch-drift wordt nooit een oude snapshot opnieuw toegepast; maak één successor vanaf actuele `main`, projecteer uitsluitend de nog geldige delta en retire de predecessor;
 - verschillende obligations bouwen parallel zolang changed paths, conflict contracts en mutable resources niet overlappen;
 - alleen de korte overlappende terminal landing wordt geserialiseerd;
 - queue pressure en voorspelde fan-out worden vóór de write beoordeeld; bij overbelasting bundelen/hergebruiken in plaats van meer workflows starten;
