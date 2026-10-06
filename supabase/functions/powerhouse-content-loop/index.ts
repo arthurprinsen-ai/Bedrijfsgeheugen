@@ -92,7 +92,7 @@ async function claimLoopLease(runDate:string, holder:string) {
        tenant_id,record_id,record_type,record_kind,subject_id,status,observed_at,executed,verified,
        result,payload,idempotency_key,source_revision,stored_at,updated_at
      ) values (
-       $1,$2,'RuntimeLease','verification',$3,'IN_PROGRESS',$4,true,false,
+       $1,$2,'Verification','verification',$3,'IN_PROGRESS',$4,true,false,
        '{}'::jsonb,$5::jsonb,$2,'content-closed-loop-lease-v1',$4,$4
      )
      on conflict (tenant_id,record_id) do update set
