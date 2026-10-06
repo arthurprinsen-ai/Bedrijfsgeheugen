@@ -7,7 +7,7 @@ const source = readFileSync('supabase/functions/social-recovery-runner/index.ts'
 test('social recovery uses Supabase HTTP data plane and never a direct Postgres socket', () => {
   assert.doesNotMatch(source, /npm:postgres/);
   assert.doesNotMatch(source, /SUPABASE_DB_URL/);
-  assert.doesNotMatch(source, /pooler\.supabase\.com/);
+  assert.equal(source.includes('pooler.supabase.com'), false);
   assert.doesNotMatch(source, /postgres\(/);
   assert.match(source, /\/rest\/v1\/rpc\/bg_geheim/);
   assert.match(source, /\/rest\/v1\/powerhouse_channel_decisions/);
