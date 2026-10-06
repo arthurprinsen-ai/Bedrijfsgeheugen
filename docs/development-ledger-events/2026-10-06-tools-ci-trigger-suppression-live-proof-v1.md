@@ -8,3 +8,6 @@
 - Closure evidence: this ledger, matching change note, and Brain learning artifact.
 - Trigger invariant: `tools/ci/**`, `brain/learning/**`, and `docs/**` are all ignored by Production Source Snapshot and Production Release Readback.
 - Terminal proof: after protected auto-merge, neither production workflow may have a run for the proof merge SHA.
+- CI prerequisite discovered: material writeback used a merge-base-dependent three-dot diff in shallow preflight.
+- Structural repair: exact two-tree changed-path diff plus regression with two commits that deliberately have no merge base.
+- Final trigger-suppression proof is deferred to a clean current-main successor after this prerequisite merges.

@@ -9,3 +9,7 @@ All of those paths are explicitly ignored by both `Production Source Snapshot` a
 ## Expected result
 
 After protected auto-merge of #3976, GitHub Actions must show no run of either production workflow for the resulting merge SHA. Any such run is a regression.
+
+## Shallow preflight prerequisite
+
+The first proof attempt exposed a separate CI defect: the material writeback guard used `git diff base...head`, while Required preflight intentionally uses a shallow checkout and may fetch the base as an independent shallow object. The guard now compares the two commit trees directly with `git diff base head`, which is the correct operation for an exact changed-path contract and does not require a merge base.
