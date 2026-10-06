@@ -18,9 +18,12 @@ test('Netlify deterministic build defects are blocked before merge', async()=>{
   assert.ok(workflow.includes('Validate fail-closed static English cache before merge'));
   assert.ok(workflow.includes('Run exact Netlify deploy-preview build parity before merge'));
   assert.ok(workflow.includes("config['context']['deploy-preview']['command']"));
-  assert.ok(workflow.includes('Run exact Netlify production build parity before merge'));
+  assert.ok(workflow.includes('netlify_build_parity:'));
+  assert.ok(workflow.includes('Run exact Netlify production build command once'));
+  assert.ok(workflow.includes("if: needs.preflight.outputs.netlify_build_required == 'true'"));
   assert.ok(workflow.includes("netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}"));
-  assert.ok(workflow.includes("if: steps.scope.outputs.netlify_build_required == 'true'"));
+  assert.ok(workflow.includes("NETLIFY_BUILD_REQUIRED: ${{ needs.preflight.outputs.netlify_build_required }}"));
+  assert.ok(workflow.includes("NETLIFY_BUILD: ${{ needs.netlify_build_parity.result }}"));
   assert.ok(workflow.includes("const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/']"));
   assert.ok(workflow.includes("STATIC_I18N_REQUIRE_CACHE: '1'"));
   assert.ok(skill.includes('netlify-premerge-build-parity-test-ownership-v1'));
