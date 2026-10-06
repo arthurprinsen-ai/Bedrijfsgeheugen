@@ -38,11 +38,6 @@ permissions:
   statuses: read
   pull-requests: read
 
-concurrency:
-  # Native PR and recovery dispatch for the same PR are one logical flight.
-  group: required-test-${{ inputs.pr_number || github.event.pull_request.number || github.event.merge_group.head_sha || github.ref_name }}
-  # Single-flight is PR-scoped; exact candidate identity remains enforced inside the gates below.
-  cancel-in-progress: true
 
 jobs:
   hygiene:
@@ -84,6 +79,9 @@ jobs:
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             npm-${{ runner.os }}-
+      - name: Enforce CI control plane v2 architecture
+        run: node --test tests/brain-ci-control-plane-v2.test.mjs
+
       - id: scope
         name: Classify independent delivery lanes
         env:
@@ -175,7 +173,7 @@ jobs:
           echo "::error::INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
           exit 78
       - name: Execute fast impact quality gate
-        if: steps.integration.outputs.full_shared_suite == 'false'
+        if: github.event_name == 'pull_request' || steps.integration.outputs.full_shared_suite == 'false'
         env:
           TESTS_JSON: ${{ steps.integration.outputs.tests_json }}
         run: |
@@ -191,16 +189,16 @@ jobs:
       - name: Verify material writeback closure regression
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
       - name: Install runtime dependencies for the unwired contracts
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: github.event_name != 'pull_request' && steps.integration.outputs.full_shared_suite == 'true'
         run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Validate fail-closed static English cache before merge
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: github.event_name != 'pull_request' && steps.integration.outputs.full_shared_suite == 'true'
         env:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
         run: node tools/site-shell/build-localized-routes.mjs --validate-cache
       - name: Verify previously unwired test contracts
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: github.event_name != 'pull_request' && steps.integration.outputs.full_shared_suite == 'true'
         run: >-
           node --test
           tests/agents-delivery-contract.test.mjs
@@ -269,7 +267,7 @@ jobs:
           tests/v18-standalone-compositor-safety.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: github.event_name != 'pull_request' && steps.integration.outputs.full_shared_suite == 'true'
         run: >-
           node --test --test-concurrency=1
           tests/brain-fast-development-protocol-v2.test.mjs
@@ -293,16 +291,16 @@ jobs:
           tests/portal-v2-release-identity-invariant.test.mjs
           tests/website-static-syntax-preflight.test.mjs
       - name: Verify Fast Development Protocol v2 authority contract
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: github.event_name != 'pull_request' && steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/powerhouse-fast-development-protocol-v2.mjs --check
       - name: Verify Autonomous Engineering Fabric v3 authority contract
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: github.event_name != 'pull_request' && steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
 
 
   netlify_build_parity:
     needs: preflight
-    if: needs.preflight.outputs.netlify_build_required == 'true'
+    if: github.event_name != 'pull_request' && needs.preflight.outputs.netlify_build_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -360,7 +358,7 @@ jobs:
 
   supabase_preview:
     needs: preflight
-    if: needs.preflight.outputs.supabase_preview_required == 'true'
+    if: github.event_name == 'workflow_dispatch' && needs.preflight.outputs.supabase_preview_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     permissions:
@@ -428,28 +426,28 @@ jobs:
 
   backend:
     needs: preflight
-    if: needs.preflight.outputs.backend == 'true'
+    if: github.event_name != 'pull_request' && needs.preflight.outputs.backend == 'true'
     uses: ./.github/workflows/lane-backend.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   portal:
     needs: preflight
-    if: needs.preflight.outputs.portal == 'true'
+    if: github.event_name != 'pull_request' && needs.preflight.outputs.portal == 'true'
     uses: ./.github/workflows/lane-portal.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   automation:
     needs: preflight
-    if: needs.preflight.outputs.automation == 'true'
+    if: github.event_name != 'pull_request' && needs.preflight.outputs.automation == 'true'
     uses: ./.github/workflows/lane-automation.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   website:
     needs: preflight
-    if: needs.preflight.outputs.website == 'true'
+    if: github.event_name != 'pull_request' && needs.preflight.outputs.website == 'true'
     uses: ./.github/workflows/lane-website.yml
     with:
       base_sha: ${{ needs.preflight.outputs.base_sha }}
@@ -464,6 +462,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
+      EVENT_NAME: ${{ github.event_name }}
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
@@ -490,8 +489,13 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "PR fast lane green: admission, hygiene, impact classification and affected tests passed."
+            exit 0
+          fi
           [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
-          [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
+          # Provider-owned Supabase previews are intentionally not polled on merge_group.
+          # Database/security assurance is local and deterministic in the selected full lanes.
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
           [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
