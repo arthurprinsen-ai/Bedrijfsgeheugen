@@ -19,10 +19,27 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
+      - id: scope
+        name: Detect Supabase source changes without checkout
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          if grep -q '^supabase/' <<< "$files"; then
+            echo "applicable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "applicable=false" >> "$GITHUB_OUTPUT"
+            echo "SUPABASE_PREVIEW_NOT_APPLICABLE: no supabase/** changes on this PR"
+          fi
       - uses: actions/checkout@v5
+        if: steps.scope.outputs.applicable == 'true'
         with:
           fetch-depth: 0
       - name: Decide applicability and verify provider-owned preview
+        if: steps.scope.outputs.applicable == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           BASE_SHA: ${{ github.event.pull_request.base.sha }}

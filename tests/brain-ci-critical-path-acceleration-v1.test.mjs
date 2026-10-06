@@ -92,3 +92,17 @@ test('Netlify skips only known governance-only commits and fails open for runtim
   assert.match(ignore, /\.github\//);
   assert.doesNotMatch(ignore, /netlify\/functions\//);
 });
+test('CodeQL keeps its PR check but only runs heavy analysis for JavaScript or TypeScript changes', async () => {
+  const workflow = await read('.github/workflows/powerhouse-codeql.yml');
+  assert.match(workflow, /name: CodeQL applicability/);
+  assert.match(workflow, /pull-requests:\s*read/);
+  assert.match(workflow, /if: needs\.scope\.outputs\.relevant == 'true'/);
+  assert.match(workflow, /CODEQL_NOT_APPLICABLE/);
+});
+
+test('Supabase preview applicability exits before checkout for non-Supabase pull requests', async () => {
+  const workflow = await read('.github/workflows/supabase-preview-applicability.yml');
+  assert.match(workflow, /Detect Supabase source changes without checkout/);
+  assert.match(workflow, /if: steps\.scope\.outputs\.applicable == 'true'/);
+  assert.match(workflow, /SUPABASE_PREVIEW_NOT_APPLICABLE: no supabase\/\*\* changes on this PR/);
+});

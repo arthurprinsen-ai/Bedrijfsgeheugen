@@ -20,6 +20,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
   security-events: write
   packages: read
 
@@ -28,8 +29,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scope:
+    name: CodeQL applicability
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      relevant: ${{ steps.scope.outputs.relevant }}
+    steps:
+      - id: scope
+        name: Detect JavaScript/TypeScript security surface
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" != "pull_request" ]; then
+            echo "relevant=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          relevant=false
+          while IFS= read -r file; do
+            case "$file" in
+              *.js|*.mjs|*.cjs|*.ts|*.tsx|package.json|package-lock.json|.github/workflows/powerhouse-codeql.yml)
+                relevant=true
+                break
+                ;;
+            esac
+          done <<< "$files"
+          echo "relevant=$relevant" >> "$GITHUB_OUTPUT"
+          if [ "$relevant" = "false" ]; then
+            echo "CODEQL_NOT_APPLICABLE: no JavaScript/TypeScript or dependency surface changed"
+          fi
+
   analyze:
     name: CodeQL javascript-typescript
+    needs: scope
+    if: needs.scope.outputs.relevant == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
