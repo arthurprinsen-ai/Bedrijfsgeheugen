@@ -73,13 +73,19 @@ jobs:
           echo "::add-mask::$scheduler_token"
 
           payload="$(node -e 'process.stdout.write(JSON.stringify({runDate:process.env.RUN_DATE}))')"
-          http_code="$(curl -sS --max-time 120 -o /tmp/social-content-loop.json -w '%{http_code}' -X POST             -H 'Content-Type: application/json'             -H "x-powerhouse-token: $scheduler_token"             --data "$payload"             "$SUPABASE_URL/functions/v1/powerhouse-content-loop")"
+          curl_rc=0
+          http_code="$(curl -sS --max-time 120 -o /tmp/social-content-loop.json -w '%{http_code}' -X POST             -H 'Content-Type: application/json'             -H "x-powerhouse-token: $scheduler_token"             --data "$payload"             "$SUPABASE_URL/functions/v1/powerhouse-content-loop")" || curl_rc=$?
+          if [ ! -s /tmp/social-content-loop.json ]; then
+            printf '%s\n' '{"ok":false,"error":"CONTENT_LOOP_TRANSPORT_UNAVAILABLE"}' > /tmp/social-content-loop.json
+          fi
 
-          HTTP_CODE="$http_code" node --input-type=module <<'NODE'
+          HTTP_CODE="$http_code" CURL_RC="$curl_rc" node --input-type=module <<'NODE'
           import { readFileSync, writeFileSync } from 'node:fs';
-          const x=JSON.parse(readFileSync('/tmp/social-content-loop.json','utf8')||'{}');
+          let x={};
+          try { x=JSON.parse(readFileSync('/tmp/social-content-loop.json','utf8')||'{}'); } catch {}
           const safe={
             http:Number(process.env.HTTP_CODE||0),
+            curl_rc:Number(process.env.CURL_RC||0),
             ok:x.ok===true,
             loop_state:x.loop_state||null,
             runDate:x.runDate||null,
@@ -115,11 +121,14 @@ jobs:
           console.log('CANONICAL_SOCIAL_CONTENT_LOOP_RESULT='+JSON.stringify(safe));
           NODE
 
-          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+          if [ "$curl_rc" -ne 0 ]; then
+            echo "::warning::CANONICAL_SOCIAL_CONTENT_LOOP_PREPARATION_TRANSPORT_$curl_rc"
+          elif [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
             echo "::warning::CANONICAL_SOCIAL_CONTENT_LOOP_PREPARATION_HTTP_$http_code"
           fi
 
       - name: Invoke bounded canonical publishers
+        if: always()
         id: publisher
         shell: bash
         env:
@@ -220,15 +229,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .artifacts
-          cp /tmp/social-content-loop-sanitized.json .artifacts/content-loop.json 2>/dev/null || printf '%s\n' '{"unavailable":true}' > .artifacts/content-loop.json
-          cp /tmp/social-decisions.json .artifacts/decisions.json 2>/dev/null || printf '%s\n' '[]' > .artifacts/decisions.json
-          cp /tmp/social-publishers/*.sanitized.json .artifacts/ 2>/dev/null || true
+          mkdir -p recovery-artifacts
+          cp /tmp/social-content-loop-sanitized.json recovery-artifacts/content-loop.json 2>/dev/null || printf '%s\n' '{"unavailable":true}' > recovery-artifacts/content-loop.json
+          cp /tmp/social-decisions.json recovery-artifacts/decisions.json 2>/dev/null || printf '%s\n' '[]' > recovery-artifacts/decisions.json
+          cp /tmp/social-publishers/*.sanitized.json recovery-artifacts/ 2>/dev/null || true
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: social-publication-recovery-${{ steps.date.outputs.run_date }}-${{ github.run_id }}
-          path: .artifacts
+          path: recovery-artifacts
           if-no-files-found: error
           retention-days: 30
