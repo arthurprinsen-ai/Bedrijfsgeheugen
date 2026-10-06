@@ -178,51 +178,77 @@ async function composioLinkedInCompanyContext(db:any){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error('COMPOSIO_LINKEDIN_AUTH_REQUIRED');
   const targetOrg=clean(await secret(db,'COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN'))||'urn:li:organization:18234216';
+
+  const {data:stateRow,error:stateError}=await db.from('brain_records')
+    .select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
+  if(stateError)throw new Error('COMPOSIO_LINKEDIN_COMPANY_STATE_READ:'+stateError.message);
+  const state=jsonObject(stateRow?.result);
+  const accountId=clean(state?.company_oauth_connection_id||state?.connected_account_id);
+  const oauthVerifiedAt=clean(state?.company_oauth_verified_at);
+  const freshVerified=state?.company_oauth_fresh_verified===true;
+  const adminVerified=state?.linkedin_company_admin_oauth_proven===true;
+  const writeAuthorized=state?.organization_write_scope_authorized===true;
+  if(state?.company_ready!==true||!freshVerified||!adminVerified||!writeAuthorized||!accountId||!oauthVerifiedAt){
+    throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
+  }
+
   const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=linkedin&statuses=ACTIVE&account_type=ALL&limit=50`,{headers:{'x-api-key':apiKey}});
   const body:any=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(`COMPOSIO_LINKEDIN_ACCOUNT_DISCOVERY_${response.status}`);
   const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
-  const candidates:any[]=[];
-  let lastError='';
-  for(const item of items){
-    if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
-    const accountId=clean(item?.id||item?.connected_account_id);
-    const userId=clean(item?.user_id);
-    if(!accountId||!userId)continue;
-    try{
-      const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-      const personId=findExpectedLinkedInPersonId(me?.data||me,'N1twnCNCrD');
-      if(!personId)continue;
-      let organizationReadVerified=false;
-      try{
-        const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
-        const raw=JSON.stringify(companies?.data||companies);
-        const targetOrgId=targetOrg.replace(/^urn:li:organization:/,'');
-        organizationReadVerified=raw.includes(targetOrg)||raw.includes(targetOrgId);
-      }catch(_organizationReadError){}
-      candidates.push({apiKey,accountId,userId,personId,alias:clean(item?.alias),isDefault:item?.is_default===true,createdAt:clean(item?.created_at),organizationReadVerified});
-    }catch(error){
-      lastError=error instanceof Error?error.message:String(error);
-    }
-  }
-  if(candidates.length===0)throw new Error('LINKEDIN_COMPANY_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
-  candidates.sort((a:any,b:any)=>
-    Number((b.alias||'').includes('canonical-org'))-Number((a.alias||'').includes('canonical-org'))
-    || Number((b.alias||'').includes('company'))-Number((a.alias||'').includes('company'))
-    || Number(b.isDefault)-Number(a.isDefault)
-    || b.createdAt.localeCompare(a.createdAt)
-  );
-  return {...candidates[0],targetOrg,connection_source:candidates[0].organizationReadVerified?'organization_capability_probe':'canonical_org_write_candidate'};
+  const item=items.find((candidate:any)=>clean(candidate?.id||candidate?.connected_account_id)===accountId&&clean(candidate?.status).toUpperCase()==='ACTIVE'&&candidate?.is_disabled!==true);
+  if(!item)throw new Error('LINKEDIN_COMPANY_BOUND_OAUTH_NOT_ACTIVE');
+  const userId=clean(item?.user_id)||clean(state?.user_id);
+  if(!userId)throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
+
+  const companyExpectedPersonUrn=clean(state?.personal_author_urn);
+  const companyExpectedPersonId=companyExpectedPersonUrn.replace(/^urn:li:person:/,'');
+  if(!companyExpectedPersonId)throw new Error('LINKEDIN_COMPANY_OAUTH_PRINCIPAL_UNVERIFIED');
+  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
+  const personId=findExpectedLinkedInPersonId(me?.data||me,companyExpectedPersonId);
+  if(!personId)throw new Error('LINKEDIN_COMPANY_OAUTH_PRINCIPAL_MISMATCH');
+
+  const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
+  const raw=JSON.stringify(companies?.data||companies);
+  const targetOrgId=targetOrg.replace(/^urn:li:organization:/,'');
+  const organizationAdminVerified=raw.includes(targetOrg)||raw.includes(targetOrgId);
+  if(!organizationAdminVerified)throw new Error('LINKEDIN_COMPANY_ADMIN_ROLE_REQUIRED');
+
+  return {
+    apiKey,accountId,userId,personId,targetOrg,
+    organizationAdminVerified:true,
+    organizationWriteScopeAuthorized:true,
+    companyOauthFreshVerified:true,
+    companyReadbackReady:state?.company_readback_ready===true,
+    adminOauthVerifiedAt:oauthVerifiedAt,
+    connection_source:'fresh_bound_organization_admin_oauth'
+  };
 }
 
 async function preflightLinkedInCompanyComposio(db:any){
-  const {apiKey,accountId,userId,targetOrg}=await composioLinkedInCompanyContext(db);
-  return {provider:'composio',provider_auth_preflight:'passed',provider_auth_checked_at:new Date().toISOString(),account_id:accountId,organization_urn:targetOrg,organization_capability_verified:true,organization_read_capability_required_for_write:false};
+  const {accountId,targetOrg,organizationAdminVerified,organizationWriteScopeAuthorized,companyOauthFreshVerified,companyReadbackReady,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  return {
+    provider:'composio',
+    provider_auth_preflight:'passed',
+    provider_auth_checked_at:new Date().toISOString(),
+    account_id:accountId,
+    organization_urn:targetOrg,
+    organization_capability_verified:organizationAdminVerified===true&&companyOauthFreshVerified===true,
+    linkedin_company_admin_oauth_proven:organizationAdminVerified===true,
+    organization_write_scope_authorized:organizationWriteScopeAuthorized===true,
+    organization_write_scope_verified:false,
+    company_oauth_fresh_verified:companyOauthFreshVerified===true,
+    company_oauth_connection_id:accountId,
+    company_oauth_verified_at:adminOauthVerifiedAt,
+    company_readback_ready:companyReadbackReady===true,
+    organization_read_capability_required_for_write:true
+  };
 }
 
 async function preflightLinkedInCompanyViaComposio(db:any){
-  const {apiKey,accountId,userId,targetOrg}=await composioLinkedInCompanyContext(db);
-  return {apiKey,accountId,userId,organizationUrn:targetOrg};
+  const ctx=await composioLinkedInCompanyContext(db);
+  if(ctx.organizationAdminVerified!==true||ctx.organizationWriteScopeAuthorized!==true||ctx.companyOauthFreshVerified!==true)throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
+  return {apiKey:ctx.apiKey,accountId:ctx.accountId,userId:ctx.userId,organizationUrn:ctx.targetOrg,organizationAdminVerified:true,organizationWriteScopeAuthorized:true,companyOauthFreshVerified:true,companyReadbackReady:ctx.companyReadbackReady,adminOauthVerifiedAt:ctx.adminOauthVerifiedAt};
 }
 
 function isLinkedInAuthPreflightError(error:any){
@@ -237,7 +263,16 @@ function isLinkedInAuthPreflightError(error:any){
     ||message.includes('CANONICAL_CONNECTION_NOT_PINNED')
     ||message.includes('PINNED_CONNECTION_NOT_ACTIVE')
     ||message.includes('HUMAN_BOUNDARY_R_ORGANIZATION_ADMIN_REQUIRED')
-    ||message.includes('COMPANY_REAUTH_REQUIRED');
+    ||message.includes('COMPANY_REAUTH_REQUIRED')
+    ||message.includes('ADMIN_OAUTH_REQUIRED')
+    ||message.includes('FRESH_ORG_OAUTH_REQUIRED')
+    ||message.includes('BOUND_OAUTH_NOT_ACTIVE')
+    ||message.includes('OAUTH_PRINCIPAL')
+    ||message.includes('ADMIN_ROLE_REQUIRED')
+    ||message.includes('ORGANIZATION_ADMIN')
+    ||message.includes('ORGANIZATION PERMISSIONS')
+    ||message.includes('INSUFFICIENT_SCOPE')
+    ||message.includes('NOT_ENOUGH_PERMISSIONS');
 }
 
 async function preflightLinkedInComposio(db:any){
@@ -555,7 +590,8 @@ function assertLinkedInCompanyContentPolicy(commentary:string){
 }
 
 async function publishLinkedInCompanyViaComposio(db:any,art:any){
-  const {apiKey,accountId,userId}=await composioLinkedInCompanyContext(db);
+  const {apiKey,accountId,userId,organizationAdminVerified,organizationWriteScopeAuthorized,companyOauthFreshVerified,companyReadbackReady,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  if(organizationAdminVerified!==true||organizationWriteScopeAuthorized!==true||companyOauthFreshVerified!==true)throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
   const author=await linkedinCompanyAuthorUrn(db);
   const commentary=clean(art.body);
   assertLinkedInCompanyContentPolicy(commentary);
@@ -571,40 +607,31 @@ async function publishLinkedInCompanyViaComposio(db:any,art:any){
     if(!truth)throw new Error('COMPOSIO_LINKEDIN_COMPANY_EXACT_READBACK_MISMATCH');
     const publishedAtMs=Number(rb?.publishedAt||createdData?.publishedAt||Date.now());
     return {
-      provider:'composio',
-      provider_post_id:postUrn,
-      provider_create_success:true,
-      provider_truth_verified:true,
-      provider_truth_checked_at:new Date().toISOString(),
-      provider_status:'published',
-      republish_forbidden:true,
+      provider:'composio',provider_post_id:postUrn,provider_create_success:true,provider_truth_verified:true,
+      provider_truth_checked_at:new Date().toISOString(),provider_status:'published',republish_forbidden:true,
+      linkedin_company_admin_oauth_proven:true,organization_write_scope_authorized:true,organization_write_scope_verified:true,
+      company_oauth_fresh_verified:true,company_oauth_connection_id:accountId,company_oauth_verified_at:adminOauthVerifiedAt,
+      company_readback_ready:companyReadbackReady===true,
       published_at:Number.isFinite(publishedAtMs)?new Date(publishedAtMs).toISOString():new Date().toISOString(),
-      author_urn:author,
-      linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
+      author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
     };
   }catch(error){
     const readbackError=error instanceof Error?error.message:String(error);
     const permissionLimited=/\b(401|403|FORBIDDEN|UNAUTHORIZED|PERMISSION)\b/i.test(readbackError);
     return {
-      provider:'composio',
-      provider_post_id:postUrn,
-      provider_create_success:true,
-      provider_publication_ack_verified:true,
-      provider_truth_verified:false,
-      provider_truth_checked_at:new Date().toISOString(),
-      provider_status:'published',
-      verification_pending:true,
-      readback_permission_limited:permissionLimited,
-      republish_forbidden:true,
-      author_urn:author,
-      readback_error:readbackError
+      provider:'composio',provider_post_id:postUrn,provider_create_success:true,provider_publication_ack_verified:true,
+      provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',
+      verification_pending:true,readback_permission_limited:permissionLimited,republish_forbidden:true,
+      linkedin_company_admin_oauth_proven:true,organization_write_scope_authorized:true,organization_write_scope_verified:true,
+      company_oauth_fresh_verified:true,company_oauth_connection_id:accountId,company_readback_ready:companyReadbackReady===true,
+      company_oauth_verified_at:adminOauthVerifiedAt,author_urn:author,readback_error:readbackError
     };
   }
 }
 async function readLinkedInCompanyPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
   const ref=clean(postUrn);
   if(!/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))throw new Error('COMPOSIO_LINKEDIN_COMPANY_POST_URN_INVALID');
-  const {apiKey,accountId,userId}=await composioLinkedInCompanyContext(db);
+  const {apiKey,accountId,userId,organizationAdminVerified,organizationWriteScopeAuthorized,companyOauthFreshVerified,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
   const author=await linkedinCompanyAuthorUrn(db);
   const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:ref});
   const rb=readback?.data||readback;
@@ -613,7 +640,10 @@ async function readLinkedInCompanyPostViaComposio(db:any,postUrn:string,expected
   const lifecycleState=clean(rb?.lifecycleState).toUpperCase();
   const truth=rbUrn===ref&&clean(rb?.author)===author&&lifecycleState==='PUBLISHED'&&(!clean(expectedCommentary)||commentary===clean(expectedCommentary));
   if(!truth)throw new Error('COMPOSIO_LINKEDIN_COMPANY_EXACT_RECONCILE_MISMATCH');
-  return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
+  return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',
+    linkedin_company_admin_oauth_proven:organizationAdminVerified===true,organization_write_scope_authorized:organizationWriteScopeAuthorized===true,
+    company_oauth_fresh_verified:companyOauthFreshVerified===true,company_oauth_connection_id:accountId,company_oauth_verified_at:adminOauthVerifiedAt,
+    author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
 function deepPickId(value:any,preferred:string[]=[]):string{
@@ -1265,14 +1295,22 @@ Deno.serve(async (req) => {
         const evidence={...gatePassedEvidence,...direct,provider_publication_ack_verified:true,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
         await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,exactReadbackVerified?'Collect LinkedIn company outcome metrics and feed learning loop.':'Collect outcome metrics; exact API readback is optional after provider create acknowledgement and must never trigger republish.',null);
-        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,provider:'composio',provider_create_success:true,provider_publication_ack_verified:true,provider_truth_verified:exactReadbackVerified,verification_pending:!exactReadbackVerified});
+        const liveProven=exactReadbackVerified&&direct.linkedin_company_admin_oauth_proven===true&&direct.organization_write_scope_verified===true&&direct.company_oauth_fresh_verified===true;
+        await recordObligation(db,runDate,row.channel,liveProven?'LIVE_PROVEN':'PUBLISHED',direct.provider_post_id,evidence,liveProven?'Collect LinkedIn company outcome metrics and feed learning loop.':'Provider write exists, but LIVE_PROVEN remains blocked until exact readback plus fresh organization-admin OAuth proof.',null);
+        results.push({channel:row.channel,status:liveProven?'live_proven':'published',post_id:direct.provider_post_id,provider:'composio',provider_create_success:true,provider_publication_ack_verified:true,provider_truth_verified:exactReadbackVerified,linkedin_company_admin_oauth_proven:direct.linkedin_company_admin_oauth_proven===true,organization_write_scope_verified:direct.organization_write_scope_verified===true,company_oauth_fresh_verified:direct.company_oauth_fresh_verified===true,verification_pending:!liveProven});
         continue;
       } catch(error) {
         const message=error instanceof Error?error.message:String(error);
-        const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true};
+        if(isLinkedInAuthPreflightError(error)){
+          const evidence={...jsonObject(row.delivery_evidence),provider:'composio',provider_auth_preflight:'failed',provider_auth_required:true,provider_truth_verified:false,provider_create_success:false,possible_provider_side_effect:false,error:message,transport_contract:'linkedin-composio-direct-v3-auth-resumable',buffer_dependency:false,republish_forbidden:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true,provider_side_effect:false}};
+          await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+          await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Repair fresh organization-admin OAuth and resume this exact daily claim. No provider side effect occurred; never create a replacement claim.','LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
+          results.push({channel:row.channel,status:'waiting_auth',provider:'composio',resumable:true,provider_side_effect:false,error:message});
+          continue;
+        }
+        const evidence={...jsonObject(row.delivery_evidence),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true};
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
-        await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Repair the Composio LinkedIn company connection/readback for this exact claim; do not fall back to Buffer or issue a replacement post.',message);
+        await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Reconcile this exact claim before any retry; do not fall back to Buffer or issue a replacement post.',message);
         results.push({channel:row.channel,status:'blocked_composio_linkedin_company',provider:'composio',error:message});
         continue;
       }
