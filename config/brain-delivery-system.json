@@ -551,6 +551,7 @@
         "tests/supabase/edge-function-registry.test.mjs",
         "tests/terminal-writer-lease-",
         "tools/build/artifact-id.mjs",
+        "tools/build/release-evidence.mjs",
         "tools/netlify/ephemeral-janitor.mjs",
         "tools/notion/root-lifecycle.mjs",
         "tools/regulatory-",

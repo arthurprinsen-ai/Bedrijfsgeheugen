@@ -24,6 +24,7 @@ test('control-plane lifecycle tooling is classified as automation work', () => {
   "tests/release-artifact-identity.test.mjs",
   "tests/supabase/edge-function-registry.test.mjs",
   "tools/build/artifact-id.mjs",
+  "tools/build/release-evidence.mjs",
   "tools/netlify/ephemeral-janitor.mjs",
   "tools/notion/root-lifecycle.mjs",
   "tools/supabase/edge-function-registry.mjs"
@@ -40,11 +41,11 @@ test('control-plane lifecycle tooling is classified as automation work', () => {
 test('control-plane budget separates current ceilings from the canonical admission target', () => {
   const github = controlPlaneBudget.budgets.github;
   const baseline = controlPlaneBudget.baseline.github;
-  assert.equal(github.maxDirectPrTriggerWorkflows, 20);
-  assert.equal(github.maxDirectPrAdmissionWorkflows, 15);
+  assert.equal(github.maxDirectPrTriggerWorkflows, 15);
+  assert.equal(github.maxDirectPrAdmissionWorkflows, 10);
   assert.equal(github.maxLifecyclePrAuthorityWorkflows, 5);
   assert.equal(github.targetDirectPrAdmissionWorkflows, 1);
-  assert.equal(baseline.directPrTriggerCount, 20);
-  assert.equal(baseline.directPrAdmissionCount, 15);
+  assert.equal(baseline.directPrTriggerCount, 15);
+  assert.equal(baseline.directPrAdmissionCount, 10);
   assert.equal(baseline.lifecyclePrAuthorityCount, 5);
 });
