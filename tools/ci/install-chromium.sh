@@ -18,6 +18,8 @@
 # drie pogingen met een schone apt-cache ertussen, voor het geval een spiegel
 # tijdelijk uit de pas loopt.
 #
+# Trigger-scope live proof: tools/ci-only control-plane changes must not start production workflows.
+#
 # Gebruik in een workflow:
 #   - name: Install Chromium
 #     run: bash tools/ci/install-chromium.sh
