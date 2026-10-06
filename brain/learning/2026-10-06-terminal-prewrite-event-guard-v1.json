@@ -14,7 +14,8 @@
       "PR #3994 advanced from d5862df4 to eaac0b6e through a content commit while the lineage was terminally leased.",
       "A synchronize event carrying TERMINAL_DELIVERY must fail admission regardless of a later metadata update.",
       "A MAIN_SYNC event must prove a merge commit containing the old leased head and exact main target as parents.",
-      "An explicit RECOVERY transition remains the only path for ordinary repair content."
+      "An explicit RECOVERY transition remains the only path for ordinary repair content.",
+      "The guard repair itself must preserve one supervisor YAML document and one exact metadata replaceOne helper."
     ]
   },
   "evidence": {
@@ -26,7 +27,9 @@
       "MAIN_SYNC is parent-bound to previous head and exact main target",
       "MAIN_SYNC remains premature-close protected",
       "supervisor restores terminal metadata if the merge call fails",
-      "no new PR workflow is introduced"
+      "no new PR workflow is introduced",
+      "recovery supervisor source is reconstructed from clean current main before MAIN_SYNC patching; duplicate YAML/header injection is regression-blocked",
+      "generic unmapped workflow regression follows ci-workflow-lane-fallback-v1 and remains backend-only"
     ],
     "observed_failure": "PR #3994 terminal HEAD d5862df405db5f244486dccc153e6d66d5e0429b was followed by content commit eaac0b6e1f4a2ccdf62c09f61dee0ee0a57d8e91 and the lease metadata was advanced afterward."
   },

@@ -24,10 +24,13 @@ test('MAIN_SYNC synchronize is bound to the old leased head and exact main targe
 });
 
 test('recovery supervisor transitions lease before branch mutation and terminalizes after it',()=>{
-  const pre=supervisor.indexOf("replaceOne(body,'Writer-Lease-State','MAIN_SYNC')");
+  const pre=supervisor.indexOf('Writer-Lease-State: MAIN_SYNC');
   const merge=supervisor.indexOf('repos/$repo/merges');
   const terminal=supervisor.indexOf("replaceOne(body,'Writer-Lease-State','TERMINAL_DELIVERY')", pre + 1);
   assert.ok(pre >= 0, 'MAIN_SYNC transition missing');
+  assert.equal(supervisor.split('# Queue-storm guard v1: bounded recovery, repository backpressure, no main-push fan-out').length-1,1);
+  assert.equal(supervisor.split('const replaceOne=(text,label,value)=>{').length-1,1);
+  assert.match(supervisor,/awk -v sync_main="\$refresh_main_sha"/);
   assert.ok(merge > pre, 'branch merge must occur after MAIN_SYNC metadata readback');
   assert.ok(terminal > merge, 'TERMINAL_DELIVERY must be rebound after the merge');
   assert.match(supervisor,/sync_head.*\$head/);
