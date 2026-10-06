@@ -6,3 +6,5 @@ export default {
     await runSocialPublicationDelivery();
   }
 };
+
+export const config = { region:'fra' };
