@@ -5,3 +5,5 @@ The pull-request critical path is reduced to the canonical Required gate plus re
 Full-history checkouts in the central classifiers are replaced with shallow checkouts and exact comparison-base fetches. Supabase Preview applicability is owned only by Required. A bounded missing-gate watchdog recovers absent Required runs, and a conservative PR janitor closes explicit supersessions plus generated candidates stale for more than 30 days.
 
 Safety remains fail-closed: website runtime changes still route through Required -> Website release lane, provider-owned Supabase Preview remains exact-head verified, and watchdog redispatch is limited to recent main-targeting PRs with no existing Required run.
+
+The janitor also enforces one open machine PR per `Obligation-ID`: an active `TERMINAL_DELIVERY` lease holder wins over non-terminal duplicates, then explicit peer-supersession and newest PR number break remaining ties. `Supersedes:` accepts plain numbers, `#`-prefixed numbers and lists. The watchdog paginates all open PRs and passes their actual labels into Required redispatch.
