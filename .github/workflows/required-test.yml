@@ -298,27 +298,7 @@ jobs:
       - name: Verify Autonomous Engineering Fabric v3 authority contract
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
-      - name: Run exact Netlify deploy-preview build parity before merge
-        if: steps.scope.outputs.netlify_build_required == 'true'
-        env:
-          COMMIT_REF: ${{ steps.scope.outputs.change_head_sha }}
-          CONTEXT: deploy-preview
-          DEPLOY_ID: required-premerge-deploy-preview-build
-          STATIC_I18N_NETWORK: '0'
-          STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
-        run: |
-          set -euo pipefail
-          command="$(python3 - <<'PY'
-          import tomllib
-          with open('netlify.toml','rb') as handle:
-              config=tomllib.load(handle)
-          print(config['context']['deploy-preview']['command'])
-          PY
-          )"
-          bash -lc "$command"
-          git reset --hard HEAD
-          git clean -fd -e node_modules/ -e .artifacts/
+
 
   netlify_build_parity:
     needs: preflight
