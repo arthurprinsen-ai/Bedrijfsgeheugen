@@ -142,8 +142,9 @@ jobs:
           fi
           run_id=""
           for attempt in $(seq 1 60); do
-            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/portal-v2-live-preview.yml/runs?event=pull_request&head_sha=${pr_head_sha}&per_page=50")"
-            run_id="$(jq -r '[.workflow_runs[] | select(.conclusion == "success")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/portal-v2-live-preview.yml/runs?event=workflow_run&per_page=100")"
+            expected_title="portal-preview-pr-${pr_number}-${pr_head_sha}"
+            run_id="$(jq -r --arg title "$expected_title" '[.workflow_runs[] | select(.conclusion == "success" and .display_title == $title)] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
             if [ -n "$run_id" ]; then
               break
             fi
