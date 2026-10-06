@@ -9,8 +9,9 @@ test('LinkedIn capability discovery is read-only and uses active Composio accoun
   assert.match(setup,/toolkit_slugs=linkedin&statuses=ACTIVE/);
   assert.match(setup,/LINKEDIN_GET_MY_INFO/);
   assert.match(setup,/LINKEDIN_GET_COMPANY_INFO/);
-  assert.doesNotMatch(setup,/LINKEDIN_CREATE_LINKED_IN_POST/);
-  assert.doesNotMatch(setup,/LINKEDIN_CREATE_VIDEO_POST/);
+  assert.match(setup,/COMPANY_SCOPE_TOOLS=.*LINKEDIN_GET_COMPANY_INFO.*LINKEDIN_CREATE_LINKED_IN_POST.*LINKEDIN_GET_POST_CONTENT/);
+  assert.doesNotMatch(setup,/execute\(key,[^\n]*'LINKEDIN_CREATE_LINKED_IN_POST'/);
+  assert.doesNotMatch(setup,/execute\(key,[^\n]*'LINKEDIN_CREATE_VIDEO_POST'/);
 });
 
 test('LinkedIn personal and company capability are proven separately',()=>{
@@ -102,7 +103,7 @@ test('LinkedIn company requires a fresh bound organization-admin OAuth before pu
 test('LinkedIn production setup can create OAuth link and resume the same daily claim',()=>{
   assert.match(setup,/action==='create_link'/);
   assert.match(setup,/toolkit_slug=linkedin/);
-  assert.match(setup,/auth_config_id:authConfigId,user_id:USER_ID,alias:ALIAS/);
+  assert.match(setup,/auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS/);
   assert.match(setup,/production_workspace:true/);
   assert.match(setup,/action==='resume'/);
   assert.match(setup,/linkedin-production-oauth-complete/);
