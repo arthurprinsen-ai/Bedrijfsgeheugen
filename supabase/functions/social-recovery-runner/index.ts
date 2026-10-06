@@ -54,7 +54,7 @@ async function schedulerToken() {
   });
 }
 
-async function directReadback(runDate: string) {
+async function readCanonicalState(runDate: string) {
   return await withSql(async (sql) => {
     const decisions = await sql.unsafe(
       `select channel,decision,state,delivery_ref,delivery_evidence,updated_at
@@ -144,7 +144,7 @@ Deno.serve(async (req: Request) => {
 
   let initialReadback: any;
   try {
-    initialReadback = await directReadback(runDate);
+    initialReadback = await readCanonicalState(runDate);
   } catch (error) {
     console.error("SOCIAL_RECOVERY_INITIAL_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({ ok: false, runDate, error: "CANONICAL_READBACK_UNAVAILABLE" }, 503);
@@ -159,7 +159,7 @@ Deno.serve(async (req: Request) => {
 
   const loop = preparationNeeded
     ? await invokeFunction(url, token, "powerhouse-content-loop", { runDate }, 60_000)
-    : { ok: true, http: 204, body: {}, timed_out: false, skipped: true, error: null };
+    : { ok: true, http: 204, body: { reason: "CANONICAL_CONTENT_ALREADY_READY_OR_TERMINAL" }, timed_out: false, skipped: true, error: null };
   const degradedPreparation = preparationNeeded && !loop.ok;
   if (degradedPreparation) {
     console.error("SOCIAL_RECOVERY_PREPARATION_DEGRADED", loop.http, loop.timed_out);
@@ -167,7 +167,7 @@ Deno.serve(async (req: Request) => {
 
   let postPreparation: any;
   try {
-    postPreparation = await directReadback(runDate);
+    postPreparation = await readCanonicalState(runDate);
   } catch (error) {
     console.error("SOCIAL_RECOVERY_POST_PREPARATION_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({ ok: false, runDate, degraded_preparation: degradedPreparation, error: "CANONICAL_READBACK_UNAVAILABLE" }, 503);
@@ -197,7 +197,7 @@ Deno.serve(async (req: Request) => {
 
   let readback: any;
   try {
-    readback = await directReadback(runDate);
+    readback = await readCanonicalState(runDate);
   } catch (error) {
     console.error("SOCIAL_RECOVERY_POOLER_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({
