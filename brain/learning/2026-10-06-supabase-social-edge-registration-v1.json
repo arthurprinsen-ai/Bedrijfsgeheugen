@@ -1,11 +1,11 @@
 {
-  "fingerprint": "supabase-git|edge-function-registration|green-check-stale-provider-source|v1",
+  "fingerprint": "supabase-git|edge-function-registration|green-check-stale-provider-source|read-only-parity|v2",
   "date": "2026-10-06",
   "type": "POWERHOUSE_LEARNING",
   "status": "CANDIDATE",
   "obligation_id": "supabase-social-edge-registration-20261006-v1",
-  "root_cause": "The PAT-less Supabase GitHub production authority observed a successful exact-SHA Supabase deployment check while social-recovery-runner remained on provider v7. Supabase GitHub Integration only deploys Edge Functions declared in supabase/config.toml; the social publisher and recovery runner were absent, so the deploy phase could be green without promoting them.",
-  "prevention_rule": "Every authority-critical production Edge Function must be explicitly declared in supabase/config.toml with its provider-compatible verify_jwt mode and entrypoint. Regression tests must fail closed if either social authority function is missing or misconfigured. A green provider check alone is insufficient for TERMINAL_GREEN until provider source parity is verified.",
+  "root_cause": "The PAT-less Supabase GitHub production authority observed a successful exact-SHA Supabase deployment check while social-recovery-runner remained on provider v7. Supabase GitHub Integration only deploys Edge Functions declared in supabase/config.toml; the social publisher and recovery runner were absent, so the deploy phase could be green without promoting them. The attestation workflow also trusted the GitHub App check without independently reading provider source, so it could not detect that false positive by itself.",
+  "prevention_rule": "Every authority-critical production Edge Function must be declared in supabase/config.toml. Supabase GitHub Integration remains the sole writer. After its exact-SHA production check succeeds, GitHub Actions must use SUPABASE_ACCESS_TOKEN only for read-only Edge Function download and byte-for-byte file-set parity; any drift fails closed. No CLI deploy command is permitted.",
   "compiler": {
     "failure_class": "SUPABASE_GIT_UNDECLARED_EDGE_FUNCTION_FALSE_POSITIVE",
     "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
@@ -16,7 +16,8 @@
   "evidence": {
     "source": [
       "supabase/config.toml",
-      "brain/contracts/supabase-edge-production-authority-v1.json"
+      "brain/contracts/supabase-edge-production-authority-v1.json",
+      ".github/workflows/supabase-edge-production-authority.yml"
     ],
     "regression": [
       "tests/brain-runtime-authority-governance.test.mjs"
@@ -24,7 +25,8 @@
     "observed_provider_state": [
       "social-recovery-runner production v7 remained byte-different after exact-SHA Supabase production check success",
       "powerhouse-social-publisher provider config verify_jwt=false",
-      "social-recovery-runner provider config verify_jwt=true"
+      "social-recovery-runner provider config verify_jwt=true",
+      "green GitHub App check alone was insufficient because provider source remained stale"
     ]
   },
   "evaluation": {
@@ -37,5 +39,6 @@
     "canary": [
       "tests/brain-runtime-authority-governance.test.mjs"
     ]
-  }
+  },
+  "readback_auth": "scoped SUPABASE_ACCESS_TOKEN with Edge Functions Read only when available"
 }
