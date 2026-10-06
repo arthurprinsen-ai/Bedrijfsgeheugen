@@ -1,14 +1,8 @@
 name: Portal Visual Density
 
 on:
-  pull_request:
-    paths:
-      - 'portal-v2/**'
-      - 'config/powerhouse-portal-visual-assurance-v1.json'
-      - 'tools/portal-visual-density.mjs'
-      - 'tests/portal-visual-density-contract.test.mjs'
-      - 'tests/portal-visual-density-delivery-classification.test.mjs'
-      - '.github/workflows/portal-visual-density.yml'
+  merge_group:
+    types: [checks_requested]
   schedule:
     - cron: '45 5 * * *'
   workflow_dispatch:
@@ -29,13 +23,13 @@ jobs:
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
       - name: Serve repository for PR evidence
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'merge_group'
         run: |
           python3 -m http.server 4173 >/tmp/portal-http.log 2>&1 &
           echo $! > /tmp/portal-http.pid
       - name: Capture and measure portal
         env:
-          BASE_URL: ${{ github.event_name == 'pull_request' && 'http://127.0.0.1:4173' || 'https://www.bedrijfsgeheugen.nl' }}
+          BASE_URL: ${{ github.event_name == 'merge_group' && 'http://127.0.0.1:4173' || 'https://www.bedrijfsgeheugen.nl' }}
           VISUAL_ASSURANCE_CONTRACT: config/powerhouse-portal-visual-assurance-v1.json
         run: node tools/portal-visual-density.mjs
       - name: Upload visual evidence

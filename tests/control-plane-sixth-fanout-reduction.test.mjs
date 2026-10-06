@@ -20,6 +20,14 @@ const retired = [
   '.github/workflows/seo-order-engine.yml',
   '.github/workflows/unified-content-operations.yml',
   '.github/workflows/universal-closed-loop-learning.yml',
+  '.github/workflows/blog-technical-seo-gate.yml',
+  '.github/workflows/paginacontrole-debug.yml',
+  '.github/workflows/portal-visual-density.yml',
+  '.github/workflows/powerhouse-quality-surface-gate.yml',
+  '.github/workflows/fresh-device-autonomy-canary.yml',
+  '.github/workflows/verify-approved-central-blog.yml',
+  '.github/workflows/powerhouse-assurance.yml',
+  '.github/workflows/powerhouse-foresight-autonomy.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -55,5 +63,28 @@ test('Required merge_group preserves sixth-batch assurance', () => {
     'tests/content-growth-unified-content-operations.test.mjs',
     'scripts/brain/validate-universal-closed-loop-learning.mjs',
     'tests/brain-universal-closed-loop-learning.test.mjs',
+    'tests/approved-blog-verifier-contract.test.mjs',
+    'tests/powerhouse-assurance.test.mjs',
+    'scripts/powerhouse-assurance-check.mjs',
+    'scripts/brain/powerhouse-loop-assurance-contract.mjs',
+    'scripts/brain/powerhouse-quality-intelligence.mjs',
+    'tests/powerhouse-foresight-autonomy.test.mjs',
+    'tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs',
+    'scripts/brain/foresight-autonomy.mjs',
   ]) assert.ok(required.includes(marker), marker);
+});
+
+
+test('heavy read-only specialists moved from pull_request to merge_group', () => {
+  for (const path of [
+    '.github/workflows/blog-technical-seo-gate.yml',
+    '.github/workflows/paginacontrole-debug.yml',
+    '.github/workflows/portal-visual-density.yml',
+    '.github/workflows/powerhouse-quality-surface-gate.yml',
+    '.github/workflows/fresh-device-autonomy-canary.yml',
+  ]) {
+    const source = readFileSync(path, 'utf8');
+    assert.match(source, /^  merge_group:/m, path);
+    assert.doesNotMatch(source, /^  pull_request:/m, path);
+  }
 });

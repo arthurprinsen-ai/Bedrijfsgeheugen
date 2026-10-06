@@ -1,20 +1,8 @@
 name: Powerhouse Quality Intelligence Surface Gate
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'site/**'
-      - '!site/website-release-risk.json'
-      - 'portal-v2/**'
-      - 'public/**'
-      - 'netlify/functions/**'
-      - 'supabase/**'
-      - 'contracts/openapi/**'
-      - 'config/powerhouse-quality-surface-contracts.json'
-      - 'scripts/brain/quality/surface-discovery*.mjs'
-      - '.github/workflows/powerhouse-quality-surface-gate.yml'
-
+  merge_group:
+    types: [checks_requested]
 concurrency:
   group: powerhouse-quality-surface-gate-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -37,8 +25,8 @@ jobs:
         run: node scripts/brain/chat-learning-preflight.mjs
       - name: Capture exact PR changed files
         env:
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.merge_group.base_sha }}
+          HEAD_SHA: ${{ github.event.merge_group.head_sha }}
         run: |
           mkdir -p artifacts/quality/coverage
           git diff --name-only "$BASE_SHA" "$HEAD_SHA" > artifacts/quality/coverage/changed-files.txt

@@ -230,6 +230,27 @@ jobs:
           python3 -m py_compile scripts/publish_approved_blog_v2.py
           node scripts/brain/validate-universal-closed-loop-learning.mjs
           node --test tests/brain-universal-closed-loop-learning.test.mjs tests/brain-powerhouse-daily-compound-learning-v1.test.mjs
+          node --test tests/approved-blog-verifier-contract.test.mjs
+          node --test \
+            tests/powerhouse-assurance.test.mjs \
+            tests/powerhouse-assurance-delivery-classification.test.mjs \
+            tests/brain-powerhouse-loop-assurance-v2.test.mjs \
+            tests/brain-quality-intelligence.test.mjs \
+            tests/brain-quality-intelligence-v2.test.mjs \
+            tests/brain-quality-exploration.test.mjs \
+            tests/brain-quality-adversarial.test.mjs \
+            tests/brain-quality-production-shadow.test.mjs \
+            tests/brain-quality-economics.test.mjs
+          node scripts/powerhouse-assurance-check.mjs --check
+          node scripts/brain/powerhouse-loop-assurance-contract.mjs --check
+          node scripts/brain/powerhouse-quality-intelligence.mjs --check
+          node --test tests/powerhouse-foresight-autonomy.test.mjs tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs
+          grep -q "benchmark_required: true" scripts/brain/continuous-improvement/technology-discovery.mjs
+          grep -q "auto_adopt: false" scripts/brain/continuous-improvement/technology-discovery.mjs
+          test -f .github/workflows/shared-agent-memory-tests.yml
+          test -f .github/workflows/engineering-os-learning.yml
+          test -f config/powerhouse-daily-self-evolution.json
+          node scripts/brain/foresight-autonomy.mjs > /tmp/foresight.json
       - uses: actions/cache@v4
         with:
           path: ~/.npm
