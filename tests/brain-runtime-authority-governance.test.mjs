@@ -97,7 +97,7 @@ test('Supabase Edge production has exactly one protected-main promotion authorit
   const owners=ownersFor('supabase_edge_production_promotion');
   assert.equal(owners.length,1);
   assert.equal(owners[0].id,'github-supabase-edge-production-authority');
-  assert.equal(owners[0].runtime,'supabase_github_integration');
+  assert.equal(owners[0].runtime,'github_actions_supabase_cli');
   assert.equal(owners[0].production_execution_allowed,true);
   assert.equal(registry.controls.supabase_edge_production_authority,'PROTECTED_MAIN_ONLY');
   assert.equal(registry.controls.supabase_edge_source_of_truth,'GITHUB_PROTECTED_MAIN');
@@ -106,25 +106,31 @@ test('Supabase Edge production has exactly one protected-main promotion authorit
   assert.equal(registry.controls.supabase_edge_drift_policy,'FAIL_CLOSED');
 });
 
-test('Supabase Edge production workflow is current-main-only, single-flight and exact-provider-attested without a static PAT writer',async()=>{
+test('Supabase Edge production workflow is current-main-only, single-flight, sole-writer and byte-read-after-write',async()=>{
   const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
   assert.match(workflow,/branches:\s*\[main\]/);
-  assert.match(workflow,/checks:\s*read/);
   assert.match(workflow,/group:\s*supabase-edge-production-authority/);
   assert.match(workflow,/cancel-in-progress:\s*false/);
   assert.match(workflow,/refs\/heads\/main/);
   assert.match(workflow,/git rev-parse origin\/main/);
   assert.match(workflow,/git merge-base --is-ancestor/);
-  assert.match(workflow,/app\?\.slug==='supabase'/);
-  assert.match(workflow,/Supabase Preview/);
-  assert.match(workflow,/stableSuccess>=2/);
-  assert.match(workflow,/source-tree-sha256\.json/);
-  assert.match(workflow,/SUPABASE_EDGE_ATTESTATION_SUPERSEDED_BY_RUNTIME_CHANGE/);
+  assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
+  assert.match(workflow,/supabase\/setup-cli@v1/);
+  assert.match(workflow,/version:\s*2\.119\.0/);
+  assert.match(workflow,/supabase functions deploy --help/);
+  assert.match(workflow,/supabase functions download --help/);
+  assert.match(workflow,/supabase functions deploy "\$fn" --project-ref "\$PROJECT_REF" --use-api/);
+  assert.match(workflow,/supabase functions download "\$fn" --project-ref "\$PROJECT_REF"/);
+  assert.match(workflow,/powerhouse-social-publisher social-recovery-runner/);
+  assert.match(workflow,/SUPABASE_EDGE_PROVIDER_FILESET_DRIFT/);
+  assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT/);
+  assert.match(workflow,/provider_tree_sha256/);
+  assert.match(workflow,/byte_for_byte:true/);
+  assert.match(workflow,/production-authority-artifacts/);
+  assert.match(workflow,/SUPABASE_EDGE_READBACK_SUPERSEDED_BY_RUNTIME_CHANGE/);
   assert.match(workflow,/actions\/upload-artifact@v4/);
-  assert.doesNotMatch(workflow,/SUPABASE_ACCESS_TOKEN/);
-  assert.doesNotMatch(workflow,/supabase\/setup-cli/);
-  assert.doesNotMatch(workflow,/supabase functions deploy/);
-  assert.doesNotMatch(workflow,/supabase functions download/);
+  assert.doesNotMatch(workflow,/app\?\.slug==='supabase'/);
+  assert.doesNotMatch(workflow,/stableSuccess>=2/);
 });
 
 test('runtime governance fails closed if direct Supabase Edge deploy becomes allowed',()=>{
@@ -136,11 +142,13 @@ test('runtime governance fails closed if direct Supabase Edge deploy becomes all
 });
 
 
-test('Supabase Edge authority registry binds provider deployment to the GitHub integration and GitHub Actions to attestation only',()=>{
-  assert.equal(registry.controls.supabase_edge_provider_deployer,'SUPABASE_GITHUB_INTEGRATION');
-  assert.equal(registry.controls.supabase_edge_github_actions_role,'ATTESTATION_ONLY');
-  assert.equal(registry.controls.supabase_edge_static_pat_required,false);
-  assert.equal(registry.controls.supabase_edge_provider_check,'Supabase Preview');
+test('Supabase Edge authority registry binds the sole writer to protected-main CLI and requires byte readback',()=>{
+  assert.equal(registry.controls.supabase_edge_provider_deployer,'GITHUB_ACTIONS_SUPABASE_CLI');
+  assert.equal(registry.controls.supabase_edge_github_actions_role,'SOLE_DEPLOYER_AND_BYTE_READBACK');
+  assert.equal(registry.controls.supabase_edge_static_pat_required,true);
+  assert.equal(registry.controls.supabase_edge_provider_check,'ADVISORY_ONLY');
   assert.equal(registry.controls.supabase_edge_provider_app,'supabase');
-  assert.equal('supabase_edge_cli_version' in registry.controls,false);
+  assert.equal(registry.controls.supabase_edge_cli_version,'2.119.0');
+  assert.equal(registry.controls.supabase_edge_pat_scope,'PROJECT_SCOPED_EDGE_FUNCTIONS_READ_WRITE_PREFERRED');
+  assert.equal(registry.controls.supabase_edge_provider_readback,'BYTE_FOR_BYTE_SOURCE_TREE');
 });
