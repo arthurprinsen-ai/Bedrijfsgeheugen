@@ -4,14 +4,16 @@ import { readFile } from 'node:fs/promises';
 
 const read = path => readFile(path, 'utf8');
 
-test('CI acceleration keeps one Required single-flight and removes duplicate generic domain work', async () => {
-  const required = await read('.github/workflows/required-test.yml');
-  assert.match(required, /group: required-test-/);
-  assert.match(required, /cancel-in-progress:\s*true/);
-  assert.doesNotMatch(required, /Prove Supabase security gate blocks known unsafe patterns/);
-  assert.doesNotMatch(required, /Verify Portal V2 suite/);
-  assert.match(required, /npm install --prefer-offline/);
-  assert.match(required, /hashFiles\('package\.json'\)/);
+test('CI acceleration keeps one canonical PR ingress without a workflow-level lock', async () => {
+  const [required, control] = await Promise.all([
+    read('.github/workflows/required-test.yml'),
+    read('config/powerhouse-ci-control-plane-v2.json'),
+  ]);
+  assert.doesNotMatch(required, /^concurrency:/m);
+  assert.match(required, /Enforce CI control plane v2 architecture/);
+  assert.match(required, /github\.event_name == 'pull_request' \|\| steps\.integration\.outputs\.full_shared_suite == 'false'/);
+  assert.match(required, /github\.event_name != 'pull_request'/);
+  assert.match(control, /"pull_request_head_workflow_budget": 1/);
 });
 
 test('website lane reuses exact preview and central Netlify parity without duplicate builds', async () => {
@@ -48,18 +50,13 @@ test('CI intelligence telemetry is registered and measures queue, execution and 
 });
 
 
-test('broad platform changes do not fan out into unrelated Business OS and portal-native workflows', async () => {
+test('specialist Business OS and portal workflows no longer receive PR HEAD events', async () => {
   const [foundation, portal] = await Promise.all([
     read('.github/workflows/business-os-foundation.yml'),
     read('.github/workflows/portal-native-regression-tests.yml'),
   ]);
-  assert.doesNotMatch(foundation, /- 'platform\/\*\*'/);
-  assert.match(foundation, /platform\/contracts\/\*\*/);
-  assert.match(foundation, /platform\/events\/\*\*/);
-  assert.match(foundation, /platform\/integrations\/\*\*/);
-  assert.match(foundation, /platform\/read-models\/\*\*/);
-  assert.doesNotMatch(portal, /- 'platform\/\*\*'/);
-  assert.match(portal, /platform\/read-models\/portal-server-state\.mjs/);
+  assert.doesNotMatch(foundation, /^  pull_request:/m);
+  assert.doesNotMatch(portal, /^  pull_request:/m);
 });
 
 test('backend release lane cannot hang indefinitely during dependency installation', async () => {
@@ -73,16 +70,14 @@ test('backend release lane cannot hang indefinitely during dependency installati
 });
 
 
-test('repository-writer verification cancels superseded candidate work instead of queueing stale heads', async () => {
+test('repository-writer verification is dispatched after canonical admission instead of receiving every PR HEAD', async () => {
   const [dispatch,operational] = await Promise.all([
     read('.github/workflows/repo-writer-gate-dispatch.yml'),
     read('.github/workflows/repo-writer-operational-verification.yml'),
   ]);
   assert.match(dispatch, /group: repo-writer-gates-\$\{\{ inputs\.pr_number \}\}/);
-  assert.doesNotMatch(dispatch, /group: repo-writer-gates-.*inputs\.head_sha/);
   assert.match(dispatch, /cancel-in-progress:\s*true/);
-  assert.match(operational, /group: repo-writer-operational-\$\{\{ github\.event\.pull_request\.number \}\}/);
-  assert.match(operational, /cancel-in-progress:\s*true/);
+  assert.doesNotMatch(operational, /^  pull_request:/m);
 });
 
 test('Netlify skips only known governance-only commits and fails open for runtime changes', async () => {
@@ -100,12 +95,10 @@ test('Netlify skips only known governance-only commits and fails open for runtim
 });
 
 
-test('Supabase provider preview is change-scoped inside the canonical Required gate', async () => {
+test('Supabase provider preview never blocks the PR fast lane or merge-group assurance', async () => {
   const required = await read('.github/workflows/required-test.yml');
-  assert.match(required, /supabase_preview_required/);
   assert.match(required, /^  supabase_preview:/m);
-  assert.match(required, /Verify provider-owned Supabase Preview on exact candidate head/);
-  assert.match(required, /SELECT_SUPABASE_PREVIEW/);
-  assert.match(required, /SUPABASE_PREVIEW_PROVIDER_VERIFIED/);
+  assert.match(required, /github\.event_name == 'workflow_dispatch'/);
+  assert.match(required, /Provider-owned Supabase previews are intentionally not polled on merge_group/);
   assert.match(required, /!path\.startsWith\('supabase\/functions\/'\)/);
 });
