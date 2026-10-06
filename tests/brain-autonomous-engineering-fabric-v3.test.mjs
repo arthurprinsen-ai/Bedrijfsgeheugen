@@ -169,5 +169,8 @@ test('optimizer and self evolution do not allocate standalone PR workflows',asyn
   assert.doesNotMatch(optimizer,/^  pull_request:/m);
   assert.doesNotMatch(selfEvolution,/^  pull_request:/m);
   assert.doesNotMatch(optimizer,/fetch-depth:\s*0/);
+  assert.doesNotMatch(optimizer,/cat <<EOF/);
+  assert.doesNotMatch(optimizer,/^Obligation-ID:/m);
+  assert.match(optimizer,/printf '%s\\n'/);
   for(const metric of ['required_queue_wait_seconds_p95','required_total_seconds_p95','direct_pull_request_workflow_count','duplicate_workflow_runs_7d','duplicate_open_obligations','retired_pr_churn_7d']) assert.match(intelligence,new RegExp(metric));
 });

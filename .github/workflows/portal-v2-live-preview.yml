@@ -5,6 +5,9 @@ on:
     branches: [main]
     paths:
       - 'portal-v2/**'
+      - 'portal-next/**'
+      - '_redirects'
+      - '.github/workflows/business-os-live-preview.yml'
       - 'tests/integration/portal-v2-live.spec.js'
       - 'tests/integration/portal-v2-mobile-shell.spec.js'
       - 'tests/integration/portal-v2-functional-parity.spec.js'
@@ -103,6 +106,20 @@ jobs:
           grep -q 'csrd-mobile-domain' /tmp/portal-v2-csrd-saas.css
           grep -q 'v2repeatrow' /tmp/portal-v2-functional.css
           grep -q 'calculateLegacyEquivalent' /tmp/portal-v2-parity-engine.js
+
+      - name: Verify canonical Business OS redirect and input compatibility
+        run: |
+          set -euo pipefail
+          headers=$(mktemp)
+          curl -sS --max-time 30 -D "$headers" -o /tmp/portal-next-body "$PREVIEW_URL/portal-next/"
+          status=$(awk 'NR==1 {print $2}' "$headers")
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/ {gsub(/\r/,""); print $2}' "$headers" | tail -n1)
+          test "$status" = "301"
+          test "$location" = "/portal-v2/"
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/business-input-store.js" -o /tmp/business-input-store.js
+          node --check /tmp/business-input-store.js
+          grep -q 'savePortalBusinessInput' /tmp/business-input-store.js
+          grep -q 'readLegacyPortalBusinessInputs' /tmp/business-input-store.js
 
       - name: Install Playwright runtime
         run: |

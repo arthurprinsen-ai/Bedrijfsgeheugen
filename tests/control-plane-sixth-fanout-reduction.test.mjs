@@ -32,6 +32,9 @@ const retired = [
   '.github/workflows/powerhouse-closure-a-f.yml',
   '.github/workflows/powerhouse-daily-self-evolution.yml',
   '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml',
+  '.github/workflows/powerhouse-security-operations-closure.yml',
+  '.github/workflows/powerhouse-supabase-security-contract.yml',
+  '.github/workflows/security-operations-proof.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -81,6 +84,11 @@ test('Required merge_group preserves sixth-batch assurance', () => {
     'tests/brain-self-improvement-layer-v1.test.mjs',
     'tests/ai-model-intelligence-freshness-v1.test.mjs',
     'tests/brain-autonomous-engineering-fabric-v3.test.mjs',
+    'tests/brain-security-operations-closure-v1.test.mjs',
+    'tests/security-operations-proof.test.mjs',
+    'scripts/security-operations-proof.mjs --check',
+    'scripts/brain/check_powerhouse_supabase_security.py',
+    'tests/candidate-environment.test.mjs',
   ]) assert.ok(required.includes(marker), marker);
 });
 
@@ -97,4 +105,19 @@ test('heavy read-only specialists moved from pull_request to merge_group', () =>
     assert.match(source, /^  merge_group:/m, path);
     assert.doesNotMatch(source, /^  pull_request:/m, path);
   }
+});
+
+
+test('retired duplicate admission workflows are removed after consolidation', () => {
+  for (const path of [
+    '.github/workflows/business-os-live-preview.yml',
+    '.github/workflows/supabase-pr-preview.yml',
+  ]) assert.throws(() => readFileSync(path, 'utf8'));
+});
+
+test('portal preview owns consolidated Business OS preview assurance', () => {
+  const source = readFileSync('.github/workflows/portal-v2-live-preview.yml', 'utf8');
+  assert.ok(source.includes("'portal-next/**'"));
+  assert.ok(source.includes("Verify canonical Business OS redirect and input compatibility"));
+  assert.ok(source.includes("readLegacyPortalBusinessInputs"));
 });
