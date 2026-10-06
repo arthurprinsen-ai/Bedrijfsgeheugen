@@ -1,0 +1,34 @@
+{
+  "fingerprint": "github|delivery-classifier|shared-brain-script-product-fanout|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "control-plane-lane-ownership-20261006-v1",
+  "compiler": {
+    "failure_class": "CI_OVERCLASSIFICATION",
+    "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "scripts/brain/ was simultaneously a shared executable prefix and a backend lane prefix. createDeliveryPlan therefore set sharedExecutable=true before lane resolution and activated backend, portal, website and automation for a small chat-learning control-plane regression change. This caused a full website build/browser crawl even though no website runtime changed.",
+  "prevention_rule": "Generic scripts/brain/ is backend-owned, not shared executable. Exact scripts with explicit scoped ownership keep that ownership, including automation-only autonomous engineering scripts. Control-plane regression bundles must not activate portal or website unless a changed path is genuinely owned by those lanes.",
+  "evidence": {
+    "observed_pr": 3941,
+    "observed_required_run": 37473752255,
+    "observed_lanes": [
+      "automation",
+      "backend",
+      "portal",
+      "website"
+    ],
+    "unnecessary_job": "website / browser",
+    "structural_fix": "remove scripts/brain/ from sharedPaths while retaining backend lane ownership and exact scoped ownership"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-control-plane-lane-ownership-v1.test.mjs"
+    ],
+    "expected": "generic scripts/brain work selects backend only; explicit scoped automation scripts remain automation only; no portal/website fanout"
+  }
+}
