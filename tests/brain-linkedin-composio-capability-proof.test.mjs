@@ -100,14 +100,15 @@ test('LinkedIn company requires a fresh bound organization-admin OAuth before pu
 });
 
 
-test('LinkedIn production setup can create OAuth link and resume the same daily claim',()=>{
+test('LinkedIn production setup prewrites fresh OAuth state before resuming the same daily claim',()=>{
   assert.match(setup,/action==='create_link'/);
-  assert.match(setup,/toolkit_slug=linkedin/);
-  assert.match(setup,/auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS/);
   assert.match(setup,/production_workspace:true/);
-  assert.match(setup,/action==='resume'/);
+  assert.match(setup,/action==='resume'&&companyReady/);
+  assert.match(setup,/await writeState\(db,'ACTIVE',result\);/);
+  const prewrite=setup.indexOf("await writeState(db,'ACTIVE',result);");
+  const publisher=setup.indexOf("fetch(url+'/functions/v1/powerhouse-social-publisher'");
+  assert.ok(prewrite>=0&&publisher>prewrite);
   assert.match(setup,/linkedin-production-oauth-complete/);
-  assert.match(setup,/powerhouse-social-publisher/);
 });
 
 
