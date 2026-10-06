@@ -30,7 +30,7 @@ assert.match(canary,/repo-writer-candidate-shadow\.yml[\s\S]*-f verification_onl
 
 assert.match(shadow,/verification_only:/,'shadow workflow must declare verification-only input');
 assert.match(shadow,/repo-writer-gate-dispatch\.yml[\s\S]*-f verification_only="\$VERIFICATION_ONLY"/,'shadow must propagate verification-only state to central gates');
-assert.match(shadow,/VERIFICATION_ONLY: \$\{\{ inputs\.verification_only \}\}/,'dispatch-only shadow propagation must bind directly to explicit verification_only input');
+assert.match(shadow,/VERIFICATION_ONLY: \\$\\{\\{ inputs\\.verification_only \\|\\| false \\$\\}\\}/,'dispatch-only shadow propagation must bind directly to explicit verification_only input with false default');
 assert.doesNotMatch(shadow,/github\.event_name == 'workflow_dispatch'/,'dispatch-only shadow must not retain legacy event-name fallback logic');
 
 assert.match(gate,/verification_only:/,'central gate workflow must declare verification-only input');
