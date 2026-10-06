@@ -1,0 +1,28 @@
+{
+  "fingerprint": "social-recovery|edge-runtime|direct-postgres-auth-timeout|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-recovery-http-data-plane-20261006-v1",
+  "root_cause": "social-recovery-runner v26 opened a direct Postgres connection from Supabase Edge Runtime. The production recovery request reached the function correctly, but database authentication did not complete within 15000ms and the runtime returned HTTP 503 with an empty body.",
+  "prevention_rule": "Supabase Edge recovery/control functions must use the project HTTP Data API/PostgREST with service-role authorization for canonical reads and RPCs. Direct Postgres sockets, pooler host rewrites and SUPABASE_DB_URL are forbidden in social-recovery-runner.",
+  "evidence": {
+    "failed_workflow_run": 37492491110,
+    "failed_job": 112368541490,
+    "request_id": "01a111f3-c44b-75d2-83ca-8b190f0fc6da",
+    "function_version": 26,
+    "failure": "PostgresError: Failed to connect to database: authentication did not complete within 15000ms",
+    "http_status": 503
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-recovery-http-data-plane-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-recovery-http-data-plane-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-recovery-http-data-plane-v1.test.mjs"
+    ]
+  }
+}

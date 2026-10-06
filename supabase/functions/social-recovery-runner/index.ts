@@ -1,10 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import postgres from "npm:postgres@3.4.7";
-
 // Protected-main promotion bootstrap: social provider-truth contract v1.
 
-const REF = "adhjwmvyoixzjtmiroln";
-const POOLER = "aws-0-eu-central-1.pooler.supabase.com";
 const SOCIAL_CHANNELS = ["linkedin_personal", "linkedin_company", "instagram_company"] as const;
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), {
   status,
@@ -15,68 +11,74 @@ const todayAmsterdam = () => new Intl.DateTimeFormat("en-CA", {
   timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit",
 }).format(new Date());
 
-function poolerUrl() {
-  const raw = Deno.env.get("SUPABASE_DB_URL") || "";
-  if (!raw) throw new Error("SUPABASE_DB_URL_MISSING");
-  const u = new URL(raw);
-  u.hostname = POOLER;
-  u.port = "6543";
-  u.username = "postgres." + REF;
-  return u.toString();
+function apiBase(base: string) {
+  return base.replace(/\/$/, "");
 }
 
-function bearer(req: Request) {
-  const raw = clean(req.headers.get("authorization"));
-  return raw.toLowerCase().startsWith("bearer ") ? raw.slice(7).trim() : "";
+function dataHeaders(service: string, jsonBody = false) {
+  return {
+    "apikey": service,
+    "authorization": `Bearer ${service}`,
+    ...(jsonBody ? { "content-type": "application/json" } : {}),
+  };
 }
 
-async function withSql<T>(fn: (sql: any) => Promise<T>) {
-  let sql: any = null;
-  try {
-    sql = postgres(poolerUrl(), {
-      max: 1,
-      prepare: false,
-      connect_timeout: 6,
-      idle_timeout: 1,
-      max_lifetime: 30,
-    });
-    return await fn(sql);
-  } finally {
-    try { if (sql) await sql.end({ timeout: 1 }); } catch {}
+async function dataApiJson(base: string, service: string, pathOrUrl: string, init: RequestInit = {}) {
+  const target = /^https?:\/\//i.test(pathOrUrl) ? pathOrUrl : apiBase(base) + pathOrUrl;
+  const response = await fetch(target, {
+    ...init,
+    headers: {
+      ...dataHeaders(service, Boolean(init.body)),
+      ...(init.headers || {}),
+    },
+    signal: AbortSignal.timeout(10_000),
+  });
+  const text = await response.text();
+  let body: any = null;
+  if (text) {
+    try { body = JSON.parse(text); } catch { body = text; }
   }
+  if (!response.ok) {
+    throw new Error(`SUPABASE_DATA_API_${response.status}:${clean(typeof body === "string" ? body : body?.message || body?.error || "") .slice(0, 120)}`);
+  }
+  return body;
 }
 
-async function schedulerToken() {
-  return await withSql(async (sql) => {
-    const rows = await sql.unsafe(
-      "select public.bg_geheim(p_naam := $1) as token",
-      ["powerhouse_daily_scheduler_token"],
-    );
-    return clean(rows?.[0]?.token);
+async function schedulerToken(base: string, service: string) {
+  const body = await dataApiJson(base, service, "/rest/v1/rpc/bg_geheim", {
+    method: "POST",
+    body: JSON.stringify({ p_naam: "powerhouse_daily_scheduler_token" }),
   });
+  if (typeof body === "string") return clean(body);
+  if (Array.isArray(body)) {
+    const first = body[0];
+    return clean(typeof first === "string" ? first : first?.token ?? first?.bg_geheim ?? first?.value);
+  }
+  return clean(body?.token ?? body?.bg_geheim ?? body?.value);
 }
 
-async function readCanonicalState(runDate: string) {
-  return await withSql(async (sql) => {
-    const decisions = await sql.unsafe(
-      `select channel,decision,state,delivery_ref,delivery_evidence,updated_at
-         from public.powerhouse_channel_decisions
-        where run_date=$1::date
-          and channel in ('linkedin_personal','linkedin_company','instagram_company')
-        order by channel`,
-      [runDate],
-    );
-    const obligations = await sql.unsafe(
-      `select channel,status,external_id,evidence,last_error,next_action,updated_at
-         from public.content_publication_obligations
-        where tenant_id='canonical'
-          and publication_date=$1::date
-          and channel in ('linkedin_personal','linkedin_company','instagram')
-        order by channel`,
-      [runDate],
-    );
-    return { decisions, obligations };
-  });
+async function readCanonicalState(base: string, service: string, runDate: string) {
+  const decisionsUrl = new URL(apiBase(base) + "/rest/v1/powerhouse_channel_decisions");
+  decisionsUrl.searchParams.set("select", "channel,decision,state,delivery_ref,delivery_evidence,updated_at");
+  decisionsUrl.searchParams.set("run_date", `eq.${runDate}`);
+  decisionsUrl.searchParams.set("channel", "in.(linkedin_personal,linkedin_company,instagram_company)");
+  decisionsUrl.searchParams.set("order", "channel.asc");
+
+  const obligationsUrl = new URL(apiBase(base) + "/rest/v1/content_publication_obligations");
+  obligationsUrl.searchParams.set("select", "channel,status,external_id,evidence,last_error,next_action,updated_at");
+  obligationsUrl.searchParams.set("tenant_id", "eq.canonical");
+  obligationsUrl.searchParams.set("publication_date", `eq.${runDate}`);
+  obligationsUrl.searchParams.set("channel", "in.(linkedin_personal,linkedin_company,instagram)");
+  obligationsUrl.searchParams.set("order", "channel.asc");
+
+  const [decisions, obligations] = await Promise.all([
+    dataApiJson(base, service, decisionsUrl.toString()),
+    dataApiJson(base, service, obligationsUrl.toString()),
+  ]);
+  return {
+    decisions: Array.isArray(decisions) ? decisions : [],
+    obligations: Array.isArray(obligations) ? obligations : [],
+  };
 }
 
 async function invokeFunction(base: string, token: string, name: string, payload: unknown, timeoutMs: number) {
@@ -151,16 +153,16 @@ Deno.serve(async (req: Request) => {
 
   let token = "";
   try {
-    token = await schedulerToken();
+    token = await schedulerToken(url, service);
   } catch (error) {
-    console.error("SOCIAL_RECOVERY_POOLER_AUTH_FAILED", clean((error as Error)?.message || error).slice(0, 160));
+    console.error("SOCIAL_RECOVERY_DATA_API_AUTH_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({ ok: false, error: "SCHEDULER_TOKEN_UNAVAILABLE" }, 503);
   }
   if (!token) return json({ ok: false, error: "SCHEDULER_TOKEN_EMPTY" }, 503);
 
   let initialReadback: any;
   try {
-    initialReadback = await readCanonicalState(runDate);
+    initialReadback = await readCanonicalState(url, service, runDate);
   } catch (error) {
     console.error("SOCIAL_RECOVERY_INITIAL_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({ ok: false, runDate, error: "CANONICAL_READBACK_UNAVAILABLE" }, 503);
@@ -183,7 +185,7 @@ Deno.serve(async (req: Request) => {
 
   let postPreparation: any;
   try {
-    postPreparation = await readCanonicalState(runDate);
+    postPreparation = await readCanonicalState(url, service, runDate);
   } catch (error) {
     console.error("SOCIAL_RECOVERY_POST_PREPARATION_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({ ok: false, runDate, degraded_preparation: degradedPreparation, error: "CANONICAL_READBACK_UNAVAILABLE" }, 503);
@@ -213,9 +215,9 @@ Deno.serve(async (req: Request) => {
 
   let readback: any;
   try {
-    readback = await readCanonicalState(runDate);
+    readback = await readCanonicalState(url, service, runDate);
   } catch (error) {
-    console.error("SOCIAL_RECOVERY_POOLER_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
+    console.error("SOCIAL_RECOVERY_DATA_API_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({
       ok: false,
       runDate,
