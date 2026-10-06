@@ -101,7 +101,7 @@ const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
   'docs/portal-v2-parity-architecture.md'
 ]);
 
-function scopedLaneForPath(path) {
+function scopedLaneForPath(path, policy = {}) {
   if (SCOPED_CONTROL_PLANE_LANES[path]) return SCOPED_CONTROL_PLANE_LANES[path];
   if (SCOPED_WORKFLOW_LANES[path]) return SCOPED_WORKFLOW_LANES[path];
   if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
@@ -109,6 +109,10 @@ function scopedLaneForPath(path) {
   if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
   if (matches(path, REGULATORY_AUTOMATION_PATHS)) return 'automation';
   if (matches(path, DELIVERY_CONTROL_PLANE_BACKEND_PATHS)) return 'backend';
+  if (path.startsWith('.github/workflows/')) {
+    const explicitPolicyLane=(policy.lanes || []).find(lane => matches(path, lane.paths || []));
+    return explicitPolicyLane?.id || 'backend';
+  }
   return null;
 }
 function isScopedNonExecutable(path) {
@@ -142,14 +146,14 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   const paths = unique(changedPaths.map(value => String(value).trim()).filter(Boolean)).sort();
   const nonExecutablePatterns = effectiveNonExecutableSharedPaths(policy);
   const nonExecutableShared = paths.filter(path => matches(path, nonExecutablePatterns) || isScopedNonExecutable(path));
-  const scopedLanePaths = paths.filter(path => scopedLaneForPath(path));
-  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !matches(path, policy.ignoredPaths) && !scopedLaneForPath(path) && !isScopedNonExecutable(path));
+  const scopedLanePaths = paths.filter(path => scopedLaneForPath(path, policy));
+  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !matches(path, policy.ignoredPaths) && !scopedLaneForPath(path, policy) && !isScopedNonExecutable(path));
   const ignored = paths.filter(path => matches(path, policy.ignoredPaths) || isScopedNonExecutable(path));
   const lanes = policy.lanes
-    .filter(lane => sharedExecutable || scopedLanePaths.some(path => scopedLaneForPath(path) === lane.id) || paths.some(path => !matches(path, nonExecutablePatterns) && !scopedLaneForPath(path) && !isScopedNonExecutable(path) && matches(path, lane.paths)))
+    .filter(lane => sharedExecutable || scopedLanePaths.some(path => scopedLaneForPath(path, policy) === lane.id) || paths.some(path => !matches(path, nonExecutablePatterns) && !scopedLaneForPath(path, policy) && !isScopedNonExecutable(path) && matches(path, lane.paths)))
     .map(lane => Object.freeze({ id: lane.id, laneId: `${lane.id}|${sha.slice(0, 12)}`, candidateIdentity: sha, testedIdentity: sha, owner: lane.owner, requiredContracts: Object.freeze([...lane.requiredContracts]), independentPromotion: policy.version === 'BRAIN-DELIVERY-v2' && policy.integration?.independentPromotion === true }))
     .sort((left, right) => left.id.localeCompare(right.id));
-  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, nonExecutablePatterns) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || scopedLaneForPath(path) || isScopedNonExecutable(path));
+  const classified = paths.filter(path => matches(path, policy.sharedPaths) || matches(path, nonExecutablePatterns) || matches(path, policy.ignoredPaths) || policy.lanes.some(lane => matches(path, lane.paths)) || scopedLaneForPath(path, policy) || isScopedNonExecutable(path));
   const unclassified = paths.filter(path => !classified.includes(path));
   if (unclassified.length) throw new Error(`unclassified delivery path: ${unclassified.join(', ')}`);
   const noLanePaths = unique([...ignored, ...nonExecutableShared]);
