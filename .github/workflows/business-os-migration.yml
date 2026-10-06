@@ -1,16 +1,6 @@
 name: Business OS Migration
 
 on:
-  pull_request:
-    paths:
-      - 'platform/migrations/**'
-      - 'platform/changes/**'
-      - 'platform/read-models/website.mjs'
-      - 'platform/intelligence/learning.mjs'
-      - 'tests/business-os-migration.test.mjs'
-      - 'tests/paginacontrole-concurrency.test.mjs'
-      - '.github/workflows/paginacontrole.yml'
-      - '.github/workflows/business-os-migration.yml'
   workflow_dispatch:
 
 permissions:
