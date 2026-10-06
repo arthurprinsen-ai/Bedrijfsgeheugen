@@ -31,7 +31,6 @@
       "directPrTriggerWorkflows": [
         "ai-model-intelligence.yml",
         "autonomous-improvement-completion-gate.yml",
-        "bg184-stateful-blocker-dedupe-tests.yml",
         "blog-technical-seo-gate.yml",
         "buffer-social-learning.yml",
         "business-os-experience.yml",
@@ -42,14 +41,12 @@
         "canonical-brand-shell-test.yml",
         "chat-learning-preflight-pr.yml",
         "codeql.yml",
-        "compliance-status-contract.yml",
         "component-foundation-tdd.yml",
         "component-preview.yml",
         "config-wacht.yml",
         "content-growth-ci.yml",
         "engineering-os-learning.yml",
         "engineering-supply-chain-trust.yml",
-        "error-learning-contract.yml",
         "fresh-device-autonomy-canary.yml",
         "hero-media-production-verify.yml",
         "homepage-hero-video-verify.yml",
@@ -86,7 +83,6 @@
         "required-test.yml",
         "revenue-content-intelligence.yml",
         "revenue-learning.yml",
-        "runtime-authority-governance-tests.yml",
         "security-operations-proof.yml",
         "seo-growth-intelligence.yml",
         "seo-order-engine.yml",
@@ -97,7 +93,7 @@
         "verify-approved-central-blog.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 67
+      "directPrTriggerCount": 63
     },
     "netlify": {
       "projects": 16
