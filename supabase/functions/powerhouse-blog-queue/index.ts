@@ -2,19 +2,6 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const VERSION='v7-repository-native-prewrite';
 const clean=(v:unknown)=>String(v??'').trim();
-function jsonObject(value:any){
-  if(value===null||value===undefined)return {};
-  if(typeof value==='string'){
-    try{return jsonObject(JSON.parse(value));}catch{return {};}
-  }
-  if(Array.isArray(value))return value.reduce((acc:any,item:any)=>Object.assign(acc,jsonObject(item)),{});
-  if(typeof value==='object'){
-    const keys=Object.keys(value);
-    if(keys.length>0&&keys.every((key)=>/^\d+$/.test(key)))return {};
-    return value;
-  }
-  return {};
-}
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
@@ -37,12 +24,10 @@ Deno.serve(async(req)=>{
   if(ae||de) return json({ok:false,error:'READ_FAILED'},500);
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
 
-  const generationEvidence=jsonObject(a.generation_evidence);
-  const deliveryEvidence=jsonObject(d.delivery_evidence);
-  const slug=clean(generationEvidence.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
+  const slug=clean(a.generation_evidence?.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
   const evidence={
-    ...deliveryEvidence,
+    ...(d.delivery_evidence||{}),
     provider:'github-protected-daily-blog',
     executor:'powerhouse-blog-queue',
     executor_version:VERSION,
