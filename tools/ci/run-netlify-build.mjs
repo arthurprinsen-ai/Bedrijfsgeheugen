@@ -1,5 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { tmpdir } from 'node:os';
 import { performance } from 'node:perf_hooks';
 
 const startedAt=new Date().toISOString();
@@ -45,10 +47,11 @@ const profile={
   status:'running'
 };
 
-mkdirSync('.artifacts',{recursive:true});
+const profilePath=String(process.env.NETLIFY_BUILD_PROFILE_PATH||join(tmpdir(),'netlify-build-profile.json'));
+mkdirSync(dirname(profilePath),{recursive:true});
 const persist=()=>{
   profile.duration_ms=Math.round(performance.now()-started);
-  writeFileSync('.artifacts/netlify-build-profile.json',JSON.stringify(profile,null,2)+'\n');
+  writeFileSync(profilePath,JSON.stringify(profile,null,2)+'\n');
 };
 
 try{
