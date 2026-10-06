@@ -526,6 +526,7 @@
       "owner": "agent-integration-control-plane",
       "paths": [
         "automation/",
+        "schemas/",
         "data/regulatory-source-state.json",
         "make/",
         "notion/",
