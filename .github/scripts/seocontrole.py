@@ -397,10 +397,13 @@ def main():
             naam = os.path.basename(p['bestand'])[:-5]
             # Utility/admin routes and every explicit noindex page are intentionally
             # outside the crawl inventory. Keep sitemap authority aligned with robots.
-            if naam in GEEN_SITEMAP or 'noindex' in p['ruw'].lower():
+            current_path = url.rstrip('/') or '/'
+            # Exclude by both physical filename and canonical route. Generated/index-style
+            # utility pages (for example /cms from cms/index.html) must never be forced
+            # into the public sitemap merely because their basename is "index".
+            if naam in GEEN_SITEMAP or current_path.lstrip('/') in GEEN_SITEMAP or 'noindex' in p['ruw'].lower():
                 continue
             canonical_path = urlparse(p.get('canon', '')).path.rstrip('/') or '/'
-            current_path = url.rstrip('/') or '/'
             if p.get('canon') and canonical_path != current_path:
                 continue
             if url.rstrip('/') and url.rstrip('/') not in in_sitemap:
