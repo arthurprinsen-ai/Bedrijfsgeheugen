@@ -241,7 +241,7 @@ jobs:
             mkdir -p "$root"
             (
               cd "$root"
-              supabase functions download "$fn" --project-ref "$PROJECT_REF"
+              supabase functions download "$fn" --project-ref "$PROJECT_REF" --use-api
             )
             source_root="supabase/functions/$fn"
             provider_root="$root/supabase/functions/$fn"
