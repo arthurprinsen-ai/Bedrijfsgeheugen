@@ -148,6 +148,7 @@
       "paths": [
         "tools/site-shell/",
         "tests/site-shell-",
+        "tests/tabbladen.test.mjs",
         "tools/controleer-site-ui.mjs",
         "tools/controleer-technische-seo.mjs",
         "tools/genereer-sitemap.mjs",
