@@ -89,10 +89,16 @@ test('LinkedIn company requires fresh bound organization-admin OAuth proof befor
   assert.match(setup,/companyOauthFreshVerified=freshOauthBound&&companyAdminReadReady&&hasOrgWriteScope/);
   assert.match(setup,/companyReady=personalReady&&companyOauthFreshVerified/);
   assert.match(setup,/linkedin_company_admin_oauth_proven:companyOauthFreshVerified/);
-  assert.match(setup,/company_live_proven_eligible:companyOauthFreshVerified&&companyReadbackReady/);
+  assert.match(setup,/organization_write_scope_requested:companyOauthFreshVerified&&hasOrgWriteScope/);
+  assert.match(setup,/organization_write_scope_verified:false/);
+  assert.match(setup,/company_live_proven_eligible:false/);
   assert.match(publisher,/LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED/);
   assert.match(publisher,/state\?\.company_oauth_fresh_verified===true/);
+  assert.match(publisher,/organization_write_scope_requested:organizationWriteScopeRequested===true/);
+  assert.match(publisher,/organization_write_scope_verified:false/);
   assert.match(publisher,/company_oauth_connection_id:accountId/);
+  assert.match(publisher,/provider_create_success:true/);
+  assert.match(publisher,/organization_write_scope_verified:true/);
   assert.match(publisher,/liveProven=exactReadbackVerified&&direct\.linkedin_company_admin_oauth_proven===true&&direct\.organization_write_scope_verified===true&&direct\.company_oauth_fresh_verified===true/);
   assert.match(publisher,/liveProven\?'LIVE_PROVEN':'PUBLISHED'/);
   assert.match(loop,/if\(channel==='linkedin_company'&&status==='PUBLISHED'\)return false/);
