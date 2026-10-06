@@ -7,6 +7,10 @@ const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,
 const tenantOf=(b:any)=>String(b?.tenantId||'canonical');
 const asNum=(v:any)=>v===null||v===undefined||v===''?null:Number(v);
 const normalizeStage=(s:any)=>String(s||'').toLowerCase().replace(/[\s-]+/g,'_');
+const STORE_DB_TIMEOUT_MS=2_500;
+const PROJECTION_BREAKER_MS=30_000;
+let projectionDbDegradedUntil=0;
+const boundedFetch=(input:RequestInfo|URL,init:RequestInit={})=>fetch(input,{...init,signal:AbortSignal.timeout(STORE_DB_TIMEOUT_MS)});
 
 function commercialByStage(rows:any[]){
   const out:any={leads:null,qualified_leads:null,meetings:null,proposals:null,orders:null,revenue:null};
@@ -50,43 +54,57 @@ Deno.serve(async(req)=>{
   const action=String(body?.action||''),tenant=tenantOf(body);
   const url=Deno.env.get('SUPABASE_URL'),key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'STORE_CONFIG_MISSING'},503);
-  const db=createClient(url,key,{auth:{persistSession:false}});
+  const db=createClient(url,key,{auth:{persistSession:false},global:{fetch:boundedFetch}});
   const fail=(error:any,status=503)=>json({error:error?.message||String(error)},status);
 
   try{
     if(action==='list_projection_candidates'){
-      const candidates:any[]=[];
-      const since=new Date(Date.now()-90*864e5).toISOString();
-      const [{data:posts,error:pErr},{data:snapshots,error:sErr},{data:daily,error:dErr},{data:events,error:eErr},{data:outcomes,error:oErr}]=await Promise.all([
-        db.from('social_posts').select('*').eq('tenant_id',tenant).gte('published_at',since).order('published_at',{ascending:false}).limit(150),
-        db.from('social_metric_snapshots').select('*').eq('tenant_id',tenant).order('observed_at',{ascending:false}).limit(1200),
-        db.from('growth_page_daily').select('*').order('day',{ascending:false}).limit(1000),
-        db.from('growth_events').select('canonical,page_role,funnel_stage,intent_owner,attribution_root_key,occurred_at').gte('occurred_at',since).order('occurred_at',{ascending:false}).limit(2000),
-        db.from('growth_outcomes').select('stage,attribution_root_key,canonical,revenue_eur,occurred_at').gte('occurred_at',since).order('occurred_at',{ascending:false}).limit(2000)
-      ]);
-      if(pErr)throw pErr;if(sErr)throw sErr;if(dErr)throw dErr;if(eErr)throw eErr;if(oErr)throw oErr;
-      const snapsByPost=new Map<string,any[]>();for(const s of snapshots||[]){const arr=snapsByPost.get(s.post_id)||[];arr.push(s);snapsByPost.set(s.post_id,arr);}
-      const outcomesByRoot=new Map<string,any[]>();for(const o of outcomes||[]){if(!o.attribution_root_key)continue;const a=outcomesByRoot.get(o.attribution_root_key)||[];a.push(o);outcomesByRoot.set(o.attribution_root_key,a);}
-      for(const p of posts||[]){
-        const snaps=snapsByPost.get(p.post_id)||[];for(const w of [24,48,72]){
-          const nearest=snaps.map(s=>({s,age:Number(s.age_hours??((new Date(s.observed_at).getTime()-new Date(p.published_at).getTime())/36e5))})).filter(x=>Number.isFinite(x.age)&&Math.abs(x.age-w)<=6).sort((a,b)=>Math.abs(a.age-w)-Math.abs(b.age-w))[0]?.s;
-          if(!nearest)continue;const commercial=commercialByStage(p.source_campaign_id?outcomesByRoot.get(p.source_campaign_id)||[]:[]);
-          const channel=p.channel_kind||p.platform;
-          candidates.push({kind:'social',contentId:p.post_id,channel,canonical:null,attributionRootKey:p.source_campaign_id||null,publishedAt:p.published_at,windowHours:w,
-            componentFingerprint:`social|${channel}|${p.content_pillar||''}|${p.funnel_stage||''}|${p.format||''}|${p.hook_type||''}|${p.cta_type||''}`,
-            metrics:{...(nearest.metrics||{}),...commercial},attributes:{platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,contentPillar:p.content_pillar,funnelStage:p.funnel_stage,format:p.format,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type},sourceRefs:[nearest.snapshot_id]});
+      try{
+        if(Date.now()<projectionReadDegradedUntil)return json({candidates:[],degraded:true,reason:'DATA_API_CIRCUIT_OPEN'},202);
+        const readDb=createClient(url,key,{auth:{persistSession:false},global:{fetch:boundedFetch}});
+        const candidates:any[]=[];
+        const since=new Date(Date.now()-90*864e5).toISOString();
+        if(Date.now()<projectionDbDegradedUntil)return json({error:'PROJECTION_STORE_UNAVAILABLE',detail:'DATA_API_CIRCUIT_OPEN'},503);
+        let posts:any[]=[],snapshots:any[]=[],daily:any[]=[],events:any[]=[],outcomes:any[]=[];
+        try{
+          const p=await readDb.from('social_posts').select('post_id,platform,channel_id,channel_name,channel_kind,published_at,source_campaign_id,content_pillar,funnel_stage,format,hook_type,narrative_type,emotion,cta_type').eq('tenant_id',tenant).gte('published_at',since).order('published_at',{ascending:false}).limit(150);if(p.error)throw p.error;posts=p.data||[];
+          const m=await readDb.from('social_metric_snapshots').select('snapshot_id,post_id,observed_at,age_hours,metrics').eq('tenant_id',tenant).order('observed_at',{ascending:false}).limit(600);if(m.error)throw m.error;snapshots=m.data||[];
+          const d=await readDb.from('growth_page_daily').select('day,canonical,page_views,cta_clicks,leads,qualified_leads,appointments,proposals,won_orders,revenue_eur,intent_owner').order('day',{ascending:false}).limit(500);if(d.error)throw d.error;daily=d.data||[];
+          const e=await readDb.from('growth_events').select('canonical,page_role,funnel_stage,intent_owner,attribution_root_key,occurred_at').gte('occurred_at',since).order('occurred_at',{ascending:false}).limit(1000);if(e.error)throw e.error;events=e.data||[];
+          const o=await readDb.from('growth_outcomes').select('stage,attribution_root_key,canonical,revenue_eur,occurred_at').gte('occurred_at',since).order('occurred_at',{ascending:false}).limit(1000);if(o.error)throw o.error;outcomes=o.data||[];
+          projectionDbDegradedUntil=0;
+        }catch(error){
+          projectionDbDegradedUntil=Date.now()+PROJECTION_BREAKER_MS;
+          console.error('REVENUE_PROJECTION_DATA_API_DEGRADED',error instanceof Error?error.message:String(error));
+          return json({error:'PROJECTION_STORE_UNAVAILABLE',detail:'DATA_API_UNAVAILABLE'},503);
         }
+        const snapsByPost=new Map<string,any[]>();for(const s of snapshots||[]){const arr=snapsByPost.get(s.post_id)||[];arr.push(s);snapsByPost.set(s.post_id,arr);}
+        const outcomesByRoot=new Map<string,any[]>();for(const o of outcomes||[]){if(!o.attribution_root_key)continue;const a=outcomesByRoot.get(o.attribution_root_key)||[];a.push(o);outcomesByRoot.set(o.attribution_root_key,a);}
+        for(const p of posts||[]){
+          const snaps=snapsByPost.get(p.post_id)||[];for(const w of [24,48,72]){
+            const nearest=snaps.map(s=>({s,age:Number(s.age_hours??((new Date(s.observed_at).getTime()-new Date(p.published_at).getTime())/36e5))})).filter(x=>Number.isFinite(x.age)&&Math.abs(x.age-w)<=6).sort((a,b)=>Math.abs(a.age-w)-Math.abs(b.age-w))[0]?.s;
+            if(!nearest)continue;const commercial=commercialByStage(p.source_campaign_id?outcomesByRoot.get(p.source_campaign_id)||[]:[]);
+            const channel=p.channel_kind||p.platform;
+            candidates.push({kind:'social',contentId:p.post_id,channel,canonical:null,attributionRootKey:p.source_campaign_id||null,publishedAt:p.published_at,windowHours:w,
+              componentFingerprint:`social|${channel}|${p.content_pillar||''}|${p.funnel_stage||''}|${p.format||''}|${p.hook_type||''}|${p.cta_type||''}`,
+              metrics:{...(nearest.metrics||{}),...commercial},attributes:{platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,contentPillar:p.content_pillar,funnelStage:p.funnel_stage,format:p.format,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type},sourceRefs:[nearest.snapshot_id]});
+          }
+        }
+        const eventByCanonical=new Map<string,any>();for(const e of events||[]){if(e.canonical&&!eventByCanonical.has(e.canonical))eventByCanonical.set(e.canonical,e);}
+        const outcomeByCanonical=new Map<string,any[]>();for(const o of outcomes||[]){if(!o.canonical)continue;const a=outcomeByCanonical.get(o.canonical)||[];a.push(o);outcomeByCanonical.set(o.canonical,a);}
+        const seen=new Set<string>();for(const d of daily||[]){if(!d.canonical||seen.has(d.canonical))continue;seen.add(d.canonical);const ev=eventByCanonical.get(d.canonical)||{};const role=String(ev.page_role||'').toLowerCase();const channel=/(blog|article|kennis|content)/.test(role)||String(d.canonical).startsWith('/blog')?'blog':'website';
+          const attributed=commercialByStage((ev.attribution_root_key?outcomesByRoot.get(ev.attribution_root_key):null)||outcomeByCanonical.get(d.canonical)||[]);
+          candidates.push({kind:'growth',contentId:`page:${d.canonical}`,channel,canonical:d.canonical,attributionRootKey:ev.attribution_root_key||null,publishedAt:`${d.day}T00:00:00Z`,windowHours:24,
+            componentFingerprint:`${channel}|${ev.page_role||''}|${ev.funnel_stage||''}|${d.intent_owner||ev.intent_owner||''}`,
+            metrics:{pageViews:d.page_views,ctaClicks:d.cta_clicks,leads:d.leads??attributed.leads,qualifiedLeads:d.qualified_leads??attributed.qualified_leads,appointments:d.appointments??attributed.meetings,proposals:d.proposals??attributed.proposals,wonOrders:d.won_orders??attributed.orders,revenueEur:d.revenue_eur??attributed.revenue},
+            attributes:{pageRole:ev.page_role||null,funnelStage:ev.funnel_stage||null,intentOwner:d.intent_owner||ev.intent_owner||null},sourceRefs:[`growth_page_daily:${d.day}:${d.canonical}`]});
+        }
+        return json({candidates});
+      }catch(error){
+        projectionReadDegradedUntil=Date.now()+READ_BREAKER_MS;
+        console.error('REVENUE_PROJECTION_READ_DEGRADED',error instanceof Error?error.message:String(error));
+        return json({candidates:[],degraded:true,reason:'DATA_API_UNAVAILABLE'},202);
       }
-      const eventByCanonical=new Map<string,any>();for(const e of events||[]){if(e.canonical&&!eventByCanonical.has(e.canonical))eventByCanonical.set(e.canonical,e);}
-      const outcomeByCanonical=new Map<string,any[]>();for(const o of outcomes||[]){if(!o.canonical)continue;const a=outcomeByCanonical.get(o.canonical)||[];a.push(o);outcomeByCanonical.set(o.canonical,a);}
-      const seen=new Set<string>();for(const d of daily||[]){if(!d.canonical||seen.has(d.canonical))continue;seen.add(d.canonical);const ev=eventByCanonical.get(d.canonical)||{};const role=String(ev.page_role||'').toLowerCase();const channel=/(blog|article|kennis|content)/.test(role)||String(d.canonical).startsWith('/blog')?'blog':'website';
-        const attributed=commercialByStage((ev.attribution_root_key?outcomesByRoot.get(ev.attribution_root_key):null)||outcomeByCanonical.get(d.canonical)||[]);
-        candidates.push({kind:'growth',contentId:`page:${d.canonical}`,channel,canonical:d.canonical,attributionRootKey:ev.attribution_root_key||null,publishedAt:`${d.day}T00:00:00Z`,windowHours:24,
-          componentFingerprint:`${channel}|${ev.page_role||''}|${ev.funnel_stage||''}|${d.intent_owner||ev.intent_owner||''}`,
-          metrics:{pageViews:d.page_views,ctaClicks:d.cta_clicks,leads:d.leads??attributed.leads,qualifiedLeads:d.qualified_leads??attributed.qualified_leads,appointments:d.appointments??attributed.meetings,proposals:d.proposals??attributed.proposals,wonOrders:d.won_orders??attributed.orders,revenueEur:d.revenue_eur??attributed.revenue},
-          attributes:{pageRole:ev.page_role||null,funnelStage:ev.funnel_stage||null,intentOwner:d.intent_owner||ev.intent_owner||null},sourceRefs:[`growth_page_daily:${d.day}:${d.canonical}`]});
-      }
-      return json({candidates});
     }
     if(action==='upsert_evidence'){
       const row=evidenceRow(tenant,body.evidence);const {data,error}=await db.from('revenue_learning_evidence').upsert(row,{onConflict:'tenant_id,evidence_id'}).select().single();if(error)throw error;return json({stored:true,evidence:evidenceOut(data)});
@@ -123,7 +141,7 @@ Deno.serve(async(req)=>{
       const o=body.obligation||{};const row={tenant_id:tenant,obligation_id:o.id,type:o.type,content_id:o.contentId??null,window_hours:o.windowHours??null,status:o.status||'OPEN',payload:o,due_at:o.dueAt??null,updated_at:new Date().toISOString()};const {error}=await db.from('revenue_learning_obligations').upsert(row,{onConflict:'tenant_id,obligation_id'});if(error)throw error;return json({stored:true});
     }
     if(action==='reconcile_action_learning_obligations'){
-      const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions').select('action_id').not('executed_at','is',null).order('executed_at',{ascending:true}).limit(1000);
+      const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions').select('action_id').not('executed_at','is',null).order('executed_at',{ascending:true}).limit(50);
       if(aErr)throw aErr;
       let reconciled=0;
       for(const actionRow of actions||[]){

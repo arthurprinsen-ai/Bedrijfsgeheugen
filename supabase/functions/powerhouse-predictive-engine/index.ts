@@ -3,6 +3,16 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const USE_CASE='supabase-powerhouse-predictive-first-mover-v1';
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const clean=(v:any)=>String(v??'').trim();
+const AUTH_CACHE_MS=15*60_000;
+let schedulerTokenCache='',schedulerTokenCacheUntil=0;
+const boundedFetch=(input:RequestInfo|URL,init:RequestInit={})=>fetch(input,{...init,signal:AbortSignal.timeout(2_500)});
+async function schedulerToken(db:any){
+  if(schedulerTokenCache&&Date.now()<schedulerTokenCacheUntil)return {token:schedulerTokenCache,error:''};
+  const r=await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'});
+  if(r.error)return {token:'',error:'AUTH_SECRET_LOOKUP_FAILED'};
+  const token=clean(r.data);if(!token)return {token:'',error:'AUTH_SECRET_EMPTY'};
+  schedulerTokenCache=token;schedulerTokenCacheUntil=Date.now()+AUTH_CACHE_MS;return {token,error:''};
+}
 const sha=async(v:string)=>{const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');};
 const clamp=(n:any)=>Math.max(0,Math.min(1,Number(n)||0));
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
@@ -11,9 +21,10 @@ Deno.serve(async(req:Request)=>{
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
   const url=Deno.env.get('SUPABASE_URL')||'', service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   if(!url||!service) return json({ok:false,error:'CONFIG'},500);
-  const db=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
-  const expected=clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
-  if(!expected||req.headers.get('x-powerhouse-token')!==expected) return json({ok:false,error:'UNAUTHORIZED'},401);
+  const db=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:boundedFetch}});
+  const auth=await schedulerToken(db);
+  if(auth.error)return json({ok:false,error:auth.error},503);
+  if(req.headers.get('x-powerhouse-token')!==auth.token)return json({ok:false,error:'TOKEN_MISMATCH'},401);
   try{
     const [{data:gov},{data:external},{data:keywords},{data:existing},{data:learnings}]=await Promise.all([
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id',USE_CASE).maybeSingle(),

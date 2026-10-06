@@ -4,7 +4,12 @@ const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(value:string){const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const tenantOf=(b:any)=>String(b?.tenantId||b?.post?.tenantId||b?.snapshot?.tenantId||b?.evaluation?.tenantId||b?.experiment?.tenantId||b?.learning?.tenantId||b?.application?.tenantId||b?.decision?.tenantId||b?.projection?.tenantId||b?.obligation?.tenantId||b?.data?.tenantId||'canonical');
+const STORE_DB_TIMEOUT_MS=2_500;
+const boundedFetch=(input:RequestInfo|URL,init:RequestInit={})=>fetch(input,{...init,signal:AbortSignal.timeout(STORE_DB_TIMEOUT_MS)});
 const camelPost=(p:any)=>({postId:p.post_id,tenantId:p.tenant_id,platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,publishedAt:p.published_at,format:p.format,funnelStage:p.funnel_stage,contentPillar:p.content_pillar,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type,learningStatus:p.learning_status,learningId:p.learning_id});
+const READ_TIMEOUT_MS=2_500, READ_BREAKER_MS=60_000;
+let dueReadDegradedUntil=0;
+const boundedFetch=(input:RequestInfo|URL,init?:RequestInit)=>fetch(input,{...init,signal:AbortSignal.timeout(READ_TIMEOUT_MS)});
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -12,7 +17,7 @@ Deno.serve(async(req:Request)=>{
   let body:any;try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||''),tenantId=tenantOf(body),url=Deno.env.get('SUPABASE_URL'),key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
-  const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+  const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:boundedFetch}});
   try{
     if(action==='put_post'){
       const p=body.post||{};if(!p.postId||!p.platform||!p.externalPostId)return json({error:'INVALID_POST'},400);
@@ -31,10 +36,28 @@ Deno.serve(async(req:Request)=>{
     if(action==='get_post'){const {data,error}=await db.from('social_posts').select('*').eq('tenant_id',tenantId).eq('post_id',body.postId).maybeSingle();if(error)throw error;return json({post:data?camelPost(data):null});}
     if(action==='get_snapshots'){const {data,error}=await db.from('social_metric_snapshots').select('*').eq('tenant_id',tenantId).eq('post_id',body.postId).order('observed_at',{ascending:true});if(error)throw error;return json({snapshots:(data||[]).map((r:any)=>({snapshotId:r.snapshot_id,postId:r.post_id,tenantId:r.tenant_id,observedAt:r.observed_at,ageHours:r.age_hours,source:r.source,sourceEventId:r.source_event_id,dataQuality:r.data_quality,metrics:r.metrics}))});}
     if(action==='list_due_posts'){
-      const now=new Date(body.now||Date.now());const {data:posts,error}=await db.from('social_posts').select('*').eq('tenant_id',tenantId).not('published_at','is',null).lte('published_at',new Date(now.getTime()-24*36e5).toISOString());if(error)throw error;
-      const {data:evals,error:e2}=await db.from('social_learning_evaluations').select('post_id,window_hours').eq('tenant_id',tenantId);if(e2)throw e2;const done=new Set((evals||[]).map((e:any)=>`${e.post_id}:${e.window_hours}`)),out:any[]=[];
-      for(const p of posts||[])for(const w of [24,48,72])if(now.getTime()>=new Date(p.published_at).getTime()+w*36e5&&!done.has(`${p.post_id}:${w}`))out.push({...camelPost(p),dueWindow:w});
-      return json({posts:out});
+      if(Date.now()<dueReadDegradedUntil)return json({posts:[],degraded:true,reason:'DATA_API_CIRCUIT_OPEN'},202);
+      const readDb=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:boundedFetch}});
+      try{
+        const now=new Date(body.now||Date.now());
+        const {data:posts,error}=await readDb.from('social_posts')
+          .select('post_id,tenant_id,platform,channel_id,channel_name,channel_kind,published_at,format,funnel_stage,content_pillar,hook_type,narrative_type,emotion,cta_type,learning_status,learning_id')
+          .eq('tenant_id',tenantId).not('published_at','is',null)
+          .lte('published_at',new Date(now.getTime()-24*36e5).toISOString())
+          .order('published_at',{ascending:false}).limit(300);
+        if(error)throw error;
+        const {data:evals,error:e2}=await readDb.from('social_learning_evaluations')
+          .select('post_id,window_hours').eq('tenant_id',tenantId).limit(1200);
+        if(e2)throw e2;
+        dueReadDegradedUntil=0;
+        const done=new Set((evals||[]).map((e:any)=>`${e.post_id}:${e.window_hours}`)),out:any[]=[];
+        for(const p of posts||[])for(const w of [24,48,72])if(now.getTime()>=new Date(p.published_at).getTime()+w*36e5&&!done.has(`${p.post_id}:${w}`))out.push({...camelPost(p),dueWindow:w});
+        return json({posts:out});
+      }catch(error){
+        dueReadDegradedUntil=Date.now()+READ_BREAKER_MS;
+        console.error('SOCIAL_LEARNING_DUE_READ_DEGRADED',error instanceof Error?error.message:String(error));
+        return json({posts:[],degraded:true,reason:'DATA_API_UNAVAILABLE'},202);
+      }
     }
     if(action==='get_cohort'){
       const input=body.query||{},target=input.post||{},windowHours=Number(input.windowHours||24),tolerance=Number(input.toleranceHours||6);
@@ -57,5 +80,5 @@ Deno.serve(async(req:Request)=>{
     if(action==='get_projection'){const {data,error}=await db.from('social_learning_projections').select('projection').eq('tenant_id',tenantId).maybeSingle();if(error)throw error;return json({projection:data?.projection||null});}
     if(action==='put_projection'){const p=body.projection||{};const {error}=await db.from('social_learning_projections').upsert({tenant_id:tenantId,version:p.version,projection:p,updated_at:new Date().toISOString()},{onConflict:'tenant_id'});if(error)throw error;return json({stored:true});}
     return json({error:'INVALID_ACTION'},400);
-  }catch(error:any){console.error(error);return json({error:'STORE_OPERATION_FAILED'},500);}
+  }catch(error:any){console.error(error);return json({error:'STORE_OPERATION_UNAVAILABLE'},503);}
 });

@@ -7,11 +7,19 @@ function requiredEnv(name){
 export async function cmsGateway(body){
   const baseUrl=requiredEnv('BG_PORTAL_EU_SUPABASE_URL').replace(/\/$/,'');
   const serviceToken=requiredEnv('BG_PORTAL_EU_SERVICE_TOKEN');
-  const response=await fetch(baseUrl+'/functions/v1/portal-state-eu',{
-    method:'POST',
-    headers:{'content-type':'application/json','x-bg-service-token':serviceToken},
-    body:JSON.stringify(body)
-  });
+  let response;
+  try{
+    response=await fetch(baseUrl+'/functions/v1/portal-state-eu',{
+      method:'POST',
+      headers:{'content-type':'application/json','x-bg-service-token':serviceToken},
+      body:JSON.stringify(body),
+      signal:AbortSignal.timeout(3500)
+    });
+  }catch(error){
+    const failure=new Error(error?.name==='TimeoutError'?'CMS_GATEWAY_TIMEOUT':'CMS_GATEWAY_NETWORK');
+    failure.status=503;
+    throw failure;
+  }
   const data=await response.json().catch(()=>({error:'INVALID_EDGE_RESPONSE'}));
   if(!response.ok){
     const error=new Error(data?.error||'CMS_GATEWAY_FAILED');

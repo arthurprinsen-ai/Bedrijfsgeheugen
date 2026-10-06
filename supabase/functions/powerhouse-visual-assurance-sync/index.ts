@@ -2,6 +2,15 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const clean=(v:unknown)=>String(v??'').trim();
+const AUTH_CACHE_MS=15*60_000;
+let schedulerTokenCache='',schedulerTokenCacheUntil=0;
+async function schedulerToken(db:any){
+  if(schedulerTokenCache&&Date.now()<schedulerTokenCacheUntil)return {token:schedulerTokenCache,error:''};
+  const r=await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'});
+  if(r.error)return {token:'',error:'AUTH_SECRET_LOOKUP_FAILED'};
+  const token=clean(r.data);if(!token)return {token:'',error:'AUTH_SECRET_EMPTY'};
+  schedulerTokenCache=token;schedulerTokenCacheUntil=Date.now()+AUTH_CACHE_MS;return {token,error:''};
+}
 const REPO='arthurprinsen-ai/Bedrijfsgeheugen';
 const WORKFLOW='portal-visual-density.yml';
 const LOOP_KEY='portal-visual-density';
@@ -22,8 +31,9 @@ Deno.serve(async(req)=>{
   const service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   if(!url||!service) return json({ok:false,error:'CONFIG'},500);
   const db=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
-  const expected=clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
-  if(!expected||req.headers.get('x-powerhouse-token')!==expected) return json({ok:false,error:'UNAUTHORIZED'},401);
+  const auth=await schedulerToken(db);
+  if(auth.error)return json({ok:false,error:auth.error},503);
+  if(req.headers.get('x-powerhouse-token')!==auth.token)return json({ok:false,error:'TOKEN_MISMATCH'},401);
 
   try{
     const runs=await gh('/repos/'+REPO+'/actions/workflows/'+WORKFLOW+'/runs?branch=main&status=completed&per_page=20');

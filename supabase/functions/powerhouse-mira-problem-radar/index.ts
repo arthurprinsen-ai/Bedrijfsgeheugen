@@ -1,6 +1,15 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
+const AUTH_CACHE_MS=15*60_000;
+let schedulerTokenCache='',schedulerTokenCacheUntil=0;
+async function schedulerToken(db:any){
+  if(schedulerTokenCache&&Date.now()<schedulerTokenCacheUntil)return {token:schedulerTokenCache,error:''};
+  const r=await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'});
+  if(r.error)return {token:'',error:'AUTH_SECRET_LOOKUP_FAILED'};
+  const token=String(r.data||'').trim();if(!token)return {token:'',error:'AUTH_SECRET_EMPTY'};
+  schedulerTokenCache=token;schedulerTokenCacheUntil=Date.now()+AUTH_CACHE_MS;return {token,error:''};
+}
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 const topic=(text:string)=>{
@@ -16,21 +25,24 @@ const topic=(text:string)=>{
  return 'dagelijkse-digitale-frictie';
 };
 const queries=[
- 'Nederland klacht irritant app account wachtwoord inloggen 2FA gewone gebruiker',
- 'Nederland forum ergernis schoolapp ouderportaal berichten meldingen',
- 'Nederland klacht parkeerapp zone account betalen parkeren',
- 'Nederland forum klacht pakket bezorger niet thuis bezorging app',
- 'Nederland klacht abonnement opzeggen app klantenservice chatbot',
- 'Nederland blog digitale frustratie te veel apps schermen bevestigingen'
+ '2026 Nederland klacht irritant app account wachtwoord inloggen 2FA gewone gebruiker forum blog',
+ '2026 Nederland forum ergernis schoolapp ouderportaal berichten meldingen ouders',
+ '2026 Nederland klacht parkeerapp zone account betalen parkeren forum',
+ '2026 Nederland forum klacht pakket bezorger niet thuis bezorging app',
+ '2026 Nederland klacht abonnement opzeggen app klantenservice chatbot consumenten',
+ '2026 Nederland blog digitale frustratie te veel apps schermen bevestigingen dagelijks leven'
 ];
+const complaintRichDomains=['reddit.com','tweakers.net','radar.avrotros.nl','kassa.bnnvara.nl','klachtenkompas.nl','consumentenbond.nl','ecommercenews.nl'];
+const blockedPath=/(\/contact\/?$|\/support\/?$|\/service\/?$|\/help\/?$|\/faq\/?$|mijnomgeving|klantenservice\/?$)/i;
 Deno.serve(async(req:Request)=>{
  if(req.method!=='POST') return json({error:'POST_ONLY'},405);
  const url=Deno.env.get('SUPABASE_URL'), key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
  if(!url||!key) return json({error:'CONFIG'},500);
  const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
  const incoming=req.headers.get('x-powerhouse-token')||'';
- const expected=String((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data||'');
- if(!expected||incoming!==expected) return json({error:'UNAUTHORIZED'},401);
+ const auth=await schedulerToken(db);
+ if(auth.error)return json({error:auth.error},503);
+ if(incoming!==auth.token)return json({error:'TOKEN_MISMATCH'},401);
  const tavily=String(Deno.env.get('TAVILY_API_KEY')||((await db.rpc('bg_geheim',{p_naam:'TAVILY_API_KEY'})).data||'')).trim();
  const [dfsLogin,dfsPassword]=await Promise.all([db.rpc('bg_geheim',{p_naam:'DATAFORSEO_LOGIN'}),db.rpc('bg_geheim',{p_naam:'DATAFORSEO_PASSWORD'})]);
  const dfsUser=String(dfsLogin.data||'').trim(), dfsPass=String(dfsPassword.data||'').trim();
@@ -61,16 +73,21 @@ Deno.serve(async(req:Request)=>{
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
    if(!d||title.length<12) continue;
    const all=(title+' '+excerpt).toLowerCase();
-   const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
-   const personal=/(ik|mijn|thuis|kind|school|parkeren|pakket|wachtwoord|app|abonnement|klantenservice|chatbot)/.test(all)?1:0.6;
+   const explicitComplaint=/(klacht|erger|irrit|frustr|gedoe|waardeloos|werkt niet|kan niet|onterecht|misleid|teleurgesteld|elke keer|steeds weer|waarom moet)/.test(all);
+   const richDomain=complaintRichDomains.some(v=>d===v||d.endsWith('.'+v));
+   const blocked=blockedPath.test(sourceUrl) || /^(contact opnemen|klantenservice|support|service)$/i.test(title);
+   const complaint=(explicitComplaint||richDomain)?1:0.35;
+   const personal=/(\bik\b|\bmijn\b|thuis|kind|school|parkeren|pakket|wachtwoord|app|abonnement|chatbot)/.test(all)?1:0.6;
    const share=/(herken|iedereen|steeds|elke keer|weer|waarom)/.test(all)?0.95:0.65;
    const evidence=clamp(Number(x.score)||0.5);
-   const recency=0.8;
+   const yearMatch=all.match(/\b(20\d{2})\b/);
+   const year=yearMatch?Number(yearMatch[1]):null;
+   const recency=year===null?0.6:year>=2026?1:year===2025?0.75:0.35;
    const originality=0.8;
-   const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
+   const total=Math.round((recency*.17+personal*.18+complaint*.28+share*.15+originality*.10+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,contract:'mira-public-complaint-source-loop-v1'}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')||d.includes('klachtenkompas')||d.includes('consumentenbond')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:!blocked&&explicitComplaint&&total>=0.70,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,contract:'mira-public-complaint-source-loop-v1',explicit_complaint:explicitComplaint,complaint_rich_domain:richDomain,blocked_support_page:blocked,published_year:year}};
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
    stored++; if(row.eligible) eligible++;
   }
