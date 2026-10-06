@@ -64,14 +64,22 @@ test('scheduler auth bypasses PostgREST and uses the bounded IPv4 Supavisor auth
 test('public runtime verifier is retired and cannot amplify database outages',()=>{
   const verifier=read('supabase/functions/powerhouse-runtime-verifier-v1/index.ts');
   const config=read('supabase/config.toml');
-  assert.equal(contract.runtime_verifier.state,'RETIRED');
+  assert.equal(contract.runtime_verifier.state,'RETIRED_DIAGNOSTIC');
   assert.equal(contract.runtime_verifier.public_db_probe,false);
+  assert.equal(contract.runtime_verifier.response_status,200);
+  assert.equal(contract.runtime_verifier.replacement,'commercial-heartbeat-and-runtime-readback');
+  assert.ok(contract.runtime_verifier.authority.includes('supabase-provider-logs'));
+  assert.ok(contract.runtime_verifier.authority.includes('supabase-management-api'));
+  assert.ok(contract.runtime_verifier.authority.includes('powerhouse-commercial-heartbeat-v1'));
   assert.match(config,/\[functions\.powerhouse-runtime-verifier-v1\]/);
-  assert.match(verifier,/TOKEN_QUERY_FORBIDDEN/);
-  assert.match(verifier,/RUNTIME_VERIFIER_RETIRED/);
-  assert.match(verifier,/state:"RETIRED"/);
-  assert.match(verifier,/,410\)/);
+  assert.match(verifier,/retired:true/);
+  assert.match(verifier,/status:"RETIRED_DIAGNOSTIC"/);
+  assert.match(verifier,/database_probe_performed:false/);
+  assert.match(verifier,/replacement:"commercial-heartbeat-and-runtime-readback"/);
+  assert.match(verifier,/status:200/);
   assert.doesNotMatch(verifier,/postgres@/);
   assert.doesNotMatch(verifier,/SUPABASE_DB_URL/);
+  assert.doesNotMatch(verifier,/select 1/);
   assert.doesNotMatch(verifier,/TOKEN_HASH/);
+  assert.doesNotMatch(verifier,/x-bg-runtime-verifier-token/);
 });
