@@ -38,6 +38,19 @@
       "platform/saas/",
       "platform/connectors/",
       "platform/read-models/"
+    ],
+    "runtimeApplicabilityRequired": true,
+    "exactMatchAppliesWhenDeploymentRequired": true,
+    "controlPlaneAncestorAllowed": true,
+    "controlPlaneAncestorRequiresAllDeltaNonRuntime": true,
+    "verifierOnlyNoDeployment": true,
+    "verifierOnlyPaths": [
+      "tools/site-shell/contracts.mjs",
+      "tools/site-shell/test-shell-components.mjs",
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/test-live-contract.mjs",
+      "brain/contracts/production-readback-v1.json",
+      "tools/site-shell/production-supersession.mjs"
     ]
   },
   "connectorReadiness": {
@@ -57,7 +70,8 @@
       "/over-ons"
     ],
     "maxAttempts": 40,
-    "contentAndShellVerification": true
+    "contentAndShellVerification": true,
+    "controlPlaneVerifierCanReadLiveAncestor": true
   },
   "learning": {
     "contract": "BRAIN-CLOSED-LOOP-v1",

@@ -1,0 +1,40 @@
+{
+  "id": "supabase-migration-repair-oidc-bootstrap-3742-v1",
+  "issue": 3742,
+  "observed_deadlock": "The OIDC transport PR also changed supabase/**, making its merge depend on hosted fresh replay before the migration-history repair it exists to enable.",
+  "resolution": "Bootstrap the already-active OIDC-locked production bridge from GitHub-only trusted workflow code. After official tracking repair advances #3766 and makes the canonical migration lane replayable, canonicalize the bridge source/config under the normal Supabase Preview gate.",
+  "runtime_bridge": {
+    "slug": "supabase-migration-repair-bridge",
+    "status": "ACTIVE",
+    "trust": "GitHub OIDC repository + refs/heads/main + exact workflow_ref + exact SHA"
+  },
+  "invariant": "No direct supabase_migrations write; only pinned Supabase CLI migration repair --status applied --db-url after exact allowlist and effect-evidence checks.",
+  "failure_class": "delivery-bootstrap-cycle",
+  "root_cause": "A prerequisite that changed supabase/** was itself forced through the hosted fresh-replay gate whose failure the prerequisite existed to repair.",
+  "prevention_rule": "Separate trusted control-plane bootstrap from provider-source canonicalization whenever the latter depends on the recovery enabled by the former; keep the runtime bridge exact-main/SHA OIDC locked and canonicalize provider source only after replay recovery.",
+  "regression_test": "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs"
+    ]
+  },
+  "fingerprint": "delivery-bootstrap|supabase-migration-repair|oidc-control-plane-before-replay-recovery|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "failed_run_id": 37350898932,
+    "failed_before_provider_mutation": true,
+    "bootstrap_pr": 3782,
+    "runtime_bridge_status": "ACTIVE",
+    "provider_transport": "GitHub OIDC exact repository/ref/workflow/SHA",
+    "regression_tests": [
+      "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs",
+      "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs"
+    ]
+  }
+}

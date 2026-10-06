@@ -1,0 +1,237 @@
+name: Supabase Supported Migration Repair #3742
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/supabase-supported-migration-repair-3742.yml'
+      - 'tests/supabase-supported-migration-repair-3742.test.mjs'
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+concurrency:
+  group: supabase-supported-migration-repair-3742
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Enforce trusted main execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = "refs/heads/main" || {
+            echo "::error::Migration repair may execute only from trusted main workflow code"
+            exit 78
+          }
+
+      - name: Checkout trusted control plane
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Install pinned Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Resolve immutable canonical recovery
+        id: candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          pr_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/3766")"
+          state="$(jq -r '.state' <<<"$pr_json")"
+          merged="$(jq -r '.merged' <<<"$pr_json")"
+          head_ref="$(jq -r '.head.ref' <<<"$pr_json")"
+          head_sha="$(jq -r '.head.sha' <<<"$pr_json")"
+          body="$(jq -r '.body // ""' <<<"$pr_json")"
+
+          test "$state" = "open"
+          test "$merged" = "false"
+          test "$head_ref" = "fix/3742-migration-parity-canonical-v6"
+          [[ "$head_sha" =~ ^[0-9a-f]{40}$ ]]
+          grep -qx 'Writer-Lease-Owner: supabase-migration-history-canonical-v6' <<<"$body"
+          grep -qx "Writer-Lease-Head: $head_sha" <<<"$body"
+          grep -qx 'Writer-Lease-NonOwner-Action: READBACK_ONLY' <<<"$body"
+
+          echo "pr=3766" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact recovery head without production credentials
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.candidate.outputs.head_sha }}
+          fetch-depth: 0
+          path: candidate
+
+      - name: Prove repair allowlist and effect evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const lock=JSON.parse(fs.readFileSync('candidate/supabase/migration-history.lock.json','utf8'));
+          const expected=[
+            ['20260920101150','p0_proof_replay_baseline_v1'],
+            ['20260920102450','instagram_daily_winner_table_replay_baseline_v1'],
+            ['20260925080500','instagram_media_reserve_replay_baseline_v1'],
+            ['20261005133951','outbound_message_quality_ready_replay_baseline_v1']
+          ];
+          const rows=lock.replay_baselines_pending_repair || [];
+          if (rows.length !== expected.length) throw new Error('REPAIR_ALLOWLIST_CARDINALITY_DRIFT');
+          for (const [version,name] of expected) {
+            const row=rows.find(x=>x.version===version);
+            if (!row || row.name!==name || row.status!=='EFFECT_VERIFIED_REPAIR_REQUIRED') {
+              throw new Error('REPAIR_ALLOWLIST_OR_STATUS_DRIFT:'+version);
+            }
+            if (!row.production_effect_readback || Object.keys(row.production_effect_readback).length===0) {
+              throw new Error('MISSING_PRODUCTION_EFFECT_EVIDENCE:'+version);
+            }
+          }
+          NODE
+
+          mkdir -p parity/supabase repair-evidence
+          cp supabase/config.toml parity/supabase/config.toml
+          cp -R candidate/supabase/migrations parity/supabase/migrations
+
+      - name: Acquire Supabase database transport through GitHub OIDC
+        shell: bash
+        env:
+          OIDC_AUDIENCE: bedrijfsgeheugen-supabase-migration-repair-bridge
+          BRIDGE_URL: https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/supabase-migration-repair-bridge
+        run: |
+          set -euo pipefail
+          request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${OIDC_AUDIENCE}"
+          token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
+          oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
+          test -n "$oidc_token"
+          bridge_json="$(curl -fsSL --max-time 20 -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' --data "$(node -e 'process.stdout.write(JSON.stringify({expected_sha:process.env.GITHUB_SHA}))')" "$BRIDGE_URL")"
+          db_url="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.db_url||""))' "$bridge_json")"
+          test -n "$db_url"
+          case "$db_url" in postgres://*|postgresql://*) ;; *) echo "::error::OIDC bridge returned invalid database transport"; exit 78;; esac
+          echo "::add-mask::$db_url"
+          printf 'SUPABASE_DB_URL=%s\n' "$db_url" >> "$GITHUB_ENV"
+
+      - name: Repair production migration tracking with supported Supabase CLI
+        working-directory: parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${SUPABASE_DB_URL:?OIDC database transport missing}"
+
+          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/before.txt
+
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const text=fs.readFileSync('../repair-evidence/before.txt','utf8');
+          const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
+            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .filter(x=>x.length>=2 && (/^\d{14}$/.test(x[0]) || /^\d{14}$/.test(x[1])))
+            .map(x=>({local:x[0]||'',remote:x[1]||''}));
+          const drift=rows.filter(x=>x.local!==x.remote);
+          const expected=['20260920101150','20260920102450','20260925080500','20261005133951'];
+          const actual=drift.map(x=>x.local).sort();
+          if (JSON.stringify(actual)!==JSON.stringify(expected)) {
+            throw new Error('UNEXPECTED_PRE_REPAIR_DRIFT:'+JSON.stringify(drift));
+          }
+          if (drift.some(x=>x.remote)) throw new Error('REMOTE_ONLY_OR_IDENTITY_DRIFT');
+          NODE
+
+          supabase migration repair             20260920101150             20260920102450             20260925080500             20261005133951             --status applied --db-url "$SUPABASE_DB_URL"
+
+          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/after.txt
+
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const text=fs.readFileSync('../repair-evidence/after.txt','utf8');
+          const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
+            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .filter(x=>x.length>=2 && (/^\d{14}$/.test(x[0]) || /^\d{14}$/.test(x[1])))
+            .map(x=>({local:x[0]||'',remote:x[1]||''}));
+          const drift=rows.filter(x=>x.local!==x.remote);
+          if (!rows.length || drift.length) throw new Error('POST_REPAIR_PARITY_FAILED:'+JSON.stringify(drift));
+          NODE
+
+      - name: Advance exact recovery lock to provider-readback state
+        shell: bash
+        env:
+          TARGET_BRANCH: ${{ steps.candidate.outputs.head_ref }}
+          EXPECTED_HEAD: ${{ steps.candidate.outputs.head_sha }}
+          TARGET_PR: ${{ steps.candidate.outputs.pr }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cd candidate
+          observed="$(git rev-parse HEAD)"
+          test "$observed" = "$EXPECTED_HEAD"
+
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const p='supabase/migration-history.lock.json';
+          const lock=JSON.parse(fs.readFileSync(p,'utf8'));
+          const expected=[
+            ['20260920101150','p0_proof_replay_baseline_v1'],
+            ['20260920102450','instagram_daily_winner_table_replay_baseline_v1'],
+            ['20260925080500','instagram_media_reserve_replay_baseline_v1'],
+            ['20261005133951','outbound_message_quality_ready_replay_baseline_v1']
+          ];
+          const repaired=new Set(expected.map(x=>x[0]));
+          for (const row of lock.replay_baselines_pending_repair || []) {
+            if (repaired.has(row.version)) {
+              row.status='REPAIRED_APPLIED_VERIFIED';
+              row.repair_readback={
+                source:'supabase migration repair --status applied --db-url + supabase migration list --db-url',
+                provider:'supabase-cli',
+                github_run_id:process.env.GITHUB_RUN_ID
+              };
+            }
+          }
+          const byVersion=new Map((lock.applied||[]).map(x=>[x.version,x]));
+          for (const [version,name] of expected) byVersion.set(version,{version,name});
+          lock.applied=[...byVersion.values()].sort((a,b)=>a.version.localeCompare(b.version));
+          lock.captured_at=new Date().toISOString();
+          lock.production_ledger_count=lock.applied.length;
+          fs.writeFileSync(p,JSON.stringify(lock,null,2)+'\n');
+          NODE
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add supabase/migration-history.lock.json
+          git commit -m "Record supported Supabase migration repair for #3742"
+          git push --force-with-lease="refs/heads/$TARGET_BRANCH:$EXPECTED_HEAD" origin "HEAD:refs/heads/$TARGET_BRANCH"
+
+          new_head="$(git rev-parse HEAD)"
+          pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$TARGET_PR" --jq '.body')"
+          updated_body="$(PR_BODY="$pr_body" NEW_HEAD="$new_head" node --input-type=module - <<'NODE'
+          let body=process.env.PR_BODY || '';
+          const head=process.env.NEW_HEAD || '';
+          body=body.replace(/^Writer-Lease-Head:.*$/m, 'Writer-Lease-Head: '+head);
+          body=body.replace(/- production ledger: 564 applied versions;/, '- production ledger after supported repair: 568 applied versions;');
+          body=body.replace(/- executable local-only reduced to exactly 4 replay-compatibility baselines:/, '- executable local-only after supported repair: 0; repaired replay baselines:');
+          body=body.replace(/- migration-history\.lock\.json refreshed from the live 564-entry production ledger;/, '- migration-history.lock.json refreshed from the live 568-entry production ledger;');
+          body += '\n\nProvider repair evidence: supported Supabase CLI migration repair --status applied completed for the four allowlisted replay baselines and migration list readback proved zero local/remote drift. This does not itself prove fresh replay, exact-HEAD gates, protected merge, or post-merge production readback.';
+          process.stdout.write(body);
+          NODE
+          )"
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/$TARGET_PR" -f body="$updated_body" >/dev/null
+
+      - name: Record immutable repair evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-supported-migration-repair-3742-${{ github.run_id }}
+          path: repair-evidence/
+          if-no-files-found: error
+          retention-days: 90

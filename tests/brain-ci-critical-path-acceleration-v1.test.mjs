@@ -55,3 +55,13 @@ test('broad platform changes do not fan out into unrelated Business OS and porta
   assert.doesNotMatch(portal, /- 'platform\/\*\*'/);
   assert.match(portal, /platform\/read-models\/portal-server-state\.mjs/);
 });
+
+test('backend release lane cannot hang indefinitely during dependency installation', async () => {
+  const backend = await read('.github/workflows/lane-backend.yml');
+  assert.match(backend, /backend:\n    runs-on: ubuntu-latest\n    timeout-minutes: 20/);
+  assert.match(backend, /Install runtime dependencies for backend contracts\n        timeout-minutes: 8/);
+  assert.match(backend, /npm_config_fetch_retries: '2'/);
+  assert.match(backend, /npm_config_fetch_retry_maxtimeout: '20000'/);
+  assert.match(backend, /npm install --prefer-offline --no-audit --no-fund/);
+  assert.doesNotMatch(backend, /npm install .*--silent/);
+});

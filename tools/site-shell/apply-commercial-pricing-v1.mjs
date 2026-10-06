@@ -46,7 +46,7 @@ function renderServices(){
   <div class="sprice">${s.price_cents===0?'€ 0':s.price_cents!=null?euro(s.price_cents):'Vanaf '+euro(s.price_cents_from)} <span>| ${esc(s.unit)}</span></div>
   <ul>${s.includes.map(x=>`<li>✓ ${esc(x)}</li>`).join('')}</ul>
   ${s.portal_access?`<p class="access">Incl. ${s.portal_days?s.portal_days+' dagen ':''}${esc(s.portal_access)}-toegang</p>`:''}
-  <a class="cta dark" href="${s.code==='frisse-blik'?'https://www.bedrijfsgeheugen.nl/frisse-blik':'https://www.bedrijfsgeheugen.nl/contact?onderwerp='+encodeURIComponent(s.code)}">${s.code==='frisse-blik'?'Plan een Frisse Blik':'Bespreek '+esc(s.name)} →</a>
+  <a class="cta dark"${s.code==='frisse-blik'?' data-bg-conversion="frisse-blik" data-bg-page-role="money" data-bg-funnel-stage="decide"':''} href="${s.code==='frisse-blik'?'https://www.bedrijfsgeheugen.nl/frisse-blik':'https://www.bedrijfsgeheugen.nl/contact?onderwerp='+encodeURIComponent(s.code)}">${s.code==='frisse-blik'?'Plan een Frisse Blik':'Bespreek '+esc(s.name)} →</a>
  </article>`).join('');
 }
 function page(){

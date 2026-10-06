@@ -1,0 +1,49 @@
+{
+  "id": "supabase-preview-applicability-gate-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "pr-3765-branch-protection-deadlock",
+  "fingerprint": "powerhouse|supabase-preview|applicability|provider-proof|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A provider check configured to run only for Supabase changes was required universally by branch protection, so correct provider skips deadlocked unrelated pull requests.",
+  "prevention": [
+    "Require an always-running repository-owned applicability check universally.",
+    "Treat non-Supabase changes as explicit not-applicable success.",
+    "For Supabase changes require exact-head success from the provider-owned Supabase GitHub App.",
+    "Never manufacture a supabase/** change solely to obtain a provider check."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-applicability-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "source_pr": 3765,
+    "blocked_head_sha": "99b43d4e204efee9ea48bc2a1cf3d9e729dad54a",
+    "previous_required_check": {
+      "context": "Supabase Preview",
+      "app_id": 330661,
+      "observed_conclusion": "skipped"
+    },
+    "replacement_required_check": {
+      "context": "Supabase Preview Applicability",
+      "app_id": 15368
+    },
+    "branch_protection_readback": {
+      "strict": true,
+      "required_contexts": [
+        "test",
+        "CodeQL javascript-typescript",
+        "Supabase Preview Applicability"
+      ]
+    }
+  }
+}
