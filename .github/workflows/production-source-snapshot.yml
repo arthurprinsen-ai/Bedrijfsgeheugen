@@ -54,6 +54,7 @@ on:
       - 'tools/site-shell/standalone-visibility-check.mjs'
       - 'brain/contracts/production-readback-v1.json'
       - 'tools/delivery/**'
+      - 'tools/ci/**'
       - 'brain/policies/**'
       - 'AGENTS.md'
       - 'platform/system-map/canonical-system-map.mjs'
