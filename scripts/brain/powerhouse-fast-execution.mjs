@@ -51,6 +51,9 @@ export function buildStablePolicyPrefix() {
     persistentEvidenceAuthority: 'brain_outcome_obligation_evidence',
     fullReleaseGatesAtPromotionBoundary: true,
     productionReadbackCacheable: false,
+    externalWaitMode: 'CHECKPOINT_AND_YIELD',
+    maxActiveExternalWaitSeconds: 30,
+    activePollingAllowed: false,
     terminalState: 'LIVE & BEWEZEN'
   });
 }
@@ -91,6 +94,28 @@ export function computeDeltaContext({ lastVerifiedState, currentState, relevantK
     if (JSON.stringify(before) !== JSON.stringify(after)) delta[key] = { before, after };
   }
   return delta;
+}
+
+export function buildWaitingExternalCheckpoint({ taskId, pr = null, branch = null, headSha, mainSha = null, runIds = [], jobIds = [], remainingGate = null, resumeEvent = 'workflow_run.completed', nextSafeAction = null } = {}) {
+  if (!taskId) throw new TypeError('taskId is required');
+  if (!headSha) throw new TypeError('headSha is required');
+  return Object.freeze({
+    state: 'WAITING_EXTERNAL',
+    task_id: String(taskId),
+    pr,
+    branch,
+    head_sha: String(headSha),
+    main_sha: mainSha,
+    run_ids: Object.freeze(stableUnique(runIds.map(String))),
+    job_ids: Object.freeze(stableUnique(jobIds.map(String))),
+    remaining_gate: remainingGate,
+    resume_event: resumeEvent,
+    next_safe_action: nextSafeAction,
+    active_turn_must_yield: true,
+    active_wait_budget_seconds: 30,
+    polling_allowed: false,
+    immutable_identity: true
+  });
 }
 
 export function buildExecutionPacketV2(input = {}, { maxChars = 12_000 } = {}) {
