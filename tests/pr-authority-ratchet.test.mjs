@@ -32,8 +32,8 @@ test('repository PR authority policy is monotonic and fail-closed',async()=>{
   const result=await validatePolicy('.');
   assert.equal(result.ok,true,result.errors.join('\n'));
   assert.equal(result.target,2);
-  assert.equal(result.budget,56);
-  assert.ok(result.direct.length<=56);
+  assert.equal(result.budget,55);
+  assert.ok(result.direct.length<=55);
   assert.deepEqual(result.canonical,['powerhouse-codeql.yml','required-test.yml']);
   assert.ok(result.direct.includes('required-test.yml'));
   assert.ok(result.direct.includes('powerhouse-codeql.yml'));
