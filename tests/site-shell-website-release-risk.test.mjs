@@ -25,12 +25,28 @@ test('root public HTML change is normal', () => {
   assert.ok(result.affected_routes.includes('/ai-automatisering-mkb'));
 });
 
-test('shared navigation and website delivery workflow changes are high-risk', () => {
-  for (const path of ['assets/js/menu.js','.github/workflows/required-test.yml','netlify.toml']) {
+test('shared navigation and runtime delivery config changes are high-risk', () => {
+  for (const path of ['assets/js/menu.js','netlify.toml']) {
     const result = classifyWebsiteRelease({ changedPaths:[path], riskConfig, acceptedBaseline });
     assert.equal(result.lane, 'high-risk');
     assert.equal(result.requires_preview, true);
   }
+});
+
+test('workflow-only changes are website control-plane and never require browser preview', () => {
+  const result = classifyWebsiteRelease({
+    changedPaths:[
+      '.github/workflows/required-test.yml',
+      '.github/workflows/canonical-brand-shell-test.yml',
+      '.github/workflows/seo-order-engine.yml'
+    ],
+    riskConfig,
+    acceptedBaseline
+  });
+  assert.equal(result.lane, 'control-plane');
+  assert.equal(result.requires_preview, false);
+  assert.deepEqual(result.affected_routes, []);
+  assert.ok(result.risk_reasons.every(reason => reason.startsWith('non-artifact:')));
 });
 
 test('approved blog and delivery-control-plane-only changes do not require a website deploy preview', () => {
