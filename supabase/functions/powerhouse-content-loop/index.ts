@@ -63,6 +63,38 @@ function obligationTerminal(o:any){
     || (clean(o?.status)==='PUBLISHED' && providerSideEffectTerminal(o));
 }
 
+async function readBoundedJson(response: Response, maxBytes = 32768) {
+  const reader = response.body?.getReader();
+  if (!reader) return { body: {}, truncated: false, bytes: 0 };
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  let truncated = false;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value?.length) continue;
+      const remaining = maxBytes - total;
+      if (remaining <= 0) { truncated = true; break; }
+      const take = value.length > remaining ? value.subarray(0, remaining) : value;
+      chunks.push(take);
+      total += take.length;
+      if (value.length > remaining || total >= maxBytes) { truncated = true; break; }
+    }
+  } finally {
+    if (truncated) {
+      try { await reader.cancel(); } catch {}
+    }
+  }
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) { merged.set(chunk, offset); offset += chunk.length; }
+  const text = new TextDecoder().decode(merged);
+  let body:any = {};
+  try { body = text ? JSON.parse(text) : {}; } catch { body = { parse_error:true, preview:text.slice(0,512) }; }
+  return { body, truncated, bytes: total };
+}
+
 async function invoke(base: string, token: string, name: string, payload: any) {
   const audit = payload?.mode === 'audit_only';
   const timeoutKey = audit && name === 'powerhouse-social-publisher' ? 'powerhouse-social-publisher:audit' : name;
@@ -74,8 +106,16 @@ async function invoke(base: string, token: string, name: string, payload: any) {
       body: JSON.stringify(payload),
       signal: AbortSignal.timeout(timeoutMs),
     });
-    const body = await response.json().catch(() => ({}));
-    return { name, http: response.status, ok: response.ok && body?.ok !== false, body, timeout_ms: timeoutMs };
+    const bounded = await readBoundedJson(response);
+    return {
+      name,
+      http: response.status,
+      ok: response.ok && bounded.body?.ok !== false,
+      body: bounded.body,
+      body_bytes: bounded.bytes,
+      body_truncated: bounded.truncated,
+      timeout_ms: timeoutMs
+    };
   } catch (error) {
     const detail = clean((error as Error)?.name || (error as Error)?.message || error).slice(0,80);
     return { name, http: 0, ok: false, timed_out: detail.toLowerCase().includes('timeout'), error: 'CHILD_CALL_FAILED', detail, timeout_ms: timeoutMs };
@@ -164,12 +204,12 @@ Deno.serve(async (req) => {
   try {
     const first = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
     if (first.error) throw new Error('RECONCILE_PRE_FAILED');
-    stepResults.push({ name: 'reconcile_pre', ok: true, body: first.data });
+    stepResults.push({ name: 'reconcile_pre', ok: true });
 
     // Freeze one ex-ante Mira winner before any media generation or publication work.
     const winner = await db.rpc('powerhouse_select_instagram_daily_winner_v1', { p_date: runDate });
     if (winner.error) throw new Error('INSTAGRAM_DAILY_WINNER_SELECTION_FAILED');
-    stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, body: winner.data });
+    stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, selected: winner.data?.selected === true, recommendation_id: clean(winner.data?.recommendation_id), format: clean(winner.data?.format), reason: clean(winner.data?.reason) });
     // Channel isolation: Instagram readiness may degrade Instagram, but must never block
     // blog/LinkedIn generation and delivery. Blog has its own no-gap obligation.
     if (winner.data?.selected !== true) {
@@ -177,9 +217,9 @@ Deno.serve(async (req) => {
     }
     const mediaJob = await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
     if (mediaJob.error || mediaJob.data?.ok !== true) {
-      stepResults.push({ name: 'instagram_winner_media_job', ok: false, degraded: true, error: 'INSTAGRAM_WINNER_MEDIA_JOB_FAILED', body: mediaJob.data || null });
+      stepResults.push({ name: 'instagram_winner_media_job', ok: false, degraded: true, error: 'INSTAGRAM_WINNER_MEDIA_JOB_FAILED', status: clean(mediaJob.data?.status), next_action: clean(mediaJob.data?.next_action) });
     } else {
-      stepResults.push({ name: 'instagram_winner_media_job', ok: true, body: mediaJob.data });
+      stepResults.push({ name: 'instagram_winner_media_job', ok: true, status: clean(mediaJob.data?.status), job_id: clean(mediaJob.data?.job_id) });
     }
 
     // Media routing is isolated: a missing/blocked Instagram asset never blocks LinkedIn or blog.
@@ -208,7 +248,7 @@ Deno.serve(async (req) => {
 
     const final = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
     if (final.error) throw new Error('RECONCILE_POST_FAILED');
-    stepResults.push({ name: 'reconcile_post', ok: true, body: final.data });
+    stepResults.push({ name: 'reconcile_post', ok: true });
 
     const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
@@ -235,6 +275,25 @@ Deno.serve(async (req) => {
       return true;
     });
 
+    const obligationSummary = (obligations || []).map((o:any) => ({
+      channel: clean(o.channel),
+      status: clean(o.status),
+      external_id: clean(o.external_id) || null,
+      last_error: clean(o.last_error) || null,
+      next_action: clean(o.next_action) || null,
+      provider_truth_verified: o.evidence?.provider_truth_verified === true,
+      provider_status: clean(o.evidence?.provider_status) || null,
+      updated_at: o.updated_at,
+    }));
+    const decisionSummary = (decisions || []).map((d:any) => ({
+      channel: clean(d.channel),
+      decision: clean(d.decision),
+      state: clean(d.state),
+      delivery_ref: clean(d.delivery_ref) || null,
+      capability_state: clean(d.delivery_evidence?.capability_state) || null,
+      capability_reason: clean(d.delivery_evidence?.capability_reason) || null,
+      updated_at: d.updated_at,
+    }));
     const result = {
       ok: loopState !== 'RED' && providerTruthHealthy,
       loop_state: loopState,
@@ -245,8 +304,13 @@ Deno.serve(async (req) => {
       providerTruthHealthy,
       blocked,
       hardBoundaries,
-      obligations: obligations || [],
-      decisions: decisions || [],
+      obligations: obligationSummary,
+      decisions: decisionSummary,
+      steps: stepResults.map((s:any)=>({
+        name:s.name, ok:s.ok, http:s.http ?? null, timed_out:s.timed_out===true,
+        degraded:s.degraded===true, skipped:s.skipped===true, body_bytes:s.body_bytes ?? null,
+        body_truncated:s.body_truncated===true, error:s.error ?? null
+      })),
     };
 
     await db.from('brain_records').upsert({
