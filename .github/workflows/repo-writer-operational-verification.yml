@@ -159,3 +159,60 @@ jobs:
             -f base_sha="$PR_BASE_SHA" \
             -f head_sha="$PR_HEAD_SHA" \
             -f candidate_branch="$PR_HEAD_REF"
+
+
+  route-cheap-canary:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      (startsWith(github.head_ref, 'verify-cheap/regelgeving-bijwerken-') ||
+       startsWith(github.head_ref, 'verify-cheap/seo-controle-') ||
+       startsWith(github.head_ref, 'verify-cheap/weekblog-'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Validate cheap-canary trigger and dispatch exact writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          grep -Eq '^brain/evidence/writer-canary-trigger/[^/]+\.json$' <<<"$files" || {
+            echo "::notice::Writer cheap-canary branch has no canary trigger file; no dispatch."
+            exit 0
+          }
+          case "$HEAD_REF" in
+            verify-cheap/regelgeving-bijwerken-*) writer='regelgeving-bijwerken' ;;
+            verify-cheap/seo-controle-*) writer='seo-controle' ;;
+            verify-cheap/weekblog-*) writer='weekblog' ;;
+            *) echo "::error::UNSUPPORTED_CHEAP_CANARY_REF:$HEAD_REF"; exit 2 ;;
+          esac
+          gh workflow run repo-writer-cheap-canary.yml             --repo "$GITHUB_REPOSITORY"             --ref main             -f writer="$writer"             -f base_sha="$BASE_SHA"
+          echo "CHEAP_CANARY_ROUTED:$writer:$BASE_SHA"
+
+  route-parity-rollback:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.head_ref, 'verify-parity/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Validate parity trigger and dispatch exact proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          grep -Eq '^brain/evidence/writer-parity-trigger/' <<<"$files" || {
+            echo "::notice::Writer parity branch has no parity trigger file; no dispatch."
+            exit 0
+          }
+          gh workflow run repo-writer-parity-rollback.yml             --repo "$GITHUB_REPOSITORY"             --ref main             -f base_sha="$BASE_SHA"             -f trigger_ref="$HEAD_REF"
+          echo "PARITY_ROLLBACK_ROUTED:$HEAD_REF:$BASE_SHA"

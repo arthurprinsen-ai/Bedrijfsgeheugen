@@ -41,11 +41,26 @@ test('control-plane lifecycle tooling is classified as automation work', () => {
 test('control-plane budget separates current ceilings from the canonical admission target', () => {
   const github = controlPlaneBudget.budgets.github;
   const baseline = controlPlaneBudget.baseline.github;
-  assert.equal(github.maxDirectPrTriggerWorkflows, 15);
-  assert.equal(github.maxDirectPrAdmissionWorkflows, 10);
+  assert.equal(github.maxDirectPrTriggerWorkflows, 12);
+  assert.equal(github.maxDirectPrAdmissionWorkflows, 7);
   assert.equal(github.maxLifecyclePrAuthorityWorkflows, 5);
   assert.equal(github.targetDirectPrAdmissionWorkflows, 1);
-  assert.equal(baseline.directPrTriggerCount, 15);
-  assert.equal(baseline.directPrAdmissionCount, 10);
+  assert.equal(baseline.directPrTriggerCount, 12);
+  assert.equal(baseline.directPrAdmissionCount, 7);
   assert.equal(baseline.lifecyclePrAuthorityCount, 5);
+});
+
+
+test('writer authority workflows are scoped to automation lane', () => {
+  const plan = createDeliveryPlan({
+    changedPaths: [
+      '.github/workflows/repo-writer-candidate-shadow.yml',
+      '.github/workflows/repo-writer-cheap-canary.yml',
+      '.github/workflows/repo-writer-operational-verification.yml',
+      '.github/workflows/repo-writer-parity-rollback.yml',
+    ],
+    headSha: 'c'.repeat(40),
+    policy,
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
 });

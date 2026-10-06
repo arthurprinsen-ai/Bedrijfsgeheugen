@@ -35,6 +35,8 @@ const retired = [
   '.github/workflows/powerhouse-security-operations-closure.yml',
   '.github/workflows/powerhouse-supabase-security-contract.yml',
   '.github/workflows/security-operations-proof.yml',
+  '.github/workflows/repo-writer-parity-rollback.yml',
+  '.github/workflows/repo-writer-cheap-canary.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -120,4 +122,22 @@ test('portal preview owns consolidated Business OS preview assurance', () => {
   assert.ok(source.includes("'portal-next/**'"));
   assert.ok(source.includes("Verify canonical Business OS redirect and input compatibility"));
   assert.ok(source.includes("readLegacyPortalBusinessInputs"));
+});
+
+
+test('writer PR fan-out is consolidated behind one operational router', () => {
+  const router = readFileSync('.github/workflows/repo-writer-operational-verification.yml', 'utf8');
+  const cheap = readFileSync('.github/workflows/repo-writer-cheap-canary.yml', 'utf8');
+  const parity = readFileSync('.github/workflows/repo-writer-parity-rollback.yml', 'utf8');
+  const shadow = readFileSync('.github/workflows/repo-writer-candidate-shadow.yml', 'utf8');
+  assert.match(router, /^  pull_request:/m);
+  assert.ok(router.includes('route-cheap-canary:'));
+  assert.ok(router.includes('route-parity-rollback:'));
+  assert.ok(router.includes('gh workflow run repo-writer-cheap-canary.yml'));
+  assert.ok(router.includes('gh workflow run repo-writer-parity-rollback.yml'));
+  assert.doesNotMatch(cheap, /^  pull_request:/m);
+  assert.match(cheap, /^  workflow_dispatch:/m);
+  assert.doesNotMatch(parity, /^  pull_request:/m);
+  assert.match(parity, /^  workflow_dispatch:/m);
+  assert.doesNotMatch(shadow, /^  pull_request:/m);
 });

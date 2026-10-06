@@ -7,8 +7,8 @@
       "maxOpenImplementationPRs": 10,
       "maxLivePRsPerObligation": 1,
       "maxSuccessorDepth": 1,
-      "maxDirectPrTriggerWorkflows": 15,
-      "maxDirectPrAdmissionWorkflows": 10,
+      "maxDirectPrTriggerWorkflows": 12,
+      "maxDirectPrAdmissionWorkflows": 7,
       "maxLifecyclePrAuthorityWorkflows": 5,
       "targetDirectPrAdmissionWorkflows": 1
     },
@@ -41,14 +41,11 @@
         "powerhouse-merged-branch-cleanup.yml",
         "powerhouse-obligation-terminalizer.yml",
         "powerhouse-terminal-writer-lease-closure-guard.yml",
-        "repo-writer-candidate-shadow.yml",
-        "repo-writer-cheap-canary.yml",
         "repo-writer-operational-verification.yml",
-        "repo-writer-parity-rollback.yml",
         "required-test.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 15,
+      "directPrTriggerCount": 12,
       "lifecyclePrAuthorityWorkflows": [
         "obligation-terminal-closure.yml",
         "powerhouse-merged-branch-cleanup.yml",
@@ -63,13 +60,10 @@
         "portal-v2-live-preview.yml",
         "portal-v2-production-dom-readback.yml",
         "powerhouse-codeql.yml",
-        "repo-writer-candidate-shadow.yml",
-        "repo-writer-cheap-canary.yml",
         "repo-writer-operational-verification.yml",
-        "repo-writer-parity-rollback.yml",
         "required-test.yml"
       ],
-      "directPrAdmissionCount": 10
+      "directPrAdmissionCount": 7
     },
     "netlify": {
       "projects": 16
