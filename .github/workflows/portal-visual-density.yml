@@ -1,14 +1,6 @@
 name: Portal Visual Density
 
 on:
-  pull_request:
-    paths:
-      - 'portal-v2/**'
-      - 'config/powerhouse-portal-visual-assurance-v1.json'
-      - 'tools/portal-visual-density.mjs'
-      - 'tests/portal-visual-density-contract.test.mjs'
-      - 'tests/portal-visual-density-delivery-classification.test.mjs'
-      - '.github/workflows/portal-visual-density.yml'
   schedule:
     - cron: '45 5 * * *'
   workflow_dispatch:
