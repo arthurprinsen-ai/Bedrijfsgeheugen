@@ -14,14 +14,23 @@ test('recovery supervisor is scheduled/manual only and applies repository backpr
   assert.match(yml,/concurrency:\n\s+group: powerhouse-delivery-recovery-supervisor\n\s+cancel-in-progress: true/);
 });
 
-test('Required and BRAIN share PR single-flight identity across native and recovery triggers', async () => {
-  for (const path of ['.github/workflows/required-test.yml','.github/workflows/unified-brain-delivery.yml']) {
-    const yml = await readFile(path,'utf8');
-    const concurrency = yml.slice(yml.indexOf('concurrency:'), yml.indexOf('\njobs:'));
-    assert.match(concurrency,/inputs\.pr_number \|\| github\.event\.pull_request\.number/);
-    assert.doesNotMatch(concurrency,/github\.event_name/);
-    assert.match(concurrency,/cancel-in-progress: true/);
-  }
+test('Required is the only PR admission orchestrator and keeps PR-scoped single-flight identity', async () => {
+  const required = await readFile('.github/workflows/required-test.yml','utf8');
+  const concurrency = required.slice(required.indexOf('concurrency:'), required.indexOf('\njobs:'));
+  assert.match(required,/^  pull_request:/m);
+  assert.match(required,/^  merge_group:/m);
+  assert.match(concurrency,/inputs\.pr_number \|\| github\.event\.pull_request\.number/);
+  assert.doesNotMatch(concurrency,/github\.event_name/);
+  assert.match(concurrency,/cancel-in-progress: true/);
+
+  const brain = await readFile('.github/workflows/unified-brain-delivery.yml','utf8');
+  assert.doesNotMatch(brain,/^  pull_request:/m);
+});
+
+test('PR admission ratchet is exactly Required plus Powerhouse CodeQL', async () => {
+  const baseline = JSON.parse(await readFile('config/pr-trigger-baseline.json','utf8'));
+  assert.deepEqual([...baseline.admissionPullRequestWorkflows].sort(), ['powerhouse-codeql.yml','required-test.yml']);
+  assert.equal(baseline.admissionPullRequestWorkflowCount, 2);
 });
 
 test('skill projection supersedes stale same-PR/ref work', async () => {
