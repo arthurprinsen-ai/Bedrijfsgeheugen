@@ -6,10 +6,10 @@ The production database was independently proven healthy through direct SQL whil
 
 This change makes the working transport canonical:
 
-- content-operations, powerhouse-social-publisher, powerhouse-content-orchestrator and powerhouse-content-loop are reconciled from proven production source into the repository;
+- the social recovery control plane is reconciled from proven production source into the repository; provider runtime parity is handled by the separate publication-delivery recovery lane;
 - social-recovery-runner retrieves the scheduler authority internally through the EU Supavisor transaction pooler and returns only sanitized state;
 - the GitHub recovery workflow calls that runner with the existing service-role credential and no longer queries Vault or publication tables through /rest/v1;
-- the canonical content loop remains the single owner of generation, provider dispatch, reconciliation and provider-truth readback;
+- powerhouse-social-publisher remains the only provider side-effect authority; the recovery runner may only delegate bounded publish_only work to it;
 - regression tests reject /rest/v1 in the critical recovery path and require the eu-central-1 Supavisor endpoint.
 
 Security remains fail-closed: no secret value is logged or returned, no provider writer is bypassed, and provider-side readback remains required for terminal success.
