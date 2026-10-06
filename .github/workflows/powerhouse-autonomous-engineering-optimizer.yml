@@ -62,18 +62,18 @@ jobs:
           git commit -m "Engineering: daily bounded tuning"
           git push origin "$branch"
           base_sha="$(git rev-parse main)"
-          body="$(cat <<EOF
-Obligation-ID: powerhouse-daily-engineering-tuning-$GITHUB_RUN_ID
-Delivery-Lane: automation
-Candidate-Type: implementation
-Base-SHA: $base_sha
-Supersedes: none
-Change-Scope: config/powerhouse-engineering-tuning.json
-Scope-Budget: 1
-
-Bounded autonomous tuning only. Direct-PR and workflow budgets may only ratchet downward. Safety gates, exact-SHA identity, protected merge and production readback cannot be weakened by this optimizer.
-EOF
-)"
+          body="$(
+            printf '%s\n' \
+              "Obligation-ID: powerhouse-daily-engineering-tuning-$GITHUB_RUN_ID" \
+              "Delivery-Lane: automation" \
+              "Candidate-Type: implementation" \
+              "Base-SHA: $base_sha" \
+              "Supersedes: none" \
+              "Change-Scope: config/powerhouse-engineering-tuning.json" \
+              "Scope-Budget: 1" \
+              "" \
+              "Bounded autonomous tuning only. Direct-PR and workflow budgets may only ratchet downward. Safety gates, exact-SHA identity, protected merge and production readback cannot be weakened by this optimizer."
+          )"
           url="$(gh pr create --base main --head "$branch" --title "Powerhouse: daily engineering tuning" --body "$body")"
           gh pr merge "$url" --auto --squash || true
       - uses: actions/upload-artifact@v4
