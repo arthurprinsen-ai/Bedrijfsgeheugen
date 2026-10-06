@@ -400,7 +400,7 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, netlify_build_parity, backend, portal, automation, website]
+    needs: [hygiene, preflight, supabase_preview, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -413,8 +413,6 @@ jobs:
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
       SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
-      NETLIFY_BUILD_REQUIRED: ${{ needs.preflight.outputs.netlify_build_required }}
-      NETLIFY_BUILD: ${{ needs.netlify_build_parity.result }}
       BACKEND: ${{ needs.backend.result }}
       PORTAL: ${{ needs.portal.result }}
       AUTOMATION: ${{ needs.automation.result }}
@@ -430,7 +428,7 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
-          [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
+          [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
           [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
