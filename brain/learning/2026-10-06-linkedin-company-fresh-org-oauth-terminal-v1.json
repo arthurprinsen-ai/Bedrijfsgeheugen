@@ -1,0 +1,37 @@
+{
+  "fingerprint": "linkedin-company|fresh-org-oauth|durable-proof-binding|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "linkedin-company-fresh-org-oauth-terminal-20261006",
+  "root_cause": "A valid fresh LinkedIn organization OAuth proof existed in production, but the setup runtime could still prefer stale oauth_candidate/company_oauth state before the durable verified proof. That left the canonical company setup BLOCKED_AMBIGUOUS and caused the publication claim to remain content_ready with LINKEDIN_REAUTH_REQUIRED even though a verified fresh organization OAuth lineage existed.",
+  "prevention_rule": "When linkedin-company-oauth-fresh-proof-v1 is VERIFIED and fresh_oauth_verified=true, the setup controller must evaluate and prefer that exact connected_account_id before stale candidate, alias, default-account, or generic ACTIVE discovery. Company readiness remains fail-closed on live ADMINISTRATOR ACL plus organization scopes; provider publication remains owned only by powerhouse-social-publisher; LIVE_PROVEN still requires successful create plus exact provider readback.",
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_STALE_OAUTH_CANDIDATE_PRECEDENCE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts",
+      "supabase/functions/powerhouse-content-loop/index.ts"
+    ],
+    "regression": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "production_contract": [
+      "docs/production-sql-history/20261006-linkedin-company-oauth-terminal-state.json"
+    ]
+  }
+}
