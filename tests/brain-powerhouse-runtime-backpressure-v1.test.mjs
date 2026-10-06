@@ -59,3 +59,19 @@ test('scheduler auth bypasses PostgREST and uses the bounded IPv4 Supavisor auth
     assert.doesNotMatch(source,/bg_geheim'\s*,?\s*\{p_naam:'powerhouse_daily_scheduler_token'/);
   }
 });
+
+
+test('runtime verifier is a bounded health signal, not an outage amplifier',()=>{
+  const verifier=read('supabase/functions/powerhouse-runtime-verifier-v1/index.ts');
+  const config=read('supabase/config.toml');
+  assert.match(config,/\[functions\.powerhouse-runtime-verifier-v1\]/);
+  assert.match(verifier,/DB_POOLER_HOST="aws-0-eu-central-1\.pooler\.supabase\.com"/);
+  assert.match(verifier,/url\.port="6543"/);
+  assert.match(verifier,/max:1/);
+  assert.match(verifier,/PROBE_CACHE_MS=30_000/);
+  assert.match(verifier,/TOKEN_QUERY_FORBIDDEN/);
+  assert.match(verifier,/x-bg-runtime-verifier-token/);
+  assert.match(verifier,/state:"DEGRADED"/);
+  assert.match(verifier,/return json\(body,200\)/);
+  assert.doesNotMatch(verifier,/transport:"direct-db"/);
+});
