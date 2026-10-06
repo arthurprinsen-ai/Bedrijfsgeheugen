@@ -5,12 +5,13 @@ import fs from 'node:fs';
 const setup=fs.readFileSync('supabase/functions/powerhouse-composio-linkedin-setup/index.ts','utf8');
 const loop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
 
-test('LinkedIn capability discovery is read-only and uses active Composio account',()=>{
+test('LinkedIn capability discovery is read-only while OAuth config is organization-capable',()=>{
   assert.match(setup,/toolkit_slugs=linkedin&statuses=ACTIVE/);
   assert.match(setup,/LINKEDIN_GET_MY_INFO/);
   assert.match(setup,/LINKEDIN_GET_COMPANY_INFO/);
-  assert.doesNotMatch(setup,/LINKEDIN_CREATE_LINKED_IN_POST/);
-  assert.doesNotMatch(setup,/LINKEDIN_CREATE_VIDEO_POST/);
+  assert.match(setup,/COMPANY_OAUTH_SCOPES=.*r_organization_admin.*w_organization_social/);
+  assert.doesNotMatch(setup,/await execute\([^\n]*'LINKEDIN_CREATE_LINKED_IN_POST'/);
+  assert.doesNotMatch(setup,/await execute\([^\n]*'LINKEDIN_CREATE_VIDEO_POST'/);
 });
 
 test('LinkedIn personal and company capability are proven separately',()=>{
@@ -49,14 +50,16 @@ test('connected-account user_id is forwarded to every Composio LinkedIn tool cal
   assert.match(setup,/execute\(key,accountId,userId,'LINKEDIN_GET_COMPANY_INFO'/);
 });
 
-test('company capability stays fail-closed when organization scope is absent',()=>{
-  assert.match(setup,/company_scope_required:companyReady\?null:\[/);
-  assert.match(setup,/r_organization_admin/);
-  assert.match(setup,/w_organization_social/);
-  assert.match(setup,/company_admin_scope_present:hasOrgAdminScope/);
-  assert.match(setup,/company_write_scope_present:hasOrgWriteScope/);
-  assert.match(setup,/granted_scopes:grantedScopes/);
-  assert.match(setup,/company_ready:companyReady/);
+test('company capability stays fail-closed without fresh bound organization OAuth',()=>{
+  assert.match(setup,/COMPANY_PROOF_RECORD='linkedin-company-oauth-fresh-proof-v1'/);
+  assert.match(setup,/proofAccountId/);
+  assert.match(setup,/adminAclVerified/);
+  assert.match(setup,/companyOauthFreshVerified/);
+  assert.match(setup,/companyReady=personalReady&&companyOauthFreshVerified&&companyAdminReadReady/);
+  assert.match(setup,/linkedin_company_admin_oauth_proven:companyReady/);
+  assert.match(setup,/organization_write_scope_verified:companyReady&&hasOrgWriteScope/);
+  assert.match(setup,/company_oauth_connection_id:companyReady\?accountId:null/);
+  assert.match(setup,/company_live_proven_eligible:companyReady&&companyReadbackReady/);
 });
 
 
@@ -78,23 +81,46 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
 });
 
 
-test('LinkedIn company write readiness is independent from organization ACL read permission', () => {
-  assert.match(setup,/companyReady=personalReady&&companyAuthorConfigured/);
-  assert.doesNotMatch(setup,/companyReady=orgUrns\.length===1&&hasOrgAdminScope&&hasOrgWriteScope/);
-  assert.match(setup,/company_admin_read_ready:companyAdminReadReady/);
-  assert.match(setup,/company_admin_read_scope_required:companyAdminReadReady\?null:'r_organization_admin'/);
-  assert.match(publisher,/organizationReadVerified=false/);
-  assert.match(publisher,/catch\(_organizationReadError\)\{\}/);
-  assert.match(publisher,/canonical_org_write_candidate/);
+test('LinkedIn company publisher binds exact fresh OAuth state and approved organization ACL', () => {
+  assert.match(publisher,/state\?\.company_oauth_connection_id\|\|state\?\.connected_account_id/);
+  assert.match(publisher,/state\?\.company_oauth_fresh_verified===true/);
+  assert.match(publisher,/state\?\.linkedin_company_admin_oauth_proven===true/);
+  assert.match(publisher,/state\?\.organization_write_scope_verified===true/);
+  assert.match(publisher,/LINKEDIN_COMPANY_BOUND_OAUTH_NOT_ACTIVE/);
+  assert.match(publisher,/LINKEDIN_COMPANY_ADMIN_ROLE_REQUIRED/);
+  assert.match(publisher,/findExpectedLinkedInPersonId\(me\?\.data\|\|me,expectedPersonId\)/);
+  assert.doesNotMatch(publisher,/findExpectedLinkedInPersonId\(me\?\.data\|\|me,'N1twnCNCrD'\)/);
 });
 
 
-test('LinkedIn production setup can create OAuth link and resume the same daily claim',()=>{
+test('LinkedIn production setup reuses scoped production auth lineage and resumes the same daily claim',()=>{
   assert.match(setup,/action==='create_link'/);
   assert.match(setup,/toolkit_slug=linkedin/);
-  assert.match(setup,/auth_config_id:authConfigId,user_id:USER_ID,alias:ALIAS/);
+  assert.match(setup,/proofAuthConfigId/);
+  assert.match(setup,/proofUserId/);
+  assert.match(setup,/auth_config_id:authConfigId,user_id:linkUserId,alias:ALIAS/);
   assert.match(setup,/production_workspace:true/);
   assert.match(setup,/action==='resume'/);
   assert.match(setup,/linkedin-production-oauth-complete/);
   assert.match(setup,/powerhouse-social-publisher/);
+});
+
+const liveProofState=fs.readFileSync('supabase/migrations/20261006103856_linkedin_company_live_proof_state_canonical_v3.sql','utf8');
+
+test('LinkedIn company LIVE_PROVEN requires fresh OAuth, write scope and exact provider truth',()=>{
+  assert.match(liveProofState,/p_channel='linkedin_company'/);
+  assert.match(liveProofState,/provider_truth_verified/);
+  assert.match(liveProofState,/linkedin_company_admin_oauth_proven/);
+  assert.match(liveProofState,/organization_write_scope_verified/);
+  assert.match(liveProofState,/company_oauth_fresh_verified/);
+  assert.match(liveProofState,/company_oauth_connection_id/);
+  assert.match(liveProofState,/company_oauth_verified_at/);
+  assert.match(liveProofState,/urn:li:organization:18234216/);
+  assert.match(liveProofState,/LINKEDIN_COMPANY_FRESH_ORG_OAUTH_PROOF_REQUIRED/);
+});
+
+test('LinkedIn company exact readback promotes to LIVE_PROVEN, not provider-create alone',()=>{
+  assert.match(publisher,/const obligationState=exactReadbackVerified\?'LIVE_PROVEN':'PUBLISHED'/);
+  assert.match(publisher,/recordObligation\(db,runDate,row\.channel,'LIVE_PROVEN',ref,evidence/);
+  assert.match(publisher,/company_oauth_fresh_verified:companyOauthFreshVerified===true/);
 });
