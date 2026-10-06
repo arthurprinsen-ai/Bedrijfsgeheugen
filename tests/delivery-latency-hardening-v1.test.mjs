@@ -24,3 +24,10 @@ test('repository writer polling yields after the 30-second synchronous budget',(
   assert.match(workflow,/WAITING_EXTERNAL:WRITER_PR_NOT_MATERIALIZED/);
   assert.match(workflow,/resume from this exact verify SHA/);
 });
+
+
+test('integration bundle compiler is shallow-safe and never requires a merge base',()=>{
+  const source=read('tools/delivery/integration-bundle-compiler.mjs');
+  assert.match(source,/\['diff', '--name-only', baseSha, headSha\]/);
+  assert.doesNotMatch(source,/\$\{baseSha\}\.\.\.\$\{headSha\}/);
+});
