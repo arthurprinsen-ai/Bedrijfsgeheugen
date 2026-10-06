@@ -1,16 +1,16 @@
 {
-  "fingerprint": "social-publication|manual-recovery-control-plane|same-day|v1",
+  "fingerprint": "social-publication|manual-recovery-control-plane|same-day-full-loop|v2",
   "date": "2026-10-06",
   "type": "POWERHOUSE_LEARNING",
   "status": "CANDIDATE",
   "obligation_id": "social-publication-manual-recovery-control-plane-20261006",
-  "root_cause": "The canonical publisher and automated recovery existed, but operators had no trusted same-day control-plane path to invoke the canonical publisher and inspect its exact result when the Netlify scheduled endpoint was externally protected with HTTP 403 and direct Supabase SQL access was unavailable.",
-  "prevention_rule": "Provide a same-day-only GitHub workflow that uses existing GitHub-held Supabase credentials to retrieve the scheduler token without logging it, invoke only the canonical powerhouse-social-publisher, and read back canonical decision state. Never introduce a second provider writer or bypass publication capabilities, uniqueness gates, identity gates, or provider readback.",
+  "root_cause": "The canonical automated recovery existed but an operator could neither invoke the protected Netlify scheduled endpoint nor inspect the exact closed-loop blocker when no daily provider publication appeared. Invoking only the publisher would also be insufficient when the missing prerequisite is content generation, media readiness, provider preflight or orchestration.",
+  "prevention_rule": "Provide an auditable same-day recovery control plane that can be started by workflow_dispatch or a reviewed main-branch request marker, retrieves the existing scheduler token only inside GitHub Actions, invokes the full canonical powerhouse-content-loop, persists sanitized loop and decision evidence, and never introduces a second provider writer or bypasses identity, capability, uniqueness or provider-readback gates.",
   "compiler": {
     "failure_class": "SOCIAL_PUBLICATION_RECOVERY_CONTROL_PLANE_GAP",
     "scope": "AUTOMATION",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   },
   "evaluation": {
@@ -23,7 +23,8 @@
   },
   "evidence": {
     "runtime": [
-      ".github/workflows/social-publication-recovery.yml"
+      ".github/workflows/social-publication-recovery.yml",
+      "ops/social-publication-recovery-request.json"
     ],
     "regression": [
       "tests/brain-central-social-publication-authority-v1.test.mjs"

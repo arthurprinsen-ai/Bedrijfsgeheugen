@@ -64,7 +64,6 @@ test('completion supervisor requires channel policy authorization evidence',()=>
   assert.ok(result.required_evidence.includes('CHANNEL_POLICY_AUTHORIZATION'));
 });
 
-
 test('social publication recovery retries at most every ten minutes',()=>{
   const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
   assert.match(delivery,/schedule:\s*'\*\/10 \* \* \* \*'/);
@@ -92,13 +91,16 @@ test('social recovery remains bounded by the publication window and canonical si
   assert.ok(loop>=0 && readback>loop && buffer>readback,'recovery must run full content loop before fresh state and provider readback');
 });
 
-test('manual recovery workflow is same-day only and delegates to the canonical publisher',()=>{
+test('manual recovery is same-day, auditable and delegates to the canonical full content loop',()=>{
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
   assert.match(workflow,/workflow_dispatch:/);
+  assert.match(workflow,/push:/);
+  assert.match(workflow,/ops\/social-publication-recovery-request\.json/);
   assert.match(workflow,/Europe\/Amsterdam/);
   assert.match(workflow,/SAME_DAY_RECOVERY_ONLY/);
   assert.match(workflow,/rest\/v1\/rpc\/bg_geheim/);
-  assert.match(workflow,/functions\/v1\/powerhouse-social-publisher/);
-  assert.match(workflow,/x-powerhouse-token/);
+  assert.match(workflow,/functions\/v1\/powerhouse-content-loop/);
+  assert.match(workflow,/CANONICAL_SOCIAL_CONTENT_LOOP_RESULT/);
+  assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.doesNotMatch(workflow,/api\.buffer\.com|LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
 });
