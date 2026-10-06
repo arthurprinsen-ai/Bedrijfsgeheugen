@@ -16,14 +16,19 @@ test('central authority issues exact-bound one-time capabilities',()=>{
 });
 
 test('publisher requires capability consumption before provider calls',()=>{
-  const consume=publisher.indexOf('await consumePublishCapability');
-  const meta=publisher.lastIndexOf('publishInstagramViaMeta(db,art)');
-  const composio=publisher.lastIndexOf('publishInstagramViaComposio(db, art, runDate)');
-  const buffer=publisher.indexOf('created = await createPost(bufferToken, input)');
-  assert.ok(consume>0);
-  assert.ok(meta>consume);
-  assert.ok(composio>consume);
-  assert.ok(buffer>consume);
+  const branchOrder=(branchMarker,providerMarker)=>{
+    const branch=publisher.indexOf(branchMarker);
+    const consume=publisher.indexOf('await consumePublishCapability',branch);
+    const provider=publisher.indexOf(providerMarker,branch);
+    assert.ok(branch>=0,branchMarker);
+    assert.ok(consume>branch,'capability consumption must occur inside the channel branch');
+    assert.ok(provider>consume,'provider side effect must occur after capability consumption');
+  };
+  branchOrder("if (row.channel === 'linkedin_personal')",'publishLinkedInPersonalViaComposio(db,art)');
+  branchOrder("if (row.channel === 'linkedin_company')",'publishLinkedInCompanyViaComposio(db,art)');
+  branchOrder("if (row.channel === 'instagram_company')",'publishInstagramViaComposio(db,art,runDate,instagramContext)');
+  branchOrder("const input: Record<string,unknown>",'created = await createPost(bufferToken, input)');
+  assert.doesNotMatch(publisher,/await publishInstagramViaMeta\(/);
   assert.match(publisher,/containmentSweepInstagram/);
   assert.match(publisher,/PENDING_PROVIDER_CANCELLATION/);
 });
