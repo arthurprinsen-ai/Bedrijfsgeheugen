@@ -6,17 +6,17 @@ import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
 const controlPlaneBudget = JSON.parse(await readFile('config/control-plane-budget.json','utf8'));
 
-test('repository schemas are classified as automation control-plane work', () => {
+test('repository schemas are classified as backend control-plane work', () => {
   const plan = createDeliveryPlan({
     changedPaths: ['schemas/delivery-evidence.schema.json'],
     headSha: 'a'.repeat(40),
     policy,
   });
-  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
 });
 
 
-test('control-plane lifecycle tooling is classified as automation work', () => {
+test('control-plane lifecycle tooling is classified as backend work', () => {
   const changedPaths = [
   "tests/build/artifact-id.test.mjs",
   "tests/netlify/ephemeral-janitor.test.mjs",
@@ -34,7 +34,7 @@ test('control-plane lifecycle tooling is classified as automation work', () => {
     headSha: 'b'.repeat(40),
     policy,
   });
-  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
   assert.deepEqual(plan.changedPaths, [...changedPaths].sort());
 });
 
