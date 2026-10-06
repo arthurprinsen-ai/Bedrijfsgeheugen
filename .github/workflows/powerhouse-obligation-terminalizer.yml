@@ -145,13 +145,18 @@ jobs:
           NODE
           )"
 
+          printf '%s\n' "$changed_paths" > /tmp/powerhouse-terminalizer-changed-paths.txt
+          canonical_governance_paths="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { isNetlifyGovernancePath } from './tools/delivery/netlify-deployment-applicability.mjs';
+          for (const path of readFileSync('/tmp/powerhouse-terminalizer-changed-paths.txt','utf8').split(/\r?\n/).filter(Boolean)) {
+            if (isNetlifyGovernancePath(path)) console.log(path);
+          }
+          NODE
+          )"
+
           is_governance_path() {
-            case "$1" in
-              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|tools/ci/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json|config/powerhouse-quality-surface-contracts.json)
-                return 0
-                ;;
-            esac
-            grep -Fxq -- "$1" <<< "$verifier_only_paths"
+            grep -Fxq -- "$1" <<< "$canonical_governance_paths"               || grep -Fxq -- "$1" <<< "$verifier_only_paths"
           }
 
           observed="$(git rev-parse origin/main)"
