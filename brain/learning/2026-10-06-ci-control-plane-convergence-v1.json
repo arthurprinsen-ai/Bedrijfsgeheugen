@@ -5,14 +5,16 @@
   "obligation_id": "ci-control-plane-convergence-20261006-v1",
   "root_cause": {
     "escaped_defect": "Independent pull_request workflows and fetch-depth:0 caused duplicated runners, full remote-ref fetches, stale PR pressure, and occasional missing canonical Required runs.",
-    "evidence": "PR #3911 started browser, page/SEO, quality and skill workflows despite Required already owning website release classification; Required and Skill Projection logs fetched refs/heads/*."
+    "evidence": "PR #3911 started browser, page/SEO, quality and skill workflows despite Required already owning website release classification; Required and Skill Projection logs fetched refs/heads/*.",
+    "duplicate_lineage": "Two same-obligation current-main successors (#3928 and #3929) were created concurrently, proving explicit Supersedes cleanup alone is insufficient."
   },
   "prevention": {
     "ingress": "Heavy browser, page/SEO, Quality Intelligence and Skill Projection no longer allocate independent PR runners; Required remains the canonical PR gate.",
     "fetch": "Required and website classifiers use shallow checkout plus an exact comparison-base fetch on demand.",
     "provider": "Supabase Preview applicability is owned by the Required aggregate; the redundant standalone runner is retired.",
     "recovery": "A five-minute watchdog redispatches Required only when a recent open PR has no canonical run after 90 seconds.",
-    "hygiene": "A bounded janitor closes explicitly superseded PRs and generated candidates stale for more than 30 days."
+    "hygiene": "The bounded janitor closes explicit supersessions, long-stale generated candidates, and duplicate machine PRs sharing one Obligation-ID; TERMINAL_DELIVERY lease holders outrank non-terminal duplicates.",
+    "watchdog_identity": "The missing-Required watchdog paginates the full open-PR set and preserves actual PR labels when redispatching the immutable candidate."
   },
   "regression": [
     "tests/brain-ci-control-plane-convergence-v1.test.mjs",
@@ -33,6 +35,7 @@
       "tests/brain-ci-control-plane-convergence-v1.test.mjs"
     ],
     "observed_failure": "multiple independent PR workflows plus full-history checkout and at least 100 open PRs",
-    "proof_boundary": "canonical Required gate, exact base/head comparison, bounded recovery and cleanup"
+    "proof_boundary": "canonical Required gate, exact base/head comparison, bounded recovery and cleanup",
+    "duplicate_obligation": "#3928 and #3929 shared ci-control-plane-convergence-20261006-v1 on the same main epoch; #3929 was retired and #3928 retained as terminal lease owner."
   }
 }
