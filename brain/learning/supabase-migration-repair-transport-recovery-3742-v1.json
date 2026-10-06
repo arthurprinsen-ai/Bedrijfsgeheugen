@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|supabase-migration-repair|transport-recovery|required|v1",
+  "date": "2026-10-06",
+  "obligation": "#3742",
+  "failure_class": "PROVIDER_TRANSPORT",
+  "observed": {
+    "workflow_run": 37425004020,
+    "project": "adhjwmvyoixzjtmiroln",
+    "symptom": "Supavisor session transport terminated before migration-list readback",
+    "sqlstate": "08006",
+    "provider_status": "ACTIVE_HEALTHY",
+    "production_tracking_mutation_started": false
+  },
+  "prevention": [
+    "Bound retries to read-only Supabase migration-list acquisition.",
+    "Never auto-retry the supported migration repair mutation.",
+    "Keep the exact four-version allowlist and zero-drift postcondition unchanged."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-transport-recovery-3742-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_TRANSPORT"
+  },
+  "root_cause": {
+    "cause": "The trusted GitHub runner reached the OIDC-authenticated Supavisor session endpoint, but the provider connection was reset before the initial migration-list readback; PostgreSQL logged SQLSTATE 08006/client loss in the same window."
+  },
+  "evidence": {
+    "github_workflow_run": 37425004020,
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "postgres_sqlstate": "08006",
+    "provider_status": "ACTIVE_HEALTHY",
+    "repair_mutation_reached": false,
+    "regression_test": "tests/brain-supabase-migration-repair-transport-recovery-3742-v1.test.mjs"
+  }
+}

@@ -131,7 +131,24 @@ jobs:
           set -euo pipefail
           : "${SUPABASE_DB_URL:?OIDC database transport missing}"
 
-          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/before.txt
+          migration_list_with_retry() {
+            local output="$1"
+            local attempt
+            for attempt in 1 2 3 4; do
+              if supabase migration list --db-url "$SUPABASE_DB_URL" > "${output}.tmp" 2> "${output}.err"; then
+                cat "${output}.tmp" | tee "$output"
+                rm -f "${output}.tmp" "${output}.err"
+                return 0
+              fi
+              cat "${output}.err" >&2 || true
+              rm -f "${output}.tmp"
+              [ "$attempt" -eq 4 ] || sleep "$((attempt * 5))"
+            done
+            echo "::error::Supabase migration-list transport unavailable after 4 bounded attempts"
+            return 1
+          }
+
+          migration_list_with_retry ../repair-evidence/before.txt
 
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
@@ -151,7 +168,7 @@ jobs:
 
           supabase migration repair             20260920101150             20260920102450             20260925080500             20261005133951             --status applied --db-url "$SUPABASE_DB_URL"
 
-          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/after.txt
+          migration_list_with_retry ../repair-evidence/after.txt
 
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';

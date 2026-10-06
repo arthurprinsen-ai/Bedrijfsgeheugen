@@ -24,7 +24,8 @@ test('repair is allowlisted to exactly the four proven replay baselines', () => 
 
 test('provider repair updates tracking only and proves post-repair parity', () => {
   assert.match(workflow, /supabase migration repair[\s\S]*--status applied/);
-  assert.match(workflow, /supabase migration list --linked/);
+  assert.match(workflow, /migration_list_with_retry \.\.\/repair-evidence\/before\.txt/);
+  assert.match(workflow, /migration_list_with_retry \.\.\/repair-evidence\/after\.txt/);
   assert.doesNotMatch(workflow, /insert\s+into\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /update\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /delete\s+from\s+supabase_migrations/i);
@@ -42,4 +43,14 @@ test('normalizes Supabase CLI migration-list backticks before parity comparison'
   assert.match(workflow, /replace\(\/\^\\`\|\\`\$\/g,''\)\.trim\(\)/);
   assert.match(workflow, /UNEXPECTED_PRE_REPAIR_DRIFT/);
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
+});
+
+
+test('read-only provider transport retries are bounded while repair mutation is not blindly retried', () => {
+  assert.match(workflow, /migration_list_with_retry\(\)/);
+  assert.match(workflow, /for attempt in 1 2 3 4/);
+  assert.match(workflow, /Supabase migration-list transport unavailable after 4 bounded attempts/);
+  assert.match(workflow, /supabase migration list --db-url "\$SUPABASE_DB_URL"/);
+  const repairMatches = workflow.match(/supabase migration repair[^\n]*--status applied --db-url "\$SUPABASE_DB_URL"/g) || [];
+  assert.equal(repairMatches.length, 1, 'repair mutation must remain a single fail-closed invocation');
 });
