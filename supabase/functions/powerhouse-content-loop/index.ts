@@ -39,6 +39,15 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 const localDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const OPERATIONAL_CHANNELS = ['linkedin_personal','linkedin_company','instagram','blog'];
 const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED','SKIPPED']);
+const LOOP_LEASE_MS = 240_000;
+const CHILD_TIMEOUTS: Record<string, number> = {
+  'powerhouse-instagram-media-router': 10_000,
+  'powerhouse-composio-linkedin-setup': 8_000,
+  'powerhouse-social-publisher:audit': 12_000,
+  'powerhouse-content-orchestrator': 40_000,
+  'powerhouse-social-publisher': 25_000,
+  'powerhouse-blog-queue': 25_000,
+};
 function providerSideEffectTerminal(o:any){
   const channel=clean(o?.channel);
   if(!['linkedin_personal','linkedin_company','instagram'].includes(channel))return false;
@@ -54,14 +63,64 @@ function obligationTerminal(o:any){
     || (clean(o?.status)==='PUBLISHED' && providerSideEffectTerminal(o));
 }
 
-async function invoke(base: string, token: string, name: string, payload: unknown) {
-  const response = await fetch(`${base}/functions/v1/${name}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-powerhouse-token': token },
-    body: JSON.stringify(payload),
-  });
-  const body = await response.json().catch(() => ({}));
-  return { name, http: response.status, ok: response.ok && body?.ok !== false, body };
+async function invoke(base: string, token: string, name: string, payload: any) {
+  const audit = payload?.mode === 'audit_only';
+  const timeoutKey = audit && name === 'powerhouse-social-publisher' ? 'powerhouse-social-publisher:audit' : name;
+  const timeoutMs = CHILD_TIMEOUTS[timeoutKey] || 20_000;
+  try {
+    const response = await fetch(`${base}/functions/v1/${name}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-powerhouse-token': token },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    const body = await response.json().catch(() => ({}));
+    return { name, http: response.status, ok: response.ok && body?.ok !== false, body, timeout_ms: timeoutMs };
+  } catch (error) {
+    const detail = clean((error as Error)?.name || (error as Error)?.message || error).slice(0,80);
+    return { name, http: 0, ok: false, timed_out: detail.toLowerCase().includes('timeout'), error: 'CHILD_CALL_FAILED', detail, timeout_ms: timeoutMs };
+  }
+}
+
+async function claimLoopLease(runDate:string, holder:string) {
+  const recordId = `runtime-lease:content-closed-loop:${runDate}`;
+  const now = new Date().toISOString();
+  const expiresAt = new Date(Date.now() + LOOP_LEASE_MS).toISOString();
+  const payload = JSON.stringify({ holder, run_date: runDate, expires_at: expiresAt, lease: 'content-closed-loop-v1' });
+  const rows:any[] = await directSql.unsafe(
+    `insert into public.brain_records(
+       tenant_id,record_id,record_type,record_kind,subject_id,status,observed_at,executed,verified,
+       result,payload,idempotency_key,source_revision,stored_at,updated_at
+     ) values (
+       $1,$2,'RuntimeLease','runtime_lease',$3,'IN_PROGRESS',$4,true,false,
+       '{}'::jsonb,$5::jsonb,$2,'content-closed-loop-lease-v1',$4,$4
+     )
+     on conflict (tenant_id,record_id) do update set
+       status='IN_PROGRESS',
+       observed_at=excluded.observed_at,
+       executed=true,
+       verified=false,
+       payload=excluded.payload,
+       source_revision=excluded.source_revision,
+       updated_at=excluded.updated_at
+     where coalesce((public.brain_records.payload->>'expires_at')::timestamptz,'epoch'::timestamptz) <= now()
+        or public.brain_records.payload->>'holder' = $6
+     returning record_id`,
+    ['canonical',recordId,runDate,now,payload,holder]
+  );
+  return rows.length === 1;
+}
+
+async function releaseLoopLease(runDate:string, holder:string) {
+  const recordId = `runtime-lease:content-closed-loop:${runDate}`;
+  const now = new Date().toISOString();
+  const payload = JSON.stringify({ holder, run_date: runDate, expires_at: now, released_at: now, lease: 'content-closed-loop-v1' });
+  await directSql.unsafe(
+    `update public.brain_records
+       set status='VERIFIED', verified=true, observed_at=$1, payload=$2::jsonb, updated_at=$1
+     where tenant_id='canonical' and record_id=$3 and payload->>'holder'=$4`,
+    [now,payload,recordId,holder]
+  );
 }
 
 Deno.serve(async (req) => {
@@ -81,11 +140,25 @@ Deno.serve(async (req) => {
     return json({ ok: false, error: 'AUTH_SECRET_EMPTY' }, 503);
   }
   const provided = clean(req.headers.get('x-powerhouse-token'));
-  if (!provided) return json({ ok: false, error: 'TOKEN_REQUIRED' }, 401);
-  if (provided !== expected) return json({ ok: false, error: 'TOKEN_MISMATCH' }, 401);
+  if (!provided) return json({ ok: false, error: 'TOKEN_REQUIRED', expected_len: expected.length, provided_len: 0 }, 401);
+  if (provided !== expected) {
+    const authShape = { expected_len: expected.length, provided_len: provided.length, same_length: provided.length === expected.length };
+    console.error('CONTENT_LOOP_TOKEN_MISMATCH_SHAPE', JSON.stringify(authShape));
+    return json({ ok: false, error: 'TOKEN_MISMATCH', ...authShape }, 401);
+  }
   let input: any = {};
   try { input = await req.json(); } catch { /* default */ }
   const runDate = clean(input.runDate) || localDate();
+  const leaseHolder = crypto.randomUUID();
+  let leaseAcquired = false;
+  try {
+    leaseAcquired = await claimLoopLease(runDate, leaseHolder);
+  } catch (error) {
+    console.error('CONTENT_LOOP_LEASE_CLAIM_FAILED', clean((error as Error)?.message || error).slice(0,160));
+    return json({ ok:false, runDate, error:'LEASE_CLAIM_FAILED' }, 503);
+  }
+  if (!leaseAcquired) return json({ ok:true, runDate, skipped:true, reason:'ALREADY_RUNNING' }, 202);
+
   const stepResults: any[] = [];
 
   try {
@@ -109,36 +182,29 @@ Deno.serve(async (req) => {
       stepResults.push({ name: 'instagram_winner_media_job', ok: true, body: mediaJob.data });
     }
 
-    // Instagram media must be provider-routed and proven before orchestration or dispatch.
-    stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));
+    // Media routing is isolated: a missing/blocked Instagram asset never blocks LinkedIn or blog.
+    if (winner.data?.selected === true && mediaJob.data?.ok === true) {
+      stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));
+    } else {
+      stepResults.push({ name:'powerhouse-instagram-media-router', ok:true, skipped:true, degraded:true, reason:'INSTAGRAM_NOT_READY' });
+    }
 
-    // Read provider capability before any social dispatch. This is read-only and fail-closed.
+    // Read-only provider truth before any content decision mutation.
     stepResults.push(await invoke(url, expected, 'powerhouse-composio-linkedin-setup', { action: 'status', runDate }));
-
-    // Provider truth must be established before orchestration can preserve or replan delivery state.
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
-    for (let i = 0; i < 5; i++) {
-      const step = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
-      stepResults.push(step);
-      if (!step.ok || step.body?.generated !== true) break;
-    }
+    // Bounded generation: exactly one artifact attempt per scheduler tick.
+    stepResults.push(await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate }));
 
-    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate }));
-    stepResults.push(await invoke(url, expected, 'powerhouse-blog-queue', { runDate }));
+    // Independent delivery lanes execute in parallel, once per tick.
+    const [socialDispatch, blogDispatch] = await Promise.all([
+      invoke(url, expected, 'powerhouse-social-publisher', { runDate }),
+      invoke(url, expected, 'powerhouse-blog-queue', { runDate }),
+    ]);
+    stepResults.push(socialDispatch, blogDispatch);
 
-    // Legacy Buffer sync is telemetry/compatibility only. LinkedIn transport authority is Composio.
-    // A Buffer outage/rate-limit must never fail or delay the canonical LinkedIn content loop.
-    try {
-    const sync = await fetch(`${url}/functions/v1/bg-buffer-sync`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
-    const syncBody = await sync.json().catch(() => ({}));
-      const syncOk = sync.ok && syncBody?.ok !== false;
-      stepResults.push({ name: 'bg-buffer-sync', http: sync.status, ok: true, degraded: !syncOk, non_blocking: true, linkedin_authority: 'composio', body: syncBody });
-    } catch (error) {
-      stepResults.push({ name: 'bg-buffer-sync', http: 0, ok: true, degraded: true, non_blocking: true, linkedin_authority: 'composio', error: 'LEGACY_BUFFER_SYNC_UNAVAILABLE' });
-    }
-
-    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
+    // Buffer is legacy telemetry only and is deliberately absent from the critical path.
+    stepResults.push({ name:'bg-buffer-sync', ok:true, skipped:true, non_blocking:true, linkedin_authority:'composio', reason:'LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH' });
 
     const final = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
     if (final.error) throw new Error('RECONCILE_POST_FAILED');
@@ -203,5 +269,14 @@ Deno.serve(async (req) => {
       }, { onConflict: 'tenant_id,record_id' });
     } catch { /* preserve original failure */ }
     return json({ ok: false, loop_state: 'RED', runDate, error: 'CONTENT_LOOP_INTERNAL_ERROR' }, 500);
+  } finally {
+    const childMayStillRun = stepResults.some((s:any) => s?.timed_out === true || s?.http === 0);
+    if (childMayStillRun) {
+      console.error('CONTENT_LOOP_LEASE_RETAINED_UNTIL_EXPIRY');
+    } else {
+      try { await releaseLoopLease(runDate, leaseHolder); } catch (error) {
+        console.error('CONTENT_LOOP_LEASE_RELEASE_FAILED', clean((error as Error)?.message || error).slice(0,160));
+      }
+    }
   }
 });
