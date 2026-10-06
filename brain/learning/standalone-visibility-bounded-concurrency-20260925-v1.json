@@ -1,29 +1,49 @@
 {
   "fingerprint": "standalone-visibility-bounded-concurrency-v1",
-  "date": "2026-09-25",
-  "status": "IMPLEMENTED_CANDIDATE",
-  "root_cause": "The Required website lane swept every sitemap route at three viewports sequentially. With 92 public routes this meant 276 serial browser navigations, causing otherwise-green PRs to spend minutes in the same visibility step and accumulate concurrent GitHub runners.",
-  "prevention_rule": "Keep full public-route and three-viewport coverage, but execute route checks with bounded concurrency and retain the global fail-closed time budget.",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "The production visibility workflow overrode the checker’s bounded route default with 8 route workers and 3 concurrent viewports, allowing up to 24 simultaneous browser navigations against the public production origin. Under that synthetic burst, two healthy English blog routes returned transient HTTP 403 and one healthy English AI Model Guide route produced no response, while all three were independently reachable immediately afterwards.",
+  "prevention_rule": "Keep full public-route and three-viewport coverage, but cap canonical-production execution at four route workers and two concurrent viewports regardless of environment overrides. Treat the visibility checker and its workflow as verifier-only production control plane so assurance maintenance never requires a website redeploy.",
   "compiler": {
-    "failure_class": "CI_QUEUE_AMPLIFICATION",
+    "failure_class": "PRODUCTION_READBACK",
     "scope": "WEBSITE",
     "machine_enforceable": true,
-    "repeat_count": 7,
+    "repeat_count": 8,
     "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
+      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs",
+      "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
+      "tests/brain-production-runtime-applicability-v1.test.mjs"
     ],
-    "shadow": [
-      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
+    "canary": [
+      "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
+      "tests/brain-production-runtime-applicability-v1.test.mjs"
     ]
   },
   "evidence": {
-    "observed_parallel_jobs": 7,
-    "route_count": 92,
-    "viewport_count": 3,
-    "checks_per_run": 276,
-    "blocked_step": "Verify all public pages are visibly rendered"
+    "production_sha": "52460f88df1d48a5c51e1b9582fdd87e119a325b",
+    "canonical_brand_shell_run": 37436641401,
+    "transient_failures": [
+      "/en/blog/afas-api desktop: HTTP 403",
+      "/en/blog/afas-exact-koppelen desktop: HTTP 403",
+      "/en/ai-modelwijzer desktop: HTTP no-response"
+    ],
+    "independent_readback": "all three routes returned full public content immediately after the failed parallel sweep",
+    "previous_workflow_concurrency": {
+      "route_workers": 8,
+      "viewport_workers": 3,
+      "max_parallel_navigations": 24
+    },
+    "bounded_workflow_concurrency": {
+      "route_workers": 4,
+      "viewport_workers": 2,
+      "max_parallel_navigations": 8
+    },
+    "production_source_snapshot_run": 37436641505,
+    "production_source_snapshot_result": "success",
+    "production_release_readback_run": 37436641445,
+    "production_release_readback_result": "success"
   }
 }

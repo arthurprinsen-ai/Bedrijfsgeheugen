@@ -12,6 +12,9 @@ test('standalone visibility gate bounds every async layer', async () => {
   assert.match(source, /AbortSignal\.timeout\(navigationTimeoutMs\)/);
   assert.match(source, /Visibility sweep exceeded bounded budget/);
   assert.match(source, /UI_VR_ROUTE_CONCURRENCY/);
+  assert.match(source, /isCanonicalProduction/);
+  assert.match(source, /Math\.min\(4, requestedRouteConcurrency\)/);
+  assert.match(source, /Math\.min\(2, requestedViewportConcurrency\)/);
   assert.match(source, /const workerCount = Math\.min\(routeConcurrency, routes\.length\)/);
   assert.match(source, /Promise\.all\(Array\.from\(\{ length: workerCount \}/);
   assert.doesNotMatch(source, /for \(let attempt = 1; attempt <= 4; attempt\+\+\)/);
@@ -55,7 +58,8 @@ test('visibility sweep parallelizes bounded viewport batches', async () => {
 
 test('production readback explicitly bounds route and viewport worker budgets', async () => {
   const workflow = await readFile('.github/workflows/canonical-brand-shell-live-readback.yml', 'utf8');
-  assert.match(workflow, /UI_VR_ROUTE_CONCURRENCY:\s*'8'/);
-  assert.match(workflow, /UI_VR_VIEWPORT_CONCURRENCY:\s*'3'/);
+  assert.match(workflow, /UI_VR_ROUTE_CONCURRENCY:\s*'4'/);
+  assert.match(workflow, /UI_VR_VIEWPORT_CONCURRENCY:\s*'2'/);
+  assert.doesNotMatch(workflow, /UI_VR_ROUTE_CONCURRENCY:\s*'8'/);
   assert.match(workflow, /timeout --signal=TERM --kill-after=30s 10m node tools\/site-shell\/standalone-visibility-check\.mjs/);
 });
