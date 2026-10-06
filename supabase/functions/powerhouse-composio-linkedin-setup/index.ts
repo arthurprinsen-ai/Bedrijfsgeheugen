@@ -87,7 +87,8 @@ Deno.serve(async(req:Request)=>{
         Number(clean(b?.name)===COMPANY_AUTH_CONFIG_NAME)-Number(clean(a?.name)===COMPANY_AUTH_CONFIG_NAME)
         ||clean(b?.last_updated_at||b?.created_at).localeCompare(clean(a?.last_updated_at||a?.created_at))
       );
-      let authConfigId=clean(companyConfigs[0]?.id);
+      const priorConfigHasRequired=COMPANY_REQUIRED_SCOPES.every(scope=>priorRequestedScopes.includes(scope));
+      let authConfigId=priorConfigHasRequired?clean(priorState?.auth_config_id):clean(companyConfigs[0]?.id);
       if(!authConfigId){
         const created=await api(key,'/auth_configs',{method:'POST',body:JSON.stringify({
           toolkit:{slug:'linkedin'},
