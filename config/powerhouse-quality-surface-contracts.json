@@ -793,6 +793,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_normalize_publication_text_v1",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/brain-linkedin-composio-capability-proof.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_persuasion_revenue_optimizer_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928152400_powerhouse_persuasion_revenue_optimizer_v1.sql",
