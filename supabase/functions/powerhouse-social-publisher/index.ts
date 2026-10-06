@@ -12,6 +12,19 @@ const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedi
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
 const clean = (value: unknown) => String(value ?? '').trim();
+function jsonObject(value:any){
+  if(value===null||value===undefined)return {};
+  if(typeof value==='string'){
+    try{return jsonObject(JSON.parse(value));}catch{return {};}
+  }
+  if(Array.isArray(value))return value.reduce((acc:any,item:any)=>Object.assign(acc,jsonObject(item)),{});
+  if(typeof value==='object'){
+    const keys=Object.keys(value);
+    if(keys.length>0&&keys.every((key)=>/^\d+$/.test(key)))return {};
+    return value;
+  }
+  return {};
+}
 const esc = (value: unknown) => String(value ?? '').replaceAll('\\','\\\\').replaceAll('"','\\"').replaceAll('\n','\\n').replaceAll('\r','');
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
@@ -70,13 +83,35 @@ async function composioExecuteArgsNoUser(apiKey:string,connectedAccountId:string
   }
   return body;
 }
+function findExpectedLinkedInPersonId(value:any,expected:string):string{
+  const wanted=clean(expected);
+  if(!wanted)return'';
+  if(typeof value==='string'){
+    const v=clean(value);
+    if(v===wanted||v===`urn:li:person:${wanted}`)return wanted;
+    return'';
+  }
+  if(!value||typeof value!=='object')return'';
+  for(const child of Object.values(value)){
+    const found=findExpectedLinkedInPersonId(child,wanted);
+    if(found)return found;
+  }
+  return'';
+}
+
 async function composioLinkedInContext(db:any){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error('COMPOSIO_LINKEDIN_AUTH_REQUIRED');
 
   const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
   if(error)throw new Error('COMPOSIO_LINKEDIN_STATE_READ:'+error.message);
-  const state=data?.result||{};
+  const rawState=data?.result;
+  let state:any={};
+  if(typeof rawState==='string'){
+    try{state=JSON.parse(rawState)||{};}catch{state={};}
+  }else if(rawState&&typeof rawState==='object'){
+    state=rawState;
+  }
   const expectedPersonUrn=clean(state?.personal_author_urn)||'urn:li:person:N1twnCNCrD';
   const expectedPersonId=expectedPersonUrn.replace(/^urn:li:person:/,'');
   const stateUserId=clean(state?.user_id);
@@ -127,8 +162,8 @@ async function composioLinkedInContext(db:any){
   for(const candidate of candidates){
     try{
       const me=await composioExecuteArgs(apiKey,candidate.accountId,candidate.userId,'LINKEDIN_GET_MY_INFO',{});
-      const personId=deepPickString(me?.data||me,['id']);
-      if(personId&&personId===expectedPersonId){
+      const personId=findExpectedLinkedInPersonId(me?.data||me,expectedPersonId);
+      if(personId){
         return {apiKey,accountId:candidate.accountId,userId:candidate.userId,personId,connection_source:candidate.source};
       }
       lastError='LINKEDIN_CANONICAL_PERSON_MISMATCH';
@@ -156,8 +191,8 @@ async function composioLinkedInCompanyContext(db:any){
     if(!accountId||!userId)continue;
     try{
       const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-      const personId=deepPickString(me?.data||me,['id']);
-      if(!personId||personId!=='N1twnCNCrD')continue;
+      const personId=findExpectedLinkedInPersonId(me?.data||me,'N1twnCNCrD');
+      if(!personId)continue;
       let organizationReadVerified=false;
       try{
         const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
@@ -198,7 +233,11 @@ function isLinkedInAuthPreflightError(error:any){
     ||message.includes('UNAUTHORIZED')
     ||message.includes('TOKEN')
     ||message.includes('AUTH_REQUIRED')
-    ||message.includes('CONNECTION_REQUIRED');
+    ||message.includes('CONNECTION_REQUIRED')
+    ||message.includes('CANONICAL_CONNECTION_NOT_PINNED')
+    ||message.includes('PINNED_CONNECTION_NOT_ACTIVE')
+    ||message.includes('HUMAN_BOUNDARY_R_ORGANIZATION_ADMIN_REQUIRED')
+    ||message.includes('COMPANY_REAUTH_REQUIRED');
 }
 
 async function preflightLinkedInComposio(db:any){
@@ -353,16 +392,12 @@ function isLinkedInAuthFailure(error:any){
   return status===401||status===403||message.includes('REVOKED_ACCESS_TOKEN')||message.includes('UNAUTHORIZED')||message.includes('AUTH_REQUIRED')||message.includes('CONNECTION_REQUIRED')||message.includes('TOKEN_EXPIRED')||message.includes('EXPIRED_TOKEN');
 }
 async function preflightLinkedInViaComposio(db:any){
-  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
-  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-  const personId=deepPickString(me?.data||me,['id']);
+  const {apiKey,accountId,userId,personId}=await composioLinkedInContext(db);
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   return {apiKey,accountId,userId,personId};
 }
 async function publishLinkedInPersonalViaComposio(db:any,art:any){
-  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
-  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-  const personId=deepPickString(me?.data||me,['id']);
+  const {apiKey,accountId,userId,personId}=await composioLinkedInContext(db);
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   const author=`urn:li:person:${personId}`;
   const commentary=clean(art.body);
@@ -411,9 +446,7 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any){
 async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
   const ref=clean(postUrn);
   if(!/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))throw new Error('COMPOSIO_LINKEDIN_POST_URN_INVALID');
-  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
-  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-  const personId=deepPickString(me?.data||me,['id']);
+  const {apiKey,accountId,userId,personId}=await composioLinkedInContext(db);
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   const author=`urn:li:person:${personId}`;
   const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:ref});
@@ -1048,10 +1081,12 @@ Deno.serve(async (req) => {
   ]);
   if (rowsError) throw new Error(`CONTENT_READY_DECISION_READ:${rowsError.message}`);
   if (artifactsError) throw new Error(`CONTENT_READY_ARTIFACT_READ:${artifactsError.message}`);
-  const artifactByChannel = new Map((artifacts || []).map((artifact: any) => [artifact.channel, artifact]));
+  const safeRows = (rows || []).map((row: any) => ({ ...row, delivery_evidence: jsonObject(row.delivery_evidence) }));
+  const safeArtifacts = (artifacts || []).map((artifact: any) => ({ ...artifact, generation_evidence: jsonObject(artifact.generation_evidence) }));
+  const artifactByChannel = new Map(safeArtifacts.map((artifact: any) => [artifact.channel, artifact]));
   const results: any[] = [];
 
-  for (const row of rows || []) {
+  for (const row of safeRows) {
     const art: any = artifactByChannel.get(row.channel) || null;
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });

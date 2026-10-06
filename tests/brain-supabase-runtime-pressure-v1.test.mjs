@@ -132,3 +132,18 @@ test('direct DB adapters normalize JSONB strings before spread and write',()=>{
     assert.match(source,/normalizeJsonValue\(rows\?\.\[0\]\?\.result\?\?null\)/);
   }
 });
+
+
+test('publication delivery normalizes legacy JSONB strings before merge', () => {
+  const publisher = fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+  const blogQueue = fs.readFileSync('supabase/functions/powerhouse-blog-queue/index.ts','utf8');
+  assert.match(publisher, /delivery_evidence: jsonObject\(row\.delivery_evidence\)/);
+  assert.match(publisher, /generation_evidence: jsonObject\(artifact\.generation_evidence\)/);
+  assert.match(blogQueue, /const deliveryEvidence=jsonObject\(d\.delivery_evidence\)/);
+  assert.match(blogQueue, /const generationEvidence=jsonObject\(a\.generation_evidence\)/);
+});
+
+test('production SQL history is classified as non-executable delivery evidence', () => {
+  const policy = JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+  assert.ok(policy.nonExecutableSharedPaths.includes('docs/production-sql-history/'));
+});
