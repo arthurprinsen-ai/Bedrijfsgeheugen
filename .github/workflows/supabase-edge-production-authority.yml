@@ -6,6 +6,7 @@ on:
     paths:
       - 'supabase/functions/**'
       - 'supabase/config.toml'
+      - '.github/workflows/supabase-edge-production-authority.yml'
   workflow_dispatch:
     inputs:
       functions:
@@ -36,7 +37,7 @@ jobs:
           fetch-depth: 2
           persist-credentials: false
 
-      - name: Prove trusted current-main authority
+      - name: Prove trusted protected-main authority
         shell: bash
         run: |
           set -euo pipefail
@@ -46,14 +47,19 @@ jobs:
           }
           git fetch --no-tags origin main
           CURRENT_MAIN="$(git rev-parse origin/main)"
-          test "$CURRENT_MAIN" = "$GITHUB_SHA" || {
-            echo "::error::SUPABASE_EDGE_PRODUCTION_STALE_MAIN expected=$CURRENT_MAIN candidate=$GITHUB_SHA"
-            exit 78
-          }
-          test -n "${SUPABASE_ACCESS_TOKEN:-}" || {
-            echo "::error::SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_PROTECTED_MAIN_PROMOTION"
-            exit 78
-          }
+          if [ "$CURRENT_MAIN" != "$GITHUB_SHA" ]; then
+            git merge-base --is-ancestor "$GITHUB_SHA" "$CURRENT_MAIN" || {
+              echo "::error::SUPABASE_EDGE_PRODUCTION_NON_ANCESTOR candidate=$GITHUB_SHA current=$CURRENT_MAIN"
+              exit 78
+            }
+            git diff --name-only "$GITHUB_SHA" "$CURRENT_MAIN" > /tmp/current-main-drift.txt
+            if grep -Eq '^supabase/(config\.toml|functions/)' /tmp/current-main-drift.txt; then
+              echo "::error::SUPABASE_EDGE_PRODUCTION_SUPERSEDED_BY_NEWER_RUNTIME candidate=$GITHUB_SHA current=$CURRENT_MAIN"
+              cat /tmp/current-main-drift.txt
+              exit 78
+            fi
+            echo "SUPABASE_EDGE_PRODUCTION_SAFE_MAIN_DESCENDANT candidate=$GITHUB_SHA current=$CURRENT_MAIN"
+          fi
           echo "CURRENT_MAIN=$CURRENT_MAIN" >> "$GITHUB_ENV"
 
       - name: Resolve exact function set
@@ -76,7 +82,7 @@ jobs:
             if grep -Eq '^supabase/(config\.toml|functions/_shared/)' /tmp/changed-paths.txt; then
               find supabase/functions -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -Ev '^_' | sort -u > /tmp/functions.txt
             else
-              sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' /tmp/changed-paths.txt | grep -Ev '^_' | sort -u > /tmp/functions.txt
+              sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' /tmp/changed-paths.txt | grep -Ev '^_' | sort -u > /tmp/functions.txt || true
             fi
           fi
           while IFS= read -r fn; do
@@ -94,24 +100,44 @@ jobs:
           echo "Protected-main function set:"
           cat /tmp/functions.txt
 
-      - name: Install pinned Supabase CLI
-        if: steps.scope.outputs.applicable == 'true'
-        uses: supabase/setup-cli@v1
-        with:
-          version: 2.119.0
-
-      - name: Deploy exact current-main Edge source
+      - name: Record production credential readiness
+        id: credential
         if: steps.scope.outputs.applicable == 'true'
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p .artifacts/supabase-edge-production-readback
+          if [ -n "${SUPABASE_ACCESS_TOKEN:-}" ]; then
+            ready=true
+            state=READY
+          else
+            ready=false
+            state=MISSING_SUPABASE_ACCESS_TOKEN
+          fi
+          echo "ready=$ready" >> "$GITHUB_OUTPUT"
+          printf 'credential_state=%s\ncandidate_sha=%s\nobserved_current_main=%s\nproject_ref=%s\n' \
+            "$state" "$GITHUB_SHA" "$CURRENT_MAIN" "$PROJECT_REF" \
+            > .artifacts/supabase-edge-production-readback/credential-readiness.txt
+          echo "SUPABASE_EDGE_PRODUCTION_CREDENTIAL_STATE:$state"
+
+      - name: Install pinned Supabase CLI
+        if: steps.scope.outputs.applicable == 'true' && steps.credential.outputs.ready == 'true'
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Deploy exact protected-main Edge source
+        if: steps.scope.outputs.applicable == 'true' && steps.credential.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
           while IFS= read -r fn; do
-            echo "PROMOTE_SUPABASE_EDGE:$fn:$GITHUB_SHA"
+            echo "PROMOTE_SUPABASE_EDGE:$fn:$GITHUB_SHA:current_main=$CURRENT_MAIN"
             supabase functions deploy "$fn" --project-ref "$PROJECT_REF" --use-api
           done < /tmp/functions.txt
 
       - name: Read back provider source
-        if: steps.scope.outputs.applicable == 'true'
+        if: steps.scope.outputs.applicable == 'true' && steps.credential.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -136,7 +162,7 @@ jobs:
             }
             sha256sum "$source" | awk -v fn="$fn" -v rev="$GITHUB_SHA" '{print fn" "$1" "rev}' >> .artifacts/supabase-edge-production-readback/source-sha256.txt
           done < /tmp/functions.txt
-          printf 'main_sha=%s\nproject_ref=%s\n' "$GITHUB_SHA" "$PROJECT_REF" > .artifacts/supabase-edge-production-readback/authority.txt
+          printf 'candidate_sha=%s\nobserved_current_main=%s\nproject_ref=%s\n' "$GITHUB_SHA" "$CURRENT_MAIN" "$PROJECT_REF" > .artifacts/supabase-edge-production-readback/authority.txt
 
       - name: Upload immutable production authority evidence
         if: steps.scope.outputs.applicable == 'true'
@@ -146,3 +172,11 @@ jobs:
           path: .artifacts/supabase-edge-production-readback/
           if-no-files-found: error
           retention-days: 90
+
+      - name: Fail closed when production credential is absent
+        if: steps.scope.outputs.applicable == 'true' && steps.credential.outputs.ready != 'true'
+        shell: bash
+        run: |
+          echo "::error::SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_PROTECTED_MAIN_PROMOTION"
+          echo "::error::Provision SUPABASE_ACCESS_TOKEN once in the GitHub production environment, then workflow_dispatch this authority with the exact function slug(s)."
+          exit 78

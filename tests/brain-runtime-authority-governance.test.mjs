@@ -106,21 +106,38 @@ test('Supabase Edge production has exactly one protected-main promotion authorit
   assert.equal(registry.controls.supabase_edge_drift_policy,'FAIL_CLOSED');
 });
 
-test('Supabase Edge production workflow is current-main-only, single-flight and read-after-write',async()=>{
+test('Supabase Edge production workflow is protected-main-only, single-flight and read-after-write',async()=>{
   const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
   assert.match(workflow,/branches:\s*\[main\]/);
+  assert.match(workflow,/supabase-edge-production-authority\.yml/);
   assert.match(workflow,/group:\s*supabase-edge-production-authority/);
   assert.match(workflow,/cancel-in-progress:\s*false/);
   assert.match(workflow,/refs\/heads\/main/);
   assert.match(workflow,/git rev-parse origin\/main/);
-  assert.match(workflow,/CURRENT_MAIN.*GITHUB_SHA|GITHUB_SHA.*CURRENT_MAIN/s);
+  assert.match(workflow,/git merge-base --is-ancestor/);
+  assert.match(workflow,/SUPABASE_EDGE_PRODUCTION_SAFE_MAIN_DESCENDANT/);
+  assert.match(workflow,/SUPABASE_EDGE_PRODUCTION_SUPERSEDED_BY_NEWER_RUNTIME/);
+  assert.match(workflow,/Record production credential readiness/);
+  assert.match(workflow,/MISSING_SUPABASE_ACCESS_TOKEN/);
+  assert.match(workflow,/workflow_dispatch/);
+  assert.match(workflow,/REQUESTED_FUNCTIONS/);
   assert.match(workflow,/supabase\/setup-cli@v1/);
   assert.match(workflow,/version:\s*2\.119\.0/);
   assert.match(workflow,/supabase functions deploy/);
   assert.match(workflow,/--project-ref "\$PROJECT_REF"/);
   assert.match(workflow,/supabase functions download/);
   assert.match(workflow,/cmp "\$source" "\$provider"/);
-  assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
+  assert.match(workflow,/SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_PROTECTED_MAIN_PROMOTION/);
+});
+
+test('Supabase Edge authority does not require a production credential for non-applicable control-plane-only runs',async()=>{
+  const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
+  const scope=workflow.indexOf('name: Resolve exact function set');
+  const credential=workflow.indexOf('name: Record production credential readiness');
+  const fail=workflow.indexOf('name: Fail closed when production credential is absent');
+  assert.ok(scope>=0 && credential>scope && fail>credential);
+  assert.match(workflow,/steps\.scope\.outputs\.applicable == 'true' && steps\.credential\.outputs\.ready == 'true'/);
+  assert.match(workflow,/No Supabase Edge function source changed; promotion not applicable/);
 });
 
 test('runtime governance fails closed if direct Supabase Edge deploy becomes allowed',()=>{
