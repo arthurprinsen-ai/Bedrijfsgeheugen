@@ -158,7 +158,7 @@ async function main() {
   const head = argValue(args, '--head', 'HEAD');
   const baseSha = execFileSync('git', ['rev-parse', base], { encoding: 'utf8' }).trim();
   const headSha = execFileSync('git', ['rev-parse', head], { encoding: 'utf8' }).trim();
-  const changedPaths = execFileSync('git', ['diff', '--name-only', `${baseSha}...${headSha}`], { encoding: 'utf8' })
+  const changedPaths = execFileSync('git', ['diff', '--name-only', baseSha, headSha], { encoding: 'utf8' })
     .split(/\r?\n/).filter(Boolean);
   const adaptivePolicy = await loadAdaptiveDeliveryPolicy();
   const integrationPolicy = JSON.parse(await readFile('config/powerhouse-integration-bundle-v1.json', 'utf8'));
