@@ -54,6 +54,23 @@ export function resolveDeliveryMetadataAuthority({ prBody = '', manifest = null 
   if (fallback.delivery.obligationId !== versioned.delivery.obligationId) {
     return Object.freeze({ source: 'pr-body', ...fallback });
   }
+  const prBodyComplete = Boolean(
+    fallback.delivery.obligationId &&
+    fallback.delivery.deliveryLane &&
+    fallback.delivery.candidateType &&
+    SHA40.test(fallback.delivery.baseSha) &&
+    Array.isArray(fallback.expectedPaths) &&
+    fallback.expectedPaths.length &&
+    Number.isInteger(fallback.maxFiles) &&
+    fallback.maxFiles >= 1
+  );
+  if (prBodyComplete) {
+    return Object.freeze({
+      source: 'pr-body',
+      ...fallback,
+      versionedManifestAdvisory: versioned,
+    });
+  }
   return Object.freeze({
     source: 'versioned-manifest',
     ...versioned,

@@ -1,0 +1,45 @@
+{
+  "version": "ADAPTIVE-CI-INTELLIGENCE-v2",
+  "date": "2026-10-06",
+  "fingerprint": "ci|adaptive-intelligence|slo-ratchet-v2",
+  "obligation_id": "adaptive-ci-intelligence-v2-20261006",
+  "root_cause": "The daily optimizer measured broad queue/execution/fan-out only, sampled too narrowly, created its own pull_request fan-out, and could propose a new tuning PR every day solely because generated timestamps differed. It did not measure Required-specific latency, direct PR workflow count, duplicate authority or successor churn.",
+  "prevention": "Measure bounded seven-day CI history with Required-specific p95, direct PR workflow inventory, duplicate run/obligation and retired-candidate churn. Remove optimizer/self-evolution direct PR ingress, enforce immutable SLO/safety budgets, ratchet direct-PR budget only downward, and emit no tuning PR when content is unchanged.",
+  "compiler": {
+    "failure_class": "CI_OPTIMIZER_SELF_INDUCED_FANOUT_AND_BLIND_SPOTS",
+    "machine_enforceable": true
+  },
+  "slo": {
+    "required_queue_p95_seconds": 30,
+    "required_total_p95_seconds": 120,
+    "max_pr_workflows_per_head": 5,
+    "direct_pr_workflow_target": 2,
+    "agent_external_wait_budget_seconds": 30,
+    "unchanged_state_no_repoll_seconds": 120
+  },
+  "safety": {
+    "autonomous_gate_weakening_forbidden": true,
+    "direct_pr_budget_may_only_decrease": true
+  },
+  "evidence": {
+    "regressions": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs",
+      "tests/powerhouse-daily-self-evolution.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "pre-v2 direct pull_request fan-out and broad-only CI telemetry",
+        "expected": "detect Required-specific latency/fan-out blind spots and preserve canonical Required + CodeQL assurance",
+        "result": "PASS_BY_CONTRACT_TESTS"
+      },
+      {
+        "scenario": "no-op daily optimizer proposal",
+        "expected": "byte-identical tuning proposal with no timestamp-only candidate churn",
+        "result": "PASS_BY_CONTRACT_TESTS"
+      }
+    ]
+  }
+}

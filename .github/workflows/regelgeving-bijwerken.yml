@@ -22,6 +22,7 @@ on:
           - candidate-pr
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -129,6 +130,13 @@ jobs:
           Dit is een afgeleide interpretatiekandidaat. De officiële source observations en hashes zijn de autoriteit; deze kandidaat mag alleen worden gepromoveerd na evidence-validatie tegen die baseline.
           EOF
           )"
+
+      - name: Dispatch immutable read-only writer shadow
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: .github/scripts/dispatch-repo-writer-shadow.sh "$CANDIDATE_BRANCH"
 
       - name: Ouderdom bewaken
         run: |

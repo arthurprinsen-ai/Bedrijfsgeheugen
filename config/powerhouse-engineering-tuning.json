@@ -6,11 +6,22 @@
   "fast_path_target_seconds": 45,
   "speculative_execution_threshold": 0.75,
   "source": "baseline",
+  "ci": {
+    "direct_pr_workflow_target": 2,
+    "direct_pr_workflow_budget": 100,
+    "max_pr_workflows_per_head": 5,
+    "required_queue_p95_slo_seconds": 30,
+    "required_total_p95_slo_seconds": 120,
+    "agent_external_wait_budget_seconds": 30,
+    "unchanged_state_no_repoll_seconds": 120,
+    "architecture_attention_required": true
+  },
   "safety": {
     "required_release_gate": true,
     "security_gate": true,
     "production_readback": true,
     "protected_merge": true,
-    "exact_sha_identity": true
+    "exact_sha_identity": true,
+    "autonomous_gate_weakening_forbidden": true
   }
 }

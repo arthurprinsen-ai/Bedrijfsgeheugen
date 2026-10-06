@@ -10,7 +10,7 @@ on:
 
 permissions:
   contents: write
-  pull-requests: read
+  pull-requests: write
   actions: write
 
 concurrency:
@@ -163,12 +163,17 @@ jobs:
             body="$(jq -r '.body // ""' <<<"$pr")"
             head_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
             mergeable="$(gh api "repos/$repo/pulls/$number" --jq '.mergeable')"
+            refresh_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+            compare_json="$(gh api "repos/$repo/compare/$refresh_main_sha...$head" 2>/dev/null || echo '{}')"
+            behind_by="$(jq -r '.behind_by // 0' <<<"$compare_json")"
+            merge_base="$(jq -r '.merge_base_commit.sha // empty' <<<"$compare_json")"
             runs="$(gh api "repos/$repo/actions/runs?head_sha=$head&per_page=100" --jq '.workflow_runs | map({id,name,status,conclusion,created_at,updated_at,run_started_at})')"
-            decision="$(node --input-type=module - "$mergeable" "$updated" "$runs" <<'NODE'
+            decision="$(node --input-type=module - "$mergeable" "$behind_by" "$updated" "$runs" <<'NODE'
           import { classifyRecovery } from './tools/delivery/predictive-controller.mjs';
-          const [mergeableRaw,updated,runsRaw]=process.argv.slice(2);
+          const [mergeableRaw,behindByRaw,updated,runsRaw]=process.argv.slice(2);
           const mergeable=mergeableRaw==='true'?true:mergeableRaw==='false'?false:null;
-          process.stdout.write(JSON.stringify(classifyRecovery({mergeable,workflowRuns:JSON.parse(runsRaw||'[]'),headUpdatedAt:updated})));
+          const behindBy=Number(behindByRaw||0);
+          process.stdout.write(JSON.stringify(classifyRecovery({mergeable,behindBy,workflowRuns:JSON.parse(runsRaw||'[]'),headUpdatedAt:updated})));
           NODE
             )"
             state="$(jq -r '.state' <<<"$decision")"
@@ -203,23 +208,87 @@ jobs:
                 dispatch_required || true
                 dispatch_brain || true
                 ;;
+              FAILED_GATE_RECOVERY)
+                latest_required_id="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | .id // empty' <<<"$runs")"
+                latest_required_updated="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | (.updated_at // .created_at // "")' <<<"$runs")"
+                lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+                lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+                if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ "$lease_head" != "$head" ]; then
+                  echo "::notice::PR#$number failed gate remains fail-closed; current metadata is not an exact terminal lease."
+                  continue
+                fi
+                admission_failed=0
+                if [ -n "$latest_required_id" ]; then
+                  admission_failed="$(gh api "repos/$repo/actions/runs/$latest_required_id/jobs?filter=latest&per_page=100" --jq '[.jobs[] | select(.name=="hygiene / admission" and .conclusion=="failure")] | length' 2>/dev/null || echo 0)"
+                fi
+                pr_updated_epoch="$(date -u -d "$updated" +%s 2>/dev/null || echo 0)"
+                required_updated_epoch="$(date -u -d "$latest_required_updated" +%s 2>/dev/null || echo 0)"
+                if [ "$admission_failed" -gt 0 ] && [ "$pr_updated_epoch" -gt "$required_updated_epoch" ]; then
+                  active="$(active_for_pr required-test.yml)"
+                  if [ "$active" -eq 0 ]; then
+                    echo "::notice::PR#$number metadata changed after failed admission; redispatching exact-head Required once."
+                    if dispatch_required; then
+                      recovered_prs=$((recovered_prs + 1))
+                      echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
+                    fi
+                  else
+                    echo "::notice::PR#$number corrected metadata already has an active Required; duplicate redispatch suppressed."
+                  fi
+                else
+                  echo "::notice::PR#$number failed gate has no newer metadata-only correction; no automatic retry."
+                fi
+                ;;
               LONG_RUNNING_OBSERVE)
                 echo "::notice::PR#$number current-head workflow is long-running but still in progress; do not cancel without concrete stalled-job evidence."
                 ;;
-              MERGE_CONFLICT_RECOVERY)
+              MERGE_CONFLICT_RECOVERY|MAIN_DRIFT_RECOVERY)
                 echo "::warning::PR#$number requires same-lineage main refresh; duplicate recovery PR forbidden."
                 if [ "$head_repo" != "$repo" ]; then
                   echo "::warning::PR#$number is not a same-repository branch; automatic refresh forbidden."
                   continue
                 fi
-                if ! grep -qx 'Writer-Lease-State: TERMINAL_DELIVERY' <<<"$body" || ! grep -qx 'Writer-Lease-Owner: powerhouse-terminal-delivery' <<<"$body"; then
-                  echo "::warning::PR#$number has no active canonical terminal writer lease; automatic refresh forbidden."
+                lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+                lease_owner="$(sed -n 's/^Writer-Lease-Owner: //p' <<<"$body" | tail -n1)"
+                lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+                lease_obligation="$(sed -n 's/^Writer-Lease-Obligation: //p' <<<"$body" | tail -n1)"
+                if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ -z "$lease_owner" ] || [ "$lease_head" != "$head" ] || [ -z "$lease_obligation" ]; then
+                  echo "::warning::PR#$number has no exact active terminal writer lease; automatic refresh forbidden."
                   continue
                 fi
                 default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
-                if gh api --method POST "repos/$repo/merges" -f base="$branch" -f head="$default_branch" -f commit_message="delivery: refresh PR #$number from $default_branch" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
+                if [ -z "$merge_base" ]; then
+                  echo "::warning::PR#$number main refresh compare could not prove a merge base; automatic refresh forbidden."
+                  continue
+                fi
+                main_paths="$(gh api "repos/$repo/compare/$merge_base...$refresh_main_sha" --jq '.files[]?.filename' 2>/dev/null || true)"
+                candidate_paths="$(gh api "repos/$repo/compare/$merge_base...$head" --jq '.files[]?.filename' 2>/dev/null || true)"
+                path_overlap="$(comm -12 <(printf '%s\n' "$main_paths" | sed '/^$/d' | sort -u) <(printf '%s\n' "$candidate_paths" | sed '/^$/d' | sort -u) || true)"
+                if [ -n "$path_overlap" ]; then
+                  echo "::warning::PR#$number main refresh has path overlap and requires reconciliation; automatic refresh forbidden."
+                  printf '%s\n' "$path_overlap"
+                  continue
+                fi
+                if gh api --method POST "repos/$repo/merges" -f base="$branch" -f head="$refresh_main_sha" -f commit_message="delivery: refresh PR #$number from $default_branch@$refresh_main_sha" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
                   new_head="$(gh api "repos/$repo/branches/$branch" --jq '.commit.sha')"
-                  echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head; exact-head gates will restart."
+                  new_main="$refresh_main_sha"
+                  current_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
+                  updated_body="$(PR_BODY="$current_body" NEW_HEAD="$new_head" NEW_MAIN="$new_main" node --input-type=module - <<'NODE'
+const body=String(process.env.PR_BODY||'');
+const replaceOne=(text,label,value)=>{
+  const re=new RegExp(`^${label}:.*$`,'m');
+  if(!re.test(text)) throw new Error(`MISSING_${label.replaceAll('-','_').toUpperCase()}`);
+  return text.replace(re,`${label}: ${value}`);
+};
+let next=replaceOne(body,'Base-SHA',process.env.NEW_MAIN);
+next=replaceOne(next,'Writer-Lease-Head',process.env.NEW_HEAD);
+next=replaceOne(next,'Writer-Lease-Main-Epoch',process.env.NEW_MAIN);
+process.stdout.write(next);
+NODE
+                  )"
+                  gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
+                  echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head at main $new_main; metadata advanced before the next recovery cycle."
+                  recovered_prs=$((recovered_prs + 1))
+                  echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 else
                   echo "::warning::PR#$number could not be refreshed automatically; preserving same lineage fail-closed."
                   cat /tmp/merge-refresh.err || true

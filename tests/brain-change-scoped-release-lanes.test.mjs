@@ -295,3 +295,29 @@ test('historical terminal reconciliation bundle stays backend-only', () => {
     shared:true, backend:true, portal:false, website:false, automation:false
   });
 });
+
+
+test('material writeback closure guard stays backend-only and never activates website browser proof', () => {
+  const suites = suitesFor([
+    'scripts/brain/material-writeback-closure-guard.mjs',
+    'tests/brain-material-writeback-closure-guard.test.mjs',
+    'brain/learning/example.json',
+    'docs/changes/example.md',
+    'docs/development-ledger-events/example.md'
+  ]);
+  assert.deepEqual(suites, {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
+
+
+test('latency control-plane workflows stay backend-only and avoid website browser proof', () => {
+  for (const path of [
+    '.github/workflows/powerhouse-delivery-hygiene.yml',
+    '.github/workflows/repo-writer-operational-verification.yml'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:true, portal:false, website:false, automation:false
+    }, path);
+  }
+});

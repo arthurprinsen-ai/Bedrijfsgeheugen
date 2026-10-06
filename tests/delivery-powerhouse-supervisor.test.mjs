@@ -15,6 +15,21 @@ test('open-PR recovery is complete when Required is active even if BRAIN is abse
   assert.equal(classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T08:00:00Z',now:Date.parse('2026-09-18T08:02:00Z')}).state,'HEALTHY_PROGRESS');
 });
 
+
+test('completed green Required on a behind-main head becomes same-lineage main-drift recovery',()=>{
+  const runs=[{name:'Required test',status:'completed',conclusion:'success',updated_at:'2026-10-06T15:40:00Z'}];
+  const r=classifyRecovery({mergeable:true,behindBy:1,workflowRuns:runs,headUpdatedAt:'2026-10-06T15:39:00Z',now:Date.parse('2026-10-06T15:40:10Z')});
+  assert.equal(r.state,'MAIN_DRIFT_RECOVERY');
+  assert.equal(r.action,'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN');
+  assert.equal(r.behindBy,1);
+});
+
+test('behind-main never refreshes while canonical Required is still active',()=>{
+  const runs=[{name:'Required test',status:'in_progress',updated_at:'2026-10-06T15:40:00Z'}];
+  const r=classifyRecovery({mergeable:true,behindBy:1,workflowRuns:runs,headUpdatedAt:'2026-10-06T15:39:00Z',now:Date.parse('2026-10-06T15:40:10Z')});
+  assert.equal(r.state,'HEALTHY_PROGRESS');
+});
+
 test('stale queued exact-head work is recoverable from run progress timestamps',()=>{
   const runs=[
     {id:11,name:'Required test',status:'queued',updated_at:'2026-09-18T08:00:00Z'},
@@ -80,16 +95,30 @@ test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
 });
 
 
-test('same-lineage moving-main recovery requires terminal lease and never merges the PR itself',()=>{
+test('same-lineage moving-main recovery requires terminal lease, zero overlap and never merges the PR itself',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(yaml,/contents:\s*write/);
-  assert.match(yaml,/MERGE_CONFLICT_RECOVERY/);
-  assert.match(yaml,/Writer-Lease-State: TERMINAL_DELIVERY/);
-  assert.match(yaml,/Writer-Lease-Owner: powerhouse-terminal-delivery/);
+  assert.ok(yaml.includes('MERGE_CONFLICT_RECOVERY|MAIN_DRIFT_RECOVERY'));
+  assert.ok(yaml.includes('pull-requests: write'));
+  assert.match(yaml,/behind_by/);
+  assert.match(yaml,/merge_base/);
+  assert.match(yaml,/path_overlap/);
+  assert.match(yaml,/comm -12/);
+  assert.match(yaml,/lease_state/);
+  assert.match(yaml,/lease_owner/);
+  assert.match(yaml,/lease_head/);
+  assert.match(yaml,/lease_obligation/);
+  assert.match(yaml,/\[ "\$lease_state" != "TERMINAL_DELIVERY" \]/);
+  assert.match(yaml,/\[ "\$lease_head" != "\$head" \]/);
+  assert.doesNotMatch(yaml,/Writer-Lease-Owner: powerhouse-terminal-delivery/);
   assert.match(yaml,/head_repo/);
   assert.match(yaml,/repos\/\$repo\/merges/);
   assert.match(yaml,/-f base="\$branch"/);
-  assert.match(yaml,/-f head="\$default_branch"/);
+  assert.match(yaml,/-f head="\$refresh_main_sha"/);
+  assert.match(yaml,/Writer-Lease-Head/);
+  assert.match(yaml,/Writer-Lease-Main-Epoch/);
+  assert.match(yaml,/Base-SHA/);
+  assert.match(yaml,/--method PATCH "repos\/\$repo\/pulls\/\$number"/);
   assert.doesNotMatch(yaml,/gh pr merge|merge_pull_request|--admin/);
 });
 
