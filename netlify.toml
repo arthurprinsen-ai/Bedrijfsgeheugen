@@ -1,3 +1,4 @@
+# Production transport recovery verification: 2026-10-01
 # LET OP: dit bestand is TOML. Regels in _redirects-vorm (/van /naar 301)
 # horen hier NIET in - die horen in het bestand _redirects. Staat er zo'n regel
 # tussen, dan kan Netlify de configuratie niet lezen en faalt elke build met

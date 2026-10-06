@@ -1,0 +1,27 @@
+{
+  "version": "POWERHOUSE-LEARNING-v1",
+  "date": "2026-10-01",
+  "topic": "netlify-production-transport",
+  "fingerprint": "netlify|linked-build|fallback-timing|v1",
+  "problem": "The production workflow could fall back before the Git-linked Netlify deploy had enough time to become observable, creating unnecessary transport churn and confusing production state.",
+  "root_cause": "The bounded wait for the native Git-linked Netlify production deploy was shorter than the provider's real completion latency during busy delivery periods, so fallback transport could be attempted while the linked deploy was still viable.",
+  "prevention_rule": "Give the native Git-linked production deploy a longer bounded observation window before activating exact-source fallback, while keeping exact-SHA readback and bounded failure behavior.",
+  "evidence": [
+    ".github/workflows/production-source-snapshot.yml",
+    "netlify.toml",
+    "production release.json exact-SHA readback"
+  ],
+  "compiler": {
+    "failure_class": "NETLIFY_PRODUCTION_DELIVERY",
+    "scope": "production",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs",
+      "tests/brain-production-promotion-observability.test.mjs"
+    ]
+  }
+}
