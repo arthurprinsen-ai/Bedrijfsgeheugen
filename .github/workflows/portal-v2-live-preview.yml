@@ -1,16 +1,6 @@
 name: Portal V2 Live Preview
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'portal-v2/**'
-      - 'tests/integration/portal-v2-live.spec.js'
-      - 'tests/integration/portal-v2-mobile-shell.spec.js'
-      - 'tests/integration/portal-v2-functional-parity.spec.js'
-      - 'tests/integration/portal-v2-bcg-parity.spec.js'
-      - 'tests/integration/portal-v2-legacy-algorithm-parity.spec.js'
-      - '.github/workflows/portal-v2-live-preview.yml'
   workflow_dispatch:
 
 concurrency:
