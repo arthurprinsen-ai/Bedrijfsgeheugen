@@ -60,19 +60,30 @@ jobs:
           head_sha="$(jq -r '.head.sha' <<<"$pr_json")"
           body="$(jq -r '.body // ""' <<<"$pr_json")"
 
-          test "$state" = "open"
-          test "$merged" = "false"
           test "$head_ref" = "fix/3742-migration-parity-canonical-v6"
           [[ "$head_sha" =~ ^[0-9a-f]{40}$ ]]
           grep -qx 'Writer-Lease-Owner: supabase-migration-history-canonical-v6' <<<"$body"
           grep -qx "Writer-Lease-Head: $head_sha" <<<"$body"
           grep -qx 'Writer-Lease-NonOwner-Action: READBACK_ONLY' <<<"$body"
 
+          if [ "$state" = "open" ] && [ "$merged" = "false" ]; then
+            mode="repair"
+          elif [ "$state" = "closed" ] && [ "$merged" = "true" ]; then
+            grep -qx 'Trusted-Repair-State: REPAIRED_APPLIED_VERIFIED' <<<"$body"
+            grep -qx 'Trusted-Repair-Post-Drift: 0' <<<"$body"
+            mode="readback_only"
+          else
+            echo "::error::Canonical recovery #3766 is neither repairable-open nor merged-with-provider-proof"
+            exit 78
+          fi
+
           echo "pr=3766" >> "$GITHUB_OUTPUT"
           echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
           echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact recovery head without production credentials
+        if: steps.candidate.outputs.mode == 'repair'
         uses: actions/checkout@v5
         with:
           ref: ${{ steps.candidate.outputs.head_sha }}
@@ -80,6 +91,7 @@ jobs:
           path: candidate
 
       - name: Prove repair allowlist and effect evidence
+        if: steps.candidate.outputs.mode == 'repair'
         shell: bash
         run: |
           set -euo pipefail
@@ -143,6 +155,7 @@ jobs:
           printf 'SUPABASE_DB_URL=%s\n' "$db_url" >> "$GITHUB_ENV"
 
       - name: Repair production migration tracking with supported Supabase CLI
+        if: steps.candidate.outputs.mode == 'repair'
         working-directory: parity
         shell: bash
         run: |
@@ -233,7 +246,52 @@ jobs:
           if (!rows.length || drift.length) throw new Error('POST_REPAIR_PARITY_FAILED:'+JSON.stringify(drift));
           NODE
 
+      - name: Prove merged recovery through Supavisor IPv4 readback
+        if: steps.candidate.outputs.mode == 'readback_only'
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${SUPABASE_DB_URL:?OIDC database transport missing}"
+          mkdir -p repair-evidence
+
+          pooler_host="$(SUPABASE_DB_URL="$SUPABASE_DB_URL" node -e 'const u=new URL(process.env.SUPABASE_DB_URL);process.stdout.write(u.hostname)')"
+          test "$pooler_host" = "aws-0-eu-central-1.pooler.supabase.com" || {
+            echo "::error::Unexpected Supavisor host: $pooler_host"
+            exit 78
+          }
+          getent ahostsv4 "$pooler_host" >/dev/null || {
+            echo "::error::Canonical Supavisor host has no IPv4 resolution from this GitHub runner"
+            exit 1
+          }
+
+          for attempt in 1 2 3; do
+            if supabase migration list --db-url "$SUPABASE_DB_URL" > repair-evidence/merged-readback.txt 2>&1; then
+              break
+            fi
+            cat repair-evidence/merged-readback.txt >&2 || true
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            sleep $((attempt * 3))
+          done
+          cat repair-evidence/merged-readback.txt
+
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const text=fs.readFileSync('repair-evidence/merged-readback.txt','utf8');
+          const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
+            .map(line=>line.split(/[|│]/).map(x=>x.trim().replace(/^\`|\`$/g,'').trim()))
+            .filter(x=>x.length>=2);
+          const expected=['20260920101150','20260920102450','20260925080500','20261005133951'];
+          const remote=new Set(rows.map(x=>x[1]).filter(x=>/^\d{14}$/.test(x)));
+          const missing=expected.filter(version=>!remote.has(version));
+          if (missing.length) throw new Error('MERGED_REPAIR_REMOTE_READBACK_MISSING:'+missing.join(','));
+          fs.writeFileSync('repair-evidence/transport-proof.txt',
+            'mode=readback_only\ntransport=supavisor-session-ipv4\nremote_allowlist_verified=4\n');
+          NODE
+
       - name: Advance exact recovery lock to provider-readback state
+        if: steps.candidate.outputs.mode == 'repair'
         shell: bash
         env:
           TARGET_BRANCH: ${{ steps.candidate.outputs.head_ref }}
