@@ -15,5 +15,28 @@
   "regression": [
     "tests/delivery-powerhouse-supervisor.test.mjs"
   ],
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "CANCELLED_REQUIRED_MAIN_DRIFT_DEAD_END",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "A behind-main PR whose latest canonical Required attempt is cancelled and has no newer active Required must become MAIN_DRIFT_RECOVERY.",
+      "A behind-main PR whose latest canonical Required attempt concluded failure must remain FAILED_GATE_RECOVERY."
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "observed_failure": "main drift -> cancelled Required -> branch protection reports required checks expected",
+    "controls": [
+      "terminal writer lease required before same-lineage refresh",
+      "same-repository branch required",
+      "merge base required",
+      "zero changed-path overlap required",
+      "real Required failures remain fail-closed"
+    ]
+  }
 }
