@@ -104,3 +104,21 @@ test('manual recovery is same-day, auditable and delegates to the canonical full
   assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.doesNotMatch(workflow,/api\.buffer\.com|LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
 });
+
+
+test('social recovery functions use the EU function region',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  const deployHook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
+  assert.match(delivery,/region:\s*'fra'/);
+  assert.match(deployHook,/region:\s*'fra'/);
+});
+
+
+test('content operations shares the canonical scheduler authority with social publication',()=>{
+  const operations=fs.readFileSync('supabase/functions/content-operations/index.ts','utf8');
+  assert.match(operations,/rpc\/bg_geheim/);
+  assert.match(operations,/powerhouse_daily_scheduler_token/);
+  assert.match(operations,/async function schedulerToken/);
+  assert.match(operations,/await schedulerToken\(\)/);
+  assert.match(operations,/if \(!\(await authorized\(req\)\)\)/);
+});
