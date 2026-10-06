@@ -29,8 +29,8 @@ test('consolidated Powerhouse CodeQL is the single security authority on PR and 
   assert.match(yml, /github\/codeql-action\/analyze@/);
   assert.match(yml, /^  pull_request:/m);
   assert.match(yml, /^  merge_group:/m);
-  assert.match(yml, /languages:\s*javascript-typescript/);
-  assert.match(yml, /languages:\s*python/);
+  assert.match(yml, /language:\s*\[javascript-typescript, python\]/);
+  assert.match(yml, /languages:\s*\$\{\{ matrix\.language \}\}/);
 });
 
 test('duplicate governance PR fanout is routed through Required', () => {
