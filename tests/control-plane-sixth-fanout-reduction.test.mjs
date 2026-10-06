@@ -9,6 +9,8 @@ const retired = [
   '.github/workflows/config-wacht.yml',
   '.github/workflows/portal-parity.yml',
   '.github/workflows/repository-hygiene.yml',
+  '.github/workflows/hero-media-production-verify.yml',
+  '.github/workflows/engineering-os-learning.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -29,5 +31,8 @@ test('Required merge_group preserves sixth-batch assurance', () => {
     'tests/portal-parity-source-contract.py',
     'tests/portal-modular-legacy-capability-parity.test.mjs',
     'tests/brain-repository-hygiene.test.mjs',
+    'Verify hero production media contract',
+    'Verify engineering learning self-test',
+    'tests/brain-powerhouse-engineering-closed-loop.test.mjs',
   ]) assert.ok(required.includes(marker), marker);
 });

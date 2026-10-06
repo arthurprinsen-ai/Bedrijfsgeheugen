@@ -35,10 +35,8 @@
         "chat-learning-preflight-pr.yml",
         "codeql.yml",
         "component-preview.yml",
-        "engineering-os-learning.yml",
         "engineering-supply-chain-trust.yml",
         "fresh-device-autonomy-canary.yml",
-        "hero-media-production-verify.yml",
         "obligation-terminal-closure.yml",
         "paginacontrole-debug.yml",
         "portal-v2-live-preview.yml",
@@ -73,7 +71,7 @@
         "verify-approved-central-blog.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 43
+      "directPrTriggerCount": 41
     },
     "netlify": {
       "projects": 16

@@ -112,6 +112,33 @@ jobs:
           tests/linkedin-revenue-cockpit.test.mjs
           tests/linkedin-revenue-runtime.test.mjs
           tests/linkedin-revenue-engagement-cockpit.test.mjs
+          tests/brain-powerhouse-engineering-closed-loop.test.mjs
+      - name: Verify engineering learning self-test
+        if: github.event_name == 'merge_group'
+        run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
+
+      - name: Verify hero production media contract
+        if: github.event_name == 'merge_group'
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const crypto = require('crypto');
+          const expected = 'a261792e9b0058802ab5b30ce107c7ac14e8b2291a3bd7ee78fdb5968bbe97fd';
+          const mediaPath = 'assets/openart-hero-iphone-safe-v1.mp4';
+          if (!fs.existsSync(mediaPath)) throw new Error('accepted hero binary missing');
+          const bytes = fs.readFileSync(mediaPath);
+          const sha = crypto.createHash('sha256').update(bytes).digest('hex');
+          if (sha !== expected) throw new Error(`hero binary hash mismatch: ${sha}`);
+          const manifest = JSON.parse(fs.readFileSync('assets/openart-hero-production.json','utf8'));
+          if (manifest.derivative_sha256 !== expected) throw new Error('manifest derivative hash mismatch');
+          if (manifest.physical_iphone_runtime !== 'PASS') throw new Error('physical iPhone acceptance missing');
+          if (manifest.promotion_state !== 'MEDIA_READY') throw new Error('media is not MEDIA_READY');
+          const p = manifest.derivative_probe || {};
+          const exact = p.width === 1920 && p.height === 1080 && p.fps === 30 && p.codec === 'h264' && p.pixel_format === 'yuv420p' && p.has_audio === false && p.faststart === true;
+          if (!exact) throw new Error(`manifest media profile mismatch: ${JSON.stringify(p)}`);
+          console.log(`Hero static media contract PASS: ${sha}; bytes=${bytes.length}`);
+          NODE
+
       - name: Run consolidated business and portal merge assurance
         if: github.event_name == 'merge_group'
         run: |
