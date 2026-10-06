@@ -1,21 +1,6 @@
 name: Website Cross-Browser Screenshot Assurance
 
 on:
-  pull_request:
-    paths:
-      - '*.html'
-      - 'netlify.toml'
-      - '_redirects'
-      - '_headers'
-      - 'assets/**'
-      - 'blog/**'
-      - 'en/**'
-      - 'kennis/**'
-      - 'site/**'
-      - '!site/website-release-risk.json'
-      - 'config/powerhouse-website-cross-browser-assurance-v1.json'
-      - 'tools/site-shell/**'
-      - '.github/workflows/website-cross-browser-screenshot-assurance.yml'
   schedule:
     - cron: '20 6 * * *'
   workflow_dispatch:
