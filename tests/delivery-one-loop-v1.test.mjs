@@ -102,6 +102,13 @@ test('Powerhouse CodeQL is the single PR authority for Python and JavaScript', (
   assert.match(powerhouse, /queries:\s*security-extended/);
 });
 
+test('automation failure evidence uploads are producer-scoped', () => {
+  const automation = workflow('lane-automation.yml');
+  assert.match(automation, /id:\s*shared_memory/);
+  assert.match(automation, /if:\s*steps\.shared_memory\.outcome == 'failure'/);
+  assert.doesNotMatch(automation, /Upload Shared Agent Memory failure evidence\n\s+if:\s+failure\(\)/);
+});
+
 test('delivery lane keeps recovery priority and recovery diagnostics', () => {
   assert.equal(evaluateFinishingPressure({ maxExecutable: 5, admittedExecutable: 5, finishing: 2, candidate: { type: 'implementation', lane: 'portal' } }).decision, 'WAITING_CAPACITY');
   assert.equal(reconcileExecution({ state: 'WORKER_LOST', activeCandidates: ['a','b'], candidateSha: 'a' }).action, 'REVIEW_REQUIRED');
