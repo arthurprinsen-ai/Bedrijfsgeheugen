@@ -109,7 +109,7 @@ test('manual recovery is same-day, auditable and delegates to the canonical reco
 
 test('recovery runner owns degraded preparation, bounded publication and direct readback',()=>{
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
-  assert.match(recoveryRunner,/aws-0-eu-central-1\.pooler\.supabase\.com/);
+  assert.ok(recoveryRunner.includes('const POOLER = "aws-0-eu-central-1.pooler.supabase.com";'));
   assert.match(recoveryRunner,/readCanonicalState/);
   assert.match(recoveryRunner,/preparationNeeded/);
   assert.match(recoveryRunner,/CANONICAL_CONTENT_ALREADY_READY_OR_TERMINAL/);
