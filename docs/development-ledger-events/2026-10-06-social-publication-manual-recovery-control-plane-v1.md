@@ -26,3 +26,10 @@ Recovery retry:
 - reason: full content-loop exceeded its edge runtime budget, while LinkedIn company/personal canonical decisions remained resumable;
 - bounded canonical publishers must run even when preparation degrades;
 - final daily-decision readback remains fail-closed.
+
+
+Recovery replay request:
+- requested_at_merge_sha: 41336f780ebb8fdbbf497634ad553ab98caf8627
+- reason: bounded Supavisor recovery control plane is now protected-merged and requires same-day canonical runtime/readback proof
+- provider_side_effect_authority: powerhouse-social-publisher only
+- requested_run_date: 2026-10-06
