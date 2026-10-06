@@ -32,25 +32,16 @@
     "keep exactly Required plus Powerhouse CodeQL as PR admission authorities",
     "ratchet budgets downward",
     "broad migrations require scope-broad-approved plus exact scope",
-    "reuse immutable source/artifact identity"
+    "reuse immutable source/artifact identity",
+    "keep production applicability and terminalizer governance classification on one canonical predicate",
+    "historical replay fields contain executable brain tests; measured history is stored as evidence"
   ],
   "fingerprint": "control-plane|pr-fanout|duplicate-authority|ratchet-v1",
   "evaluation": {
     "historical_replay": [
-      {
-        "source": "ci-intelligence-run-37494062432",
-        "direct_pull_request_workflows": 59,
-        "workflow_fanout_p95": 9,
-        "required_queue_wait_seconds_p95": 94,
-        "required_total_seconds_p95": 395
-      },
-      {
-        "source": "control-plane-diet-candidate",
-        "direct_pr_authorities_before": 38,
-        "direct_pr_authorities_after": 7,
-        "admission_authorities": 2,
-        "lifecycle_recovery_authorities": 5
-      }
+      "tests/brain-netlify-governance-applicability.test.mjs",
+      "tests/brain-obligation-terminalizer-squash.test.mjs",
+      "tests/brain-ci-admission-single-flight.test.mjs"
     ],
     "summary": {
       "historical_replay": [
@@ -67,10 +58,26 @@
         "workflow_files": 123
       },
       "target": "hold PR admission at exactly Required plus Powerhouse CodeQL, with specialist assurance on merge_group or successful Required workflow_run consumers"
-    }
+    },
+    "historical_evidence": [
+      {
+        "source": "ci-intelligence-run-37494062432",
+        "direct_pull_request_workflows": 59,
+        "workflow_fanout_p95": 9,
+        "required_queue_wait_seconds_p95": 94,
+        "required_total_seconds_p95": 395
+      },
+      {
+        "source": "control-plane-diet-candidate",
+        "direct_pr_authorities_before": 38,
+        "direct_pr_authorities_after": 7,
+        "admission_authorities": 2,
+        "lifecycle_recovery_authorities": 5
+      }
+    ]
   },
   "root_cause": "Read-only specialist assurance, lifecycle recovery, writer routing and canonical admission accumulated as independent pull_request workflows, multiplying queueing and duplicate work per candidate SHA.",
-  "prevention": "Keep Required as the canonical PR admission orchestrator, keep Powerhouse CodeQL as the sole independent CodeQL authority, move read-only specialist assurance to merge_group, make post-admission Portal/writer verification consume successful Required workflow_run events, keep lifecycle recovery off PR admission, and enforce a downward-only 7-total/2-admission/5-lifecycle trigger budget.",
+  "prevention": "Keep Required as the canonical PR admission orchestrator, keep Powerhouse CodeQL as the sole independent CodeQL authority, move read-only specialist assurance to merge_group, make post-admission Portal/writer verification consume successful Required workflow_run events, keep lifecycle recovery off PR admission, and enforce a downward-only 7-total/2-admission/5-lifecycle trigger budget. Production applicability and post-merge terminalization share the canonical Netlify governance-path predicate, and machine learning replay references executable brain tests rather than measurement objects.",
   "evidence": {
     "tests": [
       "tests/control-plane-pr-trigger-ratchet.test.mjs",
