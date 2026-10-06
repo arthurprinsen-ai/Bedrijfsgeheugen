@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { evaluateProductionReadback } from '../tools/site-shell/verify-production-release.mjs';
+import { isNonProductionPath, isNetlifyRuntimePath } from '../tools/site-shell/production-supersession.mjs';
 
 const SHA = '9353ecfc8d5a463a89963ae9b671318d3db02d54';
 
@@ -242,3 +243,16 @@ test('scheduler governance and Supabase-only changes do not start Netlify produc
   assert.match(release,/deriveNetlifyDeploymentApplicability/);
 });
 
+
+
+test('Netlify control-plane registry and janitor remain non-runtime while runtime tools stay deployable', () => {
+  for (const path of [
+    'config/netlify-project-registry.json',
+    'tools/netlify/ephemeral-janitor.mjs',
+  ]) {
+    assert.equal(isNonProductionPath(path), true, path);
+    assert.equal(isNetlifyRuntimePath(path), false, path);
+  }
+  assert.equal(isNetlifyRuntimePath('tools/site-shell/restamp-release-identity.mjs'), true);
+  assert.equal(isNetlifyRuntimePath('netlify/functions/connector-readiness.mjs'), true);
+});
