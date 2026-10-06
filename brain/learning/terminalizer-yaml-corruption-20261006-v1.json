@@ -1,0 +1,39 @@
+{
+  "id": "terminalizer-yaml-corruption-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "post-merge-pr-3821",
+  "fingerprint": "powerhouse|terminalizer|workflow-corruption|contents-api-edit|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A multiline string replacement used to patch a shell continuation in powerhouse-obligation-terminalizer.yml corrupted the run block: the Candidate-Type condition was truncated and a duplicate tail of the workflow was appended. GitHub therefore registered a zero-job failed workflow on main.",
+  "prevention": [
+    "For workflow hotfiles, reconstruct from the last valid Git blob and apply line-local edits instead of multiline string replacement across shell continuations.",
+    "Require structural regression assertions that critical terminalizer steps occur exactly once.",
+    "Treat any zero-job workflow run after a workflow-file merge as a compile failure and block terminal closure.",
+    "Keep canonical Supabase migration-history routing changes bounded to classifier and path-allowlist lines."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-authority-routing-v1.test.mjs"
+    ],
+    "expected": "The terminalizer YAML remains syntactically intact, contains one copy of each critical step, and recognizes canonical Supabase migration-history recovery without weakening unknown-runtime fail-closed behavior."
+  },
+  "evidence": {
+    "source_pr": 3821,
+    "merge_sha": "3804307006a0e716413b319cac6a340beceac92f",
+    "failed_workflow_run": 37429302807,
+    "failure": "zero-job failed workflow after merge",
+    "corrupt_blob": "50770edbc5edc00c838b122da8690d96ead36ab2",
+    "restored_from_blob": "81f5404e4e20900b6f9a5297d4ef94c6246e7155",
+    "regression_test": "tests/brain-production-readback-authority-routing-v1.test.mjs",
+    "implementation": ".github/workflows/powerhouse-obligation-terminalizer.yml"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
