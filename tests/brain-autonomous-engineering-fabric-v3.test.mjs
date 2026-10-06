@@ -112,3 +112,59 @@ test('low-priority calibration does not block otherwise-safe upward tuning',()=>
   assert.equal(result.tuning.max_parallel_packages,5);
   assert.ok(result.tuning.speculative_execution_threshold<0.75);
 });
+
+
+test('Required SLO breach reduces pressure even when global queue looks healthy',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,ci:{direct_pr_workflow_budget:20},safety:{}};
+  const result=optimizeDailyTuning({metrics:{
+    queue_wait_seconds_p95:10,
+    required_queue_wait_seconds_p95:45,
+    required_total_seconds_p95:140,
+    execution_seconds_p95:80,
+    cancelled_jobs:0,
+    failed_jobs:0,
+    skipped_jobs:0,
+    sampled_jobs:50,
+    workflow_fanout_per_sha_p95:4,
+    direct_pull_request_workflow_count:12
+  },current});
+  assert.equal(result.tuning.max_parallel_packages,3);
+  assert.ok(result.decisions.includes('required-fast-gate-slo-breach'));
+  assert.equal(result.signals.required_queue_wait_seconds_p95,45);
+  assert.equal(result.signals.required_total_seconds_p95,140);
+});
+
+test('direct PR workflow budget only ratchets downward and never auto-expands',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,ci:{direct_pr_workflow_budget:12},safety:{}};
+  const reduced=optimizeDailyTuning({metrics:{queue_wait_seconds_p95:10,required_queue_wait_seconds_p95:10,required_total_seconds_p95:80,execution_seconds_p95:80,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:4,direct_pull_request_workflow_count:9},current});
+  assert.equal(reduced.tuning.ci.direct_pr_workflow_budget,9);
+  assert.ok(reduced.decisions.includes('ratchet-direct-pr-workflow-budget-down'));
+  const regression=optimizeDailyTuning({metrics:{queue_wait_seconds_p95:10,required_queue_wait_seconds_p95:10,required_total_seconds_p95:80,execution_seconds_p95:80,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:4,direct_pull_request_workflow_count:11},current:{...current,ci:{direct_pr_workflow_budget:9}}});
+  assert.equal(regression.tuning.ci.direct_pr_workflow_budget,9);
+  assert.ok(regression.decisions.includes('direct-pr-workflow-budget-regression-observed'));
+});
+
+test('adaptive optimizer cannot weaken immutable safety and observation budgets',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,ci:{direct_pr_workflow_budget:8},safety:{}};
+  const result=optimizeDailyTuning({metrics:{queue_wait_seconds_p95:5,required_queue_wait_seconds_p95:5,required_total_seconds_p95:50,execution_seconds_p95:50,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:3,direct_pull_request_workflow_count:8},current});
+  assert.equal(result.tuning.ci.direct_pr_workflow_target,2);
+  assert.equal(result.tuning.ci.max_pr_workflows_per_head,5);
+  assert.equal(result.tuning.ci.required_queue_p95_slo_seconds,30);
+  assert.equal(result.tuning.ci.required_total_p95_slo_seconds,120);
+  assert.equal(result.tuning.ci.agent_external_wait_budget_seconds,30);
+  assert.equal(result.tuning.ci.unchanged_state_no_repoll_seconds,120);
+  assert.equal(result.tuning.safety.autonomous_gate_weakening_forbidden,true);
+});
+
+test('optimizer and self evolution do not allocate standalone PR workflows',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const [optimizer,selfEvolution,intelligence]=await Promise.all([
+    readFile('.github/workflows/powerhouse-autonomous-engineering-optimizer.yml','utf8'),
+    readFile('.github/workflows/powerhouse-daily-self-evolution.yml','utf8'),
+    readFile('scripts/brain/powerhouse-ci-intelligence.mjs','utf8')
+  ]);
+  assert.doesNotMatch(optimizer,/^  pull_request:/m);
+  assert.doesNotMatch(selfEvolution,/^  pull_request:/m);
+  assert.doesNotMatch(optimizer,/fetch-depth:\s*0/);
+  for(const metric of ['required_queue_wait_seconds_p95','required_total_seconds_p95','direct_pull_request_workflow_count','duplicate_workflow_runs_7d','duplicate_open_obligations','retired_pr_churn_7d']) assert.match(intelligence,new RegExp(metric));
+});
