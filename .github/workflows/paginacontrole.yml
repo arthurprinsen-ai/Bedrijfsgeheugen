@@ -12,12 +12,6 @@ on:
       - 'assets/**'
       - '_redirects'
       - '.github/workflows/paginacontrole.yml'
-  pull_request:
-    paths:
-      - '**.html'
-      - 'assets/**'
-      - '_redirects'
-      - '.github/workflows/paginacontrole.yml'
   workflow_dispatch:
     inputs:
       delivery_mode:
