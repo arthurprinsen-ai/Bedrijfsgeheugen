@@ -15,12 +15,6 @@ on:
         description: 'Optional exact base SHA; empty means current main'
         required: false
         default: ''
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'brain/evidence/writer-canary-trigger/*.json'
-
 permissions:
   contents: write
   pull-requests: write
