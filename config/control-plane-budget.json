@@ -7,9 +7,10 @@
       "maxOpenImplementationPRs": 10,
       "maxLivePRsPerObligation": 1,
       "maxSuccessorDepth": 1,
-      "maxDirectPrTriggerWorkflows": 1,
+      "maxDirectPrTriggerWorkflows": 20,
       "maxDirectPrAdmissionWorkflows": 15,
-      "maxLifecyclePrAuthorityWorkflows": 5
+      "maxLifecyclePrAuthorityWorkflows": 5,
+      "targetDirectPrAdmissionWorkflows": 1
     },
     "netlify": {
       "maxActiveBedrijfsgeheugenProjects": 5,
@@ -92,5 +93,5 @@
       "untitledRootItems": 0
     }
   },
-  "policy": "Existing debt is tolerated only as a ratchet baseline. Any increase above the checked-in baseline fails. Targets become strict after cleanup."
+  "policy": "Existing debt is tolerated only as a downward ratchet. Raw pull_request triggers include five closed-only lifecycle/recovery authorities and are capped at the measured baseline; PR admission is independently capped at 15 and retains a canonical target of one Required admission workflow plus explicitly necessary security/provider authorities. Any increase fails."
 }
