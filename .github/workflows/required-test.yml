@@ -112,6 +112,31 @@ jobs:
           tests/linkedin-revenue-cockpit.test.mjs
           tests/linkedin-revenue-runtime.test.mjs
           tests/linkedin-revenue-engagement-cockpit.test.mjs
+      - name: Run consolidated business and portal merge assurance
+        if: github.event_name == 'merge_group'
+        run: |
+          node --test \
+            tests/portal-next-shell.test.mjs \
+            tests/intelligence-agent-runtime.test.mjs \
+            tests/policy-engine.test.mjs \
+            tests/trust-*.test.mjs \
+            tests/canonical-*.test.mjs \
+            tests/source-adapters.test.mjs \
+            tests/read-models.test.mjs \
+            tests/foundation-registry-eventstore.test.mjs \
+            tests/monitor-brain-ingest.test.mjs
+          python3 .github/scripts/portal_parity.py
+          node tests/homepage-hero-video.test.mjs
+          npm --prefix portal-v2 test
+          test -f portal-v2/index.html
+          test -f portal-v2/app.css
+          test -f portal-v2/app.js
+          test -f portal-v2/page-shell.js
+          test -f portal-v2/interaction.css
+          test -f portal-v2/brain.svg
+          grep -q "./brain.svg" portal-v2/app.js
+          grep -q "enhancePortalShell" portal-v2/app.js
+          grep -q "openPortalPage" portal-v2/app.js
       - uses: actions/cache@v4
         with:
           path: ~/.npm
