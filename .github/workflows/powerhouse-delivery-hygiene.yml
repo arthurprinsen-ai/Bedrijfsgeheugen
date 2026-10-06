@@ -53,6 +53,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action || '' }}
+          EVENT_PR_BODY: ${{ github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           EXPECTED_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
         run: |
@@ -72,7 +74,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
           import { setTimeout as sleep } from 'node:timers/promises';
-          import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
+          import { parseDeliveryMetadata, parseWriterLease, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
           import { validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage } from './tools/delivery/github-delivery-state-machine.mjs';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
 
@@ -142,6 +144,26 @@ jobs:
           try {
             if (process.env.EXPECTED_HEAD_SHA && headSha !== process.env.EXPECTED_HEAD_SHA) {
               throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
+            }
+            const eventLease = parseWriterLease(process.env.EVENT_PR_BODY || '');
+            const synchronize = process.env.EVENT_NAME === 'pull_request'
+              && process.env.EVENT_ACTION === 'synchronize';
+            if (synchronize && eventLease.state === 'TERMINAL_DELIVERY') {
+              throw new Error(`TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION:${eventLease.headSha || 'missing'}:${headSha}`);
+            }
+            if (synchronize && eventLease.state === 'MAIN_SYNC') {
+              const syncCommit = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/commits/${headSha}`);
+              const syncParents = (syncCommit?.parents || []).map(parent => String(parent?.sha || '').toLowerCase());
+              const expectedPreviousHead = String(eventLease.headSha || '').toLowerCase();
+              const expectedMainTarget = String(eventLease.mainEpochSha || '').toLowerCase();
+              const validMainSync = /^[0-9a-f]{40}$/.test(expectedPreviousHead)
+                && /^[0-9a-f]{40}$/.test(expectedMainTarget)
+                && syncParents.length >= 2
+                && syncParents.includes(expectedPreviousHead)
+                && syncParents.includes(expectedMainTarget);
+              if (!validMainSync) {
+                throw new Error(`INVALID_MAIN_SYNC_COMMIT:${expectedPreviousHead || 'missing'}:${expectedMainTarget || 'missing'}:${headSha}`);
+              }
             }
             const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
             const open = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);

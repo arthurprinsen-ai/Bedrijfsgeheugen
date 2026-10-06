@@ -268,6 +268,36 @@ jobs:
                   printf '%s\n' "$path_overlap"
                   continue
                 fi
+                current_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
+                pre_sync_body="$(printf '%s\n' "$current_body" | awk -v sync_main="$refresh_main_sha" '
+BEGIN { state_count=0; epoch_count=0 }
+{
+  if ($0 ~ /^Writer-Lease-State:/) {
+    print "Writer-Lease-State: MAIN_SYNC"
+    state_count++
+    next
+  }
+  if ($0 ~ /^Writer-Lease-Main-Epoch:/) {
+    print "Writer-Lease-Main-Epoch: " sync_main
+    epoch_count++
+    next
+  }
+  print
+}
+END {
+  if (state_count != 1 || epoch_count != 1) exit 42
+}
+')"
+                gh api --method PATCH "repos/$repo/pulls/$number" -f body="$pre_sync_body" >/dev/null
+                sync_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
+                sync_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$sync_body" | tail -n1)"
+                sync_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$sync_body" | tail -n1)"
+                sync_epoch="$(sed -n 's/^Writer-Lease-Main-Epoch: //p' <<<"$sync_body" | tail -n1)"
+                if [ "$sync_state" != "MAIN_SYNC" ] || [ "$sync_head" != "$head" ] || [ "$sync_epoch" != "$refresh_main_sha" ]; then
+                  echo "::warning::PR#$number MAIN_SYNC transition readback failed; restoring terminal lease."
+                  gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
+                  continue
+                fi
                 if gh api --method POST "repos/$repo/merges" -f base="$branch" -f head="$refresh_main_sha" -f commit_message="delivery: refresh PR #$number from $default_branch@$refresh_main_sha" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
                   new_head="$(gh api "repos/$repo/branches/$branch" --jq '.commit.sha')"
                   new_main="$refresh_main_sha"
@@ -279,18 +309,20 @@ const replaceOne=(text,label,value)=>{
   if(!re.test(text)) throw new Error(`MISSING_${label.replaceAll('-','_').toUpperCase()}`);
   return text.replace(re,`${label}: ${value}`);
 };
-let next=replaceOne(body,'Base-SHA',process.env.NEW_MAIN);
+let next=replaceOne(body,'Writer-Lease-State','TERMINAL_DELIVERY');
+next=replaceOne(next,'Base-SHA',process.env.NEW_MAIN);
 next=replaceOne(next,'Writer-Lease-Head',process.env.NEW_HEAD);
 next=replaceOne(next,'Writer-Lease-Main-Epoch',process.env.NEW_MAIN);
 process.stdout.write(next);
 NODE
                   )"
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
-                  echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head at main $new_main; metadata advanced before the next recovery cycle."
+                  echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head at main $new_main; MAIN_SYNC lease returned to exact TERMINAL_DELIVERY."
                   recovered_prs=$((recovered_prs + 1))
                   echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 else
-                  echo "::warning::PR#$number could not be refreshed automatically; preserving same lineage fail-closed."
+                  echo "::warning::PR#$number could not be refreshed automatically; restoring terminal lease fail-closed."
+                  gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
                   cat /tmp/merge-refresh.err || true
                 fi
                 ;;
