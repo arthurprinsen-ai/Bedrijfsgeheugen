@@ -13,11 +13,13 @@ test('supply-chain workflow creates SBOM and GitHub artifact attestation', () =>
   assert.match(yml, /dependency-review-action@/);
 });
 
-test('supply-chain PR work is dependency-scoped while provenance remains main-only', () => {
-  const yml = read('.github/workflows/engineering-supply-chain-trust.yml');
-  assert.match(yml, /pull_request:\s*\n\s+paths:\s*\n\s+- 'package\.json'\s*\n\s+- 'package-lock\.json'/);
-  assert.match(yml, /provenance:\s*\n\s+if: github\.event_name == 'push'/);
-  assert.match(yml, /push:\s*\n\s+branches: \[main\]/);
+test('supply-chain provenance remains main-only and dependency review moved into Required', () => {
+  const supply = read('.github/workflows/engineering-supply-chain-trust.yml');
+  const required = read('.github/workflows/required-test.yml');
+  assert.doesNotMatch(supply, /^  pull_request:/m);
+  assert.match(supply, /provenance:\s*\n\s+if: github\.event_name == 'push'/);
+  assert.match(required, /actions\/dependency-review-action@v4/);
+  assert.match(required, /dependency_review_required/);
 });
 
 test('CodeQL workflow is present with security-events permission', () => {
@@ -32,23 +34,25 @@ test('duplicate governance PR fanout is routed through Required while supply-cha
   const classifier = read('.github/workflows/learning-contract-delivery-classifier-tests.yml');
   assert.doesNotMatch(intelligence, /^\s*pull_request\s*:/m);
   assert.doesNotMatch(classifier, /^\s*pull_request\s*:/m);
-  assert.match(supply, /pull_request:[\s\S]*?paths:/);
+  assert.doesNotMatch(supply, /^  pull_request:/m);
   for (const [name, yml] of [['engineering intelligence', intelligence], ['supply chain', supply], ['learning classifier', classifier]]) {
-    assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
+    assert.doesNotMatch(yml, /^  pull_request:/m, `${name} must not own PR HEAD ingress`);
   }
 });
 
-test('supply-chain provenance is post-merge while dependency review remains fail-closed on dependency PRs', () => {
-  const yml = read('.github/workflows/engineering-supply-chain-trust.yml');
-  assert.match(yml, /dependency-review:[\s\S]*?if:\s*github\.event_name == 'pull_request'/);
-  assert.match(yml, /provenance:[\s\S]*?if:\s*github\.event_name == 'push'/);
-  assert.match(yml, /package-lock\.json/);
+test('dependency review remains fail-closed inside Required while provenance is post-merge', () => {
+  const supply = read('.github/workflows/engineering-supply-chain-trust.yml');
+  const required = read('.github/workflows/required-test.yml');
+  assert.match(required, /dependency_review:[\s\S]*?fail-on-severity: high/);
+  assert.match(required, /npm audit --package-lock-only --audit-level=high/);
+  assert.match(supply, /provenance:[\s\S]*?if:\s*github\.event_name == 'push'/);
 });
 
-test('Required test remains the protected SHA-specific admission authority', () => {
+test('Required test remains the only protected PR admission authority and owns merge security', () => {
   const yml = read('.github/workflows/required-test.yml');
-  assert.match(yml, /group:\s*required-test-\$\{\{[\s\S]*?github\.event\.pull_request\.head\.sha/);
-  assert.match(yml, /cancel-in-progress:\s*true/);
+  assert.doesNotMatch(yml, /^concurrency:/m);
   assert.match(yml, /test:\n\s+name:\s*test/);
-  assert.match(yml, /needs:\s*\[hygiene, preflight, netlify_build_parity, backend, portal, automation, website\]/);
+  assert.match(yml, /dependency_review/);
+  assert.match(yml, /security_codeql/);
+  assert.match(yml, /merge_group:/);
 });
