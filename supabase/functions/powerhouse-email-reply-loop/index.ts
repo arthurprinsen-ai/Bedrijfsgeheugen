@@ -18,7 +18,7 @@ async function resolveGmail(db:any,apiKey:string){
   const pinned=await secret(db,'COMPOSIO_GMAIL_CONNECTED_ACCOUNT_ID');
   const r=await fetch(COMPOSIO_BASE+'/connected_accounts?toolkit_slugs=gmail&statuses=ACTIVE&account_type=ALL&limit=20',{headers:{'x-api-key':apiKey}});
   const b:any=await r.json().catch(()=>({}));
-  if(!r.ok)throw new Error('GMAIL_DISCOVERY_'+r.status+':'+JSON.stringify(b).slice(0,300));
+  if(!r.ok)throw new Error('GMAIL_DISCOVERY_HTTP_'+r.status);
   const items=Array.isArray(b?.items)?b.items:Array.isArray(b?.data?.items)?b.data.items:Array.isArray(b?.data)?b.data:[];
   const active=items.filter((x:any)=>clean(x?.status).toUpperCase()==='ACTIVE'&&x?.is_disabled!==true);
   if(active.length===0)throw new Error('GMAIL_CONNECTION_REQUIRED');
@@ -35,7 +35,7 @@ async function gmailFetch(apiKey:string,accountId:string,query:string){
     }})
   });
   const b:any=await r.json().catch(()=>({}));
-  if(!r.ok||b?.successful!==true)throw new Error('GMAIL_FETCH_'+r.status+':'+JSON.stringify(b).slice(0,500));
+  if(!r.ok||b?.successful!==true)throw new Error('GMAIL_FETCH_FAILED_'+r.status);
   const d=b?.data||b;
   return Array.isArray(d?.messages)?d.messages:[];
 }
@@ -211,8 +211,16 @@ Deno.serve(async(req:Request)=>{
 
     return json({ok:true,contract:CONTRACT,eligible:eligible.length,inbox_messages:inbox.length,ingested,duplicates,followups,suppressions,results});
   }catch(err:any){
-    const message=clean(err?.message||err).slice(0,500);
-    try{await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-email-reply-loop',soort:'commercial-learning',status:'fout',detail:message,gegevens:{contract:CONTRACT}});}catch{}
-    return json({ok:false,contract:CONTRACT,error:message},503);
+    const internal=clean(err?.message||err).slice(0,300);
+    console.error('POWERHOUSE_EMAIL_REPLY_LOOP_FAILED',internal);
+    try{await db.from('bg_gezondheid').insert({
+      gemeten_op:new Date().toISOString(),
+      onderdeel:'powerhouse-email-reply-loop',
+      soort:'commercial-learning',
+      status:'fout',
+      detail:'EMAIL_REPLY_LOOP_FAILED',
+      gegevens:{contract:CONTRACT,failure_class:'runtime_dependency'}
+    });}catch{}
+    return json({ok:false,contract:CONTRACT,error:'EMAIL_REPLY_LOOP_FAILED'},503);
   }
 });
