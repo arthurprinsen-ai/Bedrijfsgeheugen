@@ -70,3 +70,36 @@ test('sync uses bounded parallelism while preserving complete idempotent coverag
   assert.equal(maxActive,3);
   assert.equal(new Set(seen).size,7);
 });
+
+
+test('sync prefetches existing Notion pages once and bypasses per-row lookup for updates',async()=>{
+  const many={...projection,companyDecisions:Array.from({length:4},(_,index)=>({
+    ...projection.companyDecisions[0],
+    id:`d${index+1}`,
+    title:`Besluit ${index+1}`
+  }))};
+  const calls=[];
+  const writer={
+    prefetch:async fingerprints=>new Map(fingerprints.map(fingerprint=>[fingerprint,`page:${fingerprint}`])),
+    upsert:async(row,options={})=>{calls.push({row,options});return {ok:true,id:options.pageId};}
+  };
+  const result=await syncCompanyDecisionsToNotion(many,{writer,concurrency:3});
+  assert.equal(result.succeeded,4);
+  assert.equal(result.prefetch.used,true);
+  assert.equal(result.prefetch.found,4);
+  assert.equal(calls.length,4);
+  assert.ok(calls.every(call=>call.options.pageId));
+});
+
+test('sync falls back to legacy idempotent upsert when prefetch is transiently unavailable',async()=>{
+  const calls=[];
+  const writer={
+    prefetch:async()=>{throw new Error('temporary prefetch failure');},
+    upsert:async(row,options={})=>{calls.push(options);return {ok:true,id:row.decisionId};}
+  };
+  const result=await syncCompanyDecisionsToNotion(projection,{writer});
+  assert.equal(result.succeeded,1);
+  assert.equal(result.prefetch.used,false);
+  assert.match(result.prefetch.error,/temporary prefetch failure/);
+  assert.deepEqual(calls,[{}]);
+});
