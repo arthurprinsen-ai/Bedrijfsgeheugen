@@ -91,7 +91,7 @@ jobs:
 
           is_governance_path() {
             case "$1" in
-              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json)
+              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json|brain/contracts/production-readback-v1.json|brain/contracts/supabase-edge-runtime-readback-v1.json)
                 return 0
                 ;;
             esac
@@ -169,39 +169,59 @@ jobs:
 
           mapfile -t changed_functions < <(jq -r '.supabase[]?' <<<"$runtime_classes" | sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' | sort -u)
           supabase_required=false
+          supabase_readback_kind=""
           printf '[]\n' > .artifacts/supabase-provider-readbacks.json
           if [ "${#changed_functions[@]}" -gt 0 ]; then
             supabase_required=true
             provider_lines="$(printf '%s\n' "$PR_BODY" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
-            if [ -z "$provider_lines" ]; then
-              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING"
-              exit 78
-            fi
+            provider_complete=true
             readbacks='[]'
-            for fn in "${changed_functions[@]}"; do
-              line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
-              if [ -z "$line" ]; then
-                echo "::error::SUPABASE_PROVIDER_READBACK_INCOMPLETE:${fn}"
-                exit 78
-              fi
-              version="$(sed -nE 's/.*;version=([1-9][0-9]*);.*/\1/p' <<<"$line")"
-              runtime_sha256="$(sed -nE 's/.*;runtime_sha256=([0-9a-fA-F]{64})$/\1/p' <<<"$line" | tr '[:upper:]' '[:lower:]')"
-              readbacks="$(jq -c --arg fn "$fn" --argjson version "$version" --arg runtime_sha256 "$runtime_sha256" '. + [{function:$fn,version:$version,runtime_sha256:$runtime_sha256,state:"ACTIVE"}]' <<<"$readbacks")"
-              echo "SUPABASE_PROVIDER_READBACK_PROVEN:${line}"
-            done
-            printf '%s\n' "$readbacks" > .artifacts/supabase-provider-readbacks.json
+            if [ -z "$provider_lines" ]; then
+              provider_complete=false
+              echo "::notice::SUPABASE_PROVIDER_READBACK_MISSING:using_live_runtime_fingerprint"
+            else
+              for fn in "${changed_functions[@]}"; do
+                line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+                if [ -z "$line" ]; then
+                  provider_complete=false
+                  echo "::notice::SUPABASE_PROVIDER_READBACK_INCOMPLETE:${fn}:using_live_runtime_fingerprint"
+                  break
+                fi
+                version="$(sed -nE 's/.*;version=([1-9][0-9]*);.*/\1/p' <<<"$line")"
+                runtime_sha256="$(sed -nE 's/.*;runtime_sha256=([0-9a-fA-F]{64})$/\1/p' <<<"$line" | tr '[:upper:]' '[:lower:]')"
+                readbacks="$(jq -c --arg fn "$fn" --argjson version "$version" --arg runtime_sha256 "$runtime_sha256" '. + [{function:$fn,version:$version,runtime_sha256:$runtime_sha256,state:"ACTIVE"}]' <<<"$readbacks")"
+                echo "SUPABASE_PROVIDER_READBACK_PROVEN:${line}"
+              done
+            fi
+
+            if [ "$provider_complete" = true ]; then
+              printf '%s\n' "$readbacks" > .artifacts/supabase-provider-readbacks.json
+              supabase_readback_kind="provider"
+            else
+              printf '%s' "$non_governance_paths" > /tmp/supabase-runtime-changed-paths.txt
+              node tools/delivery/supabase-edge-runtime-readback.mjs verify \
+                --paths-file /tmp/supabase-runtime-changed-paths.txt \
+                --output .artifacts/supabase-edge-runtime-readback.json
+              supabase_readback_kind="runtime"
+              echo "SUPABASE_EDGE_RUNTIME_FINGERPRINT_READBACK_PROVEN:functions=${changed_functions[*]}"
+            fi
           fi
 
           netlify_required="$(jq -r '(.netlify|length)>0' <<<"$runtime_classes")"
           if [ "$netlify_required" != true ]; then
             [ "$supabase_required" = true ] || {
-              echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
+              echo "::error::UNWIRED_RUNTIME_READBACK:UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
               printf '%s' "$non_governance_paths"
               exit 78
             }
             prove_main_containment
-            echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
-            echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            if [ "$supabase_readback_kind" = "provider" ]; then
+              echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            else
+              echo "readback_mode=supabase_edge_runtime" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_RUNTIME_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            fi
             exit 0
           fi
 
@@ -223,7 +243,11 @@ jobs:
                 if git merge-base --is-ancestor "$MERGE_SHA" "$observed" && [ -s /tmp/runtime.html ]; then
                   echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
                   if [ "$supabase_required" = true ]; then
-                    echo "readback_mode=netlify_runtime_supabase_provider" >> "$GITHUB_OUTPUT"
+                    if [ "$supabase_readback_kind" = "provider" ]; then
+                      echo "readback_mode=netlify_runtime_supabase_provider" >> "$GITHUB_OUTPUT"
+                    else
+                      echo "readback_mode=multi_runtime" >> "$GITHUB_OUTPUT"
+                    fi
                   else
                     echo "readback_mode=netlify_runtime" >> "$GITHUB_OUTPUT"
                   fi
@@ -257,7 +281,11 @@ jobs:
           const providerReadbacks=existsSync('.artifacts/supabase-provider-readbacks.json')
             ? JSON.parse(readFileSync('.artifacts/supabase-provider-readbacks.json','utf8'))
             : [];
+          const runtimeFingerprintReadback=existsSync('.artifacts/supabase-edge-runtime-readback.json')
+            ? JSON.parse(readFileSync('.artifacts/supabase-edge-runtime-readback.json','utf8'))
+            : null;
           const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','netlify_runtime_supabase_provider'];
+          runtimeReadbackModes.push('supabase_edge_runtime','multi_runtime');
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -274,11 +302,13 @@ jobs:
               runtime_function_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               production_readback_not_applicable:['non_runtime','supabase_history_parity_recovery'].includes(process.env.READBACK_MODE),
               supabase_provider_readback:['supabase_edge_provider','netlify_runtime_supabase_provider'].includes(process.env.READBACK_MODE),
+              supabase_runtime_fingerprint_readback:['supabase_edge_runtime','multi_runtime'].includes(process.env.READBACK_MODE),
               outcome_evidence:true,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
             },
-            supabase_provider_readbacks:providerReadbacks
+            supabase_provider_readbacks:providerReadbacks,
+            supabase_runtime_fingerprint_readback:runtimeFingerprintReadback
           };
           if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
@@ -287,6 +317,9 @@ jobs:
           }
           if(evidence.checks.supabase_provider_readback && providerReadbacks.length===0) {
             throw new Error('TERMINAL_SUPABASE_PROVIDER_READBACK_EVIDENCE_MISSING');
+          }
+          if(evidence.checks.supabase_runtime_fingerprint_readback && runtimeFingerprintReadback?.status!=='LIVE_VERIFIED') {
+            throw new Error('TERMINAL_SUPABASE_RUNTIME_FINGERPRINT_EVIDENCE_MISSING');
           }
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));

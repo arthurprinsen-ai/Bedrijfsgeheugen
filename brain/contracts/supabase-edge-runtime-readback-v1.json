@@ -1,0 +1,19 @@
+{
+  "id": "powerhouse-supabase-edge-runtime-readback-v1",
+  "owner": "delivery-control-plane",
+  "system": "BRAIN/Powerhouse",
+  "status": "canonical",
+  "project_ref": "adhjwmvyoixzjtmiroln",
+  "runtime_prefix": "supabase/functions/",
+  "entrypoint": "index.ts",
+  "probe_mode": "runtime_readback",
+  "probe_method": "GET",
+  "public_metadata_only": true,
+  "source_fingerprint": "sha256-normalized-source-with-declaration-placeholder",
+  "deployment_identity": "DENO_DEPLOYMENT_ID",
+  "max_attempts": 6,
+  "timeout_ms": 10000,
+  "fail_closed": true,
+  "verifier": "tools/delivery/supabase-edge-runtime-readback.mjs",
+  "contract_test": "tests/brain-production-release-readback-scope.test.mjs"
+}

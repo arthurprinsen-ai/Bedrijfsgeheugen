@@ -99,6 +99,7 @@ jobs:
             'platform/read-models/',
           ];
           const netlifyRuntimeRequired=!readbackControlPlaneOnly && runtimeChangedPaths.some(path => netlifyRuntimePrefixes.some(prefix => path.startsWith(prefix)));
+          const supabaseRuntimeRequired=!readbackControlPlaneOnly && runtimeChangedPaths.some(path => path.startsWith('supabase/functions/'));
           const deploymentRequired=browserRequired || netlifyRuntimeRequired;
 
           let routes=[];
@@ -119,7 +120,8 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`portal_required=${portalRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
-          console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
+          await appendFile(process.env.GITHUB_OUTPUT,`supabase_runtime_required=${supabaseRuntimeRequired}\n`);
+          console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,supabase_runtime_required:supabaseRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - name: Persist promotion-required state before waiting
         if: steps.scope.outputs.deployment_required == 'true'
@@ -201,6 +203,17 @@ jobs:
           done
           echo "Production never exposed exact release marker + deploy identity for ${EXPECTED_COMMIT}" >&2
           exit 1
+      - id: supabase_runtime
+        name: Verify exact Supabase Edge Function runtime fingerprints
+        if: steps.scope.outputs.supabase_runtime_required == 'true'
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          git diff --name-only HEAD^ HEAD > /tmp/supabase-runtime-changed-paths.txt
+          node tools/delivery/supabase-edge-runtime-readback.mjs verify \
+            --paths-file /tmp/supabase-runtime-changed-paths.txt \
+            --output .artifacts/supabase-edge-runtime-readback.json
+
       - name: Record exact deployment not applicable
         if: steps.scope.outputs.deployment_required != 'true'
         run: |

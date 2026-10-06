@@ -1,0 +1,44 @@
+{
+  "fingerprint": "supabase-edge-runtime-readback|terminalizer-unwired-runtime|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "content-publication:2026-10-06:delivery-recovery",
+  "compiler": {
+    "failure_class": "UNWIRED_SUPABASE_EDGE_RUNTIME_TERMINAL_READBACK",
+    "scope": "SUPABASE_EDGE_RUNTIME_AND_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The terminal delivery path had exact production readback for Netlify-hosted runtime, but no equivalent route for Supabase Edge Function source. A protected merge could therefore be correct and production-proven at the provider while Powerhouse Obligation Terminalizer still failed closed with UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+  "failed_approach": "Treating every non-governance runtime change as Netlify-hosted runtime and using release.json as the only runtime identity source cannot prove Supabase Edge Function deployment identity.",
+  "fix": "Add a side-effect-free runtime_readback mode to affected Edge Functions, bind it to a normalized SHA-256 source fingerprint and DENO_DEPLOYMENT_ID, and route Supabase function paths through that verifier in Production Release Readback and Powerhouse Obligation Terminalizer.",
+  "prevention_rule": "Every executable production runtime family must have an explicit fail-closed provider readback adapter before a terminal delivery workflow may classify it as LIVE_BEWEZEN; unknown runtime paths remain blocked.",
+  "evidence": {
+    "tests": [
+      "tests/brain-production-release-readback-scope.test.mjs",
+      "tests/brain-obligation-terminalizer-squash.test.mjs"
+    ],
+    "control_plane": [
+      ".github/workflows/production-release-readback.yml",
+      ".github/workflows/powerhouse-obligation-terminalizer.yml",
+      "tools/delivery/supabase-edge-runtime-readback.mjs"
+    ],
+    "runtime": [
+      "supabase/functions/powerhouse-social-publisher/index.ts",
+      "supabase/functions/powerhouse-blog-queue/index.ts"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  }
+}

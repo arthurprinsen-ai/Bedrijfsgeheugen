@@ -223,3 +223,37 @@ test('scheduler governance changes do not start production snapshot or release r
   assert.ok(snapshot.includes('config/powerhouse-agent-delivery-scheduler-v1.json'));
   assert.match(release,/governanceOnlyExact[\s\S]*config\/powerhouse-agent-delivery-scheduler-v1\.json/);
 });
+
+test('Supabase Edge Function runtime changes require exact public runtime fingerprint readback', async () => {
+  const [workflow, terminalizer, contract, helper] = await Promise.all([
+    readFile('.github/workflows/production-release-readback.yml','utf8'),
+    readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8'),
+    readFile('brain/contracts/supabase-edge-runtime-readback-v1.json','utf8').then(JSON.parse),
+    import('../tools/delivery/supabase-edge-runtime-readback.mjs'),
+  ]);
+  assert.equal(contract.id, 'powerhouse-supabase-edge-runtime-readback-v1');
+  assert.equal(contract.project_ref, 'adhjwmvyoixzjtmiroln');
+  assert.equal(contract.fail_closed, true);
+  assert.match(workflow, /supabase_runtime_required/);
+  assert.match(workflow, /supabase-edge-runtime-readback\.mjs verify/);
+  assert.match(terminalizer, /readback_mode=supabase_edge_runtime/);
+  assert.match(terminalizer, /readback_mode=multi_runtime/);
+  assert.match(terminalizer, /UNWIRED_RUNTIME_READBACK/);
+
+  for (const slug of ['powerhouse-social-publisher','powerhouse-blog-queue']) {
+    const source = await readFile(`supabase/functions/${slug}/index.ts`,'utf8');
+    const validated = helper.validateRuntimeSource({source,slug});
+    assert.match(validated.source_fingerprint, /^[0-9a-f]{64}$/);
+    assert.ok(source.indexOf("mode') === 'runtime_readback'") < source.indexOf("SUPABASE_SERVICE_ROLE_KEY"), `${slug} readback must be side-effect-free and precede secret/database setup`);
+    assert.match(source, /DENO_DEPLOYMENT_ID/);
+  }
+});
+
+test('canonical production readback contract explicitly governs Supabase Edge runtime truth', async () => {
+  const contract = JSON.parse(await readFile('brain/contracts/production-readback-v1.json','utf8'));
+  assert.equal(contract.productionTruth.supabaseEdgeRuntimeReadbackRequired, true);
+  assert.equal(contract.productionTruth.supabaseEdgeRuntimePrefix, 'supabase/functions/');
+  assert.equal(contract.productionTruth.supabaseEdgeRuntimeContract, 'brain/contracts/supabase-edge-runtime-readback-v1.json');
+  assert.equal(contract.productionTruth.supabaseEdgeRuntimeVerifier, 'tools/delivery/supabase-edge-runtime-readback.mjs');
+});
+

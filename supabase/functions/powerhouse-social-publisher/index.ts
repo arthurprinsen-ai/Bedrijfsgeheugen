@@ -8,6 +8,8 @@ const GATE = 'channel-identity-hard-gate-v3';
 const CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PUBLICATION_AUTHORITY = 'social-publication-authority-v1';
 const INSTAGRAM_POLICY = 'instagram-mira-reel-only-v3';
+const RUNTIME_READBACK_CONTRACT='powerhouse-supabase-edge-runtime-readback-v1';
+const RUNTIME_READBACK_FINGERPRINT='104ac380b720b4409e0b5d043e4ef08fe34470c5883c55512b8f259f88d09c42';
 const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedin_company: COMPANY, instagram_company: INSTAGRAM };
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
@@ -1016,6 +1018,18 @@ function instagramInput(art:any,due:Date,future:boolean){
 
 Deno.serve(async (req) => {
   try {
+  const requestUrl = new URL(req.url);
+  if (req.method === 'GET' && requestUrl.searchParams.get('mode') === 'runtime_readback') {
+    return json({
+      ok: true,
+      contract: RUNTIME_READBACK_CONTRACT,
+      function: 'powerhouse-social-publisher',
+      source_fingerprint: RUNTIME_READBACK_FINGERPRINT,
+      deployment_id: Deno.env.get('DENO_DEPLOYMENT_ID') || null,
+      region: Deno.env.get('SB_REGION') || null,
+    });
+  }
+
   if (req.method !== 'POST') return json({ ok: false, error: 'POST_ONLY' }, 405);
   const url = Deno.env.get('SUPABASE_URL') || '';
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';

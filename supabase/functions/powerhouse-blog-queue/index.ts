@@ -1,6 +1,8 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const VERSION='v7-repository-native-prewrite';
+const RUNTIME_READBACK_CONTRACT='powerhouse-supabase-edge-runtime-readback-v1';
+const RUNTIME_READBACK_FINGERPRINT='85ce601136134edeea340f2b27f790e475ac94cbe9187473d87832883a5c98b3';
 const clean=(v:unknown)=>String(v??'').trim();
 function jsonObject(value:any){
   if(value===null||value===undefined)return {};
@@ -20,6 +22,18 @@ const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam'
 const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
 
 Deno.serve(async(req)=>{
+  const requestUrl = new URL(req.url);
+  if (req.method === 'GET' && requestUrl.searchParams.get('mode') === 'runtime_readback') {
+    return json({
+      ok: true,
+      contract: RUNTIME_READBACK_CONTRACT,
+      function: 'powerhouse-blog-queue',
+      source_fingerprint: RUNTIME_READBACK_FINGERPRINT,
+      deployment_id: Deno.env.get('DENO_DEPLOYMENT_ID') || null,
+      region: Deno.env.get('SB_REGION') || null,
+    });
+  }
+
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
   const url=Deno.env.get('SUPABASE_URL')||'',key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   if(!url||!key) return json({ok:false,error:'CONFIG'},500);

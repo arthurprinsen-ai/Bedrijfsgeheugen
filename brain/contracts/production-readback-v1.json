@@ -92,7 +92,11 @@
       "tools/normaliseer-site-ui.mjs",
       "tools/genereer-sitemap.mjs"
     ],
-    "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json"
+    "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json",
+    "supabaseEdgeRuntimeReadbackRequired": true,
+    "supabaseEdgeRuntimePrefix": "supabase/functions/",
+    "supabaseEdgeRuntimeContract": "brain/contracts/supabase-edge-runtime-readback-v1.json",
+    "supabaseEdgeRuntimeVerifier": "tools/delivery/supabase-edge-runtime-readback.mjs"
   },
   "connectorReadiness": {
     "maxAttempts": 8,
