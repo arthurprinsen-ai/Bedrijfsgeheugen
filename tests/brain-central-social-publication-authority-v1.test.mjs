@@ -156,13 +156,9 @@ test('content operations shares the canonical scheduler authority with social pu
 });
 
 
-test('LinkedIn auth and company-admin configuration boundaries remain resumable before provider side effects',()=>{
-  assert.match(publisher,/isLinkedInAuthPreflightError/);
-  assert.match(publisher,/CANONICAL_CONNECTION_NOT_PINNED/);
-  assert.match(publisher,/PINNED_CONNECTION_NOT_ACTIVE/);
-  assert.match(publisher,/HUMAN_BOUNDARY_R_ORGANIZATION_ADMIN_REQUIRED/);
-  assert.match(publisher,/COMPANY_REAUTH_REQUIRED/);
-  assert.match(publisher,/status:'waiting_reauth'/);
-  assert.match(publisher,/possible_provider_side_effect:false/);
-  assert.match(publisher,/state:'content_ready'/);
+test('recovery runner delegates provider side effects only to the canonical publisher',()=>{
+  assert.match(recoveryRunner,/powerhouse-social-publisher/);
+  assert.match(recoveryRunner,/mode: "publish_only"/);
+  assert.match(recoveryRunner,/channels: \[channel\]/);
+  assert.doesNotMatch(recoveryRunner,/LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH|api\.buffer\.com/);
 });
