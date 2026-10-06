@@ -1,0 +1,28 @@
+{
+  "fingerprint": "linkedin-company-oauth-production-sql-history-20261006-v1",
+  "executable": false,
+  "production_authority": "Supabase project adhjwmvyoixzjtmiroln",
+  "purpose": "Record already-applied production migration lineage without replaying credential-bearing historical SQL from Git.",
+  "applied_versions": [
+    "20261006102646",
+    "20261006102754",
+    "20261006103336",
+    "20261006103408",
+    "20261006103432",
+    "20261006103445",
+    "20261006103617",
+    "20261006103856"
+  ],
+  "terminal_invariant": {
+    "channel": "linkedin_company",
+    "requires": [
+      "fresh organization-admin OAuth",
+      "canonical organization urn:li:organization:18234216",
+      "successful organization provider create",
+      "exact provider readback",
+      "durable LinkedIn share/ugcPost URN"
+    ],
+    "published_without_exact_readback_is_terminal": false
+  },
+  "note": "The credential-bearing production reauthorization helper remains production-side only. This history file contains no secrets and is non-executable."
+}
