@@ -500,3 +500,15 @@ Fingerprint: `delivery|terminal-closure-single-owner|governance-noop-production|
 - `Obligation Terminal Closure` is fallback/manual for lineages not owned by that terminal writer lease; it must not race the canonical terminalizer.
 - Governance-only scheduler config, System Map and delivery-classifier changes must not start Netlify production snapshot/readback.
 - Runtime, website, portal, Netlify-function or Supabase-function changes keep their normal production/provider proof.
+
+
+## Canonical Netlify deployment applicability
+
+Fingerprint: `main-push-fanout-budget-20260925-v1|netlify-applicability-v2`.
+
+All Netlify build/deploy decisions use `tools/delivery/netlify-deployment-applicability.mjs`:
+- Required pre-merge parity, native Netlify build-ignore, Production Source Snapshot and Production Release Readback share this authority;
+- pure Supabase/provider/backend changes that do not alter Netlify-hosted runtime never trigger a Netlify production deploy or browser proof;
+- website, Portal V2 and Netlify-hosted runtime changes remain fail-closed and require their normal exact-SHA production evidence;
+- manual production dispatch may explicitly force deployment; a manual snapshot with deploy=false remains non-mutating;
+- static `paths-ignore` is only an early fan-out optimization, never the canonical applicability decision.
