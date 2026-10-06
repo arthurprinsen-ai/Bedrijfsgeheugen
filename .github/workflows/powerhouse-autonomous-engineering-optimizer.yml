@@ -24,10 +24,11 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify autonomous engineering fabric
+      - name: Verify autonomous engineering fabric and CI control plane
         run: |
-          node --test tests/brain-autonomous-engineering-fabric-v3.test.mjs
+          node --test tests/brain-autonomous-engineering-fabric-v3.test.mjs tests/brain-ci-control-plane-v2.test.mjs
           node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+          node scripts/brain/powerhouse-ci-control-plane-v2.mjs
       - name: Measure current CI
         if: github.event_name != 'pull_request'
         env:
