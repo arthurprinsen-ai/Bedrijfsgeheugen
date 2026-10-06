@@ -173,3 +173,22 @@ test('Supabase Edge config changes are scoped to declared functions only',async(
   assert.match(workflow,/supabase\/config\.toml/);
   assert.doesNotMatch(workflow,/find supabase\/functions -mindepth 1 -maxdepth 1 -type d -printf/);
 });
+
+
+test('Supabase Git production source blob anchors force config admission for social Edge runtime changes',async()=>{
+  const config=await readFile('supabase/config.toml','utf8');
+  const functions=[
+    ['powerhouse-social-publisher','supabase/functions/powerhouse-social-publisher/index.ts'],
+    ['social-recovery-runner','supabase/functions/social-recovery-runner/index.ts'],
+  ];
+  for(const [slug,path] of functions){
+    const header=`[functions.${slug}]`;
+    const start=config.indexOf(header);
+    assert.notEqual(start,-1,`missing config section for ${slug}`);
+    const after=config.slice(start+header.length);
+    const next=after.indexOf('\n[functions.');
+    const section=next===-1?after:after.slice(0,next);
+    const blob=execFileSync('git',['hash-object',path],{encoding:'utf8'}).trim();
+    assert.ok(section.includes(`# production_source_git_blob = "${blob}"`),`${slug} production source anchor must match ${blob}`);
+  }
+});

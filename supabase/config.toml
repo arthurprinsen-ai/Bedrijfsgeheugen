@@ -26,11 +26,13 @@ verify_jwt = false
 entrypoint = "./functions/supabase-migration-repair-bridge/index.ts"
 
 [functions.powerhouse-social-publisher]
+# production_source_git_blob = "6a3c4f6f79a3ecccff67b91930252a3924d85244"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-social-publisher/index.ts"
 
 [functions.social-recovery-runner]
+# production_source_git_blob = "f0837918011e318c38d0d4958765e358054d5fc6"
 enabled = true
 verify_jwt = true
 entrypoint = "./functions/social-recovery-runner/index.ts"

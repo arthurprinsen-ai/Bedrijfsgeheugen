@@ -1,6 +1,6 @@
 {
   "id": "supabase-edge-production-authority-v1",
-  "fingerprint": "supabase-edge|production-promotion|source-equivalent-deployment-anchor-api-readback|v7",
+  "fingerprint": "supabase-edge|production-promotion|config-source-anchor-source-equivalent-readback|v8",
   "status": "canonical",
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source_of_truth": "GITHUB_PROTECTED_MAIN",
@@ -13,11 +13,11 @@
   "manual_recovery": "ATTEST_TRUSTED_CURRENT_MAIN_WITH_SOURCE_EQUIVALENT_SUCCESSFUL_DEPLOYMENT_ANCHOR",
   "drift_policy": "FAIL_CLOSED",
   "concurrency": "SINGLE_FLIGHT",
-  "deployment_scope": "Supabase GitHub Integration deploys only Edge Functions declared in supabase/config.toml. Production authority scopes config.toml/_shared changes to that declared set and rejects any directly changed function that is undeclared.",
+  "deployment_scope": "Supabase GitHub Integration production admission is anchored through supabase/config.toml. Every authority-critical social Edge Function is declared there and carries a production_source_git_blob comment that must equal git hash-object of its entrypoint. Any source change therefore requires a config.toml change before merge, forcing the GitHub Integration production deployment DAG to observe the runtime delta.",
   "readback": "current protected-main first uses an exact-SHA successful Supabase GitHub App production check when present; otherwise it resolves a bounded recent successful production deployment anchor whose supabase/config.toml plus selected Edge Function source trees are byte-equivalent to the current protected-main SHA. The anchor check is observed twice. GitHub Actions then uses a scoped read-only SUPABASE_ACCESS_TOKEN with `supabase functions download --use-api` and byte-compares the complete provider file set against current protected main.",
-  "terminal_truth": "protected merge -> Supabase GitHub Integration production deployment anchor -> proof current protected-main selected runtime is source-equivalent to that successful anchor -> scoped PAT server-side source readback via --use-api -> byte-for-byte provider-source parity -> no newer Supabase runtime drift",
+  "terminal_truth": "protected merge with current production_source_git_blob anchors -> Supabase GitHub Integration production deployment -> source-equivalent successful deployment anchor -> scoped PAT server-side source readback via --use-api -> byte-for-byte provider-source parity -> no newer Supabase runtime drift",
   "secret_requirement": "GitHub production environment secret SUPABASE_ACCESS_TOKEN; scoped to the production project with Edge Functions Read only when scoped PATs are available; never used for deployment",
-  "rationale": "preserve Supabase GitHub Integration as the sole production writer while allowing safe manual/current-main attestation after unrelated main commits that correctly receive only a skipped Supabase preview check",
+  "rationale": "preserve Supabase GitHub Integration as the sole production writer while ensuring authority-critical Edge source changes cannot merge without also mutating the config.toml file that reliably admits the production deployment DAG",
   "provider_deployer": "SUPABASE_GITHUB_INTEGRATION",
   "github_actions_role": "ATTESTATION_ONLY_WITH_READ_ONLY_PROVIDER_PARITY",
   "provider_check": {
@@ -47,5 +47,16 @@
   "readback_token_policy": "READ_ONLY_EDGE_FUNCTIONS_READ; SUPABASE_ACCESS_TOKEN MUST NOT AUTHORIZE OR EXECUTE PRODUCTION DEPLOYMENT",
   "config_scope_policy": "CONFIG_OR_SHARED_CHANGE_RESOLVES_TO_DECLARED_FUNCTIONS_ONLY",
   "provider_source_readback_mode": "SUPABASE_CLI_DOWNLOAD_USE_API_SERVER_SIDE_UNBUNDLE",
-  "local_eszip_extraction_for_terminal_parity": "FORBIDDEN"
+  "local_eszip_extraction_for_terminal_parity": "FORBIDDEN",
+  "production_trigger_anchor": {
+    "file": "supabase/config.toml",
+    "marker": "production_source_git_blob",
+    "algorithm": "GIT_BLOB_SHA1_VIA_GIT_HASH_OBJECT",
+    "functions": [
+      "powerhouse-social-publisher",
+      "social-recovery-runner"
+    ],
+    "merge_guard": "tests/brain-runtime-authority-governance.test.mjs",
+    "stale_anchor_policy": "FAIL_CLOSED"
+  }
 }

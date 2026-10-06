@@ -1,0 +1,40 @@
+{
+  "id": "supabase-edge-production-source-anchor-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "supabase-edge|production-admission|source-anchor-config-toml|v1",
+  "obligation_id": "supabase-edge-production-source-anchor-20261006-v1",
+  "root_cause": "Protected merge 7e03a846 changed social-recovery-runner source but not supabase/config.toml. GitHub received only the Supabase preview-branch check, which completed skipped with 'This git branch is not associated with any Supabase Branch', and production social-recovery-runner remained provider v28. The last proven production deployment commit 2b0539cb changed supabase/config.toml and produced the successful /project check.",
+  "prevention_rule": "Authority-critical social Edge Functions must carry a production_source_git_blob marker in supabase/config.toml equal to git hash-object of the function entrypoint. Required CI fails closed on mismatch, so any function source change must also change config.toml and therefore enter Supabase GitHub Integration production admission.",
+  "evidence": {
+    "skipped_merge_sha": "7e03a846caa1241cf32d543ba69e7c2e065f9073",
+    "skipped_check_run_id": 112377585210,
+    "skipped_check_details": "https://supabase.com/dashboard/project/adhjwmvyoixzjtmiroln/branches",
+    "skipped_summary": "This git branch is not associated with any Supabase Branch. You can open a PR to create a new branch.",
+    "provider_recovery_version_after_merge": 28,
+    "last_proven_production_anchor_sha": "2b0539cb729b658bc5e85184406d8421e56f9d35",
+    "last_proven_production_check_run_id": 112296747565,
+    "current_markers": {
+      "powerhouse_social_publisher": "6a3c4f6f79a3ecccff67b91930252a3924d85244",
+      "social_recovery_runner": "f0837918011e318c38d0d4958765e358054d5fc6"
+    }
+  },
+  "prevention": {
+    "config_anchor": "supabase/config.toml",
+    "merge_guard": "tests/brain-runtime-authority-governance.test.mjs",
+    "stale_anchor": "BLOCK_MERGE",
+    "direct_cli_deploy": "FORBIDDEN"
+  },
+  "compiler": {
+    "failure_class": "SUPABASE_EDGE_SOURCE_CHANGE_NOT_ADMITTED_TO_PRODUCTION",
+    "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}
