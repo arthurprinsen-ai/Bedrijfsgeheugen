@@ -70,6 +70,7 @@ jobs:
       affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
       netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
       supabase_preview_required: ${{ steps.scope.outputs.supabase_preview_required }}
+      artifact_id: ${{ steps.artifact.outputs.artifact_id }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -82,6 +83,9 @@ jobs:
         run: |
           node tools/ci/check-control-plane-budget.mjs
           node tools/ci/check-pr-trigger-ratchet.mjs
+      - id: artifact
+        name: Compute immutable artifact identity
+        run: echo "artifact_id=$(node tools/build/artifact-id.mjs)" >> "$GITHUB_OUTPUT"
       - name: Run consolidated merge-group specialist assurance
         if: github.event_name == 'merge_group'
         run: >-
@@ -112,6 +116,7 @@ jobs:
           tests/linkedin-revenue-cockpit.test.mjs
           tests/linkedin-revenue-runtime.test.mjs
           tests/linkedin-revenue-engagement-cockpit.test.mjs
+          tests/build/artifact-id.test.mjs
           tests/brain-powerhouse-engineering-closed-loop.test.mjs
       - name: Verify engineering learning self-test
         if: github.event_name == 'merge_group'
