@@ -2,8 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { parse, serialize } from 'parse5';
 import { spawn } from 'node:child_process';
+import os from 'node:os';
 
 const ROOT = process.cwd();
+const SHARD_DIR = String(process.env.STATIC_I18N_SHARD_DIR || fs.mkdtempSync(path.join(os.tmpdir(),'bg-static-i18n-')));
 const MODEL = 'claude-haiku-4-5-20251001';
 const SITE = 'https://www.bedrijfsgeheugen.nl';
 const LOCALES = ['nl','en'];
@@ -759,8 +761,8 @@ if(shardArg){
   const productionTranslationRequired=String(process.env.STATIC_I18N_REQUIRE_CACHE||'').trim()==='1'||String(process.env.STATIC_I18N_NETWORK||'').trim()==='1';
   const selected=files.filter((_,index)=>index%shardTotal===shardIndex);
   const result=buildLocalizedFiles(selected,translations,productionTranslationRequired);
-  fs.mkdirSync(path.join(ROOT,'.artifacts'),{recursive:true});
-  fs.writeFileSync(path.join(ROOT,'.artifacts',`static-i18n-shard-${shardIndex}.json`),JSON.stringify(result,null,2)+'\n');
+  fs.mkdirSync(SHARD_DIR,{recursive:true});
+  fs.writeFileSync(path.join(SHARD_DIR,`static-i18n-shard-${shardIndex}.json`),JSON.stringify(result,null,2)+'\n');
   console.log('STATIC_I18N_SHARD_DONE',JSON.stringify({shard:shardIndex,total:shardTotal,...result}));
   process.exit(0);
 }
@@ -798,19 +800,19 @@ let aggregate={files:0,translatedRoutes:0,partialRoutes:0,untranslatedRefs:0};
 if(routeWorkers===1){
   aggregate=buildLocalizedFiles(files,translations,productionTranslationRequired);
 }else{
-  fs.mkdirSync(path.join(ROOT,'.artifacts'),{recursive:true});
+  fs.mkdirSync(SHARD_DIR,{recursive:true});
   const runShard=shardIndex=>new Promise((resolve,reject)=>{
     const child=spawn(process.execPath,[process.argv[1],`--route-shard=${shardIndex}/${routeWorkers}`],{
       cwd:ROOT,
       stdio:'inherit',
-      env:{...process.env,STATIC_I18N_ROUTE_WORKERS:'1'}
+      env:{...process.env,STATIC_I18N_ROUTE_WORKERS:'1',STATIC_I18N_SHARD_DIR:SHARD_DIR}
     });
     child.on('error',reject);
     child.on('exit',code=>code===0?resolve():reject(new Error(`STATIC_I18N_SHARD_FAILED:${shardIndex}:${code}`)));
   });
   await Promise.all(Array.from({length:routeWorkers},(_,index)=>runShard(index)));
   for(let index=0;index<routeWorkers;index++){
-    const shard=JSON.parse(fs.readFileSync(path.join(ROOT,'.artifacts',`static-i18n-shard-${index}.json`),'utf8'));
+    const shard=JSON.parse(fs.readFileSync(path.join(SHARD_DIR,`static-i18n-shard-${index}.json`),'utf8'));
     aggregate.files+=Number(shard.files||0);
     aggregate.translatedRoutes+=Number(shard.translatedRoutes||0);
     aggregate.partialRoutes+=Number(shard.partialRoutes||0);
