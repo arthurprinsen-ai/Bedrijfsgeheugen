@@ -1,0 +1,22 @@
+{
+  "fingerprint": "linkedin-company-live-proven-production-state-20261006-v1",
+  "executable": false,
+  "production_authority": "Supabase project adhjwmvyoixzjtmiroln + LinkedIn provider readback",
+  "channel": "linkedin_company",
+  "provider_post_id": "urn:li:share:7513196691630575616",
+  "organization_urn": "urn:li:organization:18234216",
+  "publication_obligation_status": "LIVE_PROVEN",
+  "provider_create_success": true,
+  "provider_publication_ack_verified": true,
+  "provider_truth_verified": true,
+  "company_oauth_fresh_verified": true,
+  "linkedin_company_admin_oauth_proven": true,
+  "organization_write_scope_verified": true,
+  "runtime": {
+    "setup_version": 23,
+    "content_loop_version": 31,
+    "publisher_version": 115
+  },
+  "normalized_content_hash": "0f901c9c8bd0cd7e9028f26e4fc3a2f3e86827882a490b22899fc67e34dcfce8",
+  "note": "Secrets, OAuth tokens and credential-bearing authorization URLs are intentionally excluded. This file is evidence only and must never trigger provider publication."
+}
