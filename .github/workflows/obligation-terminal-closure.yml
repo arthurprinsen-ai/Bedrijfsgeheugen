@@ -65,7 +65,6 @@ jobs:
       - name: Verify machine-readable obligation and main containment
         id: identity
         env:
-          PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
           HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
@@ -237,7 +236,8 @@ jobs:
         run: |
           set -euo pipefail
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
-          mapfile -t changed_functions < <(printf '%s\n' "$changed_paths" | sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' | sort -u)
+          printf '%s\n' "$changed_paths" > /tmp/supabase-runtime-paths.txt
+          mapfile -t changed_functions < <(node tools/supabase/edge-runtime-scope.mjs /tmp/supabase-runtime-paths.txt)
           if [ "${#changed_functions[@]}" -eq 0 ]; then
             echo "required=false" >> "$GITHUB_OUTPUT"
             echo "readbacks=[]" >> "$GITHUB_OUTPUT"
@@ -245,10 +245,21 @@ jobs:
             exit 0
           fi
 
-          pr_body="$(printf '%s' "$PR_BODY_B64" | base64 -d)"
-          provider_lines="$(printf '%s\n' "$pr_body" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
-          if [ -z "$provider_lines" ]; then
-            echo "::error::SUPABASE_PROVIDER_READBACK_MISSING: changed edge functions require explicit active provider evidence before LIVE_BEWEZEN"
+          provider_lines=""
+          complete=false
+          for attempt in $(seq 1 24); do
+            pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+            provider_lines="$(printf '%s\n' "$pr_body" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
+            complete=true
+            for fn in "${changed_functions[@]}"; do
+              line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+              if [ -z "$line" ]; then complete=false; break; fi
+            done
+            [ "$complete" = true ] && break
+            sleep 5
+          done
+          if [ "$complete" != true ]; then
+            echo "::error::SUPABASE_PROVIDER_READBACK_MISSING: production authority did not publish complete provider evidence for functions=${changed_functions[*]}"
             exit 78
           fi
 

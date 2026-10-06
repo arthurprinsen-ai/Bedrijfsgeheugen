@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const clean=(v:unknown)=>String(v??'').trim();
@@ -18,12 +19,12 @@ async function gh(path:string){
 
 Deno.serve(async(req)=>{
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
+  const auth=await authorizePowerhouseScheduler(req);
+  if(!auth.ok) return json({ok:false,error:auth.error},auth.status);
   const url=Deno.env.get('SUPABASE_URL')||'';
   const service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   if(!url||!service) return json({ok:false,error:'CONFIG'},500);
   const db=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
-  const expected=clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
-  if(!expected||req.headers.get('x-powerhouse-token')!==expected) return json({ok:false,error:'UNAUTHORIZED'},401);
 
   try{
     const runs=await gh('/repos/'+REPO+'/actions/workflows/'+WORKFLOW+'/runs?branch=main&status=completed&per_page=20');
