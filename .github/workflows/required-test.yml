@@ -678,10 +678,11 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity, supabase_preview, backend, portal, automation, website]
+    needs: [hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity, supabase_source_contract, supabase_preview, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
+      EVENT_NAME: ${{ github.event_name }}
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
