@@ -8,9 +8,23 @@ const ALIAS='bedrijfsgeheugen-company-canonical';
 const COMPANY_PROOF_RECORD='linkedin-company-oauth-fresh-proof-v1';
 const COMPANY_OAUTH_SCOPES=['openid','profile','email','r_organization_admin','r_organization_social','rw_organization_admin','w_member_social','w_organization_social'];
 const COMPANY_REQUIRED_SCOPES=['r_organization_admin','w_organization_social'];
+const COMPANY_SCOPE_TOOLS=['LINKEDIN_GET_MY_INFO','LINKEDIN_GET_COMPANY_INFO','LINKEDIN_CREATE_LINKED_IN_POST','LINKEDIN_GET_POST_CONTENT'];
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
+function composioErrorText(value:any):string{
+  if(value===null||value===undefined)return'';
+  if(typeof value==='string'||typeof value==='number'||typeof value==='boolean')return clean(value);
+  if(typeof value==='object'){
+    const nested=value?.message??value?.error_description??value?.description??value?.detail;
+    if(nested!==undefined&&nested!==value){
+      const text=composioErrorText(nested);
+      if(text)return text;
+    }
+    try{return JSON.stringify(value);}catch{return clean(value);}
+  }
+  return clean(value);
+}
 function jsonObject(value:any){
   if(value===null||value===undefined)return {};
   if(typeof value==='string'){try{return jsonObject(JSON.parse(value));}catch{return {};}}
@@ -25,7 +39,7 @@ function jsonObject(value:any){
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
-async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_LINKEDIN_SETUP_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240));return b;}
+async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_LINKEDIN_SETUP_'+r.status+':'+composioErrorText(b?.error??b?.message??b).slice(0,240));return b;}
 async function execute(key:string,accountId:string,userId:string,toolSlug:string,args:Record<string,unknown>={}){
   if(!clean(accountId))throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID_REQUIRED');
   if(!clean(userId))throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
@@ -35,7 +49,7 @@ async function execute(key:string,accountId:string,userId:string,toolSlug:string
     body:JSON.stringify({connected_account_id:accountId,user_id:userId,version:'latest',arguments:args})
   });
   const b:any=await r.json().catch(()=>({}));
-  if(!r.ok||b?.successful!==true)throw new Error(`COMPOSIO_${toolSlug}_${r.status}:${clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240)}`);
+  if(!r.ok||b?.successful!==true)throw new Error(`COMPOSIO_${toolSlug}_${r.status}:${composioErrorText(b?.error??b?.message??b).slice(0,240)}`);
   return b?.data??b;
 }
 function deepFindStrings(value:any,keys:string[],out:string[]=[]){
@@ -112,7 +126,7 @@ Deno.serve(async(req:Request)=>{
           auth_config:{
             type:'use_composio_managed_auth',
             credentials:{scopes:COMPANY_OAUTH_SCOPES.join(',')},
-            restrict_to_following_tools:['LINKEDIN_GET_MY_INFO','LINKEDIN_GET_COMPANY_INFO','LINKEDIN_CREATE_LINKED_IN_POST','LINKEDIN_GET_POST_CONTENT']
+            restrict_to_following_tools:COMPANY_SCOPE_TOOLS
           }
         })});
         authConfigId=clean(created?.auth_config?.id||created?.id);
