@@ -18,6 +18,9 @@
 # drie pogingen met een schone apt-cache ertussen, voor het geval een spiegel
 # tijdelijk uit de pas loopt.
 #
+# Trigger-scope proof (2026-10-06): a tools/ci-only main push must not admit
+# Production Source Snapshot or Production Release Readback.
+#
 # Gebruik in een workflow:
 #   - name: Install Chromium
 #     run: bash tools/ci/install-chromium.sh
