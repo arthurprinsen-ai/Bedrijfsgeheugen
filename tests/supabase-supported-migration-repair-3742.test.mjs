@@ -24,7 +24,7 @@ test('repair is allowlisted to exactly the four proven replay baselines', () => 
 
 test('provider repair updates tracking only and proves post-repair parity', () => {
   assert.match(workflow, /supabase migration repair[\s\S]*--status applied/);
-  assert.match(workflow, /supabase migration list --linked/);
+  assert.match(workflow, /supabase migration list --db-url/);
   assert.doesNotMatch(workflow, /insert\s+into\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /update\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /delete\s+from\s+supabase_migrations/i);
@@ -53,4 +53,17 @@ test('provider readback is bounded-retry and repair is resumable without repeati
   const repairs = workflow.match(/supabase migration repair/g) || [];
   assert.equal(repairs.length, 2, 'one executable repair plus one evidence string is expected');
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
+});
+
+
+test('post-merge readback mode proves production ledger without repeating mutation', () => {
+  assert.match(workflow, /mode="readback"/);
+  assert.match(workflow, /POST_MERGE_RECOVERY_NOT_CONTAINED/);
+  assert.match(workflow, /REPAIRED_APPLIED_VERIFIED/);
+  assert.match(workflow, /POST_MERGE_LOCK_LEDGER_COUNT_DRIFT/);
+  assert.match(workflow, /POST_MERGE_LEDGER_COUNT_DRIFT/);
+  assert.match(workflow, /POST_MERGE_TARGET_MISSING/);
+  assert.match(workflow, /SUPABASE-MIGRATION-HISTORY-POSTMERGE-READBACK-v1/);
+  assert.match(workflow, /if: steps\.candidate\.outputs\.mode != 'readback'/);
+  assert.match(workflow, /Provider already reports zero migration-list drift; resuming at post-repair readback/);
 });
