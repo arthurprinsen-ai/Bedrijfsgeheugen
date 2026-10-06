@@ -11,6 +11,7 @@ import {
   runParallelStateRetrieval,
   buildMinimalContextPack,
   buildExecutionPacketV2,
+  buildWaitingExternalCheckpoint,
   computeDeltaContext,
   detectNoOp,
   buildEvidenceIdentity,
@@ -34,6 +35,9 @@ test('stable policy prefix exposes v2 incremental invariants', () => {
   assert.equal(a.noOpBeforeReasoning, true);
   assert.equal(a.fullReleaseGatesAtPromotionBoundary, true);
   assert.equal(a.productionReadbackCacheable, false);
+  assert.equal(a.externalWaitMode, 'CHECKPOINT_AND_YIELD');
+  assert.equal(a.maxActiveExternalWaitSeconds, 30);
+  assert.equal(a.activePollingAllowed, false);
 });
 
 test('tool output is bounded and handles unsafe serialization', () => {
@@ -129,4 +133,25 @@ test('latency trace emits v2 lead-time fields', () => {
   for (const [name, ms] of [['contextLoad',3],['classification',2],['reasoning',5],['tool',7],['targetedTest',11],['fullGate',13],['deploy',17],['proof',19],['writeback',23]]) { trace.markStart(name); now += ms; trace.markEnd(name); }
   const metrics = trace.snapshot();
   for (const key of ['context_load_ms','classification_ms','reasoning_ms','tool_ms','targeted_test_ms','full_gate_ms','deploy_ms','proof_ms','writeback_ms','total_lead_time_ms']) assert.equal(typeof metrics[key], 'number');
+});
+
+
+test('WAITING_EXTERNAL checkpoint yields the active turn and preserves exact identity', () => {
+  const checkpoint=buildWaitingExternalCheckpoint({
+    taskId:'T-CI',
+    pr:3900,
+    branch:'feature/x',
+    headSha:'abc123',
+    mainSha:'main123',
+    runIds:[42,42,43],
+    jobIds:[7],
+    remainingGate:'Required test / test',
+    nextSafeAction:'resume exact-head readback'
+  });
+  assert.equal(checkpoint.state,'WAITING_EXTERNAL');
+  assert.equal(checkpoint.active_turn_must_yield,true);
+  assert.equal(checkpoint.active_wait_budget_seconds,30);
+  assert.equal(checkpoint.polling_allowed,false);
+  assert.deepEqual(checkpoint.run_ids,['42','43']);
+  assert.equal(checkpoint.head_sha,'abc123');
 });
