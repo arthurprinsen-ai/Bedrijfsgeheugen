@@ -6,32 +6,30 @@
     "direct_pr_authorities": 38
   },
   "observed_after": {
-    "direct_pr_authorities": 10,
-    "admission_authorities": 5,
+    "direct_pr_authorities": 7,
+    "admission_authorities": 2,
     "lifecycle_recovery_authorities": 5,
     "workflow_files": 123
   },
   "admission": [
     "required-test.yml",
-    "powerhouse-codeql.yml",
-    "engineering-supply-chain-trust.yml",
-    "portal-v2-live-preview.yml",
-    "repo-writer-operational-verification.yml"
+    "powerhouse-codeql.yml"
   ],
   "invariants_preserved": [
-    "Required canonical admission",
-    "CodeQL JS/TS + Python fail-closed",
-    "supply-chain security independent",
-    "Netlify exact-head preview provider-backed",
-    "single writer PR router with dedicated dispatched writers",
-    "closed-PR lifecycle authorities separate",
-    "production Portal readback on push/main",
+    "Required canonical PR admission",
+    "Powerhouse CodeQL is the sole CodeQL authority for JS/TS + Python on PR and merge queue",
+    "dependency supply-chain risk remains fail-closed inside Required merge_group assurance",
+    "Netlify exact-head Portal preview remains provider-backed after successful Required admission",
+    "writer verification consumes successful Required via workflow_run instead of direct PR fan-out",
+    "closed-PR lifecycle authorities remain separate",
+    "production Portal readback runs only for deployable Portal runtime changes",
     "protected auto-merge only"
   ],
   "learning": [
     "move read-only specialist assurance to Required/merge_group",
     "separate closed lifecycle from admission",
-    "route writers behind one PR authority",
+    "make post-admission specialists consume successful Required via workflow_run",
+    "keep exactly Required plus Powerhouse CodeQL as PR admission authorities",
     "ratchet budgets downward",
     "broad migrations require scope-broad-approved plus exact scope",
     "reuse immutable source/artifact identity"
@@ -49,8 +47,8 @@
       {
         "source": "control-plane-diet-candidate",
         "direct_pr_authorities_before": 38,
-        "direct_pr_authorities_after": 10,
-        "admission_authorities": 5,
+        "direct_pr_authorities_after": 7,
+        "admission_authorities": 2,
         "lifecycle_recovery_authorities": 5
       }
     ],
@@ -63,16 +61,16 @@
         "direct_pr_authorities": 38
       },
       "observed_after": {
-        "direct_pr_authorities": 10,
-        "admission_authorities": 5,
+        "direct_pr_authorities": 7,
+        "admission_authorities": 2,
         "lifecycle_recovery_authorities": 5,
         "workflow_files": 123
       },
-      "target": "ratchet direct pull_request admission toward Required plus independent security authority without removing assurance"
+      "target": "hold PR admission at exactly Required plus Powerhouse CodeQL, with specialist assurance on merge_group or successful Required workflow_run consumers"
     }
   },
   "root_cause": "Read-only specialist assurance, lifecycle recovery, writer routing and canonical admission accumulated as independent pull_request workflows, multiplying queueing and duplicate work per candidate SHA.",
-  "prevention": "Keep Required as the canonical PR admission orchestrator, preserve independent security authority, move specialist assurance behind reusable/internal lanes or merge_group, keep lifecycle recovery off PR admission, and enforce a downward-only trigger budget.",
+  "prevention": "Keep Required as the canonical PR admission orchestrator, keep Powerhouse CodeQL as the sole independent CodeQL authority, move read-only specialist assurance to merge_group, make post-admission Portal/writer verification consume successful Required workflow_run events, keep lifecycle recovery off PR admission, and enforce a downward-only 7-total/2-admission/5-lifecycle trigger budget.",
   "evidence": {
     "tests": [
       "tests/control-plane-pr-trigger-ratchet.test.mjs",
