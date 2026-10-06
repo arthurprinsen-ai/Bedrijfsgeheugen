@@ -10,6 +10,11 @@ permissions:
   pull-requests: read
   actions: write
 
+concurrency:
+  # synchronize events supersede older verification work for the same PR.
+  group: repo-writer-operational-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   dispatch-writer-candidate:
     if: >-
