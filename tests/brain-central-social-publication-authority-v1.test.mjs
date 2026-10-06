@@ -99,3 +99,13 @@ test('social recovery functions use the EU function region',()=>{
   assert.match(delivery,/region:\s*'fra'/);
   assert.match(deployHook,/region:\s*'fra'/);
 });
+
+
+test('content operations shares the canonical scheduler authority with social publication',()=>{
+  const operations=fs.readFileSync('supabase/functions/content-operations/index.ts','utf8');
+  assert.match(operations,/rpc\/bg_geheim/);
+  assert.match(operations,/powerhouse_daily_scheduler_token/);
+  assert.match(operations,/async function schedulerToken/);
+  assert.match(operations,/await schedulerToken\(\)/);
+  assert.match(operations,/if \(!\(await authorized\(req\)\)\)/);
+});
