@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const migration = fs.readFileSync('supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql','utf8');
 const telemetry = fs.readFileSync('supabase/functions/bg-interactie/index.ts','utf8');
 const bridge = fs.readFileSync('supabase/functions/supabase-migration-repair-bridge/index.ts','utf8');
+const contentLoop = fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
 
 test('trusted Supabase repair transport remains IPv4 Supavisor session mode', () => {
   assert.match(bridge, /aws-0-eu-central-1\.pooler\.supabase\.com/);
@@ -41,4 +42,15 @@ test('interaction telemetry cannot amplify a PostgREST outage', () => {
   assert.match(telemetry, /status: 202/);
   assert.match(telemetry, /AbortSignal\.timeout\(TELEMETRY_DB_TIMEOUT_MS\)/);
   assert.doesNotMatch(telemetry, /status:\s*500/);
+});
+
+test('content-loop auth distinguishes infrastructure failure from credential failure', () => {
+  assert.match(contentLoop, /CONTENT_LOOP_AUTH_LOOKUP_FAILED/);
+  assert.match(contentLoop, /AUTH_SECRET_LOOKUP_FAILED/);
+  assert.match(contentLoop, /CONTENT_LOOP_AUTH_SECRET_EMPTY/);
+  assert.match(contentLoop, /AUTH_SECRET_EMPTY/);
+  assert.match(contentLoop, /TOKEN_REQUIRED/);
+  assert.match(contentLoop, /TOKEN_MISMATCH/);
+  assert.match(contentLoop, /clean\(req\.headers\.get\('x-powerhouse-token'\)\)/);
+  assert.doesNotMatch(contentLoop, /error:\s*'UNAUTHORIZED'/);
 });
