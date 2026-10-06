@@ -206,13 +206,17 @@ async function composioLinkedInCompanyContext(db:any){
     }
   }
   if(candidates.length===0)throw new Error('LINKEDIN_COMPANY_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
-  candidates.sort((a:any,b:any)=>
+  const organizationCapable=candidates.filter((candidate:any)=>candidate.organizationReadVerified===true);
+  if(organizationCapable.length===0){
+    throw new Error('LINKEDIN_COMPANY_ORGANIZATION_CAPABILITY_REQUIRED');
+  }
+  organizationCapable.sort((a:any,b:any)=>
     Number((b.alias||'').includes('canonical-org'))-Number((a.alias||'').includes('canonical-org'))
     || Number((b.alias||'').includes('company'))-Number((a.alias||'').includes('company'))
     || Number(b.isDefault)-Number(a.isDefault)
     || b.createdAt.localeCompare(a.createdAt)
   );
-  return {...candidates[0],targetOrg,connection_source:candidates[0].organizationReadVerified?'organization_capability_probe':'canonical_org_write_candidate'};
+  return {...organizationCapable[0],targetOrg,connection_source:'organization_capability_probe'};
 }
 
 async function preflightLinkedInCompanyComposio(db:any){

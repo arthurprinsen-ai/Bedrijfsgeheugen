@@ -90,7 +90,14 @@ async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaTy
     })
   });
   const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('VISION_PROVIDER_REQUEST_FAILED');
+  if(!response.ok){
+    const providerType=clean(body?.error?.type);
+    const providerMessage=clean(body?.error?.message);
+    if(response.status===400 && /credit balance is too low/i.test(providerMessage)){
+      throw new Error('VISION_PROVIDER_CREDIT_EXHAUSTED');
+    }
+    throw new Error('VISION_PROVIDER_REQUEST_FAILED:'+response.status+':'+providerType+':'+providerMessage.slice(0,180));
+  }
   const item=(body.content||[]).find((x:any)=>x.type==='tool_use'&&x.name==='visual_verdict');
   if(!item?.input)throw new Error('VISION_TOOL_OUTPUT_MISSING');
   return item.input;
