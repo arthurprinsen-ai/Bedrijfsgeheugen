@@ -76,8 +76,8 @@ test('approved blog writer strips remote font links while preserving unrelated l
     "print(writer.normalize_performance(sample))",
   ].join('\n');
   const output = execFileSync('python3', ['-c', probe], { encoding:'utf8' });
-  assert.doesNotMatch(output, /fonts\.googleapis\.com/);
-  assert.doesNotMatch(output, /fonts\.gstatic\.com/);
+  assert.equal(output.includes('fonts.googleapis.com'), false);
+  assert.equal(output.includes('fonts.gstatic.com'), false);
   assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
@@ -95,7 +95,7 @@ test('approved blog writer keeps analytics out of the first render until consent
   assert.match(output, /analytics_storage==='granted'/);
   assert.doesNotMatch(output, /<script data-goatcounter=.*src=\"https:\/\/gc\.zgo\.at\/count\.js/);
   assert.match(output, /setTimeout\(loadGoat,5000\)/);
-  assert.doesNotMatch(output, /fonts\.googleapis\.com/);
+  assert.equal(output.includes('fonts.googleapis.com'), false);
   assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
