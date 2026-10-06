@@ -217,4 +217,4 @@ export default async function handler() {
   catch (error) { console.error('SOCIAL_PUBLICATION_DELIVERY_FAILED', error); return json({ ok:false, error:'SOCIAL_PUBLICATION_DELIVERY_FAILED', message:error?.message || String(error) }, 503); }
 }
 
-export const config = { schedule:'5 * * * *' };
+export const config = { schedule:'*/10 * * * *' };
