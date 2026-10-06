@@ -4,14 +4,6 @@ on:
   schedule:
     - cron: '27 5 * * *'
   workflow_dispatch:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'config/powerhouse-autonomous-engineering-fabric-v3.json'
-      - 'config/powerhouse-engineering-tuning.json'
-      - 'scripts/brain/autonomous-engineering-fabric-v3.mjs'
-      - 'tests/brain-autonomous-engineering-fabric-v3.test.mjs'
-      - '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml'
 
 permissions:
   actions: read
