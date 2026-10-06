@@ -1,0 +1,12 @@
+{
+  "version": "CI-WORKFLOW-LANE-FALLBACK-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|workflow-lane-fallback|no-browser-fanout|v1",
+  "obligation_id": "ci-workflow-lane-fallback-20261006-v1",
+  "root_cause": "The generic .github/workflows/ shared-path fallback classified an unmapped workflow definition as shared executable work. That activated every delivery lane, including website/browser, even when the changed workflow had no website runtime impact.",
+  "prevention": "Explicit workflow ownership remains authoritative. An unmapped .github/workflows/* definition now defaults to the backend control-plane lane only; explicit website workflow paths still select the website lane. Regression tests cover the powerhouse-ci-intelligence workflow and a future unmapped workflow.",
+  "regressions": [
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION"
+}
