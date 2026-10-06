@@ -68,7 +68,7 @@ jobs:
       risk_level: ${{ steps.integration.outputs.risk }}
       full_shared_suite: ${{ steps.integration.outputs.full_shared_suite }}
       affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
-      netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
+      supabase_preview_required: ${{ steps.scope.outputs.supabase_preview_required }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -141,16 +141,20 @@ jobs:
           const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
-          const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/'];
-          const netlifyBuildExact=new Set(['netlify.toml','_redirects','_headers','index.html','klantportaal.html','package.json','package-lock.json']);
-          const netlifyBuildRequired=changedPaths.some(path=>netlifyBuildExact.has(path)||netlifyBuildPrefixes.some(prefix=>path.startsWith(prefix)));
+          // Hosted Supabase preview is only material for database-relevant source.
+          // Edge Functions and function-only config are verified by source/runtime contracts instead.
+          const supabasePreviewRequired=changedPaths.some(path =>
+            path.startsWith('supabase/') &&
+            !path.startsWith('supabase/functions/') &&
+            path !== 'supabase/config.toml'
+          );
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nsupabase_preview_required=${supabasePreviewRequired}\n`);
           console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
       - id: integration
@@ -292,84 +296,75 @@ jobs:
       - name: Verify Autonomous Engineering Fabric v3 authority contract
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
-      - name: Run exact Netlify deploy-preview build parity before merge
-        if: steps.scope.outputs.netlify_build_required == 'true'
-        env:
-          COMMIT_REF: ${{ steps.scope.outputs.change_head_sha }}
-          CONTEXT: deploy-preview
-          DEPLOY_ID: required-premerge-deploy-preview-build
-          STATIC_I18N_NETWORK: '0'
-          STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
-        run: |
-          set -euo pipefail
-          command="$(python3 - <<'PY'
-          import tomllib
-          with open('netlify.toml','rb') as handle:
-              config=tomllib.load(handle)
-          print(config['context']['deploy-preview']['command'])
-          PY
-          )"
-          bash -lc "$command"
-          git reset --hard HEAD
-          git clean -fd -e node_modules/ -e .artifacts/
 
-  netlify_build_parity:
+
+  supabase_preview:
     needs: preflight
-    if: needs.preflight.outputs.netlify_build_required == 'true'
+    if: needs.preflight.outputs.supabase_preview_required == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      checks: read
+      pull-requests: read
     steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ needs.preflight.outputs.candidate_sha }}
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22.12.0'
-      - uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
-          restore-keys: |
-            npm-${{ runner.os }}-
-      - name: Install exact Netlify build dependencies
-        run: npm install --prefer-offline --no-audit --no-fund --silent
-      - name: Run exact Netlify production build command once
+      - name: Verify provider-owned Supabase Preview on exact candidate head
         env:
-          COMMIT_REF: ${{ needs.preflight.outputs.change_head_sha }}
-          CONTEXT: production
-          DEPLOY_ID: required-netlify-build-parity
-          STATIC_I18N_NETWORK: '0'
-          STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ needs.preflight.outputs.change_head_sha }}
+          REPO: ${{ github.repository }}
+        shell: bash
         run: |
           set -euo pipefail
-          node tools/site-shell/pricing-build-integrity.mjs capture
-          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
-          node tools/bouw-powerhouse-auth.mjs
-          node tools/bouw-kennisindex.mjs
-          node tools/bouw-v18-production.mjs
-          node tools/site-shell/apply-product-led-home.mjs
-          node tools/apply-tabbladen.mjs
-          node tools/bouw-v18-views.mjs
-          node tools/bouw-v18-chrome-alles.mjs
-          node tools/prijzen-uit-de-homepage.mjs
-          node tools/normaliseer-site-ui.mjs
-          node tools/site-shell/pricing-build-integrity.mjs restore
-          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
-          node tools/seo-order-engine/apply.mjs
-          node tools/seo-order-engine/validate.mjs
-          node tools/site-shell/apply-i18n.mjs
-          node tools/site-shell/build-localized-routes.mjs
-          node tools/site-shell/apply-commercial-pricing-v1.mjs
-          node tools/seo-order-engine/apply-revenue-links.mjs
-          node tools/site-shell/finalize-website-coherence-v1.mjs
-          node tools/site-shell/apply-cms-runtime.mjs
-          node tools/genereer-sitemap.mjs
-          node tools/seo-order-engine/validate-locales.mjs
-          node tools/bouw-release-evidence.mjs
-      - name: Verify built artifact contracts
-        run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
+          stable_provider_success_id=""
+          for attempt in $(seq 1 48); do
+            curl --fail --silent --show-error \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
+              > /tmp/supabase-preview-check-runs.json
+
+            state="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const payload=JSON.parse(readFileSync('/tmp/supabase-preview-check-runs.json','utf8'));
+          const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
+          const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
+          if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
+          provider.sort((a,b)=>(Number(b.id||0)-Number(a.id||0)) || String(b.started_at||'').localeCompare(String(a.started_at||'')));
+          const check=provider[0];
+          const id=String(check.id||'unknown');
+          if(check.status!=='completed'){ process.stdout.write(`pending:${id}`); process.exit(0); }
+          process.stdout.write(`${String(check.conclusion||'unknown')}:${id}`);
+          NODE
+            )"
+
+            case "$state" in
+              success:*)
+                provider_id="${state#success:}"
+                if [ "$stable_provider_success_id" = "$provider_id" ]; then
+                  echo "SUPABASE_PREVIEW_PROVIDER_VERIFIED:$HEAD_SHA:$provider_id"
+                  exit 0
+                fi
+                stable_provider_success_id="$provider_id"
+                sleep 5
+                ;;
+              failure:*|cancelled:*|timed_out:*|action_required:*|stale:*|startup_failure:*|skipped:*|neutral:*)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_SUCCESS:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              missing|pending:*)
+                stable_provider_success_id=""
+                sleep 5
+                ;;
+              *)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_UNKNOWN_STATE:$state:$HEAD_SHA"
+                exit 1
+                ;;
+            esac
+          done
+          echo "::error::SUPABASE_PREVIEW_PROVIDER_TIMEOUT:$HEAD_SHA"
+          exit 1
 
   backend:
     needs: preflight
@@ -412,6 +407,8 @@ jobs:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
+      SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
+      SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
