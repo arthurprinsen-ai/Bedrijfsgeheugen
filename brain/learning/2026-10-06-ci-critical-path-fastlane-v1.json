@@ -1,0 +1,15 @@
+{
+  "version": "CI-CRITICAL-PATH-FASTLANE-v1",
+  "date": "2026-10-06",
+  "obligation_id": "ci-critical-path-fastlane-20261006-v1",
+  "problem": {
+    "observed": "Required PR validation duplicated Netlify build parity while Supabase Preview Applicability consumed a global required runner on every PR.",
+    "impact": "Repeated exact-head builds and provider polling increased Actions fan-out, branch churn exposure and agent completion latency."
+  },
+  "prevention": {
+    "netlify": "Own deterministic build parity once in the canonical website release lane; do not duplicate it in Required preflight.",
+    "supabase": "Route database-relevant provider preview verification through the canonical Required test aggregate and skip it for non-database changes.",
+    "invariant": "Keep branch protection fail-closed through the single canonical test context; do not remove provider proof before it is represented inside Required test."
+  },
+  "status": "ACTIVE_PREVENTION"
+}
