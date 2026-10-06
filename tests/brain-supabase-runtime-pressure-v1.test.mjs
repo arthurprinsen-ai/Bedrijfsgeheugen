@@ -91,9 +91,12 @@ test('orchestrator avoids blocking nested Edge Function preflight on the critica
 test('content loop bounds nested-call memory and direct DB pool size',()=>{
   const loop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
   assert.match(loop,/postgres\(dbPoolerUrl\(\),\{max:2,/);
-  assert.doesNotMatch(loop,/return \{ name, http: response\.status, ok: response\.ok && body\?\.ok !== false, body \}/);
-  assert.match(loop,/generated: body\?\.generated === true/);
-  assert.match(loop,/if \(!step\.ok \|\| step\.generated !== true\) break/);
+  assert.match(loop,/AbortSignal\.timeout\(timeoutMs\)/);
+  assert.match(loop,/LOOP_LEASE_MS = 240_000/);
+  assert.match(loop,/claimLoopLease\(runDate, leaseHolder\)/);
+  assert.match(loop,/reason:'ALREADY_RUNNING'/);
+  assert.doesNotMatch(loop,/for \(let i = 0; i < 5; i\+\+\)/);
+  assert.equal((loop.match(/invoke\(url, expected, 'powerhouse-content-orchestrator'/g) || []).length,1);
 });
 
 test('orchestrator avoids wide payload reads on the hot path',()=>{
