@@ -1,34 +1,9 @@
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { deriveNetlifyDeploymentApplicability } from '../delivery/netlify-deployment-applicability.mjs';
 
 const cached = String(process.env.CACHED_COMMIT_REF || '').trim();
 const commit = String(process.env.COMMIT_REF || '').trim();
-
-const governancePrefixes = [
-  'docs/',
-  '.agents/',
-  'tests/',
-  '.github/',
-  'brain/learning/',
-  'brain/policies/',
-  'tools/delivery/',
-];
-
-const governanceExact = new Set([
-  'AGENTS.md',
-  'config/delivery-prevention-rules.json',
-  'config/powerhouse-agent-delivery-scheduler-v1.json',
-  'platform/system-map/canonical-system-map.mjs',
-  'tools/brain-delivery-system.mjs',
-  'site/website-release-risk.json',
-  'tools/site-shell/verify-targeted-website-routes.mjs',
-  'tools/site-shell/contracts.mjs',
-  'tools/site-shell/test-shell-components.mjs',
-  'tools/site-shell/live-contract.mjs',
-  'tools/site-shell/test-live-contract.mjs',
-  'tools/site-shell/production-supersession.mjs',
-  'tools/site-shell/standalone-visibility-check.mjs',
-  'brain/contracts/production-readback-v1.json',
-]);
 
 function failOpen(reason) {
   console.log(`NETLIFY_BUILD_REQUIRED: ${reason}`);
@@ -54,15 +29,15 @@ if (changed.length === 0) {
   process.exit(0);
 }
 
-const runtimePaths = changed.filter(path =>
-  !governanceExact.has(path) &&
-  !governancePrefixes.some(prefix => path.startsWith(prefix))
-);
-
-if (runtimePaths.length > 0) {
-  console.log(`NETLIFY_BUILD_REQUIRED: runtime paths: ${runtimePaths.join(', ')}`);
-  process.exit(1);
+try {
+  const policy=JSON.parse(readFileSync('config/brain-delivery-system.json','utf8'));
+  const applicability=deriveNetlifyDeploymentApplicability({changedPaths:changed,headSha:commit,policy});
+  if(applicability.deploymentRequired){
+    console.log(`NETLIFY_BUILD_REQUIRED: ${applicability.reason}: ${applicability.runtimeChangedPaths.join(', ')}`);
+    process.exit(1);
+  }
+  console.log(`NETLIFY_BUILD_SKIPPED: ${applicability.reason}: ${changed.join(', ')}`);
+  process.exit(0);
+} catch (error) {
+  failOpen(`applicability classification failed: ${error instanceof Error ? error.message : String(error)}`);
 }
-
-console.log(`NETLIFY_BUILD_SKIPPED: governance-only paths: ${changed.join(', ')}`);
-process.exit(0);

@@ -4,8 +4,9 @@ import {readFile} from 'node:fs/promises';
 const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
 
 test('Netlify deterministic build defects are blocked once before merge', async()=>{
-  const [workflow,skill,learning]=await Promise.all([
+  const [workflow,authority,skill,learning]=await Promise.all([
     read('.github/workflows/required-test.yml'),
+    read('tools/delivery/netlify-deployment-applicability.mjs'),
     read('.agents/skills/powerhouse-netlify-production-truth/SKILL.md'),
     read('brain/learning/2026-09-30-netlify-premerge-build-parity-test-ownership-v1.json')
   ]);
@@ -21,7 +22,12 @@ test('Netlify deterministic build defects are blocked once before merge', async(
   assert.ok(workflow.includes('Run exact Netlify production build command once'));
   assert.ok(workflow.includes("netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}"));
   assert.ok(workflow.includes("if: needs.preflight.outputs.netlify_build_required == 'true'"));
-  assert.ok(workflow.includes("const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/']"));
+  assert.ok(workflow.includes('deriveNetlifyDeploymentApplicability'));
+  assert.ok(authority.includes('NETLIFY_RUNTIME_PREFIXES'));
+  assert.ok(authority.includes("'netlify/functions/'"));
+  assert.ok(authority.includes('createDeliveryPlan'));
+  assert.doesNotMatch(workflow,/const netlifyBuildPrefixes=/);
+  assert.doesNotMatch(workflow,/netlifyGovernanceExact/);
   assert.ok(workflow.includes("STATIC_I18N_REQUIRE_CACHE: '1'"));
   assert.ok(skill.includes('netlify-premerge-build-parity-test-ownership-v1'));
   const j=JSON.parse(learning);
