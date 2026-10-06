@@ -60,7 +60,7 @@ test('pre-terminal write fails closed when captured main epoch is stale',()=>{
     mutationKind:'content'
   });
   assert.equal(r.ok,false);
-  assert.equal(r.action,'CREATE_SUCCESSOR_FROM_CURRENT_MAIN');
+  assert.equal(r.action,'REVALIDATE_AND_SYNC_EXISTING_CANDIDATE');
   assert.ok(r.reasons.includes('CAPTURED_MAIN_EPOCH_STALE'));
 });
 
@@ -79,7 +79,7 @@ test('head compare-and-swap mismatch is blocked without rewriting the branch',()
   assert.ok(r.reasons.includes('EXPECTED_HEAD_CAS_MISMATCH'));
 });
 
-test('predictive scheduler never rewrites a terminal lease and creates successor on epoch drift',()=>{
+test('predictive scheduler keeps the same terminal lineage on epoch drift',()=>{
   const stable=planConcurrentAgentWork({
     obligationId:'terminal-writer-cas',
     currentHead:B,
@@ -100,5 +100,41 @@ test('predictive scheduler never rewrites a terminal lease and creates successor
     projectedNewRuns:0
   });
   assert.equal(stale.canMutateCandidate,false);
-  assert.equal(stale.action,'CREATE_SUCCESSOR_FROM_CURRENT_MAIN');
+  assert.equal(stale.action,'REVALIDATE_ZERO_OVERLAP_AND_SYNC_EXISTING_CANDIDATE');
+});
+
+
+test('zero-overlap terminal main sync is explicitly admitted under exact CAS identity',()=>{
+  const r=evaluateTerminalBranchWriteGuard({
+    body:terminalBody,
+    observedHeadSha:B,
+    expectedHeadSha:B,
+    capturedMainEpochSha:A,
+    currentMainSha:C,
+    obligationId:'terminal-writer-cas',
+    mutationKind:'main-sync',
+    mainSyncOverlap:[],
+    mainSyncContractOverlap:[]
+  });
+  assert.equal(r.ok,true);
+  assert.equal(r.state,'SAME_LINEAGE_MAIN_SYNC_ADMITTED');
+  assert.equal(r.action,'ALLOW_COMPARE_AND_SWAP_MAIN_SYNC');
+  assert.equal(r.canMutateCandidate,true);
+});
+
+test('main sync with overlap stays on the same lineage but requires reconciliation',()=>{
+  const r=evaluateTerminalBranchWriteGuard({
+    body:terminalBody,
+    observedHeadSha:B,
+    expectedHeadSha:B,
+    capturedMainEpochSha:A,
+    currentMainSha:C,
+    obligationId:'terminal-writer-cas',
+    mutationKind:'main-sync',
+    mainSyncOverlap:['.github/workflows/required-test.yml']
+  });
+  assert.equal(r.ok,false);
+  assert.equal(r.state,'SAME_LINEAGE_RECONCILIATION_REQUIRED');
+  assert.equal(r.action,'RECONCILE_EXISTING_CANDIDATE_OR_PROVE_UNSYNCHRONIZABLE');
+  assert.ok(r.reasons.includes('MAIN_SYNC_OVERLAP_REQUIRES_RECONCILIATION'));
 });
