@@ -37,3 +37,25 @@ test('scheduled growth drain is bounded, timeout protected and stops on first ba
   assert.match(replay,/if\(!datahub\.persisted\)[\s\S]*break;/);
   assert.match(replay,/if\(delivery\.attempted&&!delivery\.delivered\)\{failed\+\+;break;\}/);
 });
+
+
+test('scheduler auth bypasses PostgREST and uses the bounded IPv4 Supavisor authority',()=>{
+  const helper=read('supabase/functions/_shared/powerhouse-scheduler-auth.ts');
+  assert.equal(contract.service_auth.pooler_port,6543);
+  assert.equal(contract.service_auth.max_connections_per_isolate,1);
+  assert.equal(contract.service_auth.cache_ms,300000);
+  assert.match(helper,/DB_POOLER_HOST='aws-0-eu-central-1\.pooler\.supabase\.com'/);
+  assert.match(helper,/url\.port='6543'/);
+  assert.match(helper,/max:1/);
+  assert.match(helper,/AUTH_CACHE_MS=300_000/);
+  assert.match(helper,/POWERHOUSE_DAILY_SCHEDULER_TOKEN/);
+  assert.match(helper,/AUTH_SECRET_LOOKUP_FAILED/);
+  assert.match(helper,/TOKEN_REQUIRED/);
+  assert.match(helper,/TOKEN_MISMATCH/);
+
+  for(const slug of contract.service_auth.protected_functions){
+    const source=read('supabase/functions/'+slug+'/index.ts');
+    assert.match(source,/authorizePowerhouseScheduler/);
+    assert.doesNotMatch(source,/bg_geheim'\s*,?\s*\{p_naam:'powerhouse_daily_scheduler_token'/);
+  }
+});
