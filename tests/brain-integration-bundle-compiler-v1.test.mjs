@@ -162,3 +162,11 @@ test('bundle merges bounded historical pattern-memory regressions into adaptive 
   assert.ok(bundle.adaptive.tests.includes('tests/brain-delivery-pattern-memory-v1.test.mjs'));
   assert.equal(bundle.patternMemory.matches[0].fingerprint,'delivery|historical-regression|v1');
 });
+
+
+test('integration bundle CLI is shallow-safe and uses exact two-tree diff', async () => {
+  const source = await readFile('tools/delivery/integration-bundle-compiler.mjs', 'utf8');
+  assert.match(source, /TARGETED_\$\{label\}_FETCH/);
+  assert.match(source, /\['diff', '--name-only', baseSha, headSha\]/);
+  assert.doesNotMatch(source, /baseSha\}\.{3}\$\{headSha/);
+});
