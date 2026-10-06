@@ -106,6 +106,21 @@ test('manual recovery is same-day, auditable and delegates to the canonical full
 });
 
 
+test('manual recovery bounds provider publication by channel under the edge runtime budget',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
+  assert.match(publisher,/const publishOnly = mode === 'publish_only'/);
+  assert.match(publisher,/requestedChannels/);
+  assert.match(publisher,/publishOnly \? \[\] : await runLinkedInCockpitAutopilot\(db\)/);
+  assert.match(publisher,/if \(!publishOnly\)/);
+  assert.match(workflow,/mode:"publish_only"/);
+  assert.match(workflow,/channels:\[process\.env\.CHANNEL\]/);
+  assert.match(workflow,/for channel in linkedin_personal linkedin_company instagram_company/);
+  assert.match(workflow,/--max-time 58/);
+  assert.match(workflow,/SOCIAL_PUBLICATION_UNRESOLVED/);
+});
+
+
+
 test('social recovery functions use the EU function region',()=>{
   const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
   const deployHook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
