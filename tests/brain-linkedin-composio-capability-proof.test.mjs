@@ -83,6 +83,7 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
 
 test('LinkedIn company requires fresh bound organization-admin OAuth proof before publish', () => {
   assert.match(setup,/COMPANY_OAUTH_SCOPES=.*r_organization_admin.*r_organization_social.*w_organization_social/);
+  assert.match(setup,/COMPANY_REQUIRED_SCOPES=.*r_organization_admin.*r_organization_social.*w_organization_social/);
   assert.match(setup,/credentials:\{scopes:COMPANY_OAUTH_SCOPES\.join\(','\)\}/);
   assert.match(setup,/oauth_candidate_connection_id:connectedAccountId/);
   assert.match(setup,/boundOauthAccountId=clean\(priorState\?\.oauth_candidate_connection_id\|\|priorState\?\.company_oauth_connection_id\)/);
