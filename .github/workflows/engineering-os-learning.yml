@@ -1,13 +1,6 @@
 name: Engineering OS learning
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'scripts/brain/powerhouse-engineering-closed-loop.mjs'
-      - 'tests/brain-powerhouse-engineering-closed-loop.test.mjs'
-      - '.github/workflows/engineering-os-learning.yml'
-      - 'config/powerhouse-engineering-os.json'
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:
