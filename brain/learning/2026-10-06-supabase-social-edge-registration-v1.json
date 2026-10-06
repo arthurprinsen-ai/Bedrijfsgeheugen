@@ -1,0 +1,41 @@
+{
+  "fingerprint": "supabase-git|edge-function-registration|green-check-stale-provider-source|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-social-edge-registration-20261006-v1",
+  "root_cause": "The PAT-less Supabase GitHub production authority observed a successful exact-SHA Supabase deployment check while social-recovery-runner remained on provider v7. Supabase GitHub Integration only deploys Edge Functions declared in supabase/config.toml; the social publisher and recovery runner were absent, so the deploy phase could be green without promoting them.",
+  "prevention_rule": "Every authority-critical production Edge Function must be explicitly declared in supabase/config.toml with its provider-compatible verify_jwt mode and entrypoint. Regression tests must fail closed if either social authority function is missing or misconfigured. A green provider check alone is insufficient for TERMINAL_GREEN until provider source parity is verified.",
+  "compiler": {
+    "failure_class": "SUPABASE_GIT_UNDECLARED_EDGE_FUNCTION_FALSE_POSITIVE",
+    "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "source": [
+      "supabase/config.toml",
+      "brain/contracts/supabase-edge-production-authority-v1.json"
+    ],
+    "regression": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "observed_provider_state": [
+      "social-recovery-runner production v7 remained byte-different after exact-SHA Supabase production check success",
+      "powerhouse-social-publisher provider config verify_jwt=false",
+      "social-recovery-runner provider config verify_jwt=true"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}
