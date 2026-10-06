@@ -26,3 +26,8 @@ Recovery retry:
 - reason: full content-loop exceeded its edge runtime budget, while LinkedIn company/personal canonical decisions remained resumable;
 - bounded canonical publishers must run even when preparation degrades;
 - final daily-decision readback remains fail-closed.
+
+
+Recovery replay marker:
+- terminal-social-recovery-control-8a681b96
+- protected merge of the current-main control-plane candidate must launch a fresh same-day recovery/readback run.
