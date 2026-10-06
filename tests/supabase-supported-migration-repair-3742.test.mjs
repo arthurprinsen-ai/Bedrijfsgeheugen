@@ -36,3 +36,10 @@ test('recovery branch advancement is exact-head leased and remains pre-terminal'
   assert.match(workflow, /REPAIRED_APPLIED_VERIFIED/);
   assert.match(workflow, /does not itself prove fresh replay, exact-HEAD gates, protected merge, or post-merge production readback/);
 });
+
+
+test('normalizes Supabase CLI migration-list backticks before parity comparison', () => {
+  assert.match(workflow, /replace\(\/\^\\`\|\\`\$\/g,''\)\.trim\(\)/);
+  assert.match(workflow, /UNEXPECTED_PRE_REPAIR_DRIFT/);
+  assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
+});

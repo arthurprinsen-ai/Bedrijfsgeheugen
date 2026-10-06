@@ -82,15 +82,20 @@ jobs:
           git fetch origin main --no-tags
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" || true)"
 
+          verifier_only_paths="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const contract=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8'));
+          for (const path of contract?.productionTruth?.verifierOnlyPaths || []) console.log(String(path));
+          NODE
+          )"
+
           is_governance_path() {
             case "$1" in
               docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json)
                 return 0
                 ;;
-              *)
-                return 1
-                ;;
             esac
+            grep -Fxq -- "$1" <<< "$verifier_only_paths"
           }
 
           observed="$(git rev-parse origin/main)"

@@ -11,6 +11,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  id-token: write
 
 concurrency:
   group: supabase-supported-migration-repair-3742
@@ -105,27 +106,38 @@ jobs:
           cp supabase/config.toml parity/supabase/config.toml
           cp -R candidate/supabase/migrations parity/supabase/migrations
 
+      - name: Acquire Supabase database transport through GitHub OIDC
+        shell: bash
+        env:
+          OIDC_AUDIENCE: bedrijfsgeheugen-supabase-migration-repair-bridge
+          BRIDGE_URL: https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/supabase-migration-repair-bridge
+        run: |
+          set -euo pipefail
+          request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${OIDC_AUDIENCE}"
+          token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
+          oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
+          test -n "$oidc_token"
+          bridge_json="$(curl -fsSL --max-time 20 -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' --data "$(node -e 'process.stdout.write(JSON.stringify({expected_sha:process.env.GITHUB_SHA}))')" "$BRIDGE_URL")"
+          db_url="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.db_url||""))' "$bridge_json")"
+          test -n "$db_url"
+          case "$db_url" in postgres://*|postgresql://*) ;; *) echo "::error::OIDC bridge returned invalid database transport"; exit 78;; esac
+          echo "::add-mask::$db_url"
+          printf 'SUPABASE_DB_URL=%s\n' "$db_url" >> "$GITHUB_ENV"
+
       - name: Repair production migration tracking with supported Supabase CLI
         working-directory: parity
         shell: bash
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD }}
-          SUPABASE_PROJECT_ID: adhjwmvyoixzjtmiroln
         run: |
           set -euo pipefail
-          : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN missing}"
-          : "${SUPABASE_DB_PASSWORD:?PRODUCTION_DB_PASSWORD or SUPABASE_DB_PASSWORD missing}"
-          test "$SUPABASE_PROJECT_ID" = "adhjwmvyoixzjtmiroln"
+          : "${SUPABASE_DB_URL:?OIDC database transport missing}"
 
-          supabase link --project-ref "$SUPABASE_PROJECT_ID"
-          supabase migration list --linked | tee ../repair-evidence/before.txt
+          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/before.txt
 
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           const text=fs.readFileSync('../repair-evidence/before.txt','utf8');
           const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
-            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .map(line=>line.split(/[|│]/).map(x=>x.trim().replace(/^\`|\`$/g,'').trim()))
             .filter(x=>x.length>=2 && (/^\d{14}$/.test(x[0]) || /^\d{14}$/.test(x[1])))
             .map(x=>({local:x[0]||'',remote:x[1]||''}));
           const drift=rows.filter(x=>x.local!==x.remote);
@@ -137,15 +149,15 @@ jobs:
           if (drift.some(x=>x.remote)) throw new Error('REMOTE_ONLY_OR_IDENTITY_DRIFT');
           NODE
 
-          supabase migration repair             20260920101150             20260920102450             20260925080500             20261005133951             --status applied
+          supabase migration repair             20260920101150             20260920102450             20260925080500             20261005133951             --status applied --db-url "$SUPABASE_DB_URL"
 
-          supabase migration list --linked | tee ../repair-evidence/after.txt
+          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/after.txt
 
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           const text=fs.readFileSync('../repair-evidence/after.txt','utf8');
           const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
-            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .map(line=>line.split(/[|│]/).map(x=>x.trim().replace(/^\`|\`$/g,'').trim()))
             .filter(x=>x.length>=2 && (/^\d{14}$/.test(x[0]) || /^\d{14}$/.test(x[1])))
             .map(x=>({local:x[0]||'',remote:x[1]||''}));
           const drift=rows.filter(x=>x.local!==x.remote);
@@ -180,7 +192,7 @@ jobs:
             if (repaired.has(row.version)) {
               row.status='REPAIRED_APPLIED_VERIFIED';
               row.repair_readback={
-                source:'supabase migration repair --status applied + supabase migration list --linked',
+                source:'supabase migration repair --status applied --db-url + supabase migration list --db-url',
                 provider:'supabase-cli',
                 github_run_id:process.env.GITHUB_RUN_ID
               };

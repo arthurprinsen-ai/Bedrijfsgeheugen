@@ -19,6 +19,19 @@ function beforeFooter(html) {
   const i = String(html).search(/<footer\b/i);
   return i < 0 ? String(html) : String(html).slice(0, i);
 }
+function encodeHtmlText(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function hasHeadingText(html, tag, text) {
+  const raw = `<${tag}>${text}</${tag}>`;
+  const encoded = `<${tag}>${encodeHtmlText(text)}</${tag}>`;
+  return String(html).includes(raw) || String(html).includes(encoded);
+}
 
 function verifyOne(html, path, expectedCommit, pricing = false) {
   assert.equal(readReleaseMarker(html), expectedCommit, `${path}: release marker wijkt af van productiecommit`);
@@ -28,33 +41,32 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
 
   if (pricing) {
     for (const [attr, value] of [
-      ['data-tab', 'saas'],
-      ['data-tab', 'consulting'],
-      ['data-panel', 'saas'],
-      ['data-panel', 'consulting'],
+      ['href', '#saas'],
+      ['href', '#expertise'],
     ]) {
-      assert.ok(hasAttrValue(html, attr, value), `${path}: canonieke pricing-tab/panel ontbreekt: ${attr}=${value}`);
+      assert.ok(hasAttrValue(html, attr, value), `${path}: canonieke pricing-navigatie ontbreekt: ${attr}=${value}`);
+    }
+    for (const id of ['saas', 'expertise']) {
+      assert.ok(hasId(html, id), `${path}: canonieke pricing-sectie ontbreekt live: #${id}`);
     }
     for (const plan of ['Starter', 'Pro', 'Groei', 'Enterprise']) {
       assert.ok(html.includes(`<h3>${plan}</h3>`), `${path}: canoniek SaaS-pakket ontbreekt live: ${plan}`);
     }
-    for (const token of ['€ 99', '€ 299', '€ 749', 'Op maat']) {
-      assert.ok(html.includes(token), `${path}: canonieke SaaS-prijs ontbreekt live: ${token}`);
+    for (const token of ['€ 99', '€ 299', '€ 749', 'Op maat']) {
+      assert.ok(html.includes(token) || html.includes(token.replace(' ',' ')), `${path}: canonieke SaaS-prijs ontbreekt live: ${token}`);
     }
     for (const service of ['Frisse Blik', 'Directie & AI Workshop', 'Bedrijfsgeheugen Scan', 'Build Sprint', 'Transformation / Fractional Lead']) {
-      assert.ok(html.includes(`<h3>${service}</h3>`), `${path}: canonieke consulting-propositie ontbreekt live: ${service}`);
+      assert.ok(hasHeadingText(html, 'h3', service), `${path}: canonieke consulting-propositie ontbreekt live: ${service}`);
     }
-    for (const id of ['fitSize', 'fitGoal', 'fitMode', 'fitGo', 'fitResult']) {
-      assert.ok(hasId(html, id), `${path}: pricing-keuzehulp ontbreekt live: #${id}`);
+    for (const id of ['pkgSize', 'pkgGoal', 'pkgMode', 'pkgGo']) {
+      assert.ok(hasId(html, id), `${path}: canonieke pakketadvies-control ontbreekt live: #${id}`);
     }
+    assert.ok(hasAttrValue(html, 'href', '/pakketadvies') || html.includes('bedrijfsgeheugen.nl/pakketadvies'), `${path}: pakketadvies-route ontbreekt live`);
+
     assert.ok(!html.includes('data-bg-billing="monthly"'), `${path}: retired billing-toggle contract staat live`);
     assert.ok(!html.includes('data-bg-billing="yearly"'), `${path}: retired billing-toggle contract staat live`);
     assert.ok(!html.includes('<h3>Build</h3>'), `${path}: retired Build-pakket staat live`);
     assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: retired Transform-pakket staat live`);
-  } else {
-    for (const value of ['saas', 'consulting']) {
-      assert.ok(!hasAttrValue(html, 'data-panel', value), `${path}: pricing-panel staat buiten prijzen: ${value}`);
-    }
   }
   verifyPageShell(html, path);
 }

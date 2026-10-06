@@ -10,6 +10,7 @@ on:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
         with:
@@ -24,7 +25,12 @@ jobs:
           restore-keys: |
             npm-${{ runner.os }}-
       - name: Install runtime dependencies for backend contracts
-        run: npm install --prefer-offline --no-audit --no-fund --silent
+        timeout-minutes: 8
+        env:
+          npm_config_fetch_retries: '2'
+          npm_config_fetch_retry_maxtimeout: '20000'
+          npm_config_fetch_retry_mintimeout: '5000'
+        run: npm install --prefer-offline --no-audit --no-fund
       - name: Verify backend Brain runtime and Quality Intelligence contracts
         run: >-
           node --test
