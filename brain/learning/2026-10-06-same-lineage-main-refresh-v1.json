@@ -17,5 +17,22 @@
     "tests/terminal-writer-lease-closure-guard.test.mjs",
     "tests/brain-moving-main-successor-guard.test.mjs"
   ],
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs",
+      "tests/delivery-powerhouse-supervisor.test.mjs",
+      "tests/terminal-writer-lease-closure-guard.test.mjs"
+    ],
+    "expected": "Zero-overlap main drift refreshes the existing terminal PR lineage under exact-head CAS instead of spawning a successor; real overlap remains fail-closed."
+  },
+  "evidence": {
+    "observed_problem": "Repeated zero-overlap main movement caused successor churn, duplicate Required/CodeQL executions, and avoidable runner pressure.",
+    "proven_behavior": "Current lineage keeps one PR, refreshes Base-SHA and writer epoch only under zero-overlap exact-head CAS, and preserves protected merge and terminal readback."
+  }
 }
