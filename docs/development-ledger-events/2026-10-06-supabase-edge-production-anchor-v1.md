@@ -3,7 +3,7 @@
 Obligation-ID: supabase-edge-production-anchor-20261006-v1
 Delivery-Lane: automation
 Candidate-Type: recovery
-Base-SHA: b6f6ccbb17767cad90a679854033ad3044b52e73
+Base-SHA: 0087d2c530ed5eae273113e532c6aefb8f479c02
 
 Observed:
 - manual authority run 37487286439 started on current main 03156e2b875718d20a9a3369f1f68f3660c721f4;
