@@ -24,5 +24,12 @@
     "canary": [
       "tests/brain-social-recovery-http-data-plane-v1.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "SUPABASE_EDGE_DIRECT_POSTGRES_AUTH_TIMEOUT",
+    "scope": "SUPABASE_EDGE_SOCIAL_RECOVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
   }
 }
