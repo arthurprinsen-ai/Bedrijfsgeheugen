@@ -1,0 +1,41 @@
+{
+  "fingerprint": "supabase-edge|static-pat-parallel-writer|git-integration-attestation|v2",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-edge-provider-attestation-authority-20261006-v1",
+  "compiler": {
+    "failure_class": "PROTECTED_MAIN_AUTHORITY_BLOCKED_BY_MISSING_STATIC_PAT",
+    "scope": "SUPABASE_EDGE_PRODUCTION_AUTHORITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The protected-main authority introduced by PR #3898 still implemented a second Supabase production writer in GitHub Actions. It required secrets.SUPABASE_ACCESS_TOKEN, but no such credential exists in the GitHub production environment or canonical Supabase secret store. The workflow therefore failed before promotion, while the already-connected Supabase GitHub Integration is the provider-native mechanism that deploys protected production-branch changes.",
+  "contributing_causes": [
+    "Production authority and production execution were conflated: GitHub Actions attempted to deploy instead of attesting the provider-managed Git deployment.",
+    "A long-lived management PAT was assumed rather than provisioned, rotated or derived through the existing trust model.",
+    "The duplicate CLI writer would have preserved a second mutation route even if the missing PAT were added."
+  ],
+  "prevention_rule": "Protected main is the sole source authority. Supabase GitHub Integration is the sole normal Edge production deployer. GitHub Actions is attestation-only and must never require a static Supabase PAT or invoke supabase functions deploy; it verifies the newest exact-SHA production Supabase App check twice, records immutable source-tree hashes and fails closed on provider failure or newer Supabase runtime drift.",
+  "evidence": {
+    "escaped_failure": {
+      "pr": 3898,
+      "merge_sha": "1387eebf1f08531df03f8319d62548be76ef3345",
+      "workflow_run": 37461804855,
+      "error": "SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_PROTECTED_MAIN_PROMOTION"
+    },
+    "provider_contract": [
+      "Supabase GitHub integration Deploy to production automatically deploys changed Edge Functions after production-branch push/merge.",
+      "The Supabase GitHub App publishes a commit-bound provider check on the production SHA."
+    ],
+    "tests": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}

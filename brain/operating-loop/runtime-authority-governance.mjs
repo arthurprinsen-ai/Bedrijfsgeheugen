@@ -55,7 +55,11 @@ export function evaluateRuntimeAuthority(registry){
   if(controls.supabase_edge_manual_recovery!=='TRUSTED_CURRENT_MAIN_ONLY') violations.push({code:'SUPABASE_EDGE_MANUAL_RECOVERY_NOT_TRUSTED_MAIN_ONLY'});
   if(controls.supabase_edge_drift_policy!=='FAIL_CLOSED') violations.push({code:'SUPABASE_EDGE_DRIFT_NOT_FAIL_CLOSED'});
   if(controls.supabase_edge_promotion_workflow!=='.github/workflows/supabase-edge-production-authority.yml') violations.push({code:'SUPABASE_EDGE_PROMOTION_WORKFLOW_DRIFT'});
-  if(controls.supabase_edge_cli_version!=='2.119.0') violations.push({code:'SUPABASE_EDGE_CLI_VERSION_DRIFT'});
+  if(controls.supabase_edge_provider_deployer!=='SUPABASE_GITHUB_INTEGRATION') violations.push({code:'SUPABASE_EDGE_PROVIDER_DEPLOYER_DRIFT'});
+  if(controls.supabase_edge_github_actions_role!=='ATTESTATION_ONLY') violations.push({code:'SUPABASE_EDGE_GITHUB_ACTIONS_ROLE_DRIFT'});
+  if(controls.supabase_edge_static_pat_required!==false) violations.push({code:'SUPABASE_EDGE_STATIC_PAT_FORBIDDEN'});
+  if(controls.supabase_edge_provider_check!=='Supabase Preview') violations.push({code:'SUPABASE_EDGE_PROVIDER_CHECK_DRIFT'});
+  if(controls.supabase_edge_provider_app!=='supabase') violations.push({code:'SUPABASE_EDGE_PROVIDER_APP_DRIFT'});
 
   return {ready:violations.length===0,violations};
 }

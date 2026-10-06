@@ -133,14 +133,14 @@
     },
     {
       "id": "github-supabase-edge-production-authority",
-      "runtime": "github_actions",
+      "runtime": "supabase_github_integration",
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
       "obligations": [
         "supabase_edge_production_promotion"
       ],
-      "role": "sole Supabase Edge production promotion authority: exact protected current-main source -> pinned Supabase CLI deploy -> provider source readback; direct chat/agent/dashboard production deploy is forbidden"
+      "role": "sole Supabase Edge production promotion authority: Supabase GitHub Integration deploys protected-main source; GitHub Actions only attests the exact-SHA provider check and immutable source hashes; direct CLI/chat/agent/dashboard production deploy is forbidden"
     }
   ],
   "make_classification_policy": {
@@ -234,6 +234,10 @@
     "supabase_edge_direct_provider_deploy": "FORBIDDEN",
     "supabase_edge_manual_recovery": "TRUSTED_CURRENT_MAIN_ONLY",
     "supabase_edge_drift_policy": "FAIL_CLOSED",
-    "supabase_edge_cli_version": "2.119.0"
+    "supabase_edge_provider_deployer": "SUPABASE_GITHUB_INTEGRATION",
+    "supabase_edge_github_actions_role": "ATTESTATION_ONLY",
+    "supabase_edge_static_pat_required": false,
+    "supabase_edge_provider_check": "Supabase Preview",
+    "supabase_edge_provider_app": "supabase"
   }
 }
