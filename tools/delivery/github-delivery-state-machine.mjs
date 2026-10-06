@@ -45,6 +45,55 @@ export function validateMachineReadablePrBody({body='',candidateHeadSha='',curre
   return Object.freeze({ok:errors.length===0,errors:uniq(errors),metadata,lease,terminal});
 }
 
+
+export function evaluateTerminalBranchWriteGuard({
+  body='',observedHeadSha='',expectedHeadSha='',capturedMainEpochSha='',currentMainSha='',obligationId='',mutationKind='content'
+}={}){
+  const observed=normalize(observedHeadSha).toLowerCase();
+  const expected=normalize(expectedHeadSha).toLowerCase();
+  const captured=normalize(capturedMainEpochSha).toLowerCase();
+  const current=normalize(currentMainSha).toLowerCase();
+  const actualObligation=normalize(obligationId);
+  const kind=normalize(mutationKind).toLowerCase()||'content';
+  const reasons=[];
+  if(!SHA40.test(observed)) reasons.push('OBSERVED_HEAD_INVALID');
+  if(!SHA40.test(expected)) reasons.push('EXPECTED_HEAD_INVALID');
+  if(!SHA40.test(captured)) reasons.push('CAPTURED_MAIN_EPOCH_INVALID');
+  if(!SHA40.test(current)) reasons.push('CURRENT_MAIN_INVALID');
+  if(SHA40.test(observed)&&SHA40.test(expected)&&observed!==expected) reasons.push('EXPECTED_HEAD_CAS_MISMATCH');
+  if(SHA40.test(captured)&&SHA40.test(current)&&captured!==current) reasons.push('CAPTURED_MAIN_EPOCH_STALE');
+
+  const lease=parseWriterLease(body);
+  if(lease.state==='TERMINAL_DELIVERY'){
+    if(SHA40.test(observed)&&lease.headSha!==observed) reasons.push('TERMINAL_LEASE_HEAD_DRIFT');
+    if(SHA40.test(current)&&lease.mainEpochSha!==current) reasons.push('TERMINAL_LEASE_MAIN_EPOCH_DRIFT');
+    if(actualObligation&&lease.obligationId&&lease.obligationId!==actualObligation) reasons.push('TERMINAL_LEASE_OBLIGATION_DRIFT');
+    if(!['metadata','readback'].includes(kind)) reasons.push('TERMINAL_CANDIDATE_IMMUTABLE');
+  }
+
+  const successorRequired=reasons.some(reason=>[
+    'CAPTURED_MAIN_EPOCH_STALE',
+    'TERMINAL_LEASE_MAIN_EPOCH_DRIFT',
+    'TERMINAL_CANDIDATE_IMMUTABLE'
+  ].includes(reason));
+  const ok=reasons.length===0;
+  return Object.freeze({
+    ok,
+    state:ok?'WRITE_ADMITTED':successorRequired?'SUCCESSOR_REQUIRED':'WRITE_BLOCKED',
+    action:ok?'ALLOW_COMPARE_AND_SWAP_WRITE':successorRequired?'CREATE_SUCCESSOR_FROM_CURRENT_MAIN':'BLOCK_STALE_WRITE',
+    canMutateCandidate:ok,
+    requiresExpectedHead:true,
+    requiresCurrentMainEpoch:true,
+    observedHead:observed||null,
+    expectedHead:expected||null,
+    capturedMainEpoch:captured||null,
+    currentMain:current||null,
+    mutationKind:kind,
+    lease,
+    reasons:uniq(reasons)
+  });
+}
+
 export function scanStaticSecurity(diff=''){
   const text=String(diff??'');
   const findings=[];
@@ -120,8 +169,13 @@ if(isCli){
       const result=evaluateTerminalMergeGuard(payload);
       console.log(JSON.stringify(result,null,2));
       if(!result.ok) process.exitCode=78;
+    } else if(cmd==='terminal-write-guard'){
+      const payload=JSON.parse(fs.readFileSync(arg('--input'),'utf8'));
+      const result=evaluateTerminalBranchWriteGuard(payload);
+      console.log(JSON.stringify(result,null,2));
+      if(!result.ok) process.exitCode=78;
     } else {
-      throw new Error('USAGE: github-delivery-state-machine.mjs security-static --diff <file> | terminal-guard --input <file>');
+      throw new Error('USAGE: github-delivery-state-machine.mjs security-static --diff <file> | terminal-guard --input <file> | terminal-write-guard --input <file>');
     }
   }catch(error){console.error(`GITHUB_DELIVERY_STATE_MACHINE_FAILED: ${error.message}`);process.exitCode=1;}
 }
