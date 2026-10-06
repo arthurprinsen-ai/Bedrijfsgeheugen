@@ -6,7 +6,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 
 const CANDIDATE_WORKFLOWS = [
   '.github/workflows/required-test.yml',
-  '.github/workflows/powerhouse-codeql.yml',
+  '.github/workflows/codeql.yml',
 ];
 
 const hasPullRequestTrigger = (workflow) => /(^|\n)\s*pull_request:\s*(\n|$)/.test(workflow);
