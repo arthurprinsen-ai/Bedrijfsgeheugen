@@ -1,31 +1,36 @@
 {
   "id": "supabase-edge-production-authority-v1",
-  "fingerprint": "supabase-edge|production-promotion|protected-main-git-integration-attestation|v2",
+  "fingerprint": "supabase-edge|production-promotion|protected-main-cli-single-writer-byte-readback|v3",
   "status": "canonical",
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source_of_truth": "GITHUB_PROTECTED_MAIN",
   "sole_promotion_workflow": ".github/workflows/supabase-edge-production-authority.yml",
-  "cli_version": "FORBIDDEN_FOR_NORMAL_PRODUCTION_PROMOTION",
+  "cli_version": "2.119.0",
   "provider": "supabase",
   "direct_chat_agent_provider_deploy": "FORBIDDEN",
   "direct_dashboard_production_deploy": "FORBIDDEN_EXCEPT_HARD_BREAK_GLASS",
   "break_glass_requires": "explicit human emergency authorization + immediate source projection + protected-main reconciliation",
-  "manual_recovery": "ATTEST_TRUSTED_CURRENT_MAIN_ONLY",
+  "manual_recovery": "TRUSTED_CURRENT_MAIN_ONLY",
   "drift_policy": "FAIL_CLOSED",
   "concurrency": "SINGLE_FLIGHT",
-  "deployment_scope": "Supabase GitHub Integration deploys changed Edge Functions from protected main; config.toml/shared changes remain provider-managed",
-  "readback": "newest exact-SHA Supabase GitHub App production check must complete success and remain stable across two observations; immutable protected-main source-tree hashes are retained",
-  "terminal_truth": "protected merge -> Supabase GitHub Integration production deployment -> exact-SHA stable provider check -> no newer Supabase runtime drift",
-  "secret_requirement": "NONE_IN_GITHUB_ACTIONS",
-  "rationale": "remove the broken static PAT/parallel CLI writer while preserving protected-main-only production authority and exact provider attestation",
-  "provider_deployer": "SUPABASE_GITHUB_INTEGRATION",
-  "github_actions_role": "ATTESTATION_ONLY",
-  "provider_check": {
-    "app_slug": "supabase",
-    "name": "Supabase Preview",
-    "details_url": "https://supabase.com/dashboard/project/adhjwmvyoixzjtmiroln",
-    "exact_commit_bound": true,
-    "stable_success_observations": 2
+  "deployment_scope": "changed function directories; all functions for config.toml/_shared changes; publisher and recovery-runner are a coupled social deployment unit",
+  "readback": "supabase functions download must reproduce the complete deployed function file tree byte-for-byte; file set and deterministic tree SHA-256 must equal protected-main source",
+  "terminal_truth": "protected merge -> protected-main GitHub Actions deploy -> provider download -> byte-for-byte source-tree parity -> no newer Supabase runtime drift",
+  "secret_requirement": "GitHub production environment secret SUPABASE_ACCESS_TOKEN; project-scoped Edge Functions Read-write PAT preferred",
+  "provider_deployer": "GITHUB_ACTIONS_SUPABASE_CLI",
+  "github_actions_role": "SOLE_DEPLOYER_AND_BYTE_READBACK",
+  "direct_cli_production_deploy": "FORBIDDEN_OUTSIDE_AUTHORITY_WORKFLOW",
+  "scoped_pat": {
+    "preferred": true,
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "permission": "Edge Functions",
+    "access": "Read-write",
+    "classic_pat_fallback": "ALLOWED_WITH_WARNING_WHEN_SCOPED_PAT_IS_NOT_AVAILABLE"
   },
-  "direct_cli_production_deploy": "FORBIDDEN"
+  "supabase_github_app_check": "ADVISORY_ONLY_NOT_TERMINAL_PROOF",
+  "social_pair": [
+    "powerhouse-social-publisher",
+    "social-recovery-runner"
+  ],
+  "rationale": "the Supabase GitHub App success check carried no deployed source identity and was observed green while social-recovery-runner production source remained stale; terminal proof therefore requires the same protected-main workflow to be the only normal writer and to read back provider bytes after deployment"
 }
