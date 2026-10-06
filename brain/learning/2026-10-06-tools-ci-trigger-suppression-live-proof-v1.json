@@ -1,0 +1,36 @@
+{
+  "id": "tools-ci-trigger-suppression-live-proof-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|netlify|tools-ci|push-admission|live-proof|v1",
+  "root_cause": "Before #3969, tools/ci/** was classified as non-deployable only after Production Source Snapshot and Production Release Readback had already admitted the main push and allocated runners. During the live-proof prerequisite run, the material writeback guard also used a three-dot diff in a shallow checkout, so separately fetched base/head commit objects could exist without a discoverable merge base and the guard failed before semantic evaluation.",
+  "evidence": {
+    "structural_fix_pr": 3969,
+    "structural_fix_merge_sha": "a603f712fee167b8c60e0aab07b4f00316185130",
+    "live_proof_pr": 3976,
+    "candidate_head_before_closure": "26f6f3493e1b73fe711747dfb96f9870758de48b"
+  },
+  "prevention": {
+    "production_source_snapshot_paths_ignore": "tools/ci/**",
+    "production_release_readback_paths_ignore": "tools/ci/**",
+    "closure_evidence_paths_are_also_ignored": [
+      "brain/learning/**",
+      "docs/**"
+    ],
+    "mixed_runtime_changes_remain_fail_closed": true,
+    "material_writeback_diff": "Use exact two-tree git diff --name-only <base> <head>; changed-path classification does not require commit ancestry."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "expected_final_proof": "A successor containing only production-ignored paths produces no Production Source Snapshot or Production Release Readback run on its protected-main merge SHA."
+  },
+  "compiler": {
+    "failure_class": "CI_UNNECESSARY_NETLIFY_RUNNER",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
