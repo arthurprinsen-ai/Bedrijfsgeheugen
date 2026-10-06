@@ -4,7 +4,7 @@ Date: 2026-10-06
 Obligation-ID: linkedin-personal-provider-ack-truth-20261006-v1
 Delivery-Lane: automation
 Candidate-Type: recovery
-Base-SHA: 0e38b4b270c6559fce79d4d3df039a216c35df85
+Base-SHA: 8223fcd78e33f1771dd8e6d983a9a2d18f0ed444
 
 Observed production evidence:
 - LinkedIn personal has a durable provider post ID.
