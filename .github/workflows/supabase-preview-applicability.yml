@@ -3,6 +3,17 @@ name: Supabase Preview Applicability
 on:
   pull_request:
     branches: [main]
+  workflow_call:
+    inputs:
+      base_sha:
+        required: false
+        type: string
+      head_sha:
+        required: false
+        type: string
+      pr_number:
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -10,7 +21,7 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: supabase-preview-applicability-${{ github.event.pull_request.number }}
+  group: supabase-preview-applicability-${{ inputs.pr_number || github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -23,7 +34,7 @@ jobs:
         name: Fast-path Supabase applicability from PR file metadata
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         shell: bash
         run: |
@@ -38,7 +49,7 @@ jobs:
       - name: Record provider preview not applicable without checkout
         if: steps.scope.outputs.supabase_changed != 'true'
         run: |
-          echo "SUPABASE_PREVIEW_NOT_APPLICABLE no supabase/** changes on PR ${{ github.event.pull_request.number }}"
+          echo "SUPABASE_PREVIEW_NOT_APPLICABLE no supabase/** changes on PR ${{ inputs.pr_number || github.event.pull_request.number }}"
 
       - uses: actions/checkout@v5
         if: steps.scope.outputs.supabase_changed == 'true'
@@ -48,8 +59,8 @@ jobs:
         if: steps.scope.outputs.supabase_changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
           REPO: ${{ github.repository }}
         run: |
           set -euo pipefail

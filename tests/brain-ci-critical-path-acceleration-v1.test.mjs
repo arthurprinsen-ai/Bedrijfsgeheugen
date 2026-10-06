@@ -11,6 +11,7 @@ test('CI acceleration keeps one Required single-flight and removes duplicate gen
   assert.doesNotMatch(required, /Prove Supabase security gate blocks known unsafe patterns/);
   assert.doesNotMatch(required, /Verify Portal V2 suite/);
   assert.match(required, /npm install --prefer-offline/);
+  assert.doesNotMatch(required, /Run exact Netlify deploy-preview build parity before merge/);
   assert.match(required, /hashFiles\('package\.json'\)/);
 });
 

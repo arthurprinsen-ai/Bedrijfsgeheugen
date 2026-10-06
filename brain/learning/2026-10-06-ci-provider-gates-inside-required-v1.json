@@ -1,0 +1,15 @@
+{
+  "fingerprint": "ci-provider-gates-inside-required-v1",
+  "compiler": {
+    "failure_class": "DELIVERY"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Two provider validations were on the PR critical path inefficiently: a full deploy-preview build executed serially inside Required preflight, and Supabase Preview Applicability was a repository-level required workflow on every PR even when no Supabase source changed.",
+  "prevention_rule": "Preflight classifies only. Netlify production parity and provider/browser proof run after classification without blocking lane startup. Supabase applicability is a reusable exact-head proof called by Required only when supabase/** changes; non-Supabase PRs allocate no Supabase runner after branch-protection migration.",
+  "evidence": [
+    "Required preflight previously executed the full Netlify deploy-preview command before backend/portal/automation/website could start.",
+    "Main branch protection required Supabase Preview Applicability globally.",
+    "Supabase Preview Applicability already has exact-head, provider-app and stable-success validation suitable for reusable ownership.",
+    "Supabase migration parity was independently restored to 591 remote / 591 local before this change."
+  ]
+}

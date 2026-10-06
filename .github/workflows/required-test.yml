@@ -34,6 +34,7 @@ on:
 
 permissions:
   actions: read
+  checks: read
   contents: read
   statuses: read
   pull-requests: read
@@ -69,6 +70,8 @@ jobs:
       full_shared_suite: ${{ steps.integration.outputs.full_shared_suite }}
       affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
       netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
+      supabase_changed: ${{ steps.scope.outputs.supabase_changed }}
+      supabase_preview_required: ${{ steps.scope.outputs.supabase_preview_required }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -144,14 +147,16 @@ jobs:
           const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/'];
           const netlifyBuildExact=new Set(['netlify.toml','_redirects','_headers','index.html','klantportaal.html','package.json','package-lock.json']);
           const netlifyBuildRequired=changedPaths.some(path=>netlifyBuildExact.has(path)||netlifyBuildPrefixes.some(prefix=>path.startsWith(prefix)));
+          const supabaseChanged=changedPaths.some(path=>path.startsWith('supabase/'));
+          const supabasePreviewRequired=supabaseChanged && process.env.EVENT_NAME !== 'merge_group';
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\n`);
-          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_changed=${supabaseChanged}\nsupabase_preview_required=${supabasePreviewRequired}\n`);
+          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites,netlifyBuildRequired,supabaseChanged,supabasePreviewRequired},null,2));
           NODE
       - id: integration
         name: Compile one-write integration bundle
@@ -292,27 +297,15 @@ jobs:
       - name: Verify Autonomous Engineering Fabric v3 authority contract
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
-      - name: Run exact Netlify deploy-preview build parity before merge
-        if: steps.scope.outputs.netlify_build_required == 'true'
-        env:
-          COMMIT_REF: ${{ steps.scope.outputs.change_head_sha }}
-          CONTEXT: deploy-preview
-          DEPLOY_ID: required-premerge-deploy-preview-build
-          STATIC_I18N_NETWORK: '0'
-          STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
-        run: |
-          set -euo pipefail
-          command="$(python3 - <<'PY'
-          import tomllib
-          with open('netlify.toml','rb') as handle:
-              config=tomllib.load(handle)
-          print(config['context']['deploy-preview']['command'])
-          PY
-          )"
-          bash -lc "$command"
-          git reset --hard HEAD
-          git clean -fd -e node_modules/ -e .artifacts/
+
+  supabase_preview:
+    needs: preflight
+    if: needs.preflight.outputs.supabase_preview_required == 'true'
+    uses: ./.github/workflows/supabase-preview-applicability.yml
+    with:
+      base_sha: ${{ needs.preflight.outputs.base_sha }}
+      head_sha: ${{ needs.preflight.outputs.change_head_sha }}
+      pr_number: ${{ needs.preflight.outputs.pr_number }}
 
   netlify_build_parity:
     needs: preflight
@@ -405,7 +398,7 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, netlify_build_parity, backend, portal, automation, website]
+    needs: [hygiene, preflight, supabase_preview, netlify_build_parity, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -416,6 +409,8 @@ jobs:
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
       SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
+      SUPABASE_PREVIEW_REQUIRED: ${{ needs.preflight.outputs.supabase_preview_required }}
+      SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
       NETLIFY_BUILD_REQUIRED: ${{ needs.preflight.outputs.netlify_build_required }}
       NETLIFY_BUILD: ${{ needs.netlify_build_parity.result }}
       BACKEND: ${{ needs.backend.result }}
@@ -433,6 +428,7 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
+          [ "$SUPABASE_PREVIEW_REQUIRED" != true ] || [ "$SUPABASE_PREVIEW" = success ]
           [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]

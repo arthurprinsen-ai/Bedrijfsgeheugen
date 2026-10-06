@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const workflowPath='.github/workflows/supabase-preview-applicability.yml';
+const requiredPath='.github/workflows/required-test.yml';
 
 test('applicability gate always runs on pull requests to main', async () => {
   const workflow=await readFile(workflowPath,'utf8');
@@ -45,4 +46,16 @@ test('latest provider check wins and success must be stable before verification'
   assert.match(workflow,/stable_provider_success_id/);
   assert.match(workflow,/success:\*/);
   assert.match(workflow,/requiring a second stable observation/);
+});
+
+test('Required test conditionally owns Supabase applicability on changed Supabase source', async () => {
+  const [workflow,required]=await Promise.all([readFile(workflowPath,'utf8'),readFile(requiredPath,'utf8')]);
+  assert.match(workflow,/workflow_call:/);
+  assert.match(workflow,/inputs\.head_sha \|\| github\.event\.pull_request\.head\.sha/);
+  assert.match(required,/supabase_changed:/);
+  assert.match(required,/supabase_preview_required:/);
+  assert.match(required,/\n  supabase_preview:\n\s+needs: preflight/);
+  assert.match(required,/uses: \.\/\.github\/workflows\/supabase-preview-applicability\.yml/);
+  assert.match(required,/SUPABASE_PREVIEW_REQUIRED/);
+  assert.match(required,/SUPABASE_PREVIEW/);
 });
