@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse-ci-control-plane-v2",
+  "version": 2,
+  "status": "active",
+  "canonical_pr_workflow": ".github/workflows/required-test.yml",
+  "canonical_required_job": "test",
+  "pull_request_head_workflow_budget": 1,
+  "lifecycle_pull_request_closed_allowlist": [
+    ".github/workflows/obligation-terminal-closure.yml",
+    ".github/workflows/powerhouse-merged-branch-cleanup.yml",
+    ".github/workflows/powerhouse-obligation-terminalizer.yml",
+    ".github/workflows/powerhouse-terminal-writer-lease-closure-guard.yml",
+    ".github/workflows/writer-production-reconcile.yml"
+  ],
+  "slo": {
+    "fast_gate_queue_p95_seconds": 30,
+    "fast_gate_total_p95_seconds": 120,
+    "stale_head_cancellation_seconds": 15,
+    "agent_active_external_wait_seconds": 30,
+    "workflow_fanout_per_pr_head_p95": 1
+  },
+  "topology": {
+    "pull_request": "admission + hygiene + impact classification + fast affected tests only",
+    "merge_group": "full assurance + selected release lanes + local build parity",
+    "main": "deployment + production readback + learning",
+    "background": "schedule/workflow_dispatch/push-main only"
+  },
+  "autonomy": {
+    "measure_daily": true,
+    "optimize_daily": true,
+    "protected_pr_for_tuning": true,
+    "auto_merge_only_after_protected_gates": true,
+    "safe_auto_change_scope": [
+      "max_parallel_packages",
+      "candidate_batch_window_seconds",
+      "fast_path_target_seconds",
+      "speculative_execution_threshold",
+      "ci_background_max_parallel"
+    ],
+    "never_auto_weaken": [
+      "canonical_required_gate",
+      "security_assurance",
+      "production_readback",
+      "protected_merge",
+      "exact_sha_identity",
+      "merge_group_full_assurance",
+      "pull_request_head_workflow_budget"
+    ]
+  },
+  "agent_state_machine": [
+    "RUNNING",
+    "WAITING_EXTERNAL",
+    "TERMINAL"
+  ]
+}
