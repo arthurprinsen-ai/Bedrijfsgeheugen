@@ -91,7 +91,7 @@ jobs:
 
           is_governance_path() {
             case "$1" in
-              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json)
+              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json)
                 return 0
                 ;;
             esac
@@ -151,17 +151,58 @@ jobs:
             exit 0
           fi
 
-          netlify_required="$(NON_GOVERNANCE_PATHS="$non_governance_paths" node --input-type=module - <<'NODE'
+          runtime_classes="$(NON_GOVERNANCE_PATHS="$non_governance_paths" node --input-type=module - <<'NODE'
           import { isNetlifyRuntimePath } from './tools/site-shell/production-supersession.mjs';
           const paths=String(process.env.NON_GOVERNANCE_PATHS||'').split(/\r?\n/).filter(Boolean);
-          process.stdout.write(paths.some(path => isNetlifyRuntimePath(path)) ? 'true' : 'false');
+          const supabase=paths.filter(path=>/^supabase\/functions\/[^/]+\//.test(path));
+          const netlify=paths.filter(path=>isNetlifyRuntimePath(path));
+          const unknown=paths.filter(path=>!supabase.includes(path)&&!netlify.includes(path));
+          process.stdout.write(JSON.stringify({supabase,netlify,unknown}));
           NODE
           )"
-
-          if [ "$netlify_required" != true ]; then
+          unknown_runtime_paths="$(jq -r '.unknown[]?' <<<"$runtime_classes")"
+          if [ -n "$unknown_runtime_paths" ]; then
             echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
-            printf '%s' "$non_governance_paths"
+            printf '%s\n' "$unknown_runtime_paths"
             exit 78
+          fi
+
+          mapfile -t changed_functions < <(jq -r '.supabase[]?' <<<"$runtime_classes" | sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' | sort -u)
+          supabase_required=false
+          printf '[]\n' > .artifacts/supabase-provider-readbacks.json
+          if [ "${#changed_functions[@]}" -gt 0 ]; then
+            supabase_required=true
+            provider_lines="$(printf '%s\n' "$PR_BODY" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
+            if [ -z "$provider_lines" ]; then
+              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING"
+              exit 78
+            fi
+            readbacks='[]'
+            for fn in "${changed_functions[@]}"; do
+              line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+              if [ -z "$line" ]; then
+                echo "::error::SUPABASE_PROVIDER_READBACK_INCOMPLETE:${fn}"
+                exit 78
+              fi
+              version="$(sed -nE 's/.*;version=([1-9][0-9]*);.*/\1/p' <<<"$line")"
+              runtime_sha256="$(sed -nE 's/.*;runtime_sha256=([0-9a-fA-F]{64})$/\1/p' <<<"$line" | tr '[:upper:]' '[:lower:]')"
+              readbacks="$(jq -c --arg fn "$fn" --argjson version "$version" --arg runtime_sha256 "$runtime_sha256" '. + [{function:$fn,version:$version,runtime_sha256:$runtime_sha256,state:"ACTIVE"}]' <<<"$readbacks")"
+              echo "SUPABASE_PROVIDER_READBACK_PROVEN:${line}"
+            done
+            printf '%s\n' "$readbacks" > .artifacts/supabase-provider-readbacks.json
+          fi
+
+          netlify_required="$(jq -r '(.netlify|length)>0' <<<"$runtime_classes")"
+          if [ "$netlify_required" != true ]; then
+            [ "$supabase_required" = true ] || {
+              echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
+              printf '%s' "$non_governance_paths"
+              exit 78
+            }
+            prove_main_containment
+            echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
+            echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            exit 0
           fi
 
           for attempt in $(seq 1 36); do
@@ -181,7 +222,11 @@ jobs:
                 git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
                 if git merge-base --is-ancestor "$MERGE_SHA" "$observed" && [ -s /tmp/runtime.html ]; then
                   echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
-                  echo "readback_mode=netlify_runtime" >> "$GITHUB_OUTPUT"
+                  if [ "$supabase_required" = true ]; then
+                    echo "readback_mode=netlify_runtime_supabase_provider" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "readback_mode=netlify_runtime" >> "$GITHUB_OUTPUT"
+                  fi
                   exit 0
                 fi
               fi
@@ -206,9 +251,13 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           node --input-type=module - <<'NODE'
-          import { readFileSync, writeFileSync } from 'node:fs';
+          import { existsSync, readFileSync, writeFileSync } from 'node:fs';
           const lineage=JSON.parse(readFileSync('.artifacts/terminal-lineage.json','utf8'));
           const preflight=JSON.parse(readFileSync('/tmp/chat-learning-preflight.json','utf8'));
+          const providerReadbacks=existsSync('.artifacts/supabase-provider-readbacks.json')
+            ? JSON.parse(readFileSync('.artifacts/supabase-provider-readbacks.json','utf8'))
+            : [];
+          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','netlify_runtime_supabase_provider'];
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -221,18 +270,23 @@ jobs:
             readback_mode:process.env.READBACK_MODE,
             checks:{
               merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
-              deploy_promotion_readback:process.env.READBACK_MODE==='netlify_runtime',
-              runtime_function_readback:process.env.READBACK_MODE==='netlify_runtime',
+              deploy_promotion_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
+              runtime_function_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               production_readback_not_applicable:['non_runtime','supabase_history_parity_recovery'].includes(process.env.READBACK_MODE),
+              supabase_provider_readback:['supabase_edge_provider','netlify_runtime_supabase_provider'].includes(process.env.READBACK_MODE),
               outcome_evidence:true,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
-            }
+            },
+            supabase_provider_readbacks:providerReadbacks
           };
           if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
           if(!evidence.checks.deploy_promotion_readback && !evidence.checks.production_readback_not_applicable) {
             throw new Error('TERMINAL_PRODUCTION_READBACK_MODE_UNPROVEN');
+          }
+          if(evidence.checks.supabase_provider_readback && providerReadbacks.length===0) {
+            throw new Error('TERMINAL_SUPABASE_PROVIDER_READBACK_EVIDENCE_MISSING');
           }
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));
