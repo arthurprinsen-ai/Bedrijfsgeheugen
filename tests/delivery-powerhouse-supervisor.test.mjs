@@ -85,11 +85,17 @@ test('same-lineage moving-main recovery requires terminal lease and never merges
   assert.match(yaml,/contents:\s*write/);
   assert.match(yaml,/MERGE_CONFLICT_RECOVERY/);
   assert.match(yaml,/Writer-Lease-State: TERMINAL_DELIVERY/);
-  assert.match(yaml,/Writer-Lease-Owner: powerhouse-terminal-delivery/);
+  assert.match(yaml,/lease_owner/);
+  assert.match(yaml,/lease_head/);
+  assert.match(yaml,/Writer-Lease-State: TERMINAL_DELIVERY/);
   assert.match(yaml,/head_repo/);
   assert.match(yaml,/repos\/\$repo\/merges/);
   assert.match(yaml,/-f base="\$branch"/);
   assert.match(yaml,/-f head="\$default_branch"/);
+  assert.match(yaml,/Writer-Lease-Head/);
+  assert.match(yaml,/Writer-Lease-Main-Epoch/);
+  assert.match(yaml,/Base-SHA/);
+  assert.match(yaml,/--method PATCH "repos\/\$repo\/pulls\/\$number"/);
   assert.doesNotMatch(yaml,/gh pr merge|merge_pull_request|--admin/);
 });
 

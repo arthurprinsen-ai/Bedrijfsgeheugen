@@ -1,0 +1,21 @@
+{
+  "version": "SAME-LINEAGE-MAIN-REFRESH-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|moving-main|same-lineage-refresh|v1",
+  "obligation_id": "same-lineage-main-refresh-20261006-v1",
+  "root_cause": "The successor guard already forbade successor creation for non-overlapping main drift, but terminal write/predictive recovery still mapped main-epoch drift to CREATE_SUCCESSOR_FROM_CURRENT_MAIN and the recovery supervisor accepted only one hard-coded writer owner. This produced repeated PR successors, repeated Required/CodeQL fan-out, and lease-head metadata races.",
+  "prevention": "Main-epoch drift now routes to revalidate-and-sync of the existing PR. A terminal main-sync is admitted only with exact head CAS and zero path/contract overlap. Overlap stays on the same lineage for reconciliation. Premature closure reopens any structurally valid terminal lease, independent of owner naming. Recovery refresh advances Base-SHA, Writer-Lease-Head and Writer-Lease-Main-Epoch immediately.",
+  "safety": {
+    "ordinary_terminal_content_mutation": "still immutable and successor-required",
+    "stale_head": "blocked/reload before action",
+    "overlap": "fail-closed reconciliation",
+    "merge_protection": "unchanged"
+  },
+  "regression": [
+    "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs",
+    "tests/delivery-powerhouse-supervisor.test.mjs",
+    "tests/terminal-writer-lease-closure-guard.test.mjs",
+    "tests/brain-moving-main-successor-guard.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION"
+}
