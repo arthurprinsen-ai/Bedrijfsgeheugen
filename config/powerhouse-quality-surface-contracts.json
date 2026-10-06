@@ -254,6 +254,13 @@
       "required": true
     },
     {
+      "id": "function:social-recovery-runner",
+      "type": "function",
+      "authority": "supabase/functions/social-recovery-runner/index.ts",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:supabase-migration-repair-bridge",
       "type": "function",
       "authority": "supabase/functions/supabase-migration-repair-bridge/index.ts",
