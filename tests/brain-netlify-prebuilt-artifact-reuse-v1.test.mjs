@@ -72,4 +72,5 @@ test('tabbladen regression is classified with its website implementation',async(
   assert.ok(website);
   assert.ok(website.paths.includes('tools/apply-tabbladen.mjs'));
   assert.ok(website.paths.includes('tests/tabbladen.test.mjs'));
+  assert.ok(website.paths.includes('tests/product-led-home-v1.test.mjs'));
 });
