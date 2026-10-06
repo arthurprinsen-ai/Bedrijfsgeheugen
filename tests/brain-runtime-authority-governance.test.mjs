@@ -117,7 +117,13 @@ test('Supabase Edge production workflow is current-main-only, single-writer and 
   assert.match(workflow,/git merge-base --is-ancestor/);
   assert.match(workflow,/app\?\.slug==='supabase'/);
   assert.match(workflow,/Supabase Preview/);
-  assert.match(workflow,/stableSuccess>=2/);
+  assert.match(workflow,/deployment_anchor_sha/);
+  assert.match(workflow,/SUPABASE_PRODUCTION_DEPLOYMENT_ANCHOR_NOT_FOUND/);
+  assert.match(workflow,/git fetch --no-tags --deepen=300 origin main/);
+  assert.match(workflow,/git','log','--format=%H','-n','80'/);
+  assert.match(workflow,/git','diff','--quiet',anchor,sha/);
+  assert.match(workflow,/source_equivalent_to_anchor:true/);
+  assert.match(workflow,/stable_success_observations:2/);
   assert.match(workflow,/source-tree-sha256\.json/);
   assert.match(workflow,/SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG/);
   assert.match(workflow,/sed -nE 's\/\^\\\[functions\\\.\(\[\^\]\]\+\)\\\]\$\/\\1\/p' supabase\/config\.toml/);

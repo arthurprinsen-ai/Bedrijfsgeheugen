@@ -146,60 +146,80 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          git fetch --no-tags --deepen=300 origin main
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
+          import { execFileSync, spawnSync } from 'node:child_process';
           const repo=process.env.GITHUB_REPOSITORY;
           const sha=process.env.GITHUB_SHA;
           const token=process.env.GH_TOKEN;
           const project=process.env.PROJECT_REF;
           const productionUrl=`https://supabase.com/dashboard/project/${project}`;
-          const api=`https://api.github.com/repos/${repo}/commits/${sha}/check-runs?per_page=100`;
+          const functions=fs.readFileSync('/tmp/functions.txt','utf8').split(/\r?\n/).filter(Boolean);
+          const runtimePaths=['supabase/config.toml',...functions.map(fn=>`supabase/functions/${fn}`)];
+          const headers={
+            authorization:`Bearer ${token}`,
+            accept:'application/vnd.github+json',
+            'x-github-api-version':'2022-11-28'
+          };
           const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-          let stableId='';
-          let stableSuccess=0;
-          let selected=null;
-          let lastObservation=null;
-          for(let attempt=1;attempt<=60;attempt+=1){
-            const response=await fetch(api,{headers:{
-              authorization:`Bearer ${token}`,
-              accept:'application/vnd.github+json',
-              'x-github-api-version':'2022-11-28'
-            }});
-            if(!response.ok) throw new Error(`GITHUB_CHECKS_READ_FAILED:${response.status}`);
+          async function checksFor(commit){
+            const api=`https://api.github.com/repos/${repo}/commits/${commit}/check-runs?per_page=100`;
+            const response=await fetch(api,{headers});
+            if(!response.ok) throw new Error(`GITHUB_CHECKS_READ_FAILED:${response.status}:${commit}`);
             const payload=await response.json();
-            const checks=(payload.check_runs||[])
+            return (payload.check_runs||[])
               .filter(check=>check?.app?.slug==='supabase' && check?.name==='Supabase Preview')
               .filter(check=>String(check?.details_url||'')===productionUrl)
               .sort((a,b)=>Number(b.id||0)-Number(a.id||0));
-            const check=checks[0]||null;
-            lastObservation=check?{
-              id:check.id,status:check.status,conclusion:check.conclusion,details_url:check.details_url,
-              started_at:check.started_at,completed_at:check.completed_at
-            }:null;
-            if(!check){
-              stableId=''; stableSuccess=0;
-              console.log(`SUPABASE_PRODUCTION_CHECK_WAIT attempt=${attempt}/60 reason=missing`);
-              await sleep(10000);
-              continue;
-            }
-            if(check.status!=='completed'){
-              stableId=''; stableSuccess=0;
-              console.log(`SUPABASE_PRODUCTION_CHECK_WAIT attempt=${attempt}/60 id=${check.id} status=${check.status}`);
-              await sleep(10000);
-              continue;
-            }
-            if(check.conclusion!=='success'){
-              throw new Error(`SUPABASE_PRODUCTION_CHECK_TERMINAL_${String(check.conclusion||'UNKNOWN').toUpperCase()}:id=${check.id}`);
-            }
-            if(String(check.id)===stableId) stableSuccess+=1;
-            else { stableId=String(check.id); stableSuccess=1; }
-            console.log(`SUPABASE_PRODUCTION_CHECK_SUCCESS id=${check.id} stable=${stableSuccess}/2`);
-            if(stableSuccess>=2){ selected=check; break; }
-            await sleep(3000);
           }
-          if(!selected) throw new Error(`SUPABASE_PRODUCTION_CHECK_TIMEOUT:last=${JSON.stringify(lastObservation)}`);
+          function runtimeEqual(anchor){
+            const result=spawnSync('git',['diff','--quiet',anchor,sha,'--',...runtimePaths],{stdio:'ignore'});
+            if(result.status===0) return true;
+            if(result.status===1) return false;
+            throw new Error(`SUPABASE_PRODUCTION_ANCHOR_DIFF_FAILED:${anchor}:status=${result.status}`);
+          }
+
+          const currentChecks=await checksFor(sha);
+          const current=currentChecks[0]||null;
+          if(current?.status==='completed' && current?.conclusion && current.conclusion!=='success'){
+            throw new Error(`SUPABASE_PRODUCTION_CHECK_TERMINAL_${String(current.conclusion).toUpperCase()}:id=${current.id}:sha=${sha}`);
+          }
+
+          let anchorSha=null;
+          let selected=null;
+          if(current?.status==='completed' && current?.conclusion==='success'){
+            anchorSha=sha;
+            selected=current;
+          } else {
+            const log=execFileSync('git',['log','--format=%H','-n','80','--',...runtimePaths],{encoding:'utf8'});
+            const candidates=[...new Set(log.split(/\r?\n/).filter(Boolean))];
+            for(const candidate of candidates){
+              if(!runtimeEqual(candidate)) continue;
+              const checks=await checksFor(candidate);
+              const success=checks.find(check=>check.status==='completed' && check.conclusion==='success');
+              if(success){
+                anchorSha=candidate;
+                selected=success;
+                break;
+              }
+            }
+          }
+          if(!anchorSha || !selected){
+            throw new Error(`SUPABASE_PRODUCTION_DEPLOYMENT_ANCHOR_NOT_FOUND:sha=${sha}:paths=${runtimePaths.join(',')}`);
+          }
+
+          await sleep(3000);
+          const confirm=(await checksFor(anchorSha)).find(check=>String(check.id)===String(selected.id))||null;
+          if(!confirm || confirm.status!=='completed' || confirm.conclusion!=='success'){
+            throw new Error(`SUPABASE_PRODUCTION_ANCHOR_NOT_STABLE:anchor=${anchorSha}:id=${selected.id}`);
+          }
+          if(!runtimeEqual(anchorSha)){
+            throw new Error(`SUPABASE_PRODUCTION_ANCHOR_RUNTIME_DRIFT:anchor=${anchorSha}:sha=${sha}`);
+          }
+
           const evidence={
-            contract:'supabase-edge-production-authority-v2',
+            contract:'supabase-edge-production-authority-v3',
             provider:'supabase-github-integration',
             app_slug:selected.app.slug,
             check_name:selected.name,
@@ -209,12 +229,15 @@ jobs:
             details_url:selected.details_url,
             started_at:selected.started_at,
             completed_at:selected.completed_at,
+            deployment_anchor_sha:anchorSha,
             protected_main_sha:sha,
-            stable_success_observations:stableSuccess,
+            runtime_paths:runtimePaths,
+            source_equivalent_to_anchor:true,
+            stable_success_observations:2,
             observed_at:new Date().toISOString()
           };
           fs.writeFileSync('.artifacts/supabase-edge-production-readback/provider-check.json',JSON.stringify(evidence,null,2)+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`check_run_id=${selected.id}\n`);
+          fs.appendFileSync(process.env.GITHUB_OUTPUT,`check_run_id=${selected.id}\nanchor_sha=${anchorSha}\n`);
           NODE
 
       - name: Install pinned Supabase CLI for read-only provider parity
@@ -288,7 +311,7 @@ jobs:
               exit 78
             }
           fi
-          printf 'attested_main=%s\nprovider_check_run_id=%s\n' "$CURRENT_MAIN" "${{ steps.provider.outputs.check_run_id }}" >> .artifacts/supabase-edge-production-readback/authority.txt
+          printf 'attested_main=%s\nprovider_check_run_id=%s\ndeployment_anchor_sha=%s\n' "$CURRENT_MAIN" "${{ steps.provider.outputs.check_run_id }}" "${{ steps.provider.outputs.anchor_sha }}" >> .artifacts/supabase-edge-production-readback/authority.txt
 
       - name: Record non-applicable authority state
         if: steps.scope.outputs.applicable != 'true'
