@@ -376,6 +376,28 @@ jobs:
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
 
 
+  merge_specialist_node24:
+    if: github.event_name == 'merge_group'
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.preflight.outputs.candidate_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '24'
+      - name: Run Node 24 specialist assurance
+        run: |
+          node tools/site-shell/test-shell-components.mjs
+          node --test tests/site-shell-compare-slider-physical-edges.test.mjs
+          node --test tests/content-growth-*.test.mjs
+          node tools/content-growth/validate-policy.mjs
+          node --test tests/brain-linkedin-company-growth-engine-v1.test.mjs
+          node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs
+
+
   netlify_build_parity:
     needs: preflight
     if: needs.preflight.outputs.netlify_build_required == 'true'
@@ -536,13 +558,15 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, netlify_build_parity, supabase_preview, backend, portal, automation, website]
+    needs: [hygiene, preflight, merge_specialist_node24, netlify_build_parity, supabase_preview, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
+      MERGE_SPECIALIST_NODE24: ${{ needs.merge_specialist_node24.result }}
+      EVENT_NAME: ${{ github.event_name }}
       SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
       SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
@@ -566,6 +590,7 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
+          [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST_NODE24" = success ]
           [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
           [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
