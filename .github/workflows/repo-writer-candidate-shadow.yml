@@ -33,6 +33,10 @@ permissions:
   pull-requests: read
   actions: write
 
+concurrency:
+  group: repo-writer-candidate-shadow-${{ inputs.pr_number || github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   verify:
     if: startsWith(github.head_ref, 'writer/') || (github.event_name == 'workflow_dispatch' && startsWith(inputs.candidate_branch, 'writer/'))

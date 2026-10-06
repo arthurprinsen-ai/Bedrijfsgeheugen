@@ -28,7 +28,7 @@ permissions:
 
 concurrency:
   group: repo-writer-cheap-canary-${{ inputs.writer || github.head_ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   candidate:

@@ -16,6 +16,9 @@
 
 [build]
   publish = "."
+  # Skip provider builds only when every changed path is proven not to affect the Netlify-hosted artifact.
+  # The ignore script fails open: unknown/missing Git context always builds.
+  ignore = "node tools/netlify-ignore-build.mjs"
   # Netlify: stop before dependency install/build for commits that only touch
   # delivery governance, tests or documentation. The script fails open: any
   # unknown/runtime path returns exit 1 so the deploy still runs.

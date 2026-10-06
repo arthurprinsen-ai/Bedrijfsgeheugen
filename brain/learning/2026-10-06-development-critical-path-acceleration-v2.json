@@ -1,0 +1,20 @@
+{
+  "fingerprint": "development-critical-path-acceleration-v2",
+  "compiler": {
+    "failure_class": "DELIVERY"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ]
+  },
+  "root_cause": "Delivery latency was dominated by orchestration fan-out and superseded work. Remaining hotspots included candidate-shadow/canary flights, JS/TS CodeQL initialization on non-JS/TS PRs, Supabase applicability checkout on non-Supabase PRs, and Netlify builds for changes already classified as non-deployment.",
+  "prevention_rule": "Keep required check contexts visible while moving applicability decisions ahead of expensive work; cancel stale logical flights by PR/ref; skip Netlify only for a fail-open allowlist of proven non-Netlify paths.",
+  "evidence": [
+    "Repository audit observed 124 workflow files.",
+    "Latest sampled 100 Actions runs: 45 queued, 7 in progress, 18 cancelled, 10 successful.",
+    "Inspected Netlify production deploy reported 122 seconds deploy_time and about 6m41 created-to-published.",
+    "Current main already contains PR-scoped cancellation for writer gate dispatch and operational verification.",
+    "Regression: tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+  ]
+}
