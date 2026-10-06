@@ -1,13 +1,14 @@
 {
-  "version": 4,
+  "version": 5,
   "contract": "whole-brain-outcome-obligations",
   "architecture": {
-    "activePath": "Powerhouse/Supabase/GitHub/Buffer/Notion",
+    "activePath": "Powerhouse/Supabase/GitHub/Netlify/Notion",
     "retiredPaths": [
-      "Make"
+      "Make",
+      "Buffer"
     ],
     "retiredPathPolicy": "LEGACY_RETIRED_PATH",
-    "rule": "Retired executors may remain only as historical provenance and may never be required for current completion or production truth."
+    "rule": "GitHub is code/contract authority; Supabase is runtime truth/state/learning authority; Netlify is production execution authority; Notion is knowledge/handoff authority. Retired executors may remain only as historical provenance or manual telemetry and may never be scheduled, required for completion, or treated as production truth."
   },
   "invariants": [
     "NO SILENT FAILURE",
@@ -79,7 +80,7 @@
     {
       "id": "cost-ledger-all-scenarios-daily",
       "domain": "cost",
-      "expected": "Every discovered active Powerhouse/Supabase/GitHub/Buffer/Notion runtime component is classified and represented once in the daily normalized cost ledger.",
+      "expected": "Every discovered active Powerhouse/Supabase/GitHub/Netlify/Notion runtime component is classified and represented once in the daily normalized cost ledger.",
       "dueAt": "daily_after_inventory_refresh",
       "ownerAgent": "agent-cost",
       "evidencePolicy": "The catalog contains every current active runtime inventory key once and unknown optional components are BUDGET_DEFERRED.",

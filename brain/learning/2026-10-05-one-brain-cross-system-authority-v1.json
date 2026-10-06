@@ -1,0 +1,27 @@
+{
+  "fingerprint": "powerhouse|one-brain|cross-system-authority|v1",
+  "date": "2026-10-05",
+  "status": "ACTIVE",
+  "problem": "Canonical intent and runtime could drift across GitHub, Supabase, Netlify and Notion; retired Buffer scheduling and duplicate compound-learning ownership were concrete examples.",
+  "authority": {
+    "github": "code_and_contract",
+    "supabase": "runtime_truth_state_learning",
+    "netlify": "production_execution",
+    "notion": "knowledge_handoff"
+  },
+  "invariants": [
+    "ONE_BRAIN_NO_PARALLEL_TRUTH",
+    "ONE_PRODUCER_OWNER_PER_CAPABILITY",
+    "RETIRED_PATHS_ARE_PROVENANCE_OR_MANUAL_TELEMETRY_ONLY",
+    "COMMERCIAL_LOOPS_CONSUME_MATERIALIZED_LEARNING_AND_DO_NOT_RERUN_ITS_PRODUCER",
+    "RUNTIME_GREEN_IS_NOT_TERMINAL_WITHOUT_PROTECTED_MERGE_EXACT_PRODUCTION_READBACK_AND_HANDOFF"
+  ],
+  "observed_repairs": [
+    "sales v6 no longer invokes daily compound learning",
+    "Buffer Netlify autonomous schedule removed",
+    "Buffer compatibility workflow no longer requires schedule",
+    "retired Buffer Netlify surface explicitly registered",
+    "canonical authority map changed to Powerhouse/Supabase/GitHub/Netlify/Notion"
+  ],
+  "prevention": "Future material changes must reconcile repository contract, runtime ownership, production execution and knowledge handoff under the same obligation before FULLY_WIRED_LIVE_PROVEN."
+}
