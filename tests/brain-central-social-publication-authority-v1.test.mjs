@@ -122,7 +122,7 @@ test('critical social recovery database transport is Supavisor-only',()=>{
   for(const [name,source] of critical){
     assert.match(source,/npm:postgres@3\.4\.7/,name+' must use the pinned direct postgres client');
     assert.match(source,/SUPABASE_DB_URL/,name+' must source DB credentials from the managed runtime secret');
-    assert.match(source,/aws-0-eu-central-1\.pooler\.supabase\.com/,name+' must use the EU Supavisor endpoint');
+    assert.ok(source.includes('aws-0-eu-central-1.pooler.supabase.com'),name+' must use the EU Supavisor endpoint');
     assert.match(source,/6543/,name+' must use Supavisor transaction-pooler port');
     assert.doesNotMatch(source,/\/rest\/v1\//,name+' must not depend on PostgREST for the critical recovery path');
   }
