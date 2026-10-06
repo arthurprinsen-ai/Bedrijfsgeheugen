@@ -11,3 +11,7 @@ Borging:
 - provider-readback blijft verplicht voordat publicatie als live bewezen geldt.
 
 Tijdens het incident waren daarnaast tijdelijke database-gateway timeouts zichtbaar. Daarom wordt de runtime pas terminal groen verklaard na herstelde database access én echte provider-side readback.
+
+## Regionale recovery
+
+De twee kritieke social-recoveryfuncties draaien voortaan in Netlify-regio `fra`. Het canonieke Supabase-project draait in `eu-central-1`. Hiermee vermijdt de publicatielus de problematische eastern-US netwerkroute zonder de overige functies of website-runtime te verplaatsen.
