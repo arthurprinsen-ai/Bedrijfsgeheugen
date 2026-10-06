@@ -274,6 +274,7 @@ jobs:
           tests/ai-model-advisor-v1.test.mjs
           tests/brain-ai-modelwijzer-novice-i18n-v1.test.mjs
           tests/brain-netlify-premerge-build-parity-v1.test.mjs
+          tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
           tests/social-learning-compatibility.test.mjs
@@ -338,6 +339,13 @@ jobs:
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             npm-${{ runner.os }}-
+      - name: Restore and extend content-addressed static i18n render cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/bg-static-i18n-v1
+          key: static-i18n-render-v1-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            static-i18n-render-v1-${{ runner.os }}-
       - name: Install exact Netlify build dependencies
         run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Run exact Netlify production build command once
@@ -347,35 +355,57 @@ jobs:
           DEPLOY_ID: required-netlify-build-parity
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
+          STATIC_I18N_BUILD_CACHE_DIR: .cache/bg-static-i18n-v1
+          STATIC_I18N_ROUTE_WORKERS: '2'
+          NETLIFY_BUILD_PROFILE_PATH: .artifacts/netlify-build-profile.json
         run: |
           set -euo pipefail
-          node tools/site-shell/pricing-build-integrity.mjs capture
-          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
-          node tools/bouw-powerhouse-auth.mjs
-          node tools/bouw-kennisindex.mjs
-          node tools/bouw-v18-production.mjs
-          node tools/site-shell/apply-product-led-home.mjs
-          node tools/apply-tabbladen.mjs
-          node tools/bouw-v18-views.mjs
-          node tools/bouw-v18-chrome-alles.mjs
-          node tools/prijzen-uit-de-homepage.mjs
-          node tools/normaliseer-site-ui.mjs
-          node tools/site-shell/pricing-build-integrity.mjs restore
-          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
-          node tools/seo-order-engine/apply.mjs
-          node tools/seo-order-engine/validate.mjs
-          node tools/site-shell/apply-i18n.mjs
-          node tools/site-shell/build-localized-routes.mjs
-          node tools/site-shell/apply-commercial-pricing-v1.mjs
-          node tools/seo-order-engine/apply-revenue-links.mjs
-          node tools/site-shell/finalize-website-coherence-v1.mjs
-          node tools/site-shell/apply-cms-runtime.mjs
-          node tools/genereer-sitemap.mjs
-          node tools/seo-order-engine/validate-locales.mjs
-          node tools/bouw-release-evidence.mjs
+          mkdir -p .artifacts
+          node tools/ci/netlify-build-entry.mjs
       - name: Verify built artifact contracts
-        run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
+        run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs
+      - id: prebuilt
+        name: Package immutable tree-addressed Netlify prebuilt artifact
+        env:
+          CANDIDATE_SHA: ${{ needs.preflight.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          source_tree_sha="$(git rev-parse "${CANDIDATE_SHA}^{tree}")"
+          stage="$(mktemp -d)"
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='node_modules/' \
+            --exclude='.cache/' \
+            --exclude='.artifacts/' \
+            --exclude='netlify-prebuilt.zip' \
+            ./ "$stage/"
+          rm -f "$stage/.bg-prebuilt-deploy.json" "$stage/.bg-prebuilt-manifest.json"
+          (cd "$stage" && zip -qr "$GITHUB_WORKSPACE/netlify-prebuilt.zip" .)
+          archive_sha256="$(sha256sum netlify-prebuilt.zip | awk '{print $1}')"
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          cat > .artifacts/netlify-prebuilt-manifest.json <<JSON
+          {
+            "contract": "NETLIFY_PREBUILT_ARTIFACT_V1",
+            "source_head_sha": "${CANDIDATE_SHA}",
+            "source_tree_sha": "${source_tree_sha}",
+            "archive_sha256": "${archive_sha256}",
+            "generated_at": "${generated_at}"
+          }
+          JSON
+          echo "source_tree_sha=${source_tree_sha}" >> "$GITHUB_OUTPUT"
+          echo "archive_sha256=${archive_sha256}" >> "$GITHUB_OUTPUT"
+          echo "NETLIFY_PREBUILT_PACKAGED tree=${source_tree_sha} sha256=${archive_sha256}"
+      - name: Upload immutable Netlify prebuilt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-prebuilt-tree-${{ steps.prebuilt.outputs.source_tree_sha }}
+          path: |
+            netlify-prebuilt.zip
+            .artifacts/netlify-prebuilt-manifest.json
+            .artifacts/netlify-build-profile.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
 
 
   supabase_preview:

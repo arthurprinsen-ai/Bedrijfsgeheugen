@@ -33,13 +33,21 @@ test('V18 generator cannot overwrite the standalone Bedrijfslek route',()=>{
   const views=read('tools/v18-views-lijst.mjs');
   const integrity=read('tools/site-shell/bedrijfslek-build-integrity.mjs');
   const netlify=read('netlify.toml');
+  const buildAuthority=read('tools/ci/netlify-build-entry.mjs');
   assert.doesNotMatch(views,/view:\s*['"]selfscan['"]/i);
   assert.match(views,/Bedrijfslek-productroute/i);
   assert.match(views,/V18-generator mag die standalone acquisitieroute niet overschrijven/i);
   assert.match(integrity,/BEDRIJFSLEK_INTEGRITY_LEGACY_SIX_QUESTIONS/);
-  assert.match(netlify,/bedrijfslek-build-integrity\.mjs capture/);
-  assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore/);
-  assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore[^\n]*normaliseer-site-ui\.mjs/);
+  assert.match(netlify,/node tools\/ci\/netlify-build-entry\.mjs/);
+  assert.match(buildAuthority,/bedrijfslek-build-integrity\.mjs/);
+  assert.ok(
+    buildAuthority.indexOf("'bedrijfslek-capture'") < buildAuthority.indexOf("'v18-production'"),
+    'Bedrijfslek capture must precede legacy website builders'
+  );
+  assert.ok(
+    buildAuthority.indexOf("'site-ui'") < buildAuthority.indexOf("'bedrijfslek-restore'"),
+    'Final site UI normalization must precede Bedrijfslek restore so the protected route is restored last'
+  );
 });
 
 

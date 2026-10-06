@@ -68,6 +68,7 @@ on:
         default: false
 
 permissions:
+  actions: read
   contents: read
   id-token: write
 
@@ -138,6 +139,70 @@ jobs:
           if-no-files-found: error
           retention-days: 1
  
+      - id: prebuilt
+        name: Resolve verified Required prebuilt artifact for exact main tree
+        if: steps.scope.outputs.deployment_required == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          fallback() {
+            echo "reuse=false" >> "$GITHUB_OUTPUT"
+            echo "deploy_dir=$GITHUB_WORKSPACE" >> "$GITHUB_OUTPUT"
+            echo "::notice::NETLIFY_PREBUILT_FALLBACK:$1"
+            exit 0
+          }
+          source_tree_sha="$(git rev-parse "${EXPECTED_SHA}^{tree}")"
+          artifact_name="netlify-prebuilt-tree-${source_tree_sha}"
+          artifact_json="$(gh api "repos/${REPOSITORY}/actions/artifacts?name=${artifact_name}&per_page=100" || true)"
+          artifact_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);const a=(x.artifacts||[]).filter(v=>!v.expired).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));process.stdout.write(String(a[0]?.id||""))}catch{}' "$artifact_json")"
+          [ -n "$artifact_id" ] || fallback "artifact-missing:${source_tree_sha}"
+          source_run_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);const a=(x.artifacts||[]).filter(v=>!v.expired).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));process.stdout.write(String(a.find(v=>String(v.id)===process.argv[2])?.workflow_run?.id||""))}catch{}' "$artifact_json" "$artifact_id")"
+          [ -n "$source_run_id" ] || fallback "source-run-missing:${artifact_id}"
+          run_json="$(gh api "repos/${REPOSITORY}/actions/runs/${source_run_id}" || true)"
+          run_name="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.name||""))}catch{}' "$run_json")"
+          run_conclusion="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.conclusion||""))}catch{}' "$run_json")"
+          run_repo="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.head_repository?.full_name||""))}catch{}' "$run_json")"
+          [ "$run_name" = "Required test" ] || fallback "source-run-not-required:${source_run_id}:${run_name}"
+          [ "$run_conclusion" = "success" ] || fallback "source-run-not-success:${source_run_id}:${run_conclusion}"
+          [ "$run_repo" = "$GITHUB_REPOSITORY" ] || fallback "source-run-repository-mismatch:${source_run_id}:${run_repo}"
+
+          artifact_dir="$RUNNER_TEMP/netlify-prebuilt-artifact"
+          deploy_dir="$RUNNER_TEMP/netlify-prebuilt-site"
+          rm -rf "$artifact_dir" "$deploy_dir"
+          mkdir -p "$artifact_dir" "$deploy_dir"
+          gh api "repos/${REPOSITORY}/actions/artifacts/${artifact_id}/zip" > "$RUNNER_TEMP/netlify-prebuilt-artifact.zip" || fallback "artifact-download-failed:${artifact_id}"
+          unzip -q "$RUNNER_TEMP/netlify-prebuilt-artifact.zip" -d "$artifact_dir" || fallback "artifact-wrapper-unzip-failed:${artifact_id}"
+          archive_path="$(find "$artifact_dir" -type f -name netlify-prebuilt.zip -print -quit)"
+          manifest_path="$(find "$artifact_dir" -type f -name netlify-prebuilt-manifest.json -print -quit)"
+          [ -n "$archive_path" ] && [ -n "$manifest_path" ] || fallback "artifact-payload-incomplete:${artifact_id}"
+          manifest_tree="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.source_tree_sha||""))}catch{}' "$manifest_path")"
+          manifest_contract="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.contract||""))}catch{}' "$manifest_path")"
+          expected_archive_sha="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.archive_sha256||""))}catch{}' "$manifest_path")"
+          [ "$manifest_contract" = "NETLIFY_PREBUILT_ARTIFACT_V1" ] || fallback "manifest-contract-invalid:${artifact_id}"
+          [ "$manifest_tree" = "$source_tree_sha" ] || fallback "manifest-tree-mismatch:${artifact_id}:${manifest_tree}:${source_tree_sha}"
+          actual_archive_sha="$(sha256sum "$archive_path" | awk '{print $1}')"
+          [ -n "$expected_archive_sha" ] && [ "$actual_archive_sha" = "$expected_archive_sha" ] || fallback "archive-sha256-mismatch:${artifact_id}"
+          unzip -q "$archive_path" -d "$deploy_dir" || fallback "prebuilt-unzip-failed:${artifact_id}"
+          cp "$manifest_path" "$deploy_dir/.bg-prebuilt-manifest.json"
+          cat > "$deploy_dir/.bg-prebuilt-deploy.json" <<JSON
+          {
+            "contract": "NETLIFY_PREBUILT_DEPLOY_V1",
+            "commit_ref": "${EXPECTED_SHA}",
+            "tree_sha": "${source_tree_sha}",
+            "artifact_id": "${artifact_id}",
+            "source_run_id": "${source_run_id}"
+          }
+          JSON
+          echo "reuse=true" >> "$GITHUB_OUTPUT"
+          echo "deploy_dir=$deploy_dir" >> "$GITHUB_OUTPUT"
+          echo "source_tree_sha=$source_tree_sha" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$artifact_id" >> "$GITHUB_OUTPUT"
+          echo "NETLIFY_PREBUILT_ARTIFACT_REUSE tree=$source_tree_sha artifact=$artifact_id required_run=$source_run_id"
+
+
       - name: Acquire Netlify deploy transport through GitHub OIDC
         if: steps.scope.outputs.deployment_required == 'true'
         env:
@@ -159,6 +224,8 @@ jobs:
         if: steps.scope.outputs.deployment_required == 'true'
         env:
           EXPECTED_SHA: ${{ github.sha }}
+          PREBUILT_REUSE: ${{ steps.prebuilt.outputs.reuse || 'false' }}
+          PREBUILT_DIR: ${{ steps.prebuilt.outputs.deploy_dir || github.workspace }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 3); do
@@ -178,7 +245,7 @@ jobs:
           request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=bedrijfsgeheugen-netlify-deploy-bridge"
           token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
           oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
-          if [ -n "$oidc_token" ]; then
+          if [ "$PREBUILT_REUSE" != "true" ] && [ -n "$oidc_token" ]; then
             trigger_json="$(curl -sS --max-time 25 -X POST \
               -H "Authorization: Bearer $oidc_token" \
               -H 'Content-Type: application/json' \
@@ -262,8 +329,14 @@ jobs:
 
             : > "$deploy_log"
             set +e
-            npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH" 2>&1 | tee "$deploy_log"
-            deploy_status=${PIPESTATUS[0]}
+            if [ "$PREBUILT_REUSE" = "true" ]; then
+              echo "NETLIFY_PREBUILT_UPLOAD directory=$PREBUILT_DIR"
+              (cd "$PREBUILT_DIR" && npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH") 2>&1 | tee "$deploy_log"
+              deploy_status=${PIPESTATUS[0]}
+            else
+              npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH" 2>&1 | tee "$deploy_log"
+              deploy_status=${PIPESTATUS[0]}
+            fi
             set -e
             if [ "$deploy_status" -eq 0 ]; then
               deploy_ok=true
