@@ -18,6 +18,10 @@
     "metadata_regression_fix_merge_sha": "86e3bf5e2824c15d066e80a2235cdbc48f4f8cd0"
   },
   "evaluation": {
+    "historical_replay": [
+      "tests/delivery-main-push-fanout-budget-v1.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
     "terminal_condition": "After protected merge, no Production Source Snapshot or Production Release Readback workflow run exists for the resulting main SHA."
   },
   "compiler": {
