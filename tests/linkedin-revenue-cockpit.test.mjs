@@ -123,10 +123,9 @@ test('LinkedIn cockpit autopilot requires concrete post context and exact commen
   assert.match(source, /Comment text: \$\{message\}/);
 });
 
-test('canonical publisher exposes dedicated autopilot mode and content loop runs it as its own delivery lane', () => {
+test('canonical publisher exposes dedicated autopilot mode and runs it during normal delivery', () => {
   const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
-  const contentLoop = fs.readFileSync(new URL('../supabase/functions/powerhouse-content-loop/index.ts', import.meta.url), 'utf8');
   assert.match(source, /mode === 'cockpit_autopilot'/);
-  assert.equal((source.match(/await runLinkedInCockpitAutopilot\(db\)/g) || []).length, 1);
-  assert.match(contentLoop, /powerhouse-social-publisher', \{ runDate, mode: 'cockpit_autopilot' \}/);
+  const calls = (source.match(/await runLinkedInCockpitAutopilot\(db\)/g) || []).length;
+  assert.ok(calls >= 2);
 });
