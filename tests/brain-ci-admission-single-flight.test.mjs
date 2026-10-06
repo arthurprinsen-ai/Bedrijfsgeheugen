@@ -14,20 +14,17 @@ test('recovery supervisor is scheduled/manual only and applies repository backpr
   assert.match(yml,/concurrency:\n\s+group: powerhouse-delivery-recovery-supervisor\n\s+cancel-in-progress: true/);
 });
 
-test('Required and BRAIN share PR single-flight identity across native and recovery triggers', async () => {
-  for (const path of ['.github/workflows/required-test.yml','.github/workflows/unified-brain-delivery.yml']) {
-    const yml = await readFile(path,'utf8');
-    const concurrency = yml.slice(yml.indexOf('concurrency:'), yml.indexOf('\njobs:'));
-    assert.match(concurrency,/inputs\.pr_number \|\| github\.event\.pull_request\.number/);
-    assert.doesNotMatch(concurrency,/github\.event_name/);
-    assert.match(concurrency,/cancel-in-progress: true/);
-  }
+test('Required fast ingress has no workflow lock while recovery remains single-flight', async () => {
+  const required = await readFile('.github/workflows/required-test.yml','utf8');
+  const recovery = await readFile('.github/workflows/unified-brain-delivery.yml','utf8');
+  assert.doesNotMatch(required,/^concurrency:/m);
+  const concurrency = recovery.slice(recovery.indexOf('concurrency:'), recovery.indexOf('\njobs:'));
+  assert.match(concurrency,/cancel-in-progress: true/);
 });
 
-test('skill projection supersedes stale same-PR/ref work', async () => {
+test('skill projection no longer consumes a runner on every PR HEAD', async () => {
   const yml = await readFile('.github/workflows/powerhouse-skill-projection.yml','utf8');
-  assert.match(yml,/group: powerhouse-skill-projection-\$\{\{ github\.event\.pull_request\.number \|\| github\.ref_name \}\}/);
-  assert.match(yml,/cancel-in-progress: true/);
+  assert.doesNotMatch(yml,/^  pull_request:/m);
 });
 
 test('Required executes this CI admission regression', async () => {
