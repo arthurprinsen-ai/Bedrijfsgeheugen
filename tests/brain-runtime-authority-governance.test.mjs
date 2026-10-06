@@ -144,3 +144,9 @@ test('Supabase Edge authority registry binds provider deployment to the GitHub i
   assert.equal(registry.controls.supabase_edge_provider_app,'supabase');
   assert.equal('supabase_edge_cli_version' in registry.controls,false);
 });
+
+test('Supabase Git production registration includes all social authority-critical functions with provider-compatible JWT modes',async()=>{
+  const config=await readFile('supabase/config.toml','utf8');
+  assert.match(config,/\[functions\.powerhouse-social-publisher\][\s\S]*?enabled\s*=\s*true[\s\S]*?verify_jwt\s*=\s*false[\s\S]*?entrypoint\s*=\s*"\.\/functions\/powerhouse-social-publisher\/index\.ts"/);
+  assert.match(config,/\[functions\.social-recovery-runner\][\s\S]*?enabled\s*=\s*true[\s\S]*?verify_jwt\s*=\s*true[\s\S]*?entrypoint\s*=\s*"\.\/functions\/social-recovery-runner\/index\.ts"/);
+});
