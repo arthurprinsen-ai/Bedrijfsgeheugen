@@ -18,5 +18,33 @@
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "evidence": {
+    "incident": {
+      "window": "2026-10-06T18:00:00Z/2026-10-06T20:00:00Z",
+      "function_edge_401": 14,
+      "function_edge_500": 962,
+      "function_edge_503": 4,
+      "edge_522": 2241,
+      "dominant_paths": {
+        "bg_growth_ingest_event_522": 1224,
+        "cms_content_items_522": 963,
+        "portal_state_eu_500": 960
+      },
+      "management_sql": "Connection terminated due to connection timeout"
+    },
+    "root_cause_proof": [
+      "public CMS reads synchronously traversed portal-state-eu into PostgREST",
+      "visitor growth events synchronously traversed growth-datahub-ingest into bg_growth_ingest_event",
+      "scheduler auth looked up powerhouse_daily_scheduler_token through PostgREST before authorization"
+    ],
+    "prevention_proof": [
+      "netlify/functions/cms-public.mjs",
+      "netlify/functions/growth-event.mjs",
+      "netlify/functions/growth-drain.mjs",
+      "netlify/functions/growth-replay.mjs",
+      "supabase/functions/_shared/powerhouse-scheduler-auth.ts",
+      "tests/brain-powerhouse-runtime-backpressure-v1.test.mjs"
+    ]
+  }
 }
