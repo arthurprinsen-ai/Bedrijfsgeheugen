@@ -41,3 +41,17 @@ test('terminalizer recognizes current production-ledger parity recovery without 
   assert.match(parityBlock,/SUPABASE_PARITY_RECOVERY_CONTAINS_RUNTIME_PATH/);
   assert.doesNotMatch(parityBlock,/supabase\/functions\/\*/);
 });
+
+
+test('terminalizer treats CI implementation helpers as non-runtime governance', async()=>{
+  const workflow=await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  const start=workflow.indexOf('is_governance_path()');
+  const end=workflow.indexOf('observed="$(git rev-parse origin/main)"', start);
+  assert.notEqual(start,-1);
+  assert.notEqual(end,-1);
+  const block=workflow.slice(start,end);
+  assert.match(block,/tools\/ci\/\*/);
+  assert.match(block,/tools\/delivery\/\*/);
+  assert.doesNotMatch(block,/netlify\/functions\/\*/);
+  assert.doesNotMatch(block,/supabase\/functions\/\*/);
+});

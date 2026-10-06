@@ -1,0 +1,35 @@
+{
+  "id": "terminalizer-ci-governance-classification-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "pr-3952-post-merge-terminalizer",
+  "fingerprint": "powerhouse|terminalizer|ci-helper-governance|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Post-merge terminalization treated tools/ci/netlify-ignore-build.mjs as unknown production runtime even though it is a CI-only deployment applicability helper. PR #3952 had already merged safely, but terminal proof failed with UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+  "prevention": [
+    "Classify tools/ci/** as governance-only for post-merge production readback.",
+    "Keep Netlify functions and Supabase functions outside this governance bypass so actual runtime changes remain fail-closed.",
+    "Replay the already-merged #3952 under the corrected terminalizer instead of fabricating or bypassing readback evidence."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+    ],
+    "expected": "Merged CI-only helper changes close through main-containment non-runtime proof, while true Netlify/Supabase runtime paths still require runtime/provider readback."
+  },
+  "evidence": {
+    "source_pr": 3952,
+    "merge_sha": "e902e07fef8b3411451280072b40f0d0aac24bb8",
+    "failed_terminalizer_run": 37478237670,
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "path": "tools/ci/netlify-ignore-build.mjs"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
