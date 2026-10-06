@@ -15,7 +15,12 @@ async function api(path, init={}){
   return r.json();
 }
 
-const pulls=await api('/pulls?state=open&base=main&per_page=100');
+const pulls=[];
+for(let page=1;;page++){
+  const batch=await api(`/pulls?state=open&base=main&per_page=100&page=${page}`);
+  pulls.push(...batch);
+  if(batch.length<100) break;
+}
 let dispatched=0;
 for(const pr of pulls){
   const age=now-Date.parse(pr.updated_at||pr.created_at);
@@ -31,7 +36,7 @@ for(const pr of pulls){
     head_sha:String(head),
     candidate_branch:String(pr.head?.ref||''),
     pr_body:pr.body||'',
-    pr_labels_json:JSON.stringify([])
+    pr_labels_json:JSON.stringify((pr.labels||[]).map(label=>label?.name).filter(Boolean))
   };
   await api('/actions/workflows/required-test.yml/dispatches',{method:'POST',body:JSON.stringify({ref:pr.head.ref,inputs}),headers:{'content-type':'application/json'}});
   console.log(`REQUIRED_GATE_WATCHDOG_DISPATCHED:#${pr.number}:${head}`);
