@@ -1,0 +1,33 @@
+{
+  "id": "control-plane-early-trigger-skill-projection-convergence-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|control-plane-convergence|early-trigger-skill-projection|v1",
+  "root_cause": "Two control-plane contracts lagged their canonical authorities: Netlify production workflow push filters did not include tools/ci/** although the shared applicability classifier marks tools/ci as governance-only, and the Skill Projection regression still required fetch-depth 0 after the workflow intentionally moved to bounded fetch-depth 2.",
+  "evidence": {
+    "merge_sha": "e902e07fef8b3411451280072b40f0d0aac24bb8",
+    "unnecessary_snapshot_run": 37478237193,
+    "unnecessary_release_readback_run": 37478237085,
+    "skill_projection_failure_run": 37478237282,
+    "skill_projection_failure": "tests/brain-learning-canonicalization-gate-v1.test.mjs expected fetch-depth 0 while powerhouse-skill-projection.yml uses fetch-depth 2",
+    "canonicalization_result": "GREEN_BEFORE_STALE_REGRESSION_FAILURE"
+  },
+  "prevention": {
+    "netlify_early_trigger": "Both Production Source Snapshot and Production Release Readback ignore tools/ci/** when it is the only changed domain.",
+    "netlify_runtime_authority": "tools/delivery/netlify-deployment-applicability.mjs remains the canonical in-job applicability authority.",
+    "skill_projection_checkout": "Regression asserts bounded fetch-depth 2 plus github.event.before base identity instead of obsolete full-history checkout.",
+    "unknown_runtime": "FAIL_CLOSED"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs",
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

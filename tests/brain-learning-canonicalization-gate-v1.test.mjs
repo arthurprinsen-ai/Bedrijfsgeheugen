@@ -55,7 +55,9 @@ test('evaluation paths are restricted to classified Brain regression tests',()=>
 
 test('skill projection workflow gates canonicalization before projection',()=>{
   const workflow=fs.readFileSync('.github/workflows/powerhouse-skill-projection.yml','utf8');
-  assert.match(workflow,/fetch-depth:\s*0/);
+  assert.match(workflow,/fetch-depth:\s*2/);
+  assert.doesNotMatch(workflow,/fetch-depth:\s*0/);
+  assert.match(workflow,/github\.event\.before/);
   const gate=workflow.indexOf('Evaluate changed learning before canonicalization');
   const projection=workflow.indexOf('Reconcile all canonical learning into skill projection');
   assert.ok(gate>0 && projection>gate);

@@ -237,6 +237,8 @@ test('scheduler governance and Supabase-only changes do not start Netlify produc
   assert.ok(snapshot.includes('config/powerhouse-agent-delivery-scheduler-v1.json'));
   assert.ok(snapshot.includes("supabase/**"));
   assert.ok(release.includes("supabase/**"));
+  assert.ok(snapshot.includes("tools/ci/**"));
+  assert.ok(release.includes("tools/ci/**"));
   assert.match(release,/deriveNetlifyDeploymentApplicability/);
 });
 
