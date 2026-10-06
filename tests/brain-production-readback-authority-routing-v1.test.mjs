@@ -10,9 +10,12 @@ test('production readback excludes GitHub control-plane files from runtime lane 
 test('terminalizer routes migration-history recovery without a fake Netlify dependency', async () => {
   const workflow = await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml', 'utf8');
   assert.match(workflow, /Candidate-Type: recovery/);
-  assert.match(workflow, /Obligation-ID: supabase-migration-history-parity-/);
+  assert.match(workflow, /Obligation-ID: supabase-migration-history-\(parity\|canonical\)-/);
   assert.match(workflow, /SUPABASE_HISTORY_PARITY_RECOVERY_RUNTIME_NOT_APPLICABLE/);
   assert.match(workflow, /readback_mode=supabase_history_parity_recovery/);
+  assert.match(workflow, /supabase\/migration-history\/\*/);
+  assert.match(workflow, /supabase\/migration-history\.lock\.json/);
+  assert.match(workflow, /supabase\/production-baseline\/\*/);
 });
 
 test('terminalizer fails closed for non-Netlify runtime without a dedicated readback authority', async () => {
