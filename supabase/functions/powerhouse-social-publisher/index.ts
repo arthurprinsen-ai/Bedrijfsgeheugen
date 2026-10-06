@@ -1321,7 +1321,8 @@ Deno.serve(async (req) => {
         const exactReadbackVerified=direct.provider_truth_verified===true;
         const providerCreateProven=direct.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(clean(direct.provider_post_id));
         if(!providerCreateProven)throw new Error('LINKEDIN_COMPANY_PROVIDER_CREATE_NOT_PROVEN');
-        const evidence={...gatePassedEvidence,...direct,provider_publication_ack_verified:true,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        const evidence:any={...gatePassedEvidence,...direct,provider_publication_ack_verified:true,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        for(const staleKey of ['error','provider_error','provider_auth_preflight','provider_auth_required']) delete evidence[staleKey];
         await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         const liveProven=exactReadbackVerified&&direct.linkedin_company_admin_oauth_proven===true&&direct.organization_write_scope_verified===true&&direct.company_oauth_fresh_verified===true;
