@@ -41,16 +41,22 @@ test('optimizer cannot move full assurance off PR before real merge-group eviden
   assert.equal(withoutMergeGroup.tuning.ci.pr_full_assurance,true);
   assert.equal(withoutMergeGroup.tuning.ci.mode,'safe-transition');
 
-  const withMergeGroup=optimizeDailyTuning({metrics:{sampled_jobs:100,failed_jobs:0,skipped_jobs:0,queue_wait_seconds_p95:10,execution_seconds_p95:60,workflow_fanout_per_sha_p95:4,merge_group_runs_7d:3},current});
-  assert.equal(withMergeGroup.tuning.ci.pr_full_assurance,false);
-  assert.equal(withMergeGroup.tuning.ci.mode,'fast-pr-full-merge-group');
+  const oneSuccessfulMergeGroup=optimizeDailyTuning({metrics:{sampled_jobs:100,failed_jobs:0,skipped_jobs:0,queue_wait_seconds_p95:10,execution_seconds_p95:60,workflow_fanout_per_sha_p95:4,merge_group_runs_7d:1,merge_group_required_successes_7d:1,merge_group_required_failures_7d:0,merge_group_ready:false},current});
+  assert.equal(oneSuccessfulMergeGroup.tuning.ci.pr_full_assurance,true);
+  assert.equal(oneSuccessfulMergeGroup.tuning.ci.mode,'safe-transition');
+
+  const withProvenMergeGroup=optimizeDailyTuning({metrics:{sampled_jobs:100,failed_jobs:0,skipped_jobs:0,queue_wait_seconds_p95:10,execution_seconds_p95:60,workflow_fanout_per_sha_p95:4,merge_group_runs_7d:3,merge_group_required_successes_7d:3,merge_group_required_failures_7d:0,merge_group_ready:true},current});
+  assert.equal(withProvenMergeGroup.tuning.ci.pr_full_assurance,false);
+  assert.equal(withProvenMergeGroup.tuning.ci.mode,'fast-pr-full-merge-group');
 });
 
 test('CI intelligence measures the SLOs that drive architecture selection', async () => {
   const source=await read('scripts/brain/powerhouse-ci-intelligence.mjs');
-  for (const metric of ['required_queue_wait_seconds_p95','required_total_seconds_p95','workflow_fanout_per_sha_p95','merge_group_runs_7d','active_nonterminal_runs']) {
+  for (const metric of ['required_queue_wait_seconds_p95','required_total_seconds_p95','workflow_fanout_per_sha_p95','merge_group_runs_7d','merge_group_required_successes_7d','merge_group_required_failures_7d','merge_group_ready','active_nonterminal_runs']) {
     assert.match(source,new RegExp(metric));
   }
+  assert.match(source,/run\.status === 'completed' && run\.updated_at/);
+  assert.doesNotMatch(source,/run\.completed_at/);
 });
 
 test('external executors cannot keep a chat synchronously polling beyond 30 seconds', async () => {

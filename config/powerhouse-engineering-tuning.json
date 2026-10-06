@@ -11,7 +11,8 @@
     "security_gate": true,
     "production_readback": true,
     "protected_merge": true,
-    "exact_sha_identity": true
+    "exact_sha_identity": true,
+    "merge_group_proof_required_before_fast_pr": true
   },
   "ci": {
     "mode": "safe-transition",
@@ -23,6 +24,9 @@
     "pr_full_assurance": true,
     "merge_group_full_assurance": true,
     "automatic_mode_selection": true,
-    "fast_pr_requires_merge_group_evidence": true
+    "fast_pr_requires_merge_group_evidence": true,
+    "merge_group_min_successful_required_runs": 3,
+    "merge_group_max_required_failures": 0,
+    "merge_group_evidence_window_days": 7
   }
 }

@@ -121,6 +121,9 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
   const mergeGroupRuns = Number(metrics.merge_group_runs_7d ?? 0);
+  const mergeGroupSuccesses = Number(metrics.merge_group_required_successes_7d ?? 0);
+  const mergeGroupFailures = Number(metrics.merge_group_required_failures_7d ?? 0);
+  const mergeGroupReady = metrics.merge_group_ready === true && mergeGroupSuccesses >= 3 && mergeGroupFailures === 0;
   const requiredQueueP95 = Number(metrics.required_queue_wait_seconds_p95 ?? queueP95);
   const requiredTotalP95 = Number(metrics.required_total_seconds_p95 ?? executionP95);
 
@@ -157,14 +160,17 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   ci.agent_external_wait_budget_seconds = clamp(Number(ci.agent_external_wait_budget_seconds ?? 30), 5, 30);
   ci.stale_run_cancel_target_seconds = clamp(Number(ci.stale_run_cancel_target_seconds ?? 15), 5, 30);
   ci.merge_group_full_assurance = true;
-  if (mergeGroupRuns > 0 && !calibrationVeto && failureRate < 0.10) {
+  ci.merge_group_min_successful_required_runs = 3;
+  ci.merge_group_max_required_failures = 0;
+  ci.merge_group_evidence_window_days = 7;
+  if (mergeGroupReady && !calibrationVeto && failureRate < 0.10) {
     ci.mode = 'fast-pr-full-merge-group';
     ci.pr_full_assurance = false;
     decisions.push('promote-fast-pr-after-merge-group-proof');
   } else {
     ci.mode = 'safe-transition';
     ci.pr_full_assurance = true;
-    if (mergeGroupRuns === 0) decisions.push('retain-full-pr-assurance-until-merge-group-proof');
+    if (!mergeGroupReady) decisions.push('retain-full-pr-assurance-until-merge-group-proof');
   }
   next.ci = ci;
 
@@ -175,13 +181,16 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     required_queue_wait_seconds_p95:requiredQueueP95,
     required_total_seconds_p95:requiredTotalP95,
     merge_group_runs_7d:mergeGroupRuns,
+    merge_group_required_successes_7d:mergeGroupSuccesses,
+    merge_group_required_failures_7d:mergeGroupFailures,
+    merge_group_ready:mergeGroupReady,
     ci_mode:ci.mode,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
     calibration_mode:String(calibration?.mode || 'NONE'),
     calibration_high_priority_recommendations:Object.freeze(highCalibrationWarnings.map(item => String(item.id || '')).filter(Boolean))
   });
-  next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true };
+  next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true, merge_group_proof_required_before_fast_pr:true };
   return Object.freeze({ changed:JSON.stringify(next)!==JSON.stringify(current), decisions:Object.freeze(decisions), signals, tuning:Object.freeze(next) });
 }
 
@@ -198,8 +207,11 @@ export async function validateAutonomousEngineeringFabricV3() {
   if(policy.closure_compiler?.late_bound!==true) errors.push('closure must be late bound');
   if(policy.daily_optimizer?.enabled!==true) errors.push('daily optimizer required');
   if(policy.daily_optimizer?.auto_merge_only_after_protected_gates!==true) errors.push('protected-gate auto merge required');
-  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity','merge_group_proof_required_before_fast_pr']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
   if(tuning.ci?.merge_group_full_assurance!==true) errors.push('merge-group full assurance required');
+  if(Number(tuning.ci?.merge_group_min_successful_required_runs ?? 0)<3) errors.push('at least three successful merge-group Required runs are required before fast PR mode');
+  if(Number(tuning.ci?.merge_group_max_required_failures ?? 999)!==0) errors.push('merge-group fast-mode promotion requires zero observed Required failures');
+  if(tuning.ci?.mode==='fast-pr-full-merge-group' && tuning.ci?.pr_full_assurance!==false) errors.push('fast PR mode must disable duplicate PR full assurance');
   if(Number(tuning.ci?.max_pr_workflows_per_head ?? 999)>5) errors.push('PR workflow fan-out target must be <=5');
   if(Number(tuning.ci?.agent_external_wait_budget_seconds ?? 999)>30) errors.push('external wait budget must be <=30s');
   return { ok:errors.length===0, errors, fingerprint:policy.fingerprint };

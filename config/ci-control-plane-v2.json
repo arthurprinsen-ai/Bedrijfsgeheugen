@@ -35,7 +35,11 @@
       "protected_merge",
       "production_readback",
       "provider_truth"
-    ]
+    ],
+    "merge_group_min_successful_required_runs": 3,
+    "merge_group_max_required_failures": 0,
+    "merge_group_evidence_window_days": 7,
+    "promotion_requires_ci_intelligence_readiness": true
   },
   "learning": {
     "telemetry_source": "scripts/brain/powerhouse-ci-intelligence.mjs",
