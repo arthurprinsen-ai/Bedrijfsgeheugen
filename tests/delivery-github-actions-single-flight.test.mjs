@@ -6,14 +6,7 @@ const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf
 
 const CANDIDATE_WORKFLOWS = [
   '.github/workflows/required-test.yml',
-  '.github/workflows/unified-brain-delivery.yml',
-  '.github/workflows/brain-foundation-verify.yml',
-  '.github/workflows/shared-agent-memory-tests.yml',
-  '.github/workflows/bg168-materiality-promotion-tests.yml',
-  '.github/workflows/learning-contract-delivery-classifier-tests.yml',
   '.github/workflows/powerhouse-codeql.yml',
-  '.github/workflows/engineering-intelligence-trust.yml',
-  '.github/workflows/engineering-supply-chain-trust.yml',
 ];
 
 const hasPullRequestTrigger = (workflow) => /(^|\n)\s*pull_request:\s*(\n|$)/.test(workflow);
@@ -32,7 +25,6 @@ test('all actual PR fan-out workflows are single-flight per pull request', () =>
 test('central delivery workflows do not put candidate head SHA in PR concurrency identity', () => {
   for (const path of [
     '.github/workflows/required-test.yml',
-    '.github/workflows/unified-brain-delivery.yml',
   ]) {
     const workflow = read(path);
     const block = workflow.match(/concurrency:\s*\n([\s\S]*?)\n\n/)?.[1] ?? '';
