@@ -53,6 +53,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
+          EVENT_ACTION: ${{ github.event.action || '' }}
+          EVENT_PR_BODY: ${{ github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           EXPECTED_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
         run: |
@@ -142,6 +144,13 @@ jobs:
           try {
             if (process.env.EXPECTED_HEAD_SHA && headSha !== process.env.EXPECTED_HEAD_SHA) {
               throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
+            }
+            const eventLease = parseWriterLease(process.env.EVENT_PR_BODY || '');
+            const terminalSynchronize = process.env.EVENT_NAME === 'pull_request'
+              && process.env.EVENT_ACTION === 'synchronize'
+              && eventLease.state === 'TERMINAL_DELIVERY';
+            if (terminalSynchronize) {
+              throw new Error(`TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION:${eventLease.headSha || 'missing'}:${headSha}`);
             }
             const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
             const open = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
