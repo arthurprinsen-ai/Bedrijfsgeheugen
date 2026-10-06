@@ -1,7 +1,10 @@
 import { cmsGateway } from './_cms-gateway.mjs';
 
 function json(body,status=200){
-  return Response.json(body,{status,headers:{'cache-control':'public, max-age=30, stale-while-revalidate=120'}});
+  const headers=status===200
+    ? {'cache-control':'public, max-age=30, stale-while-revalidate=120','netlify-cdn-cache-control':'public, durable, s-maxage=60, stale-while-revalidate=600'}
+    : {'cache-control':'no-store','netlify-cdn-cache-control':'no-store'};
+  return Response.json(body,{status,headers});
 }
 
 export default async function handler(request){
