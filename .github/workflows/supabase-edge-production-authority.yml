@@ -16,6 +16,7 @@ on:
 permissions:
   contents: read
   checks: read
+  pull-requests: write
 
 concurrency:
   group: supabase-edge-production-authority
@@ -75,11 +76,7 @@ jobs:
               base="${GITHUB_SHA}^"
             fi
             git diff --name-only "$base" "$GITHUB_SHA" > /tmp/changed-paths.txt
-            if grep -Eq '^supabase/(config\.toml|functions/_shared/)' /tmp/changed-paths.txt; then
-              sed -nE 's/^\[functions\.([^]]+)\]$/\1/p' supabase/config.toml | sort -u > /tmp/functions.txt
-            else
-              sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' /tmp/changed-paths.txt | grep -Ev '^_' | sort -u > /tmp/functions.txt
-            fi
+            node tools/supabase/edge-runtime-scope.mjs /tmp/changed-paths.txt > /tmp/functions.txt
           fi
           while IFS= read -r fn; do
             [ -d "supabase/functions/$fn" ] || {
@@ -293,6 +290,16 @@ jobs:
           done < /tmp/functions.txt
           printf 'provider_source_parity=BYTE_FOR_BYTE\nreadback_auth=SUPABASE_ACCESS_TOKEN_READ_ONLY\n' \
             >> .artifacts/supabase-edge-production-readback/authority.txt
+
+      - name: Publish exact provider readback evidence to merged PR
+        if: steps.scope.outputs.applicable == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/supabase/publish-edge-provider-readback.mjs
 
       - name: Prove no newer Supabase runtime superseded the attested SHA
         if: steps.scope.outputs.applicable == 'true'

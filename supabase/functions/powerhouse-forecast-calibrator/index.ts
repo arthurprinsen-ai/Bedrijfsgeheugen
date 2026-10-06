@@ -1,15 +1,16 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 
 const USE_CASE='supabase-powerhouse-predictive-first-mover-v1';
 const json=(b:any,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const clean=(v:any)=>String(v??'').trim();
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
+  const auth=await authorizePowerhouseScheduler(req);
+  if(!auth.ok) return json({ok:false,error:auth.error},auth.status);
   const url=Deno.env.get('SUPABASE_URL')||'',service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   if(!url||!service) return json({ok:false,error:'CONFIG'},500);
   const db=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
-  const expected=clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
-  if(!expected||req.headers.get('x-powerhouse-token')!==expected) return json({ok:false,error:'UNAUTHORIZED'},401);
   try{
     const [{data:gov},{data:due},{data:external},{data:keywords},{data:outcomes}]=await Promise.all([
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id',USE_CASE).maybeSingle(),
