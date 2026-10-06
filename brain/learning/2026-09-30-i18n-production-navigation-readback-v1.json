@@ -1,33 +1,40 @@
 {
-  "fingerprint":"i18n-production-navigation-readback-20260930-v1",
-  "date":"2026-09-30",
-  "type":"PRODUCTION_READBACK_RECOVERY",
-  "failure_class":"PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
-  "root_cause":[
-    "The production locale verifier waited for the full browser load event after a correct locale navigation.",
-    "Non-critical resources could keep the full load event open even though the target route and localized DOM were already correct."
+  "fingerprint": "i18n-production-navigation-readback-20260930-v1",
+  "date": "2026-10-06",
+  "type": "PRODUCTION_READBACK_RECOVERY",
+  "failure_class": "PRODUCTION_READBACK_NAVIGATION_LIFECYCLE_FALSE_NEGATIVE",
+  "root_cause": [
+    "The production locale verifier polled location and document.documentElement.lang inside page.waitForFunction while a real navigation was replacing the document.",
+    "During the navigation lifecycle the evaluated document could transiently have no documentElement, causing a TypeError even though the route commit, production SHA and pricing content were correct."
   ],
-  "evidence":{
-    "production_sha":"936ca60ad5c2415ff2372880a61aea5b1d690875",
-    "provider_identity_proven":true,
-    "pricing_content_proven":true,
-    "readback_failure":"page.waitForURL timeout while waiting for load",
-    "verifier":"tools/site-shell/verify-pricing-i18n-production.mjs"
+  "evidence": {
+    "production_sha": "2fa5fa60f248a5f14d86426cb835c447ab291cd3",
+    "deploy_id": "6ac4aed9e166fa0008fa35c7",
+    "provider_identity_proven": true,
+    "pricing_content_proven": true,
+    "production_release_readback": "success",
+    "production_source_snapshot_failure": "page.waitForFunction TypeError: Cannot read properties of null (reading 'lang')",
+    "verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
   },
-  "prevention":[
-    "Locale navigation waits for exact pathname with waitUntil=domcontentloaded.",
-    "After navigation, the verifier still requires html[lang], localized visible content and absence of visible translation failure.",
-    "Do not classify a full-load timeout as a locale defect when DOM-ready route evidence is correct."
+  "prevention": [
+    "Start the navigation wait before clicking or selecting the real language control.",
+    "Use page.waitForURL with waitUntil=commit for exact-path route proof instead of polling the old/new document during replacement.",
+    "After commit, require a visible body, exact html[lang], localized visible content and absence of runtime translation failure.",
+    "Keep NL routes canonical without /nl/* leakage."
   ],
-  "evaluation":{
-    "historical_replay":["tests/brain-i18n-production-navigation-readback-v2.test.mjs"],
-    "canary":["tests/brain-i18n-production-navigation-readback-v2.test.mjs"]
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-production-navigation-readback-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-production-navigation-readback-v2.test.mjs"
+    ]
   },
-  "compiler":{
-    "failure_class":"PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
-    "scope":"RUNTIME",
-    "machine_enforceable":true,
-    "security_sensitive":false
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false
   },
-  "status":"ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION"
 }
