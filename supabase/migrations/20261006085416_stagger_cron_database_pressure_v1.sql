@@ -44,11 +44,12 @@ begin
     from cron.job j
     where j.jobname = rec.jobname;
 
-    if v_jobid is null then
-      raise exception 'CRON_PRESSURE_CONTRACT_JOB_MISSING:%', rec.jobname;
+    -- Preview branches do not necessarily materialize every production-only scheduler
+    -- job. Alter every canonical job that is present; production completeness is
+    -- asserted separately by runtime readback so replay remains portable.
+    if v_jobid is not null then
+      perform cron.alter_job(job_id := v_jobid, schedule := rec.schedule);
     end if;
-
-    perform cron.alter_job(job_id := v_jobid, schedule := rec.schedule);
   end loop;
 end
 $migration$;
