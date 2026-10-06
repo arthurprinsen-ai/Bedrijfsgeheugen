@@ -1,13 +1,6 @@
 name: Blog Technical SEO Gate
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'blog/**'
-      - 'sitemap.xml'
-      - 'robots.txt'
-      - '.github/workflows/weekblog.yml'
   workflow_dispatch:
 
 permissions:
