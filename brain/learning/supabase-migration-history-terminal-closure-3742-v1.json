@@ -21,7 +21,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-migration-history-terminal-closure-v1.test.mjs"
+      "tests/brain-supabase-migration-history-terminal-closure-v1.test.mjs"
     ],
     "expected": "Issue 3742 can close only after this exact closure candidate passes hosted preview, exact-head gates, protected merge and post-merge terminalizer evidence."
   },
@@ -33,8 +33,10 @@
     "production_ledger_count": 568,
     "terminalizer_restore_pr": 3822,
     "terminalizer_restore_merge_sha": "2729dfd6dbf07426b1451e4469ea29cf295e692d",
-    "closure_contract": "supabase/production-baseline/migration-history-terminal-closure-3742-v1.json"
+    "closure_contract": "supabase/production-baseline/migration-history-terminal-closure-3742-v1.json",
+    "invalidated_predecessor_pr": 3824,
+    "invalidation_reason": "Merged while skill-projection-contract was red; terminalizer success alone is not full exact-head terminal proof."
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 2
 }
