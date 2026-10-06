@@ -8,6 +8,7 @@ const riskConfig = JSON.parse(await readFile('site/website-release-risk.json', '
 const acceptedBaseline = JSON.parse(await readFile('site/accepted-baseline.json', 'utf8'));
 const websiteLane = await readFile('.github/workflows/lane-website.yml', 'utf8');
 const requiredWorkflow = await readFile('.github/workflows/required-test.yml', 'utf8');
+const netlifyBuildAuthority = await readFile('tools/ci/netlify-build-entry.mjs', 'utf8');
 const visibilityCheck = await readFile('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
 
 test('one explicitly owned page-local asset is fast-fix', () => {
@@ -100,8 +101,9 @@ test('website browser verification stays exact-candidate and preserves scoped cl
 test('local website fallback and central Netlify parity build the same final artifact layer', () => {
   assert.match(websiteLane, /COMMIT_REF: \$\{\{ inputs\.candidate_sha \}\}/);
   assert.match(requiredWorkflow, /COMMIT_REF: \$\{\{ needs\.preflight\.outputs\.change_head_sha \}\}/);
-  assert.match(requiredWorkflow, /node tools\/bouw-release-evidence\.mjs/);
-  assert.match(websiteLane, /node tools\/bouw-release-evidence\.mjs/);
+  assert.match(requiredWorkflow, /node tools\/ci\/netlify-build-entry\.mjs/);
+  assert.match(websiteLane, /node tools\/ci\/netlify-build-entry\.mjs/);
+  assert.match(netlifyBuildAuthority, /tools\/bouw-release-evidence\.mjs/);
   assert.match(requiredWorkflow, /DEPLOY_ID: required-netlify-build-parity/);
   assert.match(websiteLane, /DEPLOY_ID: required-browser-local/);
 });

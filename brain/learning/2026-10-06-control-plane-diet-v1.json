@@ -1,0 +1,39 @@
+{
+  "version": "POWERHOUSE-CONTROL-PLANE-DIET-LEARNING-v1",
+  "obligation_id": "control-plane-diet-20261006-v1",
+  "date": "2026-10-06",
+  "observed_before": {
+    "direct_pr_authorities": 38
+  },
+  "observed_after": {
+    "direct_pr_authorities": 10,
+    "admission_authorities": 5,
+    "lifecycle_recovery_authorities": 5,
+    "workflow_files": 123
+  },
+  "admission": [
+    "required-test.yml",
+    "powerhouse-codeql.yml",
+    "engineering-supply-chain-trust.yml",
+    "portal-v2-live-preview.yml",
+    "repo-writer-operational-verification.yml"
+  ],
+  "invariants_preserved": [
+    "Required canonical admission",
+    "CodeQL JS/TS + Python fail-closed",
+    "supply-chain security independent",
+    "Netlify exact-head preview provider-backed",
+    "single writer PR router with dedicated dispatched writers",
+    "closed-PR lifecycle authorities separate",
+    "production Portal readback on push/main",
+    "protected auto-merge only"
+  ],
+  "learning": [
+    "move read-only specialist assurance to Required/merge_group",
+    "separate closed lifecycle from admission",
+    "route writers behind one PR authority",
+    "ratchet budgets downward",
+    "broad migrations require scope-broad-approved plus exact scope",
+    "reuse immutable source/artifact identity"
+  ]
+}

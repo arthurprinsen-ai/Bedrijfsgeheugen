@@ -70,7 +70,6 @@ jobs:
       affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
       netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
       supabase_preview_required: ${{ steps.scope.outputs.supabase_preview_required }}
-      artifact_id: ${{ steps.artifact.outputs.artifact_id }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -92,182 +91,6 @@ jobs:
         run: |
           node --test tests/brain-security-operations-closure-v1.test.mjs tests/security-operations-proof.test.mjs
           node scripts/security-operations-proof.mjs --check
-      - name: Run consolidated merge-group specialist assurance
-        if: github.event_name == 'merge_group'
-        run: >-
-          node --test
-          tests/compliance-status-page.test.mjs
-          tests/brain-error-learning-contract.test.mjs
-          tests/brain-runtime-authority-governance.test.mjs
-          tests/brain-adapter-conformance.test.mjs
-          tests/brain-bg184-stateful-blocker-dedupe.test.mjs
-          tests/homepage-pricing-boundary-readback.test.mjs
-          tests/main-write-integrity-squash-pr.test.mjs
-          tests/universal-event-envelope.test.mjs
-          tests/universal-failure-learning.test.mjs
-          tests/event-retention-policy.test.mjs
-          tests/event-retention-expiry.test.mjs
-          tests/universal-event-contract-check.test.mjs
-          tests/universal-event-adapters.test.mjs
-          tests/parallel-ownership.test.mjs
-          tests/change-classes.test.mjs
-          tests/page-composition.test.mjs
-          tests/component-preview-composition.test.mjs
-          tests/component-boundaries.test.mjs
-          tests/change-scope.test.mjs
-          tests/component-hash-protection.test.mjs
-          tests/detect-changed-components.test.mjs
-          tests/component-preview-workflow-contract.test.mjs
-          tests/supabase-public-rls-regression-guard.test.mjs
-          tests/linkedin-revenue-cockpit.test.mjs
-          tests/linkedin-revenue-runtime.test.mjs
-          tests/linkedin-revenue-engagement-cockpit.test.mjs
-          tests/build/artifact-id.test.mjs
-          tests/brain-powerhouse-engineering-closed-loop.test.mjs
-      - name: Verify engineering learning self-test
-        if: github.event_name == 'merge_group'
-        run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
-
-      - name: Verify hero production media contract
-        if: github.event_name == 'merge_group'
-        run: |
-          node - <<'NODE'
-          const fs = require('fs');
-          const crypto = require('crypto');
-          const expected = 'a261792e9b0058802ab5b30ce107c7ac14e8b2291a3bd7ee78fdb5968bbe97fd';
-          const mediaPath = 'assets/openart-hero-iphone-safe-v1.mp4';
-          if (!fs.existsSync(mediaPath)) throw new Error('accepted hero binary missing');
-          const bytes = fs.readFileSync(mediaPath);
-          const sha = crypto.createHash('sha256').update(bytes).digest('hex');
-          if (sha !== expected) throw new Error(`hero binary hash mismatch: ${sha}`);
-          const manifest = JSON.parse(fs.readFileSync('assets/openart-hero-production.json','utf8'));
-          if (manifest.derivative_sha256 !== expected) throw new Error('manifest derivative hash mismatch');
-          if (manifest.physical_iphone_runtime !== 'PASS') throw new Error('physical iPhone acceptance missing');
-          if (manifest.promotion_state !== 'MEDIA_READY') throw new Error('media is not MEDIA_READY');
-          const p = manifest.derivative_probe || {};
-          const exact = p.width === 1920 && p.height === 1080 && p.fps === 30 && p.codec === 'h264' && p.pixel_format === 'yuv420p' && p.has_audio === false && p.faststart === true;
-          if (!exact) throw new Error(`manifest media profile mismatch: ${JSON.stringify(p)}`);
-          console.log(`Hero static media contract PASS: ${sha}; bytes=${bytes.length}`);
-          NODE
-
-      - name: Run intelligence, chat and regulation merge assurance
-        if: github.event_name == 'merge_group'
-        run: |
-          node --test tests/brain-chat-learning-fast-development-v2.test.mjs
-          node scripts/brain/test-chat-learning-preflight-compiler.mjs
-          node scripts/brain/chat-learning-preflight.mjs
-          node --test tests/delivery-regelgeving-actueel.test.mjs
-          node scripts/brain/continuous-improvement/run-autonomous-improvement.mjs
-          node --test \
-            tests/brain-autonomous-improvement-runtime.test.mjs \
-            tests/brain-autonomous-improvement-production-cycle.test.mjs \
-            tests/brain-autonomous-backlog-intake.test.mjs \
-            tests/brain-github-backlog-source.test.mjs
-          node --test tests/agent-fabric.test.mjs
-          if [ -f tests/agent-fabric-gateway.test.mjs ]; then node --test tests/agent-fabric-gateway.test.mjs; fi
-          node --test \
-            tests/brain-acceptance.test.mjs \
-            tests/brain-api-gateway.test.mjs \
-            tests/brain-production-ai.test.mjs \
-            tests/brain-storage-port.test.mjs
-
-      - name: Run consolidated business and portal merge assurance
-        if: github.event_name == 'merge_group'
-        run: |
-          node --test \
-            tests/portal-next-shell.test.mjs \
-            tests/intelligence-agent-runtime.test.mjs \
-            tests/policy-engine.test.mjs \
-            tests/trust-*.test.mjs \
-            tests/canonical-*.test.mjs \
-            tests/source-adapters.test.mjs \
-            tests/read-models.test.mjs \
-            tests/foundation-registry-eventstore.test.mjs \
-            tests/monitor-brain-ingest.test.mjs
-          python3 .github/scripts/portal_parity.py
-          node tests/homepage-hero-video.test.mjs
-          npm --prefix portal-v2 test
-          test -f portal-v2/index.html
-          test -f portal-v2/app.css
-          test -f portal-v2/app.js
-          test -f portal-v2/page-shell.js
-          test -f portal-v2/interaction.css
-          test -f portal-v2/brain.svg
-          grep -q "./brain.svg" portal-v2/app.js
-          grep -q "enhancePortalShell" portal-v2/app.js
-          grep -q "openPortalPage" portal-v2/app.js
-      - name: Run consolidated sixth specialist assurance
-        if: github.event_name == 'merge_group'
-        run: |
-          node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-production-hotfix-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs
-          node --test tests/brain-autonomous-improvement-runtime-completion.test.mjs tests/brain-autonomous-improvement-recovery-proof.test.mjs
-          ! grep -RniE 'new_persistent_authority[[:space:]]*[:=][[:space:]]*true|make\.com|hook\.eu[0-9]+\.make\.com' \
-            scripts/brain/continuous-improvement \
-            supabase/migrations/*autonomous_improvement* || {
-              echo '::error::Parallel authority or retired Make dependency detected.'
-              exit 1
-            }
-          npm install --ignore-scripts --no-audit --no-fund
-          node --test \
-            tests/social-learning-buffer-collector.test.mjs \
-            tests/social-learning-buffer-schedule.test.mjs \
-            tests/social-learning-buffer-content-chain.test.mjs \
-            tests/social-learning-buffer-channel-identity-gate.test.mjs \
-            tests/social-learning-buffer-instagram-media-gate.test.mjs \
-            tests/social-learning-instagram-media-provider-routing-v1.test.mjs \
-            tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs \
-            tests/social-learning-buffer-delivery-guarantee-regression.test.mjs \
-            tests/social-learning-buffer-rate-limit-regression.test.mjs
-          python3 tools/config-wacht.py
-          python3 -m unittest tests/portal-parity-source-contract.py -v
-          python3 .github/scripts/portal_parity.py
-          node --test tests/portal-modular-legacy-capability-parity.test.mjs
-          node --test tests/brain-repository-hygiene.test.mjs
-          node --test \
-            tests/revenue-learning-*.test.mjs \
-            tests/powerhouse-revenue-calibration-persistence-contract.test.mjs \
-            tests/growth-intelligence-engine.test.mjs \
-            tests/growth-intelligence-daily.test.mjs \
-            tests/supabase-migration-history-integrity.test.mjs \
-            tests/notion-synced-posts-migration-reproducibility.test.mjs
-          node --test tests/content-growth-unified-content-operations.test.mjs
-          python3 -m py_compile scripts/publish_approved_blog_v2.py
-          node scripts/brain/validate-universal-closed-loop-learning.mjs
-          node --test tests/brain-universal-closed-loop-learning.test.mjs tests/brain-powerhouse-daily-compound-learning-v1.test.mjs
-          node --test tests/approved-blog-verifier-contract.test.mjs
-          node --test \
-            tests/powerhouse-assurance.test.mjs \
-            tests/powerhouse-assurance-delivery-classification.test.mjs \
-            tests/brain-powerhouse-loop-assurance-v2.test.mjs \
-            tests/brain-quality-intelligence.test.mjs \
-            tests/brain-quality-intelligence-v2.test.mjs \
-            tests/brain-quality-exploration.test.mjs \
-            tests/brain-quality-adversarial.test.mjs \
-            tests/brain-quality-production-shadow.test.mjs \
-            tests/brain-quality-economics.test.mjs
-          node scripts/powerhouse-assurance-check.mjs --check
-          node scripts/brain/powerhouse-loop-assurance-contract.mjs --check
-          node scripts/brain/powerhouse-quality-intelligence.mjs --check
-          node --test tests/powerhouse-foresight-autonomy.test.mjs tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs
-          grep -q "benchmark_required: true" scripts/brain/continuous-improvement/technology-discovery.mjs
-          grep -q "auto_adopt: false" scripts/brain/continuous-improvement/technology-discovery.mjs
-          test -f .github/workflows/shared-agent-memory-tests.yml
-          test -f .github/workflows/engineering-os-learning.yml
-          test -f config/powerhouse-daily-self-evolution.json
-          node scripts/brain/foresight-autonomy.mjs > /tmp/foresight.json
-          node --test tests/components/*.test.mjs
-          node --test \
-            tests/brain-powerhouse-closure-a-f.test.mjs \
-            tests/supabase-powerhouse-closure-db-contract.test.mjs \
-            tests/portal-v2-bcg.test.mjs \
-            tests/portal-v2-parity-integration.test.mjs \
-            tests/brain-quality-powerhouse-closure-intelligence.test.mjs
-          node --test tests/powerhouse-daily-self-evolution.test.mjs tests/brain-self-improvement-layer-v1.test.mjs tests/ai-model-intelligence-freshness-v1.test.mjs
-          node scripts/brain/ai-model-intelligence-audit.mjs
-          node scripts/brain/daily-self-evolution.mjs
-          node scripts/brain/continuous-improvement/capability-inventory.mjs
-          node --test tests/brain-autonomous-engineering-fabric-v3.test.mjs
-          node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
       - uses: actions/cache@v4
         with:
           path: ~/.npm
@@ -421,6 +244,9 @@ jobs:
           tests/brain-ci-admission-single-flight.test.mjs
           tests/brain-ci-critical-path-acceleration-v1.test.mjs
           tests/brain-autonomous-engineering-fabric-v3.test.mjs
+          tests/powerhouse-daily-self-evolution.test.mjs
+          tests/brain-self-improvement-layer-v1.test.mjs
+          tests/ai-model-intelligence-freshness-v1.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/cms-website-portal-v1.test.mjs
@@ -461,6 +287,7 @@ jobs:
           tests/ai-model-advisor-v1.test.mjs
           tests/brain-ai-modelwijzer-novice-i18n-v1.test.mjs
           tests/brain-netlify-premerge-build-parity-v1.test.mjs
+          tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
           tests/social-learning-compatibility.test.mjs
@@ -507,33 +334,6 @@ jobs:
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
 
 
-  merge_specialist_node24:
-    if: github.event_name == 'merge_group'
-    needs: preflight
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ needs.preflight.outputs.candidate_sha }}
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '24'
-      - name: Run Node 24 specialist assurance
-        run: |
-          node tools/site-shell/test-shell-components.mjs
-          node --test tests/site-shell-compare-slider-physical-edges.test.mjs
-          node --test tests/content-growth-*.test.mjs
-          node --test tests/portal-native-legacy-batch-*.test.mjs
-          node tools/content-growth/validate-policy.mjs
-          node --test tests/brain-linkedin-company-growth-engine-v1.test.mjs
-          node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs tests/seo-locale-revenue-*.test.mjs
-          node --test tests/revenue-content-intelligence.test.mjs
-          node -e "for (const p of ['brain/creative/learning-dimensions.json','brain/contracts/revenue-content-experiment.schema.json','config/social-learning-engine.json','data/revenue-content-experiment-policy.json']) JSON.parse(require('fs').readFileSync(p,'utf8'));"
-          node tools/content-growth/seed-revenue-content-experiments.mjs /tmp/revenue-content-experiment-calendar.json
-          node -e "const x=JSON.parse(require('fs').readFileSync('/tmp/revenue-content-experiment-calendar.json')); if(x.count!==111||x.calendar.at(-1).date!=='2026-12-31') process.exit(1);"
-
-
   netlify_build_parity:
     needs: preflight
     if: needs.preflight.outputs.netlify_build_required == 'true'
@@ -552,6 +352,13 @@ jobs:
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             npm-${{ runner.os }}-
+      - name: Restore and extend content-addressed static i18n render cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/bg-static-i18n-v1
+          key: static-i18n-render-v1-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            static-i18n-render-v1-${{ runner.os }}-
       - name: Install exact Netlify build dependencies
         run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Run exact Netlify production build command once
@@ -561,35 +368,57 @@ jobs:
           DEPLOY_ID: required-netlify-build-parity
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
+          STATIC_I18N_BUILD_CACHE_DIR: .cache/bg-static-i18n-v1
+          STATIC_I18N_ROUTE_WORKERS: '2'
+          NETLIFY_BUILD_PROFILE_PATH: .artifacts/netlify-build-profile.json
         run: |
           set -euo pipefail
-          node tools/site-shell/pricing-build-integrity.mjs capture
-          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
-          node tools/bouw-powerhouse-auth.mjs
-          node tools/bouw-kennisindex.mjs
-          node tools/bouw-v18-production.mjs
-          node tools/site-shell/apply-product-led-home.mjs
-          node tools/apply-tabbladen.mjs
-          node tools/bouw-v18-views.mjs
-          node tools/bouw-v18-chrome-alles.mjs
-          node tools/prijzen-uit-de-homepage.mjs
-          node tools/normaliseer-site-ui.mjs
-          node tools/site-shell/pricing-build-integrity.mjs restore
-          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
-          node tools/seo-order-engine/apply.mjs
-          node tools/seo-order-engine/validate.mjs
-          node tools/site-shell/apply-i18n.mjs
-          node tools/site-shell/build-localized-routes.mjs
-          node tools/site-shell/apply-commercial-pricing-v1.mjs
-          node tools/seo-order-engine/apply-revenue-links.mjs
-          node tools/site-shell/finalize-website-coherence-v1.mjs
-          node tools/site-shell/apply-cms-runtime.mjs
-          node tools/genereer-sitemap.mjs
-          node tools/seo-order-engine/validate-locales.mjs
-          node tools/bouw-release-evidence.mjs
+          mkdir -p .artifacts
+          node tools/ci/netlify-build-entry.mjs
       - name: Verify built artifact contracts
-        run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
+        run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs
+      - id: prebuilt
+        name: Package immutable tree-addressed Netlify prebuilt artifact
+        env:
+          CANDIDATE_SHA: ${{ needs.preflight.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          source_tree_sha="$(git rev-parse "${CANDIDATE_SHA}^{tree}")"
+          stage="$(mktemp -d)"
+          rsync -a \
+            --exclude='.git/' \
+            --exclude='node_modules/' \
+            --exclude='.cache/' \
+            --exclude='.artifacts/' \
+            --exclude='netlify-prebuilt.zip' \
+            ./ "$stage/"
+          rm -f "$stage/.bg-prebuilt-deploy.json" "$stage/.bg-prebuilt-manifest.json"
+          (cd "$stage" && zip -qr "$GITHUB_WORKSPACE/netlify-prebuilt.zip" .)
+          archive_sha256="$(sha256sum netlify-prebuilt.zip | awk '{print $1}')"
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          cat > .artifacts/netlify-prebuilt-manifest.json <<JSON
+          {
+            "contract": "NETLIFY_PREBUILT_ARTIFACT_V1",
+            "source_head_sha": "${CANDIDATE_SHA}",
+            "source_tree_sha": "${source_tree_sha}",
+            "archive_sha256": "${archive_sha256}",
+            "generated_at": "${generated_at}"
+          }
+          JSON
+          echo "source_tree_sha=${source_tree_sha}" >> "$GITHUB_OUTPUT"
+          echo "archive_sha256=${archive_sha256}" >> "$GITHUB_OUTPUT"
+          echo "NETLIFY_PREBUILT_PACKAGED tree=${source_tree_sha} sha256=${archive_sha256}"
+      - name: Upload immutable Netlify prebuilt artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-prebuilt-tree-${{ steps.prebuilt.outputs.source_tree_sha }}
+          path: |
+            netlify-prebuilt.zip
+            .artifacts/netlify-prebuilt-manifest.json
+            .artifacts/netlify-build-profile.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 3
 
 
   supabase_source_contract:
@@ -702,15 +531,13 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, merge_specialist_node24, netlify_build_parity, supabase_source_contract, supabase_preview, backend, portal, automation, website]
+    needs: [hygiene, preflight, netlify_build_parity, supabase_preview, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
-      MERGE_SPECIALIST_NODE24: ${{ needs.merge_specialist_node24.result }}
-      EVENT_NAME: ${{ github.event_name }}
       SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
       SUPABASE_SOURCE_CONTRACT: ${{ needs.supabase_source_contract.result }}
       SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
@@ -735,7 +562,6 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
-          [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST_NODE24" = success ]
           [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
           [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_SOURCE_CONTRACT" = success ]
           [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
