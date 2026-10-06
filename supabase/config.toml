@@ -49,3 +49,9 @@ entrypoint = "./functions/powerhouse-visual-assurance-sync/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-email-reply-loop/index.ts"
+
+
+[functions.powerhouse-runtime-verifier-v1]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-runtime-verifier-v1/index.ts"
