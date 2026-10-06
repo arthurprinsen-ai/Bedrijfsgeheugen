@@ -65,10 +65,10 @@ test('Instagram media job table is registered as a quality surface',()=>{
  assert.ok(surfaces.some(s=>s.id==='table:public.powerhouse_instagram_media_jobs_v1'));
 });
 
-test('content loop invokes Instagram router as real TypeScript before publish',()=>{
+test('content loop invokes Instagram router as real TypeScript before publish-only dispatch',()=>{
  assert.match(contentLoop,/stepResults\.push\(await invoke\(url, expected, 'powerhouse-instagram-media-router', \{ runDate \}\)\);/);
  const routerPos=contentLoop.indexOf("'powerhouse-instagram-media-router'");
- const publishPos=contentLoop.indexOf("'powerhouse-social-publisher', { runDate }");
+ const publishPos=contentLoop.indexOf("'powerhouse-social-publisher', { runDate, mode: 'publish_only' }");
  assert.ok(routerPos>=0);
  assert.ok(publishPos>routerPos);
 });
