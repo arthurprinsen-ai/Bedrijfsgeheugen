@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 
 const policy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+const controlPlaneBudget = JSON.parse(await readFile('config/control-plane-budget.json','utf8'));
 
 test('repository schemas are classified as automation control-plane work', () => {
   const plan = createDeliveryPlan({
@@ -34,4 +35,16 @@ test('control-plane lifecycle tooling is classified as automation work', () => {
   });
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
   assert.deepEqual(plan.changedPaths, [...changedPaths].sort());
+});
+
+test('control-plane budget separates current ceilings from the canonical admission target', () => {
+  const github = controlPlaneBudget.budgets.github;
+  const baseline = controlPlaneBudget.baseline.github;
+  assert.equal(github.maxDirectPrTriggerWorkflows, 20);
+  assert.equal(github.maxDirectPrAdmissionWorkflows, 15);
+  assert.equal(github.maxLifecyclePrAuthorityWorkflows, 5);
+  assert.equal(github.targetDirectPrAdmissionWorkflows, 1);
+  assert.equal(baseline.directPrTriggerCount, 20);
+  assert.equal(baseline.directPrAdmissionCount, 15);
+  assert.equal(baseline.lifecyclePrAuthorityCount, 5);
 });
