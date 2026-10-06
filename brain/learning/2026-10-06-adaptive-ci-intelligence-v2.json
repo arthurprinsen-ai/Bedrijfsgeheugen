@@ -27,5 +27,19 @@
       "tests/powerhouse-daily-self-evolution.test.mjs"
     ]
   },
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "pre-v2 direct pull_request fan-out and broad-only CI telemetry",
+        "expected": "detect Required-specific latency/fan-out blind spots and preserve canonical Required + CodeQL assurance",
+        "result": "PASS_BY_CONTRACT_TESTS"
+      },
+      {
+        "scenario": "no-op daily optimizer proposal",
+        "expected": "byte-identical tuning proposal with no timestamp-only candidate churn",
+        "result": "PASS_BY_CONTRACT_TESTS"
+      }
+    ]
+  }
 }
