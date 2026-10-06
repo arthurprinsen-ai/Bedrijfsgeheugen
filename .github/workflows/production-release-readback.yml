@@ -16,6 +16,7 @@ on:
       - 'config/powerhouse-agent-delivery-scheduler-v1.json'
       - 'tools/site-shell/verify-targeted-website-routes.mjs'
       - 'tools/delivery/**'
+      - 'tools/ci/**'
       - 'brain/policies/**'
       - 'AGENTS.md'
       - 'platform/system-map/canonical-system-map.mjs'
