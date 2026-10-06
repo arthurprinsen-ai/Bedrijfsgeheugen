@@ -1,0 +1,25 @@
+{
+  "id": "netlify-build-acceleration-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|build-critical-path|canonical-runner-route-shards-artifact-reuse|v1",
+  "compiler": {
+    "failure_class": "NETLIFY_BUILD_DUPLICATION_AND_SERIAL_CPU",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Netlify production, deploy-preview and exact-local fallback carried independent copies of the same long mutation pipeline. Static locale generation parsed and serialized every public route serially, and a missing provider preview could trigger a second identical local build instead of reusing the already-required parity output.",
+  "prevention": "One canonical runner owns the build order and emits per-step timing evidence. Static localized routes are sharded deterministically across a bounded worker count. Required publishes an immutable candidate-SHA build artifact; the browser fallback waits boundedly for and verifies that artifact before rebuilding.",
+  "evidence": {
+    "observed_build_seconds": 69,
+    "observed_i18n_seconds": 19,
+    "npm_install_seconds": 3,
+    "default_route_workers": 2,
+    "max_route_workers": 4,
+    "profile_artifact": "netlify-build-profile-<candidate-sha>",
+    "reuse_artifact": "netlify-build-reuse-<candidate-sha>",
+    "regression": "tests/brain-netlify-build-acceleration-v1.test.mjs"
+  }
+}
