@@ -20,3 +20,9 @@ Safety boundary:
 - no provider-side bypass was used while database truth was unavailable;
 - no direct LinkedIn/Instagram post was created outside the canonical single-writer path;
 - provider readback remains the terminal proof requirement.
+
+Regional recovery hardening:
+- canonical Supabase project: eu-central-1;
+- social delivery scheduled function: region fra;
+- deploy-triggered recovery: region fra;
+- objective: remove the critical publication loop from the affected eastern-US network path while leaving the rest of the site unchanged.
