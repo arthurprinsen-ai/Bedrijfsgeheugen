@@ -1400,6 +1400,13 @@
       "authority": "supabase/migrations/20260928110707_workshop_scan_preprovision_customer_portal.sql",
       "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "table:public.powerhouse_freshness_contradiction_cache_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261006095838_cache_research_freshness_and_split_one_brain_v1.sql",
+      "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+      "required": true
     }
   ]
 }
