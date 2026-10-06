@@ -133,14 +133,14 @@
     },
     {
       "id": "github-supabase-edge-production-authority",
-      "runtime": "supabase_github_integration",
+      "runtime": "github_actions_supabase_cli",
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
       "obligations": [
         "supabase_edge_production_promotion"
       ],
-      "role": "sole Supabase Edge production promotion authority: Supabase GitHub Integration deploys protected-main source; GitHub Actions only attests the exact-SHA provider check and immutable source hashes; direct CLI/chat/agent/dashboard production deploy is forbidden"
+      "role": "sole Supabase Edge production promotion authority: protected-main GitHub Actions deploys exact scoped source with the pinned Supabase CLI, then downloads the provider source and requires byte-for-byte tree parity; direct chat/agent/dashboard/other CLI production deploy is forbidden"
     }
   ],
   "make_classification_policy": {
@@ -234,10 +234,13 @@
     "supabase_edge_direct_provider_deploy": "FORBIDDEN",
     "supabase_edge_manual_recovery": "TRUSTED_CURRENT_MAIN_ONLY",
     "supabase_edge_drift_policy": "FAIL_CLOSED",
-    "supabase_edge_provider_deployer": "SUPABASE_GITHUB_INTEGRATION",
-    "supabase_edge_github_actions_role": "ATTESTATION_ONLY",
-    "supabase_edge_static_pat_required": false,
-    "supabase_edge_provider_check": "Supabase Preview",
-    "supabase_edge_provider_app": "supabase"
+    "supabase_edge_provider_deployer": "GITHUB_ACTIONS_SUPABASE_CLI",
+    "supabase_edge_github_actions_role": "SOLE_DEPLOYER_AND_BYTE_READBACK",
+    "supabase_edge_static_pat_required": true,
+    "supabase_edge_provider_check": "ADVISORY_ONLY",
+    "supabase_edge_provider_app": "supabase",
+    "supabase_edge_cli_version": "2.119.0",
+    "supabase_edge_pat_scope": "PROJECT_SCOPED_EDGE_FUNCTIONS_READ_WRITE_PREFERRED",
+    "supabase_edge_provider_readback": "BYTE_FOR_BYTE_SOURCE_TREE"
   }
 }
