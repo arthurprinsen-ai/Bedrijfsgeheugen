@@ -203,6 +203,36 @@ jobs:
                 dispatch_required || true
                 dispatch_brain || true
                 ;;
+              FAILED_GATE_RECOVERY)
+                latest_required_id="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | .id // empty' <<<"$runs")"
+                latest_required_updated="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | (.updated_at // .created_at // "")' <<<"$runs")"
+                lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+                lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+                if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ "$lease_head" != "$head" ]; then
+                  echo "::notice::PR#$number failed gate remains fail-closed; current metadata is not an exact terminal lease."
+                  continue
+                fi
+                admission_failed=0
+                if [ -n "$latest_required_id" ]; then
+                  admission_failed="$(gh api "repos/$repo/actions/runs/$latest_required_id/jobs?filter=latest&per_page=100" --jq '[.jobs[] | select(.name=="hygiene / admission" and .conclusion=="failure")] | length' 2>/dev/null || echo 0)"
+                fi
+                pr_updated_epoch="$(date -u -d "$updated" +%s 2>/dev/null || echo 0)"
+                required_updated_epoch="$(date -u -d "$latest_required_updated" +%s 2>/dev/null || echo 0)"
+                if [ "$admission_failed" -gt 0 ] && [ "$pr_updated_epoch" -gt "$required_updated_epoch" ]; then
+                  active="$(active_for_pr required-test.yml)"
+                  if [ "$active" -eq 0 ]; then
+                    echo "::notice::PR#$number metadata changed after failed admission; redispatching exact-head Required once."
+                    if dispatch_required; then
+                      recovered_prs=$((recovered_prs + 1))
+                      echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
+                    fi
+                  else
+                    echo "::notice::PR#$number corrected metadata already has an active Required; duplicate redispatch suppressed."
+                  fi
+                else
+                  echo "::notice::PR#$number failed gate has no newer metadata-only correction; no automatic retry."
+                fi
+                ;;
               LONG_RUNNING_OBSERVE)
                 echo "::notice::PR#$number current-head workflow is long-running but still in progress; do not cancel without concrete stalled-job evidence."
                 ;;

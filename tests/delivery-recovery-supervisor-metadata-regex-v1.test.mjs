@@ -20,3 +20,15 @@ test('same-lineage refresh updates only exact metadata lines',()=>{
   assert.match(yaml,/replaceOne\(next,'Writer-Lease-Main-Epoch',process\.env\.NEW_MAIN\)/);
   assert.match(yaml,/--method PATCH "repos\/\$repo\/pulls\/\$number"/);
 });
+
+
+test('metadata-only correction after failed admission gets one bounded exact-head redispatch',()=>{
+  assert.match(yaml,/FAILED_GATE_RECOVERY\)/);
+  assert.match(yaml,/hygiene \/ admission/);
+  assert.match(yaml,/lease_head\" != \"\$head/);
+  assert.match(yaml,/pr_updated_epoch/);
+  assert.match(yaml,/required_updated_epoch/);
+  assert.match(yaml,/metadata changed after failed admission; redispatching exact-head Required once/);
+  assert.match(yaml,/corrected metadata already has an active Required; duplicate redispatch suppressed/);
+  assert.match(yaml,/failed gate has no newer metadata-only correction; no automatic retry/);
+});
