@@ -152,6 +152,7 @@
         "tools/controleer-technische-seo.mjs",
         "tools/genereer-sitemap.mjs",
         "tools/normaliseer-site-ui.mjs",
+        "tools/netlify-build/",
         "tools/prijzen-uit-de-homepage.mjs",
         "tools/fix-homepage-automation-layout.mjs",
         "tools/bouw-release-evidence.mjs",
