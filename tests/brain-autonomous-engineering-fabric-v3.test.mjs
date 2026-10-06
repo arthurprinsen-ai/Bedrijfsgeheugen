@@ -32,9 +32,10 @@ test('daily optimizer reduces pressure without weakening safety',()=>{
   const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,safety:{}};
   const result=optimizeDailyTuning({metrics:{queue_wait_seconds_p95:180,execution_seconds_p95:700,cancelled_jobs:12,failed_jobs:4,sampled_jobs:20},current});
   assert.equal(result.tuning.max_parallel_packages,3);
+  assert.ok(result.tuning.ci_background_max_parallel<=4);
   assert.ok(result.tuning.candidate_batch_window_seconds>20);
   assert.ok(result.tuning.speculative_execution_threshold>0.75);
-  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity']) assert.equal(result.tuning.safety[key],true);
+  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity','canonical_required_gate','merge_group_full_assurance','pull_request_head_workflow_budget']) assert.equal(result.tuning.safety[key],true);
 });
 
 test('daily optimizer may increase safe parallelism when queue and failures are low',()=>{
@@ -79,7 +80,7 @@ test('daily optimizer holds parallelism in the neutral fanout and skip zone',()=
     failed_jobs:0,
     skipped_jobs:20,
     sampled_jobs:50,
-    workflow_fanout_per_sha_p95:9
+    workflow_fanout_per_sha_p95:1
   },current});
   assert.equal(result.tuning.max_parallel_packages,4);
   assert.equal(result.decisions.includes('increase-safe-parallelism'),false);
@@ -90,7 +91,7 @@ test('daily optimizer holds parallelism in the neutral fanout and skip zone',()=
 test('high-priority calibration can veto upward tuning but cannot mutate tuning directly',()=>{
   const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,safety:{}};
   const result=optimizeDailyTuning({
-    metrics:{queue_wait_seconds_p95:10,execution_seconds_p95:80,cancelled_jobs:0,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:3},
+    metrics:{queue_wait_seconds_p95:10,execution_seconds_p95:80,cancelled_jobs:0,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:1},
     calibration:{mode:'SHADOW_RECOMMENDATIONS',recommendations:[{id:'reduce-workflow-fanout',priority:'high'}]},
     current
   });
@@ -105,7 +106,7 @@ test('high-priority calibration can veto upward tuning but cannot mutate tuning 
 test('low-priority calibration does not block otherwise-safe upward tuning',()=>{
   const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,safety:{}};
   const result=optimizeDailyTuning({
-    metrics:{queue_wait_seconds_p95:10,execution_seconds_p95:80,cancelled_jobs:0,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:3},
+    metrics:{queue_wait_seconds_p95:10,execution_seconds_p95:80,cancelled_jobs:0,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:1},
     calibration:{mode:'SHADOW_RECOMMENDATIONS',recommendations:[{id:'tighten-impact-routing',priority:'medium'}]},
     current
   });
