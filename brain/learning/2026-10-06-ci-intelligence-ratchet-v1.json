@@ -1,0 +1,24 @@
+{
+  "version": "CI-INTELLIGENCE-RATCHET-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|required-latency|fanout-ratchet-v1",
+  "obligation_id": "ci-intelligence-ratchet-20261006-v1",
+  "root_cause": "The repository measured generic queue and workflow fan-out but did not distinguish Required latency or enforce a monotone budget on globally-triggered pull_request workflows. The daily optimizer could tune parallelism but had no architecture ratchet, and it also started a PR workflow when its own files changed.",
+  "prevention": "Measure Required queue/total p95, active external work and unscoped PR topology daily. Keep protected-pr-fastlane as the current authority. The optimizer may reduce the unscoped PR workflow budget toward Required + CodeQL = 2 but may never raise it automatically; any tuning still lands only through protected PR gates.",
+  "compiler": {
+    "failure_class": "CI_TOPOLOGY_REGRESSION_WITHOUT_RATCHET",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-intelligence-ratchet-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "required_queue_target_seconds": 30,
+    "required_total_target_seconds": 120,
+    "unscoped_pr_target": 2,
+    "external_wait_budget_seconds": 30
+  },
+  "status": "ACTIVE_PREVENTION"
+}

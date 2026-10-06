@@ -120,12 +120,28 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const failureRate = failed / jobs;
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
+  const requiredQueueP95 = Number(metrics.required_queue_wait_seconds_p95 ?? queueP95);
+  const requiredTotalP95 = Number(metrics.required_total_seconds_p95 ?? executionP95);
+  const unscopedPrWorkflows = Number(metrics.unscoped_pull_request_workflow_count ?? 0);
+  const ci = { ...(current.ci ?? {}) };
+  const unscopedTarget = Number(ci.unscoped_pr_workflow_target ?? 2);
+  const currentUnscopedBudget = Number(ci.unscoped_pr_workflow_budget ?? 5);
+  ci.architecture_mode = 'protected-pr-fastlane';
+  ci.unscoped_pr_workflow_target = unscopedTarget;
+  ci.unscoped_pr_workflow_budget = unscopedPrWorkflows > 0
+    ? Math.max(unscopedTarget, Math.min(currentUnscopedBudget, unscopedPrWorkflows))
+    : currentUnscopedBudget;
+  if (ci.unscoped_pr_workflow_budget < currentUnscopedBudget) decisions.push('ratchet-unscoped-pr-workflow-budget-down');
+  next.ci = ci;
 
   const calibrationRecommendations = Array.isArray(calibration?.recommendations) ? calibration.recommendations : [];
   const highCalibrationWarnings = calibrationRecommendations.filter(item => item?.priority === 'high');
   const calibrationVeto = highCalibrationWarnings.length > 0;
-  const runnerPressure = queueP95 > 120 || cancelled > 8;
-  const orchestrationWaste = fanoutP95 > 10 || skippedRate > 0.45;
+  const requiredQueueTarget = Number(ci.required_queue_p95_target_seconds ?? 30);
+  const requiredTotalTarget = Number(ci.required_total_p95_target_seconds ?? 120);
+  const fanoutBudget = Number(ci.workflow_fanout_p95_budget ?? 5);
+  const runnerPressure = requiredQueueP95 > requiredQueueTarget || queueP95 > 120 || cancelled > 8;
+  const orchestrationWaste = fanoutP95 > fanoutBudget || skippedRate > 0.45 || unscopedPrWorkflows > currentUnscopedBudget;
 
   if (runnerPressure || orchestrationWaste) {
     const before=Number(next.max_parallel_packages ?? 4);
@@ -151,12 +167,19 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     queue_wait_seconds_p95:queueP95,
     execution_seconds_p95:executionP95,
     workflow_fanout_per_sha_p95:fanoutP95,
+    required_queue_wait_seconds_p95:requiredQueueP95,
+    required_total_seconds_p95:requiredTotalP95,
+    unscoped_pull_request_workflow_count:unscopedPrWorkflows,
+    unscoped_pr_workflow_budget:ci.unscoped_pr_workflow_budget,
+    unscoped_pr_workflow_budget_exceeded:unscopedPrWorkflows > currentUnscopedBudget,
+    required_slo_breached:requiredQueueP95 > requiredQueueTarget || requiredTotalP95 > requiredTotalTarget,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
     calibration_mode:String(calibration?.mode || 'NONE'),
     calibration_high_priority_recommendations:Object.freeze(highCalibrationWarnings.map(item => String(item.id || '')).filter(Boolean))
   });
   next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true };
+  next.ci = ci;
   return Object.freeze({ changed:JSON.stringify(next)!==JSON.stringify(current), decisions:Object.freeze(decisions), signals, tuning:Object.freeze(next) });
 }
 
@@ -174,6 +197,12 @@ export async function validateAutonomousEngineeringFabricV3() {
   if(policy.daily_optimizer?.enabled!==true) errors.push('daily optimizer required');
   if(policy.daily_optimizer?.auto_merge_only_after_protected_gates!==true) errors.push('protected-gate auto merge required');
   for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  if(tuning.ci?.architecture_mode!=='protected-pr-fastlane') errors.push('protected PR fastlane architecture required');
+  if(Number(tuning.ci?.unscoped_pr_workflow_target ?? 0)!==2) errors.push('unscoped PR workflow target must be Required + CodeQL = 2');
+  if(Number(tuning.ci?.unscoped_pr_workflow_budget ?? 0)<2) errors.push('unscoped PR workflow budget cannot be below 2');
+  if(Number(tuning.ci?.required_queue_p95_target_seconds ?? 999)>30) errors.push('Required queue p95 target must be <=30s');
+  if(Number(tuning.ci?.required_total_p95_target_seconds ?? 999)>120) errors.push('Required total p95 target must be <=120s');
+  if(Number(tuning.ci?.agent_external_wait_budget_seconds ?? 999)>30) errors.push('agent external wait budget must be <=30s');
   return { ok:errors.length===0, errors, fingerprint:policy.fingerprint };
 }
 

@@ -1,4 +1,4 @@
-import { mkdir, writeFile, appendFile, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, appendFile, readFile, readdir } from 'node:fs/promises';
 import { calibrateCi } from '../../tools/delivery/ci-calibration-engine.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
@@ -21,6 +21,25 @@ const now = Date.now();
 const since = now - 7 * 24 * 60 * 60 * 1000;
 const runsPayload = await api('/actions/runs?per_page=100');
 const runs = (runsPayload.workflow_runs || []).filter(run => Date.parse(run.created_at) >= since);
+const requiredRuns = runs.filter(run => run.name === 'Required test');
+const requiredQueues = requiredRuns
+  .map(run => run.run_started_at ? Math.max(0, Math.round((Date.parse(run.run_started_at) - Date.parse(run.created_at)) / 1000)) : null)
+  .filter(Number.isFinite);
+const requiredTotals = requiredRuns
+  .map(run => run.status === 'completed' && run.updated_at ? Math.max(0, Math.round((Date.parse(run.updated_at) - Date.parse(run.created_at)) / 1000)) : null)
+  .filter(Number.isFinite);
+
+const workflowFiles = (await readdir('.github/workflows')).filter(name => /\.ya?ml$/.test(name)).sort();
+const unscopedPullRequestWorkflows = [];
+for (const name of workflowFiles) {
+  const source = await readFile(`.github/workflows/${name}`, 'utf8');
+  const match = source.match(/\n  pull_request:\s*\n([\s\S]*?)(?=\n  [A-Za-z0-9_-]+:|\n[A-Za-z][A-Za-z0-9_-]*:|$)/);
+  if (!match) continue;
+  const block = match[1] || '';
+  const closedOnly = /types:\s*\[\s*closed\s*\]/.test(block);
+  const pathScoped = /\n\s{4}(?:paths|paths-ignore):/.test(block);
+  if (!closedOnly && !pathScoped) unscopedPullRequestWorkflows.push(name);
+}
 
 const sample = runs.slice(0, 30);
 const jobRows = [];
@@ -60,7 +79,7 @@ for (const run of runs) workflowFanout.set(run.head_sha, (workflowFanout.get(run
 const fanoutValues = [...workflowFanout.values()];
 
 const baseReport = {
-  version: 'powerhouse-ci-intelligence-v1',
+  version: 'powerhouse-ci-intelligence-v2',
   observed_at: new Date().toISOString(),
   window_days: 7,
   sampled_runs: sample.length,
@@ -75,6 +94,10 @@ const baseReport = {
     skipped_jobs: skipped,
     workflow_fanout_per_sha_avg: avg(fanoutValues),
     workflow_fanout_per_sha_p95: p95(fanoutValues),
+    required_queue_wait_seconds_p95: p95(requiredQueues),
+    required_total_seconds_p95: p95(requiredTotals),
+    unscoped_pull_request_workflow_count: unscopedPullRequestWorkflows.length,
+    active_nonterminal_runs: runs.filter(run => ['queued','pending','in_progress','waiting','requested'].includes(run.status)).length,
   },
   optimization_policy: {
     stale_same_pr_runs_cancelled: true,
@@ -84,6 +107,9 @@ const baseReport = {
     website_netlify_preview_reuse: true,
     local_browser_build_is_fallback_only: true,
     duplicate_preflight_domain_checks_removed: true,
+  },
+  topology: {
+    unscoped_pull_request_workflows: unscopedPullRequestWorkflows,
   },
   jobs: jobRows,
 };

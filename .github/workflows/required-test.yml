@@ -182,8 +182,8 @@ jobs:
           PR_BODY: ${{ inputs.pr_body || github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ steps.scope.outputs.pr_number }}
         run: node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
-      - name: Verify adaptive and integration compiler regressions
-        run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs
+      - name: Verify adaptive, integration and CI architecture regressions
+        run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs tests/brain-ci-intelligence-ratchet-v1.test.mjs
       - name: Enforce Powerhouse one-loop runtime invariants
         run: node --test tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs
       - name: Fail fast on incomplete integration closure
