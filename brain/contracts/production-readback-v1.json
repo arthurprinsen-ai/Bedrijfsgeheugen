@@ -53,6 +53,8 @@
       "tools/site-shell/production-supersession.mjs",
       "tools/site-shell/standalone-visibility-check.mjs",
       "config/historical-terminal-reconciliation.json",
+      "config/netlify-project-registry.json",
+      "tools/netlify/ephemeral-janitor.mjs",
       "AGENTS.md",
       "platform/system-map/canonical-system-map.mjs",
       "tools/brain-delivery-system.mjs",
@@ -61,7 +63,6 @@
       "config/powerhouse-quality-surface-contracts.json",
       "config/build-contract.json",
       "config/control-plane-budget.json",
-      "config/netlify-project-registry.json",
       "config/notion-root-lifecycle.json",
       "config/pr-trigger-baseline.json",
       "config/supabase-edge-functions.json"
