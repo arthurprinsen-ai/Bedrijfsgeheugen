@@ -1,0 +1,40 @@
+{
+  "id": "supabase-migration-repair-list-parser-v3",
+  "date": "2026-10-06",
+  "issue": 3742,
+  "failure_class": "DELIVERY_CONTROL_PLANE",
+  "finding": "Supabase CLI renders an empty migration-list cell as backtick-space-backtick. Trimming before stripping backticks leaves a single space after delimiter removal, which is truthy and was falsely classified as remote-only drift.",
+  "rule": "Normalize provider CLI table cells to semantic values: trim whitespace, remove presentation delimiters, then trim again before identity comparison.",
+  "prevention": [
+    "normalize cells with trim -> strip surrounding backticks -> trim",
+    "apply identical normalization to pre-repair and post-repair parsers",
+    "regression-test the exact backtick-space-backtick empty-cell representation",
+    "remain fail-closed on any real remote-only or unexpected identity drift"
+  ],
+  "production_mutation": "none in parser fix",
+  "terminal_green_requires": [
+    "trusted repair success",
+    "zero post-repair migration-list drift",
+    "canonical recovery exact-head green",
+    "protected merge",
+    "post-merge production readback"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-list-parser-v3.test.mjs"
+    ]
+  },
+  "fingerprint": "supabase-migration-repair-empty-cell-normalization-v3",
+  "root_cause": "The parser called trim before removing backticks. For the CLI cell ` `, stripping backticks produced a residual space, so x.remote was truthy and triggered REMOTE_ONLY_OR_IDENTITY_DRIFT despite the migration list containing exactly the four expected local-only versions.",
+  "evidence": [
+    "trusted-main run 37425004020 acquired database transport successfully and stopped before mutation with REMOTE_ONLY_OR_IDENTITY_DRIFT",
+    "run output shows each expected remote-empty cell rendered exactly as ` `",
+    "independent reconstruction of the migration-list rows yields exactly four local-only versions and zero remote-only versions"
+  ]
+}
