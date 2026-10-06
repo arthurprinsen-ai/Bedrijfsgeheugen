@@ -19,6 +19,7 @@ const governanceExact = new Set([
   'AGENTS.md',
   'config/delivery-prevention-rules.json',
   'config/powerhouse-agent-delivery-scheduler-v1.json',
+  'config/powerhouse-quality-surface-contracts.json',
   'platform/system-map/canonical-system-map.mjs',
   'tools/brain-delivery-system.mjs',
 ]);
@@ -27,10 +28,24 @@ function isGovernancePath(path) {
   return governanceExact.has(path) || governancePrefixes.some(prefix => path.startsWith(prefix));
 }
 
-function classify({ body, changedPaths }) {
+function parseSupabaseProviderReadbacks(body) {
+  const out = [];
+  const pattern = /^Terminal-Supabase-Provider-Readback:\s*function=([^;]+);version=([1-9][0-9]*);runtime_sha256=([0-9a-fA-F]{64})$/gm;
+  for (const match of String(body || '').matchAll(pattern)) {
+    out.push({
+      function: String(match[1]).trim(),
+      version: Number(match[2]),
+      runtime_sha256: String(match[3]).toLowerCase(),
+      state: 'ACTIVE',
+    });
+  }
+  return out;
+}
+
+function classify({ body, changedPaths, expectedProviderReadbacks = [] }) {
   const nonGovernance = changedPaths.filter(path => !isGovernancePath(path));
   if (nonGovernance.length === 0) {
-    return { readback_mode: 'non_runtime', non_governance_paths: [] };
+    return { readback_mode: 'non_runtime', non_governance_paths: [], provider_readbacks: [] };
   }
 
   const parityRecovery =
@@ -47,7 +62,39 @@ function classify({ body, changedPaths }) {
     if (!allowed) {
       throw new Error('HISTORICAL_RECONCILIATION_UNEXPECTED_RUNTIME_PATH:' + nonGovernance.join(','));
     }
-    return { readback_mode: 'supabase_history_parity_recovery', non_governance_paths: nonGovernance };
+    return { readback_mode: 'supabase_history_parity_recovery', non_governance_paths: nonGovernance, provider_readbacks: [] };
+  }
+
+  const supabasePaths = nonGovernance.filter(path => /^supabase\/functions\/[^/]+\//.test(path));
+  const unknown = nonGovernance.filter(path => !supabasePaths.includes(path));
+  if (supabasePaths.length > 0 && unknown.length === 0) {
+    const changedFunctions = [...new Set(
+      supabasePaths.map(path => path.match(/^supabase\/functions\/([^/]+)\//)?.[1]).filter(Boolean)
+    )].sort();
+    const providerReadbacks = parseSupabaseProviderReadbacks(body);
+    const proven = [];
+    for (const fn of changedFunctions) {
+      const actual = providerReadbacks.find(item => item.function === fn);
+      if (!actual) throw new Error('HISTORICAL_RECONCILIATION_SUPABASE_PROVIDER_READBACK_MISSING:' + fn);
+      const expected = expectedProviderReadbacks.find(item => item.function === fn);
+      if (expected) {
+        if (
+          Number(expected.version) !== actual.version ||
+          String(expected.runtime_sha256 || '').toLowerCase() !== actual.runtime_sha256
+        ) {
+          throw new Error('HISTORICAL_RECONCILIATION_SUPABASE_PROVIDER_READBACK_DRIFT:' + fn);
+        }
+      }
+      proven.push(actual);
+    }
+    if (expectedProviderReadbacks.length && expectedProviderReadbacks.length !== proven.length) {
+      throw new Error('HISTORICAL_RECONCILIATION_SUPABASE_PROVIDER_READBACK_SET_DRIFT');
+    }
+    return {
+      readback_mode: 'supabase_edge_provider',
+      non_governance_paths: nonGovernance,
+      provider_readbacks: proven,
+    };
   }
 
   throw new Error('HISTORICAL_RECONCILIATION_RUNTIME_AUTHORITY_UNWIRED:' + nonGovernance.join(','));
@@ -97,7 +144,11 @@ for (const entry of cfg.entries) {
     .split(/\r?\n/)
     .filter(Boolean);
 
-  const authority = classify({ body: String(pr.body || ''), changedPaths });
+  const authority = classify({
+    body: String(pr.body || ''),
+    changedPaths,
+    expectedProviderReadbacks: Array.isArray(entry.supabase_provider_readbacks) ? entry.supabase_provider_readbacks : [],
+  });
   evidence.push({
     contract: 'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
     evidence_version: 'historical-reconciliation-v1',
@@ -108,6 +159,7 @@ for (const entry of cfg.entries) {
     merge_sha: pr.merge_commit_sha,
     production_sha: currentMain,
     readback_mode: authority.readback_mode,
+    supabase_provider_readbacks: authority.provider_readbacks || [],
     supersedes_terminalizer_run_id: entry.supersedes_terminalizer_run_id,
     stale_readback_run_id: entry.stale_readback_run_id,
     stale_readback_authoritative: false,
@@ -116,8 +168,8 @@ for (const entry of cfg.entries) {
       merged_lineage_verified: true,
       main_contains_merge: true,
       production_readback_not_applicable: ['non_runtime', 'supabase_history_parity_recovery'].includes(authority.readback_mode),
-      deploy_promotion_readback: false,
-      runtime_function_readback: false,
+      deploy_promotion_readback: authority.readback_mode === 'supabase_edge_provider',
+      runtime_function_readback: authority.readback_mode === 'supabase_edge_provider',
       outcome_evidence: false,
       current_authority_reconciliation: true,
     },

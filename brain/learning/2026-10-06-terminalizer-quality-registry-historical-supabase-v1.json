@@ -1,0 +1,27 @@
+{
+  "fingerprint": "terminalizer|quality-surface-governance|historical-supabase-provider-readback|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "terminalizer-quality-registry-historical-supabase-20261006-v1",
+  "root_cause": "PR #3890 merged with exact production v23/v31/v115 source and provider-proven LinkedIn company LIVE_PROVEN evidence, but the post-merge terminalizer classified config/powerhouse-quality-surface-contracts.json as an unknown runtime path. The terminalizer therefore exited before evaluating the three already-pinned Supabase provider readbacks. Historical reconciliation also lacked a Supabase Edge provider mode, so the failed terminalizer could not be superseded under current authority.",
+  "prevention_rule": "Treat the quality-surface registry as governance in terminal readback classification. Historical reconciliation must support Supabase Edge runtime changes only when every changed function has an exact Terminal-Supabase-Provider-Readback tuple and, when registry-pinned, that tuple matches the expected version and runtime SHA. Unknown runtime paths remain fail-closed.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-obligation-terminalizer-supabase-provider-readback.test.mjs",
+      "tests/brain-historical-terminal-reconciliation-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 3890,
+    "merge_sha": "22d57fdcb0e7344914288091a75319c1198a73ef",
+    "failed_terminalizer_run_id": 37458182329
+  },
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

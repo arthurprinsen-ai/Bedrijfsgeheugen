@@ -22,6 +22,7 @@ test('unknown non-Netlify and non-Supabase runtimes remain fail closed',()=>{
 
 test('delivery classification policy is governance rather than runtime deployment',()=>{
   assert.match(workflow,/config\/brain-delivery-system\.json/);
+  assert.match(workflow,/config\/powerhouse-quality-surface-contracts\.json/);
 });
 
 test('terminal evidence accepts provider-proven Supabase runtime modes',()=>{
