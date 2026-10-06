@@ -1,0 +1,38 @@
+{
+  "version": "DELIVERY-CONTROL-PLANE-HARDENING-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|delivery-control-plane|bounded-shallow-supervised|v1",
+  "obligation_id": "delivery-control-plane-hardening-20261006-v1",
+  "root_cause": {
+    "full_fetch": "Critical PR gates used fetch-depth 0, causing checkout to fetch every remote branch and tag in a repository with a large stale branch population.",
+    "long_poll": "Repository writer verification could synchronously poll for up to 360 seconds while an external candidate PR materialized.",
+    "missing_gate": "An open PR could occasionally have no canonical Required run on its exact head, leaving delivery stalled without a bounded recovery owner.",
+    "stale_prs": "Explicit retired and superseded PRs accumulated and polluted repository state."
+  },
+  "prevention": {
+    "checkout": "Critical PR gates use shallow checkout and fetch or query only exact base/head state needed for their proof.",
+    "polling": "Synchronous writer candidate polling is capped at 30 seconds and exits as WAITING_EXTERNAL with exact resumable identity.",
+    "supervisor": "A single bounded scheduled supervisor redispatches Required only when the exact PR head has no run and safely closes only explicit retired/superseded candidates.",
+    "budgets": "Supervisor dispatch and close operations are hard capped per cycle to prevent recovery fan-out."
+  },
+  "compiler": {
+    "failure_class": "DELIVERY_CONTROL_PLANE_UNBOUNDED_FETCH_POLL_AND_STALE_STATE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-control-plane-hardening-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-delivery-control-plane-hardening-v1.test.mjs"
+    ],
+    "observed_fetch": "Required, Delivery Hygiene and Skill Projection previously used fetch-depth: 0.",
+    "observed_poll": "Repository Writer Operational Verification previously used seq 1 72 with sleep 5.",
+    "invariant": "Recovery must reduce work: no all-ref fetch, no unbounded synchronous polling, no age-only PR closing, and exact-head identity is preserved."
+  },
+  "status": "ACTIVE_PREVENTION"
+}
