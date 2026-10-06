@@ -1,0 +1,27 @@
+{
+  "version": "VERSIONED-METADATA-AUTHORITY-REGRESSION-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|delivery-metadata|scope-bleed|manifest-authority|v1",
+  "obligation_id": "versioned-metadata-authority-regression-20261006-v1",
+  "root_cause": "PR #3986 was scoped to shallow-safe material writeback but also modified tools/delivery/delivery-metadata-authority.mjs. That unrelated collateral change made a complete mutable PR body override the versioned exact-head manifest for the same obligation, contradicting the One Loop authority contract introduced in #1968.",
+  "prevention": "For the same Obligation-ID, a valid POWERHOUSE-DELIVERY-CANDIDATE-v1 manifest is authoritative over mutable PR delivery metadata. PR-body authority is retained only when no manifest exists or when the manifest belongs to a different obligation. Existing regression tests remain the executable guard.",
+  "compiler": {
+    "failure_class": "UNRELATED_SCOPE_BLEED_REVERSED_VERSIONED_METADATA_AUTHORITY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-one-loop-versioned-metadata-authority.test.mjs"
+    ]
+  },
+  "evidence": {
+    "introduced_by_pr": 3986,
+    "original_contract_commit": "6ae18de754cb33044108d85ba704c965a5287b88",
+    "failing_test": "versioned exact-head manifest overrides stale mutable PR delivery metadata for the same obligation",
+    "observed_actual": "pr-body",
+    "expected": "versioned-manifest"
+  },
+  "status": "ACTIVE_PREVENTION"
+}
