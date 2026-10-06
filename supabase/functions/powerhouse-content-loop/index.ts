@@ -79,8 +79,11 @@ function providerSideEffectTerminal(o:any){
     || (evidence?.provider_truth_verified===true && ['published','sent','live'].includes(clean(evidence?.provider_status).toLowerCase()));
 }
 function obligationTerminal(o:any){
-  return TERMINAL_GREEN.has(clean(o?.status))
-    || (clean(o?.status)==='PUBLISHED' && providerSideEffectTerminal(o));
+  const status=clean(o?.status);
+  const channel=clean(o?.channel);
+  if(TERMINAL_GREEN.has(status))return true;
+  if(channel==='linkedin_company'&&status==='PUBLISHED')return false;
+  return status==='PUBLISHED'&&providerSideEffectTerminal(o);
 }
 
 async function readBoundedJson(response: Response, maxBytes = 32768) {
@@ -333,6 +336,12 @@ Deno.serve(async (req) => {
     const loopState = blocked > 0 ? 'RED' : allOperationalGreen ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
       if (['DISPATCHED','PUBLISHED'].includes(clean(o.status)) && ['linkedin_personal','linkedin_company','instagram'].includes(clean(o.channel))) {
+        if(clean(o.channel)==='linkedin_company'){
+          return o.evidence?.provider_truth_verified===true
+            && o.evidence?.linkedin_company_admin_oauth_proven===true
+            && o.evidence?.organization_write_scope_verified===true
+            && o.evidence?.company_oauth_fresh_verified===true;
+        }
         return o.evidence?.provider_truth_verified === true || providerSideEffectTerminal(o);
       }
       return true;
