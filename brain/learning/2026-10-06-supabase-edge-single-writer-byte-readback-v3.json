@@ -36,5 +36,25 @@
     "canary": [
       "tests/brain-runtime-authority-governance.test.mjs"
     ]
+  },
+  "evidence": {
+    "source": [
+      ".github/workflows/supabase-edge-production-authority.yml",
+      "brain/contracts/supabase-edge-production-authority-v1.json",
+      "config/powerhouse-runtime-authority.json"
+    ],
+    "regression": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "provider_readback": {
+      "merge_sha": "c868595e92ba5fa290de1dfb1eed632ec344802f",
+      "supabase_check_id": 112287139805,
+      "attestation_job_id": 112286822569,
+      "provider_function": "social-recovery-runner",
+      "provider_version": 7,
+      "provider_source_length": 10259,
+      "protected_main_source_length": 11458,
+      "source_equal": false
+    }
   }
 }
