@@ -2,6 +2,10 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
+const EVENT_DB_TIMEOUT_MS=2_500;
+const EVENT_BREAKER_MS=30_000;
+let eventDbDegradedUntil=0;
+const eventFetch=(input:RequestInfo|URL,init:RequestInit={})=>fetch(input,{...init,signal:AbortSignal.timeout(EVENT_DB_TIMEOUT_MS)});
 async function sha256(value:string){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 function blogContentId(canonical:string,payload:any){const explicit=String(payload?.content_id||'').trim();if(explicit)return explicit;try{const path=new URL(String(canonical||'')).pathname;const match=path.match(/^\/blog\/([a-z0-9-]+)\/?$/);return match?`blog:${match[1]}`:'';}catch{return '';}}
 function eventType(type:string){const t=String(type||'').trim();if(t==='page_view'||t==='organic_landing')return 'visit';if(t==='money_link_click'||t==='primary_cta_click'||t==='secondary_cta_click')return 'cta';if(t==='engaged_view')return 'engagement';if(t==='lead_outcome'||t==='frisse_blik_start'||t==='selfscan_start')return 'lead';return t;}
@@ -16,9 +20,18 @@ Deno.serve(async(req:Request)=>{
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
   if(action==='event'){
-    const {data,error}=await client.rpc('bg_growth_ingest_event',{p_event:body.event});
-    if(error)return json({error:'EVENT_STORE_FAILED',detail:error.message.slice(0,300)},500);
-    return json({datahub:'supabase:growth_events',result:data},200);
+    if(Date.now()<eventDbDegradedUntil)return json({error:'EVENT_STORE_UNAVAILABLE',detail:'DATA_API_CIRCUIT_OPEN'},503);
+    const eventClient=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:eventFetch}});
+    try{
+      const {data,error}=await eventClient.rpc('bg_growth_ingest_event',{p_event:body.event});
+      if(error)throw error;
+      eventDbDegradedUntil=0;
+      return json({datahub:'supabase:growth_events',result:data},200);
+    }catch(error){
+      eventDbDegradedUntil=Date.now()+EVENT_BREAKER_MS;
+      console.error('GROWTH_EVENT_DATA_API_DEGRADED',error instanceof Error?error.message:String(error));
+      return json({error:'EVENT_STORE_UNAVAILABLE',detail:'DATA_API_UNAVAILABLE'},503);
+    }
   }
   if(action==='outcome'){
     const {data,error}=await client.rpc('bg_growth_ingest_outcome',{p_outcome:body.outcome});
