@@ -1,0 +1,48 @@
+{
+  "version": "CI-CONTROL-PLANE-CONVERGENCE-v2",
+  "date": "2026-10-06",
+  "fingerprint": "github|ci|single-ingress-bounded-fetch-lineage-safe-recovery|v2",
+  "obligation_id": "ci-control-plane-convergence-20261006-v1",
+  "root_cause": {
+    "escaped_defect": "Independent pull_request workflows, fetch-depth:0, stale candidate pressure and ambiguous supersession caused duplicate work and unstable delivery. An earlier candidate also inherited an unrelated full_assurance branch variant.",
+    "evidence": "PR #3911 demonstrated duplicate browser/page/quality/skill fanout; workflow logs fetched refs/heads/*; #3924 exposed cross-obligation supersession ambiguity; #3928 exposed the stale full_assurance variant against the canonical Netlify premerge contract."
+  },
+  "prevention": {
+    "ingress": "Required remains the canonical PR admission/release gate; heavy browser, page/SEO, Quality Intelligence, Skill Projection and Business OS Migration no longer allocate independent PR runners.",
+    "fetch": "Required and website classifiers use shallow checkout plus exact comparison-base fetch on demand.",
+    "provider": "Supabase Preview applicability is owned by Required with database-relevant config.toml semantics preserved.",
+    "netlify": "Current-main netlifyGovernanceExact behavior and unconditional netlify_build_required premerge ownership remain intact.",
+    "recovery": "A five-minute watchdog redispatches only genuinely missing recent Required runs and preserves PR labels.",
+    "hygiene": "The janitor closes explicit supersessions only inside the same Obligation-ID and separately closes generated candidates stale for more than 30 days."
+  },
+  "regression": [
+    "tests/brain-ci-control-plane-convergence-v1.test.mjs",
+    "tests/brain-ci-critical-path-acceleration-v1.test.mjs",
+    "tests/brain-ci-critical-path-acceleration-v2.test.mjs",
+    "tests/brain-supabase-ipv4-session-transport-guard-v1.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "CI_CONTROL_PLANE_FANOUT_STALE_REF_AND_LINEAGE_PRESSURE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "observed_failure": "duplicate PR fanout, complete remote ref fetches, ambiguous supersession and inherited non-canonical full_assurance logic",
+    "proof_boundary": "canonical Required gate, exact base/head comparison, same-obligation janitor, bounded watchdog and current-main Netlify/Supabase semantics"
+  }
+}

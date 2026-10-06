@@ -23,7 +23,8 @@ test('Required classifies branch diff from versioned base authority but executes
   const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
   assert.match(workflow, /change_head_sha=\$\{context\.changeHeadSha\}/);
   assert.match(workflow, /candidate_sha=\$\{context\.candidateSha\}/);
-  assert.match(workflow, /comparisonBaseSha}\.\.\.\$\{context\.changeHeadSha}/);
+  assert.match(workflow, /\['diff','--name-only',comparisonBaseSha,context\.changeHeadSha\]/);
+  assert.doesNotMatch(workflow, /comparisonBaseSha}\.\.\.\$\{context\.changeHeadSha}/);
   assert.match(workflow, /head_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);
   assert.match(workflow, /change_head_sha:\s*\$\{\{ needs\.preflight\.outputs\.change_head_sha \}\}/);
   assert.match(workflow, /candidate_sha:\s*\$\{\{ needs\.preflight\.outputs\.candidate_sha \}\}/);
