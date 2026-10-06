@@ -62,3 +62,14 @@ test('repair refuses direct IPv6 transport and requires canonical Supavisor IPv4
   assert.match(workflow, /DIRECT_IPV6_ROUTE_FORBIDDEN/);
   assert.match(workflow, /getent ahostsv4/);
 });
+
+
+test('merged canonical recovery becomes readback-only instead of trying to mutate a closed branch', () => {
+  assert.match(workflow, /mode="readback_only"/);
+  assert.match(workflow, /Trusted-Repair-State: REPAIRED_APPLIED_VERIFIED/);
+  assert.match(workflow, /Trusted-Repair-Post-Drift: 0/);
+  assert.match(workflow, /steps\.candidate\.outputs\.mode == 'repair'/);
+  assert.match(workflow, /steps\.candidate\.outputs\.mode == 'readback_only'/);
+  assert.match(workflow, /MERGED_REPAIR_REMOTE_READBACK_MISSING/);
+  assert.match(workflow, /remote_allowlist_verified=4/);
+});
