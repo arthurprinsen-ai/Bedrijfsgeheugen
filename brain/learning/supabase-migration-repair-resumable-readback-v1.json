@@ -1,0 +1,41 @@
+{
+  "id": "supabase-migration-repair-resumable-readback-v1",
+  "date": "2026-10-06",
+  "issue": 3742,
+  "failure_class": "DELIVERY_CONTROL_PLANE",
+  "finding": "Trusted migration repair depends on an intermittently available Supavisor session transport. A failed read before mutation is safe to retry, while a failed read after a possibly successful repair must be resumable without blindly repeating the provider mutation.",
+  "rule": "Retry only read-only provider observations; never automatically retry the migration repair mutation. Accept only exact four-version drift or zero drift before mutation, and always require zero drift afterward.",
+  "prevention": [
+    "bounded retry around supabase migration list only",
+    "write a repair-needed decision from fail-closed parsed drift",
+    "zero pre-drift skips mutation and resumes at post-repair readback",
+    "exact four local-only versions are the only state allowed to execute repair",
+    "post-repair zero drift remains mandatory"
+  ],
+  "production_mutation": "supported Supabase CLI migration repair remains single-shot and allowlisted",
+  "terminal_green_requires": [
+    "trusted repair success",
+    "production ledger readback",
+    "canonical recovery exact-head green",
+    "protected merge",
+    "post-merge production readback"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-resumable-readback-v1.test.mjs"
+    ]
+  },
+  "fingerprint": "supabase-migration-repair-resumable-readback-v1",
+  "root_cause": "The trusted workflow treated every execution as a first attempt. Intermittent connection loss can occur before or after the one allowed repair mutation, so a later run needs to distinguish exact pre-repair drift from already-repaired zero drift.",
+  "evidence": [
+    "trusted run 37425004020 intermittently reached full migration-list output and otherwise terminated during connection establishment",
+    "trusted run 37426469433 failed before its first list readback with Connection terminated unexpectedly",
+    "tests/brain-supabase-migration-repair-resumable-readback-v1.test.mjs"
+  ]
+}
