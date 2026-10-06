@@ -19,7 +19,7 @@ test('trusted repair workflow rejects direct IPv6 before Supabase CLI execution'
 });
 
 test('trusted Supabase repair transport remains IPv4 Supavisor session mode', () => {
-  assert.ok(bridge.includes('aws-0-eu-central-1.pooler.supabase.com'));
+  assert.match(bridge,/const sessionPoolerHost = "aws-0-eu-central-1\.pooler\.supabase\.com";/);
   assert.ok(bridge.includes('url.port = "5432"'));
   assert.ok(bridge.includes('url.username = "postgres." + projectRef'));
   assert.ok(bridge.includes('transport: "supavisor-session-ipv4"'));
