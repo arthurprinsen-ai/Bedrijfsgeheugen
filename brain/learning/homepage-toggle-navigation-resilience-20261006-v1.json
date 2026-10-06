@@ -1,0 +1,47 @@
+{
+  "id": "homepage-toggle-navigation-resilience-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "required-browser-pr-3766",
+  "fingerprint": "website|browser|homepage-toggle|navigation-readiness|20261006-v1",
+  "compiler": {
+    "failure_class": "BROWSER_NAVIGATION_FLAKE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "The homepage toggle browser contract waited for Playwright networkidle before testing the DOM. On the live Netlify preview, all preceding browser contracts succeeded twice, but the toggle check timed out twice at page.goto after 90 seconds because long-lived or late network activity prevented global network-idle even though the homepage DOM and related browser contracts were healthy.",
+  "prevention": [
+    "Navigation readiness for the toggle contract is defined by DOMContentLoaded plus visibility of both toggle tabs, not global network-idle.",
+    "Navigation retry is bounded to three attempts with increasing short backoff.",
+    "All physical click, aria-selected, active-panel, visibility and content assertions remain unchanged and fail closed.",
+    "A regression test prohibits reintroducing networkidle into the homepage toggle navigation path."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-homepage-toggle-browser-stability.test.mjs",
+      "Required test run 37427956203 browser attempts 1 and 2"
+    ],
+    "expected": "A healthy preview with delayed or persistent network activity reaches the toggle contract through bounded DOM-ready navigation, while missing or non-interactable toggle DOM still fails."
+  },
+  "evidence": {
+    "source_pr": 3766,
+    "source_candidate_head": "04b82996ad16c68e45173b48d4b9ba2de270a03d",
+    "required_run": 37427956203,
+    "first_failed_job": 112155463173,
+    "rerun_failed_job": 112158418114,
+    "repeated_failure": "page.goto Timeout 90000ms exceeded",
+    "preceding_evidence": [
+      "753 public-page visibility/CLS checks green",
+      "header menu contrast green",
+      "V18 megamenu green",
+      "UI visual regression 21 states green",
+      "homepage context slider green"
+    ],
+    "implementation": "tools/site-shell/homepage-toggle-browser-check.mjs",
+    "regression_test": "tests/brain-homepage-toggle-browser-stability.test.mjs"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
