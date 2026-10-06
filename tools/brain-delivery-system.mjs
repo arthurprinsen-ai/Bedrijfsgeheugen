@@ -27,7 +27,17 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tests/brain-autonomous-engineering-fabric-v3.test.mjs': 'automation',
   'tests/brain-ci-calibration-engine-v1.test.mjs': 'backend',
   'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend',
-  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation'
+  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation',
+  'schemas/delivery-evidence.schema.json': 'backend',
+  'tools/build/': 'backend',
+  'tools/netlify/': 'backend',
+  'tools/notion/': 'backend',
+  'tools/supabase/': 'backend',
+  'tests/build/': 'backend',
+  'tests/netlify/': 'backend',
+  'tests/notion/': 'backend',
+  'tests/supabase/': 'backend',
+  'tests/release-artifact-identity.test.mjs': 'backend'
 });
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
