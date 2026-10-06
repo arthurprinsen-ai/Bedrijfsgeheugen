@@ -137,3 +137,16 @@ test('content operations shares the canonical scheduler authority with social pu
   assert.match(operations,/await schedulerToken\(\)/);
   assert.match(operations,/if \(!\(await authorized\(req\)\)\)/);
 });
+
+
+test('manual recovery degrades preparation but always runs bounded publishers and persists visible evidence',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
+  assert.match(workflow,/curl_rc=0/);
+  assert.match(workflow,/CONTENT_LOOP_TRANSPORT_UNAVAILABLE/);
+  assert.match(workflow,/CANONICAL_SOCIAL_CONTENT_LOOP_PREPARATION_TRANSPORT_/);
+  assert.match(workflow,/- name: Invoke bounded canonical publishers\n\s+if: always\(\)/);
+  assert.match(workflow,/mkdir -p recovery-artifacts/);
+  assert.match(workflow,/path: recovery-artifacts/);
+  assert.doesNotMatch(workflow,/path: \.artifacts/);
+  assert.match(workflow,/SOCIAL_PUBLICATION_UNRESOLVED/);
+});
