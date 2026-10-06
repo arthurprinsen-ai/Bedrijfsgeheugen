@@ -128,6 +128,8 @@ test('Supabase Edge production workflow is current-main-only, single-writer and 
   assert.match(workflow,/supabase\/setup-cli@v1/);
   assert.match(workflow,/version:\s*2\.119\.0/);
   assert.match(workflow,/supabase functions download/);
+  assert.match(workflow,/supabase functions download "\$fn" --project-ref "\$PROJECT_REF" --use-api/);
+  assert.doesNotMatch(workflow,/supabase functions download "\$fn" --project-ref "\$PROJECT_REF"\s*$/m);
   assert.match(workflow,/SUPABASE_EDGE_PROVIDER_FILESET_DRIFT/);
   assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT/);
   assert.doesNotMatch(workflow,/supabase functions deploy/);
