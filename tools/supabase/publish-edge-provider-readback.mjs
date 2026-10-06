@@ -1,4 +1,4 @@
-import { readFileSync, mkdirSync, writeFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 
 const required=(name)=>{
   const value=String(process.env[name]||'').trim();
