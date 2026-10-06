@@ -91,3 +91,11 @@ test('social recovery remains bounded by the publication window and canonical si
   const buffer=delivery.indexOf('posts = await getProviderPosts',readback);
   assert.ok(loop>=0 && readback>loop && buffer>readback,'recovery must run full content loop before fresh state and provider readback');
 });
+
+
+test('social recovery functions use the EU function region',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  const deployHook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
+  assert.match(delivery,/region:\s*'fra'/);
+  assert.match(deployHook,/region:\s*'fra'/);
+});
