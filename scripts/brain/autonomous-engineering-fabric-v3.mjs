@@ -120,6 +120,15 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const failureRate = failed / jobs;
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
+  const directPrWorkflowCount = Number(metrics.direct_pull_request_workflow_count ?? 0);
+  const ciTuning = { ...(current.ci ?? {}) };
+  const currentDirectPrBudget = Number(ciTuning.direct_pr_workflow_budget ?? 100);
+  ciTuning.direct_pr_workflow_target = 2;
+  ciTuning.direct_pr_workflow_budget = directPrWorkflowCount > 0
+    ? Math.max(2, Math.min(currentDirectPrBudget, directPrWorkflowCount))
+    : currentDirectPrBudget;
+  if (ciTuning.direct_pr_workflow_budget < currentDirectPrBudget) decisions.push('ratchet-direct-pr-workflow-budget-down');
+  next.ci = ciTuning;
 
   const calibrationRecommendations = Array.isArray(calibration?.recommendations) ? calibration.recommendations : [];
   const highCalibrationWarnings = calibrationRecommendations.filter(item => item?.priority === 'high');
@@ -151,6 +160,8 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     queue_wait_seconds_p95:queueP95,
     execution_seconds_p95:executionP95,
     workflow_fanout_per_sha_p95:fanoutP95,
+    direct_pull_request_workflow_count:directPrWorkflowCount,
+    direct_pr_workflow_budget:ciTuning.direct_pr_workflow_budget,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
     calibration_mode:String(calibration?.mode || 'NONE'),
@@ -174,6 +185,8 @@ export async function validateAutonomousEngineeringFabricV3() {
   if(policy.daily_optimizer?.enabled!==true) errors.push('daily optimizer required');
   if(policy.daily_optimizer?.auto_merge_only_after_protected_gates!==true) errors.push('protected-gate auto merge required');
   for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  if(Number(tuning.ci?.direct_pr_workflow_target ?? 0)!==2) errors.push('direct PR workflow target must be 2');
+  if(Number(tuning.ci?.direct_pr_workflow_budget ?? 0)<2) errors.push('direct PR workflow budget cannot be below 2');
   return { ok:errors.length===0, errors, fingerprint:policy.fingerprint };
 }
 

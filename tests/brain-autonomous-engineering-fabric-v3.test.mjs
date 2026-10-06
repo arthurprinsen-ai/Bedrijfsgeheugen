@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   classifyEngineeringRisk,
   routeEngineeringAgent,
@@ -111,4 +112,58 @@ test('low-priority calibration does not block otherwise-safe upward tuning',()=>
   });
   assert.equal(result.tuning.max_parallel_packages,5);
   assert.ok(result.tuning.speculative_execution_threshold<0.75);
+});
+
+
+test('direct PR workflow budget ratchets down and never auto-expands',()=>{
+  const current={
+    max_parallel_packages:4,
+    candidate_batch_window_seconds:20,
+    fast_path_target_seconds:45,
+    speculative_execution_threshold:0.75,
+    ci:{direct_pr_workflow_budget:100,direct_pr_workflow_target:2},
+    safety:{}
+  };
+  const reduced=optimizeDailyTuning({metrics:{
+    queue_wait_seconds_p95:10,
+    execution_seconds_p95:80,
+    failed_jobs:0,
+    skipped_jobs:0,
+    sampled_jobs:50,
+    workflow_fanout_per_sha_p95:4,
+    direct_pull_request_workflow_count:17
+  },current});
+  assert.equal(reduced.tuning.ci.direct_pr_workflow_budget,17);
+  assert.ok(reduced.decisions.includes('ratchet-direct-pr-workflow-budget-down'));
+
+  const regression=optimizeDailyTuning({metrics:{
+    queue_wait_seconds_p95:10,
+    execution_seconds_p95:80,
+    failed_jobs:0,
+    skipped_jobs:0,
+    sampled_jobs:50,
+    workflow_fanout_per_sha_p95:4,
+    direct_pull_request_workflow_count:19
+  },current:{...current,ci:{direct_pr_workflow_budget:17,direct_pr_workflow_target:2}}});
+  assert.equal(regression.tuning.ci.direct_pr_workflow_budget,17);
+});
+
+test('background learning and optimizer workflows stay out of the PR fast lane',()=>{
+  const optimizer=readFileSync('.github/workflows/powerhouse-autonomous-engineering-optimizer.yml','utf8');
+  const evolution=readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+  const required=readFileSync('.github/workflows/required-test.yml','utf8');
+  const intelligence=readFileSync('scripts/brain/powerhouse-ci-intelligence.mjs','utf8');
+
+  assert.doesNotMatch(optimizer,/^\s{2}pull_request:/m);
+  assert.doesNotMatch(evolution,/^\s{2}pull_request:/m);
+  for(const contract of [
+    'tests/brain-autonomous-engineering-fabric-v3.test.mjs',
+    'tests/powerhouse-daily-self-evolution.test.mjs',
+    'tests/brain-self-improvement-layer-v1.test.mjs',
+    'tests/ai-model-intelligence-freshness-v1.test.mjs'
+  ]) assert.ok(required.includes(contract),contract);
+
+  assert.match(intelligence,/direct_pull_request_workflow_count/);
+  assert.match(intelligence,/required_queue_wait_seconds_p95/);
+  assert.match(intelligence,/required_total_seconds_p95/);
 });
