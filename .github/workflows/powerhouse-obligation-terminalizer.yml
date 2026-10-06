@@ -144,14 +144,24 @@ jobs:
           for (const path of contract?.productionTruth?.verifierOnlyPaths || []) console.log(String(path));
           NODE
           )"
+          verifier_only_prefixes="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const contract=JSON.parse(readFileSync('brain/contracts/production-readback-v1.json','utf8'));
+          for (const prefix of contract?.productionTruth?.verifierOnlyPrefixes || []) console.log(String(prefix));
+          NODE
+          )"
 
           is_governance_path() {
-            case "$1" in
-              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|tools/ci/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json|config/brain-delivery-system.json|config/powerhouse-quality-surface-contracts.json)
+            if grep -Fxq -- "$1" <<< "$verifier_only_paths"; then
+              return 0
+            fi
+            while IFS= read -r prefix; do
+              [ -z "$prefix" ] && continue
+              if [[ "$1" == "$prefix"* ]]; then
                 return 0
-                ;;
-            esac
-            grep -Fxq -- "$1" <<< "$verifier_only_paths"
+              fi
+            done <<< "$verifier_only_prefixes"
+            return 1
           }
 
           observed="$(git rev-parse origin/main)"
