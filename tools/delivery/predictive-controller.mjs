@@ -76,11 +76,21 @@ export function classifyRecovery({mergeable=true,behindBy=0,workflowRuns=[],head
   const openPrCritical=[latest.required].filter(Boolean);
   const active=openPrCritical.filter(r=>ACTIVE.has(r.status));
   const failed=openPrCritical.filter(r=>r.status==='completed'&&FAILED.has(r.conclusion));
+  const cancelledRequired=openPrCritical.filter(r=>r.status==='completed'&&r.conclusion==='cancelled');
   const coverage=criticalWorkflowCoverage(workflowRuns);
+  const behind=Number(behindBy);
 
   if(mergeable===false)return {state:'MERGE_CONFLICT_RECOVERY',action:'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN',terminal:false,coverage};
   if(workflowRuns.length===0&&headAgeSeconds>=slo.firstSignalSeconds)return {state:'ZERO_RUN_RECOVERY',action:'DISPATCH_REQUIRED',terminal:false,coverage};
   if(!coverage.complete&&headAgeSeconds>=slo.firstSignalSeconds)return {state:'PARTIAL_START_RECOVERY',action:'DISPATCH_MISSING_CRITICAL_WORKFLOWS',terminal:false,coverage};
+  if(Number.isFinite(behind)&&behind>0&&coverage.complete&&active.length===0&&cancelledRequired.length)return {
+    state:'MAIN_DRIFT_RECOVERY',
+    action:'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN',
+    terminal:false,
+    coverage,
+    behindBy:behind,
+    recoveryCause:'CANCELLED_REQUIRED_ON_STALE_MAIN'
+  };
   if(failed.length)return {state:'FAILED_GATE_RECOVERY',action:'READ_FIRST_CURRENT_FAILURE_AND_REPAIR_SAME_LINEAGE',terminal:false,coverage};
 
   const staleQueued=active.filter(r=>QUEUED.has(r.status)&&ageSeconds(r,now)>=slo.queuedStaleSeconds);
@@ -101,7 +111,6 @@ export function classifyRecovery({mergeable=true,behindBy=0,workflowRuns=[],head
     runIds:longRunning.map(r=>r.id).filter(Boolean)
   };
 
-  const behind=Number(behindBy);
   if(Number.isFinite(behind)&&behind>0&&coverage.complete&&active.length===0)return {
     state:'MAIN_DRIFT_RECOVERY',
     action:'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN',
