@@ -1,22 +1,6 @@
 name: Revenue Learning
 
 on:
-  pull_request:
-    paths:
-      - 'netlify/functions/_revenue-learning-*.mjs'
-      - 'netlify/functions/revenue-learning-*.mjs'
-      - 'supabase/functions/revenue-learning-store/**'
-      - 'supabase/migrations/*revenue*.sql'
-      - 'supabase/migrations/*growth*.sql'
-      - 'tests/revenue-learning-*.test.mjs'
-      - 'tests/powerhouse-revenue-calibration-persistence-contract.test.mjs'
-      - 'tests/growth-intelligence-*.test.mjs'
-      - 'tests/supabase-migration-history-integrity.test.mjs'
-      - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
-      - 'supabase/migration-history.lock.json'
-      - 'platform/growth-intelligence-engine.mjs'
-      - 'netlify/functions/growth-intelligence-daily.mjs'
-      - '.github/workflows/revenue-learning.yml'
   push:
     branches: [main]
     paths:

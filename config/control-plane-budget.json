@@ -57,18 +57,12 @@
         "repo-writer-operational-verification.yml",
         "repo-writer-parity-rollback.yml",
         "required-test.yml",
-        "revenue-content-intelligence.yml",
-        "revenue-learning.yml",
         "security-operations-proof.yml",
-        "seo-growth-intelligence.yml",
-        "seo-order-engine.yml",
         "supabase-pr-preview.yml",
-        "unified-content-operations.yml",
-        "universal-closed-loop-learning.yml",
         "verify-approved-central-blog.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 38
+      "directPrTriggerCount": 32
     },
     "netlify": {
       "projects": 16

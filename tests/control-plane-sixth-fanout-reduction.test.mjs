@@ -14,6 +14,12 @@ const retired = [
   '.github/workflows/business-os-intelligence.yml',
   '.github/workflows/hero-media-production-verify.yml',
   '.github/workflows/engineering-os-learning.yml',
+  '.github/workflows/revenue-content-intelligence.yml',
+  '.github/workflows/revenue-learning.yml',
+  '.github/workflows/seo-growth-intelligence.yml',
+  '.github/workflows/seo-order-engine.yml',
+  '.github/workflows/unified-content-operations.yml',
+  '.github/workflows/universal-closed-loop-learning.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -43,5 +49,11 @@ test('Required merge_group preserves sixth-batch assurance', () => {
     'Verify hero production media contract',
     'Verify engineering learning self-test',
     'tests/brain-powerhouse-engineering-closed-loop.test.mjs',
+    'tests/revenue-content-intelligence.test.mjs',
+    'tests/revenue-learning-*.test.mjs',
+    'tests/seo-locale-revenue-*.test.mjs',
+    'tests/content-growth-unified-content-operations.test.mjs',
+    'scripts/brain/validate-universal-closed-loop-learning.mjs',
+    'tests/brain-universal-closed-loop-learning.test.mjs',
   ]) assert.ok(required.includes(marker), marker);
 });
