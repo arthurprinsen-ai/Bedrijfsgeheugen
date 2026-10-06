@@ -24,7 +24,7 @@
   "evidence": {
     "runtime": [
       ".github/workflows/social-publication-recovery.yml",
-      "docs/operations/social-publication-recovery-request.md"
+      "docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md"
     ],
     "regression": [
       "tests/brain-central-social-publication-authority-v1.test.mjs"
