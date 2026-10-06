@@ -42,11 +42,11 @@ async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:
   }
   return body;
 }
-async function composioExecuteArgs(apiKey:string,connectedAccountId:string,userId:string,toolSlug:string,args:Record<string,unknown>){
+async function composioExecuteArgs(apiKey:string,connectedAccountId:string,userId:string|null|undefined,toolSlug:string,args:Record<string,unknown>){
   const response=await fetch(COMPOSIO_BASE+'/tools/execute/'+toolSlug,{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':apiKey},
-    body:JSON.stringify({connected_account_id:connectedAccountId,user_id:userId,version:'latest',arguments:args})
+    body:JSON.stringify({connected_account_id:connectedAccountId,...(clean(userId)?{user_id:clean(userId)}:{}),version:'latest',arguments:args})
   });
   const body:any=await response.json().catch(()=>({}));
   if(!response.ok||body?.successful!==true){
@@ -85,7 +85,7 @@ async function composioLinkedInContext(db:any){
   const seen=new Set<string>();
   const addCandidate=(accountId:string,userId:string,source:string,alias='',isDefault=false,createdAt='')=>{
     const id=clean(accountId);const uid=clean(userId);
-    if(!id||!uid||seen.has(id))return;
+    if(!id||seen.has(id))return;
     seen.add(id);candidates.push({accountId:id,userId:uid,source,alias:clean(alias),isDefault,createdAt:clean(createdAt)});
   };
 
@@ -153,7 +153,7 @@ async function composioLinkedInCompanyContext(db:any){
     if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
     const accountId=clean(item?.id||item?.connected_account_id);
     const userId=clean(item?.user_id);
-    if(!accountId||!userId)continue;
+    if(!accountId)continue;
     try{
       const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
       const personId=deepPickString(me?.data||me,['id']);
