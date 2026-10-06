@@ -133,6 +133,8 @@ jobs:
         env:
           MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
           PR_BODY: ${{ steps.target.outputs.pr_body }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags
@@ -239,9 +241,21 @@ jobs:
           printf '[]\n' > .artifacts/supabase-provider-readbacks.json
           if [ "${#changed_functions[@]}" -gt 0 ]; then
             supabase_required=true
-            provider_lines="$(printf '%s\n' "$PR_BODY" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
-            if [ -z "$provider_lines" ]; then
-              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING"
+            provider_lines=""
+            complete=false
+            for attempt in $(seq 1 24); do
+              live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+              provider_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
+              complete=true
+              for fn in "${changed_functions[@]}"; do
+                line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+                if [ -z "$line" ]; then complete=false; break; fi
+              done
+              [ "$complete" = true ] && break
+              sleep 5
+            done
+            if [ "$complete" != true ]; then
+              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING:functions=${changed_functions[*]}"
               exit 78
             fi
             readbacks='[]'
