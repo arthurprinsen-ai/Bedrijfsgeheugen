@@ -53,3 +53,9 @@ test('watchdog and janitor are bounded and lineage-safe',()=>{
   assert.match(janitor,/PR_JANITOR_SKIP_CROSS_OBLIGATION/);
   assert.match(janitor,/30\*24\*60\*60\*1000/);
 });
+
+
+test('paginacontrole regression family is classified into the automation lane',()=>{
+  const policy=read('config/brain-delivery-system.json');
+  assert.match(policy,/"tests\/paginacontrole-"/);
+});
