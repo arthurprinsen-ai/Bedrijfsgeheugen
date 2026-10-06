@@ -197,20 +197,40 @@ revoke execute on function public.powerhouse_terminal_autonomous_reconcile_v1(ti
 grant execute on function public.powerhouse_terminal_autonomous_reconcile_v1(timestamptz) to service_role;
 
 -- Explicitly retire the expired 31-August P0 proof. Preserve its stale truth as historical evidence.
-select public.brain_register_desired_state(
-  'P0_PROOF',
-  'production-truth-proof-20260831-v1',
-  'production',
-  jsonb_build_object(
-    'mode','ACTIVE',
-    'healthy',true,
-    'lifecycle','RETIRED',
-    'retired_reason','HISTORICAL_TIMEBOXED_PROOF_EXPIRED',
-    'retired_at','2026-09-20T08:10:00Z'
-  ),
-  'production-truth-proof-20260831-v1-retired',
-  1
-);
+-- Replay must bind CAS to the row version produced by the preceding historical migrations,
+-- never to a hard-coded version that may already have advanced in the same clean replay.
+do $
+declare
+  v_expected_version bigint;
+begin
+  select version
+    into v_expected_version
+    from public.brain_desired_states
+   where subject_type='P0_PROOF'
+     and subject_id='production-truth-proof-20260831-v1'
+     and environment='production'
+   for update;
+
+  if not found then
+    v_expected_version := 0;
+  end if;
+
+  perform public.brain_register_desired_state(
+    'P0_PROOF',
+    'production-truth-proof-20260831-v1',
+    'production',
+    jsonb_build_object(
+      'mode','ACTIVE',
+      'healthy',true,
+      'lifecycle','RETIRED',
+      'retired_reason','HISTORICAL_TIMEBOXED_PROOF_EXPIRED',
+      'retired_at','2026-09-20T08:10:00Z'
+    ),
+    'production-truth-proof-20260831-v1-retired',
+    v_expected_version
+  );
+end
+$;
 
 comment on view public.powerhouse_terminal_control_plane_health_v1 is
 'Fail-closed current control-plane health. Explicitly retired historical proof is counted separately and cannot make current runtime green or red.';
