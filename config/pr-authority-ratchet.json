@@ -1,0 +1,43 @@
+{
+  "version": "pr-authority-ratchet-v1",
+  "target_direct_pr_workflows": 2,
+  "initial_ceiling": 55,
+  "budget": 55,
+  "max_retirements_per_cycle": 1,
+  "canonical_direct_pr_workflows": [
+    "required-test.yml",
+    "powerhouse-codeql.yml"
+  ],
+  "retired": [
+    {
+      "workflow": "codeql.yml",
+      "delegated_to": "powerhouse-codeql.yml",
+      "proof": "Python CodeQL is executed by the canonical Powerhouse CodeQL PR authority."
+    },
+    {
+      "workflow": "portal-parity.yml",
+      "delegated_to": "lane-portal.yml",
+      "proof": "Required portal lane runs portal parity source contract, portal_parity.py and modular legacy capability parity."
+    },
+    {
+      "workflow": "error-learning-contract.yml",
+      "delegated_to": "lane-backend.yml",
+      "proof": "Required backend lane runs tests/brain-error-learning-contract.test.mjs."
+    },
+    {
+      "workflow": "universal-event-retention-contract.yml",
+      "delegated_to": "lane-backend.yml",
+      "proof": "Required backend lane runs the universal event, failure, retention, contract and adapter tests."
+    }
+  ],
+  "candidates": [
+    {
+      "workflow": "homepage-hero-video-verify.yml",
+      "delegated_to": ".github/workflows/lane-website.yml",
+      "proof_contains": [
+        "tests/homepage-hero-video.test.mjs"
+      ],
+      "reason": "The exact homepage hero regression test already runs inside Required website baseline assurance."
+    }
+  ]
+}

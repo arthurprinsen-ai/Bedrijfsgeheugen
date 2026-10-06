@@ -78,6 +78,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Enforce monotonic PR authority topology
+        run: |
+          node --test tests/pr-authority-ratchet.test.mjs
+          node scripts/brain/pr-authority-ratchet.mjs --check
       - uses: actions/cache@v4
         with:
           path: ~/.npm
