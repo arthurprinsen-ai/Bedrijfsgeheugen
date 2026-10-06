@@ -309,3 +309,15 @@ test('material writeback closure guard stays backend-only and never activates we
     shared:true, backend:true, portal:false, website:false, automation:false
   });
 });
+
+
+test('latency control-plane workflows stay backend-only and avoid website browser proof', () => {
+  for (const path of [
+    '.github/workflows/powerhouse-delivery-hygiene.yml',
+    '.github/workflows/repo-writer-operational-verification.yml'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:true, portal:false, website:false, automation:false
+    }, path);
+  }
+});
