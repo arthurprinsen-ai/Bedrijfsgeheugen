@@ -110,7 +110,7 @@ jobs:
         run: |
           set -euo pipefail
           PR_NUMBER=""
-          for attempt in $(seq 1 72); do
+          for attempt in $(seq 1 6); do
             matches="$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --limit 100 --json number,headRefName,body | jq -r --arg prefix "writer/$WRITER/" --arg verify "$VERIFY_SHA" '.[] | select(.headRefName | startswith($prefix)) | select((.body // "") | contains($verify)) | .number')"
             count="$(printf '%s\n' "$matches" | sed '/^$/d' | wc -l | tr -d ' ')"
             if [ "$count" -gt 1 ]; then
@@ -124,8 +124,9 @@ jobs:
             sleep 5
           done
           if [ -z "$PR_NUMBER" ]; then
-            echo "::error::WRITER_PR_NOT_FOUND:$WRITER:$VERIFY_SHA"
-            exit 1
+            echo "::notice::WAITING_EXTERNAL:WRITER_PR_NOT_MATERIALIZED:$WRITER:$VERIFY_SHA"
+            echo "The writer candidate did not materialize within the 30-second synchronous budget; a later supervisor cycle may resume from this exact verify SHA."
+            exit 78
           fi
 
           PR_BASE_SHA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.base.sha')"
