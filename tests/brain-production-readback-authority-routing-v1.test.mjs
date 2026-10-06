@@ -32,3 +32,13 @@ test('terminal evidence distinguishes performed runtime readback from not-applic
   assert.match(workflow, /production_readback_not_applicable:\['non_runtime','supabase_history_parity_recovery'\]/);
   assert.match(workflow, /TERMINAL_PRODUCTION_READBACK_MODE_UNPROVEN/);
 });
+
+
+test('terminalizer workflow body remains singular and structurally intact', async () => {
+  const workflow = await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml', 'utf8');
+  assert.equal((workflow.match(/- name: Verify production promotion and runtime readback/g) || []).length, 1);
+  assert.equal((workflow.match(/- name: Verify learning and skill projection/g) || []).length, 1);
+  assert.equal((workflow.match(/- name: Materialize terminal outcome evidence/g) || []).length, 1);
+  assert.match(workflow, /grep -q '\^Candidate-Type: recovery\$'/);
+  assert.match(workflow, /grep -Eq '\^Obligation-ID: supabase-migration-history-\(parity\|canonical\)-'/);
+});
