@@ -14,7 +14,7 @@
   "prevention_rule": [
     "Normal social delivery must call powerhouse-social-publisher in publish_only mode; cockpit_autopilot remains explicit and isolated.",
     "All publication evidence reads must normalize legacy JSONB strings/arrays to bounded objects before merge or spread.",
-    "Applied production SQL is preserved as immutable production history, not replayed as a new forward migration.",
+    "Applied production SQL must be mirrored under its exact production migration version in the canonical migration lane; never mutate the production ledger merely to fit Git.",
     "LinkedIn company publication remains fail-closed until a canonical organization-scoped connection is objectively verified."
   ],
   "evidence": {
@@ -33,11 +33,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "date": "2026-10-06",
-        "result": "reproduced_and_bounded",
-        "detail": "Earlier publisher executions reached worker resource limits; after path separation and evidence normalization the remaining LinkedIn company stop is the external OAuth boundary, with no provider side-effect."
-      }
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
     ]
   }
 }
