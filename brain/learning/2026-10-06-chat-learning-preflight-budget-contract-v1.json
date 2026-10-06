@@ -13,13 +13,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "scripts/brain/test-chat-learning-preflight-compiler.mjs"
+      "tests/brain-chat-learning-preflight-budget-contract-v1.test.mjs"
     ]
   },
   "evidence": {
     "failing_step": "Chat learning preflight PR / Preflight compiler contract",
-    "regression": "scripts/brain/test-chat-learning-preflight-compiler.mjs",
-    "dependency_merge": "PR #3927 merge 9202c49a2acbe767d35cbb50399d0c621ecf90b0"
+    "regression": "tests/brain-chat-learning-preflight-budget-contract-v1.test.mjs",
+    "dependency_merge": "PR #3927 merge 9202c49a2acbe767d35cbb50399d0c621ecf90b0",
+    "compiler_contract": "scripts/brain/test-chat-learning-preflight-compiler.mjs"
   },
   "status": "ACTIVE_PREVENTION",
   "compiler": {
