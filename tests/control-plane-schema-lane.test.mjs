@@ -18,6 +18,7 @@ test('repository schemas are classified as backend control-plane work', () => {
 
 test('control-plane lifecycle tooling is classified as backend work', () => {
   const changedPaths = [
+  "scripts/ci/blog_technical_seo_gate.py",
   "tests/build/artifact-id.test.mjs",
   "tests/netlify/ephemeral-janitor.test.mjs",
   "tests/notion/root-lifecycle.test.mjs",

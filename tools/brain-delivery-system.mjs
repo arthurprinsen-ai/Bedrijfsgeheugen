@@ -95,6 +95,7 @@ const REGULATORY_AUTOMATION_PATHS = Object.freeze([
   'tests/regulatory-'
 ]);
 const CONTROL_PLANE_HELPER_BACKEND_PATHS = Object.freeze([
+  'scripts/ci/',
   'tools/build/',
   'tools/netlify/',
   'tools/notion/',
