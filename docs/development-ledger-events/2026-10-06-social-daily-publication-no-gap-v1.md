@@ -25,3 +25,6 @@ Safety:
 
 Terminal condition:
 merge is not completion. The obligation closes only after production deploy and provider-side readback prove the expected daily publication outcome without duplicates.
+
+Main binding:
+- candidate was conflict-checked against and merged with main 908e4f03084ac0f446299aa70fcf43cc6e48ef1e; no changed-path overlap existed at binding time.
