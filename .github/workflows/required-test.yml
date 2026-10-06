@@ -344,35 +344,57 @@ jobs:
           DEPLOY_ID: required-netlify-build-parity
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
-        run: |
-          set -euo pipefail
-          node tools/site-shell/pricing-build-integrity.mjs capture
-          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
-          node tools/bouw-powerhouse-auth.mjs
-          node tools/bouw-kennisindex.mjs
-          node tools/bouw-v18-production.mjs
-          node tools/site-shell/apply-product-led-home.mjs
-          node tools/apply-tabbladen.mjs
-          node tools/bouw-v18-views.mjs
-          node tools/bouw-v18-chrome-alles.mjs
-          node tools/prijzen-uit-de-homepage.mjs
-          node tools/normaliseer-site-ui.mjs
-          node tools/site-shell/pricing-build-integrity.mjs restore
-          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
-          node tools/seo-order-engine/apply.mjs
-          node tools/seo-order-engine/validate.mjs
-          node tools/site-shell/apply-i18n.mjs
-          node tools/site-shell/build-localized-routes.mjs
-          node tools/site-shell/apply-commercial-pricing-v1.mjs
-          node tools/seo-order-engine/apply-revenue-links.mjs
-          node tools/site-shell/finalize-website-coherence-v1.mjs
-          node tools/site-shell/apply-cms-runtime.mjs
-          node tools/genereer-sitemap.mjs
-          node tools/seo-order-engine/validate-locales.mjs
-          node tools/bouw-release-evidence.mjs
+          STATIC_I18N_ROUTE_WORKERS: '2'
+        run: node tools/ci/run-netlify-build.mjs
+      - name: Upload immutable Netlify build profile
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-build-profile-${{ needs.preflight.outputs.candidate_sha }}
+          path: .artifacts/netlify-build-profile.json
+          if-no-files-found: error
+          retention-days: 14
       - name: Verify built artifact contracts
         run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
+      - name: Package exact reusable static build
+        env:
+          CANDIDATE_SHA: ${{ needs.preflight.outputs.candidate_sha }}
+          CHANGE_HEAD_SHA: ${{ needs.preflight.outputs.change_head_sha }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import {writeFile} from 'node:fs/promises';
+          import {execFileSync} from 'node:child_process';
+          const evidence={
+            version:'NETLIFY_BUILD_REUSE_V1',
+            candidate_sha:process.env.CANDIDATE_SHA,
+            change_head_sha:process.env.CHANGE_HEAD_SHA,
+            tree_sha:execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),
+            profile:'.artifacts/netlify-build-profile.json'
+          };
+          await writeFile('.artifacts/netlify-build-reuse.json',JSON.stringify(evidence,null,2)+'\n');
+          NODE
+          tar \
+            --exclude='./.git' \
+            --exclude='./node_modules' \
+            --exclude='./.github' \
+            --exclude='./tools' \
+            --exclude='./tests' \
+            --exclude='./docs' \
+            --exclude='./brain' \
+            --exclude='./config' \
+            --exclude='./platform' \
+            --exclude='./.artifacts' \
+            -czf .artifacts/netlify-static-build.tgz .
+      - name: Upload exact reusable static build
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-build-reuse-${{ needs.preflight.outputs.candidate_sha }}
+          path: |
+            .artifacts/netlify-static-build.tgz
+            .artifacts/netlify-build-reuse.json
+          if-no-files-found: error
+          retention-days: 2
 
 
   supabase_preview:
