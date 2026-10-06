@@ -148,7 +148,8 @@ jobs:
             const eventLease = parseWriterLease(process.env.EVENT_PR_BODY || '');
             const synchronize = process.env.EVENT_NAME === 'pull_request'
               && process.env.EVENT_ACTION === 'synchronize';
-            if (synchronize && eventLease.state === 'TERMINAL_DELIVERY') {
+            if (synchronize && eventLease.state === 'TERMINAL_DELIVERY'
+              && String(eventLease.headSha || '').toLowerCase() !== String(headSha || '').toLowerCase()) {
               throw new Error(`TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION:${eventLease.headSha || 'missing'}:${headSha}`);
             }
             if (synchronize && eventLease.state === 'MAIN_SYNC') {
