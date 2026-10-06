@@ -134,7 +134,7 @@ jobs:
             prBody: livePrBody,
             manifest: oneLoopPolicy.deliveryCandidate,
           });
-          const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
+          let comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
             ? metadataAuthority.delivery.baseSha
             : context.baseSha;
           if(metadataAuthority.source === 'versioned-manifest' && metadataAuthority.delivery.baseSha !== context.baseSha) {
@@ -145,6 +145,11 @@ jobs:
           } catch {
             console.log(`TARGETED_BASE_FETCH:${comparisonBaseSha}`);
             execFileSync('git',['fetch','--no-tags','--depth=1','origin',comparisonBaseSha],{stdio:'inherit'});
+          }
+          const candidateMergeBase=execFileSync('git',['merge-base',comparisonBaseSha,context.changeHeadSha],{encoding:'utf8'}).trim();
+          if(candidateMergeBase && candidateMergeBase !== comparisonBaseSha) {
+            console.log(`CURRENT_BASE_AHEAD_OF_CANDIDATE: base=${comparisonBaseSha} merge_base=${candidateMergeBase}`);
+            comparisonBaseSha=candidateMergeBase;
           }
           const changedPaths=execFileSync('git',['diff','--name-only',comparisonBaseSha,context.changeHeadSha],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
