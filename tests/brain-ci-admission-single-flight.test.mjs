@@ -58,11 +58,13 @@ test('queue pressure forecast blocks fan-out before mutation', () => {
 });
 
 
-test('generic CodeQL main pushes are path-scoped to Python', async () => {
-  const yml = await readFile('.github/workflows/codeql.yml','utf8');
+test('consolidated CodeQL owns PR security and path-scoped main pushes', async () => {
+  const yml = await readFile('.github/workflows/powerhouse-codeql.yml','utf8');
+  assert.match(yml,/pull_request:\n\s+branches:\s*\[main\]/);
   const push = yml.slice(yml.indexOf('  push:'), yml.indexOf('  schedule:'));
   assert.match(push,/branches:\s*\[main\]/);
   assert.match(push,/paths:/);
   assert.match(push,/\*\*\/\*\.py/);
-  assert.match(push,/\.github\/workflows\/codeql\.yml/);
+  assert.match(push,/\*\*\/\*\.mjs/);
+  assert.match(push,/\.github\/workflows\/powerhouse-codeql\.yml/);
 });
