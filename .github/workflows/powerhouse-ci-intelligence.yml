@@ -6,6 +6,9 @@ on:
     paths:
       - '.github/workflows/powerhouse-ci-intelligence.yml'
       - 'scripts/brain/powerhouse-ci-intelligence.mjs'
+      - 'scripts/brain/powerhouse-ci-control-plane-v2.mjs'
+      - 'config/powerhouse-ci-control-plane-v2.json'
+      - 'tests/brain-ci-control-plane-v2.test.mjs'
   schedule:
     - cron: '17 5 * * *'
   workflow_dispatch:
@@ -27,6 +30,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify canonical CI control-plane architecture
+        run: node --test tests/brain-ci-control-plane-v2.test.mjs
       - name: Measure queue, execution, fan-out and wasted work
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
