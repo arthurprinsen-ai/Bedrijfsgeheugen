@@ -13,6 +13,20 @@ const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin
 
 const clean = (value: unknown) => String(value ?? '').trim();
 function jsonObject(value:any){if(!value)return{};if(typeof value==='string'){try{const parsed=JSON.parse(value);return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};}catch{return {};}}return typeof value==='object'&&!Array.isArray(value)?value:{};}
+function findExpectedLinkedInPersonId(value:any,expected:string):string{
+  const wanted=clean(expected);
+  if(!wanted)return'';
+  if(typeof value==='string'){
+    const v=clean(value);
+    return v===wanted||v===`urn:li:person:${wanted}`?wanted:'';
+  }
+  if(!value||typeof value!=='object')return'';
+  for(const child of Object.values(value)){
+    const found=findExpectedLinkedInPersonId(child,wanted);
+    if(found)return found;
+  }
+  return'';
+}
 const esc = (value: unknown) => String(value ?? '').replaceAll('\\','\\\\').replaceAll('"','\\"').replaceAll('\n','\\n').replaceAll('\r','');
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
@@ -77,8 +91,8 @@ async function composioLinkedInContext(db:any){
 
   const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
   if(error)throw new Error('COMPOSIO_LINKEDIN_STATE_READ:'+error.message);
-  const state=data?.result||{};
-  const expectedPersonUrn=clean(state?.personal_author_urn)||'urn:li:person:N1twnCNCrD';
+  const state=jsonObject(data?.result);
+  const expectedPersonUrn=clean(state?.personal_author_urn);
   const expectedPersonId=expectedPersonUrn.replace(/^urn:li:person:/,'');
   const stateUserId=clean(state?.user_id);
 
@@ -128,8 +142,8 @@ async function composioLinkedInContext(db:any){
   for(const candidate of candidates){
     try{
       const me=await composioExecuteArgs(apiKey,candidate.accountId,candidate.userId,'LINKEDIN_GET_MY_INFO',{});
-      const personId=deepPickString(me?.data||me,['id']);
-      if(personId&&personId===expectedPersonId){
+      const personId=findExpectedLinkedInPersonId(me?.data||me,expectedPersonId);
+      if(personId){
         return {apiKey,accountId:candidate.accountId,userId:candidate.userId,personId,connection_source:candidate.source};
       }
       lastError='LINKEDIN_CANONICAL_PERSON_MISMATCH';
@@ -150,6 +164,9 @@ async function composioLinkedInCompanyContext(db:any){
   if(stateError)throw new Error('COMPOSIO_LINKEDIN_COMPANY_STATE_READ:'+stateError.message);
   const state=jsonObject(stateRow?.result);
   const accountId=clean(state?.company_oauth_connection_id||state?.connected_account_id);
+  const expectedPersonUrn=clean(state?.personal_author_urn);
+  const expectedPersonId=expectedPersonUrn.replace(/^urn:li:person:/,'');
+  if(!expectedPersonId)throw new Error('LINKEDIN_COMPANY_CANONICAL_PERSON_STATE_REQUIRED');
   const oauthVerifiedAt=clean(state?.company_oauth_verified_at);
   const freshVerified=state?.company_oauth_fresh_verified===true;
   const adminVerified=state?.linkedin_company_admin_oauth_proven===true;
@@ -168,8 +185,8 @@ async function composioLinkedInCompanyContext(db:any){
   if(!userId)throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
 
   const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-  const personId=deepPickString(me?.data||me,['id']);
-  if(!personId||personId!=='N1twnCNCrD')throw new Error('LINKEDIN_COMPANY_CANONICAL_PERSON_MISMATCH');
+  const personId=findExpectedLinkedInPersonId(me?.data||me,expectedPersonId);
+  if(!personId)throw new Error('LINKEDIN_COMPANY_CANONICAL_PERSON_MISMATCH');
 
   const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
   const raw=JSON.stringify(companies?.data||companies);
