@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const POLICY_PATH='config/pr-authority-ratchet.json';
 const TUNING_PATH='config/powerhouse-engineering-tuning.json';
 const WORKFLOW_DIR='.github/workflows';
-const ABSOLUTE_INITIAL_CEILING=56;
+const ABSOLUTE_INITIAL_CEILING=55;
 
 export function eventBlock(source,eventName='pull_request'){
   const lines=source.split(/\r?\n/);
