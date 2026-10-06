@@ -1,0 +1,92 @@
+name: Powerhouse Delivery Supervisor
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: powerhouse-delivery-supervisor
+  cancel-in-progress: false
+
+jobs:
+  supervise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Recover missing Required runs and retire explicit stale PRs
+        shell: bash
+        run: |
+          set -euo pipefail
+          now_epoch="$(date +%s)"
+          dispatch_budget=5
+          close_budget=20
+          dispatched=0
+          closed=0
+
+          gh api --paginate --slurp "repos/$REPO/pulls?state=open&per_page=100" |
+            jq -c 'flatten | .[] | select(.head.repo.full_name == "'"$REPO"'")' > /tmp/open-prs.jsonl
+
+          while IFS= read -r pr; do
+            [ -n "$pr" ] || continue
+            number="$(jq -r '.number' <<<"$pr")"
+            title="$(jq -r '.title // ""' <<<"$pr")"
+            body="$(jq -r '.body // ""' <<<"$pr")"
+
+            if [[ "$title" == RETIRED —* ]] || grep -qE '^Terminal-State:[[:space:]]*SUPERSEDED[[:space:]]*$' <<<"$body"; then
+              if [ "$closed" -lt "$close_budget" ]; then
+                gh pr close "$number" --repo "$REPO" --comment "Delivery Supervisor: explicit retired/superseded state is terminal; closing stale candidate." || true
+                closed=$((closed + 1))
+              fi
+              continue
+            fi
+
+            obligation="$(sed -nE 's/^Obligation-ID:[[:space:]]*(.+)$/\1/p' <<<"$body" | head -n1)"
+            supersedes="$(sed -nE 's/^Supersedes:[[:space:]]*#?([0-9]+)[[:space:]]*$/\1/p' <<<"$body" | head -n1)"
+            if [ -n "$obligation" ] && [ -n "$supersedes" ] && [ "$closed" -lt "$close_budget" ]; then
+              predecessor="$(jq -c --argjson n "$supersedes" 'select(.number == $n)' /tmp/open-prs.jsonl | head -n1 || true)"
+              if [ -n "$predecessor" ]; then
+                predecessor_body="$(jq -r '.body // ""' <<<"$predecessor")"
+                predecessor_obligation="$(sed -nE 's/^Obligation-ID:[[:space:]]*(.+)$/\1/p' <<<"$predecessor_body" | head -n1)"
+                if [ "$predecessor_obligation" = "$obligation" ]; then
+                  gh pr close "$supersedes" --repo "$REPO" --comment "Delivery Supervisor: superseded by #$number for the same Obligation-ID." || true
+                  closed=$((closed + 1))
+                fi
+              fi
+            fi
+          done < /tmp/open-prs.jsonl
+
+          while IFS= read -r pr; do
+            [ "$dispatched" -lt "$dispatch_budget" ] || break
+            [ -n "$pr" ] || continue
+            number="$(jq -r '.number' <<<"$pr")"
+            head_sha="$(jq -r '.head.sha' <<<"$pr")"
+            head_ref="$(jq -r '.head.ref' <<<"$pr")"
+            base_sha="$(jq -r '.base.sha' <<<"$pr")"
+            updated_at="$(jq -r '.updated_at' <<<"$pr")"
+            updated_epoch="$(date -d "$updated_at" +%s 2>/dev/null || echo "$now_epoch")"
+            age=$((now_epoch - updated_epoch))
+            [ "$age" -ge 90 ] || continue
+
+            runs="$(gh api --method GET "repos/$REPO/actions/workflows/required-test.yml/runs" -f branch="$head_ref" -f per_page=50)"
+            exact_count="$(jq --arg sha "$head_sha" '[.workflow_runs[] | select(.head_sha == $sha)] | length' <<<"$runs")"
+            [ "$exact_count" -eq 0 ] || continue
+
+            echo "::notice::ZERO_RUN_RECOVERY:PR=$number:HEAD=$head_sha"
+            gh workflow run required-test.yml --repo "$REPO" --ref main \
+              -f pr_number="$number" \
+              -f base_sha="$base_sha" \
+              -f head_sha="$head_sha" \
+              -f candidate_branch="$head_ref"
+            dispatched=$((dispatched + 1))
+          done < /tmp/open-prs.jsonl
+
+          echo "SUPERVISOR_COMPLETE dispatched=$dispatched closed=$closed"
