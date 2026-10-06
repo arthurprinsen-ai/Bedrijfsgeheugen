@@ -17,13 +17,12 @@ Structural repair:
 - otherwise bound preparation to 60 seconds;
 - invoke only powerhouse-social-publisher in bounded per-channel publish_only mode for unresolved content_ready claims;
 - keep powerhouse-social-publisher as the only provider side-effect authority;
-- classify LinkedIn company pin/admin-scope/re-auth boundaries as resumable before provider side effects;
+- keep LinkedIn auth/config runtime repair in the separate publication-delivery parity lane; this candidate does not own provider-runtime source;
 - keep final canonical state/provider-truth readback fail-closed;
 - preserve sanitized recovery evidence under recovery-artifacts/.
 
 Runtime evidence:
-- personal LinkedIn now reaches the publisher and returns waiting_reauth / LINKEDIN_REAUTH_REQUIRED instead of PERSONAL_SOURCE_UNVERIFIED;
-- company LinkedIn now returns waiting_reauth / LINKEDIN_REAUTH_REQUIRED instead of HTTP 500;
+- production runtime has already proven both unresolved LinkedIn claims are resumable with no provider side effect; this candidate only canonicalizes the recovery control plane that observes and resumes those claims;
 - neither unresolved LinkedIn claim has a delivery_ref, provider post id, provider-create acknowledgement or proven provider side effect;
 - the remaining external boundary is LinkedIn OAuth authorization, including r_organization_admin for the company page.
 
