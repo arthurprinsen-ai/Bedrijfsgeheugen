@@ -32,10 +32,10 @@ test('Required evidence is latest-head-wins so obsolete candidate proof cannot b
   assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
 });
 
-test('governance PR fanout is consolidated behind Required while narrow supply-chain security remains PR-scoped', () => {
+test('governance PR fanout is consolidated behind Required and dependency security moves to merge_group', () => {
   assert.doesNotMatch(engineeringIntelligence, /^\s*pull_request\s*:/m);
   assert.doesNotMatch(learningClassifier, /^\s*pull_request\s*:/m);
-  assert.match(supplyChain, /pull_request:[\s\S]*?paths:/);
+  assert.doesNotMatch(supplyChain, /^\s*pull_request\s*:/m);
   for (const [name, yml] of [
     ['engineering intelligence', engineeringIntelligence],
     ['supply chain', supplyChain],
@@ -43,8 +43,11 @@ test('governance PR fanout is consolidated behind Required while narrow supply-c
   ]) {
     assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
   }
-  assert.match(supplyChain, /dependency-review:[\s\S]*?if:\s*github\.event_name == 'pull_request'/);
   assert.match(supplyChain, /provenance:[\s\S]*?if:\s*github\.event_name == 'push'/);
+  assert.match(workflow, /dependencyReviewRequired=changedPaths\.some/);
+  assert.match(workflow, /dependency_review_required=/);
+  assert.match(workflow, /merge_specialist:[\s\S]*?if:\s*github\.event_name == 'merge_group'/);
+  assert.match(workflow, /Verify dependency supply-chain risk[\s\S]*?npm audit --package-lock-only --audit-level=high/);
 });
 
 test('delivery hygiene retries transient GitHub API failures and preserves fail-closed evidence', () => {
