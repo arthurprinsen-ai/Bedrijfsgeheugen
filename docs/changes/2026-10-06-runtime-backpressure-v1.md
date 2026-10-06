@@ -16,4 +16,12 @@ Structural change:
 - A scheduled drain runs once per minute, processes at most ten queued records, and stops on the first backend failure. This converts unbounded visitor fan-out into bounded database pressure.
 - Manual `growth-replay` reuses the same drain engine.
 
-The database and service-auth layer remains fail-closed for critical writes. This change only removes retry amplification and disposable public read coupling.
+Service-to-service authentication is also removed from the PostgREST failure loop:
+
+- scheduled callers already send `x-powerhouse-token`; receivers no longer re-read that token through the Data API before authorization;
+- `supabase/functions/_shared/powerhouse-scheduler-auth.ts` is the single authority;
+- its fallback secret lookup uses the IPv4 Supavisor pooler on port 6543 with one connection per isolate and a five-minute warm cache;
+- an injected `POWERHOUSE_DAILY_SCHEDULER_TOKEN` can eliminate even that cold lookup;
+- only missing/mismatched credentials return HTTP 401; secret lookup infrastructure failures return HTTP 503.
+
+The database and service-auth layer remains fail-closed for critical writes. The change removes retry amplification and the circular PostgREST dependency from authentication; it does not weaken authorization.
