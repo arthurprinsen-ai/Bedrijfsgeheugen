@@ -16,14 +16,19 @@ test('central authority issues exact-bound one-time capabilities',()=>{
 });
 
 test('publisher requires capability consumption before provider calls',()=>{
-  const consume=publisher.indexOf('await consumePublishCapability');
-  const meta=publisher.lastIndexOf('publishInstagramViaMeta(db,art)');
-  const composio=publisher.lastIndexOf('publishInstagramViaComposio(db, art, runDate)');
-  const buffer=publisher.indexOf('created = await createPost(bufferToken, input)');
-  assert.ok(consume>0);
-  assert.ok(meta>consume);
-  assert.ok(composio>consume);
-  assert.ok(buffer>consume);
+  const branchOrder=(branchMarker,providerMarker)=>{
+    const branch=publisher.indexOf(branchMarker);
+    const consume=publisher.indexOf('await consumePublishCapability',branch);
+    const provider=publisher.indexOf(providerMarker,branch);
+    assert.ok(branch>=0,branchMarker);
+    assert.ok(consume>branch,'capability consumption must occur inside the channel branch');
+    assert.ok(provider>consume,'provider side effect must occur after capability consumption');
+  };
+  branchOrder("if (row.channel === 'linkedin_personal')",'publishLinkedInPersonalViaComposio(db,art)');
+  branchOrder("if (row.channel === 'linkedin_company')",'publishLinkedInCompanyViaComposio(db,art)');
+  branchOrder("if (row.channel === 'instagram_company')",'publishInstagramViaComposio(db,art,runDate,instagramContext)');
+  branchOrder("const input: Record<string,unknown>",'created = await createPost(bufferToken, input)');
+  assert.doesNotMatch(publisher,/await publishInstagramViaMeta\(/);
   assert.match(publisher,/containmentSweepInstagram/);
   assert.match(publisher,/PENDING_PROVIDER_CANCELLATION/);
 });
@@ -57,4 +62,27 @@ test('completion supervisor requires channel policy authorization evidence',()=>
   const result=evaluateCompletion({obligationId:'social-publication:x',workId:'w',candidateIdentity:'c',productionIdentity:'p',channelPolicyRequired:true,materialObligations:[],evidence});
   assert.equal(result.success,false);
   assert.ok(result.required_evidence.includes('CHANNEL_POLICY_AUTHORIZATION'));
+});
+
+
+test('social publication recovery retries at most every ten minutes',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  assert.match(delivery,/schedule:\s*'\*\/10 \* \* \* \*'/);
+  assert.match(delivery,/triggerCanonicalPublisher/);
+  assert.match(delivery,/runSocialPublicationDelivery/);
+});
+
+test('production deploy recovery delegates to the same canonical publisher',()=>{
+  const hook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
+  assert.match(hook,/runSocialPublicationDelivery/);
+  assert.match(hook,/deploySucceeded/);
+  assert.match(hook,/event\?\.deploy\?\.context\s*!==\s*'production'/);
+  assert.doesNotMatch(hook,/LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH|createPost\(/);
+});
+
+test('social recovery remains bounded by the publication window and canonical single-writer route',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  assert.match(delivery,/local\.hour < 7 \|\| local\.hour > 20/);
+  assert.match(delivery,/powerhouse-social-publisher/);
+  assert.match(delivery,/canonical publication runs before any Buffer read/i);
 });
