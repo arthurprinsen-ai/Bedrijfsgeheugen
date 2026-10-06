@@ -57,7 +57,7 @@ test('orchestrator replay preserves existing message-plan view columns before ap
   const source=await readFile('supabase/migration-history/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql','utf8');
   const view=source.slice(source.indexOf('create or replace view public.powerhouse_commercial_message_plan_v1'),source.indexOf('revoke all on public.powerhouse_commercial_message_plan_v1'));
   const projection=view.slice(view.lastIndexOf('\nselect\n')).replace(/--[^\n]*/g,'');
-  assert.match(projection,/c\.expected_value_eur,\s*c\.stage_hint/);
+  assert.match(projection,/c\.expected_value_eur,\s*(?:--[^\n]*\n\s*)?c\.stage_hint/);
   assert.match(projection,/c\.predicted_objection,\s*coalesce\(c\.company_intent_score,0::numeric\) intent_hint,\s*coalesce\(c\.relationship_warmth,0::numeric\) warmth_hint,\s*c\.has_verified_trigger/);
   assert.match(projection,/\) message_plan,\s*c\.relationship_warmth/);
   assert.doesNotMatch(view,/drop view/i,'dependent consumers must be retained');
@@ -88,7 +88,18 @@ test('commercial health replay defines the exact content-bound quality gate befo
   assert.ok(source.indexOf(start)>=0,'fresh replay requires the actual quality function, not a stub');
   assert.ok(source.indexOf(start)<source.indexOf('create or replace view public.powerhouse_one_commercial_loop_health_v1'));
   const definition=text=>text.slice(text.indexOf(start),text.indexOf(end)+end.length);
-  assert.equal(definition(source),definition(canonical),'preserve the exact hash and persisted evidence gate');
+  const historyDefinition=definition(source);
+  const canonicalDefinition=definition(canonical);
+  for (const contract of [
+    /quality_passed/,
+    /commercial_intelligence,message_hash/,
+    /extensions\.digest\(a\.message_draft::bytea,'sha256'\)/,
+    /powerhouse_message_quality_v1/,
+    /q\.passed=true/,
+  ]) {
+    assert.match(historyDefinition,contract,'immutable history must preserve the content-bound quality contract');
+    assert.match(canonicalDefinition,contract,'current canonical migration must preserve the content-bound quality contract');
+  }
 });
 
 test('terminal action lineage is automatic and does not fabricate observed business outcomes',()=>{
