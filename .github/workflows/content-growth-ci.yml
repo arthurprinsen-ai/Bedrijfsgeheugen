@@ -49,7 +49,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  content-growth:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
