@@ -1,0 +1,28 @@
+{
+  "version": "CHAT-LEARNING-PREFLIGHT-BUDGET-CONTRACT-v1",
+  "date": "2026-10-06",
+  "fingerprint": "chat-learning|preflight-budget|canonical-contract-test-alignment|v1",
+  "obligation_id": "chat-learning-preflight-budget-contract-20261006-v1",
+  "root_cause": {
+    "escaped_defect": "PR #3927 moved the default source budget from a hard-coded 96 to the canonical contract value 128, but scripts/brain/test-chat-learning-preflight-compiler.mjs still asserted packet.sources.length <= 96.",
+    "observed_failure": "Chat learning preflight PR failed on the first current-main consumer after #3927 merged even though the compiler itself correctly accepted the canonical 128-source budget."
+  },
+  "prevention": {
+    "canonical_budget": "The compiler regression now reads maxSources and maxBytes from config/brain-chat-learning-contract.json instead of duplicating the former 96/256000 literals.",
+    "strict_override": "Explicit stricter caller overrides still fail closed and remain covered."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "scripts/brain/test-chat-learning-preflight-compiler.mjs"
+    ]
+  },
+  "evidence": {
+    "failing_step": "Chat learning preflight PR / Preflight compiler contract",
+    "regression": "scripts/brain/test-chat-learning-preflight-compiler.mjs",
+    "dependency_merge": "PR #3927 merge 9202c49a2acbe767d35cbb50399d0c621ecf90b0"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "CHAT_LEARNING_PREFLIGHT_BUDGET_TEST_DRIFT"
+  }
+}
