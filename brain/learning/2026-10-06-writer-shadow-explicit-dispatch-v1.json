@@ -12,7 +12,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/repo-writer-shadow.test.mjs"
+      "tests/brain-writer-shadow-explicit-dispatch-v1.test.mjs"
     ]
   },
   "root_cause": "Repository Writer Candidate Shadow subscribed to every pull_request targeting main and filtered to writer/* only inside the job, producing a skipped Actions run for every unrelated PR.",
@@ -28,6 +28,7 @@
       "weekblog"
     ],
     "removed_trigger": "pull_request",
-    "preserved_gate": "repo-writer-gate-dispatch"
+    "preserved_gate": "repo-writer-gate-dispatch",
+    "regression_test": "tests/brain-writer-shadow-explicit-dispatch-v1.test.mjs"
   }
 }
