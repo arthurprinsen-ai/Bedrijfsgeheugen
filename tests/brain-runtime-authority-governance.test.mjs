@@ -106,7 +106,7 @@ test('Supabase Edge production has exactly one protected-main promotion authorit
   assert.equal(registry.controls.supabase_edge_drift_policy,'FAIL_CLOSED');
 });
 
-test('Supabase Edge production workflow is current-main-only, single-flight and exact-provider-attested without a static PAT writer',async()=>{
+test('Supabase Edge production workflow is current-main-only, single-writer and byte-for-byte provider-attested with a read-only PAT',async()=>{
   const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
   assert.match(workflow,/branches:\s*\[main\]/);
   assert.match(workflow,/checks:\s*read/);
@@ -121,10 +121,15 @@ test('Supabase Edge production workflow is current-main-only, single-flight and 
   assert.match(workflow,/source-tree-sha256\.json/);
   assert.match(workflow,/SUPABASE_EDGE_ATTESTATION_SUPERSEDED_BY_RUNTIME_CHANGE/);
   assert.match(workflow,/actions\/upload-artifact@v4/);
-  assert.doesNotMatch(workflow,/SUPABASE_ACCESS_TOKEN/);
-  assert.doesNotMatch(workflow,/supabase\/setup-cli/);
+  assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
+  assert.match(workflow,/SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_READ_ONLY_PROVIDER_PARITY/);
+  assert.match(workflow,/supabase\/setup-cli@v1/);
+  assert.match(workflow,/version:\s*2\.119\.0/);
+  assert.match(workflow,/supabase functions download/);
+  assert.match(workflow,/SUPABASE_EDGE_PROVIDER_FILESET_DRIFT/);
+  assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT/);
   assert.doesNotMatch(workflow,/supabase functions deploy/);
-  assert.doesNotMatch(workflow,/supabase functions download/);
+  assert.doesNotMatch(workflow,/PROJECT_REF:[^\n]*\n\s+SUPABASE_ACCESS_TOKEN:/);
 });
 
 test('runtime governance fails closed if direct Supabase Edge deploy becomes allowed',()=>{
@@ -143,4 +148,10 @@ test('Supabase Edge authority registry binds provider deployment to the GitHub i
   assert.equal(registry.controls.supabase_edge_provider_check,'Supabase Preview');
   assert.equal(registry.controls.supabase_edge_provider_app,'supabase');
   assert.equal('supabase_edge_cli_version' in registry.controls,false);
+});
+
+test('Supabase Git production registration includes all social authority-critical functions with provider-compatible JWT modes',async()=>{
+  const config=await readFile('supabase/config.toml','utf8');
+  assert.match(config,/\[functions\.powerhouse-social-publisher\][\s\S]*?enabled\s*=\s*true[\s\S]*?verify_jwt\s*=\s*false[\s\S]*?entrypoint\s*=\s*"\.\/functions\/powerhouse-social-publisher\/index\.ts"/);
+  assert.match(config,/\[functions\.social-recovery-runner\][\s\S]*?enabled\s*=\s*true[\s\S]*?verify_jwt\s*=\s*true[\s\S]*?entrypoint\s*=\s*"\.\/functions\/social-recovery-runner\/index\.ts"/);
 });
