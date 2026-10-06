@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  brand-shell-contracts:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
