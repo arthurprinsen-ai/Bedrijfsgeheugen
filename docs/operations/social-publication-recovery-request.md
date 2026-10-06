@@ -1,6 +1,0 @@
-# Social publication recovery request
-
-request_id: social-publication-recovery-2026-10-06-a  
-run_date: 2026-10-06  
-reason: No personal LinkedIn or canonical Instagram publication was visible after the automated ten-minute recovery cycle.  
-requested_at: 2026-10-06T08:10:00Z
