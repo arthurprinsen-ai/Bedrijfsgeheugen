@@ -8,8 +8,8 @@ test('Netlify build has one canonical runner and immutable tree-keyed reuse',asy
     read('.github/workflows/required-test.yml'),
     read('.github/workflows/production-source-snapshot.yml'),
     read('netlify.toml'),
-    read('tools/ci/run-netlify-build.mjs'),
-    read('tools/ci/run-localized-routes-parallel.mjs'),
+    read('tools/netlify-build/run-netlify-build.mjs'),
+    read('tools/netlify-build/run-localized-routes-parallel.mjs'),
     read('tools/site-shell/build-localized-routes.mjs'),
     read('tools/delivery/netlify-deployment-applicability.mjs'),
   ]);
