@@ -37,20 +37,9 @@
   "fingerprint": "control-plane|pr-fanout|duplicate-authority|ratchet-v1",
   "evaluation": {
     "historical_replay": [
-      {
-        "source": "ci-intelligence-run-37494062432",
-        "direct_pull_request_workflows": 59,
-        "workflow_fanout_p95": 9,
-        "required_queue_wait_seconds_p95": 94,
-        "required_total_seconds_p95": 395
-      },
-      {
-        "source": "control-plane-diet-candidate",
-        "direct_pr_authorities_before": 38,
-        "direct_pr_authorities_after": 7,
-        "admission_authorities": 2,
-        "lifecycle_recovery_authorities": 5
-      }
+      "tests/brain-ci-admission-single-flight.test.mjs",
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs",
+      "tests/brain-change-scoped-release-lanes.test.mjs"
     ],
     "summary": {
       "historical_replay": [
