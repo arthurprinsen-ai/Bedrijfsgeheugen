@@ -65,3 +65,30 @@ test('backend release lane cannot hang indefinitely during dependency installati
   assert.match(backend, /npm install --prefer-offline --no-audit --no-fund/);
   assert.doesNotMatch(backend, /npm install .*--silent/);
 });
+
+
+test('repository-writer verification cancels superseded candidate work instead of queueing stale heads', async () => {
+  const [dispatch,operational] = await Promise.all([
+    read('.github/workflows/repo-writer-gate-dispatch.yml'),
+    read('.github/workflows/repo-writer-operational-verification.yml'),
+  ]);
+  assert.match(dispatch, /group: repo-writer-gates-\$\{\{ inputs\.pr_number \}\}/);
+  assert.doesNotMatch(dispatch, /group: repo-writer-gates-.*inputs\.head_sha/);
+  assert.match(dispatch, /cancel-in-progress:\s*true/);
+  assert.match(operational, /group: repo-writer-operational-\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.match(operational, /cancel-in-progress:\s*true/);
+});
+
+test('Netlify skips only known governance-only commits and fails open for runtime changes', async () => {
+  const [config,ignore] = await Promise.all([
+    read('netlify.toml'),
+    read('tools/ci/netlify-ignore-build.mjs'),
+  ]);
+  assert.match(config, /ignore = "node \.\/tools\/ci\/netlify-ignore-build\.mjs"/);
+  assert.match(ignore, /NETLIFY_BUILD_REQUIRED/);
+  assert.match(ignore, /NETLIFY_BUILD_SKIPPED/);
+  assert.match(ignore, /process\.exit\(1\)/);
+  assert.match(ignore, /brain\/learning\//);
+  assert.match(ignore, /\.github\//);
+  assert.doesNotMatch(ignore, /netlify\/functions\//);
+});
