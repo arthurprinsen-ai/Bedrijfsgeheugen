@@ -144,7 +144,8 @@ jobs:
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
           const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/'];
           const netlifyBuildExact=new Set(['netlify.toml','_redirects','_headers','index.html','klantportaal.html','package.json','package-lock.json']);
-          const netlifyBuildRequired=changedPaths.some(path=>netlifyBuildExact.has(path)||netlifyBuildPrefixes.some(prefix=>path.startsWith(prefix)));
+          const netlifyGovernanceExact=new Set(['site/website-release-risk.json']);
+          const netlifyBuildRequired=changedPaths.some(path=>!netlifyGovernanceExact.has(path)&&(netlifyBuildExact.has(path)||netlifyBuildPrefixes.some(prefix=>path.startsWith(prefix))));
           const supabasePreviewRequired=changedPaths.some(path =>
             path.startsWith('supabase/') &&
             !path.startsWith('supabase/functions/') &&
