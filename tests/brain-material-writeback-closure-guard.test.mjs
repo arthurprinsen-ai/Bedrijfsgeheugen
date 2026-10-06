@@ -100,3 +100,10 @@ test('continuity and delivery skills make semantic closure a runtime obligation,
     assert.match(source,/skill projection/i);
   }
 });
+
+
+test('material writeback CLI uses shallow-safe exact two-tree diff',async()=>{
+  const source=await readFile('scripts/brain/material-writeback-closure-guard.mjs','utf8');
+  assert.match(source,/execFileSync\('git',\['diff','--name-only',base,head\]/);
+  assert.doesNotMatch(source,/base\+'\.\.\.'\+head/);
+});

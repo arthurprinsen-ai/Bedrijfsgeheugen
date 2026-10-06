@@ -12,11 +12,12 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-netlify-build-artifact-reuse-v1.test.mjs"
+      "tests/brain-netlify-build-artifact-reuse-v1.test.mjs",
+      "tests/brain-material-writeback-closure-guard.test.mjs"
     ]
   },
-  "root_cause": "Required proved the complete Netlify production build before merge, but production deployment rebuilt the same source tree again. The build command was also duplicated across Netlify production, deploy-preview and Required, so optimization and ordering drifted independently.",
-  "prevention": "Use one canonical measured build runner, cache its exact source-tree output, publish that output as a short-lived immutable GitHub artifact, and allow production to reuse it only when a successful Required run and the current main tree SHA match exactly. Production executes only release-identity stamping before provider packaging; any mismatch falls back to the canonical source build.",
+  "root_cause": "Required proved the complete Netlify production build before merge, but production deployment rebuilt the same source tree again. The build command was also duplicated across Netlify production, deploy-preview and Required, so optimization and ordering drifted independently. A second control-plane defect made shallow exact-SHA Required checkouts fail before the build: material-writeback closure used a three-dot BASE...HEAD diff and therefore required a merge base that a bounded shallow checkout does not need to contain.",
+  "prevention": "Use one canonical measured build runner, cache its exact source-tree output, publish that output as a short-lived immutable GitHub artifact, and allow production to reuse it only when a successful Required run and the current main tree SHA match exactly. Production executes only release-identity stamping before provider packaging; any mismatch falls back to the canonical source build. Material-writeback scope detection must use the exact two-tree diff BASE HEAD; merge-base ancestry is not part of this closure contract.",
   "evidence": {
     "baseline_seconds": "69-117 observed build/deploy critical path",
     "artifact_identity": "git tree SHA",
@@ -25,6 +26,7 @@
       "pricing + bedrijfslek capture",
       "pricing + bedrijfslek restore"
     ],
-    "regression": "tests/brain-netlify-build-artifact-reuse-v1.test.mjs"
+    "regression": "tests/brain-netlify-build-artifact-reuse-v1.test.mjs",
+    "shallow_safe_material_diff": "git diff --name-only BASE HEAD"
   }
 }
