@@ -9,7 +9,7 @@
     "scope": "CI",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": true
+    "security_sensitive": false
   },
   "root_cause": "The Supabase direct Postgres hostname is IPv6 by default, while the GitHub-hosted runner path used by the trusted migration repair cannot depend on IPv6 reachability. Retrying the direct endpoint therefore preserved the same network-family failure instead of changing transport.",
   "prevention": [
@@ -35,9 +35,8 @@
   "revision": 1,
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs",
-      "tests/supabase-supported-migration-repair-3742.test.mjs"
+      "tests/brain-supabase-ipv4-session-transport-guard-v1.test.mjs"
     ],
-    "expected": "The trusted repair accepts only the canonical Supavisor session-mode IPv4 transport and fails closed before mutation if direct IPv6 routing or transport identity returns."
+    "expected": "The trusted repair accepts only the canonical Supavisor session-mode IPv4 transport, rejects direct IPv6 routing before mutation, and does not falsely demand a database preview for function-only config metadata."
   }
 }
