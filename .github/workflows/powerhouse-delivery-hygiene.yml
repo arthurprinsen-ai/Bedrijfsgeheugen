@@ -74,7 +74,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
           import { setTimeout as sleep } from 'node:timers/promises';
-          import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
+          import { parseDeliveryMetadata, parseWriterLease, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
           import { validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage } from './tools/delivery/github-delivery-state-machine.mjs';
           import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
 

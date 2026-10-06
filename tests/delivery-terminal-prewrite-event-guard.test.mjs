@@ -7,6 +7,7 @@ const supervisor=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery
 const closure=fs.readFileSync('.github/workflows/powerhouse-terminal-writer-lease-closure-guard.yml','utf8');
 
 test('pull_request synchronize cannot mutate a TERMINAL_DELIVERY candidate',()=>{
+  assert.match(hygiene,/import \{[^}]*parseWriterLease[^}]*\} from '\.\/tools\/delivery\/delivery-hygiene\.mjs'/);
   assert.match(hygiene,/EVENT_ACTION: .*github\.event\.action/);
   assert.match(hygiene,/EVENT_PR_BODY: .*github\.event\.pull_request\.body/);
   assert.match(hygiene,/process\.env\.EVENT_ACTION === 'synchronize'/);
