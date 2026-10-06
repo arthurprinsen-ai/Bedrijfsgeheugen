@@ -1,0 +1,42 @@
+{
+  "version": "CI-CRITICAL-PATH-FASTLANE-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github-actions|critical-path|duplicate-build-and-global-provider-gate|v1",
+  "obligation_id": "ci-critical-path-fastlane-20261006-v1",
+  "compiler": {
+    "failure_class": "CI_CRITICAL_PATH_DUPLICATE_BUILD_AND_UNSCOPED_PROVIDER_GATE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "root_cause": {
+    "cause": "Release proof had multiple orchestration owners instead of one change-scoped aggregate owner.",
+    "contributing_factors": [
+      "Netlify parity existed in both Required preflight and the website release lane.",
+      "Supabase Preview Applicability was branch-protection-required for every PR rather than only database-relevant changes."
+    ]
+  },
+  "prevention": {
+    "rule": "One proof owner per concern on the PR critical path.",
+    "netlify": "Preserve the existing single Netlify parity owner; do not introduce a second owner in the website lane.",
+    "supabase": "Required test invokes provider preview proof only for database-relevant Supabase source.",
+    "invariant": "Do not remove provider proof from protection until the equivalent proof is represented inside the canonical Required aggregate."
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs",
+      "Required test exact-head aggregate"
+    ],
+    "observed_ci": {
+      "workflow_registry_count": 202,
+      "required_contexts": [
+        "test",
+        "CodeQL javascript-typescript",
+        "Supabase Preview Applicability"
+      ]
+    }
+  },
+  "status": "ACTIVE_PREVENTION"
+}
