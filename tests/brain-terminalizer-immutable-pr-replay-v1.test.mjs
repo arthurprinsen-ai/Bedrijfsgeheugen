@@ -26,3 +26,18 @@ test('terminalizer replay remains opt-in and preserves normal merged-PR behavior
   assert.match(workflow,/mode="replay"/);
   assert.match(workflow,/TERMINAL_REPLAY_SELF_REFERENCE/);
 });
+
+
+test('terminalizer recognizes current production-ledger parity recovery without widening runtime bypass', async()=>{
+  const workflow=await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  const parityStart=workflow.indexOf('parity_recovery=false');
+  const runtimeStart=workflow.indexOf('runtime_classes=', parityStart);
+  assert.notEqual(parityStart,-1);
+  assert.notEqual(runtimeStart,-1);
+  const parityBlock=workflow.slice(parityStart,runtimeStart);
+  assert.ok(parityBlock.includes("^Obligation-ID: supabase-(migration-history-(parity|canonical)|(current-)?production-ledger-parity)-"));
+  assert.match(parityBlock,/supabase\/migrations\/\*/);
+  assert.match(parityBlock,/supabase\/migration-history\.lock\.json/);
+  assert.match(parityBlock,/SUPABASE_PARITY_RECOVERY_CONTAINS_RUNTIME_PATH/);
+  assert.doesNotMatch(parityBlock,/supabase\/functions\/\*/);
+});

@@ -183,7 +183,7 @@ jobs:
 
           parity_recovery=false
           if grep -q '^Candidate-Type: recovery$' <<< "$PR_BODY" \
-             && grep -Eq '^Obligation-ID: supabase-migration-history-(parity|canonical)-' <<< "$PR_BODY"; then
+             && grep -Eq '^Obligation-ID: supabase-(migration-history-(parity|canonical)|(current-)?production-ledger-parity)-' <<< "$PR_BODY"; then
             parity_recovery=true
           fi
 
