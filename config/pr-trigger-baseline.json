@@ -2,23 +2,20 @@
   "version": 1,
   "measured_at": "2026-10-06",
   "mode": "ratchet",
-  "directPullRequestWorkflowCount": 10,
+  "directPullRequestWorkflowCount": 7,
   "canonicalTarget": [
     "required-test.yml"
   ],
   "directPullRequestWorkflows": [
-    "engineering-supply-chain-trust.yml",
     "obligation-terminal-closure.yml",
-    "portal-v2-live-preview.yml",
     "powerhouse-codeql.yml",
     "powerhouse-merged-branch-cleanup.yml",
     "powerhouse-obligation-terminalizer.yml",
     "powerhouse-terminal-writer-lease-closure-guard.yml",
-    "repo-writer-operational-verification.yml",
     "required-test.yml",
     "writer-production-reconcile.yml"
   ],
-  "policy": "Removing a direct PR admission trigger is always allowed. Adding a new PR admission workflow or lifecycle authority is blocked. pull_request:closed lifecycle/recovery authorities are tracked separately and never counted as admission fan-out. Both baselines only move downward.",
+  "policy": "Only Required test and Powerhouse CodeQL may admit pull requests. Closed-only lifecycle authorities are tracked separately. Specialists run in merge_group or consume Required via workflow_run, and every baseline is downward-only.",
   "lifecyclePullRequestWorkflows": [
     "obligation-terminal-closure.yml",
     "powerhouse-merged-branch-cleanup.yml",
@@ -28,11 +25,8 @@
   ],
   "lifecyclePullRequestWorkflowCount": 5,
   "admissionPullRequestWorkflows": [
-    "engineering-supply-chain-trust.yml",
-    "portal-v2-live-preview.yml",
     "powerhouse-codeql.yml",
-    "repo-writer-operational-verification.yml",
     "required-test.yml"
   ],
-  "admissionPullRequestWorkflowCount": 5
+  "admissionPullRequestWorkflowCount": 2
 }
