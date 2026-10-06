@@ -119,7 +119,21 @@ function safeObligation(o: any) {
     updated_at: o?.updated_at || null,
     provider: o?.evidence?.provider || null,
     provider_truth_verified: o?.evidence?.provider_truth_verified === true,
+    provider_create_success: o?.evidence?.provider_create_success === true,
+    provider_publication_ack_verified: o?.evidence?.provider_publication_ack_verified === true,
+    readback_permission_limited: o?.evidence?.readback_permission_limited === true,
+    republish_forbidden: o?.evidence?.republish_forbidden === true,
   };
+}
+
+function providerSideEffectTruthHealthy(channel: string, obligation: any) {
+  if (obligation?.provider_truth_verified === true) return true;
+  return channel === "linkedin_personal"
+    && obligation?.provider_create_success === true
+    && obligation?.provider_publication_ack_verified === true
+    && obligation?.readback_permission_limited === true
+    && obligation?.republish_forbidden === true
+    && !!clean(obligation?.external_id);
 }
 
 Deno.serve(async (req: Request) => {
@@ -220,13 +234,18 @@ Deno.serve(async (req: Request) => {
     const obligation = obligations.find((o: any) => clean(o.channel) === obligationChannel);
     return count + (obligation?.provider_truth_verified === true ? 1 : 0);
   }, 0);
+  const providerTruthAccepted = required.reduce((count: number, d: any) => {
+    const obligationChannel = clean(d.channel) === "instagram_company" ? "instagram" : clean(d.channel);
+    const obligation = obligations.find((o: any) => clean(o.channel) === obligationChannel);
+    return count + (providerSideEffectTruthHealthy(clean(d.channel), obligation) ? 1 : 0);
+  }, 0);
   const providerTruthHealthy = required.length > 0 && required.every((d: any) => {
     const obligationChannel = clean(d.channel) === "instagram_company" ? "instagram" : clean(d.channel);
     const obligation = obligations.find((o: any) => clean(o.channel) === obligationChannel);
     if (!obligation) return false;
     const status = clean(obligation.status).toUpperCase();
     return ["PUBLISHED", "DISPATCHED", "LIVE_PROVEN"].includes(status)
-      && obligation.provider_truth_verified === true
+      && providerSideEffectTruthHealthy(clean(d.channel), obligation)
       && !!clean(obligation.external_id);
   });
   const recovered = required.length > 0 && unresolved.length === 0 && providerTruthHealthy;
@@ -235,7 +254,7 @@ Deno.serve(async (req: Request) => {
     ok: recovered,
     runDate,
     loop_state: recovered ? "GREEN" : "AMBER",
-    truth_contract: "RECOVERY GREEN REQUIRES CANONICAL STATE AND PROVIDER TRUTH",
+    truth_contract: "RECOVERY GREEN REQUIRES CANONICAL STATE AND PROVIDER SIDE-EFFECT TRUTH",
     degraded_preparation: degradedPreparation,
     content_loop: {
       ok: loop.ok,
@@ -248,6 +267,7 @@ Deno.serve(async (req: Request) => {
     },
     fallback,
     providerTruthVerified,
+    providerTruthAccepted,
     providerTruthHealthy,
     required_publish_count: required.length,
     unresolved,
