@@ -7,39 +7,49 @@ on:
         description: Optional YYYY-MM-DD; must equal today in Europe/Amsterdam
         required: false
         type: string
+  push:
+    branches: [main]
+    paths:
+      - 'docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md'
 
 permissions:
   contents: read
 
 concurrency:
-  group: social-publication-recovery-${{ inputs.run_date || 'today' }}
+  group: social-publication-recovery-${{ github.event_name == 'workflow_dispatch' && inputs.run_date || github.sha }}
   cancel-in-progress: false
 
 jobs:
   recover:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
     env:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
+      - uses: actions/checkout@v5
+
       - name: Resolve same-day recovery date
         id: date
         shell: bash
         env:
-          REQUESTED_DATE: ${{ inputs.run_date }}
+          REQUESTED_DATE: ${{ github.event_name == 'workflow_dispatch' && inputs.run_date || '' }}
         run: |
           set -euo pipefail
           today="$(node -e "process.stdout.write(new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()))")"
-          run_date="${REQUESTED_DATE:-$today}"
+          run_date="${REQUESTED_DATE:-}"
+          if [ -z "$run_date" ] && [ -f docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md ]; then
+            run_date="$(sed -nE 's/^Date:[[:space:]]*([0-9]{4}-[0-9]{2}-[0-9]{2}).*$/\1/p' docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md | head -n1)"
+          fi
+          run_date="${run_date:-$today}"
           if [ "$run_date" != "$today" ]; then
             echo "::error::SAME_DAY_RECOVERY_ONLY requested=$run_date today=$today"
             exit 64
           fi
           echo "run_date=$run_date" >> "$GITHUB_OUTPUT"
 
-      - name: Invoke canonical social publisher
-        id: publisher
+      - name: Invoke canonical full content loop
+        id: loop
         shell: bash
         env:
           RUN_DATE: ${{ steps.date.outputs.run_date }}
@@ -63,16 +73,92 @@ jobs:
           echo "::add-mask::$scheduler_token"
 
           payload="$(node -e 'process.stdout.write(JSON.stringify({runDate:process.env.RUN_DATE}))')"
-          http_code="$(curl -sS --max-time 90 -o /tmp/social-publisher.json -w '%{http_code}' -X POST             -H 'Content-Type: application/json'             -H "x-powerhouse-token: $scheduler_token"             --data "$payload"             "$SUPABASE_URL/functions/v1/powerhouse-social-publisher")"
+          http_code="$(curl -sS --max-time 120 -o /tmp/social-content-loop.json -w '%{http_code}' -X POST             -H 'Content-Type: application/json'             -H "x-powerhouse-token: $scheduler_token"             --data "$payload"             "$SUPABASE_URL/functions/v1/powerhouse-content-loop")"
 
-          node --input-type=module <<'NODE'
-          import { readFileSync } from 'node:fs';
-          const x=JSON.parse(readFileSync('/tmp/social-publisher.json','utf8')||'{}');
+          HTTP_CODE="$http_code" node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const x=JSON.parse(readFileSync('/tmp/social-content-loop.json','utf8')||'{}');
           const safe={
+            http:Number(process.env.HTTP_CODE||0),
+            ok:x.ok===true,
+            loop_state:x.loop_state||null,
+            runDate:x.runDate||null,
+            truth_contract:x.truth_contract||null,
+            outcomeVerified:Number(x.outcomeVerified||0),
+            providerTruthVerified:Number(x.providerTruthVerified||0),
+            providerTruthHealthy:x.providerTruthHealthy===true,
+            blocked:Number(x.blocked||0),
+            hardBoundaryCount:Array.isArray(x.hardBoundaries)?x.hardBoundaries.length:0,
+            obligations:Array.isArray(x.obligations)?x.obligations.map(o=>({
+              channel:o?.channel||null,
+              status:o?.status||null,
+              external_id:o?.external_id||null,
+              last_error:o?.last_error||null,
+              next_action:o?.next_action||null,
+              updated_at:o?.updated_at||null,
+              provider:o?.evidence?.provider||null,
+              provider_truth_verified:o?.evidence?.provider_truth_verified===true
+            })):[],
+            decisions:Array.isArray(x.decisions)?x.decisions.map(d=>({
+              channel:d?.channel||null,
+              decision:d?.decision||null,
+              state:d?.state||null,
+              delivery_ref:d?.delivery_ref||null,
+              updated_at:d?.updated_at||null,
+              error:d?.delivery_evidence?.error||null,
+              provider:d?.delivery_evidence?.provider||null,
+              provider_truth_verified:d?.delivery_evidence?.provider_truth_verified===true,
+              capability_state:d?.delivery_evidence?.capability_state||null
+            })):[]
+          };
+          writeFileSync('/tmp/social-content-loop-sanitized.json',JSON.stringify(safe,null,2)+'\n');
+          console.log('CANONICAL_SOCIAL_CONTENT_LOOP_RESULT='+JSON.stringify(safe));
+          NODE
+
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+            echo "::warning::CANONICAL_SOCIAL_CONTENT_LOOP_PREPARATION_HTTP_$http_code"
+          fi
+
+      - name: Invoke bounded canonical publishers
+        id: publisher
+        shell: bash
+        env:
+          RUN_DATE: ${{ steps.date.outputs.run_date }}
+        run: |
+          set -euo pipefail
+          test -n "${SUPABASE_URL:-}"
+          test -n "${SUPABASE_SERVICE_ROLE_KEY:-}"
+          echo "::add-mask::$SUPABASE_SERVICE_ROLE_KEY"
+
+          secret_json="$(curl -fsSL --max-time 20 -X POST             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY"             -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"             -H 'Content-Type: application/json'             --data '{"p_naam":"powerhouse_daily_scheduler_token"}'             "$SUPABASE_URL/rest/v1/rpc/bg_geheim")"
+          scheduler_token="$(node -e '
+            const x=JSON.parse(process.argv[1]);
+            let v="";
+            if(typeof x==="string") v=x;
+            else if(Array.isArray(x) && typeof x[0]==="string") v=x[0];
+            else if(x && typeof x==="object") v=String(x.bg_geheim ?? x.value ?? Object.values(x)[0] ?? "");
+            process.stdout.write(v.trim());
+          ' "$secret_json")"
+          test -n "$scheduler_token"
+          echo "::add-mask::$scheduler_token"
+
+          mkdir -p /tmp/social-publishers
+          failures=0
+          for channel in linkedin_personal linkedin_company instagram_company; do
+            payload="$(CHANNEL="$channel" node -e 'process.stdout.write(JSON.stringify({runDate:process.env.RUN_DATE,mode:"publish_only",channels:[process.env.CHANNEL]}))')"
+            out="/tmp/social-publishers/$channel.json"
+            http_code="$(curl -sS --max-time 58 -o "$out" -w '%{http_code}' -X POST               -H 'Content-Type: application/json'               -H "x-powerhouse-token: $scheduler_token"               --data "$payload"               "$SUPABASE_URL/functions/v1/powerhouse-social-publisher" || true)"
+            CHANNEL="$channel" HTTP_CODE="$http_code" OUT="$out" node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+          const channel=process.env.CHANNEL;
+          const out=process.env.OUT;
+          let x={};
+          try { x=JSON.parse(existsSync(out)?readFileSync(out,'utf8'):'{}'); } catch {}
+          const safe={
+            channel,
+            http:Number(process.env.HTTP_CODE||0),
             ok:x.ok===true,
             runDate:x.runDate||null,
-            publication_authority:x.publication_authority||null,
-            provider_truth_verified:x.provider_truth_verified===true,
             results:Array.isArray(x.results)?x.results.map(r=>({
               channel:r?.channel||null,
               status:r?.status||null,
@@ -82,24 +168,67 @@ jobs:
               post_id:r?.post_id||null,
               permalink:r?.permalink||null,
               provider_truth_verified:r?.provider_truth_verified===true,
-              verification_pending:r?.verification_pending===true,
-              resumable:r?.resumable===true
+              verification_pending:r?.verification_pending===true
             })):[]
           };
+          writeFileSync(out.replace(/\.json$/,'.sanitized.json'),JSON.stringify(safe,null,2)+'\n');
           console.log('CANONICAL_SOCIAL_PUBLISHER_RESULT='+JSON.stringify(safe));
           NODE
-
-          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
-            echo "::error::CANONICAL_SOCIAL_PUBLISHER_HTTP_$http_code"
-            exit 1
-          fi
-          node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/social-publisher.json","utf8")||"{}");if(x.ok!==true)process.exit(2)'
+            if [ -z "$http_code" ] || [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+              echo "::warning::CANONICAL_SOCIAL_PUBLISHER_${channel}_HTTP_${http_code:-transport}"
+              failures=$((failures+1))
+            fi
+          done
+          echo "bounded_publish_failures=$failures" >> "$GITHUB_OUTPUT"
 
       - name: Read back canonical daily decision state
+        if: always()
         shell: bash
         env:
           RUN_DATE: ${{ steps.date.outputs.run_date }}
         run: |
           set -euo pipefail
-          curl -fsSL --max-time 20             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY"             -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"             "$SUPABASE_URL/rest/v1/powerhouse_channel_decisions?select=run_date,channel,decision,state,delivery_ref,updated_at&run_date=eq.$RUN_DATE&order=channel.asc"             -o /tmp/social-decisions.json
-          node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/social-decisions.json","utf8")||"[]");console.log("SOCIAL_DECISION_READBACK="+JSON.stringify(x))'
+          test -n "${RUN_DATE:-}"
+          curl -fsSL --max-time 20             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY"             -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"             "$SUPABASE_URL/rest/v1/powerhouse_channel_decisions?select=run_date,channel,decision,state,delivery_ref,updated_at,delivery_evidence&run_date=eq.$RUN_DATE&order=channel.asc"             -o /tmp/social-decisions-raw.json
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const rows=JSON.parse(readFileSync('/tmp/social-decisions-raw.json','utf8')||'[]');
+          const safe=rows.map(d=>({
+            run_date:d?.run_date||null,
+            channel:d?.channel||null,
+            decision:d?.decision||null,
+            state:d?.state||null,
+            delivery_ref:d?.delivery_ref||null,
+            updated_at:d?.updated_at||null,
+            error:d?.delivery_evidence?.error||null,
+            provider:d?.delivery_evidence?.provider||null,
+            provider_truth_verified:d?.delivery_evidence?.provider_truth_verified===true,
+            capability_state:d?.delivery_evidence?.capability_state||null
+          }));
+          writeFileSync('/tmp/social-decisions.json',JSON.stringify(safe,null,2)+'\n');
+          console.log('SOCIAL_DECISION_READBACK='+JSON.stringify(safe));
+          const required=safe.filter(d=>['linkedin_personal','linkedin_company','instagram_company'].includes(d.channel)&&d.decision==='publish');
+          const unresolved=required.filter(d=>!['published','scheduled'].includes(d.state));
+          if(unresolved.length){
+            console.error('SOCIAL_PUBLICATION_UNRESOLVED='+JSON.stringify(unresolved));
+            process.exitCode=2;
+          }
+          NODE
+
+      - name: Persist sanitized recovery evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          cp /tmp/social-content-loop-sanitized.json .artifacts/content-loop.json 2>/dev/null || printf '%s\n' '{"unavailable":true}' > .artifacts/content-loop.json
+          cp /tmp/social-decisions.json .artifacts/decisions.json 2>/dev/null || printf '%s\n' '[]' > .artifacts/decisions.json
+          cp /tmp/social-publishers/*.sanitized.json .artifacts/ 2>/dev/null || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: social-publication-recovery-${{ steps.date.outputs.run_date }}-${{ github.run_id }}
+          path: .artifacts
+          if-no-files-found: error
+          retention-days: 30
