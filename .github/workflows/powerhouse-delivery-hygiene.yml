@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
@@ -68,7 +68,6 @@ jobs:
             printf '{"state":"MANUAL_DIAGNOSTIC","admitted":true,"head_sha":"%s"}\n' "$GITHUB_SHA" > .artifacts/powerhouse-delivery-hygiene.json
             exit 0
           fi
-          git fetch origin main --no-tags
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
@@ -113,11 +112,10 @@ jobs:
           const brainPolicy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const prNumber = Number(process.env.PR_NUMBER);
           const headSha = sh('git','rev-parse','HEAD');
-          const currentMainSha = sh('git','rev-parse','origin/main');
-          const immutableBaseSha = sh('git','merge-base','origin/main','HEAD');
-          const changedRaw = sh('git','diff','--name-only',`${immutableBaseSha}...${headSha}`);
-          const changedPaths = changedRaw ? changedRaw.split(/\r?\n/).filter(Boolean) : [];
-          const currentContracts = deriveHygieneConflictContracts(changedPaths, brainPolicy, policy);
+          let currentMainSha = '';
+          let immutableBaseSha = '';
+          let changedPaths = [];
+          let currentContracts = [];
 
           const writeFailureEvidence = async (state, error) => {
             const evidence = {
@@ -147,6 +145,15 @@ jobs:
             }
             const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
             const open = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
+            const mainRef = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/ref/heads/main`);
+            currentMainSha = String(mainRef?.object?.sha || '').trim();
+            if (!/^[0-9a-f]{40}$/i.test(currentMainSha)) throw new Error('CURRENT_MAIN_SHA_INVALID');
+            const compare = await gh(`repos/${process.env.GITHUB_REPOSITORY}/compare/${currentMainSha}...${headSha}`);
+            immutableBaseSha = String(compare?.merge_base_commit?.sha || pr.base?.sha || '').trim();
+            if (!/^[0-9a-f]{40}$/i.test(immutableBaseSha)) throw new Error('IMMUTABLE_BASE_SHA_INVALID');
+            const prFiles = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}/files?per_page=100`);
+            changedPaths = [...new Set(prFiles.map(file => String(file?.filename || '').trim()).filter(Boolean))].sort();
+            currentContracts = deriveHygieneConflictContracts(changedPaths, brainPolicy, policy);
             if (pr.head?.sha !== headSha) {
               throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
             }
@@ -170,7 +177,7 @@ jobs:
             const coverageGate = evaluateTestWorkflowCoverage({ changedPaths, classifiedLanes });
             if (!coverageGate.ok) throw new Error(`TEST_WORKFLOW_COVERAGE_FAILED:${coverageGate.reasons.join(',')}`);
 
-            const patch = sh('git','diff','--no-ext-diff','--unified=0',`${immutableBaseSha}...${headSha}`);
+            const patch = execFileSync('gh',['pr','diff',String(prNumber),'--repo',process.env.GITHUB_REPOSITORY,'--patch'],{encoding:'utf8',maxBuffer:GH_MAX_BUFFER});
             const securityGate = scanStaticSecurity(patch);
             if (!securityGate.ok) throw new Error(`SECURITY_STATIC_FAILED:${securityGate.findings.join(',')}`);
 
