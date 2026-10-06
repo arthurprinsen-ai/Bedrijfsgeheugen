@@ -1,0 +1,42 @@
+{
+  "fingerprint": "supabase-edge|github-integration|undeclared-function-false-positive|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-edge-config-declaration-authority-20261006-v1",
+  "root_cause": "The protected-main authority accepted a successful Supabase GitHub App production check for social-recovery-runner, but the provider remained on the previous source. Supabase deploy-to-production only deploys Edge Functions declared in supabase/config.toml; social-recovery-runner and powerhouse-social-publisher were not declared, so the check could be green while those functions were outside deployment scope.",
+  "prevention_rule": "Every Edge Function selected by the protected-main production authority must exist and be explicitly declared in supabase/config.toml. A config.toml or functions/_shared change resolves to the declared function set, never every directory. Missing declarations fail closed before provider attestation.",
+  "compiler": {
+    "failure_class": "SUPABASE_GITHUB_INTEGRATION_UNDECLARED_EDGE_FALSE_POSITIVE",
+    "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "docs": [
+      "Supabase GitHub integration deploy-to-production deploys Edge Functions declared in config.toml"
+    ],
+    "runtime": [
+      "social-recovery-runner provider v7 differed from protected main after a successful exact-SHA Supabase production check"
+    ],
+    "source": [
+      "supabase/config.toml",
+      ".github/workflows/supabase-edge-production-authority.yml"
+    ],
+    "regression": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}

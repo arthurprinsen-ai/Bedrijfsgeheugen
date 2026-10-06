@@ -108,6 +108,7 @@ test('Supabase Edge production has exactly one protected-main promotion authorit
 
 test('Supabase Edge production workflow is current-main-only, single-flight and exact-provider-attested without a static PAT writer',async()=>{
   const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
+  const supabaseConfig=await readFile('supabase/config.toml','utf8');
   assert.match(workflow,/branches:\s*\[main\]/);
   assert.match(workflow,/checks:\s*read/);
   assert.match(workflow,/group:\s*supabase-edge-production-authority/);
@@ -119,6 +120,11 @@ test('Supabase Edge production workflow is current-main-only, single-flight and 
   assert.match(workflow,/Supabase Preview/);
   assert.match(workflow,/stableSuccess>=2/);
   assert.match(workflow,/source-tree-sha256\.json/);
+  assert.match(workflow,/SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG/);
+  assert.match(supabaseConfig,/\[functions\.powerhouse-social-publisher\]/);
+  assert.match(supabaseConfig,/\[functions\.social-recovery-runner\]/);
+  assert.match(supabaseConfig,/entrypoint = "\.\/functions\/powerhouse-social-publisher\/index\.ts"/);
+  assert.match(supabaseConfig,/entrypoint = "\.\/functions\/social-recovery-runner\/index\.ts"/);
   assert.match(workflow,/SUPABASE_EDGE_ATTESTATION_SUPERSEDED_BY_RUNTIME_CHANGE/);
   assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.doesNotMatch(workflow,/SUPABASE_ACCESS_TOKEN/);

@@ -1,6 +1,6 @@
 {
   "id": "supabase-edge-production-authority-v1",
-  "fingerprint": "supabase-edge|production-promotion|protected-main-git-integration-attestation|v2",
+  "fingerprint": "supabase-edge|production-promotion|protected-main-git-integration-declared-scope|v3",
   "status": "canonical",
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source_of_truth": "GITHUB_PROTECTED_MAIN",
@@ -13,11 +13,11 @@
   "manual_recovery": "ATTEST_TRUSTED_CURRENT_MAIN_ONLY",
   "drift_policy": "FAIL_CLOSED",
   "concurrency": "SINGLE_FLIGHT",
-  "deployment_scope": "Supabase GitHub Integration deploys changed Edge Functions from protected main; config.toml/shared changes remain provider-managed",
-  "readback": "newest exact-SHA Supabase GitHub App production check must complete success and remain stable across two observations; immutable protected-main source-tree hashes are retained",
-  "terminal_truth": "protected merge -> Supabase GitHub Integration production deployment -> exact-SHA stable provider check -> no newer Supabase runtime drift",
+  "deployment_scope": "Only Edge Functions declared in supabase/config.toml are eligible for Supabase GitHub Integration production deployment; changed function directories must be declared, while config.toml/_shared changes resolve to the declared function set",
+  "readback": "exact-SHA Supabase GitHub App production check is accepted only after changed functions pass config.toml declaration gating; immutable protected-main source-tree hashes are retained and out-of-band provider source parity remains terminal evidence",
+  "terminal_truth": "protected merge -> declared GitHub Integration production deployment -> exact-SHA stable provider check -> provider source parity -> no newer Supabase runtime drift",
   "secret_requirement": "NONE_IN_GITHUB_ACTIONS",
-  "rationale": "remove the broken static PAT/parallel CLI writer while preserving protected-main-only production authority and exact provider attestation",
+  "rationale": "prevent false-positive production attestation where the Supabase check succeeds but an undeclared Edge Function is silently outside provider deployment scope",
   "provider_deployer": "SUPABASE_GITHUB_INTEGRATION",
   "github_actions_role": "ATTESTATION_ONLY",
   "provider_check": {
@@ -27,5 +27,7 @@
     "exact_commit_bound": true,
     "stable_success_observations": 2
   },
-  "direct_cli_production_deploy": "FORBIDDEN"
+  "direct_cli_production_deploy": "FORBIDDEN",
+  "github_integration_config_declaration_required": true,
+  "config_authority": "supabase/config.toml"
 }

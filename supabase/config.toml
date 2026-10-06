@@ -24,3 +24,13 @@ entrypoint = "./functions/bg-opdrachtenradar/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/supabase-migration-repair-bridge/index.ts"
+
+[functions.powerhouse-social-publisher]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-social-publisher/index.ts"
+
+[functions.social-recovery-runner]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/social-recovery-runner/index.ts"

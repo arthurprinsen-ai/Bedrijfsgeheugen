@@ -76,7 +76,7 @@ jobs:
             fi
             git diff --name-only "$base" "$GITHUB_SHA" > /tmp/changed-paths.txt
             if grep -Eq '^supabase/(config\.toml|functions/_shared/)' /tmp/changed-paths.txt; then
-              find supabase/functions -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -Ev '^_' | sort -u > /tmp/functions.txt
+              sed -nE 's/^\[functions\.([^]]+)\]$/\1/p' supabase/config.toml | sort -u > /tmp/functions.txt
             else
               sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' /tmp/changed-paths.txt | grep -Ev '^_' | sort -u > /tmp/functions.txt
             fi
@@ -84,6 +84,10 @@ jobs:
           while IFS= read -r fn; do
             [ -d "supabase/functions/$fn" ] || {
               echo "::error::SUPABASE_EDGE_FUNCTION_NOT_IN_CURRENT_MAIN:$fn"
+              exit 78
+            }
+            grep -Fqx "[functions.$fn]" supabase/config.toml || {
+              echo "::error::SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:$fn"
               exit 78
             }
           done < /tmp/functions.txt
