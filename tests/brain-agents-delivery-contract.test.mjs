@@ -20,13 +20,17 @@ test('nonterminal CI completion contract forbids stopping before verified produc
   const contract = JSON.parse(await readFile(COMPLETION_CONTRACT_PATH, 'utf8'));
 
   assert.match(agents, /RED MEANS AGENTS KEEP WORKING/);
-  assert.equal(contract.version, 'NONTERMINAL-CI-COMPLETION-v1');
+  assert.equal(contract.version, 'NONTERMINAL-CI-COMPLETION-v2');
   assert.equal(contract.policy.ciPendingIsTerminal, false);
   assert.equal(contract.policy.ciFailureIsTerminal, false);
   assert.equal(contract.policy.openPrIsTerminal, false);
   assert.equal(contract.policy.mergeWaitIsTerminal, false);
   assert.equal(contract.policy.deployInProgressIsTerminal, false);
   assert.equal(contract.policy.missingProductionReadbackIsTerminal, false);
+  assert.equal(contract.policy.activePollingAllowed, false);
+  assert.equal(contract.policy.maxActiveExternalWaitSeconds, 30);
+  assert.equal(contract.policy.waitingExternalRequiresCheckpoint, true);
+  assert.equal(contract.policy.userContinueRequired, false);
 
   for (const state of [
     'queued',
