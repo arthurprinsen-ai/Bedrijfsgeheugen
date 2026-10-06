@@ -79,8 +79,11 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
 
 
 test('LinkedIn company requires a fresh bound organization-admin OAuth before publish', () => {
-  assert.match(setup,/COMPANY_OAUTH_SCOPES=.*r_organization_admin.*r_organization_social.*w_organization_social/);
-  assert.match(setup,/credentials:\{scopes:COMPANY_OAUTH_SCOPES\.join\(','\)\}/);
+  assert.match(setup,/COMPANY_REQUIRED_SCOPES=.*r_organization_admin.*w_organization_social/);
+  assert.match(setup,/COMPANY_SCOPE_TOOLS=.*LINKEDIN_GET_COMPANY_INFO.*LINKEDIN_CREATE_LINKED_IN_POST.*LINKEDIN_GET_POST_CONTENT/);
+  assert.match(setup,/toolkits\/linkedin\/scopes\/recommended/);
+  assert.match(setup,/credentials:\{scopes:recommendedScopes\.join\(','\)\}/);
+  assert.match(setup,/scope_recommendation_source:'composio-toolkit-recommended'/);
   assert.match(setup,/oauth_candidate_connection_id:connectedAccountId/);
   assert.match(setup,/boundOauthAccountId=clean\(priorState\?\.oauth_candidate_connection_id\|\|priorState\?\.company_oauth_connection_id\)/);
   assert.match(setup,/companyOauthFreshVerified=freshOauthBound&&companyAdminReadReady&&hasOrgWriteScope/);
@@ -136,4 +139,11 @@ test('company provider truth is stricter than a provider acknowledgement',()=>{
   assert.match(loop,/evidence\?\.linkedin_company_admin_oauth_proven===true/);
   assert.match(loop,/evidence\?\.organization_write_scope_verified===true/);
   assert.match(loop,/evidence\?\.company_oauth_fresh_verified===true/);
+});
+
+
+test('OAuth setup preserves structured Composio errors instead of object-string loss',()=>{
+  assert.match(setup,/function composioErrorText/);
+  assert.match(setup,/JSON\.stringify\(value\)/);
+  assert.doesNotMatch(setup,/clean\(b\?\.error\|\|b\?\.message\|\|JSON\.stringify\(b\)\)/);
 });

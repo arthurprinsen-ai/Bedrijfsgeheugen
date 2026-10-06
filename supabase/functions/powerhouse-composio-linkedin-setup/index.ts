@@ -6,15 +6,16 @@ const SUBJECT='linkedin-composio-setup';
 const USER_ID='bedrijfsgeheugen-owner';
 const ALIAS='bedrijfsgeheugen-company-canonical';
 const COMPANY_AUTH_CONFIG_NAME='Bedrijfsgeheugen LinkedIn Company';
-const COMPANY_OAUTH_SCOPES=['openid','profile','email','r_organization_admin','r_organization_social','w_organization_social'];
 const COMPANY_REQUIRED_SCOPES=['r_organization_admin','w_organization_social'];
+const COMPANY_SCOPE_TOOLS=['LINKEDIN_GET_MY_INFO','LINKEDIN_GET_COMPANY_INFO','LINKEDIN_CREATE_LINKED_IN_POST','LINKEDIN_GET_POST_CONTENT'];
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
-async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_LINKEDIN_SETUP_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240));return b;}
+function composioErrorText(body:any){const value=body?.error??body?.message??body;return clean(typeof value==='string'?value:JSON.stringify(value));}
+async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_LINKEDIN_SETUP_'+r.status+':'+composioErrorText(b).slice(0,500));return b;}
 async function execute(key:string,accountId:string,userId:string,toolSlug:string,args:Record<string,unknown>={}){
   if(!clean(accountId))throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID_REQUIRED');
   if(!clean(userId))throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
@@ -76,18 +77,34 @@ Deno.serve(async(req:Request)=>{
     const boundOauthAccountId=clean(priorState?.oauth_candidate_connection_id||priorState?.company_oauth_connection_id);
 
     if(action==='create_link'){
+      const recommendation=await api(key,'/toolkits/linkedin/scopes/recommended',{
+        method:'POST',
+        body:JSON.stringify({
+          tools:COMPANY_SCOPE_TOOLS,
+          auth_scheme:'OAUTH2',
+          toolkit_version:'latest',
+          include:COMPANY_REQUIRED_SCOPES
+        })
+      });
+      const recommendedScopes=Array.isArray(recommendation?.scopes?.least_privilege)
+        ? recommendation.scopes.least_privilege.map(clean).filter(Boolean)
+        : [];
+      if(!recommendedScopes.length||!COMPANY_REQUIRED_SCOPES.every(scope=>recommendedScopes.includes(scope))){
+        throw new Error('COMPOSIO_LINKEDIN_COMPANY_SCOPE_RECOMMENDATION_INCOMPLETE:'+JSON.stringify(recommendation?.scopes||{}).slice(0,300));
+      }
+
       const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&is_composio_managed=true&show_disabled=false&limit=50');
       const configs=(Array.isArray(configsBody?.items)?configsBody.items:[])
         .filter((x:any)=>x?.is_composio_managed===true&&clean(x?.status).toUpperCase()!=='DISABLED');
       const scopeSet=(value:any)=>new Set(clean(value?.credentials?.scopes||value?.credentials?.user_scopes).split(/[\s,]+/).map((v:string)=>v.trim()).filter(Boolean));
       const companyConfigs=configs.filter((x:any)=>{
         const scopes=scopeSet(x);
-        return COMPANY_REQUIRED_SCOPES.every(scope=>scopes.has(scope));
+        return recommendedScopes.every(scope=>scopes.has(scope));
       }).sort((a:any,b:any)=>
         Number(clean(b?.name)===COMPANY_AUTH_CONFIG_NAME)-Number(clean(a?.name)===COMPANY_AUTH_CONFIG_NAME)
         ||clean(b?.last_updated_at||b?.created_at).localeCompare(clean(a?.last_updated_at||a?.created_at))
       );
-      const priorConfigHasRequired=COMPANY_REQUIRED_SCOPES.every(scope=>priorRequestedScopes.includes(scope));
+      const priorConfigHasRequired=recommendedScopes.every(scope=>priorRequestedScopes.includes(scope));
       let authConfigId=priorConfigHasRequired?clean(priorState?.auth_config_id):clean(companyConfigs[0]?.id);
       if(!authConfigId){
         const created=await api(key,'/auth_configs',{method:'POST',body:JSON.stringify({
@@ -95,8 +112,8 @@ Deno.serve(async(req:Request)=>{
           auth_config:{
             type:'use_composio_managed_auth',
             name:COMPANY_AUTH_CONFIG_NAME,
-            credentials:{scopes:COMPANY_OAUTH_SCOPES.join(',')},
-            restrict_to_following_tools:['LINKEDIN_GET_MY_INFO','LINKEDIN_GET_COMPANY_INFO','LINKEDIN_CREATE_LINKED_IN_POST','LINKEDIN_GET_POST_CONTENT']
+            credentials:{scopes:recommendedScopes.join(',')},
+            restrict_to_following_tools:COMPANY_SCOPE_TOOLS
           }
         })});
         authConfigId=clean(created?.auth_config?.id||created?.id);
@@ -106,7 +123,7 @@ Deno.serve(async(req:Request)=>{
       const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
       if(!redirectUrl||!connectedAccountId)throw new Error('COMPOSIO_LINKEDIN_SCOPED_REDIRECT_OR_ACCOUNT_MISSING');
       const oauthRequestedAt=new Date().toISOString();
-      const result={ready:false,state:'AUTH_LINK_READY',reason:'LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED',api_key_present:true,auth_config_id:authConfigId,connected_account_id:connectedAccountId,oauth_candidate_connection_id:connectedAccountId,link_available:true,expires_at:clean(link?.expires_at)||null,production_workspace:true,requested_company_scopes:COMPANY_OAUTH_SCOPES,canonical_alias:ALIAS,oauth_requested_at:oauthRequestedAt,company_oauth_fresh_verified:false};
+      const result={ready:false,state:'AUTH_LINK_READY',reason:'LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED',api_key_present:true,auth_config_id:authConfigId,connected_account_id:connectedAccountId,oauth_candidate_connection_id:connectedAccountId,link_available:true,expires_at:clean(link?.expires_at)||null,production_workspace:true,requested_company_scopes:recommendedScopes,scope_recommendation_source:'composio-toolkit-recommended',scope_toolkit_version:clean(recommendation?.toolkit_version)||'latest',canonical_alias:ALIAS,oauth_requested_at:oauthRequestedAt,company_oauth_fresh_verified:false};
       await writeState(db,'AUTH_LINK_READY',result);
       return json({ok:true,...result,redirect_url:redirectUrl});
     }
