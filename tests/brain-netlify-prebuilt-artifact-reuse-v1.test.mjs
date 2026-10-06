@@ -60,6 +60,10 @@ test('static locale rendering uses content-addressed persistent cache',async()=>
   assert.match(builder,/cacheHits/);
   assert.match(builder,/cacheMisses/);
   assert.match(builder,/bg-release-commit/);
+  assert.match(builder,/STATIC_I18N_ROUTE_WORKERS/);
+  assert.match(builder,/STATIC_I18N_PARALLEL_START/);
+  assert.match(builder,/Math\.min\(4/);
+  assert.match(builder,/STATIC_I18N_SHARD_NETWORK_FORBIDDEN/);
 });
 
 test('tabbladen regression is classified with its website implementation',async()=>{
