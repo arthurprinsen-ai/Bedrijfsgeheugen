@@ -32,10 +32,12 @@ const evidenceHash = crypto.createHash("sha256").update(canonical).digest("hex")
 const dir = path.join(process.cwd(), "artifacts", "delivery-evidence");
 fs.mkdirSync(dir, { recursive: true });
 const file = path.join(dir, `${evidenceHash}.json`);
-if (fs.existsSync(file)) {
+const serialized = JSON.stringify(envelope, null, 2);
+try {
+  fs.writeFileSync(file, serialized + "\n", { flag: "wx" });
+} catch (error) {
+  if (error?.code !== "EEXIST") throw error;
   const existing = fs.readFileSync(file, "utf8").trim();
-  if (existing !== JSON.stringify(envelope, null, 2)) throw new Error("content-address collision");
-} else {
-  fs.writeFileSync(file, JSON.stringify(envelope, null, 2) + "\n", { flag: "wx" });
+  if (existing !== serialized) throw new Error("content-address collision");
 }
 console.log(JSON.stringify({ evidence_hash: `sha256:${evidenceHash}`, path: file, envelope }, null, 2));

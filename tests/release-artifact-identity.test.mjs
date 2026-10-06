@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { createReleaseEvidence } from '../tools/build/release-evidence.mjs';
 import { evaluateProductionReadback } from '../tools/site-shell/verify-production-release.mjs';
 
@@ -58,4 +59,11 @@ test('safe descendant requires a valid observed artifact identity',()=>{
     observedArtifactId:'',
     supersessionSafe:true,
   }),/artifact/i);
+});
+
+test('delivery evidence writer uses atomic create-or-readback without TOCTOU existence checks',()=>{
+  const source=readFileSync(new URL('../tools/ci/write-delivery-evidence.mjs', import.meta.url),'utf8');
+  assert.doesNotMatch(source,/existsSync/);
+  assert.match(source,/flag:\s*["']wx["']/);
+  assert.match(source,/error\?\.code !== ["']EEXIST["']/);
 });
