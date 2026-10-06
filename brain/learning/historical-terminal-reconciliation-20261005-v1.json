@@ -11,13 +11,15 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "A historical merged obligation retained two contradictory legacy signals: a stale Production Release Readback remained in_progress while the old terminalizer had already emitted fabricated positive runtime and outcome booleans.",
+  "root_cause": "A historical merged obligation retained two contradictory legacy signals: a stale Production Release Readback remained in_progress while the old terminalizer had already emitted fabricated positive runtime and outcome booleans. A later reconciliation merge also exposed that its registry file under config/ was not part of the canonical verifier-only authority, causing UNWIRED_NON_NETLIFY_RUNTIME_READBACK despite the bundle being control-plane-only.",
   "prevention": [
     "Reconcile historical terminal state with the current production-readback authority rather than trusting stale workflow state.",
     "Pin reconciliation to exact PR number, obligation id and merge SHA.",
     "Keep stale workflow runs and legacy terminal artifacts as historical evidence but mark them non-authoritative.",
     "Never convert runtime-not-applicable into deploy, runtime-function or outcome proof.",
-    "Fail closed for historical runtime paths without a dedicated readback authority."
+    "Fail closed for historical runtime paths without a dedicated readback authority.",
+    "Classify the pinned historical reconciliation registry as canonical verifier-only control-plane evidence.",
+    "Revalidate historical reconciliation after terminalizer routing repairs and migration-history terminal closure."
   ],
   "evaluation": {
     "historical_replay": [
@@ -29,8 +31,14 @@
     "source_merge_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
     "legacy_terminalizer_run_id": 37343578647,
     "stale_readback_run_id": 37343578411,
-    "forward_authority_pr": 3758
+    "forward_authority_pr": 3758,
+    "terminalizer_authority_prs": [
+      3812,
+      3822
+    ],
+    "migration_history_closure_pr": 3824,
+    "failed_reconciliation_terminalizer_run_id": 37360346810
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 2
 }

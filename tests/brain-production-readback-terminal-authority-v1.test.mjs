@@ -74,3 +74,10 @@ test('obligation terminalizer delegates Netlify runtime applicability to the sha
   assert.match(workflow,/production-supersession\.mjs/);
   assert.doesNotMatch(workflow,/netlify\/functions\/\*\|platform\/api\/\*/);
 });
+
+
+test('historical reconciliation registry is verifier-only control-plane evidence', () => {
+  assert.ok(contract.productionTruth.verifierOnlyPaths.includes('config/historical-terminal-reconciliation.json'));
+  assert.ok(NON_PRODUCTION_EXACT.has('config/historical-terminal-reconciliation.json'));
+  assert.equal(isNetlifyRuntimePath('config/historical-terminal-reconciliation.json'), false);
+});
