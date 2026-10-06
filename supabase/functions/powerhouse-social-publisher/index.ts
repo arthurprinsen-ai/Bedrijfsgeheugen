@@ -187,8 +187,8 @@ async function composioLinkedInCompanyContext(db:any){
   const oauthVerifiedAt=clean(state?.company_oauth_verified_at);
   const freshVerified=state?.company_oauth_fresh_verified===true;
   const adminVerified=state?.linkedin_company_admin_oauth_proven===true;
-  const writeVerified=state?.organization_write_scope_verified===true;
-  if(state?.company_ready!==true||!freshVerified||!adminVerified||!writeVerified||!accountId||!oauthVerifiedAt){
+  const writeRequested=state?.organization_write_scope_requested===true||state?.company_write_scope_present===true;
+  if(state?.company_ready!==true||!freshVerified||!adminVerified||!writeRequested||!accountId||!oauthVerifiedAt){
     throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
   }
 
@@ -214,7 +214,7 @@ async function composioLinkedInCompanyContext(db:any){
   return {
     apiKey,accountId,userId,personId,targetOrg,
     organizationAdminVerified:true,
-    organizationWriteScopeVerified:true,
+    organizationWriteScopeRequested:true,
     companyOauthFreshVerified:true,
     companyReadbackReady:state?.company_readback_ready===true,
     adminOauthVerifiedAt:oauthVerifiedAt,
@@ -222,16 +222,17 @@ async function composioLinkedInCompanyContext(db:any){
   };
 }
 async function preflightLinkedInCompanyComposio(db:any){
-  const {accountId,targetOrg,organizationAdminVerified,organizationWriteScopeVerified,companyOauthFreshVerified,companyReadbackReady,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  const {accountId,targetOrg,organizationAdminVerified,organizationWriteScopeRequested,companyOauthFreshVerified,companyReadbackReady,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
   return {
     provider:'composio',
     provider_auth_preflight:'passed',
     provider_auth_checked_at:new Date().toISOString(),
     account_id:accountId,
     organization_urn:targetOrg,
-    organization_capability_verified:organizationAdminVerified===true&&organizationWriteScopeVerified===true&&companyOauthFreshVerified===true,
+    organization_capability_verified:organizationAdminVerified===true&&organizationWriteScopeRequested===true&&companyOauthFreshVerified===true,
     linkedin_company_admin_oauth_proven:organizationAdminVerified===true,
-    organization_write_scope_verified:organizationWriteScopeVerified===true,
+    organization_write_scope_requested:organizationWriteScopeRequested===true,
+    organization_write_scope_verified:false,
     company_oauth_fresh_verified:companyOauthFreshVerified===true,
     company_oauth_connection_id:accountId,
     company_oauth_verified_at:adminOauthVerifiedAt,
@@ -242,8 +243,8 @@ async function preflightLinkedInCompanyComposio(db:any){
 
 async function preflightLinkedInCompanyViaComposio(db:any){
   const ctx=await composioLinkedInCompanyContext(db);
-  if(ctx.organizationAdminVerified!==true||ctx.organizationWriteScopeVerified!==true||ctx.companyOauthFreshVerified!==true)throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
-  return {apiKey:ctx.apiKey,accountId:ctx.accountId,userId:ctx.userId,organizationUrn:ctx.targetOrg,organizationAdminVerified:true,organizationWriteScopeVerified:true,companyOauthFreshVerified:true,companyReadbackReady:ctx.companyReadbackReady,adminOauthVerifiedAt:ctx.adminOauthVerifiedAt};
+  if(ctx.organizationAdminVerified!==true||ctx.organizationWriteScopeRequested!==true||ctx.companyOauthFreshVerified!==true)throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
+  return {apiKey:ctx.apiKey,accountId:ctx.accountId,userId:ctx.userId,organizationUrn:ctx.targetOrg,organizationAdminVerified:true,organizationWriteScopeRequested:true,companyOauthFreshVerified:true,companyReadbackReady:ctx.companyReadbackReady,adminOauthVerifiedAt:ctx.adminOauthVerifiedAt};
 }
 
 function isLinkedInAuthPreflightError(error:any){
@@ -580,8 +581,8 @@ function assertLinkedInCompanyContentPolicy(commentary:string){
 }
 
 async function publishLinkedInCompanyViaComposio(db:any,art:any){
-  const {apiKey,accountId,userId,organizationAdminVerified,organizationWriteScopeVerified,companyOauthFreshVerified,companyReadbackReady,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
-  if(organizationAdminVerified!==true||organizationWriteScopeVerified!==true||companyOauthFreshVerified!==true)throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
+  const {apiKey,accountId,userId,organizationAdminVerified,organizationWriteScopeRequested,companyOauthFreshVerified,companyReadbackReady,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  if(organizationAdminVerified!==true||organizationWriteScopeRequested!==true||companyOauthFreshVerified!==true)throw new Error('LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED');
   const author=await linkedinCompanyAuthorUrn(db);
   const commentary=clean(art.body);
   assertLinkedInCompanyContentPolicy(commentary);
@@ -605,6 +606,7 @@ async function publishLinkedInCompanyViaComposio(db:any,art:any){
       provider_status:'published',
       republish_forbidden:true,
       linkedin_company_admin_oauth_proven:true,
+      organization_write_scope_requested:true,
       organization_write_scope_verified:true,
       company_oauth_fresh_verified:true,
       company_oauth_connection_id:accountId,
@@ -629,6 +631,7 @@ async function publishLinkedInCompanyViaComposio(db:any,art:any){
       readback_permission_limited:permissionLimited,
       republish_forbidden:true,
       linkedin_company_admin_oauth_proven:true,
+      organization_write_scope_requested:true,
       organization_write_scope_verified:true,
       company_oauth_fresh_verified:true,
       company_oauth_connection_id:accountId,
@@ -642,7 +645,7 @@ async function publishLinkedInCompanyViaComposio(db:any,art:any){
 async function readLinkedInCompanyPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
   const ref=clean(postUrn);
   if(!/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))throw new Error('COMPOSIO_LINKEDIN_COMPANY_POST_URN_INVALID');
-  const {apiKey,accountId,userId,organizationAdminVerified,organizationWriteScopeVerified,companyOauthFreshVerified,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  const {apiKey,accountId,userId,organizationAdminVerified,organizationWriteScopeRequested,companyOauthFreshVerified,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
   const author=await linkedinCompanyAuthorUrn(db);
   const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:ref});
   const rb=readback?.data||readback;
@@ -651,7 +654,7 @@ async function readLinkedInCompanyPostViaComposio(db:any,postUrn:string,expected
   const lifecycleState=clean(rb?.lifecycleState).toUpperCase();
   const truth=rbUrn===ref&&clean(rb?.author)===author&&lifecycleState==='PUBLISHED'&&(!clean(expectedCommentary)||commentary===clean(expectedCommentary));
   if(!truth)throw new Error('COMPOSIO_LINKEDIN_COMPANY_EXACT_RECONCILE_MISMATCH');
-  return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',linkedin_company_admin_oauth_proven:organizationAdminVerified===true,organization_write_scope_verified:organizationWriteScopeVerified===true,company_oauth_fresh_verified:companyOauthFreshVerified===true,company_oauth_connection_id:accountId,company_oauth_verified_at:adminOauthVerifiedAt,author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
+  return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',linkedin_company_admin_oauth_proven:organizationAdminVerified===true,organization_write_scope_requested:organizationWriteScopeRequested===true,organization_write_scope_verified:true,company_oauth_fresh_verified:companyOauthFreshVerified===true,company_oauth_connection_id:accountId,company_oauth_verified_at:adminOauthVerifiedAt,author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
 function deepPickId(value:any,preferred:string[]=[]):string{
