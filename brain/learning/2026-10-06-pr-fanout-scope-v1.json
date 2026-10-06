@@ -1,0 +1,27 @@
+{
+  "id": "pr-fanout-scope-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github-pr-fanout|redundant-writer-debug-browser-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pr-workflow-fanout-scope-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Several workflows were triggered for every or overly broad pull-request change even though their jobs were inapplicable or diagnostic-only. Repository Writer Candidate Shadow emitted skipped runs on ordinary PRs despite already having an exact workflow_dispatch route; Pagina/SEO diagnose performed a full build and browser/SEO scan on PRs despite being diagnostic and currently surfacing unrelated baseline debt; cross-browser assurance treated the release-risk classifier config as a website runtime artifact.",
+  "prevention": "Use explicit workflow_dispatch for immutable writer shadow verification, keep Pagina/SEO diagnose manual-only, and exclude site/website-release-risk.json from cross-browser PR path matching while retaining daily scheduled and real website-change assurance.",
+  "evidence": {
+    "regression_test": "tests/brain-pr-workflow-fanout-scope-v1.test.mjs",
+    "writer_dispatch_source": ".github/workflows/repo-writer-operational-verification.yml",
+    "page_seo_observed_run": 37467735424,
+    "cross_browser_observed_run": 37467735423,
+    "preserved_cross_browser_schedule": "20 6 * * *"
+  }
+}
