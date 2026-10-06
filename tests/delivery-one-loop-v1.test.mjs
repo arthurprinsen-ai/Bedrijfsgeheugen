@@ -93,13 +93,12 @@ test('delivery admission avoids N+1 file reads for ordinary open PRs', () => {
   assert.doesNotMatch(hygiene, /if \(validateDeliveryMetadata\(metadata, policy\)\.ok\) \{\s*const files = await gh/);
 });
 
-test('CodeQL keeps Python and Powerhouse JavaScript coverage without analyzing JavaScript twice on each PR', () => {
-  const generic = workflow('codeql.yml');
+test('Powerhouse CodeQL is the single PR authority for Python and JavaScript', () => {
   const powerhouse = workflow('powerhouse-codeql.yml');
-  assert.match(generic, /language:\s*\[python\]/);
-  assert.match(generic, /'\*\*\/\*\.py'/);
-  assert.doesNotMatch(generic, /javascript-typescript/);
+  assert.match(powerhouse, /^  pull_request:/m);
+  assert.match(powerhouse, /'\*\*\/\*\.py'/);
   assert.match(powerhouse, /languages:\s*javascript-typescript/);
+  assert.match(powerhouse, /languages:\s*python/);
   assert.match(powerhouse, /queries:\s*security-extended/);
 });
 
