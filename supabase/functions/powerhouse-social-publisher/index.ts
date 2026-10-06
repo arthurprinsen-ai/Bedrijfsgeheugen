@@ -148,7 +148,8 @@ async function composioLinkedInCompanyContext(db:any){
   if(!response.ok)throw new Error(`COMPOSIO_LINKEDIN_ACCOUNT_DISCOVERY_${response.status}`);
   const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
   const candidates:any[]=[];
-  let lastError='';
+  let lastError='LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED';
+  const targetOrgId=targetOrg.replace(/^urn:li:organization:/,'');
   for(const item of items){
     if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
     const accountId=clean(item?.id||item?.connected_account_id);
@@ -158,36 +159,63 @@ async function composioLinkedInCompanyContext(db:any){
       const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
       const personId=deepPickString(me?.data||me,['id']);
       if(!personId||personId!=='N1twnCNCrD')continue;
-      let organizationReadVerified=false;
+      let companies:any;
       try{
-        const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
-        const raw=JSON.stringify(companies?.data||companies);
-        const targetOrgId=targetOrg.replace(/^urn:li:organization:/,'');
-        organizationReadVerified=raw.includes(targetOrg)||raw.includes(targetOrgId);
-      }catch(_organizationReadError){}
-      candidates.push({apiKey,accountId,userId,personId,alias:clean(item?.alias),isDefault:item?.is_default===true,createdAt:clean(item?.created_at),organizationReadVerified});
+        companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
+      }catch(error){
+        lastError='LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED:'+(error instanceof Error?error.message:String(error));
+        continue;
+      }
+      const raw=JSON.stringify(companies?.data||companies);
+      const organizationAdminVerified=raw.includes(targetOrg)||raw.includes(targetOrgId);
+      if(!organizationAdminVerified){
+        lastError='LINKEDIN_COMPANY_ADMIN_ROLE_REQUIRED';
+        continue;
+      }
+      candidates.push({
+        apiKey,accountId,userId,personId,
+        alias:clean(item?.alias),
+        isDefault:item?.is_default===true,
+        createdAt:clean(item?.created_at),
+        targetOrg,
+        organizationAdminVerified:true,
+        adminOauthVerifiedAt:new Date().toISOString()
+      });
     }catch(error){
       lastError=error instanceof Error?error.message:String(error);
     }
   }
-  if(candidates.length===0)throw new Error('LINKEDIN_COMPANY_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
+  if(candidates.length===0)throw new Error('LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED:'+clean(lastError).slice(0,220));
   candidates.sort((a:any,b:any)=>
-    Number((b.alias||'').includes('canonical-org'))-Number((a.alias||'').includes('canonical-org'))
+    Number((b.alias||'')==='bedrijfsgeheugen-company-canonical')-Number((a.alias||'')==='bedrijfsgeheugen-company-canonical')
+    || Number((b.alias||'').includes('canonical-org'))-Number((a.alias||'').includes('canonical-org'))
     || Number((b.alias||'').includes('company'))-Number((a.alias||'').includes('company'))
     || Number(b.isDefault)-Number(a.isDefault)
     || b.createdAt.localeCompare(a.createdAt)
   );
-  return {...candidates[0],targetOrg,connection_source:candidates[0].organizationReadVerified?'organization_capability_probe':'canonical_org_write_candidate'};
+  return {...candidates[0],connection_source:'organization_admin_oauth_proven'};
 }
 
 async function preflightLinkedInCompanyComposio(db:any){
-  const {apiKey,accountId,userId,targetOrg}=await composioLinkedInCompanyContext(db);
-  return {provider:'composio',provider_auth_preflight:'passed',provider_auth_checked_at:new Date().toISOString(),account_id:accountId,organization_urn:targetOrg,organization_capability_verified:true,organization_read_capability_required_for_write:false};
+  const {accountId,targetOrg,organizationAdminVerified,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  return {
+    provider:'composio',
+    provider_auth_preflight:'passed',
+    provider_auth_checked_at:new Date().toISOString(),
+    account_id:accountId,
+    organization_urn:targetOrg,
+    organization_capability_verified:organizationAdminVerified===true,
+    linkedin_company_admin_oauth_proven:organizationAdminVerified===true,
+    company_oauth_connection_id:accountId,
+    company_oauth_verified_at:adminOauthVerifiedAt,
+    organization_read_capability_required_for_write:true
+  };
 }
 
 async function preflightLinkedInCompanyViaComposio(db:any){
-  const {apiKey,accountId,userId,targetOrg}=await composioLinkedInCompanyContext(db);
-  return {apiKey,accountId,userId,organizationUrn:targetOrg};
+  const {apiKey,accountId,userId,targetOrg,organizationAdminVerified,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  if(organizationAdminVerified!==true)throw new Error('LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED');
+  return {apiKey,accountId,userId,organizationUrn:targetOrg,organizationAdminVerified:true,adminOauthVerifiedAt};
 }
 
 function isLinkedInAuthPreflightError(error:any){
@@ -198,7 +226,10 @@ function isLinkedInAuthPreflightError(error:any){
     ||message.includes('UNAUTHORIZED')
     ||message.includes('TOKEN')
     ||message.includes('AUTH_REQUIRED')
-    ||message.includes('CONNECTION_REQUIRED');
+    ||message.includes('CONNECTION_REQUIRED')
+    ||message.includes('ADMIN_OAUTH_REQUIRED')
+    ||message.includes('ADMIN_ROLE_REQUIRED')
+    ||message.includes('ORGANIZATION_ADMIN');
 }
 
 async function preflightLinkedInComposio(db:any){
@@ -385,6 +416,10 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any){
       provider_truth_checked_at:new Date().toISOString(),
       provider_status:'published',
       republish_forbidden:true,
+      linkedin_company_admin_oauth_proven:true,
+      organization_write_scope_verified:true,
+      company_oauth_connection_id:accountId,
+      company_oauth_verified_at:adminOauthVerifiedAt,
       published_at:Number.isFinite(publishedAtMs)?new Date(publishedAtMs).toISOString():new Date().toISOString(),
       author_urn:author,
       linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
@@ -522,7 +557,8 @@ function assertLinkedInCompanyContentPolicy(commentary:string){
 }
 
 async function publishLinkedInCompanyViaComposio(db:any,art:any){
-  const {apiKey,accountId,userId}=await composioLinkedInCompanyContext(db);
+  const {apiKey,accountId,userId,organizationAdminVerified,adminOauthVerifiedAt}=await composioLinkedInCompanyContext(db);
+  if(organizationAdminVerified!==true)throw new Error('LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED');
   const author=await linkedinCompanyAuthorUrn(db);
   const commentary=clean(art.body);
   assertLinkedInCompanyContentPolicy(commentary);
@@ -563,6 +599,10 @@ async function publishLinkedInCompanyViaComposio(db:any,art:any){
       verification_pending:true,
       readback_permission_limited:permissionLimited,
       republish_forbidden:true,
+      linkedin_company_admin_oauth_proven:true,
+      organization_write_scope_verified:true,
+      company_oauth_connection_id:accountId,
+      company_oauth_verified_at:adminOauthVerifiedAt,
       author_urn:author,
       readback_error:readbackError
     };
