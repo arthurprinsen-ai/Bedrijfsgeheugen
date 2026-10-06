@@ -6,6 +6,13 @@ const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(value:string){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
+const CMS_DB_TIMEOUT_MS=2_500;
+const CMS_BREAKER_MS=30_000;
+const CMS_CACHE_FRESH_MS=60_000;
+const CMS_CACHE_STALE_MS=600_000;
+let cmsDbDegradedUntil=0;
+const cmsCache=new Map<string,{storedAt:number,payload:any}>();
+const cmsFetch=(input:RequestInfo|URL,init:RequestInit={})=>fetch(input,{...init,signal:AbortSignal.timeout(CMS_DB_TIMEOUT_MS)});
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -26,16 +33,35 @@ Deno.serve(async(req:Request)=>{
     const cmsRoute=String(body?.route||'/').trim()||'/';
     if(!['website','portal'].includes(cmsSurface))return json({error:'INVALID_CMS_SURFACE'},400);
     if(!['nl-NL','en-US'].includes(cmsLocale))return json({error:'INVALID_CMS_LOCALE'},400);
-    const {data,error}=await client.from('cms_content_items')
-      .select('id,surface,locale,route,area,element_key,element_type,selector,content,sort_order,version,updated_at,published_at')
-      .eq('status','published')
-      .eq('locale',cmsLocale)
-      .in('surface',['shared',cmsSurface])
-      .in('route',['*',cmsRoute])
-      .order('sort_order',{ascending:true})
-      .order('element_key',{ascending:true});
-    if(error)return json({error:'CMS_PUBLIC_READ_FAILED'},500);
-    return json({items:Array.isArray(data)?data:[],surface:cmsSurface,locale:cmsLocale,route:cmsRoute,generatedAt:new Date().toISOString()});
+    const cacheKey=[cmsSurface,cmsLocale,cmsRoute].join('|');
+    const cached=cmsCache.get(cacheKey);
+    const age=cached?Date.now()-cached.storedAt:Number.POSITIVE_INFINITY;
+    if(cached&&age<CMS_CACHE_FRESH_MS)return json({...cached.payload,cache:'edge-memory-fresh'});
+    if(Date.now()<cmsDbDegradedUntil){
+      if(cached&&age<CMS_CACHE_STALE_MS)return json({...cached.payload,cache:'edge-memory-stale',degraded:true});
+      return json({error:'CMS_PUBLIC_UNAVAILABLE',detail:'DATA_API_CIRCUIT_OPEN'},503);
+    }
+    const cmsClient=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false},global:{fetch:cmsFetch}});
+    try{
+      const {data,error}=await cmsClient.from('cms_content_items')
+        .select('id,surface,locale,route,area,element_key,element_type,selector,content,sort_order,version,updated_at,published_at')
+        .eq('status','published')
+        .eq('locale',cmsLocale)
+        .in('surface',['shared',cmsSurface])
+        .in('route',['*',cmsRoute])
+        .order('sort_order',{ascending:true})
+        .order('element_key',{ascending:true});
+      if(error)throw error;
+      cmsDbDegradedUntil=0;
+      const payload={items:Array.isArray(data)?data:[],surface:cmsSurface,locale:cmsLocale,route:cmsRoute,generatedAt:new Date().toISOString()};
+      cmsCache.set(cacheKey,{storedAt:Date.now(),payload});
+      return json({...payload,cache:'data-api'});
+    }catch(error){
+      cmsDbDegradedUntil=Date.now()+CMS_BREAKER_MS;
+      console.error('CMS_PUBLIC_DATA_API_DEGRADED',error instanceof Error?error.message:String(error));
+      if(cached&&age<CMS_CACHE_STALE_MS)return json({...cached.payload,cache:'edge-memory-stale',degraded:true});
+      return json({error:'CMS_PUBLIC_UNAVAILABLE',detail:'DATA_API_UNAVAILABLE'},503);
+    }
   }
 
   if(action==='cms_admin_list'){
