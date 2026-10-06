@@ -59,3 +59,11 @@ test('paginacontrole regression family is classified into the automation lane',(
   const policy=read('config/brain-delivery-system.json');
   assert.match(policy,/"tests\/paginacontrole-"/);
 });
+
+
+test('paginacontrole test family remains classified in the automation lane',()=>{
+  const delivery=JSON.parse(read('config/brain-delivery-system.json'));
+  const automation=delivery.lanes.find(lane=>lane.id==='automation');
+  assert.ok(automation,'automation lane must exist');
+  assert.ok(automation.paths.includes('tests/paginacontrole-'),'paginacontrole regression family must stay classified');
+});
