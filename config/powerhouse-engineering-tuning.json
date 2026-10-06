@@ -1,5 +1,5 @@
 {
-  "fingerprint": "powerhouse-engineering-tuning-v1",
+  "fingerprint": "powerhouse-engineering-tuning-v2",
   "updated_at": "2026-09-28T18:05:00Z",
   "max_parallel_packages": 4,
   "candidate_batch_window_seconds": 20,
@@ -11,6 +11,13 @@
     "security_gate": true,
     "production_readback": true,
     "protected_merge": true,
-    "exact_sha_identity": true
-  }
+    "exact_sha_identity": true,
+    "canonical_required_gate": true,
+    "merge_group_full_assurance": true,
+    "pull_request_head_workflow_budget": true
+  },
+  "ci_background_max_parallel": 4,
+  "ci_fast_gate_queue_target_seconds": 30,
+  "ci_fast_gate_total_target_seconds": 120,
+  "ci_agent_active_wait_limit_seconds": 30
 }
