@@ -29,7 +29,7 @@ test('Required is the only PR admission orchestrator and keeps PR-scoped single-
 
 test('PR admission ratchet is exactly Required plus Powerhouse CodeQL', async () => {
   const baseline = JSON.parse(await readFile('config/pr-trigger-baseline.json','utf8'));
-  assert.deepEqual([...baseline.admissionPullRequestWorkflows].sort(), ['powerhouse-codeql.yml','required-test.yml']);
+  assert.deepEqual([...baseline.admissionPullRequestWorkflows].sort(), ['codeql.yml','required-test.yml']);
   assert.equal(baseline.admissionPullRequestWorkflowCount, 2);
 });
 
@@ -68,7 +68,7 @@ test('queue pressure forecast blocks fan-out before mutation', () => {
 
 
 test('consolidated CodeQL owns PR security and path-scoped main pushes', async () => {
-  const yml = await readFile('.github/workflows/powerhouse-codeql.yml','utf8');
+  const yml = await readFile('.github/workflows/codeql.yml','utf8');
   assert.match(yml,/pull_request:\n\s+branches:\s*\[main\]/);
   const push = yml.slice(yml.indexOf('  push:'), yml.indexOf('  schedule:'));
   assert.match(push,/branches:\s*\[main\]/);
