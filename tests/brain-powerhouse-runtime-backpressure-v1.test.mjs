@@ -66,7 +66,7 @@ test('public runtime verifier is retired and cannot amplify database outages',()
   const config=read('supabase/config.toml');
   assert.equal(contract.runtime_verifier.state,'RETIRED_DIAGNOSTIC');
   assert.equal(contract.runtime_verifier.public_db_probe,false);
-  assert.equal(contract.runtime_verifier.response_status,200);
+  assert.equal(contract.runtime_verifier.response_status,410);
   assert.equal(contract.runtime_verifier.replacement,'commercial-heartbeat-and-runtime-readback');
   assert.ok(contract.runtime_verifier.authority.includes('supabase-provider-logs'));
   assert.ok(contract.runtime_verifier.authority.includes('supabase-management-api'));
@@ -76,7 +76,7 @@ test('public runtime verifier is retired and cannot amplify database outages',()
   assert.match(verifier,/status:"RETIRED_DIAGNOSTIC"/);
   assert.match(verifier,/database_probe_performed:false/);
   assert.match(verifier,/replacement:"commercial-heartbeat-and-runtime-readback"/);
-  assert.match(verifier,/status:200/);
+  assert.match(verifier,/status:410/);
   assert.doesNotMatch(verifier,/postgres@/);
   assert.doesNotMatch(verifier,/SUPABASE_DB_URL/);
   assert.doesNotMatch(verifier,/select 1/);
