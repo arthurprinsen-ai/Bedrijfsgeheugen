@@ -1,0 +1,20 @@
+{
+  "fingerprint": "powerhouse|terminalizer|supabase-migration-history-canonical|readback-routing|v1",
+  "failure_class": "DELIVERY_TERMINALIZER_ROUTING",
+  "observed": {
+    "pr": 3766,
+    "candidate_head": "04b82996ad16c68e45173b48d4b9ba2de270a03d",
+    "merge_sha": "ccdf134ca4de73e547e54c9de00298d771f87be5",
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "cause": "terminalizer recognized only supabase-migration-history-parity-* while canonical recovery used supabase-migration-history-canonical-v6"
+  },
+  "correction": [
+    "recognize both parity and canonical Supabase migration-history recovery obligation families",
+    "treat immutable migration history, lock and production-baseline evidence as non-runtime Supabase recovery paths",
+    "retain fail-closed rejection for unrelated runtime paths"
+  ],
+  "prevention": [
+    "regression test pins canonical obligation routing",
+    "unknown non-Netlify runtime remains fail-closed"
+  ]
+}
