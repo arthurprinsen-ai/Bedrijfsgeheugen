@@ -1,0 +1,38 @@
+{
+  "fingerprint": "social-publication|provider-capability-preflight|20261006|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-daily-publication-no-gap-20261006",
+  "compiler": {
+    "failure_class": "SOCIAL_PROVIDER_CAPABILITY_NOT_PROVEN",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A generic ACTIVE LinkedIn connection could pass identity discovery even when it could not prove approved administrator access to the canonical organization. Separately, the Instagram vision verifier collapsed Anthropic credit exhaustion into a generic provider-request failure, obscuring the real external dependency while correctly remaining fail-closed.",
+  "prevention_rule": "LinkedIn company publication must prove organizationReadVerified for the target organization before a publication capability can be issued. Instagram vision verification must classify provider credit exhaustion explicitly while preserving the existing visual-verification gate; no alternate provider writer or verification bypass is allowed.",
+  "evidence": {
+    "runtime": [
+      "2026-10-06 linkedin_personal has one provider-created side effect urn:li:share:7513180628259852288 and must never be republished; exact API content readback is permission-limited.",
+      "2026-10-06 linkedin_company remains content_ready with no delivery_ref, no provider post id and no provider-create proof.",
+      "The company obligation remains APPROVED and resumable after canonical LinkedIn reauthorization."
+    ],
+    "source": [
+      "supabase/functions/powerhouse-social-publisher/index.ts",
+      "supabase/functions/powerhouse-instagram-media-verifier/index.ts"
+    ],
+    "regression": [
+      "tests/brain-social-provider-capability-preflight-20261006.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-provider-capability-preflight-20261006.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-provider-capability-preflight-20261006.test.mjs"
+    ]
+  }
+}
