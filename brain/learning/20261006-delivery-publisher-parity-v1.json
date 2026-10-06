@@ -33,11 +33,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "date": "2026-10-06",
-        "result": "reproduced_and_bounded",
-        "detail": "Earlier publisher executions reached worker resource limits; after path separation and evidence normalization the remaining LinkedIn company stop is the external OAuth boundary, with no provider side-effect."
-      }
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
     ]
   }
 }
