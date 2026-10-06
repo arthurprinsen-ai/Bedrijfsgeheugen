@@ -20,7 +20,7 @@
   # delivery governance, tests or documentation. The script fails open: any
   # unknown/runtime path returns exit 1 so the deploy still runs.
   ignore = "node ./tools/ci/netlify-ignore-build.mjs"
-  command = "node tools/ci/run-netlify-build.mjs"
+  command = "node tools/netlify-build/run-netlify-build.mjs"
 
 # Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
@@ -375,7 +375,7 @@
 # Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
 # alternatieve preview-composer meer die een andere website kan tonen.
 [context.deploy-preview]
-  command = "node tools/ci/run-netlify-build.mjs"
+  command = "node tools/netlify-build/run-netlify-build.mjs"
 
 [[redirects]]
   from = "/aanmelden.html"
