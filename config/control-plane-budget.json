@@ -41,7 +41,6 @@
         "canonical-brand-shell-test.yml",
         "chat-learning-preflight-pr.yml",
         "codeql.yml",
-        "component-foundation-tdd.yml",
         "component-preview.yml",
         "config-wacht.yml",
         "content-growth-ci.yml",
@@ -50,9 +49,7 @@
         "fresh-device-autonomy-canary.yml",
         "hero-media-production-verify.yml",
         "homepage-hero-video-verify.yml",
-        "homepage-pricing-boundary-regression.yml",
         "linkedin-revenue-cockpit-tests.yml",
-        "main-write-integrity-regression.yml",
         "obligation-terminal-closure.yml",
         "paginacontrole-debug.yml",
         "portal-native-regression-tests.yml",
@@ -89,11 +86,10 @@
         "supabase-pr-preview.yml",
         "unified-content-operations.yml",
         "universal-closed-loop-learning.yml",
-        "universal-event-retention-contract.yml",
         "verify-approved-central-blog.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 63
+      "directPrTriggerCount": 59
     },
     "netlify": {
       "projects": 16
