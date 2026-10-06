@@ -187,3 +187,14 @@ begin
     context=excluded.context,state=excluded.state,updated_at=excluded.updated_at;
   return v_result;
 end $function$;
+
+-- Preserve the existing internal execution boundary explicitly on fresh replay.
+revoke execute on function public.powerhouse_commercial_intelligence_heartbeat_v1(date) from public, anon, authenticated;
+grant execute on function public.powerhouse_commercial_intelligence_heartbeat_v1(date) to service_role;
+
+revoke execute on function public.powerhouse_commercial_heartbeat_v1(timestamp with time zone) from public, anon, authenticated;
+grant execute on function public.powerhouse_commercial_heartbeat_v1(timestamp with time zone) to service_role;
+
+revoke execute on function public.powerhouse_revenue_event_spine_cycle_v1(date) from public, anon, authenticated;
+grant execute on function public.powerhouse_revenue_event_spine_cycle_v1(date) to service_role;
+
