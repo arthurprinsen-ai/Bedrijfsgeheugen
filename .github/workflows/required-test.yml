@@ -271,6 +271,7 @@ jobs:
           tests/ai-model-advisor-v1.test.mjs
           tests/brain-ai-modelwijzer-novice-i18n-v1.test.mjs
           tests/brain-netlify-premerge-build-parity-v1.test.mjs
+          tests/brain-netlify-build-artifact-reuse-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
           tests/social-learning-compatibility.test.mjs
@@ -329,15 +330,30 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22.12.0'
+      - id: source
+        name: Derive immutable Netlify source tree identity
+        run: |
+          set -euo pipefail
+          tree_sha="$(git rev-parse 'HEAD^{tree}')"
+          echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
+          echo "NETLIFY_SOURCE_TREE:$tree_sha"
       - uses: actions/cache@v4
         with:
           path: ~/.npm
           key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
           restore-keys: |
             npm-${{ runner.os }}-
+      - id: prebuilt_cache
+        name: Restore exact-tree Netlify prebuilt cache
+        uses: actions/cache@v4
+        with:
+          path: .cache/netlify-prebuilt.tar
+          key: netlify-prebuilt-v1-${{ steps.source.outputs.tree_sha }}
       - name: Install exact Netlify build dependencies
+        if: steps.prebuilt_cache.outputs.cache-hit != 'true'
         run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Run exact Netlify production build command once
+        if: steps.prebuilt_cache.outputs.cache-hit != 'true'
         env:
           COMMIT_REF: ${{ needs.preflight.outputs.change_head_sha }}
           CONTEXT: production
@@ -345,34 +361,67 @@ jobs:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
           STATIC_I18N_CONCURRENCY: '1'
+        run: node tools/ci/run-netlify-production-build.mjs
+      - name: Restore cached exact-tree build output
+        if: steps.prebuilt_cache.outputs.cache-hit == 'true'
         run: |
           set -euo pipefail
-          node tools/site-shell/pricing-build-integrity.mjs capture
-          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
-          node tools/bouw-powerhouse-auth.mjs
-          node tools/bouw-kennisindex.mjs
-          node tools/bouw-v18-production.mjs
-          node tools/site-shell/apply-product-led-home.mjs
-          node tools/apply-tabbladen.mjs
-          node tools/bouw-v18-views.mjs
-          node tools/bouw-v18-chrome-alles.mjs
-          node tools/prijzen-uit-de-homepage.mjs
-          node tools/normaliseer-site-ui.mjs
-          node tools/site-shell/pricing-build-integrity.mjs restore
-          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
-          node tools/seo-order-engine/apply.mjs
-          node tools/seo-order-engine/validate.mjs
-          node tools/site-shell/apply-i18n.mjs
-          node tools/site-shell/build-localized-routes.mjs
-          node tools/site-shell/apply-commercial-pricing-v1.mjs
-          node tools/seo-order-engine/apply-revenue-links.mjs
-          node tools/site-shell/finalize-website-coherence-v1.mjs
-          node tools/site-shell/apply-cms-runtime.mjs
-          node tools/genereer-sitemap.mjs
-          node tools/seo-order-engine/validate-locales.mjs
-          node tools/bouw-release-evidence.mjs
+          test -s .cache/netlify-prebuilt.tar
+          tar -xf .cache/netlify-prebuilt.tar -C .
+          echo "NETLIFY_PREBUILT_CACHE_HIT:${{ steps.source.outputs.tree_sha }}"
+      - name: Restamp exact Required release identity
+        env:
+          COMMIT_REF: ${{ needs.preflight.outputs.change_head_sha }}
+          CONTEXT: production
+          DEPLOY_ID: required-netlify-build-parity
+        run: node tools/site-shell/stamp-release-identity.mjs
       - name: Verify built artifact contracts
         run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
+      - name: Emit immutable prebuilt manifest
+        env:
+          SOURCE_TREE_SHA: ${{ steps.source.outputs.tree_sha }}
+          CHANGE_HEAD_SHA: ${{ needs.preflight.outputs.change_head_sha }}
+          CANDIDATE_SHA: ${{ needs.preflight.outputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts .cache
+          node --input-type=module - <<'NODE'
+          import { writeFile } from 'node:fs/promises';
+          const manifest={
+            schema:'bedrijfsgeheugen/netlify-prebuilt/v1',
+            source_tree_sha:process.env.SOURCE_TREE_SHA,
+            change_head_sha:process.env.CHANGE_HEAD_SHA,
+            candidate_sha:process.env.CANDIDATE_SHA,
+            node_version:process.version,
+            created_at:new Date().toISOString(),
+          };
+          await writeFile('.artifacts/netlify-prebuilt-manifest.json',JSON.stringify(manifest,null,2)+'\n');
+          NODE
+      - name: Package exact-tree prebuilt output
+        run: |
+          set -euo pipefail
+          mkdir -p .cache
+          rm -f .cache/netlify-prebuilt.tar
+          tar \
+            --exclude='./.git' \
+            --exclude='./node_modules' \
+            --exclude='./.cache' \
+            --exclude='./.artifacts' \
+            --exclude='./.bg-build' \
+            -cf .cache/netlify-prebuilt.tar .
+          test -s .cache/netlify-prebuilt.tar
+      - name: Publish exact-tree prebuilt output for production reuse
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-prebuilt-${{ steps.source.outputs.tree_sha }}
+          path: |
+            .cache/netlify-prebuilt.tar
+            .artifacts/netlify-prebuilt-manifest.json
+            .artifacts/netlify-build-timings.json
+          if-no-files-found: error
+          retention-days: 3
+          compression-level: 0
+          include-hidden-files: true
 
 
   supabase_preview:
