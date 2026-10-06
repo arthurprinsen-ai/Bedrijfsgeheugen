@@ -146,18 +146,22 @@ export function planConcurrentAgentWork({
     const staleLeaseMain=Boolean(leaseMain&&normalizedMain&&leaseMain!==normalizedMain);
     return Object.freeze({
       state:'TERMINAL_CANDIDATE_IMMUTABLE',
-      action:staleLeaseMain||staleLeaseHead?'CREATE_SUCCESSOR_FROM_CURRENT_MAIN':'DO_NOT_REWRITE_TERMINAL_CANDIDATE',
+      action:staleLeaseHead
+        ? 'RELOAD_CANONICAL_HEAD_BEFORE_ACTION'
+        : staleLeaseMain
+          ? 'REVALIDATE_ZERO_OVERLAP_AND_SYNC_EXISTING_CANDIDATE'
+          : 'DO_NOT_REWRITE_TERMINAL_CANDIDATE',
       canMutateCandidate:false,
       canContinueIndependentWork:true,
       pressure,
-      reason:staleLeaseMain?'TERMINAL_LEASE_MAIN_EPOCH_DRIFT':staleLeaseHead?'TERMINAL_LEASE_HEAD_DRIFT':'TERMINAL_LEASE_BRANCH_IMMUTABLE'
+      reason:staleLeaseHead?'TERMINAL_LEASE_HEAD_DRIFT':staleLeaseMain?'TERMINAL_LEASE_MAIN_EPOCH_DRIFT':'TERMINAL_LEASE_BRANCH_IMMUTABLE'
     });
   }
 
   if(normalizedCaptured&&normalizedMain&&normalizedCaptured!==normalizedMain){
     return Object.freeze({
       state:'STALE_MAIN_EPOCH',
-      action:'CREATE_SUCCESSOR_FROM_CURRENT_MAIN',
+      action:'REVALIDATE_ZERO_OVERLAP_AND_SYNC_EXISTING_CANDIDATE',
       canMutateCandidate:false,
       canContinueIndependentWork:true,
       pressure,
