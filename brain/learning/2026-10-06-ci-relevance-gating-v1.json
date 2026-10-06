@@ -1,0 +1,39 @@
+{
+  "fingerprint": "ci-critical-path|change-scoped-codeql|supabase-applicability|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "development-critical-path-acceleration-20261006-v3",
+  "compiler": {
+    "failure_class": "CI_ORCHESTRATION_OVERFANOUT",
+    "scope": "GITHUB_ACTIONS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Broad pull-request workflows executed heavyweight CodeQL and Supabase preview preparation even when a candidate did not touch those runtime surfaces, increasing queue pressure and feedback latency without adding relevant evidence.",
+  "contributing_causes": [
+    "Powerhouse CodeQL had no cheap changed-file applicability stage for pull requests.",
+    "Supabase Preview Applicability checked out full history before determining that no supabase/** path had changed.",
+    "High workflow fan-out amplified unnecessary runner queue contention."
+  ],
+  "prevention_rule": "Keep required workflows visible on every pull request, but perform a cheap changed-file applicability decision first and run heavyweight provider or security work only when the relevant source surface changed. Do not use workflow-level path skipping for required checks.",
+  "evidence": {
+    "implementation": [
+      ".github/workflows/powerhouse-codeql.yml",
+      ".github/workflows/supabase-preview-applicability.yml"
+    ],
+    "tests": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ],
+    "observed": [
+      "Supabase Preview Applicability completed successfully in about eight seconds on a non-Supabase candidate after the pre-check was added.",
+      "CodeQL applicability completed successfully before heavyweight analysis on the exact candidate."
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  }
+}
