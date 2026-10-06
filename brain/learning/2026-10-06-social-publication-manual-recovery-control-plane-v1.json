@@ -24,7 +24,7 @@
   "evidence": {
     "runtime": [
       ".github/workflows/social-publication-recovery.yml",
-      "ops/social-publication-recovery-request.json"
+      "docs/operations/social-publication-recovery-request.md"
     ],
     "regression": [
       "tests/brain-central-social-publication-authority-v1.test.mjs"

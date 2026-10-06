@@ -95,7 +95,7 @@ test('manual recovery is same-day, auditable and delegates to the canonical full
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
   assert.match(workflow,/workflow_dispatch:/);
   assert.match(workflow,/push:/);
-  assert.match(workflow,/ops\/social-publication-recovery-request\.json/);
+  assert.match(workflow,/docs\/operations\/social-publication-recovery-request\.md/);
   assert.match(workflow,/Europe\/Amsterdam/);
   assert.match(workflow,/SAME_DAY_RECOVERY_ONLY/);
   assert.match(workflow,/rest\/v1\/rpc\/bg_geheim/);

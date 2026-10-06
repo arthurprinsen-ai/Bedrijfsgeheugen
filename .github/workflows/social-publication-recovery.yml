@@ -10,7 +10,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'ops/social-publication-recovery-request.json'
+      - 'docs/operations/social-publication-recovery-request.md'
 
 permissions:
   contents: read
@@ -38,8 +38,8 @@ jobs:
           set -euo pipefail
           today="$(node -e "process.stdout.write(new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()))")"
           run_date="${REQUESTED_DATE:-}"
-          if [ -z "$run_date" ] && [ -f ops/social-publication-recovery-request.json ]; then
-            run_date="$(node -e 'const x=require("./ops/social-publication-recovery-request.json");process.stdout.write(String(x.run_date||""))')"
+          if [ -z "$run_date" ] && [ -f docs/operations/social-publication-recovery-request.md ]; then
+            run_date="$(sed -nE 's/^run_date:[[:space:]]*([0-9]{4}-[0-9]{2}-[0-9]{2})[[:space:]]*$/\1/p' docs/operations/social-publication-recovery-request.md | head -n1)"
           fi
           run_date="${run_date:-$today}"
           if [ "$run_date" != "$today" ]; then
