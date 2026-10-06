@@ -1,0 +1,27 @@
+{
+  "id": "terminal-evidence-timeout-retry-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "terminal-evidence|timeout-after-successful-commit|idempotent-retry-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-evidence-timeout-retry-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The control-plane evidence HTTP client treated an Edge timeout as a failed terminalization even when Supabase had already durably committed FULFILLED obligation, VERIFIED operation and GREEN delivery evidence.",
+  "prevention": "On the exact 422 timeout-after-commit signature, retry the same idempotent terminal evidence payload once. Every other non-2xx response remains fail-closed.",
+  "evidence": {
+    "failed_run": 37468146837,
+    "failed_job": 112284303138,
+    "obligation_id": "website-control-plane-no-browser-20261006-v1",
+    "merge_sha": "8223fcd78e33f1771dd8e6d983a9a2d18f0ed444",
+    "durable_state": "FULFILLED/VERIFIED/GREEN"
+  }
+}
