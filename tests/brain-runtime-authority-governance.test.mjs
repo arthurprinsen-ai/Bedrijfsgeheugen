@@ -92,3 +92,42 @@ test('canonical registry evaluates READY',()=>{
   assert.equal(result.ready,true);
   assert.deepEqual(result.violations,[]);
 });
+
+test('Supabase Edge production has exactly one protected-main promotion authority',()=>{
+  const owners=ownersFor('supabase_edge_production_promotion');
+  assert.equal(owners.length,1);
+  assert.equal(owners[0].id,'github-supabase-edge-production-authority');
+  assert.equal(owners[0].runtime,'github_actions');
+  assert.equal(owners[0].production_execution_allowed,true);
+  assert.equal(registry.controls.supabase_edge_production_authority,'PROTECTED_MAIN_ONLY');
+  assert.equal(registry.controls.supabase_edge_source_of_truth,'GITHUB_PROTECTED_MAIN');
+  assert.equal(registry.controls.supabase_edge_direct_provider_deploy,'FORBIDDEN');
+  assert.equal(registry.controls.supabase_edge_manual_recovery,'TRUSTED_CURRENT_MAIN_ONLY');
+  assert.equal(registry.controls.supabase_edge_drift_policy,'FAIL_CLOSED');
+});
+
+test('Supabase Edge production workflow is current-main-only, single-flight and read-after-write',async()=>{
+  const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
+  assert.match(workflow,/branches:\s*\[main\]/);
+  assert.match(workflow,/group:\s*supabase-edge-production-authority/);
+  assert.match(workflow,/cancel-in-progress:\s*false/);
+  assert.match(workflow,/refs\/heads\/main/);
+  assert.match(workflow,/git rev-parse origin\/main/);
+  assert.match(workflow,/CURRENT_MAIN.*GITHUB_SHA|GITHUB_SHA.*CURRENT_MAIN/s);
+  assert.match(workflow,/supabase\/setup-cli@v1/);
+  assert.match(workflow,/version:\s*2\.119\.0/);
+  assert.match(workflow,/supabase functions deploy/);
+  assert.match(workflow,/--project-ref "\$PROJECT_REF"/);
+  assert.match(workflow,/supabase functions download/);
+  assert.match(workflow,/cmp "\$source" "\$provider"/);
+  assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
+});
+
+test('runtime governance fails closed if direct Supabase Edge deploy becomes allowed',()=>{
+  const broken=structuredClone(registry);
+  broken.controls.supabase_edge_direct_provider_deploy='ALLOWED';
+  const result=evaluateRuntimeAuthority(broken);
+  assert.equal(result.ready,false);
+  assert.ok(result.violations.some(x=>x.code==='DIRECT_SUPABASE_EDGE_PROVIDER_DEPLOY_NOT_FORBIDDEN'));
+});
+

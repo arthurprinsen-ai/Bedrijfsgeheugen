@@ -162,3 +162,18 @@ test('recovery runner delegates provider side effects only to the canonical publ
   assert.match(recoveryRunner,/channels: \[channel\]/);
   assert.doesNotMatch(recoveryRunner,/LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH|api\.buffer\.com/);
 });
+
+
+test('social recovery GREEN requires explicit provider truth for every required publish claim',()=>{
+  assert.match(recoveryRunner,/const providerTruthVerified = required\.reduce/);
+  assert.match(recoveryRunner,/provider_truth_verified === true/);
+  assert.match(recoveryRunner,/\["PUBLISHED", "DISPATCHED", "LIVE_PROVEN"\]\.includes\(status\)/);
+  assert.match(recoveryRunner,/!!clean\(obligation\.external_id\)/);
+  assert.doesNotMatch(recoveryRunner,/provider_truth_verified === true \|\| !!clean\(o\.external_id\)/);
+  assert.match(recoveryRunner,/const recovered = required\.length > 0 && unresolved\.length === 0 && providerTruthHealthy/);
+});
+
+test('successful LinkedIn company proof clears stale auth and reconcile errors',()=>{
+  assert.match(publisher,/for\(const staleKey of \['error','provider_error','provider_auth_preflight','provider_auth_required'\]\) delete evidence\[staleKey\]/);
+  assert.match(publisher,/liveProven=exactReadbackVerified&&direct\.linkedin_company_admin_oauth_proven===true&&direct\.organization_write_scope_verified===true&&direct\.company_oauth_fresh_verified===true/);
+});

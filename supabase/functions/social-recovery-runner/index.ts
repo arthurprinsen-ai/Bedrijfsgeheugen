@@ -1,6 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import postgres from "npm:postgres@3.4.7";
 
+// Protected-main promotion bootstrap: social provider-truth contract v1.
+
 const REF = "adhjwmvyoixzjtmiroln";
 const POOLER = "aws-0-eu-central-1.pooler.supabase.com";
 const SOCIAL_CHANNELS = ["linkedin_personal", "linkedin_company", "instagram_company"] as const;
@@ -213,11 +215,19 @@ Deno.serve(async (req: Request) => {
   const obligations = (readback.obligations || []).map(safeObligation);
   const required = decisions.filter((d: any) => SOCIAL_CHANNELS.includes(d.channel) && d.decision === "publish");
   const unresolved = required.filter((d: any) => !["published", "scheduled"].includes(clean(d.state)));
-  const providerTruthHealthy = obligations.every((o: any) => {
-    if (["PUBLISHED", "DISPATCHED"].includes(clean(o.status).toUpperCase()) && ["linkedin_personal", "linkedin_company", "instagram"].includes(clean(o.channel))) {
-      return o.provider_truth_verified === true || !!clean(o.external_id);
-    }
-    return true;
+  const providerTruthVerified = required.reduce((count: number, d: any) => {
+    const obligationChannel = clean(d.channel) === "instagram_company" ? "instagram" : clean(d.channel);
+    const obligation = obligations.find((o: any) => clean(o.channel) === obligationChannel);
+    return count + (obligation?.provider_truth_verified === true ? 1 : 0);
+  }, 0);
+  const providerTruthHealthy = required.length > 0 && required.every((d: any) => {
+    const obligationChannel = clean(d.channel) === "instagram_company" ? "instagram" : clean(d.channel);
+    const obligation = obligations.find((o: any) => clean(o.channel) === obligationChannel);
+    if (!obligation) return false;
+    const status = clean(obligation.status).toUpperCase();
+    return ["PUBLISHED", "DISPATCHED", "LIVE_PROVEN"].includes(status)
+      && obligation.provider_truth_verified === true
+      && !!clean(obligation.external_id);
   });
   const recovered = required.length > 0 && unresolved.length === 0 && providerTruthHealthy;
 
@@ -237,6 +247,7 @@ Deno.serve(async (req: Request) => {
       error: loop.ok ? null : (loop.error || clean(loop.body?.error) || "CONTENT_LOOP_FAILED"),
     },
     fallback,
+    providerTruthVerified,
     providerTruthHealthy,
     required_publish_count: required.length,
     unresolved,
