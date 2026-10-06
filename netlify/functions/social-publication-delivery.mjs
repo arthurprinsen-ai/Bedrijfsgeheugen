@@ -109,15 +109,17 @@ function authorizeInstagramSource(source) {
   });
 }
 
-async function triggerCanonicalPublisher(dateString) {
+async function triggerCanonicalContentLoop(dateString) {
   if (!SUPABASE_EDGE_URL || !POWERHOUSE_TOKEN) throw new Error('POWERHOUSE_DELIVERY_CONFIG_REQUIRED');
-  const response = await fetch(SUPABASE_EDGE_URL + '/functions/v1/powerhouse-social-publisher', {
+  const response = await fetch(SUPABASE_EDGE_URL + '/functions/v1/powerhouse-content-loop', {
     method:'POST',
     headers:{ 'content-type':'application/json', 'x-powerhouse-token':POWERHOUSE_TOKEN },
     body:JSON.stringify({ runDate:dateString }),
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok || body?.ok === false) throw new Error(body?.error || ('CANONICAL_SOCIAL_PUBLISHER_HTTP_' + response.status));
+  const recoverableNonTerminal = response.status === 409 && ['AMBER','RED'].includes(String(body?.loop_state || ''));
+  if (!response.ok && !recoverableNonTerminal) throw new Error(body?.error || ('CANONICAL_CONTENT_LOOP_HTTP_' + response.status));
+  if (body?.error === 'CONTENT_LOOP_INTERNAL_ERROR') throw new Error(body.error);
   return body;
 }
 
@@ -140,14 +142,15 @@ async function recordState({ date, channel, status, providerPost = null, reason 
 export async function runSocialPublicationDelivery({ now = new Date() } = {}) {
   const local = amsterdamParts(now);
   if (local.hour < 7 || local.hour > 20) return { ok:true, skipped:'OUTSIDE_DELIVERY_WINDOW', date:local.date };
+  // End-to-end recovery must rebuild missing daily content before checking delivery.
+  // The canonical content loop owns generation, gates, provider dispatch and reconciliation.
+  const canonical = await triggerCanonicalContentLoop(local.date);
+
+  // Read state only after recovery so missing artifacts/decisions created by the loop are visible.
   const context = await powerhouse('delivery_context', { date:local.date });
   const obligations = context.obligations || [];
   const artifacts = context.artifacts || [];
-
-  // Provider-isolation contract: canonical publication runs before any Buffer read.
-  // Instagram/Composio must never be blocked by a LinkedIn/Buffer outage.
-  const canonical = await triggerCanonicalPublisher(local.date);
-  const canonicalByChannel = new Map((canonical?.results || []).map((item) => [item?.channel, item]));
+  const canonicalByChannel = new Map((canonical?.decisions || []).map((item) => [item?.channel, item]));
 
   let posts = [];
   let ideas = [];
@@ -209,7 +212,7 @@ export async function runSocialPublicationDelivery({ now = new Date() } = {}) {
     if (channel === 'linkedin_personal' && normalizeText(readback.text) !== normalizeText(decision.source.text)) throw new Error('PERSONAL_PROVIDER_TEXT_MISMATCH');
     results.push({ channel, action:'DELEGATED_TO_CANONICAL_PUBLISHER', providerId:readback.id, providerStatus:readback.status, canonical:canonicalResult });
   }
-  return { ok:true, date:local.date, results, bufferUnavailable };
+  return { ok:true, date:local.date, contentLoopState:canonical?.loop_state || null, results, bufferUnavailable };
 }
 
 export default async function handler() {
