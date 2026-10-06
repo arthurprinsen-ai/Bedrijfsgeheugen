@@ -6,6 +6,23 @@ if (!baseUrl) throw new Error('UI_VR_BASE_URL ontbreekt');
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 
+async function gotoWithRetry(url, attempts = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.locator('#homepage-expertise-tab').waitFor({ state: 'visible', timeout: 15000 });
+      await page.locator('#homepage-platform-tab').waitFor({ state: 'visible', timeout: 15000 });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt === attempts) break;
+      await page.waitForTimeout(750 * attempt);
+    }
+  }
+  throw lastError;
+}
+
 async function clickStableTab(selector) {
   const tab = page.locator(selector);
   await tab.waitFor({ state: 'visible', timeout: 30000 });
@@ -27,8 +44,7 @@ async function clickStableTab(selector) {
 }
 
 try {
-  await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle', timeout: 90000 });
-  await page.waitForSelector('#homepage-expertise-tab', { state: 'visible', timeout: 30000 });
+  await gotoWithRetry(`${baseUrl}/`);
 
   await clickStableTab('#homepage-expertise-tab');
   await page.waitForFunction(() => document.querySelector('#homepage-expertise-tab')?.getAttribute('aria-selected') === 'true');
