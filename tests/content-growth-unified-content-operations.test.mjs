@@ -126,3 +126,13 @@ test('daily publication watchdog is scheduled natively and idempotently', () => 
   assert.match(publicationWatchdogMigration, /bg-content-publication-daily-watchdog/);
   assert.match(publicationWatchdogMigration, /Europe\/Amsterdam/);
 });
+
+
+test('content operations uses the same canonical scheduler-token authority as the social publisher', () => {
+  assert.match(operationsApi, /rpc\/bg_geheim/);
+  assert.match(operationsApi, /powerhouse_daily_scheduler_token/);
+  assert.match(operationsApi, /async function schedulerToken/);
+  assert.match(operationsApi, /await schedulerToken\(\)/);
+  assert.match(operationsApi, /if \(!\(await authorized\(req\)\)\)/);
+  assert.match(operationsApi, /return SHARED_SECRET\.trim\(\)/);
+});
