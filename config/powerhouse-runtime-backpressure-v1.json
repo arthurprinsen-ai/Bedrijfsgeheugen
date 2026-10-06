@@ -58,7 +58,7 @@
     "state": "RETIRED_DIAGNOSTIC",
     "function": "powerhouse-runtime-verifier-v1",
     "public_db_probe": false,
-    "response_status": 200,
+    "response_status": 410,
     "replacement": "commercial-heartbeat-and-runtime-readback",
     "authority": [
       "supabase-provider-logs",
