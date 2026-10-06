@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
 import { parse, serialize } from 'parse5';
 
 const ROOT = process.cwd();
@@ -14,6 +15,25 @@ const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json')
 const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
 const SEO_LOCALE_REVENUE_MAP_FILE = path.join(ROOT,'site','seo-locale-revenue-map.json');
+const STATIC_I18N_BUILD_CACHE_DIR = String(process.env.STATIC_I18N_BUILD_CACHE_DIR || '').trim()
+  ? path.resolve(ROOT,String(process.env.STATIC_I18N_BUILD_CACHE_DIR).trim())
+  : String(process.env.NETLIFY_CACHE_DIR || '').trim()
+    ? path.join(String(process.env.NETLIFY_CACHE_DIR).trim(),'bg-static-i18n-render-v1')
+    : '';
+const STATIC_I18N_BUILD_CACHE_VERSION = 'bg-static-i18n-render-v1';
+
+function sha256(...parts) {
+  const hash=createHash('sha256');
+  for(const part of parts) hash.update(String(part));
+  return hash.digest('hex');
+}
+
+function normalizeReleaseIdentityForCache(html) {
+  return String(html).replace(
+    /<meta\b[^>]*name=["']bg-release-commit["'][^>]*>/gi,
+    '<meta name="bg-release-commit" content="__BUILD_COMMIT__">'
+  );
+}
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
   '/zelfscan', '/frisse-blik', '/inloggen', '/aanmelden', '/contact', '/privacy'
@@ -728,12 +748,46 @@ const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CAC
 if (productionTranslationRequired && !translations) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
+const routeCacheEnabled=Boolean(STATIC_I18N_BUILD_CACHE_DIR) && productionTranslationRequired && translations instanceof Map;
+const routeCacheFingerprint=routeCacheEnabled ? sha256(
+  STATIC_I18N_BUILD_CACHE_VERSION,
+  fs.readFileSync(new URL(import.meta.url),'utf8'),
+  fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'),
+  JSON.stringify([...translations.entries()].sort(([a],[b])=>a.localeCompare(b))),
+  JSON.stringify({
+    files,
+    publicRoutes:[...publicRoutes].sort(),
+    aliases:[...aliases.entries()].sort(([a],[b])=>a.localeCompare(b)),
+  }),
+) : '';
 let translatedRoutes = 0;
 let partialRoutes = 0;
 let untranslatedRefs = 0;
+let cacheHits = 0;
+let cacheMisses = 0;
 for (const file of files) {
   const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
   const route = routeFor(file);
+  const routeCacheKey=routeCacheEnabled
+    ? sha256(routeCacheFingerprint,file,normalizeReleaseIdentityForCache(sourceHtml))
+    : '';
+  const routeCachePath=routeCacheEnabled ? path.join(STATIC_I18N_BUILD_CACHE_DIR,routeCacheKey) : '';
+  const cachedNl=routeCacheEnabled ? path.join(routeCachePath,'nl.html') : '';
+  const cachedEn=routeCacheEnabled ? path.join(routeCachePath,'en.html') : '';
+  if(routeCacheEnabled && fs.existsSync(cachedNl) && fs.existsSync(cachedEn)){
+    const nlSerialized=fs.readFileSync(cachedNl,'utf8');
+    const enSerialized=fs.readFileSync(cachedEn,'utf8');
+    const nlOut=outputPath('nl',file);
+    const enOut=outputPath('en',file);
+    ensureDir(nlOut);
+    ensureDir(enOut);
+    fs.writeFileSync(nlOut,nlSerialized);
+    fs.writeFileSync(path.join(ROOT,file),nlSerialized);
+    fs.writeFileSync(enOut,enSerialized);
+    translatedRoutes++;
+    cacheHits++;
+    continue;
+  }
 
   const nlDoc = parse(sourceHtml);
   enforceStaticLocaleTitleOwnership(nlDoc);
@@ -746,9 +800,6 @@ for (const file of files) {
   ensureDir(nlOut);
   const nlSerialized=serialize(nlDoc);
   fs.writeFileSync(nlOut,nlSerialized);
-  // Dutch is canonically served on the unprefixed route. Write the finalized
-  // NL locale metadata back to that public source so the actual canonical page,
-  // not only the legacy /nl artifact, carries reciprocal hreflang and locale SEO.
   fs.writeFileSync(path.join(ROOT,file),nlSerialized);
 
   const enDoc = parse(sourceHtml);
@@ -767,7 +818,15 @@ for (const file of files) {
   localizeStructuredData(enDoc,'en',route,translations);
   const enOut = outputPath('en',file);
   ensureDir(enOut);
-  fs.writeFileSync(enOut,serialize(enDoc));
+  const enSerialized=serialize(enDoc);
+  fs.writeFileSync(enOut,enSerialized);
+
+  if(routeCacheEnabled && missingForRoute.length===0){
+    fs.mkdirSync(routeCachePath,{recursive:true});
+    fs.writeFileSync(cachedNl,nlSerialized);
+    fs.writeFileSync(cachedEn,enSerialized);
+    cacheMisses++;
+  }
 }
 
 console.log('STATIC_I18N_ROUTES',JSON.stringify({
@@ -779,5 +838,9 @@ console.log('STATIC_I18N_ROUTES',JSON.stringify({
   translatedRoutes,
   partialRoutes,
   untranslatedRefs,
-  runtimeFallback:!translations || untranslatedRefs > 0
+  runtimeFallback:!translations || untranslatedRefs > 0,
+  cacheEnabled:routeCacheEnabled,
+  cacheHits,
+  cacheMisses,
+  cacheDir:routeCacheEnabled?STATIC_I18N_BUILD_CACHE_DIR:null
 }));
