@@ -30,7 +30,8 @@ assert.match(canary,/repo-writer-candidate-shadow\.yml[\s\S]*-f verification_onl
 
 assert.match(shadow,/verification_only:/,'shadow workflow must declare verification-only input');
 assert.match(shadow,/repo-writer-gate-dispatch\.yml[\s\S]*-f verification_only="\$VERIFICATION_ONLY"/,'shadow must propagate verification-only state to central gates');
-assert.match(shadow,/VERIFICATION_ONLY: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.verification_only \|\| false \}\}/,'shadow propagation must derive only from explicit dispatch input');
+assert.match(shadow,/VERIFICATION_ONLY: \$\{\{ inputs\.verification_only \|\| false \}\}/,'shadow propagation must derive only from explicit dispatch input');
+assert.doesNotMatch(shadow,/github\.event_name == 'workflow_dispatch' && inputs\.verification_only/,'dispatch-only shadow must not retain legacy event-name fallback');
 
 assert.match(gate,/verification_only:/,'central gate workflow must declare verification-only input');
 assert.match(gate,/unified-brain-delivery\.yml[\s\S]*-f verification_only="\$VERIFICATION_ONLY"/,'central gates must propagate verification-only state to Unified Brain');
