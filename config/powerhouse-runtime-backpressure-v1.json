@@ -25,7 +25,9 @@
     "a failing backend stops the current drain batch instead of creating retry amplification",
     "scheduler authentication must not depend on PostgREST before authorization",
     "scheduler secret lookup must use the IPv4 Supavisor pooler or an injected Edge secret",
-    "CMS circuit-breaker state must use strong-consistency Blobs"
+    "CMS circuit-breaker state must use strong-consistency Blobs",
+    "public runtime health endpoints must not open database connections",
+    "runtime verifier credentials must never appear in query strings"
   ],
   "service_auth": {
     "authority": "supabase/functions/_shared/powerhouse-scheduler-auth.ts",
@@ -50,5 +52,17 @@
       "AUTH_SECRET_EMPTY",
       "AUTH_SECRET_LOOKUP_FAILED"
     ]
+  },
+  "runtime_verifier": {
+    "state": "RETIRED",
+    "function": "powerhouse-runtime-verifier-v1",
+    "public_db_probe": false,
+    "response_status": 410,
+    "authority": [
+      "supabase-provider-logs",
+      "supabase-management-api",
+      "powerhouse-commercial-heartbeat-v1"
+    ],
+    "reason": "Public or bearer-link database probes can leak credentials and amplify outages."
   }
 }
