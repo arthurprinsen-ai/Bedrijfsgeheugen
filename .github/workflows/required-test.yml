@@ -241,6 +241,18 @@ jobs:
           tests/brain-production-promotion-observability.test.mjs
           tests/control-plane-supabase-terminal-readback-v1.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
+          tests/compliance-status-page.test.mjs
+          tests/control-plane-first-fanout-reduction.test.mjs
+          tests/control-plane-fourth-fanout-reduction.test.mjs
+          tests/control-plane-node24-fanout-reduction.test.mjs
+          tests/control-plane-pr-trigger-ratchet.test.mjs
+          tests/control-plane-required-wiring.test.mjs
+          tests/control-plane-schema-lane.test.mjs
+          tests/control-plane-second-fanout-reduction.test.mjs
+          tests/control-plane-sixth-fanout-reduction.test.mjs
+          tests/control-plane-third-fanout-reduction.test.mjs
+          tests/control-plane-workflow-inventory.test.mjs
+          tests/control-plane-workflow-retirement.test.mjs
           tests/brain-ci-admission-single-flight.test.mjs
           tests/brain-ci-critical-path-acceleration-v1.test.mjs
           tests/brain-autonomous-engineering-fabric-v3.test.mjs
