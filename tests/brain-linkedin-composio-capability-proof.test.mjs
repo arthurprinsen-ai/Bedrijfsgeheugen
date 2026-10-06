@@ -78,14 +78,23 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
 });
 
 
-test('LinkedIn company write readiness is independent from organization ACL read permission', () => {
-  assert.match(setup,/companyReady=personalReady&&companyAuthorConfigured/);
-  assert.doesNotMatch(setup,/companyReady=orgUrns\.length===1&&hasOrgAdminScope&&hasOrgWriteScope/);
-  assert.match(setup,/company_admin_read_ready:companyAdminReadReady/);
-  assert.match(setup,/company_admin_read_scope_required:companyAdminReadReady\?null:'r_organization_admin'/);
-  assert.match(publisher,/organizationReadVerified=false/);
-  assert.match(publisher,/catch\(_organizationReadError\)\{\}/);
-  assert.match(publisher,/canonical_org_write_candidate/);
+test('LinkedIn company requires a fresh bound organization-admin OAuth before publish', () => {
+  assert.match(setup,/COMPANY_OAUTH_SCOPES=.*r_organization_admin.*r_organization_social.*w_organization_social/);
+  assert.match(setup,/credentials:\{scopes:COMPANY_OAUTH_SCOPES\.join\(','\)\}/);
+  assert.match(setup,/oauth_candidate_connection_id:connectedAccountId/);
+  assert.match(setup,/boundOauthAccountId=clean\(priorState\?\.oauth_candidate_connection_id\|\|priorState\?\.company_oauth_connection_id\)/);
+  assert.match(setup,/companyOauthFreshVerified=freshOauthBound&&companyAdminReadReady&&hasOrgWriteScope/);
+  assert.match(setup,/companyReady=personalReady&&companyOauthFreshVerified/);
+  assert.match(setup,/linkedin_company_admin_oauth_proven:companyOauthFreshVerified/);
+  assert.match(setup,/organization_write_scope_authorized:companyOauthFreshVerified&&hasOrgWriteScope/);
+  assert.match(setup,/organization_write_scope_verified:false/);
+  assert.match(setup,/company_publish_eligible:companyOauthFreshVerified/);
+  assert.match(setup,/company_live_proven_eligible:false/);
+  assert.match(publisher,/LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED/);
+  assert.match(publisher,/state\?\.company_oauth_fresh_verified===true/);
+  assert.match(publisher,/organization_write_scope_authorized/);
+  assert.match(publisher,/company_oauth_connection_id:accountId/);
+  assert.match(loop,/if\(channel==='linkedin_company'&&status==='PUBLISHED'\)return false/);
 });
 
 
@@ -97,4 +106,34 @@ test('LinkedIn production setup can create OAuth link and resume the same daily 
   assert.match(setup,/action==='resume'/);
   assert.match(setup,/linkedin-production-oauth-complete/);
   assert.match(setup,/powerhouse-social-publisher/);
+});
+
+
+test('current-main publisher hardening survives LinkedIn OAuth recovery',()=>{
+  assert.match(publisher,/function jsonObject\(value:any\)/);
+  assert.match(publisher,/findExpectedLinkedInPersonId/);
+  assert.match(publisher,/delivery_evidence: jsonObject\(row\.delivery_evidence\)/);
+  assert.match(publisher,/generation_evidence: jsonObject\(artifact\.generation_evidence\)/);
+});
+
+test('organization write is proven only by a real provider create and exact readback',()=>{
+  assert.match(publisher,/provider_create_success:true/);
+  assert.match(publisher,/organization_write_scope_verified:true/);
+  assert.match(publisher,/liveProven=exactReadbackVerified&&direct\.linkedin_company_admin_oauth_proven===true&&direct\.organization_write_scope_verified===true&&direct\.company_oauth_fresh_verified===true/);
+  assert.match(publisher,/liveProven\?'LIVE_PROVEN':'PUBLISHED'/);
+});
+
+test('explicit provider auth failure remains resumable without fabricating a side effect',()=>{
+  assert.match(publisher,/linkedin-composio-direct-v3-auth-resumable/);
+  assert.match(publisher,/provider_create_success:false/);
+  assert.match(publisher,/possible_provider_side_effect:false/);
+  assert.match(publisher,/state:'content_ready'/);
+  assert.match(publisher,/republish_forbidden:false/);
+});
+
+test('company provider truth is stricter than a provider acknowledgement',()=>{
+  assert.match(loop,/evidence\?\.provider_truth_verified===true/);
+  assert.match(loop,/evidence\?\.linkedin_company_admin_oauth_proven===true/);
+  assert.match(loop,/evidence\?\.organization_write_scope_verified===true/);
+  assert.match(loop,/evidence\?\.company_oauth_fresh_verified===true/);
 });
