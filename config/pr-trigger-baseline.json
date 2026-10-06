@@ -2,16 +2,14 @@
   "version": 1,
   "measured_at": "2026-10-06",
   "mode": "ratchet",
-  "directPullRequestWorkflowCount": 12,
+  "directPullRequestWorkflowCount": 10,
   "canonicalTarget": [
     "required-test.yml"
   ],
   "directPullRequestWorkflows": [
-    "codeql.yml",
     "engineering-supply-chain-trust.yml",
     "obligation-terminal-closure.yml",
     "portal-v2-live-preview.yml",
-    "portal-v2-production-dom-readback.yml",
     "powerhouse-codeql.yml",
     "powerhouse-merged-branch-cleanup.yml",
     "powerhouse-obligation-terminalizer.yml",
@@ -30,13 +28,11 @@
   ],
   "lifecyclePullRequestWorkflowCount": 5,
   "admissionPullRequestWorkflows": [
-    "codeql.yml",
     "engineering-supply-chain-trust.yml",
     "portal-v2-live-preview.yml",
-    "portal-v2-production-dom-readback.yml",
     "powerhouse-codeql.yml",
     "repo-writer-operational-verification.yml",
     "required-test.yml"
   ],
-  "admissionPullRequestWorkflowCount": 7
+  "admissionPullRequestWorkflowCount": 5
 }

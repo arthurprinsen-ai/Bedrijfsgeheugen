@@ -41,12 +41,12 @@ test('control-plane lifecycle tooling is classified as automation work', () => {
 test('control-plane budget separates current ceilings from the canonical admission target', () => {
   const github = controlPlaneBudget.budgets.github;
   const baseline = controlPlaneBudget.baseline.github;
-  assert.equal(github.maxDirectPrTriggerWorkflows, 12);
-  assert.equal(github.maxDirectPrAdmissionWorkflows, 7);
+  assert.equal(github.maxDirectPrTriggerWorkflows, 10);
+  assert.equal(github.maxDirectPrAdmissionWorkflows, 5);
   assert.equal(github.maxLifecyclePrAuthorityWorkflows, 5);
   assert.equal(github.targetDirectPrAdmissionWorkflows, 1);
-  assert.equal(baseline.directPrTriggerCount, 12);
-  assert.equal(baseline.directPrAdmissionCount, 7);
+  assert.equal(baseline.directPrTriggerCount, 10);
+  assert.equal(baseline.directPrAdmissionCount, 5);
   assert.equal(baseline.lifecyclePrAuthorityCount, 5);
 });
 

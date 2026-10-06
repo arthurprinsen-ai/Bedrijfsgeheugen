@@ -11,9 +11,11 @@ on:
       - '**/*.cjs'
       - '**/*.ts'
       - '**/*.tsx'
+      - '**/*.py'
       - 'package.json'
       - 'package-lock.json'
       - '.github/workflows/powerhouse-codeql.yml'
+      - '.github/workflows/codeql.yml'
   schedule:
     - cron: '41 4 * * 2,5'
   workflow_dispatch:
@@ -34,7 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 3
     outputs:
-      run_codeql: ${{ steps.scope.outputs.run_codeql }}
+      run_codeql: ${{ steps.scope.outputs.run_js }}
+      run_js: ${{ steps.scope.outputs.run_js }}
+      run_python: ${{ steps.scope.outputs.run_python }}
     steps:
       - id: scope
         name: Decide whether JS/TS analysis is applicable
@@ -47,16 +51,62 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$EVENT_NAME" != "pull_request" ]; then
-            echo "run_codeql=true" >> "$GITHUB_OUTPUT"
+            echo "run_js=true" >> "$GITHUB_OUTPUT"
+            echo "run_python=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           files="$(gh api --paginate "repos/$REPO/pulls/$PR_NUMBER/files?per_page=100" --jq '.[].filename')"
-          if grep -Eq '\.(js|mjs|cjs|ts|tsx)$|^(package\.json|package-lock\.json|\.github/workflows/powerhouse-codeql\.yml)$' <<< "$files"; then
-            echo "run_codeql=true" >> "$GITHUB_OUTPUT"
+          if grep -Eq '\.(js|mjs|cjs|ts|tsx)$|^(package\.json|package-lock\.json|\.github/workflows/powerhouse-codeql\.yml)
+
+  analyze:
+    name: CodeQL javascript-typescript
+    needs: scope
+    if: needs.scope.outputs.run_js == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:javascript-typescript'
+ <<< "$files"; then
+            echo "run_js=true" >> "$GITHUB_OUTPUT"
             echo "JavaScript/TypeScript security surface changed; CodeQL analysis required."
           else
-            echo "run_codeql=false" >> "$GITHUB_OUTPUT"
-            echo "No JavaScript/TypeScript security surface changed; expensive CodeQL analysis is not applicable."
+            echo "run_js=false" >> "$GITHUB_OUTPUT"
+            echo "No JavaScript/TypeScript security surface changed."
+          fi
+          if grep -Eq '\.py$|^\.github/workflows/(codeql|powerhouse-codeql)\.yml
+
+  analyze:
+    name: CodeQL javascript-typescript
+    needs: scope
+    if: needs.scope.outputs.run_codeql == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+      - name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:javascript-typescript'
+ <<< "$files"; then
+            echo "run_python=true" >> "$GITHUB_OUTPUT"
+            echo "Python security surface changed; CodeQL analysis required."
+          else
+            echo "run_python=false" >> "$GITHUB_OUTPUT"
+            echo "No Python security surface changed."
           fi
 
   analyze:
@@ -76,3 +126,22 @@ jobs:
         uses: github/codeql-action/analyze@v4
         with:
           category: '/language:javascript-typescript'
+
+
+  analyze_python:
+    name: CodeQL python
+    needs: scope
+    if: needs.scope.outputs.run_python == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Initialize CodeQL Python
+        uses: github/codeql-action/init@v4
+        with:
+          languages: python
+          queries: security-extended
+      - name: Analyze Python
+        uses: github/codeql-action/analyze@v4
+        with:
+          category: '/language:python'

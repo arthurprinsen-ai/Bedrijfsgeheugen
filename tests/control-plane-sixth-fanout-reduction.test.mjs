@@ -37,6 +37,7 @@ const retired = [
   '.github/workflows/security-operations-proof.yml',
   '.github/workflows/repo-writer-parity-rollback.yml',
   '.github/workflows/repo-writer-cheap-canary.yml',
+  '.github/workflows/portal-v2-production-dom-readback.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -140,4 +141,27 @@ test('writer PR fan-out is consolidated behind one operational router', () => {
   assert.doesNotMatch(parity, /^  pull_request:/m);
   assert.match(parity, /^  workflow_dispatch:/m);
   assert.doesNotMatch(shadow, /^  pull_request:/m);
+});
+
+
+test('Portal PR assurance is consolidated while production push readback remains independent', () => {
+  const preview = readFileSync('.github/workflows/portal-v2-live-preview.yml', 'utf8');
+  const production = readFileSync('.github/workflows/portal-v2-production-dom-readback.yml', 'utf8');
+  assert.match(preview, /^  pull_request:/m);
+  assert.ok(preview.includes('Verify production DOM suite on immutable PR deploy'));
+  assert.ok(preview.includes('visual-baseline-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}'));
+  assert.doesNotMatch(production, /^  pull_request:/m);
+  assert.match(production, /^  push:/m);
+  assert.ok(production.includes('portal-v2-live-preview.yml/runs?event=pull_request'));
+});
+
+test('Powerhouse CodeQL is the single PR CodeQL authority for JS/TS and Python', () => {
+  assert.throws(() => readFileSync('.github/workflows/codeql.yml', 'utf8'));
+  const source = readFileSync('.github/workflows/powerhouse-codeql.yml', 'utf8');
+  assert.match(source, /^  pull_request:/m);
+  assert.ok(source.includes('run_js:'));
+  assert.ok(source.includes('run_python:'));
+  assert.ok(source.includes('languages: javascript-typescript'));
+  assert.ok(source.includes('languages: python'));
+  assert.ok(source.includes("category: '/language:python'"));
 });

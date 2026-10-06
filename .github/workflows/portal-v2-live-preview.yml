@@ -8,6 +8,8 @@ on:
       - 'portal-next/**'
       - '_redirects'
       - '.github/workflows/business-os-live-preview.yml'
+      - 'tests/integration/portal-v2-production-*.spec.js'
+      - '.github/workflows/portal-v2-production-dom-readback.yml'
       - 'tests/integration/portal-v2-live.spec.js'
       - 'tests/integration/portal-v2-mobile-shell.spec.js'
       - 'tests/integration/portal-v2-functional-parity.spec.js'
@@ -147,6 +149,25 @@ jobs:
             sleep 1
           done
           PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-bcg-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
+
+      - name: Verify production DOM suite on immutable PR deploy
+        env:
+          PRODUCTION_URL: ${{ env.PREVIEW_URL }}
+        run: npx playwright test tests/integration/portal-v2-production-*.spec.js --workers=1
+
+      - name: Capture approved production visual baseline on exact PR head
+        env:
+          PRODUCTION_URL: ${{ env.PREVIEW_URL }}
+          VISUAL_CAPTURE_PATH: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+        run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+
+      - name: Upload approved exact-head visual baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baseline-pr-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          path: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Upload visual evidence
         if: always()

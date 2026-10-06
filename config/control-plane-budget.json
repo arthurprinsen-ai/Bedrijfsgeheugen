@@ -7,8 +7,8 @@
       "maxOpenImplementationPRs": 10,
       "maxLivePRsPerObligation": 1,
       "maxSuccessorDepth": 1,
-      "maxDirectPrTriggerWorkflows": 12,
-      "maxDirectPrAdmissionWorkflows": 7,
+      "maxDirectPrTriggerWorkflows": 10,
+      "maxDirectPrAdmissionWorkflows": 5,
       "maxLifecyclePrAuthorityWorkflows": 5,
       "targetDirectPrAdmissionWorkflows": 1
     },
@@ -29,14 +29,12 @@
   },
   "baseline": {
     "github": {
-      "workflowFiles": 124,
+      "workflowFiles": 123,
       "openPullRequests": 78,
       "directPrTriggerWorkflows": [
-        "codeql.yml",
         "engineering-supply-chain-trust.yml",
         "obligation-terminal-closure.yml",
         "portal-v2-live-preview.yml",
-        "portal-v2-production-dom-readback.yml",
         "powerhouse-codeql.yml",
         "powerhouse-merged-branch-cleanup.yml",
         "powerhouse-obligation-terminalizer.yml",
@@ -45,7 +43,7 @@
         "required-test.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 12,
+      "directPrTriggerCount": 10,
       "lifecyclePrAuthorityWorkflows": [
         "obligation-terminal-closure.yml",
         "powerhouse-merged-branch-cleanup.yml",
@@ -55,15 +53,13 @@
       ],
       "lifecyclePrAuthorityCount": 5,
       "directPrAdmissionWorkflows": [
-        "codeql.yml",
         "engineering-supply-chain-trust.yml",
         "portal-v2-live-preview.yml",
-        "portal-v2-production-dom-readback.yml",
         "powerhouse-codeql.yml",
         "repo-writer-operational-verification.yml",
         "required-test.yml"
       ],
-      "directPrAdmissionCount": 7
+      "directPrAdmissionCount": 5
     },
     "netlify": {
       "projects": 16
