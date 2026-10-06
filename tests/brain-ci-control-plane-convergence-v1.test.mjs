@@ -39,5 +39,13 @@ test('watchdog and janitor remain bounded and deterministic',()=>{
   assert.match(watchdog,/MIN_AGE_MS=90_000/);
   assert.match(watchdog,/MAX_AGE_MS=2\*60\*60\*1000/);
   assert.match(janitor,/Supersedes:/);
+  assert.match(janitor,/DUPLICATE_OBLIGATION/);
+  assert.match(janitor,/Writer-Lease-State:/);
+  assert.match(janitor,/TERMINAL_DELIVERY/);
+  assert.match(janitor,/canonicalRank/);
+  assert.match(janitor,/match\(\/\\d\+\/g\)/);
   assert.match(janitor,/30\*24\*60\*60\*1000/);
+  assert.match(watchdog,/page=\$\{page\}/);
+  assert.match(watchdog,/pr\.labels/);
+  assert.match(watchdog,/pr_labels_json/);
 });
