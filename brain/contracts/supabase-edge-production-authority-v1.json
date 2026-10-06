@@ -1,11 +1,11 @@
 {
   "id": "supabase-edge-production-authority-v1",
-  "fingerprint": "supabase-edge|production-promotion|protected-main-git-integration-registration-attestation|v3",
+  "fingerprint": "supabase-edge|production-promotion|protected-main-git-integration-registration-provider-readback|v4",
   "status": "canonical",
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source_of_truth": "GITHUB_PROTECTED_MAIN",
   "sole_promotion_workflow": ".github/workflows/supabase-edge-production-authority.yml",
-  "cli_version": "FORBIDDEN_FOR_NORMAL_PRODUCTION_PROMOTION",
+  "cli_version": "2.119.0_READBACK_ONLY",
   "provider": "supabase",
   "direct_chat_agent_provider_deploy": "FORBIDDEN",
   "direct_dashboard_production_deploy": "FORBIDDEN_EXCEPT_HARD_BREAK_GLASS",
@@ -14,12 +14,12 @@
   "drift_policy": "FAIL_CLOSED",
   "concurrency": "SINGLE_FLIGHT",
   "deployment_scope": "Supabase GitHub Integration deploys authority-critical Edge Functions declared in supabase/config.toml from protected main; undeclared production functions are forbidden because a green deploy phase would not prove they were promoted",
-  "readback": "exact-SHA Supabase GitHub App production check must complete success and remain stable across two observations; authority-critical function registrations are regression-guarded and terminal closure additionally requires provider-source parity readback",
-  "terminal_truth": "protected merge -> declared-function Supabase GitHub Integration production deployment -> exact-SHA stable provider check -> provider-source parity readback -> no newer Supabase runtime drift",
-  "secret_requirement": "NONE_IN_GITHUB_ACTIONS",
-  "rationale": "remove the broken static PAT/parallel CLI writer while preserving protected-main-only production authority and exact provider attestation",
+  "readback": "exact-SHA Supabase GitHub App production check must complete success and remain stable across two observations; GitHub Actions then uses a read-only SUPABASE_ACCESS_TOKEN to download each affected provider function and byte-compare its complete file set against protected main",
+  "terminal_truth": "protected merge -> declared-function Supabase GitHub Integration production deployment -> exact-SHA stable provider check -> read-only CLI provider download -> byte-for-byte provider-source parity -> no newer Supabase runtime drift",
+  "secret_requirement": "GitHub production environment secret SUPABASE_ACCESS_TOKEN; scoped to the production project with Edge Functions Read only when scoped PATs are available; never used for deployment",
+  "rationale": "preserve Supabase GitHub Integration as the sole production writer while making GitHub Actions fail closed on real provider-source drift through a read-only PAT",
   "provider_deployer": "SUPABASE_GITHUB_INTEGRATION",
-  "github_actions_role": "ATTESTATION_ONLY",
+  "github_actions_role": "ATTESTATION_ONLY_WITH_READ_ONLY_PROVIDER_PARITY",
   "provider_check": {
     "app_slug": "supabase",
     "name": "Supabase Preview",
@@ -39,5 +39,6 @@
     }
   },
   "registration_policy": "FAIL_CLOSED_IF_AUTHORITY_CRITICAL_FUNCTION_IS_NOT_DECLARED_IN_SUPABASE_CONFIG",
-  "provider_source_parity": "REQUIRED_FOR_TERMINAL_GREEN"
+  "provider_source_parity": "BYTE_FOR_BYTE_REQUIRED_FOR_TERMINAL_GREEN",
+  "readback_token_policy": "READ_ONLY_EDGE_FUNCTIONS_READ; SUPABASE_ACCESS_TOKEN MUST NOT AUTHORIZE OR EXECUTE PRODUCTION DEPLOYMENT"
 }
