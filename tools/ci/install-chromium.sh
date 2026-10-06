@@ -18,6 +18,8 @@
 # drie pogingen met een schone apt-cache ertussen, voor het geval een spiegel
 # tijdelijk uit de pas loopt.
 #
+# Trigger-scope live proof v3: CI-only changes must not start production snapshot or release readback.
+#
 # Gebruik in een workflow:
 #   - name: Install Chromium
 #     run: bash tools/ci/install-chromium.sh
