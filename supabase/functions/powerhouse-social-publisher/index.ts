@@ -1,5 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
+// Protected-main promotion bootstrap: social provider-truth contract v1.
+
 const ORG_ID = '6a7037d2d8fce064ac755ec7';
 const PERSONAL = '6a70381699afb44349f0fb35';
 const COMPANY = '6a70381699afb44349f0fb36';
