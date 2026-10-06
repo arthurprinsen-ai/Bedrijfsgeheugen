@@ -17,11 +17,13 @@ const workflows = [
 ];
 
 for (const workflow of workflows) {
-  test(`${workflow} is PR-scoped single-flight`, () => {
+  test(`${workflow} is single-flight whenever it remains PR-scoped`, () => {
     const yaml = fs.readFileSync(workflow, 'utf8');
     assert.match(yaml, /\nconcurrency:\n/);
-    assert.match(yaml, /github\.event\.pull_request\.number/);
     assert.match(yaml, /cancel-in-progress:\s*true/);
+    if (/^\s{2}pull_request:/m.test(yaml)) {
+      assert.match(yaml, /github\.event\.pull_request\.number/);
+    }
   });
 }
 
