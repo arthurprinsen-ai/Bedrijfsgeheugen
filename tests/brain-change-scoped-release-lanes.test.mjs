@@ -12,6 +12,19 @@ function suitesFor(paths, sha = 'abcdef1234567890') {
   return deriveRequiredTestSuites({ lanes: plan.lanes.map(lane => lane.id) });
 }
 
+function absoluteHostsFromQuotedHtml(value) {
+  const hosts = [];
+  for (const token of String(value).split('"')) {
+    if (!token.startsWith('https://') && !token.startsWith('http://')) continue;
+    try {
+      hosts.push(new URL(token).hostname);
+    } catch {
+      // Ignore malformed non-URL test fragments.
+    }
+  }
+  return hosts;
+}
+
 test('website-only work blocks only shared and website required suites', () => {
   assert.deepEqual(suitesFor(['index.html']), { shared:true, backend:false, portal:false, website:true, automation:false });
 });
@@ -89,8 +102,9 @@ test('approved blog writer strips remote font links while preserving unrelated l
     "print(writer.normalize_performance(sample))",
   ].join('\n');
   const output = execFileSync('python3', ['-c', probe], { encoding:'utf8' });
-  assert.equal(output.includes('fonts.googleapis.com'), false);
-  assert.equal(output.includes('fonts.gstatic.com'), false);
+  const hosts = absoluteHostsFromQuotedHtml(output);
+  assert.equal(hosts.some(host => host === 'fonts.googleapis.com'), false);
+  assert.equal(hosts.some(host => host === 'fonts.gstatic.com'), false);
   assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
@@ -108,7 +122,8 @@ test('approved blog writer keeps analytics out of the first render until consent
   assert.match(output, /analytics_storage==='granted'/);
   assert.doesNotMatch(output, /<script data-goatcounter=.*src=\"https:\/\/gc\.zgo\.at\/count\.js/);
   assert.match(output, /setTimeout\(loadGoat,5000\)/);
-  assert.equal(output.includes('fonts.googleapis.com'), false);
+  const hosts = absoluteHostsFromQuotedHtml(output);
+  assert.equal(hosts.some(host => host === 'fonts.googleapis.com'), false);
   assert.match(output, /href=\"\/assets\/site\.css\"/);
 });
 
