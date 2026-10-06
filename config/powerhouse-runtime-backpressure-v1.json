@@ -55,25 +55,16 @@
     ]
   },
   "runtime_verifier": {
-    "state": "RETIRED",
+    "state": "RETIRED_DIAGNOSTIC",
     "function": "powerhouse-runtime-verifier-v1",
     "public_db_probe": false,
-    "response_status": 410,
+    "response_status": 200,
+    "replacement": "commercial-heartbeat-and-runtime-readback",
     "authority": [
       "supabase-provider-logs",
       "supabase-management-api",
       "powerhouse-commercial-heartbeat-v1"
     ],
-    "reason": "Public or bearer-link database probes can leak credentials and amplify outages."
-  },
-  "runtime_health": {
-    "public_database_probe": "retired",
-    "retired_function": "powerhouse-runtime-verifier-v1",
-    "authorities": [
-      "supabase-provider-logs",
-      "supabase-management-api",
-      "powerhouse-commercial-heartbeat-v1"
-    ],
-    "invariant": "production health must not create database probe traffic"
+    "reason": "Public database probes can leak credentials, amplify outages, and duplicate provider health authority."
   }
 }
