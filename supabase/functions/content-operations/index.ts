@@ -1,3 +1,4 @@
+import postgres from 'npm:postgres@3.4.7';
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') || '';
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
 const SHARED_SECRET = Deno.env.get('POWERHOUSE_SHARED_SECRET') || Deno.env.get('POWERHOUSE_TOKEN') || '';
@@ -38,20 +39,86 @@ async function authorized(req: Request) {
   const expected = await schedulerToken();
   return expected.length > 0 && supplied === expected;
 }
-async function rest(path: string, options: { method?: string; body?: unknown } = {}) {
-  if (!SUPABASE_URL || !SERVICE_KEY) throw new Error('SUPABASE_ENV_MISSING');
-  const method = options.method || 'GET';
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    method,
-    headers: { apikey: SERVICE_KEY, authorization: `Bearer ${SERVICE_KEY}`, 'content-type': 'application/json', prefer: 'return=representation' },
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
-  });
-  const text = await res.text();
-  if (!res.ok) {
-    console.error('CONTENT_OPERATIONS_SUPABASE_ERROR', res.status);
-    throw new Error('SUPABASE_REQUEST_FAILED');
+
+const DB_REF='adhjwmvyoixzjtmiroln';
+const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
+const DIRECT_SELECTS=new Set(['content_operations_cockpit','content_publication_obligations','powerhouse_content_artifacts']);
+const DIRECT_RPCS=new Set(['bg_geheim','sync_content_publication_obligations','powerhouse_reconcile_content_outcomes_v1','record_content_publication_state']);
+function dbIdent(value:string){
+  const m=value.match(/^[A-Za-z_][A-Za-z0-9_]*/)?.[0]||'';
+  if(m!==value) throw new Error('DB_IDENTIFIER_REJECTED');
+  return '"'+value.replaceAll('"','""')+'"';
+}
+function dbPoolerUrl(){
+  const raw=Deno.env.get('SUPABASE_DB_URL')||'';
+  if(!raw) throw new Error('SUPABASE_DB_URL_MISSING');
+  const u=new URL(raw);
+  u.hostname=DB_POOLER_HOST;
+  u.port='6543';
+  u.username='postgres.'+DB_REF;
+  return u.toString();
+}
+const directSql=postgres(dbPoolerUrl(),{max:4,prepare:false,connect_timeout:6,idle_timeout:10,max_lifetime:60});
+function scalarParam(value:any,values:any[],cast=''){
+  values.push(value);
+  return String.fromCharCode(36)+values.length+(cast?'::'+cast:'');
+}
+function rpcParam(value:any,values:any[]){
+  return value!==null&&typeof value==='object'
+    ? scalarParam(JSON.stringify(value),values,'jsonb')
+    : scalarParam(value,values);
+}
+function selectList(raw:string){
+  if(!raw||raw.trim()==='*') return '*';
+  return raw.split(',').map(x=>dbIdent(x.trim())).join(',');
+}
+async function directRpc(name:string,body:any){
+  if(!DIRECT_RPCS.has(name)) throw new Error('DB_RPC_REJECTED');
+  const values:any[]=[];
+  const call=Object.entries(body||{}).map(([k,v])=>dbIdent(k)+' := '+rpcParam(v,values)).join(',');
+  const q='select to_jsonb(public.'+dbIdent(name)+'('+call+')) as result';
+  const rows:any[]=await directSql.unsafe(q,values);
+  return rows?.[0]?.result??null;
+}
+async function directSelect(path:string){
+  const qmark=path.indexOf('?');
+  const table=qmark>=0?path.slice(0,qmark):path;
+  if(!DIRECT_SELECTS.has(table)) throw new Error('DB_TABLE_REJECTED');
+  const params=new URLSearchParams(qmark>=0?path.slice(qmark+1):'');
+  const values:any[]=[];
+  const where:string[]=[];
+  for(const [key,raw] of params.entries()){
+    if(['select','order','limit'].includes(key)) continue;
+    const col=dbIdent(key);
+    if(raw.startsWith('eq.')) where.push(col+' = '+scalarParam(raw.slice(3),values));
+    else if(raw.startsWith('gte.')) where.push(col+' >= '+scalarParam(raw.slice(4),values));
+    else if(raw.startsWith('lte.')) where.push(col+' <= '+scalarParam(raw.slice(4),values));
+    else if(raw.startsWith('in.(')&&raw.endsWith(')')){
+      const items=raw.slice(4,-1).split(',').map(x=>x.trim()).filter(Boolean);
+      where.push(items.length?col+' in ('+items.map(v=>scalarParam(v,values)).join(',')+')':'false');
+    } else throw new Error('DB_FILTER_REJECTED');
   }
-  return text ? JSON.parse(text) : null;
+  let q='select '+selectList(params.get('select')||'*')+' from public.'+dbIdent(table);
+  if(where.length) q+=' where '+where.join(' and ');
+  const order=params.get('order');
+  if(order){
+    q+=' order by '+order.split(',').map(part=>{
+      const [name,dir]=part.trim().split('.');
+      return dbIdent(name)+(String(dir).toLowerCase()==='desc'?' desc':' asc');
+    }).join(',');
+  }
+  const limit=Number(params.get('limit')||0);
+  if(Number.isFinite(limit)&&limit>0) q+=' limit '+Math.trunc(limit);
+  return await directSql.unsafe(q,values);
+}
+async function rest(path: string, options: { method?: string; body?: unknown } = {}) {
+  const method=options.method||'GET';
+  if(path.startsWith('rpc/')){
+    if(method!=='POST') throw new Error('DB_RPC_METHOD_REJECTED');
+    return await directRpc(path.slice(4),options.body||{});
+  }
+  if(method!=='GET') throw new Error('DB_TABLE_METHOD_REJECTED');
+  return await directSelect(path);
 }
 
 async function getCockpit(req: Request) {

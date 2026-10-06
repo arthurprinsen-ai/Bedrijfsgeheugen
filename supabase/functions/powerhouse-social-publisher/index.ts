@@ -1,4 +1,4 @@
-import { createClient } from 'npm:@supabase/supabase-js@2';
+import postgres from 'npm:postgres@3.4.7';
 
 const ORG_ID = '6a7037d2d8fce064ac755ec7';
 const PERSONAL = '6a70381699afb44349f0fb35';
@@ -10,6 +10,93 @@ const PUBLICATION_AUTHORITY = 'social-publication-authority-v1';
 const INSTAGRAM_POLICY = 'instagram-mira-reel-only-v3';
 const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedin_company: COMPANY, instagram_company: INSTAGRAM };
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
+
+
+const DB_REF='adhjwmvyoixzjtmiroln';
+const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
+const DIRECT_TABLES=new Set(['brain_records','powerhouse_sales_actions','bg_campaign_links','powerhouse_content_artifacts','powerhouse_instagram_daily_winners_v1','social_posts','powerhouse_channel_decisions','content_publication_obligations','bg_integrations']);
+const DIRECT_RPCS=new Set(['bg_geheim','powerhouse_record_outcome','powerhouse_story_fingerprint_v1','powerhouse_reserve_unique_publication_v1','record_content_publication_state','bg_content_lessen','powerhouse_issue_social_publish_capability_v1','powerhouse_consume_social_publish_capability_v1']);
+function dbIdent(value:string){
+  const matched=value.match(/^[A-Za-z_][A-Za-z0-9_]*/)?.[0]||'';
+  if(matched!==value) throw new Error('DB_IDENTIFIER_REJECTED');
+  return '"' + value.replaceAll('"','""') + '"';
+}
+function dbPoolerUrl(){
+  const raw=Deno.env.get('SUPABASE_DB_URL')||'';
+  if(!raw) throw new Error('SUPABASE_DB_URL_MISSING');
+  const u=new URL(raw); u.hostname=DB_POOLER_HOST; u.port='6543'; u.username='postgres.'+DB_REF; return u.toString();
+}
+const directSql=postgres(dbPoolerUrl(),{max:3,prepare:false,connect_timeout:6,idle_timeout:10,max_lifetime:60});
+function dbParam(value:any,values:any[]){
+  values.push(value!==null && typeof value==='object' ? JSON.stringify(value) : value);
+  return String.fromCharCode(36)+values.length+(value!==null && typeof value==='object' ? '::jsonb' : '');
+}
+class DirectQuery {
+  table:string; op='select'; columns='*'; payload:any=null; returning=''; filters:any[]=[]; orders:any[]=[]; limitValue:number|null=null; maybe=false; conflict=''; ignoreDuplicates=false;
+  constructor(table:string){ if(!DIRECT_TABLES.has(table)) throw new Error('DB_TABLE_REJECTED:'+table); this.table=table; }
+  select(columns='*'){ if(this.op==='update'||this.op==='upsert') this.returning=columns; else { this.op='select'; this.columns=columns; } return this; }
+  update(payload:any){ this.op='update'; this.payload=payload||{}; return this; }
+  upsert(payload:any,options:any={}){ this.op='upsert'; this.payload=payload||{}; this.conflict=String(options?.onConflict||''); this.ignoreDuplicates=options?.ignoreDuplicates===true; return this; }
+  eq(column:string,value:any){ this.filters.push({kind:'eq',column,value}); return this; }
+  in(column:string,values:any[]){ this.filters.push({kind:'in',column,values:Array.isArray(values)?values:[]}); return this; }
+  not(column:string,operator:string,value:any){ this.filters.push({kind:'not',column,operator,value}); return this; }
+  order(column:string,options:any={}){ this.orders.push({column,ascending:options?.ascending!==false}); return this; }
+  limit(value:number){ this.limitValue=Number(value); return this; }
+  maybeSingle(){ this.maybe=true; return this.execute(); }
+  then(resolve:any,reject:any){ return this.execute().then(resolve,reject); }
+  where(values:any[]){
+    const parts:string[]=[];
+    for(const f of this.filters){
+      const col=dbIdent(f.column);
+      if(f.kind==='eq'){ if(f.value===null) parts.push(col+' is null'); else parts.push(col+' = '+dbParam(f.value,values)); }
+      else if(f.kind==='in'){ if(!f.values.length){ parts.push('false'); continue; } const ps=f.values.map((v:any)=>dbParam(v,values)); parts.push(col+' in ('+ps.join(',')+')'); }
+      else if(f.kind==='not' && f.operator==='is' && f.value===null) parts.push(col+' is not null');
+      else throw new Error('DB_FILTER_REJECTED');
+    }
+    return parts.length ? ' where '+parts.join(' and ') : '';
+  }
+  selectList(raw:string){ if(raw.trim()==='*') return '*'; return raw.split(',').map(x=>dbIdent(x.trim())).join(','); }
+  async execute(){
+    try{
+      const values:any[]=[]; let q='';
+      if(this.op==='select'){
+        q='select '+this.selectList(this.columns)+' from public.'+dbIdent(this.table)+this.where(values);
+        if(this.orders.length) q+=' order by '+this.orders.map(o=>dbIdent(o.column)+(o.ascending?' asc':' desc')).join(',');
+        if(Number.isFinite(this.limitValue as number)) q+=' limit '+Math.max(0,Math.trunc(this.limitValue as number));
+      } else if(this.op==='update'){
+        const entries=Object.entries(this.payload||{}); if(!entries.length) throw new Error('DB_EMPTY_UPDATE');
+        q='update public.'+dbIdent(this.table)+' set '+entries.map(([k,v])=>dbIdent(k)+' = '+dbParam(v,values)).join(',')+this.where(values);
+        if(this.returning) q+=' returning '+this.selectList(this.returning);
+      } else if(this.op==='upsert'){
+        const entries=Object.entries(this.payload||{}); if(!entries.length) throw new Error('DB_EMPTY_UPSERT');
+        const cols=entries.map(([k])=>dbIdent(k)); const vals=entries.map(([,v])=>dbParam(v,values));
+        q='insert into public.'+dbIdent(this.table)+' ('+cols.join(',')+') values ('+vals.join(',')+')';
+        const conflict=this.conflict.split(',').map(x=>x.trim()).filter(Boolean); if(!conflict.length) throw new Error('DB_UPSERT_CONFLICT_REQUIRED');
+        q+=' on conflict ('+conflict.map(dbIdent).join(',')+') ';
+        if(this.ignoreDuplicates) q+='do nothing';
+        else { const conflictSet=new Set(conflict); const updateCols=entries.map(([k])=>k).filter(k=>!conflictSet.has(k)); q+=updateCols.length ? 'do update set '+updateCols.map(k=>dbIdent(k)+' = excluded.'+dbIdent(k)).join(',') : 'do nothing'; }
+        if(this.returning) q+=' returning '+this.selectList(this.returning);
+      } else throw new Error('DB_OPERATION_REJECTED');
+      const rows:any[]=await directSql.unsafe(q,values);
+      let data:any;
+      if((this.op==='update'||this.op==='upsert')&&!this.returning) data=null;
+      else if(this.maybe) data=rows[0]||null;
+      else data=rows;
+      return {data,error:null};
+    }catch(error){ return {data:null,error:{message:error instanceof Error?error.message:String(error)}}; }
+  }
+}
+async function directRpc(name:string,args:Record<string,any>={}){
+  try{
+    if(!DIRECT_RPCS.has(name)) throw new Error('DB_RPC_REJECTED:'+name);
+    const values:any[]=[];
+    const call=Object.entries(args||{}).map(([k,v])=>dbIdent(k)+' := '+dbParam(v,values)).join(',');
+    const q='select to_jsonb(public.'+dbIdent(name)+'('+call+')) as result';
+    const rows:any[]=await directSql.unsafe(q,values);
+    return {data:rows?.[0]?.result??null,error:null};
+  }catch(error){ return {data:null,error:{message:error instanceof Error?error.message:String(error)}}; }
+}
+function createDirectDb(){ return {from:(table:string)=>new DirectQuery(table),rpc:(name:string,args:any={})=>directRpc(name,args)}; }
 
 const clean = (value: unknown) => String(value ?? '').trim();
 const esc = (value: unknown) => String(value ?? '').replaceAll('\\','\\\\').replaceAll('"','\\"').replaceAll('\n','\\n').replaceAll('\r','');
@@ -143,13 +230,19 @@ async function composioLinkedInCompanyContext(db:any){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error('COMPOSIO_LINKEDIN_AUTH_REQUIRED');
   const targetOrg=clean(await secret(db,'COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN'))||'urn:li:organization:18234216';
+  const pinnedCompanyAccount=clean(await secret(db,'COMPOSIO_LINKEDIN_COMPANY_CONNECTED_ACCOUNT_ID'));
   const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=linkedin&statuses=ACTIVE&account_type=ALL&limit=50`,{headers:{'x-api-key':apiKey}});
   const body:any=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(`COMPOSIO_LINKEDIN_ACCOUNT_DISCOVERY_${response.status}`);
   const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
   const candidates:any[]=[];
   let lastError='';
-  for(const item of items){
+  const eligibleItems=pinnedCompanyAccount
+    ? items.filter((item:any)=>clean(item?.id||item?.connected_account_id)===pinnedCompanyAccount)
+    : [];
+  if(!pinnedCompanyAccount)throw new Error('LINKEDIN_COMPANY_CANONICAL_CONNECTION_NOT_PINNED');
+  if(eligibleItems.length!==1)throw new Error('LINKEDIN_COMPANY_PINNED_CONNECTION_NOT_ACTIVE');
+  for(const item of eligibleItems){
     if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
     const accountId=clean(item?.id||item?.connected_account_id);
     const userId=clean(item?.user_id);
@@ -171,6 +264,9 @@ async function composioLinkedInCompanyContext(db:any){
     }
   }
   if(candidates.length===0)throw new Error('LINKEDIN_COMPANY_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
+  const verifiedCandidates=candidates.filter((candidate:any)=>candidate.organizationReadVerified===true);
+  if(verifiedCandidates.length===0)throw new Error('LINKEDIN_COMPANY_HUMAN_BOUNDARY_R_ORGANIZATION_ADMIN_REQUIRED');
+  candidates.splice(0,candidates.length,...verifiedCandidates);
   candidates.sort((a:any,b:any)=>
     Number((b.alias||'').includes('canonical-org'))-Number((a.alias||'').includes('canonical-org'))
     || Number((b.alias||'').includes('company'))-Number((a.alias||'').includes('company'))
@@ -940,7 +1036,9 @@ async function containmentSweepInstagram(db:any,token:string){
     .select('run_date,channel,state,delivery_ref,delivery_evidence')
     .eq('channel','instagram_company')
     .not('delivery_ref','is',null)
-    .in('state',['scheduled','blocked','dispatching']);
+    .in('state',['scheduled','blocked','dispatching'])
+    .order('run_date',{ascending:false})
+    .limit(50);
   if(error)throw new Error('INSTAGRAM_CONTAINMENT_SWEEP_READ:'+error.message);
   const out:any[]=[];
   for(const row of rows||[]){
@@ -987,7 +1085,7 @@ Deno.serve(async (req) => {
   const url = Deno.env.get('SUPABASE_URL') || '';
   const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
   if (!url || !key) return json({ ok: false, error: 'CONFIG' }, 500);
-  const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
+  const db = createDirectDb();
   const tokenExpected = clean((await db.rpc('bg_geheim', { p_naam: 'powerhouse_daily_scheduler_token' })).data);
   if (!tokenExpected || req.headers.get('x-powerhouse-token') !== tokenExpected) return json({ ok: false, error: 'UNAUTHORIZED' }, 401);
   let body: any = {};
@@ -996,11 +1094,6 @@ Deno.serve(async (req) => {
   const mode = clean(body.mode) || 'run';
   if (mode === 'cockpit_autopilot') return json({ ok: true, runDate, cockpit_autopilot: await runLinkedInCockpitAutopilot(db) });
   const publishOnly = mode === 'publish_only';
-  const allChannels = ['linkedin_personal','linkedin_company','instagram_company'];
-  const requestedChannels = Array.isArray(body.channels)
-    ? [...new Set(body.channels.map((value:any)=>clean(value)).filter((value:string)=>allChannels.includes(value)))]
-    : [];
-  const channels = requestedChannels.length ? requestedChannels : allChannels;
   const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
   const bufferToken = clean(integration?.token) || null;
 
@@ -1033,6 +1126,7 @@ Deno.serve(async (req) => {
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
   const cockpit_autopilot = publishOnly ? [] : await runLinkedInCockpitAutopilot(db);
+  const channels = ['linkedin_personal','linkedin_company','instagram_company'];
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
       .select('channel,scheduled_for,delivery_evidence,priority')
