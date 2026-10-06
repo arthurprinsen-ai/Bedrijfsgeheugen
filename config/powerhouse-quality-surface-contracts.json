@@ -436,6 +436,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:social-publication-delivery-deploy",
+      "type": "netlify_function",
+      "authority": "netlify/functions/social-publication-delivery-deploy.mjs",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:stripe-webhook",
       "type": "netlify_function",
       "authority": "netlify/functions/stripe-webhook.mjs",
