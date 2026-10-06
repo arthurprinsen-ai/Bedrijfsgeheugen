@@ -9,4 +9,4 @@ Material delivery repair for the canonical publication lane.
 - LinkedIn company stays fail-closed at the real external boundary: no active connected account currently proves the required organization-admin scope.
 - No provider publication ID or success proof was fabricated.
 
-Evidence is bound to PR #3846 and its exact HEAD checks.
+Evidence is bound to PR #3851 and its exact HEAD checks; publisher source matches deployed v107 and blog-queue source matches deployed v11.
