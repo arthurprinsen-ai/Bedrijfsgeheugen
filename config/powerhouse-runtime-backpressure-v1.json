@@ -7,7 +7,8 @@
     "stale_cache_ms": 900000,
     "circuit_breaker_ms": 30000,
     "degraded_response_status": 200,
-    "degraded_mode": "static_html_authority_plus_stale_cms_overlay"
+    "degraded_mode": "static_html_authority_plus_stale_cms_overlay",
+    "blob_consistency": "strong"
   },
   "growth_events": {
     "visitor_path": "durable_queue_only",
@@ -23,7 +24,8 @@
     "growth events remain durable in Netlify Blobs until DataHub persistence succeeds",
     "a failing backend stops the current drain batch instead of creating retry amplification",
     "scheduler authentication must not depend on PostgREST before authorization",
-    "scheduler secret lookup must use the IPv4 Supavisor pooler or an injected Edge secret"
+    "scheduler secret lookup must use the IPv4 Supavisor pooler or an injected Edge secret",
+    "CMS circuit-breaker state must use strong-consistency Blobs"
   ],
   "service_auth": {
     "authority": "supabase/functions/_shared/powerhouse-scheduler-auth.ts",
