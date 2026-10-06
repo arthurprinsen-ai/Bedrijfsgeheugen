@@ -15,9 +15,10 @@
   "contributing_causes": [
     "The project has max_connections=60 while pg_cron allows up to 32 concurrent jobs.",
     "Five */5 jobs, three */10 jobs, two */15 jobs, six hourly jobs at minute 17, and five daily jobs around 06:20 created deterministic fan-out peaks.",
-    "GitHub-hosted runners cannot rely on the project's direct IPv6 database endpoint; trusted migration repair must use the IPv4 Supavisor session pooler."
+    "GitHub-hosted runners cannot rely on the project's direct IPv6 database endpoint; trusted migration repair must use the IPv4 Supavisor session pooler.",
+    "Three runtime-event writers used 'degraded' as lifecycle state even though the canonical powerhouse_runtime_events state contract allows only observed/decided/actioned/closed/ignored/error."
   ],
-  "prevention_rule": "Spread database-backed cron schedules so recurring control-plane load stays bounded; keep GitHub database transport on the canonical IPv4 Supavisor session bridge; and make noncritical telemetry fail-open with a short Data API timeout and circuit breaker.",
+  "prevention_rule": "Spread database-backed cron schedules so recurring control-plane load stays bounded; keep GitHub database transport on the canonical IPv4 Supavisor session bridge; and make noncritical telemetry fail-open with a short Data API timeout and circuit breaker. Runtime degradation must map to lifecycle state 'error' while degradation detail remains in data_quality/evidence.",
   "evidence": {
     "incident": [
       "Supavisor ECHECKOUTTIMEOUT after 15000ms in Session mode",
@@ -31,7 +32,8 @@
       "the 1-minute watchdog/reconciliation jobs returned to sub-second successful runs",
       "PostgREST reconnected and loaded its schema cache successfully",
       "bg-interactie v6 uses a 2500ms Data API budget and a 30s in-memory circuit breaker",
-      "supabase-migration-repair-bridge v4 canonicalizes direct DB input to aws-0-eu-central-1.pooler.supabase.com:5432 and reports supavisor-session-ipv4"
+      "supabase-migration-repair-bridge v4 canonicalizes direct DB input to aws-0-eu-central-1.pooler.supabase.com:5432 and reports supavisor-session-ipv4",
+      "production migration 20261006090209 normalized three invalid 'degraded' runtime-event lifecycle writes to canonical 'error'"
     ],
     "tests": [
       "tests/brain-supabase-runtime-pressure-v1.test.mjs"
