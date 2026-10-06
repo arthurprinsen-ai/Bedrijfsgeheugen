@@ -67,6 +67,7 @@ jobs:
             'tools/site-shell/live-contract.mjs',
             'tools/site-shell/test-live-contract.mjs',
             'tools/site-shell/production-supersession.mjs',
+            'tools/site-shell/standalone-visibility-check.mjs',
             'brain/contracts/production-readback-v1.json',
           ]);
           const runtimeChangedPaths=changedPaths.filter(path =>
