@@ -1,0 +1,38 @@
+{
+  "version": "CI-CONTROL-PLANE-CONVERGENCE-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|ci|single-ingress-bounded-fetch-watchdog-janitor|v1",
+  "obligation_id": "ci-control-plane-convergence-20261006-v1",
+  "root_cause": {
+    "escaped_defect": "Independent pull_request workflows and fetch-depth:0 caused duplicated runners, full remote-ref fetches, stale PR pressure, and occasional missing canonical Required runs.",
+    "evidence": "PR #3911 started browser, page/SEO, quality and skill workflows despite Required already owning website release classification; Required and Skill Projection logs fetched refs/heads/*."
+  },
+  "prevention": {
+    "ingress": "Heavy browser, page/SEO, Quality Intelligence and Skill Projection no longer allocate independent PR runners; Required remains the canonical PR gate.",
+    "fetch": "Required and website classifiers use shallow checkout plus an exact comparison-base fetch on demand.",
+    "provider": "Supabase Preview applicability is owned by the Required aggregate; the redundant standalone runner is retired.",
+    "recovery": "A five-minute watchdog redispatches Required only when a recent open PR has no canonical run after 90 seconds.",
+    "hygiene": "A bounded janitor closes explicitly superseded PRs and generated candidates stale for more than 30 days."
+  },
+  "regression": [
+    "tests/brain-ci-control-plane-convergence-v1.test.mjs",
+    "tests/brain-ci-critical-path-acceleration-v1.test.mjs",
+    "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "CI_CONTROL_PLANE_FANOUT_AND_STALE_REF_PRESSURE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-ci-control-plane-convergence-v1.test.mjs"
+    ],
+    "observed_failure": "multiple independent PR workflows plus full-history checkout and at least 100 open PRs",
+    "proof_boundary": "canonical Required gate, exact base/head comparison, bounded recovery and cleanup"
+  }
+}
