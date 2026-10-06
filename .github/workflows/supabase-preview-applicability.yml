@@ -69,6 +69,7 @@ jobs:
           fi
 
           echo "Database-relevant Supabase source changed; waiting for the provider-owned Supabase Preview check on exact head $HEAD_SHA."
+          stable_provider_success_id=""
           for attempt in $(seq 1 48); do
             curl --fail --silent --show-error \
               -H "Authorization: Bearer $GH_TOKEN" \
@@ -83,27 +84,35 @@ jobs:
           const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
           const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
           if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
-          provider.sort((a,b)=>String(b.completed_at||b.started_at||'').localeCompare(String(a.completed_at||a.started_at||'')));
+          provider.sort((a,b)=>(Number(b.id||0)-Number(a.id||0)) || String(b.started_at||'').localeCompare(String(a.started_at||'')));
           const check=provider[0];
-          if(check.status!=='completed'){ process.stdout.write('pending'); process.exit(0); }
-          process.stdout.write(String(check.conclusion||'unknown'));
+          const id=String(check.id||'unknown');
+          if(check.status!=='completed'){ process.stdout.write(`pending:${id}`); process.exit(0); }
+          process.stdout.write(`${String(check.conclusion||'unknown')}:${id}`);
           NODE
             )"
 
             case "$state" in
-              success)
-                echo "SUPABASE_PREVIEW_PROVIDER_VERIFIED:$HEAD_SHA"
-                exit 0
+              success:*)
+                provider_id="${state#success:}"
+                if [ "$stable_provider_success_id" = "$provider_id" ]; then
+                  echo "SUPABASE_PREVIEW_PROVIDER_VERIFIED:$HEAD_SHA:$provider_id"
+                  exit 0
+                fi
+                stable_provider_success_id="$provider_id"
+                echo "Provider success observed once; requiring a second stable observation for check $provider_id."
+                sleep 10
                 ;;
-              failure|cancelled|timed_out|action_required|stale|startup_failure)
+              failure:*|cancelled:*|timed_out:*|action_required:*|stale:*|startup_failure:*)
                 echo "::error::SUPABASE_PREVIEW_PROVIDER_FAILED:$state:$HEAD_SHA"
                 exit 1
                 ;;
-              skipped|neutral)
+              skipped:*|neutral:*)
                 echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_PROOF:$state:$HEAD_SHA"
                 exit 1
                 ;;
-              missing|pending)
+              missing|pending:*)
+                stable_provider_success_id=""
                 sleep 10
                 ;;
               *)
