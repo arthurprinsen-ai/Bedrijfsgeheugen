@@ -9,5 +9,19 @@
       "stale_readback_run_id": 37343578411,
       "reason": "Legacy terminalizer hardcoded runtime/outcome proof and the old Production Release Readback remains in_progress after authority routing was corrected by PR #3758."
     }
-  ]
+  ],
+  "revalidation": {
+    "reason": "Re-run PR #3741 historical terminal reconciliation after terminalizer authority fixes and final migration-history closure.",
+    "terminalizer_authority_prs": [
+      3812,
+      3822
+    ],
+    "terminalizer_authority_merge_shas": [
+      "b8cdcacac4efbfa40facc8a89dbc05a7805470b3",
+      "2729dfd6dbf07426b1451e4469ea29cf295e692d"
+    ],
+    "migration_history_closure_pr": 3824,
+    "migration_history_closure_merge_sha": "908e4f03084ac0f446299aa70fcf43cc6e48ef1e",
+    "requested_on": "2026-10-06"
+  }
 }

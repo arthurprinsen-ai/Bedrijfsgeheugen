@@ -51,7 +51,8 @@
       "tools/site-shell/test-live-contract.mjs",
       "brain/contracts/production-readback-v1.json",
       "tools/site-shell/production-supersession.mjs",
-      "tools/site-shell/standalone-visibility-check.mjs"
+      "tools/site-shell/standalone-visibility-check.mjs",
+      "config/historical-terminal-reconciliation.json"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",
