@@ -36,6 +36,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "tests": [
+      "tests/brain-runtime-authority-governance.test.mjs"
     ]
   }
 }
