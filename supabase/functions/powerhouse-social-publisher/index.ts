@@ -339,7 +339,11 @@ function isLinkedInAuthPreflightError(error:any){
     ||message.includes('UNAUTHORIZED')
     ||message.includes('TOKEN')
     ||message.includes('AUTH_REQUIRED')
-    ||message.includes('CONNECTION_REQUIRED');
+    ||message.includes('CONNECTION_REQUIRED')
+    ||message.includes('CANONICAL_CONNECTION_NOT_PINNED')
+    ||message.includes('PINNED_CONNECTION_NOT_ACTIVE')
+    ||message.includes('HUMAN_BOUNDARY_R_ORGANIZATION_ADMIN_REQUIRED')
+    ||message.includes('COMPANY_REAUTH_REQUIRED');
 }
 
 async function preflightLinkedInComposio(db:any){
