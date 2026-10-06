@@ -55,10 +55,8 @@ jobs:
             ...(Array.isArray(required.checks) ? required.checks.map(item => item?.context) : []),
           ].filter(Boolean);
           const expectedChecks = [
-            'Brain foundation verify',
-            'Shared Agent Memory Tests',
-            'V18 Production Promotion',
-            'Unified Brain Delivery',
+            'test',
+            'CodeQL javascript-typescript',
           ];
           const observedSha = branch?.commit?.sha ?? '';
           const evidenceRef = `github-actions:${process.env.GITHUB_RUN_ID}:main-protection-observation`;

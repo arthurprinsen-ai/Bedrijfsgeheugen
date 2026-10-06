@@ -1,0 +1,48 @@
+{
+  "fingerprint": "github|protected-required-context-collision|terminalizer-governance-misclassification|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "terminalizer-governance-required-context-proof-20261006-v1",
+  "compiler": {
+    "failure_class": "PROTECTED_CONTEXT_COLLISION_AND_CONTROL_PLANE_RUNTIME_MISCLASSIFICATION",
+    "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "PR #3908 merged while Required test was still running because branch protection requires the generic GitHub Actions context 'test' and another workflow emitted the same context earlier. That context collision has since been removed on main. The same PR then failed terminalization because Supabase Edge authority registry/contract/governance files were treated as unknown runtime rather than control-plane governance. Main Protection Observation also still reported retired required-check names instead of the live protected contexts.",
+  "prevention_rule": "The protected status context 'test' has exactly one workflow owner: Required test. Static regression scans all workflows for duplicate ownership. Terminalizer governance classification explicitly includes Supabase Edge authority contract/registry/governance code, while unknown runtime remains fail-closed. Main Protection Observation reports the actual protected contexts 'test' and 'CodeQL javascript-typescript'.",
+  "evidence": {
+    "pr": 3908,
+    "required_test_run": 37466094024,
+    "terminalizer_run": 37466516972,
+    "observed_branch_protection": {
+      "protected": true,
+      "enforcement_level": "everyone",
+      "required_checks": [
+        "test",
+        "CodeQL javascript-typescript"
+      ]
+    },
+    "tests": [
+      "tests/brain-required-status-context-uniqueness-v1.test.mjs",
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs",
+      "tests/brain-main-protection-observation.test.mjs",
+      "tests/delivery-hygiene-required-wiring.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-status-context-uniqueness-v1.test.mjs",
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs",
+      "tests/brain-main-protection-observation.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-status-context-uniqueness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-main-protection-observation.test.mjs"
+    ]
+  }
+}
