@@ -79,6 +79,13 @@ test('supervisor recovers Required without auto-dispatching duplicate BRAIN work
 });
 
 
+
+test('Required scopes a behind candidate from its merge base instead of the moving main tip',()=>{
+  const yaml=fs.readFileSync('.github/workflows/required-test.yml','utf8');
+  assert.ok(yaml.includes("git',['merge-base',comparisonBaseSha,context.changeHeadSha]"));
+  assert.ok(yaml.includes('CURRENT_BASE_AHEAD_OF_CANDIDATE'));
+});
+
 test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.doesNotMatch(yaml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
