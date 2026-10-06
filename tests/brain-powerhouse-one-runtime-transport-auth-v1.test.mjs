@@ -76,3 +76,12 @@ test('Netlify CMS gateway and CDN absorb repeat public reads',()=>{
   assert.match(cmsPublic,/status===200/);
   assert.match(cmsPublic,/no-store/);
 });
+
+test('paid-project database recovery uses the supported Management API authority',()=>{
+  const workflow=fs.readFileSync('.github/workflows/powerhouse-db-restart-once.yml','utf8');
+  assert.match(workflow,/workflow_dispatch/);
+  assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
+  assert.match(workflow,/api\.supabase\.com\/v1\/projects\/\\?\$\{PROJECT_REF\}\/config\/database\/postgres|api\.supabase\.com\/v1\/projects\/\$\{PROJECT_REF\}\/config\/database\/postgres/);
+  assert.match(workflow,/restart_database/);
+  assert.doesNotMatch(workflow,/pause_project|restore_project|db\.adhjwmvyoixzjtmiroln\.supabase\.co/);
+});
