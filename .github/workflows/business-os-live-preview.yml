@@ -1,13 +1,6 @@
 name: Business OS Live Preview
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'portal-next/**'
-      - 'portal-v2/business-input-store.js'
-      - '_redirects'
-      - '.github/workflows/business-os-live-preview.yml'
   workflow_dispatch:
 
 concurrency:
