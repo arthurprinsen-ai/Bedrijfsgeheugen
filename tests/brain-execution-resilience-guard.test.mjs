@@ -14,7 +14,7 @@ import {
 const contract = JSON.parse(fs.readFileSync('config/powerhouse-execution-resilience-v1.json', 'utf8'));
 const continuity = JSON.parse(fs.readFileSync('brain/policies/powerhouse-agent-continuity-v1.json', 'utf8'));
 const preflightSource = fs.readFileSync('scripts/brain/chat-learning-preflight.mjs', 'utf8');
-const migrationSource = fs.readFileSync('supabase/migrations/20260917083000_powerhouse_execution_resilience_v1.sql', 'utf8');
+const migrationSource = fs.readFileSync('supabase/migration-history/repository-only/20260917083000_powerhouse_execution_resilience_v1.sql', 'utf8');
 
 test('canonical resilience contract is active and mandatory for every material agent preflight', () => {
   assert.equal(contract.status, 'ACTIVE');

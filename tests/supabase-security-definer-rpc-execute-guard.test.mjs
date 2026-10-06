@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationUrl=new URL('../supabase/migrations/20260917180600_restrict_security_definer_rpc_execute_v1.sql',import.meta.url);
+const migrationUrl=new URL('../supabase/migration-history/repository-only/20260917180600_restrict_security_definer_rpc_execute_v1.sql',import.meta.url);
 
 test('public SECURITY DEFINER workers are not executable by public browser roles',async()=>{
   const sql=(await readFile(migrationUrl,'utf8')).toLowerCase();
