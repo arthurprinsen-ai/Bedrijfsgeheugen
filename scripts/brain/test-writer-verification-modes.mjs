@@ -3,23 +3,23 @@ import assert from 'node:assert/strict';
 
 const canaryPath='.github/workflows/repo-writer-cheap-canary.yml';
 const shadowPath='.github/workflows/repo-writer-candidate-shadow.yml';
+const routerPath='.github/workflows/repo-writer-operational-verification.yml';
 const gatePath='.github/workflows/repo-writer-gate-dispatch.yml';
 const unifiedPath='.github/workflows/unified-brain-delivery.yml';
-for (const path of [canaryPath, shadowPath, gatePath, unifiedPath]) assert.ok(fs.existsSync(path),`${path} must exist`);
+for (const path of [canaryPath, shadowPath, routerPath, gatePath, unifiedPath]) assert.ok(fs.existsSync(path),`${path} must exist`);
 const canary=fs.readFileSync(canaryPath,'utf8');
 const shadow=fs.readFileSync(shadowPath,'utf8');
+const router=fs.readFileSync(routerPath,'utf8');
 const gate=fs.readFileSync(gatePath,'utf8');
 const unified=fs.readFileSync(unifiedPath,'utf8');
 
 for(const writer of ['regelgeving-bijwerken','seo-controle','weekblog']){
   assert.match(canary,new RegExp(writer.replaceAll('-','\\-')),`${writer} must be supported by cheap canary`);
-  assert.match(canary,new RegExp(`verify-cheap/${writer.replaceAll('-','\\-')}-\\*`),`${writer} must have agent-executable PR trigger`);
 }
 assert.match(canary,/workflow_dispatch:/);
-assert.match(canary,/pull_request:/);
-assert.match(canary,/brain\/evidence\/writer-canary-trigger\/\*\.json/);
-assert.match(canary,/github\.event\.pull_request\.base\.sha/);
-assert.match(canary,/github\.head_ref/);
+assert.doesNotMatch(canary,/^\s{2}pull_request:/m);
+assert.match(router,/^\s{2}pull_request:/m);
+assert.match(router,/repo-writer-cheap-canary\.yml/);
 assert.match(canary,/createWriterCandidate/);
 assert.match(canary,/validateWriterCandidate/);
 assert.match(canary,/gh pr create/);
