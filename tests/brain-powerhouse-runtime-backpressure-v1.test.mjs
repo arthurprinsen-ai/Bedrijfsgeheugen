@@ -61,17 +61,17 @@ test('scheduler auth bypasses PostgREST and uses the bounded IPv4 Supavisor auth
 });
 
 
-test('runtime verifier is a bounded health signal, not an outage amplifier',()=>{
+test('public runtime verifier is retired and cannot amplify database outages',()=>{
   const verifier=read('supabase/functions/powerhouse-runtime-verifier-v1/index.ts');
   const config=read('supabase/config.toml');
+  assert.equal(contract.runtime_verifier.state,'RETIRED');
+  assert.equal(contract.runtime_verifier.public_db_probe,false);
   assert.match(config,/\[functions\.powerhouse-runtime-verifier-v1\]/);
-  assert.match(verifier,/DB_POOLER_HOST="aws-0-eu-central-1\.pooler\.supabase\.com"/);
-  assert.match(verifier,/url\.port="6543"/);
-  assert.match(verifier,/max:1/);
-  assert.match(verifier,/PROBE_CACHE_MS=30_000/);
   assert.match(verifier,/TOKEN_QUERY_FORBIDDEN/);
-  assert.match(verifier,/x-bg-runtime-verifier-token/);
-  assert.match(verifier,/state:"DEGRADED"/);
-  assert.match(verifier,/return json\(body,200\)/);
-  assert.doesNotMatch(verifier,/transport:"direct-db"/);
+  assert.match(verifier,/RUNTIME_VERIFIER_RETIRED/);
+  assert.match(verifier,/state:"RETIRED"/);
+  assert.match(verifier,/,410\)/);
+  assert.doesNotMatch(verifier,/postgres@/);
+  assert.doesNotMatch(verifier,/SUPABASE_DB_URL/);
+  assert.doesNotMatch(verifier,/TOKEN_HASH/);
 });
