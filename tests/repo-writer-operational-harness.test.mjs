@@ -38,8 +38,8 @@ test('real writers always execute from the immutable verification ref, never fro
 
 test('moving main is ignored only when current-main changes do not overlap the canary scope', () => {
   const text = harness();
-  assert.match(text, /EXPECTED_MAIN_SHA:\s*\$\{\{ github\.event\.pull_request\.base\.sha \}\}/);
-  assert.match(text, /VERIFY_PR_NUMBER:\s*\$\{\{ github\.event\.pull_request\.number \}\}/);
+  assert.match(text, /EXPECTED_MAIN_SHA:\s*\$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.base\.sha \}\}/);
+  assert.match(text, /VERIFY_PR_NUMBER:\s*\$\{\{ github\.event\.workflow_run\.pull_requests\[0\]\.number \}\}/);
   assert.match(text, /gh pr diff "\$VERIFY_PR_NUMBER"[^\n]*--name-only/);
   assert.match(text, /compare\/\$\{EXPECTED_MAIN_SHA\}\.\.\.\$\{actual_main_sha\}/);
   assert.match(text, /comm -12/);

@@ -32,10 +32,10 @@ test('Required evidence is latest-head-wins so obsolete candidate proof cannot b
   assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
 });
 
-test('governance PR fanout is consolidated behind Required while narrow supply-chain security remains PR-scoped', () => {
+test('governance PR fanout is consolidated behind Required and dependency security moves to merge_group', () => {
   assert.doesNotMatch(engineeringIntelligence, /^\s*pull_request\s*:/m);
   assert.doesNotMatch(learningClassifier, /^\s*pull_request\s*:/m);
-  assert.match(supplyChain, /pull_request:[\s\S]*?paths:/);
+  assert.doesNotMatch(supplyChain, /^\s*pull_request\s*:/m);
   for (const [name, yml] of [
     ['engineering intelligence', engineeringIntelligence],
     ['supply chain', supplyChain],
@@ -43,8 +43,11 @@ test('governance PR fanout is consolidated behind Required while narrow supply-c
   ]) {
     assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
   }
-  assert.match(supplyChain, /dependency-review:[\s\S]*?if:\s*github\.event_name == 'pull_request'/);
   assert.match(supplyChain, /provenance:[\s\S]*?if:\s*github\.event_name == 'push'/);
+  assert.match(workflow, /dependencyReviewRequired=changedPaths\.some/);
+  assert.match(workflow, /dependency_review_required=/);
+  assert.match(workflow, /merge_specialist:[\s\S]*?if:\s*github\.event_name == 'merge_group'/);
+  assert.match(workflow, /Verify dependency supply-chain risk[\s\S]*?npm audit --package-lock-only --audit-level=high/);
 });
 
 test('delivery hygiene retries transient GitHub API failures and preserves fail-closed evidence', () => {
@@ -60,6 +63,23 @@ test('delivery hygiene retries transient GitHub API failures and preserves fail-
 test('delivery hygiene does not silently ignore conflict-contract API read failures', () => {
   assert.match(hygieneWorkflow, /const files = await gh\(/);
   assert.doesNotMatch(hygieneWorkflow, /try \{\s*const files = (?:await )?gh[\s\S]*?\}\s*catch \{\}/);
+});
+
+
+test('delivery hygiene admits only direct-parent same-tree terminal identity refreshes', () => {
+  assert.match(hygieneWorkflow, /TERMINAL_IDENTITY_REFRESH_ALLOWED/);
+  assert.match(hygieneWorkflow, /parents\.length === 1/);
+  assert.match(hygieneWorkflow, /parents\[0\] === expectedTerminalHead/);
+  assert.match(hygieneWorkflow, /currentTree === previousTree/);
+  assert.match(hygieneWorkflow, /TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION/);
+});
+
+test('delivery hygiene uses event lease only on first attempt and live lease on reruns', () => {
+  assert.match(hygieneWorkflow, /RUN_ATTEMPT:\s*\$\{\{ github\.run_attempt \}\}/);
+  assert.match(hygieneWorkflow, /const rerun = Number\(process\.env\.RUN_ATTEMPT \|\| '1'\) > 1/);
+  assert.match(hygieneWorkflow, /synchronize && !rerun && eventLease\.state === 'TERMINAL_DELIVERY'/);
+  assert.match(hygieneWorkflow, /synchronize && !rerun && eventLease\.state === 'MAIN_SYNC'/);
+  assert.match(hygieneWorkflow, /evaluateWriterLease\(\{[\s\S]*?body: pr\.body \|\| ''/);
 });
 
 test('merged same-repository branches are deleted only after exact-head verification and readback', () => {

@@ -32,20 +32,14 @@ test('heavy website verification is owned by the canonical website lane, not dup
   assert.match(lane, /Verify broad high-risk browser contracts/);
 });
 
-test('remaining specialist PR workflows keep bounded path admission', async () => {
-  for (const name of ['canonical-brand-shell-test.yml','chat-learning-preflight-pr.yml']) {
-    const block = pullRequestBlock(await workflow(name));
-    assert.ok(block, `${name} must retain a PR trigger`);
-    assert.match(block, /\n\s+paths:\s*\n/, `${name} must filter pull_request paths`);
+test('retired specialist workflows stay off direct PR admission and are preserved by Required', async () => {
+  for (const name of ['canonical-brand-shell-test.yml','chat-learning-preflight-pr.yml','component-foundation-tdd.yml']) {
+    assert.equal(pullRequestBlock(await workflow(name)), '', `${name} must not fan out directly on pull requests`);
   }
-});
-
-test('component foundation no longer treats every config file as component work', async () => {
-  const source = await workflow('component-foundation-tdd.yml');
-  const block = pullRequestBlock(source);
-  assert.doesNotMatch(block, /- ['"]config\/\*\*['"]/, 'config/** causes unrelated policy changes to fan out into component CI');
-  assert.match(block, /config\/component-ownership\.json/);
-  assert.match(block, /config\/change-classes\.json/);
+  const required = await workflow('required-test.yml');
+  assert.match(required, /node tools\/site-shell\/test-shell-components\.mjs/);
+  assert.match(required, /tests\/brain-chat-learning-fast-development-v2\.test\.mjs/);
+  assert.match(required, /tests\/component-foundation-tdd|tests\/component-boundaries\.test\.mjs/);
 });
 
 
@@ -78,4 +72,14 @@ test('production workflows ignore control-plane-only paths', async () => {
       assert.ok(triggerBlock.includes(expected), `${workflow} must ignore ${expected}`);
     }
   }
+});
+
+
+test('portal production readback only auto-runs for deployable portal runtime changes', async () => {
+  const source = await workflow('portal-v2-production-dom-readback.yml');
+  const triggerBlock = source.split(/\nconcurrency:/, 1)[0];
+  assert.match(triggerBlock, /- 'portal-v2\/\*\*'/);
+  assert.doesNotMatch(triggerBlock, /tests\/integration\/portal-v2-/);
+  assert.doesNotMatch(triggerBlock, /\.github\/workflows\/portal-v2-production-dom-readback\.yml/);
+  assert.match(triggerBlock, /workflow_dispatch:/);
 });

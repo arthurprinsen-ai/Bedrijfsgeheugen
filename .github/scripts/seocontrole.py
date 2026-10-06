@@ -14,6 +14,7 @@ De strategie zelf staat in Notion en wordt hier niet herhaald: alleen de regels
 die je automatisch kunt controleren staan hieronder.
 """
 import glob, html, io, json, os, re, sys, unicodedata
+from html.parser import HTMLParser
 from urllib.parse import urlparse
 
 # ── de clusters, zoals vastgelegd in de zoekwoordenstrategie ───────────────
@@ -153,6 +154,35 @@ MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
 GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact', 'cms'}
 GEEN_SITEMAP = {'404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt', 'cms'}
 SLECHTE_ANKERS = {'lees meer', 'klik hier', 'meer info', 'hier', 'lees verder', 'meer'}
+
+
+class _VisibleTextParser(HTMLParser):
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self._skip_depth = 0
+        self._parts = []
+
+    def handle_starttag(self, tag, attrs):
+        if tag.lower() in {'script', 'style'}:
+            self._skip_depth += 1
+
+    def handle_endtag(self, tag):
+        if tag.lower() in {'script', 'style'} and self._skip_depth:
+            self._skip_depth -= 1
+
+    def handle_data(self, data):
+        if not self._skip_depth:
+            self._parts.append(data)
+
+    def text(self):
+        return ' '.join(self._parts)
+
+
+def visible_text(markup):
+    parser = _VisibleTextParser()
+    parser.feed(markup or '')
+    parser.close()
+    return parser.text()
 
 
 def norm(t):
@@ -372,8 +402,7 @@ def main():
             if woord in plat:
                 bevindingen.append(('midden', url,
                     'merktaal: het woord "%s" hoort niet in onze teksten' % woord))
-        zichtbaar = re.sub(r'<script[\s\S]*?</script>|<style[\s\S]*?</style>|<!--[\s\S]*?-->', ' ', p['hoofd'])
-        if '!' in re.sub(r'<[^>]+>', ' ', zichtbaar):
+        if '!' in visible_text(p['hoofd']):
             bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
 
 

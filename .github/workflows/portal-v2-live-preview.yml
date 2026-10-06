@@ -1,20 +1,14 @@
 name: Portal V2 Live Preview
 
+run-name: portal-preview-pr-${{ github.event.workflow_run.pull_requests[0].number }}-${{ github.event.workflow_run.pull_requests[0].head.sha }}
+
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'portal-v2/**'
-      - 'tests/integration/portal-v2-live.spec.js'
-      - 'tests/integration/portal-v2-mobile-shell.spec.js'
-      - 'tests/integration/portal-v2-functional-parity.spec.js'
-      - 'tests/integration/portal-v2-bcg-parity.spec.js'
-      - 'tests/integration/portal-v2-legacy-algorithm-parity.spec.js'
-      - '.github/workflows/portal-v2-live-preview.yml'
-  workflow_dispatch:
+  workflow_run:
+    workflows: ['Required test']
+    types: [completed]
 
 concurrency:
-  group: portal-v2-live-preview-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: portal-v2-live-preview-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.id }}
   cancel-in-progress: true
 
 permissions:
@@ -23,17 +17,21 @@ permissions:
 
 jobs:
   preview:
-    if: github.event_name == 'pull_request'
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.pull_requests[0].number != null
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
 
       - name: Verify exact checked-out head SHA
         env:
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
         run: |
           set -euo pipefail
           actual=$(git rev-parse HEAD)
@@ -42,7 +40,7 @@ jobs:
       - name: Wait for exact Netlify preview SHA and pin immutable deploy
         env:
           GH_TOKEN: ${{ github.token }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
         run: |
           set -euo pipefail
           for i in $(seq 1 48); do
@@ -104,6 +102,20 @@ jobs:
           grep -q 'v2repeatrow' /tmp/portal-v2-functional.css
           grep -q 'calculateLegacyEquivalent' /tmp/portal-v2-parity-engine.js
 
+      - name: Verify canonical Business OS redirect and input compatibility
+        run: |
+          set -euo pipefail
+          headers=$(mktemp)
+          curl -sS --max-time 30 -D "$headers" -o /tmp/portal-next-body "$PREVIEW_URL/portal-next/"
+          status=$(awk 'NR==1 {print $2}' "$headers")
+          location=$(awk 'BEGIN{IGNORECASE=1} /^location:/ {gsub(/\r/,""); print $2}' "$headers" | tail -n1)
+          test "$status" = "301"
+          test "$location" = "/portal-v2/"
+          curl -fsS --max-time 30 "$PREVIEW_URL/portal-v2/business-input-store.js" -o /tmp/business-input-store.js
+          node --check /tmp/business-input-store.js
+          grep -q 'savePortalBusinessInput' /tmp/business-input-store.js
+          grep -q 'readLegacyPortalBusinessInputs' /tmp/business-input-store.js
+
       - name: Install Playwright runtime
         run: |
           PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
@@ -131,6 +143,25 @@ jobs:
           done
           PREVIEW_URL=http://127.0.0.1:4173 npx playwright test tests/integration/portal-v2-live.spec.js tests/integration/portal-v2-functional-parity.spec.js tests/integration/portal-v2-bcg-parity.spec.js tests/integration/portal-v2-legacy-algorithm-parity.spec.js --workers=1
 
+      - name: Verify production DOM suite on immutable PR deploy
+        env:
+          PRODUCTION_URL: ${{ env.PREVIEW_URL }}
+        run: npx playwright test tests/integration/portal-v2-production-*.spec.js --workers=1
+
+      - name: Capture approved production visual baseline on exact PR head
+        env:
+          PRODUCTION_URL: ${{ env.PREVIEW_URL }}
+          VISUAL_CAPTURE_PATH: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+        run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+
+      - name: Upload approved exact-head visual baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-baseline-pr-${{ github.event.workflow_run.pull_requests[0].number }}-${{ github.event.workflow_run.pull_requests[0].head.sha }}
+          path: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+          if-no-files-found: error
+          retention-days: 30
+
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -142,7 +173,7 @@ jobs:
 
       - name: Report exact preview evidence
         run: |
-          echo "Verified head SHA: ${{ github.event.pull_request.head.sha }}"
+          echo "Verified head SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}"
           echo "Verified immutable Netlify deploy: $NETLIFY_DEPLOY_ID"
           echo "Verified Netlify preview assets: $PREVIEW_URL/portal-v2/"
           echo "Exact demoAI mobile rewrite plus desktop, mobile CSRD, full functional parity, BCG parity and executable legacy algorithm browser checks passed."

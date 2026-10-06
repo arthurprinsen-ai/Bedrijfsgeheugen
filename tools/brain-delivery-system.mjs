@@ -27,7 +27,9 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tests/brain-autonomous-engineering-fabric-v3.test.mjs': 'automation',
   'tests/brain-ci-calibration-engine-v1.test.mjs': 'backend',
   'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend',
-  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation'
+  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation',
+  'schemas/delivery-evidence.schema.json': 'backend',
+  'tests/release-artifact-identity.test.mjs': 'backend'
 });
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
@@ -38,7 +40,10 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/business-os-foundation.yml': 'automation',
   '.github/workflows/approved-central-blog.yml': 'automation',
   '.github/workflows/powerhouse-delivery-hygiene.yml': 'backend',
-  '.github/workflows/repo-writer-operational-verification.yml': 'backend',
+  '.github/workflows/repo-writer-candidate-shadow.yml': 'automation',
+  '.github/workflows/repo-writer-cheap-canary.yml': 'automation',
+  '.github/workflows/repo-writer-operational-verification.yml': 'automation',
+  '.github/workflows/repo-writer-parity-rollback.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend',
   '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
   '.github/workflows/powerhouse-quality-surface-gate.yml': 'backend',
@@ -89,6 +94,17 @@ const REGULATORY_AUTOMATION_PATHS = Object.freeze([
   'tools/regulatory-',
   'tests/regulatory-'
 ]);
+const CONTROL_PLANE_HELPER_BACKEND_PATHS = Object.freeze([
+  'scripts/ci/',
+  'tools/build/',
+  'tools/netlify/',
+  'tools/notion/',
+  'tools/supabase/',
+  'tests/build/',
+  'tests/netlify/',
+  'tests/notion/',
+  'tests/supabase/'
+]);
 const DELIVERY_CONTROL_PLANE_BACKEND_PATHS = Object.freeze([
   '.github/workflows/obligation-terminal-closure.yml',
   '.github/workflows/production-release-readback.yml',
@@ -108,6 +124,7 @@ function scopedLaneForPath(path, policy = {}) {
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
   if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
   if (matches(path, REGULATORY_AUTOMATION_PATHS)) return 'automation';
+  if (matches(path, CONTROL_PLANE_HELPER_BACKEND_PATHS)) return 'backend';
   if (matches(path, DELIVERY_CONTROL_PLANE_BACKEND_PATHS)) return 'backend';
   if (path.startsWith('.github/workflows/')) {
     const explicitPolicyLane=(policy.lanes || []).find(lane => matches(path, lane.paths || []));

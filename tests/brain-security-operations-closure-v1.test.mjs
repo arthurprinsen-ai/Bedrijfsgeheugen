@@ -10,7 +10,7 @@ const socialMetricReplayPath = new URL('../supabase/migrations/20260910104922_bg
 const notionReplayPath = new URL('../supabase/migrations/20260909181648_notion_post_feature_staging.sql', import.meta.url);
 const postFeaturesReplayPath = new URL('../supabase/migrations/20260911101107_revenue_content_intelligence_20260911_v2.sql', import.meta.url);
 const offertesAkkoordReplayPath = new URL('../supabase/migrations/20260915111957_offertes_akkoord_op_replay_baseline.sql', import.meta.url);
-const offertesAkkoordDoorReplayPath = new URL('../supabase/migrations/20260916090823_offertes_akkoord_door_replay_baseline.sql', import.meta.url);
+const offertesStructureHygienePath = new URL('../supabase/migrations/20260916090824_powerhouse_structure_hygiene_v1.sql', import.meta.url);
 
 const requiredOpen = new Set([
   'isolated_restore_dr_exercise',
@@ -106,9 +106,13 @@ test('offertes akkoord timestamp exists before commercial learning pricing view 
 });
 
 test('offertes akkoord actor and FK exist before structure hygiene creates its index', () => {
-  const sql = fs.readFileSync(offertesAkkoordDoorReplayPath, 'utf8');
-  assert.match(sql, /add column if not exists akkoord_door uuid/i);
-  assert.match(sql, /constraint offertes_akkoord_door_fkey/i);
+  const sql = fs.readFileSync(offertesStructureHygienePath, 'utf8');
+  const columnAt = sql.search(/add column if not exists akkoord_door uuid/i);
+  const fkAt = sql.search(/add constraint offertes_akkoord_door_fkey/i);
+  const indexAt = sql.search(/create index if not exists offertes_akkoord_door_fk_idx/i);
+  assert.ok(columnAt >= 0, 'structure hygiene must create akkoord_door');
+  assert.ok(fkAt > columnAt, 'FK must be created after akkoord_door exists');
+  assert.ok(indexAt > fkAt, 'index must be created only after the FK contract exists');
   assert.match(sql, /foreign key \(akkoord_door\) references auth\.users\(id\) on delete set null/i);
   assert.doesNotMatch(sql, /akkoord_door uuid[^;]*not null/i);
 });

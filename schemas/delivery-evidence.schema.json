@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bedrijfsgeheugen.nl/schemas/delivery-evidence.schema.json",
+  "title": "Delivery Evidence Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "obligation_id",
+    "source_sha",
+    "artifact_hash",
+    "contract_version",
+    "provider",
+    "provider_object_id",
+    "started_at",
+    "completed_at",
+    "result",
+    "proof"
+  ],
+  "properties": {
+    "obligation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "source_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40,64}$"
+    },
+    "artifact_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "contract_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1
+    },
+    "provider_object_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "result": {
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "proof": {
+      "type": "object"
+    }
+  }
+}

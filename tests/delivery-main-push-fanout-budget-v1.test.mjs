@@ -29,11 +29,11 @@ test('website and SEO post-merge checks are domain scoped', () => {
 });
 
 test('CodeQL main scans are code-scoped and stale scans single-flight by ref', () => {
-  const source=read('powerhouse-codeql.yml');
+  const source=read('codeql.yml');
   const push=eventBlock(source,'push');
   assert.match(push,/paths:/);
   assert.match(push,/\*\*\/\*\.mjs/);
-  assert.match(source,/github\.event\.pull_request\.number \|\| github\.ref_name/);
+  assert.match(source,/github\.event\.pull_request\.number \|\| github\.event\.merge_group\.head_sha \|\| github\.ref_name/);
   assert.doesNotMatch(source,/github\.event\.pull_request\.number \|\| github\.run_id/);
   assert.match(source,/cancel-in-progress:\s*true/);
 });

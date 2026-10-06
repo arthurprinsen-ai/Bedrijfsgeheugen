@@ -1,20 +1,21 @@
 name: Supabase PR Preview Contract
 
 on:
-  pull_request:
-    # Hosted Supabase branching is only useful when the Supabase source changes.
-    # Portal/UI/Netlify code is verified by the canonical Required test lanes and
-    # must not allocate a database preview branch or an extra PR runner.
-    paths:
-      - 'supabase/**'
-      - '.github/workflows/supabase-pr-preview.yml'
+  workflow_call:
+    inputs:
+      base_sha:
+        required: true
+        type: string
+      head_sha:
+        required: true
+        type: string
 
 permissions:
   contents: read
   pull-requests: read
 
 concurrency:
-  group: supabase-pr-preview-${{ github.event.pull_request.number }}
+  group: supabase-pr-preview-${{ inputs.head_sha }}
   cancel-in-progress: true
 
 jobs:
@@ -24,6 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
+          ref: ${{ inputs.head_sha }}
           fetch-depth: 0
 
       # Runtime replay authority is the Supabase Git Preview Branch attached to the PR.
@@ -39,9 +41,9 @@ jobs:
           set -euo pipefail
           test -f supabase/config.toml
           test -d supabase/migrations
-          echo "PR=${{ github.event.pull_request.number }} SHA=${{ github.event.pull_request.head.sha }}"
+          echo "BASE=${{ inputs.base_sha }} SHA=${{ inputs.head_sha }}"
 
-          python - <<'PY'
+          python3 - <<'PY'
           from pathlib import Path
           import re
           import tomllib
@@ -76,8 +78,8 @@ jobs:
           print(f'Validated config plus {len(versions)} uniquely-versioned, non-empty migration files.')
           PY
 
-          python scripts/brain/check_powerhouse_supabase_security.py --self-test
-          python scripts/brain/check_powerhouse_supabase_security.py origin/main "${{ github.event.pull_request.head.sha }}"
+          python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
+          python3 scripts/brain/check_powerhouse_supabase_security.py "${{ inputs.base_sha }}" "${{ inputs.head_sha }}"
 
       - name: Contract evidence
         run: node --test tests/candidate-environment.test.mjs

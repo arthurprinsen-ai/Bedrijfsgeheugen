@@ -1,9 +1,9 @@
 name: Repository Writer Operational Verification
 
 on:
-  pull_request:
-    branches: [main]
-    types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ['Required test']
+    types: [completed]
 
 permissions:
   contents: read
@@ -12,28 +12,30 @@ permissions:
 
 concurrency:
   # synchronize events supersede older verification work for the same PR.
-  group: repo-writer-operational-${{ github.event.pull_request.number }}
+  group: repo-writer-operational-${{ github.event.workflow_run.pull_requests[0].number || github.event.workflow_run.id }}
   cancel-in-progress: true
 
 jobs:
   dispatch-writer-candidate:
     if: >-
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      (startsWith(github.head_ref, 'verify/menu-balk-fix-') ||
-       startsWith(github.head_ref, 'verify/regelgeving-bijwerken-') ||
-       startsWith(github.head_ref, 'verify/seo-controle-') ||
-       startsWith(github.head_ref, 'verify/paginacontrole-') ||
-       startsWith(github.head_ref, 'verify/approved-central-blog-') ||
-       startsWith(github.head_ref, 'verify/blog-bijwerken-') ||
-       startsWith(github.head_ref, 'verify/weekblog-'))
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      (startsWith(github.event.workflow_run.head_branch, 'verify/menu-balk-fix-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify/regelgeving-bijwerken-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify/seo-controle-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify/paginacontrole-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify/approved-central-blog-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify/blog-bijwerken-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify/weekblog-'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
-      EXPECTED_MAIN_SHA: ${{ github.event.pull_request.base.sha }}
-      VERIFY_REF: ${{ github.event.pull_request.head.ref }}
-      VERIFY_SHA: ${{ github.event.pull_request.head.sha }}
-      VERIFY_PR_NUMBER: ${{ github.event.pull_request.number }}
+      EXPECTED_MAIN_SHA: ${{ github.event.workflow_run.pull_requests[0].base.sha }}
+      VERIFY_REF: ${{ github.event.workflow_run.head_branch }}
+      VERIFY_SHA: ${{ github.event.workflow_run.pull_requests[0].head.sha }}
+      VERIFY_PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
     steps:
       - name: Resolve writer contract
         id: writer
@@ -159,3 +161,64 @@ jobs:
             -f base_sha="$PR_BASE_SHA" \
             -f head_sha="$PR_HEAD_SHA" \
             -f candidate_branch="$PR_HEAD_REF"
+
+
+  route-cheap-canary:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      (startsWith(github.event.workflow_run.head_branch, 'verify-cheap/regelgeving-bijwerken-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify-cheap/seo-controle-') ||
+       startsWith(github.event.workflow_run.head_branch, 'verify-cheap/weekblog-'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+      BASE_SHA: ${{ github.event.workflow_run.pull_requests[0].base.sha }}
+      HEAD_REF: ${{ github.event.workflow_run.head_branch }}
+    steps:
+      - name: Validate cheap-canary trigger and dispatch exact writer
+        shell: bash
+        run: |
+          set -euo pipefail
+          files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          grep -Eq '^brain/evidence/writer-canary-trigger/[^/]+\.json$' <<<"$files" || {
+            echo "::notice::Writer cheap-canary branch has no canary trigger file; no dispatch."
+            exit 0
+          }
+          case "$HEAD_REF" in
+            verify-cheap/regelgeving-bijwerken-*) writer='regelgeving-bijwerken' ;;
+            verify-cheap/seo-controle-*) writer='seo-controle' ;;
+            verify-cheap/weekblog-*) writer='weekblog' ;;
+            *) echo "::error::UNSUPPORTED_CHEAP_CANARY_REF:$HEAD_REF"; exit 2 ;;
+          esac
+          gh workflow run repo-writer-cheap-canary.yml             --repo "$GITHUB_REPOSITORY"             --ref main             -f writer="$writer"             -f base_sha="$BASE_SHA"
+          echo "CHEAP_CANARY_ROUTED:$writer:$BASE_SHA"
+
+  route-parity-rollback:
+    if: >-
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      startsWith(github.event.workflow_run.head_branch, 'verify-parity/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PR_NUMBER: ${{ github.event.workflow_run.pull_requests[0].number }}
+      BASE_SHA: ${{ github.event.workflow_run.pull_requests[0].base.sha }}
+      HEAD_REF: ${{ github.event.workflow_run.head_branch }}
+    steps:
+      - name: Validate parity trigger and dispatch exact proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          grep -Eq '^brain/evidence/writer-parity-trigger/' <<<"$files" || {
+            echo "::notice::Writer parity branch has no parity trigger file; no dispatch."
+            exit 0
+          }
+          gh workflow run repo-writer-parity-rollback.yml             --repo "$GITHUB_REPOSITORY"             --ref main             -f base_sha="$BASE_SHA"             -f trigger_ref="$HEAD_REF"
+          echo "PARITY_ROLLBACK_ROUTED:$HEAD_REF:$BASE_SHA"

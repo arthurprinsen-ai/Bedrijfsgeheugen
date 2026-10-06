@@ -14,6 +14,7 @@ import pathlib
 import re
 import subprocess
 import sys
+from html.parser import HTMLParser
 from urllib.parse import urlparse
 
 BASE = "https://www.bedrijfsgeheugen.nl"
@@ -24,11 +25,33 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
+class _TextContentParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._skip_depth = 0
+        self._parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag.lower() in {"script", "style"}:
+            self._skip_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in {"script", "style"} and self._skip_depth:
+            self._skip_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self._skip_depth:
+            self._parts.append(data)
+
+    def text(self) -> str:
+        return " ".join(self._parts)
+
+
 def text_content(value: str) -> str:
-    value = re.sub(r"<script\b.*?</script>", " ", value, flags=re.I | re.S)
-    value = re.sub(r"<style\b.*?</style>", " ", value, flags=re.I | re.S)
-    value = re.sub(r"<[^>]+>", " ", value)
-    return re.sub(r"\s+", " ", html_lib.unescape(value)).strip()
+    parser = _TextContentParser()
+    parser.feed(value or "")
+    parser.close()
+    return re.sub(r"\s+", " ", parser.text()).strip()
 
 
 def attr(tag: str, name: str) -> str:

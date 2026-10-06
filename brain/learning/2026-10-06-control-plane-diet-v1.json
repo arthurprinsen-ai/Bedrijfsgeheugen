@@ -1,0 +1,90 @@
+{
+  "version": "POWERHOUSE-CONTROL-PLANE-DIET-LEARNING-v1",
+  "obligation_id": "control-plane-diet-20261006-v1",
+  "date": "2026-10-06",
+  "observed_before": {
+    "direct_pr_authorities": 38
+  },
+  "observed_after": {
+    "direct_pr_authorities": 7,
+    "admission_authorities": 2,
+    "lifecycle_recovery_authorities": 5,
+    "workflow_files": 123
+  },
+  "admission": [
+    "required-test.yml",
+    "codeql.yml"
+  ],
+  "invariants_preserved": [
+    "Required canonical PR admission",
+    "Powerhouse CodeQL is the sole CodeQL authority for JS/TS + Python on PR and merge queue",
+    "dependency supply-chain risk remains fail-closed inside Required merge_group assurance",
+    "Netlify exact-head Portal preview remains provider-backed after successful Required admission",
+    "writer verification consumes successful Required via workflow_run instead of direct PR fan-out",
+    "closed-PR lifecycle authorities remain separate",
+    "production Portal readback runs only for deployable Portal runtime changes",
+    "protected auto-merge only"
+  ],
+  "learning": [
+    "move read-only specialist assurance to Required/merge_group",
+    "separate closed lifecycle from admission",
+    "make post-admission specialists consume successful Required via workflow_run",
+    "keep exactly Required plus Powerhouse CodeQL as PR admission authorities",
+    "ratchet budgets downward",
+    "broad migrations require scope-broad-approved plus exact scope",
+    "reuse immutable source/artifact identity"
+  ],
+  "fingerprint": "control-plane|pr-fanout|duplicate-authority|ratchet-v1",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "source": "ci-intelligence-run-37494062432",
+        "direct_pull_request_workflows": 59,
+        "workflow_fanout_p95": 9,
+        "required_queue_wait_seconds_p95": 94,
+        "required_total_seconds_p95": 395
+      },
+      {
+        "source": "control-plane-diet-candidate",
+        "direct_pr_authorities_before": 38,
+        "direct_pr_authorities_after": 7,
+        "admission_authorities": 2,
+        "lifecycle_recovery_authorities": 5
+      }
+    ],
+    "summary": {
+      "historical_replay": [
+        "A candidate with many specialist pull_request workflows must fail the trigger ratchet when direct PR authority grows above the recorded baseline.",
+        "A control-plane reduction must preserve Required and independent security authority while retiring or internalizing duplicate read-only PR assurance."
+      ],
+      "observed_before": {
+        "direct_pr_authorities": 38
+      },
+      "observed_after": {
+        "direct_pr_authorities": 7,
+        "admission_authorities": 2,
+        "lifecycle_recovery_authorities": 5,
+        "workflow_files": 123
+      },
+      "target": "hold PR admission at exactly Required plus Powerhouse CodeQL, with specialist assurance on merge_group or successful Required workflow_run consumers"
+    }
+  },
+  "root_cause": "Read-only specialist assurance, lifecycle recovery, writer routing and canonical admission accumulated as independent pull_request workflows, multiplying queueing and duplicate work per candidate SHA.",
+  "prevention": "Keep Required as the canonical PR admission orchestrator, keep Powerhouse CodeQL as the sole independent CodeQL authority, move read-only specialist assurance to merge_group, make post-admission Portal/writer verification consume successful Required workflow_run events, keep lifecycle recovery off PR admission, and enforce a downward-only 7-total/2-admission/5-lifecycle trigger budget.",
+  "evidence": {
+    "tests": [
+      "tests/control-plane-pr-trigger-ratchet.test.mjs",
+      "tests/control-plane-workflow-inventory.test.mjs",
+      "tests/control-plane-workflow-retirement.test.mjs",
+      "tests/control-plane-required-wiring.test.mjs"
+    ],
+    "configs": [
+      "config/control-plane-budget.json",
+      "config/pr-trigger-baseline.json"
+    ]
+  },
+  "compiler": {
+    "failure_class": "EXCESS_DIRECT_PULL_REQUEST_AUTHORITY_FANOUT",
+    "machine_enforceable": true
+  }
+}
