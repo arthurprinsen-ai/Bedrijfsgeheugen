@@ -15,7 +15,8 @@ test('recovery supervisor is a single YAML document and never embeds itself in m
 
 test('same-lineage refresh updates only exact metadata lines',()=>{
   assert.match(yaml,/const re=new RegExp\(\`\^\$\{label\}:\.\*\$\`,'m'\)/);
-  assert.match(yaml,/replaceOne\(body,'Base-SHA',process\.env\.NEW_MAIN\)/);
+  assert.match(yaml,/replaceOne\(body,'Writer-Lease-State','TERMINAL_DELIVERY'\)/);
+  assert.match(yaml,/replaceOne\(next,'Base-SHA',process\.env\.NEW_MAIN\)/);
   assert.match(yaml,/replaceOne\(next,'Writer-Lease-Head',process\.env\.NEW_HEAD\)/);
   assert.match(yaml,/replaceOne\(next,'Writer-Lease-Main-Epoch',process\.env\.NEW_MAIN\)/);
   assert.match(yaml,/--method PATCH "repos\/\$repo\/pulls\/\$number"/);
