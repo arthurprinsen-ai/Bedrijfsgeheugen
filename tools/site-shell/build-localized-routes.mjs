@@ -700,10 +700,16 @@ const publicRoutes = publicRoutesFromSitemap();
 const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(routeFor(file))));
 const aliases = routeAliases(files);
 if (!files.length) throw new Error('No public HTML files selected for localized build');
-console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length}));
+const shardValue=name=>process.argv.find(arg=>arg.startsWith(name+'='))?.slice(name.length+1);
+const shardCount=Math.max(1,Math.min(8,Number(shardValue('--shard-count')||1)||1));
+const shardIndex=Math.max(0,Number(shardValue('--shard-index')||0)||0);
+if(shardIndex>=shardCount) throw new Error(`STATIC_I18N_SHARD_INVALID:${shardIndex}/${shardCount}`);
+const processingFiles=shardCount===1?files:files.filter((_,index)=>index%shardCount===shardIndex);
+const cacheValidationOnly = process.argv.includes('--validate-cache');
+console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length,processing:cacheValidationOnly?files.length:processingFiles.length,shardIndex,shardCount}));
 const allStrings = new Set();
 
-for (const file of files) {
+for (const file of (cacheValidationOnly ? files : processingFiles)) {
   const html = fs.readFileSync(path.join(ROOT,file),'utf8');
   const doc = parse(html,{sourceCodeLocationInfo:false});
   const refs = collectTranslatables(doc);
@@ -711,7 +717,6 @@ for (const file of files) {
   // Do not retain parse5 document trees across routes: 100+ full DOM trees can exceed the Netlify build memory limit.
 }
 
-const cacheValidationOnly = process.argv.includes('--validate-cache');
 if (cacheValidationOnly) {
   const cache = loadCache();
   const missing = [...allStrings].filter(source => typeof cache[source] !== 'string' || !cache[source].trim());
@@ -731,7 +736,7 @@ if (productionTranslationRequired && !translations) {
 let translatedRoutes = 0;
 let partialRoutes = 0;
 let untranslatedRefs = 0;
-for (const file of files) {
+for (const file of processingFiles) {
   const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
   const route = routeFor(file);
 
@@ -771,7 +776,10 @@ for (const file of files) {
 }
 
 console.log('STATIC_I18N_ROUTES',JSON.stringify({
-  files:files.length,
+  files:processingFiles.length,
+  totalFiles:files.length,
+  shardIndex,
+  shardCount,
   strings:allStrings.size,
   nl:true,
   en:true,
