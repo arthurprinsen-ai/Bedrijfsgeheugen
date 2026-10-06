@@ -129,9 +129,42 @@ export function planConcurrentAgentWork({
   queue={},
   projectedNewRuns=0,
   terminalIntent=false,
+  writerLease=null,
+  capturedMainEpoch='',
   limits=AGENT_DELIVERY_DEFAULTS
 }={}){
   const pressure=assessQueuePressure({...queue,projectedNewRuns});
+  const normalizedHead=String(currentHead||'').trim().toLowerCase();
+  const normalizedMain=String(currentMain||'').trim().toLowerCase();
+  const normalizedCaptured=String(capturedMainEpoch||'').trim().toLowerCase();
+  const leaseState=String(writerLease?.state||'').trim().toUpperCase();
+  const leaseHead=String(writerLease?.headSha||'').trim().toLowerCase();
+  const leaseMain=String(writerLease?.mainEpochSha||'').trim().toLowerCase();
+
+  if(leaseState==='TERMINAL_DELIVERY'){
+    const staleLeaseHead=Boolean(leaseHead&&normalizedHead&&leaseHead!==normalizedHead);
+    const staleLeaseMain=Boolean(leaseMain&&normalizedMain&&leaseMain!==normalizedMain);
+    return Object.freeze({
+      state:'TERMINAL_CANDIDATE_IMMUTABLE',
+      action:staleLeaseMain||staleLeaseHead?'CREATE_SUCCESSOR_FROM_CURRENT_MAIN':'DO_NOT_REWRITE_TERMINAL_CANDIDATE',
+      canMutateCandidate:false,
+      canContinueIndependentWork:true,
+      pressure,
+      reason:staleLeaseMain?'TERMINAL_LEASE_MAIN_EPOCH_DRIFT':staleLeaseHead?'TERMINAL_LEASE_HEAD_DRIFT':'TERMINAL_LEASE_BRANCH_IMMUTABLE'
+    });
+  }
+
+  if(normalizedCaptured&&normalizedMain&&normalizedCaptured!==normalizedMain){
+    return Object.freeze({
+      state:'STALE_MAIN_EPOCH',
+      action:'CREATE_SUCCESSOR_FROM_CURRENT_MAIN',
+      canMutateCandidate:false,
+      canContinueIndependentWork:true,
+      pressure,
+      reason:'CAPTURED_MAIN_EPOCH_STALE'
+    });
+  }
+
   const sameObligation=activeCandidates.filter(candidate =>
     obligationId && String(candidate.obligationId||'')===String(obligationId)
   );

@@ -109,7 +109,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       outputs:Object.freeze(['parallel-build decision','canonical writer decision','terminal serialization decision','resumable async checkpoint']),
       runtime:Object.freeze({scheduler:'tools/delivery/predictive-controller.mjs#planConcurrentAgentWork',checkpoint:'POWERHOUSE-ASYNC-CHECKPOINT-v1',policy:'brain/policies/powerhouse-agent-continuity-v1.json'}),
       productionEvidence:Object.freeze({mergeSha:'c2188fde24f7d51c194acd1c7c0d093b7ceb316e',requiredTest:'success',skillProjection:'success',canonicalTerminalizerRunId:36696171917,canonicalTerminalizerConclusion:'success',productionMode:'MAIN_CONTAINMENT_NON_RUNTIME'}),
-      invariants:Object.freeze({oneObligationOneWriter:true,nonConflictingParallelBuild:true,serializeOnlyTerminalOverlap:true,predictFanoutBeforeWrite:true,remoteWaitNeverMeansStop:true})
+      invariants:Object.freeze({oneObligationOneWriter:true,nonConflictingParallelBuild:true,serializeOnlyTerminalOverlap:true,predictFanoutBeforeWrite:true,remoteWaitNeverMeansStop:true,terminalCandidateImmutableAfterLease:true,branchMutationCompareAndSwap:true,staleEpochCreatesSuccessor:true})
     }),
     Object.freeze({
       id:'async-delivery-continuation-v1',
