@@ -108,6 +108,10 @@ jobs:
           tests/component-hash-protection.test.mjs
           tests/detect-changed-components.test.mjs
           tests/component-preview-workflow-contract.test.mjs
+          tests/supabase-public-rls-regression-guard.test.mjs
+          tests/linkedin-revenue-cockpit.test.mjs
+          tests/linkedin-revenue-runtime.test.mjs
+          tests/linkedin-revenue-engagement-cockpit.test.mjs
           tests/homepage-pricing-boundary-readback.test.mjs
           tests/main-write-integrity-squash-pr.test.mjs
           tests/universal-event-envelope.test.mjs
