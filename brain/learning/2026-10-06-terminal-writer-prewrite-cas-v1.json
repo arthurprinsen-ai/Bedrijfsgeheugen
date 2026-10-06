@@ -24,5 +24,12 @@
     "historical_replay": [
       "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+    ],
+    "observed_failure": "#3861 stale lease snapshot repeatedly rewrote an open recovery candidate before merge-time main-epoch rejection",
+    "proof_boundary": "pre-write head SHA plus current-main epoch compare-and-swap; terminal candidate content immutability"
   }
 }
