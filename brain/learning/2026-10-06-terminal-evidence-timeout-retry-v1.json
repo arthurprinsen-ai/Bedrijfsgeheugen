@@ -1,0 +1,30 @@
+{
+  "id": "terminal-evidence-timeout-retry-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "terminal-evidence|committed-state-before-rewrite|idempotent-readback-v2",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-evidence-timeout-retry-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Terminal closure retried a durable terminalization as a fresh write. The first request could time out after Supabase had already committed FULFILLED/VERIFIED/GREEN; a later rerun could also choose a different production readback mode, producing IDEMPOTENCY_PAYLOAD_CONFLICT for the same obligation/main identity.",
+  "prevention": "Treat existing durable terminal state as authoritative before classifying timeout or idempotency payload drift as a failed write. The OIDC-authenticated endpoint recovers only from exact timeout/conflict signatures, validates the existing cockpit state for the same obligation and production main SHA, and refuses this fallback when provider readback is required. The workflow also allows one bounded timeout retry.",
+  "evidence": {
+    "failed_run": 37468146837,
+    "failed_job": 112284303138,
+    "obligation_id": "website-control-plane-no-browser-20261006-v1",
+    "merge_sha": "8223fcd78e33f1771dd8e6d983a9a2d18f0ed444",
+    "durable_state": "FULFILLED/VERIFIED/GREEN",
+    "rerun_failed_job": 112293323231,
+    "rerun_error": "OPERATION_CREATE_FAILED:IDEMPOTENCY_PAYLOAD_CONFLICT",
+    "readback_authority": "powerhouse_obligation_cockpit_v1"
+  }
+}
