@@ -37,7 +37,7 @@ jobs:
             exit 0
           fi
 
-          database_relevant_supabase="$(grep '^supabase/' <<< "$changed" | grep -v '^supabase/functions/' | grep -v '^supabase/config.toml
+          database_relevant_supabase="$(grep '^supabase/' <<< "$changed" | grep -v '^supabase/functions/' | grep -v '^supabase/config\.toml
           # Historical production migrations restored into repository history are already
           # applied. Treat them as preview-non-applicable only when every database-relevant
           # path is a migration whose current Git blob exactly matches the immutable reviewed
