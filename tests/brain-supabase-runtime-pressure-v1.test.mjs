@@ -14,6 +14,9 @@ test('trusted Supabase repair transport remains IPv4 Supavisor session mode', ()
   assert.ok(bridge.includes('url.username = "postgres." + projectRef'));
   assert.ok(bridge.includes('transport: "supavisor-session-ipv4"'));
   assert.ok(bridge.includes('"db." + projectRef + ".supabase.co"'));
+  assert.ok(bridge.includes('url.searchParams.set("sslmode", "require")'));
+  assert.ok(bridge.includes('const dbUrl = sessionPoolerUrl(directDbUrl)'));
+  assert.ok(!bridge.includes('db_url: directDbUrl'), 'direct IPv6 credential source must never be returned to GitHub');
 });
 
 test('cron pressure recovery uses stable job names and removes deterministic fan-out', () => {
