@@ -103,10 +103,12 @@ test('production readback is single-flight and supersedes obsolete main readback
   const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(production, /group:\s*production-release-readback\s*$/m);
   assert.match(production, /cancel-in-progress:\s*true/);
-  const concurrencyStart = required.indexOf('\nconcurrency:');
-  const jobsStart = required.indexOf('\njobs:', concurrencyStart);
-  assert.notEqual(concurrencyStart, -1, 'Required test concurrency block must exist');
-  assert.notEqual(jobsStart, -1, 'Required test jobs block must follow concurrency');
-  const requiredConcurrency = required.slice(concurrencyStart, jobsStart);
-  assert.doesNotMatch(requiredConcurrency, /production-release-readback/);
+  const jobsStart = required.indexOf('\njobs:');
+  assert.notEqual(jobsStart, -1, 'Required test jobs block must exist');
+  const requiredHeader = required.slice(0, jobsStart);
+  assert.doesNotMatch(requiredHeader, /^concurrency:/m);
+  assert.doesNotMatch(required, /group:\s*production-release-readback/);
+  for (const lane of ['netlify','supabase','backend','portal','automation','website']) {
+    assert.match(required, new RegExp(`group: required-${lane}-`));
+  }
 });

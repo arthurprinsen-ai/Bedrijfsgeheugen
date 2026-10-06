@@ -25,9 +25,14 @@ test('Required preflight enforces exact-head versioned branch hygiene before lan
   assert.match(workflow, /if\s*\(!hygiene\.ok\)\s*throw new Error/);
 });
 
-test('Required evidence is latest-head-wins so obsolete candidate proof cannot block the current SHA', () => {
-  assert.match(workflow, /group:\s*required-test-/);
+test('Required evidence is latest-head-wins without a workflow-level queue lock', () => {
+  const header = workflow.slice(0, workflow.indexOf('\njobs:'));
+  assert.doesNotMatch(header, /^concurrency:/m);
   assert.match(workflow, /github\.event\.pull_request\.head\.sha/);
+  assert.match(workflow, /REQUIRED_STALE_HEAD_YIELD/);
+  for (const lane of ['netlify','supabase','backend','portal','automation','website']) {
+    assert.match(workflow, new RegExp(`group: required-${lane}-`));
+  }
   assert.match(workflow, /cancel-in-progress:\s*true/);
   assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
 });

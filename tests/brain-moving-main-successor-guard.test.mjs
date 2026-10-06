@@ -60,11 +60,16 @@ test('PR successor is allowed only with sync, overlap and unsynchronizable evide
   });
 });
 
-test('Required concurrency is PR-scoped single-flight while exact candidate SHA stays inside the gates', async () => {
+test('Required avoids a workflow-level queue lock while expensive lanes stay PR-scoped and exact-head', async () => {
   const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
-  const groupLine = workflow.split(/\r?\n/).find((line) => line.trim().startsWith('group: required-test-')) ?? '';
-  assert.match(groupLine, /github\.event\.pull_request\.number/);
-  assert.doesNotMatch(groupLine, /github\.event\.pull_request\.head\.sha/);
+  const header = workflow.slice(0, workflow.indexOf('\njobs:'));
+  assert.doesNotMatch(header, /^concurrency:/m);
+  for (const lane of ['netlify','supabase','backend','portal','automation','website']) {
+    const groupLine = workflow.split(/\r?\n/).find((line) => line.trim().startsWith(`group: required-${lane}-`)) ?? '';
+    assert.match(groupLine, /needs\.preflight\.outputs\.pr_number/);
+    assert.doesNotMatch(groupLine, /pull_request\.head\.sha/);
+  }
   assert.match(workflow, /PR_HEAD_SHA|candidate_sha|change_head_sha/);
+  assert.match(workflow, /REQUIRED_STALE_HEAD_YIELD/);
   assert.match(workflow, /cancel-in-progress:\s*true/);
 });
