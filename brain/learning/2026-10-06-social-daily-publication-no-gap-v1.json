@@ -1,0 +1,22 @@
+{
+  "fingerprint": "social-publication|daily-no-gap|canonical-recovery-cadence|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-daily-publication-no-gap-20261006",
+  "root_cause": "The canonical social publisher was protected by single-writer and provider-readback gates, but the Netlify recovery supervisor only retried once per hour. A missed 08:00 Europe/Amsterdam publication could therefore remain visibly absent for too long even when healthy provider connections were available.",
+  "prevention_rule": "Keep exactly one canonical provider writer, but invoke its idempotent recovery supervisor at a bounded ten-minute cadence and once after every production deploy. Never bypass daily uniqueness, capability consumption, exact-content identity or provider readback gates.",
+  "evidence": {
+    "provider_truth": [
+      "2026-10-06 personal LinkedIn had no new post; latest observed provider post was 2026-10-05 09:33 Europe/Amsterdam.",
+      "2026-10-06 canonical Instagram @bedrijfsgeheugen.nl had no new media while provider authentication and publishing quota were healthy."
+    ],
+    "regression": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "runtime_surfaces": [
+      "netlify/functions/social-publication-delivery.mjs",
+      "netlify/functions/social-publication-delivery-deploy.mjs"
+    ]
+  }
+}
