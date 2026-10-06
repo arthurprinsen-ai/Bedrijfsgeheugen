@@ -200,3 +200,21 @@ For Netlify-hosted website/portal/runtime changes:
 - static localized-route render caching must be content-addressed and include source HTML (with release identity normalized), translation cache, public-route topology, SEO locale map and builder implementation.
 
 Regression: `tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs`.
+
+
+## GitHub-native post-merge evidence projection
+
+Fingerprint: `production-proof-commit-status-projection-v1`.
+
+The GitHub connector may omit `push`-triggered workflow runs from commit workflow listings. Workflow-list visibility is therefore not production truth.
+
+For every applicable main release:
+- `Production Source Snapshot` projects `pending|success|failure|error` to commit-status context `production/source-snapshot` on the exact merge SHA;
+- `Production Release Readback` projects the same lifecycle to `production/release-readback`;
+- each status links to the canonical Actions run via `target_url`;
+- terminal agents read these contexts through the commit combined-status API instead of repeatedly polling workflow lists;
+- a missing or non-success required context is never inferred as green from a fresh public crawl alone;
+- commit statuses are an evidence projection only; Netlify `release.json`, deploy identity and functional browser/readback remain the underlying production authorities.
+
+Canonical regression: `tests/brain-production-promotion-observability.test.mjs`.
+Canonical learning: `brain/learning/2026-10-06-production-proof-commit-status-projection-v1.json`.

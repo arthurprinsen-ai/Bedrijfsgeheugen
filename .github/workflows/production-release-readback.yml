@@ -30,6 +30,7 @@ concurrency:
 permissions:
   contents: read
   pull-requests: read
+  statuses: write
 
 jobs:
   production-readback:
@@ -42,6 +43,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Publish production release readback pending status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/publish-production-proof-status.sh pending production/release-readback "Production release readback running"
       - id: scope
         name: Derive affected production routes and deployment applicability
         env:
@@ -311,3 +316,26 @@ jobs:
       - name: Explain production readback failure
         if: failure()
         run: echo "::error::Production release readback failed for ${{ github.sha }}; inspect the failed step and uploaded readback learning artifact before retrying or promoting."
+
+      - name: Publish production release readback terminal status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+          DEPLOYMENT_REQUIRED: ${{ steps.scope.outputs.deployment_required || 'unknown' }}
+        run: |
+          case "$JOB_STATUS" in
+            success) state=success ;;
+            cancelled) state=error ;;
+            *) state=failure ;;
+          esac
+          if [ "$state" = "success" ]; then
+            if [ "$DEPLOYMENT_REQUIRED" = "true" ]; then
+              description="Exact production release identity and readback verified"
+            else
+              description="Production readback verified; deploy not applicable"
+            fi
+          else
+            description="Production release readback $JOB_STATUS"
+          fi
+          bash .github/scripts/publish-production-proof-status.sh "$state" production/release-readback "$description"
