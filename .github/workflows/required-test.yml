@@ -353,6 +353,7 @@ jobs:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
           STATIC_I18N_BUILD_CACHE_DIR: .cache/bg-static-i18n-v1
+          STATIC_I18N_ROUTE_WORKERS: '2'
           NETLIFY_BUILD_PROFILE_PATH: .artifacts/netlify-build-profile.json
         run: |
           set -euo pipefail
