@@ -62,8 +62,8 @@ test('company capability stays fail-closed when organization scope is absent',()
 
 
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
-const companyLiveProofGuard=fs.readFileSync('supabase/migrations/20261006102646_linkedin_company_admin_oauth_live_proof_guard_v1.sql','utf8');
-const companyLiveProofHardGuard=fs.readFileSync('supabase/migrations/20261006102754_linkedin_company_org_oauth_live_proof_guard_v1.sql','utf8');
+const companyLiveProofGuard=fs.readFileSync('docs/production-sql-history/20261006102646_linkedin_company_admin_oauth_live_proof_guard_v1.sql','utf8');
+const companyLiveProofHardGuard=fs.readFileSync('docs/production-sql-history/20261006102754_linkedin_company_org_oauth_live_proof_guard_v1.sql','utf8');
 
 test('LinkedIn personal and company publish through Composio, never Buffer',()=>{
   assert.match(publisher,/publishLinkedInPersonalViaComposio/);
