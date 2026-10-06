@@ -38,9 +38,9 @@ export const NETLIFY_RUNTIME_PREFIXES = Object.freeze([
 ]);
 
 export const NETLIFY_BUILD_RUNTIME_EXACT = Object.freeze(new Set([
-  'tools/ci/run-netlify-build.mjs',
-  'tools/ci/run-localized-routes-parallel.mjs',
-  'tools/ci/restamp-prebuilt-release.mjs',
+  'tools/netlify-build/run-netlify-build.mjs',
+  'tools/netlify-build/run-localized-routes-parallel.mjs',
+  'tools/netlify-build/restamp-prebuilt-release.mjs',
 ]));
 
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
@@ -87,7 +87,8 @@ export function deriveNetlifyDeploymentApplicability({
   const netlifyRuntimeRequired=runtimeChangedPaths.some(path =>
     NETLIFY_RUNTIME_PREFIXES.some(prefix => path.startsWith(prefix))
   );
-  const deploymentRequired=forceDeployment || browserRequired || netlifyRuntimeRequired;
+  const netlifyBuildRuntimeRequired=runtimeChangedPaths.some(path => NETLIFY_BUILD_RUNTIME_EXACT.has(path));
+  const deploymentRequired=forceDeployment || browserRequired || netlifyRuntimeRequired || netlifyBuildRuntimeRequired;
 
   return Object.freeze({
     changedPaths:Object.freeze(changed),
@@ -98,6 +99,7 @@ export function deriveNetlifyDeploymentApplicability({
     portalRequired,
     browserRequired,
     netlifyRuntimeRequired,
+    netlifyBuildRuntimeRequired,
     deploymentRequired,
     reason:deploymentRequired?'netlify-impact':'non-netlify-impact',
   });
