@@ -34,5 +34,6 @@
     "scope": "CI",
     "machine_enforceable": true,
     "repeat_count": 1
-  }
+  },
+  "root_cause": "The parser trimmed each CLI table cell before removing surrounding backticks. For an absent remote version rendered as backtick-space-backtick, backtick removal exposed a single space that was never trimmed again, so the fail-closed remote-drift guard interpreted the remote side as present."
 }
