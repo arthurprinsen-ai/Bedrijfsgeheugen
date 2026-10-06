@@ -7,6 +7,16 @@ const telemetry = fs.readFileSync('supabase/functions/bg-interactie/index.ts','u
 const bridge = fs.readFileSync('supabase/functions/supabase-migration-repair-bridge/index.ts','utf8');
 const contentLoop = fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
 const orchestrator = fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+const repairWorkflow = fs.readFileSync('.github/workflows/supabase-supported-migration-repair-3742.yml','utf8');
+
+test('trusted repair workflow rejects direct IPv6 before Supabase CLI execution', () => {
+  assert.match(repairWorkflow, /supavisor-session-ipv4/);
+  assert.match(repairWorkflow, /DIRECT_IPV6_ROUTE_FORBIDDEN/);
+  assert.match(repairWorkflow, /aws-0-eu-central-1\.pooler\.supabase\.com/);
+  assert.match(repairWorkflow, /SUPAVISOR_SESSION_PORT_REQUIRED/);
+  assert.match(repairWorkflow, /SSLMODE_REQUIRE_REQUIRED/);
+  assert.match(repairWorkflow, /getent ahostsv4/);
+});
 
 test('trusted Supabase repair transport remains IPv4 Supavisor session mode', () => {
   assert.ok(bridge.includes('aws-0-eu-central-1.pooler.supabase.com'));
