@@ -678,13 +678,15 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, netlify_build_parity, supabase_preview, backend, portal, automation, website]
+    needs: [hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity, supabase_preview, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
+      MERGE_SPECIALIST: ${{ needs.merge_specialist.result }}
+      MERGE_SPECIALIST_NODE24: ${{ needs.merge_specialist_node24.result }}
       SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
       SUPABASE_SOURCE_CONTRACT: ${{ needs.supabase_source_contract.result }}
       SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
@@ -709,6 +711,8 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
+          [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST" = success ]
+          [ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST_NODE24" = success ]
           [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
           [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_SOURCE_CONTRACT" = success ]
           [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
