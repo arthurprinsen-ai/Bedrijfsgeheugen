@@ -9,6 +9,6 @@ test('operational writer verification allows slow browser writers enough bounded
   assert.match(dispatch, /seq\s+1\s+6/);
   assert.doesNotMatch(dispatch, /seq\s+1\s+72/);
   assert.match(dispatch, /sleep\s+5/);
-  assert.match(dispatch, /WRITER_PR_NOT_FOUND/);
+  assert.match(dispatch, /WAITING_EXTERNAL:WRITER_PR_NOT_MATERIALIZED/);
   assert.match(dispatch, /AMBIGUOUS_WRITER_PR/);
 });
