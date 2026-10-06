@@ -147,3 +147,16 @@ test('OAuth setup preserves structured Composio errors instead of object-string 
   assert.match(setup,/JSON\.stringify\(value\)/);
   assert.doesNotMatch(setup,/clean\(b\?\.error\|\|b\?\.message\|\|JSON\.stringify\(b\)\)/);
 });
+
+
+test('durable fresh OAuth proof wins over stale candidate state',()=>{
+  assert.match(setup,/COMPANY_PROOF_RECORD='linkedin-company-oauth-fresh-proof-v1'/);
+  assert.match(setup,/record_id',COMPANY_PROOF_RECORD/);
+  assert.match(setup,/proofFresh=freshProof\?\.verified===true&&freshProof\?\.fresh_oauth_verified===true/);
+  assert.match(setup,/proofAccountId=proofFresh\?clean\(freshProof\?\.connected_account_id\):''/);
+  assert.match(setup,/proofHealthy=proofAccountId\?healthy\.filter\(x=>x\.accountId===proofAccountId\):\[\]/);
+  assert.match(setup,/selectable=proofHealthy\.length===1\?proofHealthy:/);
+  assert.match(setup,/proofBound=proofFresh/);
+  assert.match(setup,/accountId===proofAccountId/);
+  assert.match(setup,/freshProof\?\.admin_acl_verified===true/);
+});
