@@ -33,3 +33,10 @@ test('blocked governance state is evidence, not a failed observation job', async
   assert.match(yaml, /mainProtectionReady/);
   assert.doesNotMatch(yaml, /exit\s+1.*BLOCKED|BLOCKED.*exit\s+1/s);
 });
+
+test('main protection observation certifies the live protected contexts instead of retired workflow names', async () => {
+  const yaml = await readFile(workflowPath, 'utf8');
+  assert.match(yaml, /'test'/);
+  assert.match(yaml, /'CodeQL javascript-typescript'/);
+  assert.doesNotMatch(yaml, /Brain foundation verify|Shared Agent Memory Tests|V18 Production Promotion|Unified Brain Delivery/);
+});
