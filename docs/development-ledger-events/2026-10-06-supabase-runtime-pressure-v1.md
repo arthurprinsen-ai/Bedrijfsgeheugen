@@ -35,3 +35,22 @@ Follow-up after connectivity recovery:
 - production migration `20261006090209_normalize_runtime_event_degraded_state_v1` changed those degraded lifecycle outcomes to canonical `error`;
 - `powerhouse_data_spine_watchdog_v1` was intentionally not changed because its lifecycle state was already `error`; its `degraded` value is data-quality metadata, not state;
 - preview portability was corrected: scheduler migration now alters only jobs present in that branch, while production completeness stays a separate runtime assertion.
+
+Final closure evidence:
+- production restart completed at 09:50:38 UTC and project returned ACTIVE_HEALTHY;
+- research queue was rewired through `powerhouse_freshness_contradiction_cache_v1`, removing duplicate intelligence-graph evaluation;
+- composite one-brain maintenance was split across :13/:43, :18/:48, :23/:53 and :28/:58 schedules;
+- NBA v3/v4/v5 each returned 581 rows successfully after the cache fix;
+- revenue snapshot refreshed 581 rows at 10:01:52 UTC and its scheduled 10:07 run succeeded in ~52 seconds;
+- scheduled one-brain reconciliation succeeded at 09:43 in ~35 seconds;
+- freshness cache succeeded at 10:06 in ~4 seconds;
+- 1-minute watchdog/reconciliation jobs succeeded at 10:10 in milliseconds;
+- no true 522/ECHECKOUT/job-startup/schema-cache failure remained in the 10:00–10:15 UTC readback window;
+- the apparent 10:03 log hit was HTTP 200 and matched the text filter only because the post identifier happened to contain the digits `522`;
+- current commercial-heartbeat failure is `OUTBOUND_COPY_QUALITY_NOT_PROVEN`, an intentional quality gate unrelated to connectivity.
+
+Repository lineage:
+- all production pressure-recovery migration versions `20261006085416` through `20261006095958` are mirrored on the recovery branch;
+- replay mirrors add current production EXECUTE hardening where live ACL is service-role-only;
+- unrelated social/blog/test changes were reverted to main before reopening delivery.
+

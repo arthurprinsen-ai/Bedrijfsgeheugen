@@ -16,9 +16,10 @@
     "The project has max_connections=60 while pg_cron allows up to 32 concurrent jobs.",
     "Five */5 jobs, three */10 jobs, two */15 jobs, six hourly jobs at minute 17, and five daily jobs around 06:20 created deterministic fan-out peaks.",
     "GitHub-hosted runners cannot rely on the project's direct IPv6 database endpoint; trusted migration repair must use the IPv4 Supavisor session pooler.",
-    "Three runtime-event writers used 'degraded' as lifecycle state even though the canonical powerhouse_runtime_events state contract allows only observed/decided/actioned/closed/ignored/error."
+    "Three runtime-event writers used 'degraded' as lifecycle state even though the canonical powerhouse_runtime_events state contract allows only observed/decided/actioned/closed/ignored/error.",
+    "Nested analytical views re-evaluated the same buying-window/person/company intelligence chain multiple times, pushing research_queue and NBA v3+ beyond the database statement timeout."
   ],
-  "prevention_rule": "Spread database-backed cron schedules so recurring control-plane load stays bounded; keep GitHub database transport on the canonical IPv4 Supavisor session bridge; and make noncritical telemetry fail-open with a short Data API timeout and circuit breaker. Runtime degradation must map to lifecycle state 'error' while degradation detail remains in data_quality/evidence.",
+  "prevention_rule": "Spread database-backed cron schedules so recurring control-plane load stays bounded; keep GitHub database transport on the canonical IPv4 Supavisor session bridge; and make noncritical telemetry fail-open with a short Data API timeout and circuit breaker. Runtime degradation must map to lifecycle state 'error' while degradation detail remains in data_quality/evidence. Keep latency-critical read models single-pass: cache reusable freshness/contradiction state, split composite maintenance cron commands, and avoid rebuilding the same analytical view graph more than once per request.",
   "evidence": {
     "incident": [
       "Supavisor ECHECKOUTTIMEOUT after 15000ms in Session mode",
@@ -33,11 +34,24 @@
       "PostgREST reconnected and loaded its schema cache successfully",
       "bg-interactie v6 uses a 2500ms Data API budget and a 30s in-memory circuit breaker",
       "supabase-migration-repair-bridge v4 canonicalizes direct DB input to aws-0-eu-central-1.pooler.supabase.com:5432 and reports supavisor-session-ipv4",
-      "production migration 20261006090209 normalized three invalid 'degraded' runtime-event lifecycle writes to canonical 'error'"
+      "production migration 20261006090209 normalized three invalid 'degraded' runtime-event lifecycle writes to canonical 'error'",
+      "powerhouse_freshness_contradiction_cache_v1 removed duplicate person/company intelligence evaluation from powerhouse_research_queue_v1",
+      "powerhouse_one_brain_reconcile_v1 was split from LinkedIn OAuth, regression-stage and SEO maintenance into staggered cron jobs",
+      "powerhouse_commercial_next_best_action_v3/v4/v5 each returned 581 rows after the research-cache fix without connection timeout",
+      "powerhouse_refresh_revenue_intelligence_snapshot_v1 successfully materialized 581 rows at 2026-10-06 10:01:52 UTC",
+      "the scheduled revenue snapshot completed successfully at 10:07 UTC in about 52 seconds",
+      "the scheduled one-brain reconciliation completed successfully at 09:43 UTC in about 35 seconds",
+      "the one-minute execution-resilience watchdog and reconciliation worker completed successfully at 10:10 UTC in milliseconds",
+      "no real PostgREST 522, Supavisor ECHECKOUTTIMEOUT, pg_cron startup timeout or schema-cache failure remained in the 10:00-10:15 UTC readback window"
     ],
     "tests": [
       "tests/brain-supabase-runtime-pressure-v1.test.mjs"
-    ]
+    ],
+    "production_migration_range": {
+      "first": "20261006085416",
+      "last": "20261006095958",
+      "mirrored_versions": 15
+    }
   },
   "evaluation": {
     "historical_replay": [
