@@ -1,0 +1,44 @@
+{
+  "id": "supabase-production-ledger-parity-3843-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "pr-3843-production-readback",
+  "fingerprint": "powerhouse|supabase|production-ledger-parity|immutable-mirror|3843|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "PR #3843 merged with its direct recovery migrations green, but production readback showed the production migration ledger at the #3843 merge snapshot contained 15 applied identities after the prior 568-entry lock while repository history represented only the first three. Historical production mirrors also entered ordinary preview/security gates as if they were newly executable migrations.",
+  "prevention": [
+    "Bind this recovery to the immutable #3843 merge snapshot: merge SHA 47e36a513757c230ca6305a06a3724338fea047d, ledger count 583, latest included version 20261006095958.",
+    "Restore already-applied production statements as immutable repository history and allow security exemption only at an exact reviewed Git blob SHA; any byte edit restores fail-closed security checking.",
+    "Classify Supabase Preview as not applicable only when every database-relevant changed source is an exact registered historical production mirror; ordinary migrations still require provider preview.",
+    "Treat supabase/migration-history.lock.json as non-executable metadata and keep its applied count equal to production_ledger_count for the bound snapshot.",
+    "Keep later production versions after the #3843 snapshot outside this recovery obligation."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ],
+    "expected": "The #3843 recovery snapshot is reproducible from repository history, security remains blob-bound and fail-closed, historical mirrors do not demand a provider preview, and unrelated later production migrations do not expand this obligation."
+  },
+  "evidence": {
+    "source_pr": 3843,
+    "source_merge_sha": "47e36a513757c230ca6305a06a3724338fea047d",
+    "recovery_pr": 3870,
+    "snapshot_captured_at": "2026-10-06T10:16:08.000Z",
+    "snapshot_ledger_count": 583,
+    "snapshot_latest_version": "20261006095958",
+    "base_lock_count": 568,
+    "restored_repository_mirrors": 12,
+    "security_contract": "scripts/brain/check_powerhouse_supabase_security.py",
+    "preview_contract": ".github/workflows/supabase-preview-applicability.yml",
+    "history_lock": "supabase/migration-history.lock.json"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
