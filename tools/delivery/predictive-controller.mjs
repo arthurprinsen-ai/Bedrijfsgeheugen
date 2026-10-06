@@ -70,7 +70,7 @@ export function criticalWorkflowCoverage(workflowRuns=[]){
   return {requiredPresent,brainPresent,missing,complete:requiredPresent};
 }
 
-export function classifyRecovery({mergeable=true,workflowRuns=[],headUpdatedAt,now=Date.now(),slo=DEFAULT_SLO}={}){
+export function classifyRecovery({mergeable=true,behindBy=0,workflowRuns=[],headUpdatedAt,now=Date.now(),slo=DEFAULT_SLO}={}){
   const headAgeSeconds=headUpdatedAt?Math.max(0,(now-new Date(headUpdatedAt).getTime())/1000):0;
   const latest=latestCriticalWorkflowRuns(workflowRuns);
   const openPrCritical=[latest.required].filter(Boolean);
@@ -99,6 +99,15 @@ export function classifyRecovery({mergeable=true,workflowRuns=[],headUpdatedAt,n
     terminal:false,
     coverage,
     runIds:longRunning.map(r=>r.id).filter(Boolean)
+  };
+
+  const behind=Number(behindBy);
+  if(Number.isFinite(behind)&&behind>0&&coverage.complete&&active.length===0)return {
+    state:'MAIN_DRIFT_RECOVERY',
+    action:'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN',
+    terminal:false,
+    coverage,
+    behindBy:behind
   };
 
   return {state:'HEALTHY_PROGRESS',action:'CONTINUE',terminal:false,coverage};
