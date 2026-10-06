@@ -31,3 +31,10 @@ test('integration bundle compiler is shallow-safe and never requires a merge bas
   assert.match(source,/\['diff', '--name-only', baseSha, headSha\]/);
   assert.doesNotMatch(source,/\$\{baseSha\}\.\.\.\$\{headSha\}/);
 });
+
+
+test('material writeback closure guard is shallow-safe and never requires a merge base',()=>{
+  const source=read('scripts/brain/material-writeback-closure-guard.mjs');
+  assert.match(source,/\['diff','--name-only',base,head\]/);
+  assert.doesNotMatch(source,/base\+'\.\.\.'\+head/);
+});
