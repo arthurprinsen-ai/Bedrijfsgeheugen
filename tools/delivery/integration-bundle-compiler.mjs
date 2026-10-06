@@ -152,13 +152,26 @@ function argValue(args, name, fallback = '') {
   return index >= 0 ? args[index + 1] : fallback;
 }
 
+function ensureExplicitCommit(ref, label) {
+  const value = String(ref || '').trim();
+  if (!SHA40.test(value)) return;
+  try {
+    execFileSync('git', ['cat-file', '-e', `${value}^{commit}`], { stdio:'ignore' });
+  } catch {
+    console.log(`TARGETED_${label}_FETCH:${value}`);
+    execFileSync('git', ['fetch', '--no-tags', '--depth=1', 'origin', value], { stdio:'inherit' });
+  }
+}
+
 async function main() {
   const args = process.argv.slice(2);
   const base = argValue(args, '--base', 'HEAD^');
   const head = argValue(args, '--head', 'HEAD');
+  ensureExplicitCommit(base, 'BASE');
+  ensureExplicitCommit(head, 'HEAD');
   const baseSha = execFileSync('git', ['rev-parse', base], { encoding: 'utf8' }).trim();
   const headSha = execFileSync('git', ['rev-parse', head], { encoding: 'utf8' }).trim();
-  const changedPaths = execFileSync('git', ['diff', '--name-only', `${baseSha}...${headSha}`], { encoding: 'utf8' })
+  const changedPaths = execFileSync('git', ['diff', '--name-only', baseSha, headSha], { encoding: 'utf8' })
     .split(/\r?\n/).filter(Boolean);
   const adaptivePolicy = await loadAdaptiveDeliveryPolicy();
   const integrationPolicy = JSON.parse(await readFile('config/powerhouse-integration-bundle-v1.json', 'utf8'));
