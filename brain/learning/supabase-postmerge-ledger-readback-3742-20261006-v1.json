@@ -1,0 +1,45 @@
+{
+  "id": "supabase-postmerge-ledger-readback-3742-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "post-merge-closure-pr-3766",
+  "fingerprint": "powerhouse|supabase|migration-history|postmerge-ledger-readback|v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The supported repair workflow proved zero migration-list drift before PR #3766 merged, but the #3742 terminal contract also requires a production migration-ledger readback after protected merge. Supabase MCP readback was unavailable due connection timeouts and the trusted OIDC workflow did not yet have a non-mutating post-merge mode.",
+  "prevention": [
+    "Keep the trusted OIDC workflow path as the sole database-transport authority.",
+    "When canonical PR #3766 is already merged, switch the workflow to readback mode automatically instead of attempting branch mutation.",
+    "Require zero migration-list drift, exact 568-entry ledger cardinality, and remote/local presence of all four repaired replay baselines.",
+    "Skip the branch lock/PR writeback step in readback mode so no provider or repository mutation is repeated.",
+    "Upload immutable post-merge readback evidence for terminal closure."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
+    ],
+    "expected": "A trusted-main push after the readback-mode change obtains DB transport through GitHub OIDC, executes only Supabase migration list when parity is already zero, proves 568/568 parity and the four repaired versions, and uploads readback evidence without invoking migration repair or branch mutation."
+  },
+  "evidence": {
+    "source_pr": 3766,
+    "source_merge_sha": "ccdf134ca4de73e547e54c9de00298d771f87be5",
+    "provider_repair_run": 37426469433,
+    "repaired_versions": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ],
+    "successful_provider_repair": "supabase migration repair --status applied --db-url",
+    "prior_postrepair_drift": 0,
+    "implementation": ".github/workflows/supabase-supported-migration-repair-3742.yml",
+    "regression_test": "tests/supabase-supported-migration-repair-3742.test.mjs"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
