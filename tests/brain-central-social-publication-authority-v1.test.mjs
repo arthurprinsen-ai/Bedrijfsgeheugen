@@ -128,7 +128,8 @@ test('recovery runner owns degraded preparation, bounded publication and direct 
 test('manual recovery bounds provider publication by channel under the edge runtime budget',()=>{
   assert.match(publisher,/const publishOnly = mode === 'publish_only'/);
   assert.match(publisher,/requestedChannels/);
-  assert.match(publisher,/publishOnly \? \[\] : await runLinkedInCockpitAutopilot\(db\)/);
+  assert.match(publisher,/let provider_reconciliation:any\[\] = \[\]/);
+  assert.match(publisher,/containment_sweep:any = publishOnly \? \{ skipped:true, reason:'PUBLISH_ONLY' \}/);
   assert.match(publisher,/if \(!publishOnly\)/);
   assert.match(recoveryRunner,/mode: "publish_only"/);
   assert.match(recoveryRunner,/channels: \[channel\]/);
