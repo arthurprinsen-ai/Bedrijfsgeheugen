@@ -35,5 +35,32 @@
     "ratchet budgets downward",
     "broad migrations require scope-broad-approved plus exact scope",
     "reuse immutable source/artifact identity"
-  ]
+  ],
+  "fingerprint": "control-plane|pr-fanout|duplicate-authority|ratchet-v1",
+  "failure_class": "EXCESS_DIRECT_PULL_REQUEST_AUTHORITY_FANOUT",
+  "evaluation": {
+    "before": {
+      "direct_pr_authorities": 38
+    },
+    "after": {
+      "direct_pr_authorities": 10,
+      "admission_authorities": 5,
+      "lifecycle_recovery_authorities": 5
+    },
+    "target": "ratchet direct pull_request admission toward Required plus independent security authority without removing assurance"
+  },
+  "root_cause": "Read-only specialist assurance, lifecycle recovery, writer routing and canonical admission accumulated as independent pull_request workflows, multiplying queueing and duplicate work per candidate SHA.",
+  "prevention": "Keep Required as the canonical PR admission orchestrator, preserve independent security authority, move specialist assurance behind reusable/internal lanes or merge_group, keep lifecycle recovery off PR admission, and enforce a downward-only trigger budget.",
+  "evidence": {
+    "tests": [
+      "tests/control-plane-pr-trigger-ratchet.test.mjs",
+      "tests/control-plane-workflow-inventory.test.mjs",
+      "tests/control-plane-workflow-retirement.test.mjs",
+      "tests/control-plane-required-wiring.test.mjs"
+    ],
+    "configs": [
+      "config/control-plane-budget.json",
+      "config/pr-trigger-baseline.json"
+    ]
+  }
 }
