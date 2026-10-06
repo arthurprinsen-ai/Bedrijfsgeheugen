@@ -177,3 +177,7 @@ begin
   return v_written;
 end;
 $function$;
+
+-- Replay hardening mirrors the current production EXECUTE boundary.
+revoke execute on function public.powerhouse_sync_loop_assurance_receipts_v1(timestamp with time zone) from public, anon, authenticated;
+grant execute on function public.powerhouse_sync_loop_assurance_receipts_v1(timestamp with time zone) to service_role;
