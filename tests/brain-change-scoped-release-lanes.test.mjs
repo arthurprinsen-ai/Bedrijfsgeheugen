@@ -24,6 +24,19 @@ test('backend-only work blocks only shared and backend required suites', () => {
   assert.deepEqual(suitesFor(['platform/api/brain-gateway.mjs']), { shared:true, backend:true, portal:false, website:false, automation:false });
 });
 
+test('CI helper scripts stay backend-only and never activate product lanes', () => {
+  for (const path of [
+    'scripts/ci/blog_technical_seo_gate.py',
+    'scripts/ci/future-assurance-helper.py',
+  ]) {
+    assert.deepEqual(
+      suitesFor([path]),
+      { shared:true, backend:true, portal:false, website:false, automation:false },
+      path,
+    );
+  }
+});
+
 test('portal-only work blocks only shared and portal required suites', () => {
   assert.deepEqual(suitesFor(['portal-next/app.mjs']), { shared:true, backend:false, portal:true, website:false, automation:false });
 });
