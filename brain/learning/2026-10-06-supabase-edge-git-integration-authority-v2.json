@@ -37,7 +37,10 @@
     "historical_replay": [
       "tests/brain-runtime-authority-governance.test.mjs"
     ],
-    "tests": [
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
       "tests/brain-runtime-authority-governance.test.mjs"
     ]
   }
