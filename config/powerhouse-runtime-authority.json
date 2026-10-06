@@ -11,7 +11,8 @@
     "social_delivery_recovery_watch",
     "blog_delivery",
     "runtime_authority_reconciliation",
-    "interrupted_run_recovery"
+    "interrupted_run_recovery",
+    "supabase_edge_production_promotion"
   ],
   "components": [
     {
@@ -20,7 +21,9 @@
       "classification": "ACTIVE_COORDINATOR",
       "authority": "ACTIVE",
       "production_execution_allowed": false,
-      "obligations": ["daily_growth_intelligence_coordination"],
+      "obligations": [
+        "daily_growth_intelligence_coordination"
+      ],
       "role": "decision/intelligence/learning coordination; never substitutes production provider evidence"
     },
     {
@@ -29,7 +32,9 @@
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
-      "obligations": ["gmail_action_ingest"],
+      "obligations": [
+        "gmail_action_ingest"
+      ],
       "role": "privacy-filtered Gmail discovery -> deduplicated canonical powerhouse_sales_actions write -> existing bg-notion-sync projection; never sends or replies to email"
     },
     {
@@ -38,7 +43,9 @@
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
-      "obligations": ["seven_channel_daily_decision"],
+      "obligations": [
+        "seven_channel_daily_decision"
+      ],
       "role": "exactly one publish|skip|hold decision per daily channel; publish only when an allowed executor exists"
     },
     {
@@ -47,7 +54,9 @@
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
-      "obligations": ["social_delivery"],
+      "obligations": [
+        "social_delivery"
+      ],
       "role": "canonical social provider delivery through Composio; channel capability gates are independent and exact-account-bound"
     },
     {
@@ -56,7 +65,9 @@
       "classification": "ACTIVE_COORDINATOR",
       "authority": "ACTIVE",
       "production_execution_allowed": false,
-      "obligations": ["social_delivery_recovery_watch"],
+      "obligations": [
+        "social_delivery_recovery_watch"
+      ],
       "role": "recovery/readback coordinator around canonical social delivery; not a second publication authority"
     },
     {
@@ -65,7 +76,9 @@
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
-      "obligations": ["blog_delivery"],
+      "obligations": [
+        "blog_delivery"
+      ],
       "role": "approved-central queue -> candidate PR -> protected promotion -> production readback"
     },
     {
@@ -74,7 +87,9 @@
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
-      "obligations": ["runtime_authority_reconciliation"],
+      "obligations": [
+        "runtime_authority_reconciliation"
+      ],
       "role": "existing hourly canonical improvement/reconciliation cycle"
     },
     {
@@ -83,7 +98,9 @@
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
-      "obligations": ["interrupted_run_recovery"],
+      "obligations": [
+        "interrupted_run_recovery"
+      ],
       "role": "existing durable obligation/evidence/transition runtime; resumes incomplete material work idempotently"
     },
     {
@@ -113,6 +130,17 @@
         "PH Agent 15 - Post Guardian v3 stable runner",
         "PH Agent 16 - System Performance Optimizer v3 stable runner"
       ]
+    },
+    {
+      "id": "github-supabase-edge-production-authority",
+      "runtime": "github_actions",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": [
+        "supabase_edge_production_promotion"
+      ],
+      "role": "sole Supabase Edge production promotion authority: exact protected current-main source -> pinned Supabase CLI deploy -> provider source readback; direct chat/agent/dashboard production deploy is forbidden"
     }
   ],
   "make_classification_policy": {
@@ -180,12 +208,32 @@
     "single_owner_gate": "FAIL_CLOSED",
     "runtime_drift_detector": "ENABLED",
     "runtime_drift_owner": "powerhouse-autonomous-improvement-cycle-v1",
-    "runtime_drift_inputs": ["repository_contract", "supabase_runtime", "chatgpt_schedulers", "provider_bindings", "open_obligations"],
+    "runtime_drift_inputs": [
+      "repository_contract",
+      "supabase_runtime",
+      "chatgpt_schedulers",
+      "provider_bindings",
+      "open_obligations"
+    ],
     "interrupted_run_recovery": "EXISTING_BRAIN_OBLIGATION_RUNTIME",
-    "recovery_requires": ["durable_obligation", "idempotency_identity", "last_verified_checkpoint", "side_effect_readback", "terminal_state_or_hard_boundary"],
+    "recovery_requires": [
+      "durable_obligation",
+      "idempotency_identity",
+      "last_verified_checkpoint",
+      "side_effect_readback",
+      "terminal_state_or_hard_boundary"
+    ],
     "writeback_route": "public.brain_append_record",
     "writeback_record_kind": "runtime_authority_governance",
     "historical_evidence_delete_allowed": false,
-    "unknown_runtime_authority": "FAIL_CLOSED"
+    "unknown_runtime_authority": "FAIL_CLOSED",
+    "supabase_edge_production_authority": "PROTECTED_MAIN_ONLY",
+    "supabase_edge_project_ref": "adhjwmvyoixzjtmiroln",
+    "supabase_edge_source_of_truth": "GITHUB_PROTECTED_MAIN",
+    "supabase_edge_promotion_workflow": ".github/workflows/supabase-edge-production-authority.yml",
+    "supabase_edge_direct_provider_deploy": "FORBIDDEN",
+    "supabase_edge_manual_recovery": "TRUSTED_CURRENT_MAIN_ONLY",
+    "supabase_edge_drift_policy": "FAIL_CLOSED",
+    "supabase_edge_cli_version": "2.119.0"
   }
 }
