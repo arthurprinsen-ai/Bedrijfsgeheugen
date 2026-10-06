@@ -60,7 +60,45 @@ jobs:
             exit 0
           fi
 
-          database_relevant_supabase="$(grep '^supabase/' <<< "$changed" | grep -v '^supabase/functions/' | grep -v '^supabase/config.toml$' || true)"
+          database_relevant_supabase="$(grep '^supabase/' <<< "$changed" | grep -v '^supabase/functions/' | grep -v '^supabase/config.toml$' | grep -v -x -F 'supabase/migration-history.lock.json' || true)"
+          # Historical production migrations restored into repository history are already
+          # applied. Treat them as preview-non-applicable only when every database-relevant
+          # path is a migration whose current Git blob exactly matches the immutable reviewed
+          # production-mirror allowlist used by the fail-closed Supabase security gate.
+          if [ -n "$database_relevant_supabase" ] && DATABASE_RELEVANT_SUPABASE="$database_relevant_supabase" python3 - <<'PY'
+          import ast
+          import os
+          import pathlib
+          import subprocess
+
+          paths = [line.strip() for line in os.environ['DATABASE_RELEVANT_SUPABASE'].splitlines() if line.strip()]
+          if not paths or any(not (p.startswith('supabase/migrations/') and p.endswith('.sql')) for p in paths):
+              raise SystemExit(1)
+
+          checker = pathlib.Path('scripts/brain/check_powerhouse_supabase_security.py')
+          tree = ast.parse(checker.read_text(encoding='utf-8'))
+          reviewed = None
+          for node in tree.body:
+              if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'HISTORICAL_PRODUCTION_MIRROR_BLOBS' for t in node.targets):
+                  reviewed = ast.literal_eval(node.value)
+                  break
+          if not isinstance(reviewed, dict):
+              raise SystemExit(1)
+
+          for path in paths:
+              expected = reviewed.get(path)
+              if not expected:
+                  raise SystemExit(1)
+              actual = subprocess.check_output(['git', 'hash-object', path], text=True).strip()
+              if actual != expected:
+                  raise SystemExit(1)
+          PY
+          then
+            echo "SUPABASE_PREVIEW_NOT_APPLICABLE: immutable reviewed production migration mirrors on exact head $HEAD_SHA"
+            exit 0
+          fi
+
+
           function_config_only=true
           if grep -qx 'supabase/config.toml' <<< "$changed"; then
             if ! BASE_SHA="$BASE_SHA" HEAD_SHA="$HEAD_SHA" python3 - <<'PY'
