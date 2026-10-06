@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {execFileSync} from 'node:child_process';
 import {evaluateRuntimeAuthority} from '../brain/operating-loop/runtime-authority-governance.mjs';
 
 const registryPath='config/powerhouse-runtime-authority.json';
