@@ -12,19 +12,6 @@ const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedi
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
 const clean = (value: unknown) => String(value ?? '').trim();
-function jsonObject(value:any){
-  if(value===null||value===undefined)return {};
-  if(typeof value==='string'){
-    try{return jsonObject(JSON.parse(value));}catch{return {};}
-  }
-  if(Array.isArray(value))return value.reduce((acc:any,item:any)=>Object.assign(acc,jsonObject(item)),{});
-  if(typeof value==='object'){
-    const keys=Object.keys(value);
-    if(keys.length>0&&keys.every((key)=>/^\d+$/.test(key)))return {};
-    return value;
-  }
-  return {};
-}
 const esc = (value: unknown) => String(value ?? '').replaceAll('\\','\\\\').replaceAll('"','\\"').replaceAll('\n','\\n').replaceAll('\r','');
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
@@ -1045,7 +1032,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
+  const cockpit_autopilot = publishOnly ? [] : await runLinkedInCockpitAutopilot(db);
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
       .select('channel,scheduled_for,delivery_evidence,priority')
@@ -1061,12 +1048,10 @@ Deno.serve(async (req) => {
   ]);
   if (rowsError) throw new Error(`CONTENT_READY_DECISION_READ:${rowsError.message}`);
   if (artifactsError) throw new Error(`CONTENT_READY_ARTIFACT_READ:${artifactsError.message}`);
-  const safeRows = (rows || []).map((row: any) => ({ ...row, delivery_evidence: jsonObject(row.delivery_evidence) }));
-  const safeArtifacts = (artifacts || []).map((artifact: any) => ({ ...artifact, generation_evidence: jsonObject(artifact.generation_evidence) }));
-  const artifactByChannel = new Map(safeArtifacts.map((artifact: any) => [artifact.channel, artifact]));
+  const artifactByChannel = new Map((artifacts || []).map((artifact: any) => [artifact.channel, artifact]));
   const results: any[] = [];
 
-  for (const row of safeRows) {
+  for (const row of rows || []) {
     const art: any = artifactByChannel.get(row.channel) || null;
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
