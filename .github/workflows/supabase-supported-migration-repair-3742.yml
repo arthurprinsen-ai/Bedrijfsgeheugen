@@ -6,6 +6,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/supabase-supported-migration-repair-3742.yml'
+      - 'supabase/config.toml'
+      - 'supabase/functions/supabase-migration-repair-bridge/**'
+      - 'tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs'
       - 'tests/supabase-supported-migration-repair-3742.test.mjs'
 
 permissions:
@@ -57,19 +60,30 @@ jobs:
           head_sha="$(jq -r '.head.sha' <<<"$pr_json")"
           body="$(jq -r '.body // ""' <<<"$pr_json")"
 
-          test "$state" = "open"
-          test "$merged" = "false"
           test "$head_ref" = "fix/3742-migration-parity-canonical-v6"
           [[ "$head_sha" =~ ^[0-9a-f]{40}$ ]]
           grep -qx 'Writer-Lease-Owner: supabase-migration-history-canonical-v6' <<<"$body"
           grep -qx "Writer-Lease-Head: $head_sha" <<<"$body"
           grep -qx 'Writer-Lease-NonOwner-Action: READBACK_ONLY' <<<"$body"
 
+          if [ "$state" = "open" ] && [ "$merged" = "false" ]; then
+            mode="repair"
+          elif [ "$state" = "closed" ] && [ "$merged" = "true" ]; then
+            grep -qx 'Trusted-Repair-State: REPAIRED_APPLIED_VERIFIED' <<<"$body"
+            grep -qx 'Trusted-Repair-Post-Drift: 0' <<<"$body"
+            mode="readback_only"
+          else
+            echo "::error::Canonical recovery #3766 is neither repairable-open nor merged-with-provider-proof"
+            exit 78
+          fi
+
           echo "pr=3766" >> "$GITHUB_OUTPUT"
           echo "head_ref=$head_ref" >> "$GITHUB_OUTPUT"
           echo "head_sha=$head_sha" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
 
       - name: Checkout exact recovery head without production credentials
+        if: steps.candidate.outputs.mode == 'repair'
         uses: actions/checkout@v5
         with:
           ref: ${{ steps.candidate.outputs.head_sha }}
@@ -77,6 +91,7 @@ jobs:
           path: candidate
 
       - name: Prove repair allowlist and effect evidence
+        if: steps.candidate.outputs.mode == 'repair'
         shell: bash
         run: |
           set -euo pipefail
@@ -119,17 +134,43 @@ jobs:
           test -n "$oidc_token"
           bridge_json="$(curl -fsSL --max-time 20 -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' --data "$(node -e 'process.stdout.write(JSON.stringify({expected_sha:process.env.GITHUB_SHA}))')" "$BRIDGE_URL")"
           db_url="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.db_url||""))' "$bridge_json")"
+          transport="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.transport||""))' "$bridge_json")"
           test -n "$db_url"
+          test "$transport" = "supavisor-session-ipv4" || {
+            echo "::error::OIDC bridge must return the canonical Supavisor session-mode IPv4 transport"
+            exit 78
+          }
           case "$db_url" in postgres://*|postgresql://*) ;; *) echo "::error::OIDC bridge returned invalid database transport"; exit 78;; esac
+          DB_URL="$db_url" node --input-type=module - <<'NODE'
+          const url = new URL(process.env.DB_URL || '');
+          const projectRef = 'adhjwmvyoixzjtmiroln';
+          const expectedHost = 'aws-0-eu-central-1.pooler.supabase.com';
+          if (url.hostname !== expectedHost) throw new Error('NON_CANONICAL_POOLER_HOST:'+url.hostname);
+          if (url.hostname === ('db.'+projectRef+'.supabase.co')) throw new Error('DIRECT_IPV6_ROUTE_FORBIDDEN');
+          if (url.port !== '5432') throw new Error('SESSION_POOLER_PORT_REQUIRED:'+url.port);
+          if (decodeURIComponent(url.username) !== ('postgres.'+projectRef)) throw new Error('SESSION_POOLER_USERNAME_REQUIRED');
+          if (url.searchParams.get('sslmode') !== 'require') throw new Error('SSLMODE_REQUIRE_REQUIRED');
+          NODE
           echo "::add-mask::$db_url"
           printf 'SUPABASE_DB_URL=%s\n' "$db_url" >> "$GITHUB_ENV"
 
       - name: Repair production migration tracking with supported Supabase CLI
+        if: steps.candidate.outputs.mode == 'repair'
         working-directory: parity
         shell: bash
         run: |
           set -euo pipefail
           : "${SUPABASE_DB_URL:?OIDC database transport missing}"
+
+          pooler_host="$(SUPABASE_DB_URL="$SUPABASE_DB_URL" node -e 'const u=new URL(process.env.SUPABASE_DB_URL);process.stdout.write(u.hostname)')"
+          test "$pooler_host" = "aws-0-eu-central-1.pooler.supabase.com" || {
+            echo "::error::Unexpected Supavisor host: $pooler_host"
+            exit 78
+          }
+          getent ahostsv4 "$pooler_host" >/dev/null || {
+            echo "::error::Canonical Supavisor host has no IPv4 resolution from this GitHub runner"
+            exit 1
+          }
 
           migration_list_with_retry() {
             local output="$1"
@@ -205,7 +246,52 @@ jobs:
           if (!rows.length || drift.length) throw new Error('POST_REPAIR_PARITY_FAILED:'+JSON.stringify(drift));
           NODE
 
+      - name: Prove merged recovery through Supavisor IPv4 readback
+        if: steps.candidate.outputs.mode == 'readback_only'
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${SUPABASE_DB_URL:?OIDC database transport missing}"
+          mkdir -p repair-evidence
+
+          pooler_host="$(SUPABASE_DB_URL="$SUPABASE_DB_URL" node -e 'const u=new URL(process.env.SUPABASE_DB_URL);process.stdout.write(u.hostname)')"
+          test "$pooler_host" = "aws-0-eu-central-1.pooler.supabase.com" || {
+            echo "::error::Unexpected Supavisor host: $pooler_host"
+            exit 78
+          }
+          getent ahostsv4 "$pooler_host" >/dev/null || {
+            echo "::error::Canonical Supavisor host has no IPv4 resolution from this GitHub runner"
+            exit 1
+          }
+
+          for attempt in 1 2 3; do
+            if supabase migration list --db-url "$SUPABASE_DB_URL" > repair-evidence/merged-readback.txt 2>&1; then
+              break
+            fi
+            cat repair-evidence/merged-readback.txt >&2 || true
+            if [ "$attempt" -eq 3 ]; then
+              exit 1
+            fi
+            sleep $((attempt * 3))
+          done
+          cat repair-evidence/merged-readback.txt
+
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const text=fs.readFileSync('repair-evidence/merged-readback.txt','utf8');
+          const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
+            .map(line=>line.split(/[|│]/).map(x=>x.trim().replace(/^\`|\`$/g,'').trim()))
+            .filter(x=>x.length>=2);
+          const expected=['20260920101150','20260920102450','20260925080500','20261005133951'];
+          const remote=new Set(rows.map(x=>x[1]).filter(x=>/^\d{14}$/.test(x)));
+          const missing=expected.filter(version=>!remote.has(version));
+          if (missing.length) throw new Error('MERGED_REPAIR_REMOTE_READBACK_MISSING:'+missing.join(','));
+          fs.writeFileSync('repair-evidence/transport-proof.txt',
+            'mode=readback_only\ntransport=supavisor-session-ipv4\nremote_allowlist_verified=4\n');
+          NODE
+
       - name: Advance exact recovery lock to provider-readback state
+        if: steps.candidate.outputs.mode == 'repair'
         shell: bash
         env:
           TARGET_BRANCH: ${{ steps.candidate.outputs.head_ref }}
