@@ -112,6 +112,7 @@ test('manual recovery bounds provider publication by channel under the edge runt
   assert.match(publisher,/requestedChannels/);
   assert.match(publisher,/publishOnly \? \[\] : await runLinkedInCockpitAutopilot\(db\)/);
   assert.match(publisher,/if \(!publishOnly\)/);
+  assert.match(contentLoop,/powerhouse-social-publisher', \{ runDate, mode: 'publish_only' \}/);
   assert.match(workflow,/mode:"publish_only"/);
   assert.match(workflow,/channels:\[process\.env\.CHANNEL\]/);
   assert.match(workflow,/for channel in linkedin_personal linkedin_company instagram_company/);
