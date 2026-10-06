@@ -36,5 +36,10 @@
     "tests": [
       "tests/brain-supabase-runtime-pressure-v1.test.mjs"
     ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
+    ]
   }
 }
