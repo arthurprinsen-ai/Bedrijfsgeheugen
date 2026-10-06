@@ -7,10 +7,10 @@
       "maxOpenImplementationPRs": 10,
       "maxLivePRsPerObligation": 1,
       "maxSuccessorDepth": 1,
-      "maxDirectPrTriggerWorkflows": 10,
-      "maxDirectPrAdmissionWorkflows": 5,
+      "maxDirectPrTriggerWorkflows": 7,
+      "maxDirectPrAdmissionWorkflows": 2,
       "maxLifecyclePrAuthorityWorkflows": 5,
-      "targetDirectPrAdmissionWorkflows": 1
+      "targetDirectPrAdmissionWorkflows": 2
     },
     "netlify": {
       "maxActiveBedrijfsgeheugenProjects": 5,
@@ -32,18 +32,15 @@
       "workflowFiles": 123,
       "openPullRequests": 78,
       "directPrTriggerWorkflows": [
-        "engineering-supply-chain-trust.yml",
         "obligation-terminal-closure.yml",
-        "portal-v2-live-preview.yml",
         "powerhouse-codeql.yml",
         "powerhouse-merged-branch-cleanup.yml",
         "powerhouse-obligation-terminalizer.yml",
         "powerhouse-terminal-writer-lease-closure-guard.yml",
-        "repo-writer-operational-verification.yml",
         "required-test.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 10,
+      "directPrTriggerCount": 7,
       "lifecyclePrAuthorityWorkflows": [
         "obligation-terminal-closure.yml",
         "powerhouse-merged-branch-cleanup.yml",
@@ -53,13 +50,10 @@
       ],
       "lifecyclePrAuthorityCount": 5,
       "directPrAdmissionWorkflows": [
-        "engineering-supply-chain-trust.yml",
-        "portal-v2-live-preview.yml",
         "powerhouse-codeql.yml",
-        "repo-writer-operational-verification.yml",
         "required-test.yml"
       ],
-      "directPrAdmissionCount": 5
+      "directPrAdmissionCount": 2
     },
     "netlify": {
       "projects": 16
@@ -73,5 +67,5 @@
       "untitledRootItems": 0
     }
   },
-  "policy": "Existing debt is tolerated only as a downward ratchet. Raw pull_request triggers include five closed-only lifecycle/recovery authorities and are capped at the measured baseline; PR admission is independently capped at 15 and retains a canonical target of one Required admission workflow plus explicitly necessary security/provider authorities. Any increase fails."
+  "policy": "Existing debt is tolerated only as a downward ratchet. Exactly two PR admission authorities are allowed: Required test for canonical admission and Powerhouse CodeQL for security. Five closed-only lifecycle/recovery authorities are tracked separately. Specialists run on merge_group or consume successful Required workflow_run events. Any increase fails."
 }
