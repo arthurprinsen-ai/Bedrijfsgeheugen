@@ -1,0 +1,105 @@
+name: Social Publication Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_date:
+        description: Optional YYYY-MM-DD; must equal today in Europe/Amsterdam
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: social-publication-recovery-${{ inputs.run_date || 'today' }}
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - name: Resolve same-day recovery date
+        id: date
+        shell: bash
+        env:
+          REQUESTED_DATE: ${{ inputs.run_date }}
+        run: |
+          set -euo pipefail
+          today="$(node -e "process.stdout.write(new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date()))")"
+          run_date="${REQUESTED_DATE:-$today}"
+          if [ "$run_date" != "$today" ]; then
+            echo "::error::SAME_DAY_RECOVERY_ONLY requested=$run_date today=$today"
+            exit 64
+          fi
+          echo "run_date=$run_date" >> "$GITHUB_OUTPUT"
+
+      - name: Invoke canonical social publisher
+        id: publisher
+        shell: bash
+        env:
+          RUN_DATE: ${{ steps.date.outputs.run_date }}
+        run: |
+          set -euo pipefail
+          test -n "${SUPABASE_URL:-}"
+          test -n "${SUPABASE_SERVICE_ROLE_KEY:-}"
+          echo "::add-mask::$SUPABASE_SERVICE_ROLE_KEY"
+
+          secret_json="$(curl -fsSL --max-time 20 -X POST             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY"             -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"             -H 'Content-Type: application/json'             --data '{"p_naam":"powerhouse_daily_scheduler_token"}'             "$SUPABASE_URL/rest/v1/rpc/bg_geheim")"
+
+          scheduler_token="$(node -e '
+            const x=JSON.parse(process.argv[1]);
+            let v="";
+            if(typeof x==="string") v=x;
+            else if(Array.isArray(x) && typeof x[0]==="string") v=x[0];
+            else if(x && typeof x==="object") v=String(x.bg_geheim ?? x.value ?? Object.values(x)[0] ?? "");
+            process.stdout.write(v.trim());
+          ' "$secret_json")"
+          test -n "$scheduler_token"
+          echo "::add-mask::$scheduler_token"
+
+          payload="$(node -e 'process.stdout.write(JSON.stringify({runDate:process.env.RUN_DATE}))')"
+          http_code="$(curl -sS --max-time 90 -o /tmp/social-publisher.json -w '%{http_code}' -X POST             -H 'Content-Type: application/json'             -H "x-powerhouse-token: $scheduler_token"             --data "$payload"             "$SUPABASE_URL/functions/v1/powerhouse-social-publisher")"
+
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const x=JSON.parse(readFileSync('/tmp/social-publisher.json','utf8')||'{}');
+          const safe={
+            ok:x.ok===true,
+            runDate:x.runDate||null,
+            publication_authority:x.publication_authority||null,
+            provider_truth_verified:x.provider_truth_verified===true,
+            results:Array.isArray(x.results)?x.results.map(r=>({
+              channel:r?.channel||null,
+              status:r?.status||null,
+              reason:r?.reason||null,
+              error:r?.error||null,
+              provider:r?.provider||null,
+              post_id:r?.post_id||null,
+              permalink:r?.permalink||null,
+              provider_truth_verified:r?.provider_truth_verified===true,
+              verification_pending:r?.verification_pending===true,
+              resumable:r?.resumable===true
+            })):[]
+          };
+          console.log('CANONICAL_SOCIAL_PUBLISHER_RESULT='+JSON.stringify(safe));
+          NODE
+
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+            echo "::error::CANONICAL_SOCIAL_PUBLISHER_HTTP_$http_code"
+            exit 1
+          fi
+          node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/social-publisher.json","utf8")||"{}");if(x.ok!==true)process.exit(2)'
+
+      - name: Read back canonical daily decision state
+        shell: bash
+        env:
+          RUN_DATE: ${{ steps.date.outputs.run_date }}
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 20             -H "apikey: $SUPABASE_SERVICE_ROLE_KEY"             -H "Authorization: Bearer $SUPABASE_SERVICE_ROLE_KEY"             "$SUPABASE_URL/rest/v1/powerhouse_channel_decisions?select=run_date,channel,decision,state,delivery_ref,updated_at&run_date=eq.$RUN_DATE&order=channel.asc"             -o /tmp/social-decisions.json
+          node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/social-decisions.json","utf8")||"[]");console.log("SOCIAL_DECISION_READBACK="+JSON.stringify(x))'
