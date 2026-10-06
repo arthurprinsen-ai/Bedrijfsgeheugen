@@ -2,9 +2,9 @@
   "id": "skill-projection-shallow-contract-recovery-v1",
   "date": "2026-10-06",
   "status": "ACTIVE_PREVENTION",
-  "fingerprint": "skill-projection|shallow-checkout|stale-contract-v1",
+  "fingerprint": "ci-control-plane|shallow-history|stale-contract-and-triple-dot-v2",
   "compiler": {
-    "failure_class": "CI_CONTROL_PLANE_CONTRACT_DRIFT",
+    "failure_class": "CI_CONTROL_PLANE_SHALLOW_HISTORY_DRIFT",
     "scope": "AUTOMATION",
     "machine_enforceable": true,
     "repeat_count": 1,
@@ -12,17 +12,22 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ]
   },
-  "root_cause": "PR #3947 intentionally changed Powerhouse Skill Projection from fetch-depth 0 to bounded fetch-depth 2, but the canonicalization contract test still required the old full-history checkout. Post-merge projection therefore failed despite the new shallow checkout being the intended control-plane invariant.",
-  "prevention": "The canonicalization contract now requires fetch-depth 2 and explicitly rejects fetch-depth 0, keeping the post-merge projection aligned with the bounded Git-history policy introduced by the CI control-plane convergence.",
+  "root_cause": "The control-plane convergence introduced bounded shallow Git history in Skill Projection and Required, but two downstream assumptions remained stale: the canonicalization regression still required fetch-depth 0, and the Integration Bundle CLI still used triple-dot BASE...HEAD, which requires merge-base ancestry not present in a targeted shallow checkout.",
+  "prevention": "All control-plane components now share the same shallow-safe invariant: Skill Projection requires fetch-depth 2, and Integration Bundle computes exact candidate scope with two-tree git diff BASE HEAD after a bounded targeted fetch for explicit commit objects. Full-history and merge-base-dependent assumptions are rejected by regression.",
   "evidence": {
     "source_pr": 3947,
     "merge_sha": "60f0ab0269b5087d4b6bc35a68b7fd4801ef676c",
     "failed_run": 37477223108,
     "failed_job": 112315697790,
     "failed_test": "tests/brain-learning-canonicalization-gate-v1.test.mjs",
-    "intended_checkout_depth": 2
+    "intended_checkout_depth": 2,
+    "failed_required_run": 37477986032,
+    "failed_preflight_job": 112318538174,
+    "integration_error": "fatal: no merge base for BASE...HEAD",
+    "integration_regression": "tests/brain-integration-bundle-compiler-v1.test.mjs"
   }
 }
