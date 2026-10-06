@@ -42,7 +42,7 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/powerhouse-delivery-hygiene.yml': 'backend',
   '.github/workflows/repo-writer-candidate-shadow.yml': 'automation',
   '.github/workflows/repo-writer-cheap-canary.yml': 'automation',
-  '.github/workflows/repo-writer-operational-verification.yml': 'automation',
+  '.github/workflows/repo-writer-operational-verification.yml': 'backend',
   '.github/workflows/repo-writer-parity-rollback.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend',
   '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
