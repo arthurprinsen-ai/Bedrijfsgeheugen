@@ -15,6 +15,21 @@ test('open-PR recovery is complete when Required is active even if BRAIN is abse
   assert.equal(classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T08:00:00Z',now:Date.parse('2026-09-18T08:02:00Z')}).state,'HEALTHY_PROGRESS');
 });
 
+
+test('completed green Required on a behind-main head becomes same-lineage main-drift recovery',()=>{
+  const runs=[{name:'Required test',status:'completed',conclusion:'success',updated_at:'2026-10-06T15:40:00Z'}];
+  const r=classifyRecovery({mergeable:true,behindBy:1,workflowRuns:runs,headUpdatedAt:'2026-10-06T15:39:00Z',now:Date.parse('2026-10-06T15:40:10Z')});
+  assert.equal(r.state,'MAIN_DRIFT_RECOVERY');
+  assert.equal(r.action,'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN');
+  assert.equal(r.behindBy,1);
+});
+
+test('behind-main never refreshes while canonical Required is still active',()=>{
+  const runs=[{name:'Required test',status:'in_progress',updated_at:'2026-10-06T15:40:00Z'}];
+  const r=classifyRecovery({mergeable:true,behindBy:1,workflowRuns:runs,headUpdatedAt:'2026-10-06T15:39:00Z',now:Date.parse('2026-10-06T15:40:10Z')});
+  assert.equal(r.state,'HEALTHY_PROGRESS');
+});
+
 test('stale queued exact-head work is recoverable from run progress timestamps',()=>{
   const runs=[
     {id:11,name:'Required test',status:'queued',updated_at:'2026-09-18T08:00:00Z'},
