@@ -68,7 +68,8 @@ test('completion supervisor requires channel policy authorization evidence',()=>
 test('social publication recovery retries at most every ten minutes',()=>{
   const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
   assert.match(delivery,/schedule:\s*'\*\/10 \* \* \* \*'/);
-  assert.match(delivery,/triggerCanonicalPublisher/);
+  assert.match(delivery,/triggerCanonicalContentLoop/);
+  assert.match(delivery,/powerhouse-content-loop/);
   assert.match(delivery,/runSocialPublicationDelivery/);
 });
 
@@ -83,6 +84,10 @@ test('production deploy recovery delegates to the same canonical publisher',()=>
 test('social recovery remains bounded by the publication window and canonical single-writer route',()=>{
   const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
   assert.match(delivery,/local\.hour < 7 \|\| local\.hour > 20/);
-  assert.match(delivery,/powerhouse-social-publisher/);
-  assert.match(delivery,/canonical publication runs before any Buffer read/i);
+  assert.match(delivery,/powerhouse-content-loop/);
+  assert.match(delivery,/content loop owns generation, gates, provider dispatch and reconciliation/i);
+  const loop=delivery.indexOf('await triggerCanonicalContentLoop(local.date)');
+  const readback=delivery.indexOf("await powerhouse('delivery_context'",loop);
+  const buffer=delivery.indexOf('posts = await getProviderPosts',readback);
+  assert.ok(loop>=0 && readback>loop && buffer>readback,'recovery must run full content loop before fresh state and provider readback');
 });
