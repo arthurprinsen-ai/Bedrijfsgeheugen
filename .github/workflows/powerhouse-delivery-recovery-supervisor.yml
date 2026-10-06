@@ -268,6 +268,299 @@ jobs:
                   printf '%s\n' "$path_overlap"
                   continue
                 fi
+                current_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
+                pre_sync_body="$(PR_BODY="$current_body" SYNC_MAIN="$refresh_main_sha" node --input-type=module - <<'NODE'
+const body=String(process.env.PR_BODY||'');
+const replaceOne=(text,label,value)=>{
+  const re=new RegExp(`^${label}:.*# Queue-storm guard v1: bounded recovery, repository backpressure, no main-push fan-out
+name: Powerhouse Delivery Recovery Supervisor
+
+on:
+  # Recovery is scheduled/manual only. A main push must never fan out into
+  # another repository-wide recovery scan.
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: powerhouse-delivery-recovery-supervisor
+  cancel-in-progress: true
+
+jobs:
+  supervise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify recovery controller
+        run: node --test tests/delivery-powerhouse-supervisor.test.mjs
+      - name: Recover exact-head canonical Required gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTIVE_RUN_CIRCUIT_BREAKER: '12'
+          RECOVERY_PR_BUDGET: '1'
+          STALE_QUEUE_MIN_AGE_SECONDS: '60'
+          STALE_QUEUE_CANCEL_BUDGET: '100'
+          STALE_IN_PROGRESS_MIN_AGE_SECONDS: '300'
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+
+          # Reap proven zombie Actions runs before evaluating the circuit breaker.
+          # Cancellation is allowed only when the run is stale AND its delivery
+          # identity is no longer authoritative: terminal PR, superseded head SHA,
+          # missing non-main branch, or old main SHA after main has advanced.
+          now_epoch="$(date -u +%s)"
+          stale_cancelled=0
+          obsolete_uncancellable=0
+          current_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+
+          is_run_obsolete() {
+            local run_json="$1"
+            local head_branch head_sha pr_number current_branch_sha pr_state pr_head_sha
+            head_branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
+            head_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
+            pr_number="$(jq -r '.pull_requests[0].number // empty' <<<"$run_json")"
+            [ -n "$head_branch" ] && [ -n "$head_sha" ] || return 1
+
+            if [ "$head_branch" = "main" ]; then
+              [ "$head_sha" != "$current_main_sha" ] && return 0
+              return 1
+            fi
+
+            encoded_branch="$(jq -rn --arg v "$head_branch" '$v|@uri')"
+            current_branch_sha="$(gh api "repos/$repo/git/ref/heads/$encoded_branch" --jq '.object.sha' 2>/dev/null || true)"
+            if [ -z "$current_branch_sha" ]; then
+              return 0
+            fi
+            if [ "$current_branch_sha" != "$head_sha" ]; then
+              return 0
+            fi
+
+            if [ -n "$pr_number" ]; then
+              pr_state="$(gh api "repos/$repo/pulls/$pr_number" --jq '.state' 2>/dev/null || true)"
+              pr_head_sha="$(gh api "repos/$repo/pulls/$pr_number" --jq '.head.sha' 2>/dev/null || true)"
+              if [ "$pr_state" = "closed" ] || { [ -n "$pr_head_sha" ] && [ "$pr_head_sha" != "$head_sha" ]; }; then
+                return 0
+              fi
+            fi
+            return 1
+          }
+
+          cancel_obsolete_run() {
+            local run_id="$1"
+            if gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+              echo "normal-cancel"
+              return 0
+            fi
+            if gh api --method POST "repos/$repo/actions/runs/$run_id/force-cancel" >/dev/null 2>&1; then
+              echo "force-cancel"
+              return 0
+            fi
+            latest_status="$(gh api "repos/$repo/actions/runs/$run_id" --jq '.status' 2>/dev/null || echo unknown)"
+            case "$latest_status" in completed|cancelled) echo "already-terminal"; return 0 ;; esac
+            if gh api --method DELETE "repos/$repo/actions/runs/$run_id" >/dev/null 2>&1; then
+              echo "delete-fallback"
+              return 0
+            fi
+            latest_status="$(gh api "repos/$repo/actions/runs/$run_id" --jq '.status' 2>/dev/null || echo unknown)"
+            case "$latest_status" in queued|in_progress|pending|waiting|requested) return 1 ;; *) echo "not-active"; return 0 ;; esac
+          }
+
+          cancel_stale_runs() {
+            local status="$1"
+            local min_age="$2"
+            gh api --paginate "repos/$repo/actions/runs?status=$status&per_page=100" > "/tmp/$status-runs.json"
+            while read -r run_json; do
+              [ "$stale_cancelled" -lt "$STALE_QUEUE_CANCEL_BUDGET" ] || {
+                echo "::notice::STALE_RUN_CANCEL_BUDGET_EXHAUSTED:$STALE_QUEUE_CANCEL_BUDGET"
+                break
+              }
+              run_id="$(jq -r '.id' <<<"$run_json")"
+              created_at="$(jq -r '.created_at // ""' <<<"$run_json")"
+              updated_at="$(jq -r '.updated_at // .created_at // ""' <<<"$run_json")"
+              head_branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
+              [ -n "$run_id" ] && [ -n "$created_at" ] && [ -n "$head_branch" ] || continue
+              age_source="$created_at"
+              [ "$status" = "in_progress" ] && age_source="$updated_at"
+              run_epoch="$(date -u -d "$age_source" +%s 2>/dev/null || echo "$now_epoch")"
+              age_seconds=$((now_epoch - run_epoch))
+              [ "$age_seconds" -ge "$min_age" ] || continue
+              is_run_obsolete "$run_json" || continue
+              if cancel_mode="$(cancel_obsolete_run "$run_id")"; then
+                stale_cancelled=$((stale_cancelled + 1))
+                echo "::notice::STALE_ACTIONS_RUN_CANCELLED:$run_id status:$status branch:$head_branch age_seconds:$age_seconds mode:$cancel_mode"
+              else
+                obsolete_uncancellable=$((obsolete_uncancellable + 1))
+                echo "::warning::STALE_ACTIONS_RUN_CANCEL_FAILED:$run_id status:$status branch:$head_branch classified:PROVIDER_CONTROL_PLANE_ZOMBIE"
+              fi
+            done < <(jq -c '.workflow_runs[]?' "/tmp/$status-runs.json")
+          }
+
+          cancel_stale_runs queued "$STALE_QUEUE_MIN_AGE_SECONDS"
+          cancel_stale_runs in_progress "$STALE_IN_PROGRESS_MIN_AGE_SECONDS"
+          echo "::notice::STALE_ACTIONS_RUN_CANCEL_TOTAL:$stale_cancelled"
+
+          active_runs=0
+          for active_status in queued in_progress pending waiting requested; do
+            status_count="$(gh api --paginate "repos/$repo/actions/runs?status=$active_status&per_page=100" --jq '.workflow_runs[] | .id' | wc -l | tr -d ' ')"
+            active_runs=$((active_runs + status_count))
+          done
+          effective_active_runs=$((active_runs - obsolete_uncancellable))
+          [ "$effective_active_runs" -ge 0 ] || effective_active_runs=0
+          echo "::notice::ACTIONS_ACTIVE_RUNS_RAW:$active_runs effective:$effective_active_runs provider_zombies:$obsolete_uncancellable circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
+          if [ "$effective_active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then
+            echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
+            exit 0
+          fi
+          gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          recovered_prs=0
+          while read -r pr; do
+            if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then
+              echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$RECOVERY_PR_BUDGET"
+              break
+            fi
+            number="$(jq -r '.number' <<<"$pr")"
+            head="$(jq -r '.head.sha' <<<"$pr")"
+            branch="$(jq -r '.head.ref' <<<"$pr")"
+            base="$(jq -r '.base.sha' <<<"$pr")"
+            updated="$(jq -r '.updated_at' <<<"$pr")"
+            body="$(jq -r '.body // ""' <<<"$pr")"
+            head_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
+            mergeable="$(gh api "repos/$repo/pulls/$number" --jq '.mergeable')"
+            refresh_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+            compare_json="$(gh api "repos/$repo/compare/$refresh_main_sha...$head" 2>/dev/null || echo '{}')"
+            behind_by="$(jq -r '.behind_by // 0' <<<"$compare_json")"
+            merge_base="$(jq -r '.merge_base_commit.sha // empty' <<<"$compare_json")"
+            runs="$(gh api "repos/$repo/actions/runs?head_sha=$head&per_page=100" --jq '.workflow_runs | map({id,name,status,conclusion,created_at,updated_at,run_started_at})')"
+            decision="$(node --input-type=module - "$mergeable" "$behind_by" "$updated" "$runs" <<'NODE'
+          import { classifyRecovery } from './tools/delivery/predictive-controller.mjs';
+          const [mergeableRaw,behindByRaw,updated,runsRaw]=process.argv.slice(2);
+          const mergeable=mergeableRaw==='true'?true:mergeableRaw==='false'?false:null;
+          const behindBy=Number(behindByRaw||0);
+          process.stdout.write(JSON.stringify(classifyRecovery({mergeable,behindBy,workflowRuns:JSON.parse(runsRaw||'[]'),headUpdatedAt:updated})));
+          NODE
+            )"
+            state="$(jq -r '.state' <<<"$decision")"
+            echo "PR#$number $head $state"
+            active_for_pr(){
+              workflow="$1"
+              gh api "repos/$repo/actions/workflows/$workflow/runs?per_page=100" --jq "[.workflow_runs[] | select((.status==\"queued\" or .status==\"in_progress\" or .status==\"pending\" or .status==\"waiting\" or .status==\"requested\") and ((.display_title // \"\") | contains(\"PR #$number\")))] | length"
+            }
+            dispatch_required(){
+              active="$(active_for_pr required-test.yml)"
+              if [ "$active" -gt 0 ]; then
+                echo "::notice::PR#$number Required test already active; duplicate dispatch suppressed."
+                return 0
+              fi
+              gh workflow run required-test.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
+            }
+            # Required test is the canonical open-PR recovery heartbeat.
+            # Unified Brain Delivery is terminal/promotion evidence and is intentionally
+            # not auto-dispatched here; doing so duplicates expensive lane work.
+            case "$state" in
+              ZERO_RUN_RECOVERY)
+                dispatch_required || true
+                ;;
+              PARTIAL_START_RECOVERY)
+                jq -e '.coverage.missing | index("required-test.yml")' <<<"$decision" >/dev/null && dispatch_required || true
+                ;;
+              STALE_QUEUE_RECOVERY)
+                jq -r '.staleRunIds[]?' <<<"$decision" |
+                while read -r run_id; do
+                  [ -n "$run_id" ] && gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" || true
+                done
+                dispatch_required || true
+                dispatch_brain || true
+                ;;
+              FAILED_GATE_RECOVERY)
+                latest_required_id="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | .id // empty' <<<"$runs")"
+                latest_required_updated="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | (.updated_at // .created_at // "")' <<<"$runs")"
+                lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+                lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+                if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ "$lease_head" != "$head" ]; then
+                  echo "::notice::PR#$number failed gate remains fail-closed; current metadata is not an exact terminal lease."
+                  continue
+                fi
+                admission_failed=0
+                if [ -n "$latest_required_id" ]; then
+                  admission_failed="$(gh api "repos/$repo/actions/runs/$latest_required_id/jobs?filter=latest&per_page=100" --jq '[.jobs[] | select(.name=="hygiene / admission" and .conclusion=="failure")] | length' 2>/dev/null || echo 0)"
+                fi
+                pr_updated_epoch="$(date -u -d "$updated" +%s 2>/dev/null || echo 0)"
+                required_updated_epoch="$(date -u -d "$latest_required_updated" +%s 2>/dev/null || echo 0)"
+                if [ "$admission_failed" -gt 0 ] && [ "$pr_updated_epoch" -gt "$required_updated_epoch" ]; then
+                  active="$(active_for_pr required-test.yml)"
+                  if [ "$active" -eq 0 ]; then
+                    echo "::notice::PR#$number metadata changed after failed admission; redispatching exact-head Required once."
+                    if dispatch_required; then
+                      recovered_prs=$((recovered_prs + 1))
+                      echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
+                    fi
+                  else
+                    echo "::notice::PR#$number corrected metadata already has an active Required; duplicate redispatch suppressed."
+                  fi
+                else
+                  echo "::notice::PR#$number failed gate has no newer metadata-only correction; no automatic retry."
+                fi
+                ;;
+              LONG_RUNNING_OBSERVE)
+                echo "::notice::PR#$number current-head workflow is long-running but still in progress; do not cancel without concrete stalled-job evidence."
+                ;;
+              MERGE_CONFLICT_RECOVERY|MAIN_DRIFT_RECOVERY)
+                echo "::warning::PR#$number requires same-lineage main refresh; duplicate recovery PR forbidden."
+                if [ "$head_repo" != "$repo" ]; then
+                  echo "::warning::PR#$number is not a same-repository branch; automatic refresh forbidden."
+                  continue
+                fi
+                lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+                lease_owner="$(sed -n 's/^Writer-Lease-Owner: //p' <<<"$body" | tail -n1)"
+                lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+                lease_obligation="$(sed -n 's/^Writer-Lease-Obligation: //p' <<<"$body" | tail -n1)"
+                if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ -z "$lease_owner" ] || [ "$lease_head" != "$head" ] || [ -z "$lease_obligation" ]; then
+                  echo "::warning::PR#$number has no exact active terminal writer lease; automatic refresh forbidden."
+                  continue
+                fi
+                default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
+                if [ -z "$merge_base" ]; then
+                  echo "::warning::PR#$number main refresh compare could not prove a merge base; automatic refresh forbidden."
+                  continue
+                fi
+                main_paths="$(gh api "repos/$repo/compare/$merge_base...$refresh_main_sha" --jq '.files[]?.filename' 2>/dev/null || true)"
+                candidate_paths="$(gh api "repos/$repo/compare/$merge_base...$head" --jq '.files[]?.filename' 2>/dev/null || true)"
+                path_overlap="$(comm -12 <(printf '%s\n' "$main_paths" | sed '/^$/d' | sort -u) <(printf '%s\n' "$candidate_paths" | sed '/^$/d' | sort -u) || true)"
+                if [ -n "$path_overlap" ]; then
+                  echo "::warning::PR#$number main refresh has path overlap and requires reconciliation; automatic refresh forbidden."
+                  printf '%s\n' "$path_overlap"
+                  continue
+                fi
+,'m');
+  if(!re.test(text)) throw new Error(`MISSING_${label.replaceAll('-','_').toUpperCase()}`);
+  return text.replace(re,`${label}: ${value}`);
+};
+let next=replaceOne(body,'Writer-Lease-State','MAIN_SYNC');
+next=replaceOne(next,'Writer-Lease-Main-Epoch',process.env.SYNC_MAIN);
+process.stdout.write(next);
+NODE
+                )"
+                gh api --method PATCH "repos/$repo/pulls/$number" -f body="$pre_sync_body" >/dev/null
+                sync_state="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""' | sed -n 's/^Writer-Lease-State: //p' | tail -n1)"
+                sync_head="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""' | sed -n 's/^Writer-Lease-Head: //p' | tail -n1)"
+                sync_epoch="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""' | sed -n 's/^Writer-Lease-Main-Epoch: //p' | tail -n1)"
+                if [ "$sync_state" != "MAIN_SYNC" ] || [ "$sync_head" != "$head" ] || [ "$sync_epoch" != "$refresh_main_sha" ]; then
+                  echo "::warning::PR#$number MAIN_SYNC transition readback failed; automatic refresh forbidden."
+                  gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
+                  continue
+                fi
+
                 if gh api --method POST "repos/$repo/merges" -f base="$branch" -f head="$refresh_main_sha" -f commit_message="delivery: refresh PR #$number from $default_branch@$refresh_main_sha" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
                   new_head="$(gh api "repos/$repo/branches/$branch" --jq '.commit.sha')"
                   new_main="$refresh_main_sha"
@@ -275,22 +568,294 @@ jobs:
                   updated_body="$(PR_BODY="$current_body" NEW_HEAD="$new_head" NEW_MAIN="$new_main" node --input-type=module - <<'NODE'
 const body=String(process.env.PR_BODY||'');
 const replaceOne=(text,label,value)=>{
-  const re=new RegExp(`^${label}:.*$`,'m');
+  const re=new RegExp(`^${label}:.*# Queue-storm guard v1: bounded recovery, repository backpressure, no main-push fan-out
+name: Powerhouse Delivery Recovery Supervisor
+
+on:
+  # Recovery is scheduled/manual only. A main push must never fan out into
+  # another repository-wide recovery scan.
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: powerhouse-delivery-recovery-supervisor
+  cancel-in-progress: true
+
+jobs:
+  supervise:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify recovery controller
+        run: node --test tests/delivery-powerhouse-supervisor.test.mjs
+      - name: Recover exact-head canonical Required gate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTIVE_RUN_CIRCUIT_BREAKER: '12'
+          RECOVERY_PR_BUDGET: '1'
+          STALE_QUEUE_MIN_AGE_SECONDS: '60'
+          STALE_QUEUE_CANCEL_BUDGET: '100'
+          STALE_IN_PROGRESS_MIN_AGE_SECONDS: '300'
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+
+          # Reap proven zombie Actions runs before evaluating the circuit breaker.
+          # Cancellation is allowed only when the run is stale AND its delivery
+          # identity is no longer authoritative: terminal PR, superseded head SHA,
+          # missing non-main branch, or old main SHA after main has advanced.
+          now_epoch="$(date -u +%s)"
+          stale_cancelled=0
+          obsolete_uncancellable=0
+          current_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+
+          is_run_obsolete() {
+            local run_json="$1"
+            local head_branch head_sha pr_number current_branch_sha pr_state pr_head_sha
+            head_branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
+            head_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
+            pr_number="$(jq -r '.pull_requests[0].number // empty' <<<"$run_json")"
+            [ -n "$head_branch" ] && [ -n "$head_sha" ] || return 1
+
+            if [ "$head_branch" = "main" ]; then
+              [ "$head_sha" != "$current_main_sha" ] && return 0
+              return 1
+            fi
+
+            encoded_branch="$(jq -rn --arg v "$head_branch" '$v|@uri')"
+            current_branch_sha="$(gh api "repos/$repo/git/ref/heads/$encoded_branch" --jq '.object.sha' 2>/dev/null || true)"
+            if [ -z "$current_branch_sha" ]; then
+              return 0
+            fi
+            if [ "$current_branch_sha" != "$head_sha" ]; then
+              return 0
+            fi
+
+            if [ -n "$pr_number" ]; then
+              pr_state="$(gh api "repos/$repo/pulls/$pr_number" --jq '.state' 2>/dev/null || true)"
+              pr_head_sha="$(gh api "repos/$repo/pulls/$pr_number" --jq '.head.sha' 2>/dev/null || true)"
+              if [ "$pr_state" = "closed" ] || { [ -n "$pr_head_sha" ] && [ "$pr_head_sha" != "$head_sha" ]; }; then
+                return 0
+              fi
+            fi
+            return 1
+          }
+
+          cancel_obsolete_run() {
+            local run_id="$1"
+            if gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+              echo "normal-cancel"
+              return 0
+            fi
+            if gh api --method POST "repos/$repo/actions/runs/$run_id/force-cancel" >/dev/null 2>&1; then
+              echo "force-cancel"
+              return 0
+            fi
+            latest_status="$(gh api "repos/$repo/actions/runs/$run_id" --jq '.status' 2>/dev/null || echo unknown)"
+            case "$latest_status" in completed|cancelled) echo "already-terminal"; return 0 ;; esac
+            if gh api --method DELETE "repos/$repo/actions/runs/$run_id" >/dev/null 2>&1; then
+              echo "delete-fallback"
+              return 0
+            fi
+            latest_status="$(gh api "repos/$repo/actions/runs/$run_id" --jq '.status' 2>/dev/null || echo unknown)"
+            case "$latest_status" in queued|in_progress|pending|waiting|requested) return 1 ;; *) echo "not-active"; return 0 ;; esac
+          }
+
+          cancel_stale_runs() {
+            local status="$1"
+            local min_age="$2"
+            gh api --paginate "repos/$repo/actions/runs?status=$status&per_page=100" > "/tmp/$status-runs.json"
+            while read -r run_json; do
+              [ "$stale_cancelled" -lt "$STALE_QUEUE_CANCEL_BUDGET" ] || {
+                echo "::notice::STALE_RUN_CANCEL_BUDGET_EXHAUSTED:$STALE_QUEUE_CANCEL_BUDGET"
+                break
+              }
+              run_id="$(jq -r '.id' <<<"$run_json")"
+              created_at="$(jq -r '.created_at // ""' <<<"$run_json")"
+              updated_at="$(jq -r '.updated_at // .created_at // ""' <<<"$run_json")"
+              head_branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
+              [ -n "$run_id" ] && [ -n "$created_at" ] && [ -n "$head_branch" ] || continue
+              age_source="$created_at"
+              [ "$status" = "in_progress" ] && age_source="$updated_at"
+              run_epoch="$(date -u -d "$age_source" +%s 2>/dev/null || echo "$now_epoch")"
+              age_seconds=$((now_epoch - run_epoch))
+              [ "$age_seconds" -ge "$min_age" ] || continue
+              is_run_obsolete "$run_json" || continue
+              if cancel_mode="$(cancel_obsolete_run "$run_id")"; then
+                stale_cancelled=$((stale_cancelled + 1))
+                echo "::notice::STALE_ACTIONS_RUN_CANCELLED:$run_id status:$status branch:$head_branch age_seconds:$age_seconds mode:$cancel_mode"
+              else
+                obsolete_uncancellable=$((obsolete_uncancellable + 1))
+                echo "::warning::STALE_ACTIONS_RUN_CANCEL_FAILED:$run_id status:$status branch:$head_branch classified:PROVIDER_CONTROL_PLANE_ZOMBIE"
+              fi
+            done < <(jq -c '.workflow_runs[]?' "/tmp/$status-runs.json")
+          }
+
+          cancel_stale_runs queued "$STALE_QUEUE_MIN_AGE_SECONDS"
+          cancel_stale_runs in_progress "$STALE_IN_PROGRESS_MIN_AGE_SECONDS"
+          echo "::notice::STALE_ACTIONS_RUN_CANCEL_TOTAL:$stale_cancelled"
+
+          active_runs=0
+          for active_status in queued in_progress pending waiting requested; do
+            status_count="$(gh api --paginate "repos/$repo/actions/runs?status=$active_status&per_page=100" --jq '.workflow_runs[] | .id' | wc -l | tr -d ' ')"
+            active_runs=$((active_runs + status_count))
+          done
+          effective_active_runs=$((active_runs - obsolete_uncancellable))
+          [ "$effective_active_runs" -ge 0 ] || effective_active_runs=0
+          echo "::notice::ACTIONS_ACTIVE_RUNS_RAW:$active_runs effective:$effective_active_runs provider_zombies:$obsolete_uncancellable circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
+          if [ "$effective_active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then
+            echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
+            exit 0
+          fi
+          gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          recovered_prs=0
+          while read -r pr; do
+            if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then
+              echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$RECOVERY_PR_BUDGET"
+              break
+            fi
+            number="$(jq -r '.number' <<<"$pr")"
+            head="$(jq -r '.head.sha' <<<"$pr")"
+            branch="$(jq -r '.head.ref' <<<"$pr")"
+            base="$(jq -r '.base.sha' <<<"$pr")"
+            updated="$(jq -r '.updated_at' <<<"$pr")"
+            body="$(jq -r '.body // ""' <<<"$pr")"
+            head_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
+            mergeable="$(gh api "repos/$repo/pulls/$number" --jq '.mergeable')"
+            refresh_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+            compare_json="$(gh api "repos/$repo/compare/$refresh_main_sha...$head" 2>/dev/null || echo '{}')"
+            behind_by="$(jq -r '.behind_by // 0' <<<"$compare_json")"
+            merge_base="$(jq -r '.merge_base_commit.sha // empty' <<<"$compare_json")"
+            runs="$(gh api "repos/$repo/actions/runs?head_sha=$head&per_page=100" --jq '.workflow_runs | map({id,name,status,conclusion,created_at,updated_at,run_started_at})')"
+            decision="$(node --input-type=module - "$mergeable" "$behind_by" "$updated" "$runs" <<'NODE'
+          import { classifyRecovery } from './tools/delivery/predictive-controller.mjs';
+          const [mergeableRaw,behindByRaw,updated,runsRaw]=process.argv.slice(2);
+          const mergeable=mergeableRaw==='true'?true:mergeableRaw==='false'?false:null;
+          const behindBy=Number(behindByRaw||0);
+          process.stdout.write(JSON.stringify(classifyRecovery({mergeable,behindBy,workflowRuns:JSON.parse(runsRaw||'[]'),headUpdatedAt:updated})));
+          NODE
+            )"
+            state="$(jq -r '.state' <<<"$decision")"
+            echo "PR#$number $head $state"
+            active_for_pr(){
+              workflow="$1"
+              gh api "repos/$repo/actions/workflows/$workflow/runs?per_page=100" --jq "[.workflow_runs[] | select((.status==\"queued\" or .status==\"in_progress\" or .status==\"pending\" or .status==\"waiting\" or .status==\"requested\") and ((.display_title // \"\") | contains(\"PR #$number\")))] | length"
+            }
+            dispatch_required(){
+              active="$(active_for_pr required-test.yml)"
+              if [ "$active" -gt 0 ]; then
+                echo "::notice::PR#$number Required test already active; duplicate dispatch suppressed."
+                return 0
+              fi
+              gh workflow run required-test.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
+            }
+            # Required test is the canonical open-PR recovery heartbeat.
+            # Unified Brain Delivery is terminal/promotion evidence and is intentionally
+            # not auto-dispatched here; doing so duplicates expensive lane work.
+            case "$state" in
+              ZERO_RUN_RECOVERY)
+                dispatch_required || true
+                ;;
+              PARTIAL_START_RECOVERY)
+                jq -e '.coverage.missing | index("required-test.yml")' <<<"$decision" >/dev/null && dispatch_required || true
+                ;;
+              STALE_QUEUE_RECOVERY)
+                jq -r '.staleRunIds[]?' <<<"$decision" |
+                while read -r run_id; do
+                  [ -n "$run_id" ] && gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" || true
+                done
+                dispatch_required || true
+                dispatch_brain || true
+                ;;
+              FAILED_GATE_RECOVERY)
+                latest_required_id="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | .id // empty' <<<"$runs")"
+                latest_required_updated="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | (.updated_at // .created_at // "")' <<<"$runs")"
+                lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+                lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+                if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ "$lease_head" != "$head" ]; then
+                  echo "::notice::PR#$number failed gate remains fail-closed; current metadata is not an exact terminal lease."
+                  continue
+                fi
+                admission_failed=0
+                if [ -n "$latest_required_id" ]; then
+                  admission_failed="$(gh api "repos/$repo/actions/runs/$latest_required_id/jobs?filter=latest&per_page=100" --jq '[.jobs[] | select(.name=="hygiene / admission" and .conclusion=="failure")] | length' 2>/dev/null || echo 0)"
+                fi
+                pr_updated_epoch="$(date -u -d "$updated" +%s 2>/dev/null || echo 0)"
+                required_updated_epoch="$(date -u -d "$latest_required_updated" +%s 2>/dev/null || echo 0)"
+                if [ "$admission_failed" -gt 0 ] && [ "$pr_updated_epoch" -gt "$required_updated_epoch" ]; then
+                  active="$(active_for_pr required-test.yml)"
+                  if [ "$active" -eq 0 ]; then
+                    echo "::notice::PR#$number metadata changed after failed admission; redispatching exact-head Required once."
+                    if dispatch_required; then
+                      recovered_prs=$((recovered_prs + 1))
+                      echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
+                    fi
+                  else
+                    echo "::notice::PR#$number corrected metadata already has an active Required; duplicate redispatch suppressed."
+                  fi
+                else
+                  echo "::notice::PR#$number failed gate has no newer metadata-only correction; no automatic retry."
+                fi
+                ;;
+              LONG_RUNNING_OBSERVE)
+                echo "::notice::PR#$number current-head workflow is long-running but still in progress; do not cancel without concrete stalled-job evidence."
+                ;;
+              MERGE_CONFLICT_RECOVERY|MAIN_DRIFT_RECOVERY)
+                echo "::warning::PR#$number requires same-lineage main refresh; duplicate recovery PR forbidden."
+                if [ "$head_repo" != "$repo" ]; then
+                  echo "::warning::PR#$number is not a same-repository branch; automatic refresh forbidden."
+                  continue
+                fi
+                lease_state="$(sed -n 's/^Writer-Lease-State: //p' <<<"$body" | tail -n1)"
+                lease_owner="$(sed -n 's/^Writer-Lease-Owner: //p' <<<"$body" | tail -n1)"
+                lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$body" | tail -n1)"
+                lease_obligation="$(sed -n 's/^Writer-Lease-Obligation: //p' <<<"$body" | tail -n1)"
+                if [ "$lease_state" != "TERMINAL_DELIVERY" ] || [ -z "$lease_owner" ] || [ "$lease_head" != "$head" ] || [ -z "$lease_obligation" ]; then
+                  echo "::warning::PR#$number has no exact active terminal writer lease; automatic refresh forbidden."
+                  continue
+                fi
+                default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
+                if [ -z "$merge_base" ]; then
+                  echo "::warning::PR#$number main refresh compare could not prove a merge base; automatic refresh forbidden."
+                  continue
+                fi
+                main_paths="$(gh api "repos/$repo/compare/$merge_base...$refresh_main_sha" --jq '.files[]?.filename' 2>/dev/null || true)"
+                candidate_paths="$(gh api "repos/$repo/compare/$merge_base...$head" --jq '.files[]?.filename' 2>/dev/null || true)"
+                path_overlap="$(comm -12 <(printf '%s\n' "$main_paths" | sed '/^$/d' | sort -u) <(printf '%s\n' "$candidate_paths" | sed '/^$/d' | sort -u) || true)"
+                if [ -n "$path_overlap" ]; then
+                  echo "::warning::PR#$number main refresh has path overlap and requires reconciliation; automatic refresh forbidden."
+                  printf '%s\n' "$path_overlap"
+                  continue
+                fi
+,'m');
   if(!re.test(text)) throw new Error(`MISSING_${label.replaceAll('-','_').toUpperCase()}`);
   return text.replace(re,`${label}: ${value}`);
 };
-let next=replaceOne(body,'Base-SHA',process.env.NEW_MAIN);
+let next=replaceOne(body,'Writer-Lease-State','TERMINAL_DELIVERY');
+next=replaceOne(next,'Base-SHA',process.env.NEW_MAIN);
 next=replaceOne(next,'Writer-Lease-Head',process.env.NEW_HEAD);
 next=replaceOne(next,'Writer-Lease-Main-Epoch',process.env.NEW_MAIN);
 process.stdout.write(next);
 NODE
                   )"
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$updated_body" >/dev/null
-                  echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head at main $new_main; metadata advanced before the next recovery cycle."
+                  echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head at main $new_main; MAIN_SYNC lease returned to exact TERMINAL_DELIVERY."
                   recovered_prs=$((recovered_prs + 1))
                   echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 else
-                  echo "::warning::PR#$number could not be refreshed automatically; preserving same lineage fail-closed."
+                  echo "::warning::PR#$number could not be refreshed automatically; restoring terminal lease fail-closed."
+                  gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
                   cat /tmp/merge-refresh.err || true
                 fi
                 ;;
