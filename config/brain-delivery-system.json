@@ -481,6 +481,7 @@
         "tests/live-preview-trigger-scope.test.mjs",
         "tests/seo-",
         "tests/site-shell-",
+        "tests/tabbladen.test.mjs",
         "tests/targeted-website-route-regression.test.mjs",
         "tests/v18-",
         "tools/apply-tabbladen.mjs",
