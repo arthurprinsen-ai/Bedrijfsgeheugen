@@ -197,3 +197,27 @@ test('research freshness is cached and one-brain maintenance is split by minute'
   assert.match(sql, /28,58 \* \* \* \*/);
 });
 
+test('migration history lock matches the recovered production ledger', () => {
+  const lock = JSON.parse(fs.readFileSync('supabase/migration-history.lock.json','utf8'));
+  const identities = new Map(lock.applied.map((x) => [x.version, x.name]));
+  assert.equal(lock.production_ledger_count, 583);
+  const expected = new Map([
+    ['20261006085416','stagger_cron_database_pressure_v1'],
+    ['20261006090209','normalize_runtime_event_degraded_state_v1'],
+    ['20261006091309','bound_runtime_event_hotpaths_and_identity_sync_v1'],
+    ['20261006091918','bound_loop_assurance_cron_history_scan_v1'],
+    ['20261006092057','bound_heavy_maintenance_pressure_v2'],
+    ['20261006092322','repair_revenue_snapshot_projection_v3'],
+    ['20261006092411','align_revenue_snapshot_v3_dependencies'],
+    ['20261006093306','runtime_pressure_maintenance_v2'],
+    ['20261006093340','materialize_revenue_snapshot_from_canonical_nba_v1'],
+    ['20261006093529','remove_snapshot_truncate_lock_contention_v1'],
+    ['20261006093653','canonical_content_loop_scheduler_auth_authority_v1'],
+    ['20261006094410','canonicalize_person_intelligence_alias_joins_v1'],
+    ['20261006095118','remove_account_strategy_correlated_committee_scan_v1'],
+    ['20261006095838','cache_research_freshness_and_split_one_brain_v1'],
+    ['20261006095958','normalize_publication_evidence_objects_v1'],
+  ]);
+  for (const [version,name] of expected) assert.equal(identities.get(version), name);
+});
+
