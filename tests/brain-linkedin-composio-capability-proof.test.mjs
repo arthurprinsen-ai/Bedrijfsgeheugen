@@ -61,6 +61,7 @@ test('company capability stays fail-closed when organization scope is absent',()
 
 
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+const companyLiveProofGuard=fs.readFileSync('supabase/migrations/20261006102646_linkedin_company_admin_oauth_live_proof_guard_v1.sql','utf8');
 
 test('LinkedIn personal and company publish through Composio, never Buffer',()=>{
   assert.match(publisher,/publishLinkedInPersonalViaComposio/);
@@ -78,14 +79,15 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
 });
 
 
-test('LinkedIn company write readiness is independent from organization ACL read permission', () => {
-  assert.match(setup,/companyReady=personalReady&&companyAuthorConfigured/);
-  assert.doesNotMatch(setup,/companyReady=orgUrns\.length===1&&hasOrgAdminScope&&hasOrgWriteScope/);
-  assert.match(setup,/company_admin_read_ready:companyAdminReadReady/);
-  assert.match(setup,/company_admin_read_scope_required:companyAdminReadReady\?null:'r_organization_admin'/);
-  assert.match(publisher,/organizationReadVerified=false/);
-  assert.match(publisher,/catch\(_organizationReadError\)\{\}/);
-  assert.match(publisher,/canonical_org_write_candidate/);
+test('LinkedIn company requires fresh organization-admin OAuth proof before publish', () => {
+  assert.match(setup,/COMPANY_OAUTH_SCOPES=.*r_organization_admin.*w_organization_social/);
+  assert.match(setup,/credentials:\{scopes:COMPANY_OAUTH_SCOPES\.join\(','\)\}/);
+  assert.match(setup,/companyReady=personalReady&&companyAuthorConfigured&&hasOrgWriteScope&&companyAdminReadReady/);
+  assert.match(setup,/linkedin_company_admin_oauth_proven:companyAdminReadReady&&hasOrgWriteScope/);
+  assert.match(publisher,/LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED/);
+  assert.match(publisher,/organizationAdminVerified===true/);
+  assert.match(publisher,/linkedin_company_admin_oauth_proven:true/);
+  assert.match(publisher,/organization_write_scope_verified:true/);
 });
 
 
@@ -97,4 +99,14 @@ test('LinkedIn production setup can create OAuth link and resume the same daily 
   assert.match(setup,/action==='resume'/);
   assert.match(setup,/linkedin-production-oauth-complete/);
   assert.match(setup,/powerhouse-social-publisher/);
+});
+
+
+test('database refuses LinkedIn company LIVE_PROVEN without admin OAuth and organization-write proof',()=>{
+  assert.match(companyLiveProofGuard,/p_channel='linkedin_company'/);
+  assert.match(companyLiveProofGuard,/LINKEDIN_COMPANY_ADMIN_OAUTH_PROOF_REQUIRED/);
+  assert.match(companyLiveProofGuard,/linkedin_company_admin_oauth_proven/);
+  assert.match(companyLiveProofGuard,/organization_write_scope_verified/);
+  assert.match(companyLiveProofGuard,/company_oauth_connection_id/);
+  assert.match(companyLiveProofGuard,/company_oauth_verified_at/);
 });
