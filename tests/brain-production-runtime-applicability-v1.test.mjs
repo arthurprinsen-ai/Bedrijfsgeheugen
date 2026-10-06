@@ -16,6 +16,7 @@ test('verifier-only main advances do not require a new Netlify deploy', async ()
     'tools/site-shell/live-contract.mjs',
     'tools/site-shell/test-live-contract.mjs',
     'tools/site-shell/production-supersession.mjs',
+    'tools/site-shell/standalone-visibility-check.mjs',
     'brain/contracts/production-readback-v1.json',
   ]) {
     assert.ok(release.includes(path), `release classifier misses ${path}`);
