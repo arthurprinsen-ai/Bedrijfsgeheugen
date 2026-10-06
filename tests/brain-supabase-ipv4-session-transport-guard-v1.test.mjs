@@ -28,7 +28,7 @@ test('OIDC bridge rewrites the direct credential source to the IPv4 session pool
 });
 
 test('function-only config metadata does not falsely require a database preview', () => {
-  assert.match(applicability, /grep -v -F 'supabase\/config\.toml'/);
+  assert.match(applicability, /grep -v '\^supabase\/config\.toml\$'/);
   assert.match(applicability, /import tomllib/);
   assert.match(applicability, /normalized\.pop\('functions', None\)/);
   assert.match(applicability, /function_config_only/);
