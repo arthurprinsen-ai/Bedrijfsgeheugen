@@ -1,0 +1,33 @@
+{
+  "id": "tools-ci-production-trigger-suppression-live-proof-v3",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|actions|tools-ci|production-trigger-suppression|live-proof|v3",
+  "root_cause": "Production Source Snapshot and Production Release Readback previously admitted main pushes before tools/ci/** was filtered, allocating production work for CI-only changes.",
+  "prevention": {
+    "production_source_snapshot_paths_ignore": ["tools/ci/**", "brain/learning/**", "docs/**"],
+    "production_release_readback_paths_ignore": ["tools/ci/**", "brain/learning/**", "docs/**"],
+    "runtime_proof_required": true
+  },
+  "evidence": {
+    "structural_fix_pr": 3969,
+    "structural_fix_merge_sha": "a603f712fee167b8c60e0aab07b4f00316185130",
+    "shallow_guard_fix_pr": 3986,
+    "shallow_guard_fix_merge_sha": "03156e2b875718d20a9a3369f1f68f3660c721f4",
+    "metadata_regression_fix_pr": 3997,
+    "metadata_regression_fix_merge_sha": "86e3bf5e2824c15d066e80a2235cdbc48f4f8cd0"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-main-push-fanout-budget-v1.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "terminal_condition": "After protected merge, no Production Source Snapshot or Production Release Readback workflow run exists for the resulting main SHA."
+  },
+  "compiler": {
+    "failure_class": "CI_UNNECESSARY_PRODUCTION_WORKFLOW_FANOUT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
