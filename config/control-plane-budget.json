@@ -26,7 +26,7 @@
   },
   "baseline": {
     "github": {
-      "workflowFiles": 126,
+      "workflowFiles": 125,
       "openPullRequests": 78,
       "directPrTriggerWorkflows": [
         "ai-model-intelligence.yml",
