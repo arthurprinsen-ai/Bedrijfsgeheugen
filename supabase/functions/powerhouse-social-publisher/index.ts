@@ -55,7 +55,52 @@ class DirectQuery {
     }
     return parts.length ? ' where '+parts.join(' and ') : '';
   }
-  selectList(raw:string){ if(raw.trim()==='*') return '*'; return raw.split(',').map(x=>dbIdent(x.trim())).join(','); }
+  selectList(raw:string){
+    if(raw.trim()==='*') return '*';
+    const compactDeliveryEvidence = `jsonb_strip_nulls(jsonb_build_object(
+      'identity_gate_evidence', delivery_evidence->'identity_gate_evidence',
+      'instagram_media_proof', delivery_evidence->'instagram_media_proof',
+      'provider', delivery_evidence->'provider',
+      'provider_post_id', delivery_evidence->'provider_post_id',
+      'provider_create_success', delivery_evidence->'provider_create_success',
+      'provider_publication_ack_verified', delivery_evidence->'provider_publication_ack_verified',
+      'provider_truth_verified', delivery_evidence->'provider_truth_verified',
+      'republish_forbidden', delivery_evidence->'republish_forbidden',
+      'provider_status', delivery_evidence->'provider_status',
+      'provider_due_at', delivery_evidence->'provider_due_at',
+      'readback_permission_limited', delivery_evidence->'readback_permission_limited',
+      'error', delivery_evidence->'error',
+      'provider_error', delivery_evidence->'provider_error',
+      'capability_state', delivery_evidence->'capability_state'
+    )) as delivery_evidence`;
+    const compactGenerationEvidence = `jsonb_strip_nulls(jsonb_build_object(
+      'identity_gate_evidence', generation_evidence->'identity_gate_evidence',
+      'instagram_media_proof', generation_evidence->'instagram_media_proof',
+      'hook_type', generation_evidence->'hook_type',
+      'measurable_link', generation_evidence->'measurable_link',
+      'campaign_key', generation_evidence->'campaign_key',
+      'link_destination', generation_evidence->'link_destination',
+      'measurable_link_verified', generation_evidence->'measurable_link_verified'
+    )) as generation_evidence`;
+    const compactObligationEvidence = `jsonb_strip_nulls(jsonb_build_object(
+      'provider', evidence->'provider',
+      'provider_post_id', evidence->'provider_post_id',
+      'provider_create_success', evidence->'provider_create_success',
+      'provider_publication_ack_verified', evidence->'provider_publication_ack_verified',
+      'provider_truth_verified', evidence->'provider_truth_verified',
+      'republish_forbidden', evidence->'republish_forbidden',
+      'provider_status', evidence->'provider_status',
+      'readback_permission_limited', evidence->'readback_permission_limited',
+      'error', evidence->'error'
+    )) as evidence`;
+    return raw.split(',').map((part)=>{
+      const column=part.trim();
+      if(this.table==='powerhouse_channel_decisions'&&column==='delivery_evidence') return compactDeliveryEvidence;
+      if(this.table==='powerhouse_content_artifacts'&&column==='generation_evidence') return compactGenerationEvidence;
+      if(this.table==='content_publication_obligations'&&column==='evidence') return compactObligationEvidence;
+      return dbIdent(column);
+    }).join(',');
+  }
   async execute(){
     try{
       const values:any[]=[]; let q='';
@@ -1092,12 +1137,20 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { /* default */ }
   const runDate = clean(body.runDate) || today();
   const mode = clean(body.mode) || 'run';
+  const allChannels = ['linkedin_personal','linkedin_company','instagram_company'];
+  const requestedChannels = Array.isArray(body.channels)
+    ? [...new Set(body.channels.map(clean).filter((channel:string)=>allChannels.includes(channel)))]
+    : allChannels;
+  const channels = requestedChannels.length ? requestedChannels : allChannels;
   if (mode === 'cockpit_autopilot') return json({ ok: true, runDate, cockpit_autopilot: await runLinkedInCockpitAutopilot(db) });
   const publishOnly = mode === 'publish_only';
-  const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
-  const bufferToken = clean(integration?.token) || null;
+  let bufferToken:string|null = null;
+  if(!publishOnly){
+    const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
+    bufferToken = clean(integration?.token) || null;
+  }
 
-  let bufferCircuit = await readBufferCircuit(db);
+  let bufferCircuit = publishOnly ? {active:false,retry_at:null,retry_after_seconds:0} : await readBufferCircuit(db);
   let containment_sweep:any = publishOnly ? { skipped:true, reason:'PUBLISH_ONLY' } : { skipped:false };
   let provider_reconciliation:any[] = [];
 
@@ -1126,7 +1179,6 @@ Deno.serve(async (req) => {
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
   const cockpit_autopilot = publishOnly ? [] : await runLinkedInCockpitAutopilot(db);
-  const channels = ['linkedin_personal','linkedin_company','instagram_company'];
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
       .select('channel,scheduled_for,delivery_evidence,priority')
