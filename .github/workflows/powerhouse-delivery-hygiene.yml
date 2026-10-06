@@ -54,6 +54,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           EVENT_NAME: ${{ github.event_name }}
           EVENT_ACTION: ${{ github.event.action || '' }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
           EVENT_PR_BODY: ${{ github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           EXPECTED_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
@@ -146,13 +147,14 @@ jobs:
               throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
             }
             const eventLease = parseWriterLease(process.env.EVENT_PR_BODY || '');
+            const rerun = Number(process.env.RUN_ATTEMPT || '1') > 1;
             const synchronize = process.env.EVENT_NAME === 'pull_request'
               && process.env.EVENT_ACTION === 'synchronize';
-            if (synchronize && eventLease.state === 'TERMINAL_DELIVERY'
+            if (synchronize && !rerun && eventLease.state === 'TERMINAL_DELIVERY'
               && String(eventLease.headSha || '').toLowerCase() !== String(headSha || '').toLowerCase()) {
               throw new Error(`TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION:${eventLease.headSha || 'missing'}:${headSha}`);
             }
-            if (synchronize && eventLease.state === 'MAIN_SYNC') {
+            if (synchronize && !rerun && eventLease.state === 'MAIN_SYNC') {
               const syncCommit = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/commits/${headSha}`);
               const syncParents = (syncCommit?.parents || []).map(parent => String(parent?.sha || '').toLowerCase());
               const expectedPreviousHead = String(eventLease.headSha || '').toLowerCase();
