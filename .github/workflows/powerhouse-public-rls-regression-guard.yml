@@ -9,7 +9,7 @@ on:
       - '.github/workflows/powerhouse-public-rls-regression-guard.yml'
 
 concurrency:
-  group: powerhouse-public-rls-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  group: powerhouse-public-rls-${{ github.event_name }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 permissions:
