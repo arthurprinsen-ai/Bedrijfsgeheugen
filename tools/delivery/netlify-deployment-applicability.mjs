@@ -37,6 +37,12 @@ export const NETLIFY_RUNTIME_PREFIXES = Object.freeze([
   'platform/read-models/',
 ]);
 
+export const NETLIFY_BUILD_RUNTIME_EXACT = Object.freeze(new Set([
+  'tools/ci/run-netlify-build.mjs',
+  'tools/ci/run-localized-routes-parallel.mjs',
+  'tools/ci/restamp-prebuilt-release.mjs',
+]));
+
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
 
 export function deriveNetlifyDeploymentApplicability({
@@ -49,8 +55,10 @@ export function deriveNetlifyDeploymentApplicability({
 }={}) {
   const changed=unique(changedPaths);
   const runtimeChangedPaths=changed.filter(path =>
-    !NETLIFY_GOVERNANCE_EXACT.has(path) &&
-    !NETLIFY_GOVERNANCE_PREFIXES.some(prefix => path.startsWith(prefix))
+    NETLIFY_BUILD_RUNTIME_EXACT.has(path) || (
+      !NETLIFY_GOVERNANCE_EXACT.has(path) &&
+      !NETLIFY_GOVERNANCE_PREFIXES.some(prefix => path.startsWith(prefix))
+    )
   );
 
   if(skipDeployment){
