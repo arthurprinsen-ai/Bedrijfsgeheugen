@@ -71,6 +71,7 @@ jobs:
       netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
       supabase_preview_required: ${{ steps.scope.outputs.supabase_preview_required }}
       full_assurance: ${{ steps.scope.outputs.full_assurance }}
+      skill_projection_required: ${{ steps.scope.outputs.skill_projection_required }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -164,13 +165,25 @@ jobs:
             }
           }
           const supabasePreviewRequired=databaseRelevantSupabase || supabaseConfigDatabaseRelevant;
+          const skillProjectionRequired=changedPaths.some(path =>
+            path.startsWith('brain/learning/') ||
+            path.startsWith('brain/skills/') ||
+            path === 'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json' ||
+            path.startsWith('.agents/skills/') ||
+            path === 'scripts/brain/powerhouse-skill-projection.mjs' ||
+            path === 'scripts/brain/learning-canonicalization-gate.mjs' ||
+            path === 'scripts/brain/chat-learning-preflight.mjs' ||
+            path === 'tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs' ||
+            path === 'tests/brain-learning-canonicalization-gate-v1.test.mjs' ||
+            path === '.github/workflows/powerhouse-skill-projection.yml'
+          );
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\nfull_assurance=${fullAssurance}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\nskill_projection_required=${skillProjectionRequired}\nfull_assurance=${fullAssurance}\n`);
           console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites,fullAssurance,ciMode:engineeringTuning.ci?.mode ?? 'safe-transition'},null,2));
           NODE
       - id: integration
@@ -336,6 +349,39 @@ jobs:
       - name: Verify Autonomous Engineering Fabric v3 authority contract
         if: steps.scope.outputs.full_assurance == 'true' && steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+
+
+      - name: Install skill projection dependencies when full suite did not already install them
+        if: steps.scope.outputs.skill_projection_required == 'true' && steps.integration.outputs.full_shared_suite != 'true'
+        run: npm install --prefer-offline --ignore-scripts --no-audit --no-fund
+
+      - name: Evaluate changed learning before canonicalization
+        if: steps.scope.outputs.skill_projection_required == 'true'
+        env:
+          POWERHOUSE_BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          POWERHOUSE_HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
+        run: node scripts/brain/learning-canonicalization-gate.mjs
+
+      - name: Publish learning canonicalization evidence
+        if: always() && steps.scope.outputs.skill_projection_required == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-canonicalization-evidence-${{ github.run_id }}
+          path: .artifacts/learning-canonicalization-evidence.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Verify learning canonicalization gate contract
+        if: steps.scope.outputs.skill_projection_required == 'true'
+        run: node --test tests/brain-learning-canonicalization-gate-v1.test.mjs
+
+      - name: Reconcile all canonical learning into skill projection
+        if: steps.scope.outputs.skill_projection_required == 'true'
+        run: node scripts/brain/powerhouse-skill-projection.mjs
+
+      - name: Verify learning to skill projection contract
+        if: steps.scope.outputs.skill_projection_required == 'true'
+        run: node --test tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
 
 
   netlify_build_parity:

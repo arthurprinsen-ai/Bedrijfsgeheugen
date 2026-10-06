@@ -71,3 +71,18 @@ test('external executors cannot keep a chat synchronously polling beyond 30 seco
   assert.equal(protocol.waiting_external.long_polling_forbidden,true);
   assert.match(agents,/harde totale chat\/agent-budgetgrens van \*\*30 seconden\*\*/);
 });
+
+
+test('skill projection contract is absorbed into Required without a separate PR runner', async () => {
+  const [required,workflow]=await Promise.all([
+    read('.github/workflows/required-test.yml'),
+    read('.github/workflows/powerhouse-skill-projection.yml'),
+  ]);
+  assert.match(required,/skill_projection_required/);
+  assert.match(required,/learning-canonicalization-gate\.mjs/);
+  assert.match(required,/brain-learning-canonicalization-gate-v1\.test\.mjs/);
+  assert.match(required,/powerhouse-skill-projection\.mjs/);
+  assert.match(required,/brain-powerhouse-universal-agent-learning-writeback\.test\.mjs/);
+  assert.doesNotMatch(workflow,/\n  pull_request:/);
+  assert.match(workflow,/\n  push:/);
+});

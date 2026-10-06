@@ -22,6 +22,7 @@
     ".github/workflows/powerhouse-autonomous-engineering-optimizer.yml",
     ".github/workflows/powerhouse-daily-self-evolution.yml",
     ".github/workflows/powerhouse-foresight-autonomy.yml",
+    ".github/workflows/powerhouse-skill-projection.yml",
     ".github/workflows/regelgeving-actueel.yml",
     ".github/workflows/repo-writer-candidate-shadow.yml",
     ".github/workflows/revenue-content-intelligence.yml"
