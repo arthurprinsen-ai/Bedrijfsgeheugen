@@ -43,3 +43,14 @@ test('normalizes Supabase CLI migration-list backticks before parity comparison'
   assert.match(workflow, /UNEXPECTED_PRE_REPAIR_DRIFT/);
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
 });
+
+test('provider readback is bounded-retry and repair is resumable without repeating mutation', () => {
+  assert.match(workflow, /migration_list_with_retry\(\)/);
+  assert.match(workflow, /for attempt in 1 2 3/);
+  assert.match(workflow, /repair-needed\.txt/);
+  assert.match(workflow, /drift\.length === 0/);
+  assert.match(workflow, /Provider already reports zero migration-list drift; resuming at post-repair readback/);
+  const repairs = workflow.match(/supabase migration repair/g) || [];
+  assert.equal(repairs.length, 2, 'one executable repair plus one evidence string is expected');
+  assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
+});

@@ -131,7 +131,26 @@ jobs:
           set -euo pipefail
           : "${SUPABASE_DB_URL:?OIDC database transport missing}"
 
-          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/before.txt
+          migration_list_with_retry() {
+            local output="$1"
+            local attempt tmp
+            tmp="${output}.tmp"
+            for attempt in 1 2 3; do
+              if supabase migration list --db-url "$SUPABASE_DB_URL" >"$tmp" 2>&1; then
+                cat "$tmp" | tee "$output"
+                rm -f "$tmp"
+                return 0
+              fi
+              cat "$tmp" >&2 || true
+              if [ "$attempt" -eq 3 ]; then
+                rm -f "$tmp"
+                return 1
+              fi
+              sleep $((attempt * 3))
+            done
+          }
+
+          migration_list_with_retry ../repair-evidence/before.txt
 
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
@@ -143,15 +162,37 @@ jobs:
           const drift=rows.filter(x=>x.local!==x.remote);
           const expected=['20260920101150','20260920102450','20260925080500','20261005133951'];
           const actual=drift.map(x=>x.local).sort();
-          if (JSON.stringify(actual)!==JSON.stringify(expected)) {
-            throw new Error('UNEXPECTED_PRE_REPAIR_DRIFT:'+JSON.stringify(drift));
+          if (drift.length === 0) {
+            fs.writeFileSync('../repair-evidence/repair-needed.txt','false\n');
+          } else {
+            if (JSON.stringify(actual)!==JSON.stringify(expected)) {
+              throw new Error('UNEXPECTED_PRE_REPAIR_DRIFT:'+JSON.stringify(drift));
+            }
+            if (drift.some(x=>x.remote)) throw new Error('REMOTE_ONLY_OR_IDENTITY_DRIFT');
+            fs.writeFileSync('../repair-evidence/repair-needed.txt','true\n');
           }
-          if (drift.some(x=>x.remote)) throw new Error('REMOTE_ONLY_OR_IDENTITY_DRIFT');
           NODE
 
-          supabase migration repair             20260920101150             20260920102450             20260925080500             20261005133951             --status applied --db-url "$SUPABASE_DB_URL"
+          repair_needed="$(tr -d '[:space:]' < ../repair-evidence/repair-needed.txt)"
+          case "$repair_needed" in
+            true)
+              supabase migration repair \
+                20260920101150 \
+                20260920102450 \
+                20260925080500 \
+                20261005133951 \
+                --status applied --db-url "$SUPABASE_DB_URL"
+              ;;
+            false)
+              echo "Provider already reports zero migration-list drift; resuming at post-repair readback."
+              ;;
+            *)
+              echo "::error::Invalid repair-needed state: $repair_needed"
+              exit 78
+              ;;
+          esac
 
-          supabase migration list --db-url "$SUPABASE_DB_URL" | tee ../repair-evidence/after.txt
+          migration_list_with_retry ../repair-evidence/after.txt
 
           node --input-type=module - <<'NODE'
           import fs from 'node:fs';
