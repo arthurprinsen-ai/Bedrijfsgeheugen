@@ -1,0 +1,40 @@
+{
+  "fingerprint": "supabase-edge|github-app-check-false-positive|cli-single-writer-byte-readback|v3",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-edge-single-writer-byte-readback-20261006-v1",
+  "compiler": {
+    "failure_class": "SUPABASE_GITHUB_APP_CHECK_FALSE_POSITIVE_FOR_EDGE_SOURCE",
+    "scope": "SUPABASE_EDGE_PRODUCTION_AUTHORITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Authority v2 treated a successful commit-bound Supabase GitHub App check as Edge Function deployment truth. On protected merge c868595e92ba5fa290de1dfb1eed632ec344802f the Supabase check completed success and the attestation workflow went green, while direct provider readback still returned social-recovery-runner version 7 with the old 10259-byte source instead of the new 11458-byte protected-main source. The check contained no function list, source hash or deployed source identity.",
+  "prevention_rule": "The Supabase GitHub App check is advisory only. Protected-main GitHub Actions is the sole normal Edge Function writer, using a pinned CLI and SUPABASE_ACCESS_TOKEN. Every deploy is followed by provider download and exact file-set, byte and deterministic tree-hash comparison. No successful check, version number or deployment acknowledgement can substitute provider-source parity.",
+  "credential_rule": "Prefer a scoped PAT restricted to project adhjwmvyoixzjtmiroln with Edge Functions Read-write. Supabase scoped PATs are public alpha; if unavailable, a classic PAT may bootstrap compatibility but has broader account access and is explicitly warned.",
+  "social_pair_rule": "powerhouse-social-publisher and social-recovery-runner are promoted as one coupled unit so recovery semantics and publisher semantics cannot drift independently.",
+  "escaped_evidence": {
+    "merge_sha": "c868595e92ba5fa290de1dfb1eed632ec344802f",
+    "supabase_check_id": 112287139805,
+    "supabase_check_conclusion": "success",
+    "attestation_job_id": 112286822569,
+    "provider_function": "social-recovery-runner",
+    "provider_version": 7,
+    "provider_source_length": 10259,
+    "protected_main_source_length": 11458,
+    "source_equal": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}
