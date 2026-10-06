@@ -42,7 +42,10 @@ test('sitemap generator includes English pages and hreflang alternates', async()
 });
 
 test('production build runs SEO revenue enrichment and validation before locale generation', async()=>{
-  const netlify=await readFile('netlify.toml','utf8');
-  const prod='node tools/seo-order-engine/apply.mjs && node tools/seo-order-engine/validate.mjs && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs';
-  assert.ok(netlify.includes(prod));
+  const runner=await readFile('tools/ci/run-netlify-production-build.mjs','utf8');
+  const apply=runner.indexOf("node('seo-order-apply', 'tools/seo-order-engine/apply.mjs')");
+  const validate=runner.indexOf("node('seo-order-validate', 'tools/seo-order-engine/validate.mjs')");
+  const i18n=runner.indexOf("node('apply-i18n', 'tools/site-shell/apply-i18n.mjs')");
+  const localized=runner.indexOf("node('localized-routes', 'tools/site-shell/build-localized-routes.mjs')");
+  assert.ok(apply>=0&&validate>apply&&i18n>validate&&localized>i18n);
 });

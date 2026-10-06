@@ -3,6 +3,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { performance } from 'node:perf_hooks';
 
 const timeline = [];
+const routeWorkers = Math.max(1, Math.min(4, Number(process.env.STATIC_I18N_ROUTE_WORKERS || 2) || 2));
+process.env.STATIC_I18N_ROUTE_WORKERS = String(routeWorkers);
 
 function run(command, args, label) {
   return new Promise((resolve, reject) => {
@@ -84,6 +86,7 @@ try {
       failure,
       commit_ref: String(process.env.COMMIT_REF || ''),
       context: String(process.env.CONTEXT || ''),
+      route_workers: routeWorkers,
       generated_at: new Date().toISOString(),
       timeline,
     }, null, 2) + '\n',
