@@ -436,3 +436,9 @@ where run_date='2026-10-06' and channel='linkedin_personal' and delivery_ref is 
 update public.powerhouse_channel_decisions
 set delivery_evidence=public.powerhouse_jsonb_object_v1(delivery_evidence), updated_at=now()
 where run_date='2026-10-06' and channel='linkedin_company' and delivery_ref is null;
+
+-- Preserve public JSON helper intent while keeping state-changing RPCs internal.
+revoke execute on function public.powerhouse_reconcile_content_outcomes_v1(date) from public, anon, authenticated;
+grant execute on function public.powerhouse_reconcile_content_outcomes_v1(date) to service_role;
+revoke execute on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from public, anon, authenticated;
+grant execute on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) to service_role;
