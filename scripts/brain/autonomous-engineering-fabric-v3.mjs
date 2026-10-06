@@ -120,6 +120,9 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const failureRate = failed / jobs;
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
+  const mergeGroupRuns = Number(metrics.merge_group_runs_7d ?? 0);
+  const requiredQueueP95 = Number(metrics.required_queue_wait_seconds_p95 ?? queueP95);
+  const requiredTotalP95 = Number(metrics.required_total_seconds_p95 ?? executionP95);
 
   const calibrationRecommendations = Array.isArray(calibration?.recommendations) ? calibration.recommendations : [];
   const highCalibrationWarnings = calibrationRecommendations.filter(item => item?.priority === 'high');
@@ -147,10 +150,32 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)-0.02,0.6,0.95);
     decisions.push('allow-more-safe-speculation');
   }
+  const ci = { ...(current.ci ?? {}) };
+  ci.max_pr_workflows_per_head = clamp(Number(ci.max_pr_workflows_per_head ?? 5), 2, 5);
+  ci.fast_gate_queue_p95_target_seconds = clamp(Number(ci.fast_gate_queue_p95_target_seconds ?? 30), 10, 30);
+  ci.fast_gate_total_p95_target_seconds = clamp(Number(ci.fast_gate_total_p95_target_seconds ?? 120), 30, 120);
+  ci.agent_external_wait_budget_seconds = clamp(Number(ci.agent_external_wait_budget_seconds ?? 30), 5, 30);
+  ci.stale_run_cancel_target_seconds = clamp(Number(ci.stale_run_cancel_target_seconds ?? 15), 5, 30);
+  ci.merge_group_full_assurance = true;
+  if (mergeGroupRuns > 0 && !calibrationVeto && failureRate < 0.10) {
+    ci.mode = 'fast-pr-full-merge-group';
+    ci.pr_full_assurance = false;
+    decisions.push('promote-fast-pr-after-merge-group-proof');
+  } else {
+    ci.mode = 'safe-transition';
+    ci.pr_full_assurance = true;
+    if (mergeGroupRuns === 0) decisions.push('retain-full-pr-assurance-until-merge-group-proof');
+  }
+  next.ci = ci;
+
   const signals=Object.freeze({
     queue_wait_seconds_p95:queueP95,
     execution_seconds_p95:executionP95,
     workflow_fanout_per_sha_p95:fanoutP95,
+    required_queue_wait_seconds_p95:requiredQueueP95,
+    required_total_seconds_p95:requiredTotalP95,
+    merge_group_runs_7d:mergeGroupRuns,
+    ci_mode:ci.mode,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
     calibration_mode:String(calibration?.mode || 'NONE'),
@@ -174,6 +199,9 @@ export async function validateAutonomousEngineeringFabricV3() {
   if(policy.daily_optimizer?.enabled!==true) errors.push('daily optimizer required');
   if(policy.daily_optimizer?.auto_merge_only_after_protected_gates!==true) errors.push('protected-gate auto merge required');
   for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  if(tuning.ci?.merge_group_full_assurance!==true) errors.push('merge-group full assurance required');
+  if(Number(tuning.ci?.max_pr_workflows_per_head ?? 999)>5) errors.push('PR workflow fan-out target must be <=5');
+  if(Number(tuning.ci?.agent_external_wait_budget_seconds ?? 999)>30) errors.push('external wait budget must be <=30s');
   return { ok:errors.length===0, errors, fingerprint:policy.fingerprint };
 }
 

@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse-ci-control-plane-v2",
+  "version": 2,
+  "status": "ACTIVE_TRANSITION",
+  "objective": "One canonical PR authority with bounded fast feedback and full promotion assurance",
+  "slo": {
+    "max_workflows_per_pr_head": 5,
+    "fast_gate_queue_p95_seconds": 30,
+    "fast_gate_total_p95_seconds": 120,
+    "stale_run_cancel_seconds": 15,
+    "agent_external_wait_budget_seconds": 30
+  },
+  "canonical_pr_authorities": [
+    ".github/workflows/required-test.yml",
+    ".github/workflows/powerhouse-codeql.yml"
+  ],
+  "background_workflows_forbidden_on_pull_request": [
+    ".github/workflows/powerhouse-autonomous-engineering-optimizer.yml",
+    ".github/workflows/powerhouse-daily-self-evolution.yml",
+    ".github/workflows/engineering-os-learning.yml",
+    ".github/workflows/powerhouse-foresight-autonomy.yml",
+    ".github/workflows/portal-visual-density.yml",
+    ".github/workflows/revenue-content-intelligence.yml",
+    ".github/workflows/regelgeving-actueel.yml"
+  ],
+  "transition": {
+    "current_mode": "safe-transition",
+    "target_mode": "fast-pr-full-merge-group",
+    "merge_group_observation_required": true,
+    "full_pr_assurance_until_merge_group_observed": true,
+    "automatic_mode_selection": true,
+    "never_weaken": [
+      "security",
+      "exact_sha_identity",
+      "protected_merge",
+      "production_readback",
+      "provider_truth"
+    ]
+  },
+  "learning": {
+    "telemetry_source": "scripts/brain/powerhouse-ci-intelligence.mjs",
+    "optimizer": "scripts/brain/autonomous-engineering-fabric-v3.mjs",
+    "cadence": "daily",
+    "protected_pr_only": true,
+    "fanout_target_monotonic": true
+  }
+}

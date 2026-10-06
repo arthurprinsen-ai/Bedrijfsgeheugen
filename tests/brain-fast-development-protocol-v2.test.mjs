@@ -25,6 +25,10 @@ test('Fast Development Protocol v2 preserves canonical authorities and flow', as
   assert.equal(policy.authority.delivery, 'config/brain-delivery-system.json');
   assert.equal(policy.authority.success, 'LIVE & BEWEZEN');
   assert.equal(policy.creates_parallel_authority, false);
+  assert.deepEqual(policy.waiting_external.state_machine, ['RUNNING','WAITING_EXTERNAL','TERMINAL']);
+  assert.equal(policy.waiting_external.synchronous_wait_budget_seconds, 30);
+  assert.equal(policy.waiting_external.long_polling_forbidden, true);
+  assert.equal(policy.waiting_external.resume_from_checkpoint, true);
 });
 
 test('Engineering OS packet discovers the fast protocol without replacing Engineering OS authority', () => {

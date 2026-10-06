@@ -38,6 +38,10 @@ export async function validateFastDevelopmentProtocolV2() {
   if (!policy.evidence_cache?.non_cacheable?.includes('EXACT_SHA_PROD_READBACK')) errors.push('production readback must be non-cacheable');
   if (policy.writeback?.mode !== 'DELTA_ONLY') errors.push('writeback must be delta only');
   if (policy.telemetry?.is_release_authority !== false) errors.push('telemetry may not become release authority');
+  if (policy.waiting_external?.synchronous_wait_budget_seconds !== 30) errors.push('external synchronous wait budget must be 30s');
+  if (policy.waiting_external?.long_polling_forbidden !== true) errors.push('long polling must be forbidden');
+  if (policy.waiting_external?.resume_from_checkpoint !== true) errors.push('external waits must resume from checkpoint');
+  if (JSON.stringify(policy.waiting_external?.state_machine) !== JSON.stringify(['RUNNING','WAITING_EXTERNAL','TERMINAL'])) errors.push('WAITING_EXTERNAL state machine drift');
 
   if (engineeringOS.fingerprint !== 'powerhouse-engineering-os-v1') errors.push('engineering OS authority drift');
   if (engineeringOS.delivery_contract !== 'BRAIN-DELIVERY-v2') errors.push('engineering OS delivery contract drift');

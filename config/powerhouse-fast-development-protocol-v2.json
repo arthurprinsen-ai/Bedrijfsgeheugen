@@ -2,10 +2,30 @@
   "fingerprint": "powerhouse-fast-development-protocol-v2",
   "version": 2,
   "status": "active",
-  "extends": ["powerhouse-engineering-os-v1", "BRAIN-DELIVERY-v2", "powerhouse-parallel-engineering-fabric-v1"],
+  "extends": [
+    "powerhouse-engineering-os-v1",
+    "BRAIN-DELIVERY-v2",
+    "powerhouse-parallel-engineering-fabric-v1"
+  ],
   "creates_parallel_authority": false,
-  "canonical_flow": ["INTENT", "EXECUTION_PACKET_V2", "NO_OP_DEDUP", "IMPACT_GRAPH", "EXECUTION_DAG", "TARGETED_TESTS", "CANDIDATE", "FULL_RELEASE_GATES", "EXACT_SHA_PROD_READBACK", "DELTA_WRITEBACK"],
-  "execution_classes": ["FAST", "STANDARD", "CRITICAL", "WAITING_EXTERNAL"],
+  "canonical_flow": [
+    "INTENT",
+    "EXECUTION_PACKET_V2",
+    "NO_OP_DEDUP",
+    "IMPACT_GRAPH",
+    "EXECUTION_DAG",
+    "TARGETED_TESTS",
+    "CANDIDATE",
+    "FULL_RELEASE_GATES",
+    "EXACT_SHA_PROD_READBACK",
+    "DELTA_WRITEBACK"
+  ],
+  "execution_classes": [
+    "FAST",
+    "STANDARD",
+    "CRITICAL",
+    "WAITING_EXTERNAL"
+  ],
   "preflight": {
     "execution_packet": "v2",
     "delta_context": true,
@@ -22,23 +42,68 @@
   "execution": {
     "parallel_by_default": true,
     "coordinator_owns_truth_and_definition_of_done": true,
-    "serialize_on": ["dependency", "changed-path-overlap", "contract-overlap", "mutable-resource-overlap", "critical-gate-sequencing"]
+    "serialize_on": [
+      "dependency",
+      "changed-path-overlap",
+      "contract-overlap",
+      "mutable-resource-overlap",
+      "critical-gate-sequencing"
+    ]
   },
   "evidence_cache": {
     "persistent_semantics": true,
     "persistence_authority": "brain_outcome_obligation_evidence",
     "persistence_adapter": "PersistentEvidenceCache",
-    "identity_fields": ["candidate_sha", "environment", "config_digest", "schema_digest", "dependency_digest", "gate_or_test_version", "relevant_contract_digest"],
+    "identity_fields": [
+      "candidate_sha",
+      "environment",
+      "config_digest",
+      "schema_digest",
+      "dependency_digest",
+      "gate_or_test_version",
+      "relevant_contract_digest"
+    ],
     "ttl_or_invalidation_required": true,
     "append_only_invalidation": true,
-    "non_cacheable": ["EXACT_SHA_PROD_READBACK", "SECURITY_FRESHNESS", "CURRENT_PROVIDER_OUTCOME", "EXACT_FINAL_MEDIA_PROOF"]
+    "non_cacheable": [
+      "EXACT_SHA_PROD_READBACK",
+      "SECURITY_FRESHNESS",
+      "CURRENT_PROVIDER_OUTCOME",
+      "EXACT_FINAL_MEDIA_PROOF"
+    ]
   },
   "writeback": {
     "mode": "DELTA_ONLY",
-    "fields": ["changed", "evidence", "outcome", "learning", "obligation_delta", "timing", "cache_usage", "open_obligations"]
+    "fields": [
+      "changed",
+      "evidence",
+      "outcome",
+      "learning",
+      "obligation_delta",
+      "timing",
+      "cache_usage",
+      "open_obligations"
+    ]
   },
   "telemetry": {
-    "fields": ["context_load_ms", "classification_ms", "reasoning_ms", "tool_ms", "targeted_test_ms", "full_gate_ms", "deploy_ms", "proof_ms", "writeback_ms", "total_lead_time_ms", "context_bytes_or_tokens", "cache_hits", "cache_misses", "avoided_gate_time_ms", "duplicate_work_avoided", "parallelism_utilization"],
+    "fields": [
+      "context_load_ms",
+      "classification_ms",
+      "reasoning_ms",
+      "tool_ms",
+      "targeted_test_ms",
+      "full_gate_ms",
+      "deploy_ms",
+      "proof_ms",
+      "writeback_ms",
+      "total_lead_time_ms",
+      "context_bytes_or_tokens",
+      "cache_hits",
+      "cache_misses",
+      "avoided_gate_time_ms",
+      "duplicate_work_avoided",
+      "parallelism_utilization"
+    ],
     "is_release_authority": false
   },
   "authority": {
@@ -48,5 +113,25 @@
     "shared_context": "BG167",
     "writeback": "BG168/BG166",
     "success": "LIVE & BEWEZEN"
+  },
+  "waiting_external": {
+    "state_machine": [
+      "RUNNING",
+      "WAITING_EXTERNAL",
+      "TERMINAL"
+    ],
+    "synchronous_wait_budget_seconds": 30,
+    "long_polling_forbidden": true,
+    "resume_from_checkpoint": true,
+    "checkpoint_fields": [
+      "obligation_id",
+      "pr_number",
+      "candidate_sha",
+      "run_id",
+      "provider",
+      "last_observed_status",
+      "next_action"
+    ],
+    "independent_work_continues": true
   }
 }

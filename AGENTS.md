@@ -177,7 +177,8 @@ Voor alle huidige en toekomstige chats, agents en delivery-nodes geldt aanvullen
 - vóór iedere remote write wordt fan-out voorspeld; writes voor één obligation worden gebundeld zodat één head zo weinig mogelijk workflows triggert;
 - exact dezelfde head krijgt maximaal één actieve run per verplichte workflow; duplicaten worden niet opnieuw gedispatched;
 - nieuwere `main` supersedeert oudere nog niet terminale productie-snapshot/readback runs wanneer die oudere run geen unieke onomkeerbare side-effect meer hoeft af te ronden;
-- lange provider-polls hebben een harde timeout en leveren daarna een herstelbare state op; geen onbegrensd pollen of wachten;
+- synchroon wachten/pollen op GitHub, Netlify, Supabase, Composio of een andere externe executor heeft een harde totale chat/agent-budgetgrens van **30 seconden**; daarna wordt de state `WAITING_EXTERNAL`, wordt exact PR + candidate SHA + run-id + providerstatus + next safe action gecheckpoint en eindigt actief pollen;
+- `WAITING_EXTERNAL` is hervatbare execution-state (`RUNNING → WAITING_EXTERNAL → TERMINAL`), geen fout en geen reden om opnieuw vanaf nul te onderzoeken;
 - de agent bewaart een checkpoint met obligation, exacte candidate/head, huidige main, open gates en eerstvolgende herstelactie zodat een volgende execution-node direct kan hervatten;
 - tijdens remote wachttijd gaat de owner door met werk dat niet van die gate afhangt;
 - een status als `pending` of `in_progress` is interne uitvoeringsstaat en wordt niet als gebruikersuitkomst gerapporteerd;

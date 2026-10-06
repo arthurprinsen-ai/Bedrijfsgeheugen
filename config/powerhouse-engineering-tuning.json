@@ -1,16 +1,28 @@
 {
   "fingerprint": "powerhouse-engineering-tuning-v1",
-  "updated_at": "2026-09-28T18:05:00Z",
+  "updated_at": "2026-10-06T12:55:00Z",
   "max_parallel_packages": 4,
   "candidate_batch_window_seconds": 20,
   "fast_path_target_seconds": 45,
   "speculative_execution_threshold": 0.75,
-  "source": "baseline",
+  "source": "ci-control-plane-v2",
   "safety": {
     "required_release_gate": true,
     "security_gate": true,
     "production_readback": true,
     "protected_merge": true,
     "exact_sha_identity": true
+  },
+  "ci": {
+    "mode": "safe-transition",
+    "max_pr_workflows_per_head": 5,
+    "fast_gate_queue_p95_target_seconds": 30,
+    "fast_gate_total_p95_target_seconds": 120,
+    "stale_run_cancel_target_seconds": 15,
+    "agent_external_wait_budget_seconds": 30,
+    "pr_full_assurance": true,
+    "merge_group_full_assurance": true,
+    "automatic_mode_selection": true,
+    "fast_pr_requires_merge_group_evidence": true
   }
 }
