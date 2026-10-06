@@ -39,3 +39,45 @@ test('writer updates existing page and rejects non-2xx without leaking token',as
   const broken=createNotionCompanyWriter({token:'top-secret',databaseId:'db1',fetchImpl:async()=>response(500,{message:'boom'}),notionVersion:'2022-06-28'});
   await assert.rejects(()=>broken.upsert(row),error=>error.message.includes('Notion query failed')&&!error.message.includes('top-secret'));
 });
+
+
+test('writer prefetches fingerprints in bounded batches and updates known pages without a second lookup',async()=>{
+  const calls=[];
+  const fetchImpl=async(url,options)=>{
+    calls.push({url,options});
+    if(url.endsWith('/query')){
+      const body=JSON.parse(options.body);
+      const filters=body.filter?.or||[body.filter];
+      const fingerprints=filters.map(filter=>filter.rich_text.equals);
+      return response(200,{results:fingerprints.map((fingerprint,index)=>({
+        id:`page-${fingerprint}`,
+        properties:{Fingerprint:{rich_text:[{plain_text:fingerprint}]}}
+      }))});
+    }
+    return response(200,{id:'page-t1:d1'});
+  };
+  const writer=createNotionCompanyWriter({token:'secret',databaseId:'db1',fetchImpl,prefetchBatchSize:2,prefetchConcurrency:2});
+  const index=await writer.prefetch(['t1:d1','t1:d2','t1:d3']);
+  assert.equal(index.size,3);
+  assert.equal(calls.filter(call=>call.url.endsWith('/query')).length,2);
+
+  calls.length=0;
+  const result=await writer.upsert(row,{pageId:'page-t1:d1'});
+  assert.equal(result.action,'updated');
+  assert.equal(calls.filter(call=>call.url.endsWith('/query')).length,0);
+  assert.match(calls[0].url,/\/v1\/pages\/page-t1%3Ad1$/);
+});
+
+test('writer centrally retries Notion throttling and honors Retry-After',async()=>{
+  let attempts=0;
+  const sleeps=[];
+  const fetchImpl=async()=>{
+    attempts++;
+    if(attempts===1)return {ok:false,status:429,headers:{get:name=>name.toLowerCase()==='retry-after'?'1':null},json:async()=>({message:'rate limited'})};
+    return response(200,{results:[]});
+  };
+  const writer=createNotionCompanyWriter({token:'secret',databaseId:'db1',fetchImpl,sleepImpl:async ms=>{sleeps.push(ms);}});
+  await writer.upsert(row);
+  assert.equal(attempts,3);
+  assert.equal(sleeps[0],1000);
+});

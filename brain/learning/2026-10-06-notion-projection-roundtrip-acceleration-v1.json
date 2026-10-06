@@ -1,0 +1,22 @@
+{
+  "fingerprint": "notion-projection-roundtrip-acceleration-v1",
+  "compiler": {
+    "failure_class": "INTEGRATION_LATENCY"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "brain/adapters/notion-company-writer.test.mjs",
+      "brain/adapters/company-decision-notion.test.mjs",
+      "tests/brain-notion-off-critical-path-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The Notion company-decision projection already used bounded row concurrency, but each update still performed a separate fingerprint query followed by a page update. Normal update-heavy syncs therefore paid roughly two Notion round trips per decision, and retry behavior was decentralized.",
+  "prevention_rule": "Batch-resolve existing fingerprints before row fan-out, reuse resolved page ids for direct idempotent updates, preserve query-before-create for missing rows, and centralize bounded Retry-After-aware retries for transient Notion throttling/service pressure.",
+  "evidence": [
+    "Existing sync concurrency is preserved and capped at six.",
+    "Fingerprint prefetch batches are capped at 50 and prefetch concurrency at three.",
+    "Known existing pages bypass the per-row lookup; missing pages retain the original query-before-create path.",
+    "429/503/529 responses retry centrally with Retry-After or bounded exponential backoff.",
+    "Notion remains outside merge/deploy/production-readback authority."
+  ]
+}
