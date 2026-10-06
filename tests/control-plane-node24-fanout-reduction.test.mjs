@@ -11,6 +11,9 @@ test('Node 24 specialist assurance is inside Required merge_group', () => {
   assert.ok(required.includes('node tools/content-growth/validate-policy.mjs'));
   assert.ok(required.includes('tests/content-growth-*.test.mjs'));
   assert.ok(required.includes('MERGE_SPECIALIST_NODE24'));
+  assert.match(required, /needs: \[hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity/);
+  assert.ok(required.includes('[ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST" = success ]'));
+  assert.ok(required.includes('[ "$EVENT_NAME" != merge_group ] || [ "$MERGE_SPECIALIST_NODE24" = success ]'));
 });
 
 test('Node 24 specialist workflows no longer fan out on pull_request', () => {
