@@ -37,3 +37,10 @@ test('Netlify deterministic build defects are blocked once before merge', async(
   assert.equal(j.compiler.failure_class,'DETERMINISTIC_BUILD_DEFECT_REACHED_PRODUCTION_PROMOTION');
   assert.equal(j.status,'ACTIVE_PREVENTION');
 });
+
+
+test('material closure diff is exact-tree and shallow-safe', async()=>{
+  const guard=await read('scripts/brain/material-writeback-closure-guard.mjs');
+  assert.match(guard,/execFileSync\('git',\['diff','--name-only',base,head\]/);
+  assert.doesNotMatch(guard,/base\+'\.\.\.'\+head/);
+});
