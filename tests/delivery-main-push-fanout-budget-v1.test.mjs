@@ -16,7 +16,7 @@ test('production deploy and readback skip closure-only main pushes', () => {
   for(const name of ['production-source-snapshot.yml','production-release-readback.yml']){
     const push=eventBlock(read(name),'push');
     assert.match(push,/paths-ignore:/);
-    for(const path of ["docs/**",".agents/**","tests/**",".github/**","brain/learning/**"]){
+    for(const path of ["docs/**",".agents/**","tests/**",".github/**","brain/learning/**","supabase/**"]){
       assert.ok(push.includes(path), name+' must ignore '+path+' when it is the only change');
     }
   }
@@ -54,4 +54,20 @@ test('Main Write Integrity deliberately observes every main write', () => {
   const push=eventBlock(read('main-write-integrity.yml'),'push');
   assert.match(push,/branches:\s*\[main\]/);
   assert.doesNotMatch(push,/paths(?:-ignore)?:/);
+});
+
+test('one canonical Netlify applicability authority drives PR, build, snapshot and readback', () => {
+  const authority=readFileSync('tools/delivery/netlify-deployment-applicability.mjs','utf8');
+  const ignore=readFileSync('tools/ci/netlify-ignore-build.mjs','utf8');
+  const required=read('required-test.yml');
+  const snapshot=read('production-source-snapshot.yml');
+  const readback=read('production-release-readback.yml');
+  assert.match(authority,/deriveNetlifyDeploymentApplicability/);
+  assert.match(ignore,/deriveNetlifyDeploymentApplicability/);
+  assert.match(required,/deriveNetlifyDeploymentApplicability/);
+  assert.match(snapshot,/deriveNetlifyDeploymentApplicability/);
+  assert.match(readback,/deriveNetlifyDeploymentApplicability/);
+  assert.match(snapshot,/steps\.scope\.outputs\.deployment_required == 'true'/);
+  assert.ok(eventBlock(snapshot,'push').includes("supabase/**"));
+  assert.ok(eventBlock(readback,'push').includes("supabase/**"));
 });
