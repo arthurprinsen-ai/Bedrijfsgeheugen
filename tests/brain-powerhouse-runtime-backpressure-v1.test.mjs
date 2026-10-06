@@ -83,3 +83,13 @@ test('public runtime verifier is retired and cannot amplify database outages',()
   assert.doesNotMatch(verifier,/TOKEN_HASH/);
   assert.doesNotMatch(verifier,/x-bg-runtime-verifier-token/);
 });
+
+
+test('email reply-loop never returns raw dependency errors to callers',()=>{
+  const source=read('supabase/functions/powerhouse-email-reply-loop/index.ts');
+  assert.match(source,/error:'EMAIL_REPLY_LOOP_FAILED'/);
+  assert.match(source,/detail:'EMAIL_REPLY_LOOP_FAILED'/);
+  assert.doesNotMatch(source,/error:message/);
+  assert.doesNotMatch(source,/GMAIL_DISCOVERY_'\+r\.status\+'\:'/);
+  assert.doesNotMatch(source,/GMAIL_FETCH_'\+r\.status\+'\:'/);
+});
