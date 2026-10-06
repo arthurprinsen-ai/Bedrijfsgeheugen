@@ -48,6 +48,68 @@ function requiredString(value,name){
   if(!v) throw new Error(`${name}_MISSING`);
   return v;
 }
+async function recoverCommittedTerminalEvidence(input,{fetchImpl=fetch,attempts=5}={}){
+  const obligationKey=requiredString(input.obligation_id,'OBLIGATION_ID');
+  const candidateSha=requiredString(input.candidate_head_sha,'CANDIDATE_HEAD_SHA').toLowerCase();
+  const mainSha=requiredString(input.main_sha,'MAIN_SHA').toLowerCase();
+  if(!sha40(candidateSha)||!sha40(mainSha)) throw new Error('SHA_INVALID');
+  if(input.provider_readback_required===true) return null;
+  const base=env('BG_PORTAL_EU_SUPABASE_URL').replace(/\/$/,'');
+  const token=env('BG_PORTAL_EU_SERVICE_TOKEN');
+  if(!base||!token) return null;
+  for(let attempt=1;attempt<=attempts;attempt+=1){
+    try{
+      const response=await fetchImpl(`${base}/functions/v1/portal-state-eu`,{
+        method:'POST',
+        headers:{'content-type':'application/json','x-bg-service-token':token},
+        body:JSON.stringify({action:'control_plane_cockpit'}),
+        signal:AbortSignal.timeout(5000),
+      });
+      if(response.ok){
+        const payload=await response.json();
+        const row=(payload?.obligations||[]).find(item=>String(item?.obligation_key||'')===obligationKey);
+        const migrationOk=input.migration_readback_required!==true || row?.migration_readback_verified===true;
+        const projectionOk=input.skill_projection_required!==true || (row?.skill_version && row.skill_version!=='NOT_APPLICABLE');
+        if(row?.current_state==='FULFILLED'
+          && row?.operation_status==='VERIFIED'
+          && Number(row?.evidence_count||0)>0
+          && Number(row?.red_evidence_count||0)===0
+          && row?.outcome_verified===true
+          && String(row?.production_observed_sha||'').toLowerCase()===mainSha
+          && migrationOk
+          && projectionOk){
+          return {
+            ok:true,
+            terminal_state:'FULFILLED',
+            obligation_id:obligationKey,
+            obligation_record_id:row.obligation_id||null,
+            operation_id:row.operation_id||null,
+            delivery_evidence_id:null,
+            candidate_head_sha:candidateSha,
+            main_sha:mainSha,
+            production_readback_mode:'durable_cockpit',
+            production_readback_run_id:input.production_readback_run_id??null,
+            production_observed_sha:String(row.production_observed_sha).toLowerCase(),
+            production_deploy_id:input.production_deploy_id??null,
+            production_readback_verified:true,
+            skill_projection_run_id:input.skill_projection_run_id??null,
+            learning_status:input.learning_status||null,
+            migration_readback_required:input.migration_readback_required===true,
+            migration_readback_verified:migrationOk,
+            provider_readback_required:false,
+            provider_readback_verified:true,
+            provider_readbacks:[],
+            durable_readback_verified:true,
+            recovered_from_committed_terminal:true,
+          };
+        }
+      }
+    }catch{}
+    if(attempt<attempts) await new Promise(resolve=>setTimeout(resolve,1000));
+  }
+  return null;
+}
+
 async function persistTerminalEvidence(input,claims={}){
   const obligationKey=requiredString(input.obligation_id,'OBLIGATION_ID');
   const candidateSha=requiredString(input.candidate_head_sha,'CANDIDATE_HEAD_SHA').toLowerCase();
@@ -87,8 +149,18 @@ export default async function handler(request){
   try{
     const claims=await verifyGitHubOidcToken(token);
     const input=await request.json();
-    const result=await persistTerminalEvidence(input,claims);
-    return json(result,200);
+    try{
+      const result=await persistTerminalEvidence(input,claims);
+      return json(result,200);
+    }catch(error){
+      const message=String(error?.message||error);
+      const recoverable=/aborted due to timeout|IDEMPOTENCY_PAYLOAD_CONFLICT/i.test(message);
+      if(recoverable){
+        const recovered=await recoverCommittedTerminalEvidence(input);
+        if(recovered) return json(recovered,200);
+      }
+      throw error;
+    }
   }catch(error){
     const message=String(error?.message||error);
     const authError=/^OIDC_|TOKEN/.test(message);
