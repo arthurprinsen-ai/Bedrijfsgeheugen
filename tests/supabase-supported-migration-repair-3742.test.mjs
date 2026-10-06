@@ -24,7 +24,7 @@ test('repair is allowlisted to exactly the four proven replay baselines', () => 
 
 test('provider repair updates tracking only and proves post-repair parity', () => {
   assert.match(workflow, /supabase migration repair[\s\S]*--status applied/);
-  assert.match(workflow, /supabase migration list --db-url "\\$SUPABASE_DB_URL"/);
+  assert.match(workflow, /supabase migration list --db-url "\$SUPABASE_DB_URL"/);
   assert.doesNotMatch(workflow, /insert\s+into\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /update\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /delete\s+from\s+supabase_migrations/i);
