@@ -1,6 +1,6 @@
 {
-  "version": "NONTERMINAL-CI-COMPLETION-v1",
-  "fingerprint": "delivery|completion|pending-ci-is-not-terminal-v1",
+  "version": "NONTERMINAL-CI-COMPLETION-v2",
+  "fingerprint": "delivery|completion|checkpoint-yield-event-resume-v2",
   "scope": [
     "website",
     "portal",
@@ -17,7 +17,12 @@
     "deployInProgressIsTerminal": false,
     "missingProductionReadbackIsTerminal": false,
     "stopAtDiagnosisAllowed": false,
-    "stopAtPreviewAllowed": false
+    "stopAtPreviewAllowed": false,
+    "activePollingAllowed": false,
+    "maxActiveExternalWaitSeconds": 30,
+    "waitingExternalRequiresCheckpoint": true,
+    "resumeMode": "event-driven-with-scheduled-fallback",
+    "userContinueRequired": false
   },
   "nonTerminalStates": [
     "queued",
@@ -28,7 +33,8 @@
     "merge_wait",
     "deploy_in_progress",
     "production_drift",
-    "missing_production_readback"
+    "missing_production_readback",
+    "WAITING_EXTERNAL"
   ],
   "requiredSequence": [
     "build_or_fix",
@@ -91,6 +97,31 @@
       "deploy_step",
       "production_readback_step",
       "do_not_ask_again"
+    ]
+  },
+  "waitingExternalCheckpoint": {
+    "state": "WAITING_EXTERNAL",
+    "active_turn_must_yield": true,
+    "fields": [
+      "pr",
+      "branch",
+      "head_sha",
+      "main_sha",
+      "run_ids",
+      "job_ids",
+      "remaining_gate",
+      "resume_event",
+      "next_safe_action"
+    ],
+    "resume_events": [
+      "workflow_run.completed",
+      "status.change",
+      "provider_callback",
+      "scheduled_fallback"
+    ],
+    "identity_must_match": [
+      "head_sha",
+      "run_ids"
     ]
   }
 }
