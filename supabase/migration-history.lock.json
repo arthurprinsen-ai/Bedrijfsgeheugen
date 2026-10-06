@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-05T17:13:00Z",
+  "captured_at": "2026-10-06T06:57:06.151Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -1572,6 +1572,10 @@
       "name": "powerhouse_live_system_map_v1"
     },
     {
+      "version": "20260920101150",
+      "name": "p0_proof_replay_baseline_v1"
+    },
+    {
       "version": "20260920101200",
       "name": "terminal_health_lifecycle_v2"
     },
@@ -1582,6 +1586,10 @@
     {
       "version": "20260920102211",
       "name": "social_publisher_dispatching_state_contract"
+    },
+    {
+      "version": "20260920102450",
+      "name": "instagram_daily_winner_table_replay_baseline_v1"
     },
     {
       "version": "20260920102646",
@@ -1650,6 +1658,10 @@
     {
       "version": "20260925075655",
       "name": "mira_continuous_human_video_v1"
+    },
+    {
+      "version": "20260925080500",
+      "name": "instagram_media_reserve_replay_baseline_v1"
     },
     {
       "version": "20260925080635",
@@ -2156,6 +2168,10 @@
       "name": "bounded_commercial_intelligence_stages_v2"
     },
     {
+      "version": "20261005133951",
+      "name": "outbound_message_quality_ready_replay_baseline_v1"
+    },
+    {
       "version": "20261005133952",
       "name": "powerhouse_one_commercial_closed_loop_v1"
     },
@@ -2264,38 +2280,53 @@
     {
       "version": "20260920101150",
       "name": "p0_proof_replay_baseline_v1",
-      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "status": "REPAIRED_APPLIED_VERIFIED",
       "production_effect_readback": {
         "rows": 1,
         "max_version": 2,
         "artifact_version": "production-truth-proof-20260831-v1-retired"
+      },
+      "repair_readback": {
+        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
+        "provider": "supabase-cli",
+        "github_run_id": "37426469433"
       }
     },
     {
       "version": "20260920102450",
       "name": "instagram_daily_winner_table_replay_baseline_v1",
-      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "status": "REPAIRED_APPLIED_VERIFIED",
       "production_effect_readback": {
         "table": "public.powerhouse_instagram_daily_winners_v1",
         "column_count": 9,
         "recommendation_fk": true
+      },
+      "repair_readback": {
+        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
+        "provider": "supabase-cli",
+        "github_run_id": "37426469433"
       }
     },
     {
       "version": "20260925080500",
       "name": "instagram_media_reserve_replay_baseline_v1",
-      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "status": "REPAIRED_APPLIED_VERIFIED",
       "production_effect_readback": {
         "table": "public.powerhouse_instagram_media_reserve_v1",
         "column_count": 14,
         "has_exact_media_sha256": true,
         "rls_enabled": true
+      },
+      "repair_readback": {
+        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
+        "provider": "supabase-cli",
+        "github_run_id": "37426469433"
       }
     },
     {
       "version": "20261005133951",
       "name": "outbound_message_quality_ready_replay_baseline_v1",
-      "status": "EFFECT_VERIFIED_REPAIR_REQUIRED",
+      "status": "REPAIRED_APPLIED_VERIFIED",
       "production_effect_readback": {
         "function": "public.powerhouse_outbound_message_quality_ready_v1(uuid)",
         "function_exists": true,
@@ -2303,6 +2334,11 @@
         "table_column_count": 11,
         "deterministic_search_path": true,
         "execute_revoked_from_browser_roles": true
+      },
+      "repair_readback": {
+        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
+        "provider": "supabase-cli",
+        "github_run_id": "37426469433"
       }
     }
   ],
@@ -2467,5 +2503,6 @@
     "candidate_pr": 3766,
     "remote_history_repair": false,
     "direct_schema_migrations_writes_forbidden": true
-  }
+  },
+  "production_ledger_count": 568
 }
