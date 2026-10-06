@@ -24,6 +24,8 @@ jobs:
         run: |
           set -euo pipefail
           if ! grep -Eq '^Writer-Lease-State: (TERMINAL_DELIVERY|MAIN_SYNC)
+            exit 0
+          fi
           lease_owner="$(sed -n 's/^Writer-Lease-Owner: //p' <<<"$PR_BODY" | tail -n1)"
           lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$PR_BODY" | tail -n1)"
           lease_epoch="$(sed -n 's/^Writer-Lease-Main-Epoch: //p' <<<"$PR_BODY" | tail -n1)"
