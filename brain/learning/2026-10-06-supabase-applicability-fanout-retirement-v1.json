@@ -1,0 +1,33 @@
+{
+  "version": "SUPABASE-APPLICABILITY-FANOUT-RETIREMENT-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github-actions|supabase-preview-applicability|global-pr-fanout|v1",
+  "compiler": {
+    "failure_class": "CI_GLOBAL_PROVIDER_APPLICABILITY_FANOUT",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "root_cause": {
+    "cause": "A provider applicability wrapper was configured as a required all-PR workflow even though exact-head Supabase provider verification can be selected inside the canonical Required test gate."
+  },
+  "prevention": {
+    "rule": "Provider-specific verification belongs inside the change-scoped canonical aggregate unless it must be independently required by branch protection.",
+    "regression_contract": "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ],
+    "branch_protection_required_contexts": [
+      "test",
+      "CodeQL javascript-typescript"
+    ],
+    "replacement_owner": ".github/workflows/required-test.yml"
+  },
+  "status": "ACTIVE_PREVENTION"
+}
