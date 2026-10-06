@@ -103,14 +103,5 @@ if(import.meta.url===`file://${process.argv[1]}`){
     sha:required('GITHUB_SHA'),
     functions
   });
-  mkdirSync('.artifacts/supabase-edge-production-readback',{recursive:true});
-  writeFileSync(
-    '.artifacts/supabase-edge-production-readback/provider-manifest.json',
-    JSON.stringify(result,null,2)+'\n'
-  );
-  writeFileSync(
-    '.artifacts/supabase-edge-production-readback/provider-readbacks.txt',
-    result.readbacks.map(row=>`Terminal-Supabase-Provider-Readback: function=${row.function};version=${row.version};runtime_sha256=${row.runtime_sha256}`).join('\n')+'\n'
-  );
   process.stdout.write(`SUPABASE_PROVIDER_PR_WRITEBACK_PROVEN:pr=${result.pr_number||'NONE'} functions=${functions.join(',')}\n`);
 }
