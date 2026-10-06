@@ -356,6 +356,45 @@ jobs:
           retention-days: 14
       - name: Verify built artifact contracts
         run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
+      - name: Package exact reusable static build
+        env:
+          CANDIDATE_SHA: ${{ needs.preflight.outputs.candidate_sha }}
+          CHANGE_HEAD_SHA: ${{ needs.preflight.outputs.change_head_sha }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import {writeFile} from 'node:fs/promises';
+          import {execFileSync} from 'node:child_process';
+          const evidence={
+            version:'NETLIFY_BUILD_REUSE_V1',
+            candidate_sha:process.env.CANDIDATE_SHA,
+            change_head_sha:process.env.CHANGE_HEAD_SHA,
+            tree_sha:execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim(),
+            profile:'.artifacts/netlify-build-profile.json'
+          };
+          await writeFile('.artifacts/netlify-build-reuse.json',JSON.stringify(evidence,null,2)+'\n');
+          NODE
+          tar \
+            --exclude='./.git' \
+            --exclude='./node_modules' \
+            --exclude='./.github' \
+            --exclude='./tools' \
+            --exclude='./tests' \
+            --exclude='./docs' \
+            --exclude='./brain' \
+            --exclude='./config' \
+            --exclude='./platform' \
+            --exclude='./.artifacts' \
+            -czf .artifacts/netlify-static-build.tgz .
+      - name: Upload exact reusable static build
+        uses: actions/upload-artifact@v4
+        with:
+          name: netlify-build-reuse-${{ needs.preflight.outputs.candidate_sha }}
+          path: |
+            .artifacts/netlify-static-build.tgz
+            .artifacts/netlify-build-reuse.json
+          if-no-files-found: error
+          retention-days: 2
 
 
   supabase_preview:
