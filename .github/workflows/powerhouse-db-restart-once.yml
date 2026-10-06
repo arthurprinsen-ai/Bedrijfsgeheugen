@@ -1,0 +1,48 @@
+name: Powerhouse Database Recovery
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - fix/powerhouse-one-runtime-transport-auth-20261006
+    paths:
+      - .github/workflows/powerhouse-db-restart-once.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: powerhouse-database-recovery
+  cancel-in-progress: false
+
+jobs:
+  restart-postgres:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[restart-db-once]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate recovery authority
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
+            echo "::error::SUPABASE_ACCESS_TOKEN is not configured"
+            exit 1
+          fi
+
+      - name: Restart production Postgres through supported Management API
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_REF: adhjwmvyoixzjtmiroln
+        run: |
+          set -euo pipefail
+          code="$(
+            curl --silent --show-error               --connect-timeout 10               --max-time 90               --output /tmp/supabase-restart-response.json               --write-out '%{http_code}'               --request PUT               --header "Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}"               --header 'Content-Type: application/json'               --data '{"restart_database":true}'               "https://api.supabase.com/v1/projects/${PROJECT_REF}/config/database/postgres"
+          )"
+          if [ "$code" != "200" ]; then
+            echo "::error::Supabase database restart request failed with HTTP $code"
+            jq -r '.message // .error // "Management API returned no diagnostic message"' /tmp/supabase-restart-response.json 2>/dev/null || true
+            exit 1
+          fi
+          echo "Supabase accepted the production Postgres restart request."
