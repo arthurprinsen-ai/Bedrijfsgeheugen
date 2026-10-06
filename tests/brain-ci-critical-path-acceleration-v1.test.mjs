@@ -23,7 +23,7 @@ test('website lane reuses exact preview and central Netlify parity without dupli
   assert.doesNotMatch(website, /^  netlify-build-parity:/m);
   assert.doesNotMatch(website, /^  netlify_build_parity:/m);
   assert.match(required, /^  netlify_build_parity:/m);
-  assert.match(required, /Run exact Netlify production build command once/);
+  assert.match(required, /Run canonical Netlify production build once/);
   assert.match(website, /preview_mode == 'local-exact-candidate'/);
   assert.match(website, /UI_VR_BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
 });
