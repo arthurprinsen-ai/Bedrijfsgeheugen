@@ -86,3 +86,23 @@ test('orchestrator avoids blocking nested Edge Function preflight on the critica
   assert.match(orchestrator, /powerhouse_materialize_source_backed_channel_candidates_v1/);
   assert.match(orchestrator, /powerhouse_daily_runs/);
 });
+
+
+test('content loop bounds nested-call memory and direct DB pool size',()=>{
+  const loop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+  assert.match(loop,/postgres\(dbPoolerUrl\(\),\{max:2,/);
+  assert.doesNotMatch(loop,/return \{ name, http: response\.status, ok: response\.ok && body\?\.ok !== false, body \}/);
+  assert.match(loop,/generated: body\?\.generated === true/);
+  assert.match(loop,/if \(!step\.ok \|\| step\.generated !== true\) break/);
+});
+
+test('orchestrator avoids wide payload reads on the hot path',()=>{
+  const orchestrator=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+  assert.match(orchestrator,/postgres\(dbPoolerUrl\(\),\{max:2,/);
+  assert.doesNotMatch(orchestrator,/powerhouse_daily_runs'\)\.select\('\*'\)/);
+  assert.doesNotMatch(orchestrator,/powerhouse_channel_decisions'\)\.select\('\*'\)/);
+  assert.doesNotMatch(orchestrator,/content_publication_obligations'\)\.select\('\*'\)/);
+  assert.doesNotMatch(orchestrator,/powerhouse_media_proof_evidence_v1'\)\.select\('\*'\)/);
+  assert.doesNotMatch(orchestrator,/powerhouse_instagram_daily_winners_v1'\)\.select\('\*'\)/);
+  assert.match(orchestrator,/select\('channel,priority,rationale,delivery_evidence'\)/);
+});
