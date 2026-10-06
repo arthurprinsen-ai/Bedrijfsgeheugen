@@ -19,5 +19,10 @@
   "status": "ACTIVE_PREVENTION",
   "compiler": {
     "failure_class": "STALE_TERMINAL_WRITER_PREWRITE_MUTATION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+    ]
   }
 }
