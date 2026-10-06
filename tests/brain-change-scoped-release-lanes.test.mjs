@@ -309,3 +309,15 @@ test('material writeback closure guard stays backend-only and never activates we
     shared:true, backend:true, portal:false, website:false, automation:false
   });
 });
+
+
+test('PR janitor scheduler control-plane stays automation-only and avoids website browser proof', () => {
+  for (const path of [
+    '.github/scripts/pr-janitor.mjs',
+    '.github/workflows/pr-janitor.yml'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:false, portal:false, website:false, automation:true
+    }, path);
+  }
+});

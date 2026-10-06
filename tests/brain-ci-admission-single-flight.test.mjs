@@ -14,14 +14,21 @@ test('recovery supervisor is scheduled/manual only and applies repository backpr
   assert.match(yml,/concurrency:\n\s+group: powerhouse-delivery-recovery-supervisor\n\s+cancel-in-progress: true/);
 });
 
-test('Required and BRAIN share PR single-flight identity across native and recovery triggers', async () => {
-  for (const path of ['.github/workflows/required-test.yml','.github/workflows/unified-brain-delivery.yml']) {
-    const yml = await readFile(path,'utf8');
-    const concurrency = yml.slice(yml.indexOf('concurrency:'), yml.indexOf('\njobs:'));
-    assert.match(concurrency,/inputs\.pr_number \|\| github\.event\.pull_request\.number/);
-    assert.doesNotMatch(concurrency,/github\.event_name/);
-    assert.match(concurrency,/cancel-in-progress: true/);
+test('Required avoids workflow-level queue locks while BRAIN recovery keeps PR single-flight identity', async () => {
+  const required = await readFile('.github/workflows/required-test.yml','utf8');
+  const requiredHeader = required.slice(0, required.indexOf('\njobs:'));
+  assert.doesNotMatch(requiredHeader, /^concurrency:/m);
+  for (const lane of ['netlify','supabase','backend','portal','automation','website']) {
+    assert.match(required, new RegExp(`group: required-${lane}-`));
   }
+  assert.match(required, /REQUIRED_STALE_HEAD_YIELD/);
+  assert.match(required, /REQUIRED_STALE_HEAD_YIELD_BEFORE_FULL_SUITE/);
+
+  const brain = await readFile('.github/workflows/unified-brain-delivery.yml','utf8');
+  const concurrency = brain.slice(brain.indexOf('concurrency:'), brain.indexOf('\njobs:'));
+  assert.match(concurrency,/inputs\.pr_number \|\| github\.event\.pull_request\.number/);
+  assert.doesNotMatch(concurrency,/github\.event_name/);
+  assert.match(concurrency,/cancel-in-progress: true/);
 });
 
 test('skill projection supersedes stale same-PR/ref work', async () => {
