@@ -7,7 +7,7 @@ const USER_ID='bedrijfsgeheugen-owner';
 const ALIAS='bedrijfsgeheugen-company-canonical';
 const COMPANY_AUTH_CONFIG_NAME='Bedrijfsgeheugen LinkedIn Company';
 const COMPANY_OAUTH_SCOPES=['openid','profile','email','r_organization_admin','r_organization_social','w_organization_social'];
-const COMPANY_REQUIRED_SCOPES=['r_organization_admin','w_organization_social'];
+const COMPANY_REQUIRED_SCOPES=['r_organization_admin','r_organization_social','w_organization_social'];
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
