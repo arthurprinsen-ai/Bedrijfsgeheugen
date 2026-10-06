@@ -52,7 +52,9 @@
       "brain/contracts/production-readback-v1.json",
       "tools/site-shell/production-supersession.mjs",
       "tools/site-shell/standalone-visibility-check.mjs",
-      "config/historical-terminal-reconciliation.json"
+      "config/historical-terminal-reconciliation.json",
+      "config/netlify-project-registry.json",
+      "tools/netlify/ephemeral-janitor.mjs"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",
