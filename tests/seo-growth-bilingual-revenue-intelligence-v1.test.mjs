@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 test('bilingual SEO revenue migration keeps locale and market in canonical identity',async()=>{
-  const sql=await readFile('supabase/migrations/20260930113000_powerhouse_bilingual_seo_revenue_v1.sql','utf8');
+  const sql=await readFile('supabase/migration-history/repository-only/20260930113000_powerhouse_bilingual_seo_revenue_v1.sql','utf8');
   assert.match(sql,/powerhouse_seo_keyword_intelligence_v1/);
   assert.match(sql,/primary key \(tenant_id, locale, market, keyword\)/);
   assert.match(sql,/powerhouse_seo_keyword_revenue_priority_v1/);
