@@ -8,10 +8,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "observation": "Required test owned Netlify parity while the website lane also owned Netlify parity; Supabase Preview Applicability ran as a global required context.",
-        "result": "Repeated runners and provider waits were generated for the same exact-head candidate."
-      }
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
     ]
   },
   "root_cause": {
@@ -23,13 +20,13 @@
   },
   "prevention": {
     "rule": "One proof owner per concern on the PR critical path.",
-    "netlify": "Website release lane is the sole deterministic Netlify build-parity owner.",
+    "netlify": "Preserve the existing single Netlify parity owner; do not introduce a second owner in the website lane.",
     "supabase": "Required test invokes provider preview proof only for database-relevant Supabase source.",
     "invariant": "Do not remove provider proof from protection until the equivalent proof is represented inside the canonical Required aggregate."
   },
   "evidence": {
     "tests": [
-      "tests/brain-netlify-premerge-build-parity-v1.test.mjs",
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs",
       "Required test exact-head aggregate"
     ],
     "observed_ci": {
