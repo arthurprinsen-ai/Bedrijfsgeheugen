@@ -47,7 +47,8 @@ export function validateMachineReadablePrBody({body='',candidateHeadSha='',curre
 
 
 export function evaluateTerminalBranchWriteGuard({
-  body='',observedHeadSha='',expectedHeadSha='',capturedMainEpochSha='',currentMainSha='',obligationId='',mutationKind='content'
+  body='',observedHeadSha='',expectedHeadSha='',capturedMainEpochSha='',currentMainSha='',obligationId='',mutationKind='content',
+  mainSyncOverlap=[],mainSyncContractOverlap=[]
 }={}){
   const observed=normalize(observedHeadSha).toLowerCase();
   const expected=normalize(expectedHeadSha).toLowerCase();
@@ -68,19 +69,57 @@ export function evaluateTerminalBranchWriteGuard({
     if(SHA40.test(observed)&&lease.headSha!==observed) reasons.push('TERMINAL_LEASE_HEAD_DRIFT');
     if(SHA40.test(current)&&lease.mainEpochSha!==current) reasons.push('TERMINAL_LEASE_MAIN_EPOCH_DRIFT');
     if(actualObligation&&lease.obligationId&&lease.obligationId!==actualObligation) reasons.push('TERMINAL_LEASE_OBLIGATION_DRIFT');
-    if(!['metadata','readback'].includes(kind)) reasons.push('TERMINAL_CANDIDATE_IMMUTABLE');
+    if(!['metadata','readback','main-sync'].includes(kind)) reasons.push('TERMINAL_CANDIDATE_IMMUTABLE');
   }
 
-  const successorRequired=reasons.some(reason=>[
-    'CAPTURED_MAIN_EPOCH_STALE',
-    'TERMINAL_LEASE_MAIN_EPOCH_DRIFT',
-    'TERMINAL_CANDIDATE_IMMUTABLE'
-  ].includes(reason));
-  const ok=reasons.length===0;
+  const pathOverlap=Array.isArray(mainSyncOverlap)?mainSyncOverlap.filter(Boolean):[];
+  const contractOverlap=Array.isArray(mainSyncContractOverlap)?mainSyncContractOverlap.filter(Boolean):[];
+  const mainSyncRequested=kind==='main-sync';
+  if(mainSyncRequested&&(pathOverlap.length||contractOverlap.length)) reasons.push('MAIN_SYNC_OVERLAP_REQUIRES_RECONCILIATION');
+
+  const uniqueReasons=uniq(reasons);
+  const epochReasons=new Set(['CAPTURED_MAIN_EPOCH_STALE','TERMINAL_LEASE_MAIN_EPOCH_DRIFT']);
+  const mainSyncSafe=mainSyncRequested
+    && pathOverlap.length===0
+    && contractOverlap.length===0
+    && uniqueReasons.length>0
+    && uniqueReasons.every(reason=>epochReasons.has(reason));
+  if(mainSyncSafe){
+    return Object.freeze({
+      ok:true,
+      state:'SAME_LINEAGE_MAIN_SYNC_ADMITTED',
+      action:'ALLOW_COMPARE_AND_SWAP_MAIN_SYNC',
+      canMutateCandidate:true,
+      requiresExpectedHead:true,
+      requiresCurrentMainEpoch:true,
+      observedHead:observed||null,
+      expectedHead:expected||null,
+      capturedMainEpoch:captured||null,
+      currentMain:current||null,
+      mutationKind:kind,
+      lease,
+      reasons:uniqueReasons,
+      mainSyncOverlap:pathOverlap,
+      mainSyncContractOverlap:contractOverlap
+    });
+  }
+
+  const reconciliationRequired=mainSyncRequested&&uniqueReasons.includes('MAIN_SYNC_OVERLAP_REQUIRES_RECONCILIATION');
+  const epochOnly=uniqueReasons.length>0&&uniqueReasons.every(reason=>epochReasons.has(reason));
+  const successorRequired=uniqueReasons.includes('TERMINAL_CANDIDATE_IMMUTABLE');
+  const ok=uniqueReasons.length===0;
+  const state=ok?'WRITE_ADMITTED'
+    :reconciliationRequired?'SAME_LINEAGE_RECONCILIATION_REQUIRED'
+    :epochOnly?'SAME_LINEAGE_SYNC_REQUIRED'
+    :successorRequired?'SUCCESSOR_REQUIRED'
+    :'WRITE_BLOCKED';
+  const action=ok?'ALLOW_COMPARE_AND_SWAP_WRITE'
+    :reconciliationRequired?'RECONCILE_EXISTING_CANDIDATE_OR_PROVE_UNSYNCHRONIZABLE'
+    :epochOnly?'REVALIDATE_AND_SYNC_EXISTING_CANDIDATE'
+    :successorRequired?'CREATE_SUCCESSOR_FROM_CURRENT_MAIN'
+    :'BLOCK_STALE_WRITE';
   return Object.freeze({
-    ok,
-    state:ok?'WRITE_ADMITTED':successorRequired?'SUCCESSOR_REQUIRED':'WRITE_BLOCKED',
-    action:ok?'ALLOW_COMPARE_AND_SWAP_WRITE':successorRequired?'CREATE_SUCCESSOR_FROM_CURRENT_MAIN':'BLOCK_STALE_WRITE',
+    ok,state,action,
     canMutateCandidate:ok,
     requiresExpectedHead:true,
     requiresCurrentMainEpoch:true,
@@ -90,7 +129,9 @@ export function evaluateTerminalBranchWriteGuard({
     currentMain:current||null,
     mutationKind:kind,
     lease,
-    reasons:uniq(reasons)
+    reasons:uniqueReasons,
+    mainSyncOverlap:pathOverlap,
+    mainSyncContractOverlap:contractOverlap
   });
 }
 
