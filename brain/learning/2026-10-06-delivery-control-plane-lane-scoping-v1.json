@@ -1,0 +1,34 @@
+{
+  "id": "delivery-control-plane-lane-scoping-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|required|shared-path-workflow-all-lanes|v1",
+  "root_cause": "The delivery planner treated any executable path matching sharedPaths as global even when the same path already had an explicit lane owner. Because .github/workflows/ is shared, delivery-control workflow changes activated backend, portal, automation and website, including multi-minute browser assurance unrelated to the changed control plane.",
+  "prevention": [
+    "Give explicit scopedLaneForPath and configured lane.paths ownership precedence over the generic shared-path fallback.",
+    "Register known delivery-control workflows and control-plane sources with their narrow backend or automation owner.",
+    "Preserve the conservative all-lane fallback for unknown workflow files so new workflow categories cannot silently lose assurance."
+  ],
+  "evidence": {
+    "source_pr": 3974,
+    "source_head": "47de16b533ebca215c18f30b6832d3f00ab9d6ef",
+    "source_required_run": 37483356772,
+    "unnecessary_lane": "website/browser",
+    "observed_reason": ".github/workflows generic shared path overrode explicit delivery ownership"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-control-plane-lane-scoping-v1.test.mjs"
+    ],
+    "expected": "Known delivery-control workflow changes select only their explicit automation/backend owners; explicitly configured website/portal workflows select their own lane; unknown workflows still run all lanes."
+  },
+  "compiler": {
+    "failure_class": "CI_UNNECESSARY_LANE_FANOUT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
