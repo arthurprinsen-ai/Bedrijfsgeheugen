@@ -1,11 +1,7 @@
 name: Repository Writer Parity Rollback
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    paths:
-      - 'brain/evidence/writer-parity-trigger/**'
-
+  workflow_dispatch:
 permissions:
   contents: write
   pull-requests: write
