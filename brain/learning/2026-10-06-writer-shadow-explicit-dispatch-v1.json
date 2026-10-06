@@ -1,0 +1,27 @@
+{
+  "version": "WRITER-SHADOW-EXPLICIT-DISPATCH-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|writer-shadow|global-pr-fanout",
+  "obligation_id": "writer-shadow-explicit-dispatch-20261006-v1",
+  "root_cause": "Repository Writer Candidate Shadow was triggered for every pull request and then skipped for non-writer branches. Four canonical writers also depended on that global trigger instead of explicitly dispatching immutable writer-candidate identity.",
+  "prevention": "Every canonical writer must resolve exact PR/base/head/branch identity and explicitly dispatch repo-writer-candidate-shadow.yml. The shadow workflow is workflow_dispatch-only, so ordinary PRs allocate no shadow run.",
+  "compiler": {
+    "failure_class": "REDUNDANT_GLOBAL_WRITER_SHADOW_PR_FANOUT",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-shadow-explicit-dispatch-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "evidence": {
+    "regression": [
+      "tests/brain-writer-shadow-explicit-dispatch-v1.test.mjs",
+      "scripts/brain/test-writer-verification-modes.mjs"
+    ],
+    "observed_before": "ordinary pull requests allocated Repository Writer Candidate Shadow and immediately skipped it",
+    "expected_after": "ordinary pull requests do not create a Candidate Shadow run; all seven canonical writers dispatch exact PR/base/head/ref identity explicitly",
+    "verification_mode_authority": "dispatch-only shadow binds verification_only directly from inputs.verification_only; event-name fallback is forbidden"
+  }
+}
