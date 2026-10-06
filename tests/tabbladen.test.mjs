@@ -6,19 +6,18 @@ import { zoekPaginas, heeftTitel, zetPictogrammen, zetTabtitel, tabtitelScript }
 
 const config = JSON.parse(await readFile('site/tabtitels.json', 'utf8'));
 
-test('de tabbladlaag draait in de Netlify-build, na de v18-productiebouw', async () => {
+test('de tabbladlaag draait in de canonieke Netlify-build, na de v18-productiebouw', async () => {
   assert.ok(existsSync('tools/apply-tabbladen.mjs'), 'tabbladlaag moet bestaan');
   assert.ok(existsSync('site/tabtitels.json'), 'tabtitels moeten in config staan');
   const netlify = await readFile('netlify.toml', 'utf8');
-  const productie = netlify.match(/\[build\]\n([\s\S]*?)(?=\n\[)/)?.[1] ?? '';
-  const preview = netlify.match(/\[context\.deploy-preview\]\n([\s\S]*?)(?=\n\[)/)?.[1] ?? '';
-  for (const blok of [productie, preview]) {
-    assert.match(blok, /node tools\/apply-tabbladen\.mjs/);
-    assert.ok(
-      blok.indexOf('bouw-v18-production.mjs') < blok.indexOf('apply-tabbladen.mjs'),
-      'de tabbladlaag moet ná de v18-productiebouw draaien, die index.html opnieuw schrijft',
-    );
-  }
+  const runner = await readFile('tools/ci/run-netlify-build.mjs', 'utf8');
+  const commands=[...netlify.matchAll(/command = "([^"]+)"/g)].map(match=>match[1]);
+  assert.deepEqual(commands,['node tools/ci/run-netlify-build.mjs','node tools/ci/run-netlify-build.mjs']);
+  assert.match(runner,/tools\/apply-tabbladen\.mjs/);
+  assert.ok(
+    runner.indexOf('tools/bouw-v18-production.mjs') < runner.indexOf('tools/apply-tabbladen.mjs'),
+    'de tabbladlaag moet ná de v18-productiebouw draaien, die index.html opnieuw schrijft',
+  );
 });
 
 test('elke gepubliceerde pagina met een titel heeft een favicon', async () => {
