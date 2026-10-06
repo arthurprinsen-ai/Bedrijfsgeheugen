@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|terminalizer|supabase-provider-readback|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "github-terminalizer:supabase-provider-readback:2026-10-06",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The TERMINAL_DELIVERY owner rejected changed Supabase Edge Functions as UNWIRED_NON_NETLIFY_RUNTIME_READBACK even though the repository already had a canonical per-function Supabase provider-readback contract in the terminal closure lane.",
+  "prevention_rule": "The terminal-delivery owner must classify Supabase Edge Function runtime separately from Netlify, require exact per-function provider version and runtime digest evidence, preserve fail-closed behavior for unknown runtime surfaces, and persist the provider readback in terminal evidence.",
+  "evidence": {
+    "incident": [
+      "PR #3856 merged successfully with exact-head gates and production source parity.",
+      "Powerhouse Obligation Terminalizer failed at UNWIRED_NON_NETLIFY_RUNTIME_READBACK for Supabase function paths.",
+      "Production provider readback proved powerhouse-social-publisher v107 and powerhouse-blog-queue v11 ACTIVE with exact repository source parity."
+    ],
+    "tests": [
+      "tests/brain-obligation-terminalizer-supabase-provider-readback.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-obligation-terminalizer-supabase-provider-readback.test.mjs"
+    ]
+  }
+}
