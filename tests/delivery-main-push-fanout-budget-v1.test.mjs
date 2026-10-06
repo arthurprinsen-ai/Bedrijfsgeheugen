@@ -16,7 +16,7 @@ test('production deploy and readback skip closure-only main pushes', () => {
   for(const name of ['production-source-snapshot.yml','production-release-readback.yml']){
     const push=eventBlock(read(name),'push');
     assert.match(push,/paths-ignore:/);
-    for(const path of ["docs/**",".agents/**","tests/**",".github/**","brain/learning/**","supabase/**"]){
+    for(const path of ["docs/**",".agents/**","tests/**",".github/**","brain/learning/**","supabase/**","tools/ci/**"]){
       assert.ok(push.includes(path), name+' must ignore '+path+' when it is the only change');
     }
   }
