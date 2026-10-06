@@ -24,7 +24,7 @@ test('repair is allowlisted to exactly the four proven replay baselines', () => 
 
 test('provider repair updates tracking only and proves post-repair parity', () => {
   assert.match(workflow, /supabase migration repair[\s\S]*--status applied/);
-  assert.match(workflow, /supabase migration list --linked/);
+  assert.match(workflow, /supabase migration list --db-url "\\$SUPABASE_DB_URL"/);
   assert.doesNotMatch(workflow, /insert\s+into\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /update\s+supabase_migrations/i);
   assert.doesNotMatch(workflow, /delete\s+from\s+supabase_migrations/i);
@@ -53,4 +53,12 @@ test('provider readback is bounded-retry and repair is resumable without repeati
   const repairs = workflow.match(/supabase migration repair/g) || [];
   assert.equal(repairs.length, 2, 'one executable repair plus one evidence string is expected');
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
+});
+
+
+test('repair refuses direct IPv6 transport and requires canonical Supavisor IPv4', () => {
+  assert.match(workflow, /supavisor-session-ipv4/);
+  assert.match(workflow, /aws-0-eu-central-1\.pooler\.supabase\.com/);
+  assert.match(workflow, /DIRECT_IPV6_ROUTE_FORBIDDEN/);
+  assert.match(workflow, /getent ahostsv4/);
 });
