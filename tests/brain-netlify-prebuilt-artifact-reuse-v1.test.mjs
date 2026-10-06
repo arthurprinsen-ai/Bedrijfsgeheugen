@@ -61,3 +61,11 @@ test('static locale rendering uses content-addressed persistent cache',async()=>
   assert.match(builder,/cacheMisses/);
   assert.match(builder,/bg-release-commit/);
 });
+
+test('tabbladen regression is classified with its website implementation',async()=>{
+  const policy=JSON.parse(await read('config/brain-delivery-system.json'));
+  const website=policy.lanes.find(lane=>lane.id==='website');
+  assert.ok(website);
+  assert.ok(website.paths.includes('tools/apply-tabbladen.mjs'));
+  assert.ok(website.paths.includes('tests/tabbladen.test.mjs'));
+});
