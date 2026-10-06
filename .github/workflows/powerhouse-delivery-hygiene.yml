@@ -152,7 +152,24 @@ jobs:
               && process.env.EVENT_ACTION === 'synchronize';
             if (synchronize && !rerun && eventLease.state === 'TERMINAL_DELIVERY'
               && String(eventLease.headSha || '').toLowerCase() !== String(headSha || '').toLowerCase()) {
-              throw new Error(`TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION:${eventLease.headSha || 'missing'}:${headSha}`);
+              const expectedTerminalHead = String(eventLease.headSha || '').toLowerCase();
+              let identityOnlyRefresh = false;
+              if (/^[0-9a-f]{40}$/.test(expectedTerminalHead) && /^[0-9a-f]{40}$/.test(headSha)) {
+                const currentCommit = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/commits/${headSha}`);
+                const previousCommit = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/commits/${expectedTerminalHead}`);
+                const parents = (currentCommit?.parents || []).map(parent => String(parent?.sha || '').toLowerCase());
+                const currentTree = String(currentCommit?.tree?.sha || '').toLowerCase();
+                const previousTree = String(previousCommit?.tree?.sha || '').toLowerCase();
+                identityOnlyRefresh = parents.length === 1
+                  && parents[0] === expectedTerminalHead
+                  && /^[0-9a-f]{40}$/.test(currentTree)
+                  && currentTree === previousTree;
+              }
+              if (identityOnlyRefresh) {
+                console.log(`TERMINAL_IDENTITY_REFRESH_ALLOWED:${expectedTerminalHead}:${headSha}`);
+              } else {
+                throw new Error(`TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION:${eventLease.headSha || 'missing'}:${headSha}`);
+              }
             }
             if (synchronize && !rerun && eventLease.state === 'MAIN_SYNC') {
               const syncCommit = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/commits/${headSha}`);
