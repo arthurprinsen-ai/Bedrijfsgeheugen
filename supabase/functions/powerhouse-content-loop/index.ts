@@ -79,7 +79,7 @@ Deno.serve(async (req) => {
       if (!step.ok || step.body?.generated !== true) break;
     }
 
-    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate }));
+    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'publish_only' }));
     stepResults.push(await invoke(url, expected, 'powerhouse-blog-queue', { runDate }));
 
     // Legacy Buffer sync is telemetry/compatibility only. LinkedIn transport authority is Composio.
