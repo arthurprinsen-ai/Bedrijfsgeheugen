@@ -68,6 +68,7 @@ on:
         default: false
 
 permissions:
+  actions: read
   contents: read
   id-token: write
 
@@ -124,13 +125,65 @@ jobs:
           set -euo pipefail
           printf '%s\n' "$GITHUB_SHA" > .bg-source-commit
 
+      - id: prebuilt
+        name: Reuse exact Required prebuilt artifact when main tree matches
+        if: steps.scope.outputs.deployment_required == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tree_sha="$(git rev-parse 'HEAD^{tree}')"
+          artifact_name="netlify-prebuilt-tree-${tree_sha}"
+          artifact_json="$(gh api --method GET "repos/${GITHUB_REPOSITORY}/actions/artifacts" -f name="$artifact_name" -f per_page=20)"
+          artifact_id="$(node -e 'const x=JSON.parse(process.argv[1]);const a=(x.artifacts||[]).filter(v=>!v.expired).sort((a,b)=>String(b.created_at||"").localeCompare(String(a.created_at||"")));process.stdout.write(String(a[0]?.id||""))' "$artifact_json")"
+          if [ -z "$artifact_id" ]; then
+            echo "reused=false" >> "$GITHUB_OUTPUT"
+            echo "No exact tree-keyed prebuilt artifact; canonical source build will be used."
+            exit 0
+          fi
+          envelope="$(mktemp -d)"
+          curl -fsSL             -H "Authorization: Bearer $GH_TOKEN"             -H "Accept: application/vnd.github+json"             -H "X-GitHub-Api-Version: 2022-11-28"             "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip"             -o "$envelope/artifact.zip"
+          unzip -q "$envelope/artifact.zip" -d "$envelope/wrapper"
+          inner="$envelope/wrapper/netlify-prebuilt-source.zip"
+          if [ ! -f "$inner" ]; then
+            echo "reused=false" >> "$GITHUB_OUTPUT"
+            echo "Prebuilt wrapper missing source zip; canonical source build will be used."
+            exit 0
+          fi
+          marker_json="$(unzip -p "$inner" .bg-prebuilt-artifact.json 2>/dev/null || true)"
+          marker_tree="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.source_tree_sha||""))}catch{}' "$marker_json")"
+          if [ "$marker_tree" != "$tree_sha" ]; then
+            echo "reused=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::PREBUILT_SOURCE_TREE_MISMATCH expected=$tree_sha observed=${marker_tree:-missing}. Artifact tree mismatch; canonical source build will be used."
+            exit 0
+          fi
+          unzip -oq "$inner" -d "$GITHUB_WORKSPACE"
+          printf '%s\n' "$GITHUB_SHA" > .bg-source-commit
+          EXPECTED_COMMIT_SHA="$GITHUB_SHA" node --input-type=module - <<'NODE'
+          import {readFile,writeFile} from 'node:fs/promises';
+          const path='.bg-prebuilt-artifact.json';
+          const marker=JSON.parse(await readFile(path,'utf8'));
+          marker.expected_commit_sha=process.env.EXPECTED_COMMIT_SHA;
+          marker.promoted_at=new Date().toISOString();
+          await writeFile(path,JSON.stringify(marker,null,2)+'\n');
+          NODE
+          echo "reused=true" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$artifact_id" >> "$GITHUB_OUTPUT"
+          echo "tree_sha=$tree_sha" >> "$GITHUB_OUTPUT"
+          echo "PREBUILT_REUSED:$artifact_id:$tree_sha"
+
       - name: Package production source
         run: |
           set -euo pipefail
-          tmpdir="$(mktemp -d)"
-          git archive "$GITHUB_SHA" | tar -x -C "$tmpdir"
-          printf '%s\n' "$GITHUB_SHA" > "$tmpdir/.bg-source-commit"
-          (cd "$tmpdir" && zip -qr "$GITHUB_WORKSPACE/production-source.zip" .)
+          rm -f "$GITHUB_WORKSPACE/production-source.zip"
+          if [ "${{ steps.prebuilt.outputs.reused }}" = "true" ]; then
+            zip -qr "$GITHUB_WORKSPACE/production-source.zip" .               -x '.git/*' 'node_modules/*' '.artifacts/*' 'production-source.zip'
+          else
+            tmpdir="$(mktemp -d)"
+            git archive "$GITHUB_SHA" | tar -x -C "$tmpdir"
+            printf '%s\n' "$GITHUB_SHA" > "$tmpdir/.bg-source-commit"
+            (cd "$tmpdir" && zip -qr "$GITHUB_WORKSPACE/production-source.zip" .)
+          fi
       - uses: actions/upload-artifact@v4
         with:
           name: production-source-${{ github.sha }}
@@ -159,8 +212,10 @@ jobs:
         if: steps.scope.outputs.deployment_required == 'true'
         env:
           EXPECTED_SHA: ${{ github.sha }}
+          PREBUILT_REUSED: ${{ steps.prebuilt.outputs.reused || 'false' }}
         run: |
           set -euo pipefail
+          if [ "$PREBUILT_REUSED" != "true" ]; then
           for attempt in $(seq 1 3); do
             current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?predeploy=${EXPECTED_SHA}-${attempt}" || true)"
             observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
@@ -240,6 +295,10 @@ jobs:
               fi
               echo "Linked Netlify deploy was skipped; continuing with canonical exact-source upload fallback."
             fi
+          fi
+
+          else
+            echo "PREBUILT_ARTIFACT_REUSE: exact tree already built by Required; skipping linked provider rebuild and entering exact-source transport."
           fi
 
           # The Netlify proxy is intentionally short-lived. Acquisition success is
