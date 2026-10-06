@@ -337,3 +337,13 @@ test('explicit website workflow ownership overrides the generic workflow control
     shared:true, backend:false, portal:false, website:true, automation:false
   });
 });
+
+
+test('scripts/ci helpers stay backend-only and never activate product lanes', () => {
+  assert.deepEqual(suitesFor(['scripts/ci/blog_technical_seo_gate.py']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+  assert.deepEqual(suitesFor(['scripts/ci/future-control-plane-check.py']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
