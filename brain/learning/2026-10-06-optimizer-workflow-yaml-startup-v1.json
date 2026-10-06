@@ -10,5 +10,15 @@
     "failing_main_sha": "bdfb5d81a9033ba7a8b33a2a152f82c8cf38cb51",
     "test": "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
   },
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "GITHUB_ACTIONS_WORKFLOW_YAML_STARTUP_FAILURE",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "A workflow with PR-body metadata escaping the YAML run block must be rejected by regression coverage before merge.",
+      "The fixed optimizer workflow must use the quoted printf body builder and contain no column-zero Obligation-ID line."
+    ]
+  }
 }
