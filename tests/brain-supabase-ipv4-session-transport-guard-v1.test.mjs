@@ -29,8 +29,8 @@ test('OIDC bridge rewrites the direct credential source to the IPv4 session pool
 
 test('function-only config metadata does not falsely require a database preview', () => {
   assert.match(required, /databaseRelevantSupabase/);
-  assert.match(required, /import subprocess, sys, tomllib/);
-  assert.match(required, /normalized\.pop\('functions', None\)/);
+  assert.match(required, /import subprocess,sys,tomllib/);
+  assert.match(required, /norm=lambda config:\{k:v for k,v in config\.items\(\) if k!='functions'\}/);
   assert.match(required, /supabaseConfigDatabaseRelevant/);
   assert.match(required, /databaseRelevantSupabase \|\| supabaseConfigDatabaseRelevant/);
 });
