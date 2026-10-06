@@ -33,3 +33,12 @@ test('function-only config metadata does not falsely require a database preview'
   assert.match(applicability, /normalized\.pop\('functions', None\)/);
   assert.match(applicability, /function_config_only/);
 });
+
+
+test('merged repair remains immutable while the IPv4 transport is re-proven', () => {
+  assert.match(workflow, /mode="readback_only"/);
+  assert.match(workflow, /Trusted-Repair-State: REPAIRED_APPLIED_VERIFIED/);
+  assert.match(workflow, /MERGED_REPAIR_REMOTE_READBACK_MISSING/);
+  assert.match(workflow, /if: steps\.candidate\.outputs\.mode == 'repair'/);
+  assert.match(workflow, /if: steps\.candidate\.outputs\.mode == 'readback_only'/);
+});
