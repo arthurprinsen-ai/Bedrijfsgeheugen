@@ -164,11 +164,18 @@ test('recovery runner delegates provider side effects only to the canonical publ
 });
 
 
-test('social recovery GREEN requires explicit provider truth for every required publish claim',()=>{
+test('social recovery GREEN requires exact truth or permission-bound personal LinkedIn create acknowledgement',()=>{
   assert.match(recoveryRunner,/const providerTruthVerified = required\.reduce/);
-  assert.match(recoveryRunner,/provider_truth_verified === true/);
+  assert.match(recoveryRunner,/function providerSideEffectTruthHealthy/);
+  assert.match(recoveryRunner,/if \(obligation\?\.provider_truth_verified === true\) return true/);
+  assert.match(recoveryRunner,/channel === "linkedin_personal"/);
+  assert.match(recoveryRunner,/provider_create_success === true/);
+  assert.match(recoveryRunner,/provider_publication_ack_verified === true/);
+  assert.match(recoveryRunner,/readback_permission_limited === true/);
+  assert.match(recoveryRunner,/republish_forbidden === true/);
+  assert.match(recoveryRunner,/const providerTruthAccepted = required\.reduce/);
   assert.match(recoveryRunner,/\["PUBLISHED", "DISPATCHED", "LIVE_PROVEN"\]\.includes\(status\)/);
-  assert.match(recoveryRunner,/!!clean\(obligation\.external_id\)/);
+  assert.match(recoveryRunner,/!!clean\(obligation\?\.external_id\)/);
   assert.doesNotMatch(recoveryRunner,/provider_truth_verified === true \|\| !!clean\(o\.external_id\)/);
   assert.match(recoveryRunner,/const recovered = required\.length > 0 && unresolved\.length === 0 && providerTruthHealthy/);
 });
