@@ -13,3 +13,9 @@ Evidence bound into this candidate:
 - #3822 terminalizer run: `37430502441` = success
 
 No terminal claim is made by this file. The exact-head candidate and post-merge terminalizer remain mandatory.
+
+## v8 correction event
+
+- invalidated predecessor: PR #3824 (merged with skill-projection-contract red)
+- canonical replay path: `tests/brain-supabase-migration-history-terminal-closure-v1.test.mjs`
+- v8 invariant: auto-merge remains disabled until skill projection, Required, CodeQL and all registered exact-head checks are terminal green/skipped-by-design.
