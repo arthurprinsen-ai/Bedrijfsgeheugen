@@ -27,3 +27,11 @@ Safety:
 - no direct write to Supabase migration history tables;
 - no publication-provider bypass;
 - no critical business writer was changed to fail-open.
+
+
+Follow-up after connectivity recovery:
+- commercial heartbeat reached execution but failed its runtime-event check constraint because it wrote lifecycle state `degraded`;
+- audit found exactly three runtime-event writers with this invalid state pattern;
+- production migration `20261006090209_normalize_runtime_event_degraded_state_v1` changed those degraded lifecycle outcomes to canonical `error`;
+- `powerhouse_data_spine_watchdog_v1` was intentionally not changed because its lifecycle state was already `error`; its `degraded` value is data-quality metadata, not state;
+- preview portability was corrected: scheduler migration now alters only jobs present in that branch, while production completeness stays a separate runtime assertion.
