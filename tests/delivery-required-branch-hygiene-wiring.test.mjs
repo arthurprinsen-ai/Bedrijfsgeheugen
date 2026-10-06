@@ -62,6 +62,15 @@ test('delivery hygiene does not silently ignore conflict-contract API read failu
   assert.doesNotMatch(hygieneWorkflow, /try \{\s*const files = (?:await )?gh[\s\S]*?\}\s*catch \{\}/);
 });
 
+
+test('delivery hygiene uses event lease only on first attempt and live lease on reruns', () => {
+  assert.match(hygieneWorkflow, /RUN_ATTEMPT:\s*\$\{\{ github\.run_attempt \}\}/);
+  assert.match(hygieneWorkflow, /const rerun = Number\(process\.env\.RUN_ATTEMPT \|\| '1'\) > 1/);
+  assert.match(hygieneWorkflow, /synchronize && !rerun && eventLease\.state === 'TERMINAL_DELIVERY'/);
+  assert.match(hygieneWorkflow, /synchronize && !rerun && eventLease\.state === 'MAIN_SYNC'/);
+  assert.match(hygieneWorkflow, /evaluateWriterLease\(\{[\s\S]*?body: pr\.body \|\| ''/);
+});
+
 test('merged same-repository branches are deleted only after exact-head verification and readback', () => {
   assert.match(mergedBranchCleanup, /types:\s*\[closed\]/);
   assert.match(mergedBranchCleanup, /github\.event\.pull_request\.merged == true/);
