@@ -412,10 +412,6 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any){
       provider_truth_checked_at:new Date().toISOString(),
       provider_status:'published',
       republish_forbidden:true,
-      linkedin_company_admin_oauth_proven:true,
-      organization_write_scope_verified:true,
-      company_oauth_connection_id:accountId,
-      company_oauth_verified_at:adminOauthVerifiedAt,
       published_at:Number.isFinite(publishedAtMs)?new Date(publishedAtMs).toISOString():new Date().toISOString(),
       author_urn:author,
       linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
