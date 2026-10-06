@@ -36,6 +36,14 @@ test('website and portal changes retain exact Netlify deployment and browser pro
   }
 });
 
+test('canonical Netlify build runtime remains deploy-impacting outside ignored CI helpers', async () => {
+  const p=await policy();
+  const result=deriveNetlifyDeploymentApplicability({changedPaths:['tools/netlify-build/run-netlify-build.mjs'],headSha:SHA,policy:p});
+  assert.equal(result.deploymentRequired,true);
+  assert.equal(result.netlifyBuildRuntimeRequired,true);
+  assert.ok(result.runtimeChangedPaths.includes('tools/netlify-build/run-netlify-build.mjs'));
+});
+
 test('all Netlify decision consumers use the canonical applicability authority', async () => {
   const [ignore,required,snapshot,readback]=await Promise.all([
     readFile('tools/ci/netlify-ignore-build.mjs','utf8'),
