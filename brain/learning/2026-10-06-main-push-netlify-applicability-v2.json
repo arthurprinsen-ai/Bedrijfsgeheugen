@@ -1,0 +1,47 @@
+{
+  "id": "main-push-netlify-applicability-v2",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "obligation_id": "main-push-fanout-budget-20260925-v1",
+  "fingerprint": "github|main-push|netlify-applicability|single-authority|v2",
+  "root_cause": "Netlify applicability was decided independently by Required test, Netlify ignore-build, Production Source Snapshot and Production Release Readback. Static path filters allowed non-Netlify main changes, including Supabase-only changes, to launch full Netlify deployment/browser work.",
+  "observed_evidence": {
+    "failed_snapshot_run": 37470438032,
+    "failed_snapshot_sha": "e6e676c670127b7378143688b684f6ef8ba6294f",
+    "failure": "exact-source Netlify fallback exhausted three 401 Unauthorized attempts although later production recovery succeeded",
+    "unnecessary_snapshot_run": 37471619096,
+    "unnecessary_supabase_only_sha": "2b0539cb729b658bc5e85184406d8421e56f9d35",
+    "unnecessary_netlify_deploy": "6ac4f8719740e80008deedb7",
+    "unnecessary_deploy_seconds": 124
+  },
+  "prevention": {
+    "authority": "tools/delivery/netlify-deployment-applicability.mjs",
+    "consumers": [
+      "tools/ci/netlify-ignore-build.mjs",
+      ".github/workflows/required-test.yml",
+      ".github/workflows/production-source-snapshot.yml",
+      ".github/workflows/production-release-readback.yml"
+    ],
+    "supabase_only": "NO_NETLIFY_DEPLOY",
+    "website_portal_netlify_runtime": "EXACT_SHA_DEPLOY_AND_REQUIRED_READBACK",
+    "unknown_classification": "FAIL_CLOSED"
+  },
+  "failed_approaches": [
+    "Growing independent static paths-ignore lists.",
+    "Treating successful later self-heal as proof that the original snapshot fan-out was necessary.",
+    "Counting Netlify native build, PR parity, snapshot and readback as separate applicability authorities."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-main-push-fanout-budget-v1.test.mjs",
+      "tests/brain-netlify-governance-ignore-v1.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI_UNNECESSARY_NETLIFY_DEPLOY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
