@@ -8,6 +8,14 @@ test('recovered Supabase production migrations remain represented in the canonic
     '20260913133014',
     '20261005142034',
     '20261005142118',
+    '20261006102646',
+    '20261006102754',
+    '20261006103336',
+    '20261006103408',
+    '20261006103432',
+    '20261006103445',
+    '20261006103617',
+    '20261006103856',
   ]) {
     assert.ok(files.some(name => name.startsWith(version + '_') && name.endsWith('.sql')), 'missing recovered migration ' + version);
   }
@@ -57,4 +65,13 @@ test('preview applicability is fail-closed but skips exact immutable production 
   assert.match(workflow, /git', 'hash-object', path/);
   assert.match(workflow, /actual != expected/);
   assert.match(workflow, /immutable reviewed production migration mirrors/);
+});
+
+
+test('current production ledger lock is complete through LinkedIn OAuth terminal migrations', async () => {
+  const lock = JSON.parse(await readFile('supabase/migration-history.lock.json', 'utf8'));
+  assert.equal(lock.production_ledger_count, 591);
+  assert.equal(lock.applied.length, 591);
+  assert.equal(lock.applied.at(-1)?.version, '20261006103856');
+  assert.equal(lock.applied.at(-1)?.name, 'linkedin_company_live_proof_state_canonical_v3');
 });
