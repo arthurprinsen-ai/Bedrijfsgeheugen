@@ -21,8 +21,6 @@ Terminal condition:
 the incident closes only when the full loop reports provider-side truth for the required publication(s) and independent provider feed readback confirms the live post/media.
 
 
-Recovery retry:
-- requested on 2026-10-06 after merging degraded-preparation failover;
-- reason: full content-loop exceeded its edge runtime budget, while LinkedIn company/personal canonical decisions remained resumable;
-- bounded canonical publishers must run even when preparation degrades;
-- final daily-decision readback remains fail-closed.
+Recovery replay marker:
+- canonical-supavisor-runtime-successor-v1
+- protected merge of the canonical Supavisor source-parity successor must launch a fresh same-day recovery/readback run.

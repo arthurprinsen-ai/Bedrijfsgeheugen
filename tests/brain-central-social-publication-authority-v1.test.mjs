@@ -6,6 +6,10 @@ import { evaluateCompletion } from '../platform/agents/completion-supervisor.mjs
 
 const migration=fs.readFileSync('supabase/migrations/20260920073025_social_publication_authority_v1.sql','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+const operations=fs.readFileSync('supabase/functions/content-operations/index.ts','utf8');
+const orchestrator=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+const contentLoop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+const recoveryRunner=fs.readFileSync('supabase/functions/social-recovery-runner/index.ts','utf8');
 
 test('central authority issues exact-bound one-time capabilities',()=>{
   assert.match(migration,/expires_at/);
@@ -91,45 +95,80 @@ test('social recovery remains bounded by the publication window and canonical si
   assert.ok(loop>=0 && readback>loop && buffer>readback,'recovery must run full content loop before fresh state and provider readback');
 });
 
-test('manual recovery is same-day, auditable and delegates to the canonical full content loop',()=>{
+test('manual recovery is same-day, auditable and delegates through the canonical recovery runner',()=>{
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
   assert.match(workflow,/workflow_dispatch:/);
   assert.match(workflow,/push:/);
   assert.match(workflow,/docs\/development-ledger-events\/2026-10-06-social-publication-manual-recovery-control-plane-v1\.md/);
   assert.match(workflow,/Europe\/Amsterdam/);
   assert.match(workflow,/SAME_DAY_RECOVERY_ONLY/);
-  assert.match(workflow,/rest\/v1\/rpc\/bg_geheim/);
-  assert.match(workflow,/functions\/v1\/powerhouse-content-loop/);
-  assert.match(workflow,/CANONICAL_SOCIAL_CONTENT_LOOP_RESULT/);
+  assert.match(workflow,/functions\/v1\/social-recovery-runner/);
+  assert.match(workflow,/Authorization: Bearer \$SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(workflow,/actions\/upload-artifact@v4/);
+  assert.doesNotMatch(workflow,/\/rest\/v1\//);
+  assert.doesNotMatch(workflow,/rpc\/bg_geheim/);
   assert.doesNotMatch(workflow,/api\.buffer\.com|LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
 });
 
-
-test('manual recovery degrades preparation without skipping bounded publishers',()=>{
+test('critical social recovery database transport is Supavisor-only',()=>{
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
-  assert.match(workflow,/curl_rc=0/);
-  assert.match(workflow,/CANONICAL_SOCIAL_CONTENT_LOOP_PREPARATION_TRANSPORT_/);
-  assert.match(workflow,/- name: Invoke bounded canonical publishers\n\s+if: always\(\)/);
+  const critical=[
+    ['content-operations',operations],
+    ['powerhouse-social-publisher',publisher],
+    ['powerhouse-content-orchestrator',orchestrator],
+    ['powerhouse-content-loop',contentLoop],
+    ['social-recovery-runner',recoveryRunner],
+  ];
+  for(const [name,source] of critical){
+    assert.match(source,/npm:postgres@3\.4\.7/,name+' must use the pinned direct postgres client');
+    assert.match(source,/SUPABASE_DB_URL/,name+' must source DB credentials from the managed runtime secret');
+    assert.ok(source.includes('aws-0-eu-central-1.pooler.supabase.com'),name+' must use the EU Supavisor endpoint');
+    assert.match(source,/6543/,name+' must use Supavisor transaction-pooler port');
+    assert.doesNotMatch(source,/\/rest\/v1\//,name+' must not depend on PostgREST for the critical recovery path');
+  }
+  assert.doesNotMatch(workflow,/\/rest\/v1\//,'recovery workflow must not depend on PostgREST');
+});
+
+test('recovery runner keeps authority private and uses only canonical loop/publisher authorities',()=>{
+  assert.match(recoveryRunner,/SERVICE_ROLE_REQUIRED/);
+  assert.match(recoveryRunner,/powerhouse_daily_scheduler_token/);
+  assert.match(recoveryRunner,/select public\.bg_geheim/);
+  assert.match(recoveryRunner,/powerhouse-content-loop/);
+  assert.match(recoveryRunner,/powerhouse-social-publisher/);
+  assert.match(recoveryRunner,/mode: "publish_only"/);
+  assert.match(recoveryRunner,/channels: \[channel\]/);
+  assert.match(recoveryRunner,/readCanonicalState/);
+  assert.match(recoveryRunner,/CANONICAL_CONTENT_ALREADY_READY_OR_TERMINAL/);
+  assert.match(recoveryRunner,/SAME_DAY_RECOVERY_ONLY/);
+  assert.doesNotMatch(recoveryRunner,/DB_RECOVERY_INSPECT_TOKEN/);
+  assert.doesNotMatch(recoveryRunner,/createClient\(/);
+});
+
+test('manual recovery persists visible evidence and never reintroduces PostgREST',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
   assert.match(workflow,/mkdir -p recovery-artifacts/);
   assert.match(workflow,/path: recovery-artifacts/);
   assert.doesNotMatch(workflow,/path: \.artifacts/);
+  assert.doesNotMatch(workflow,/\/rest\/v1\//);
 });
 
-test('manual recovery bounds provider publication by channel under the edge runtime budget',()=>{
-  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
-  assert.match(publisher,/const publishOnly = mode === 'publish_only'/);
-  assert.match(publisher,/requestedChannels/);
-  assert.match(publisher,/publishOnly \? \[\] : await runLinkedInCockpitAutopilot\(db\)/);
-  assert.match(publisher,/if \(!publishOnly\)/);
-  assert.match(workflow,/mode:"publish_only"/);
-  assert.match(workflow,/channels:\[process\.env\.CHANNEL\]/);
-  assert.match(workflow,/for channel in linkedin_personal linkedin_company instagram_company/);
-  assert.match(workflow,/--max-time 58/);
-  assert.match(workflow,/SOCIAL_PUBLICATION_UNRESOLVED/);
+test('canonical content loop remains bounded and lease protected',()=>{
+  assert.match(contentLoop,/LOOP_LEASE_MS/);
+  assert.match(contentLoop,/claimLoopLease/);
+  assert.match(contentLoop,/releaseLoopLease/);
+  assert.match(contentLoop,/CHILD_TIMEOUTS/);
+  assert.match(contentLoop,/AbortSignal\.timeout/);
+  assert.match(contentLoop,/ALREADY_RUNNING/);
+  assert.match(contentLoop,/LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH/);
 });
 
-
+test('content loop lease SQL explicitly types reused placeholders',()=>{
+  assert.ok(contentLoop.includes("'holder',$5::text"));
+  assert.ok(contentLoop.includes("'run_date',$3::text"));
+  assert.ok(contentLoop.includes("'expires_at',$6::timestamptz"));
+  assert.ok(contentLoop.includes("payload->>'holder' = $5::text"));
+  assert.ok(contentLoop.includes("payload->>'holder'=$2::text"));
+});
 
 test('social recovery functions use the EU function region',()=>{
   const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
@@ -138,6 +177,15 @@ test('social recovery functions use the EU function region',()=>{
   assert.match(deployHook,/region:\s*'fra'/);
 });
 
+
+test('social recovery runner quality surface is canonically registered',()=>{
+  const registry=JSON.parse(fs.readFileSync('config/powerhouse-quality-surface-contracts.json','utf8'));
+  const surface=registry.surfaces.find((item)=>item.id==='function:social-recovery-runner');
+  assert.ok(surface,'social recovery runner must be registered');
+  assert.equal(surface.authority,'supabase/functions/social-recovery-runner/index.ts');
+  assert.equal(surface.evidence_contract,'tests/brain-central-social-publication-authority-v1.test.mjs');
+  assert.equal(surface.required,true);
+});
 
 test('content operations shares the canonical scheduler authority with social publication',()=>{
   const operations=fs.readFileSync('supabase/functions/content-operations/index.ts','utf8');
@@ -149,14 +197,31 @@ test('content operations shares the canonical scheduler authority with social pu
 });
 
 
-test('manual recovery degrades preparation but always runs bounded publishers and persists visible evidence',()=>{
+
+test('bounded publish_only isolates one channel and compacts recursive evidence',()=>{
+  assert.match(publisher,/const requestedChannels = Array\.isArray\(body\.channels\)/);
+  assert.match(publisher,/const channels = requestedChannels\.length \? requestedChannels : allChannels/);
+  assert.match(publisher,/\.in\('channel', channels\)/);
+  assert.match(publisher,/this\.table==='powerhouse_channel_decisions'&&column==='delivery_evidence'/);
+  assert.match(publisher,/this\.table==='powerhouse_content_artifacts'&&column==='generation_evidence'/);
+  assert.match(publisher,/this\.table==='content_publication_obligations'&&column==='evidence'/);
+  assert.match(publisher,/jsonb_strip_nulls\(jsonb_build_object/);
+  assert.match(publisher,/publishOnly \? \{active:false,retry_at:null,retry_after_seconds:0\} : await readBufferCircuit/);
+});
+
+test('recovery workflow stores evidence in a visible artifact directory',()=>{
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
-  assert.match(workflow,/curl_rc=0/);
-  assert.match(workflow,/CONTENT_LOOP_TRANSPORT_UNAVAILABLE/);
-  assert.match(workflow,/CANONICAL_SOCIAL_CONTENT_LOOP_PREPARATION_TRANSPORT_/);
-  assert.match(workflow,/- name: Invoke bounded canonical publishers\n\s+if: always\(\)/);
   assert.match(workflow,/mkdir -p recovery-artifacts/);
   assert.match(workflow,/path: recovery-artifacts/);
   assert.doesNotMatch(workflow,/path: \.artifacts/);
-  assert.match(workflow,/SOCIAL_PUBLICATION_UNRESOLVED/);
+});
+
+
+test('recovery runner skips heavyweight preparation for content-ready canonical claims',()=>{
+  assert.match(recoveryRunner,/readCanonicalState/);
+  assert.match(recoveryRunner,/preparationNeeded/);
+  assert.match(recoveryRunner,/content_ready/);
+  assert.match(recoveryRunner,/mode: "publish_only"/);
+  assert.match(recoveryRunner,/channels: \[channel\]/);
+  assert.match(recoveryRunner,/CANONICAL_READBACK_UNAVAILABLE/);
 });
