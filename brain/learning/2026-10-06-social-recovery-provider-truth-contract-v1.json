@@ -1,0 +1,18 @@
+{
+  "fingerprint": "social-recovery|provider-truth-terminal-contract|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-recovery-provider-truth-contract-20261006-v1",
+  "root_cause": "The recovery runner allowed a known external provider id to substitute for explicit provider_truth_verified=true. Separately, successful LinkedIn company reconciliation merged prior delivery evidence without deleting stale error/auth fields, allowing contradictory LIVE_PROVEN evidence.",
+  "prevention_rule": "Recovery GREEN requires one matching canonical obligation with explicit provider_truth_verified=true and durable external_id for every required publish decision. Successful LinkedIn company provider proof must remove stale error/auth-preflight fields before persisting LIVE_PROVEN evidence.",
+  "evidence": {
+    "source": [
+      "supabase/functions/social-recovery-runner/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts"
+    ],
+    "regression": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  }
+}
