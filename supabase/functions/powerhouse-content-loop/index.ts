@@ -264,7 +264,7 @@ Deno.serve(async (req) => {
 
     // Independent delivery lanes execute in parallel, once per tick.
     const [socialDispatch, blogDispatch] = await Promise.all([
-      invoke(url, expected, 'powerhouse-social-publisher', { runDate }),
+      invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'publish_only' }),
       invoke(url, expected, 'powerhouse-blog-queue', { runDate }),
     ]);
     stepResults.push(socialDispatch, blogDispatch);

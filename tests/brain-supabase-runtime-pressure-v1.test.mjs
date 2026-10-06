@@ -109,3 +109,13 @@ test('orchestrator avoids wide payload reads on the hot path',()=>{
   assert.doesNotMatch(orchestrator,/powerhouse_instagram_daily_winners_v1'\)\.select\('\*'\)/);
   assert.match(orchestrator,/select\('channel,priority,rationale,delivery_evidence'\)/);
 });
+
+test('publisher separates audit, cockpit and dispatch critical paths', () => {
+  const loop = fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
+  const publisher = fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+  assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'publish_only' \}/);
+  assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'audit_only' \}/);
+  assert.match(publisher, /if \(mode === 'cockpit_autopilot'\)/);
+  assert.match(publisher, /const cockpit_autopilot: any\[\] = \[\]/);
+  assert.doesNotMatch(publisher, /const cockpit_autopilot = publishOnly \? \[\] : await runLinkedInCockpitAutopilot/);
+});
