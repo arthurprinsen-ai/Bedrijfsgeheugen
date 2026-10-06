@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 const workflow = await readFile('.github/workflows/supabase-supported-migration-repair-3742.yml','utf8');
 const bridge = await readFile('supabase/functions/supabase-migration-repair-bridge/index.ts','utf8');
 const config = await readFile('supabase/config.toml','utf8');
-const applicability = await readFile('.github/workflows/supabase-preview-applicability.yml','utf8');
+const required = await readFile('.github/workflows/required-test.yml','utf8');
 
 test('trusted repair uses only canonical Supavisor session-mode IPv4 transport', () => {
   assert.match(workflow, /supavisor-session-ipv4/);
@@ -28,10 +28,11 @@ test('OIDC bridge rewrites the direct credential source to the IPv4 session pool
 });
 
 test('function-only config metadata does not falsely require a database preview', () => {
-  assert.match(applicability, /grep -v '\^supabase\/config\.toml\$'/);
-  assert.match(applicability, /import tomllib/);
-  assert.match(applicability, /normalized\.pop\('functions', None\)/);
-  assert.match(applicability, /function_config_only/);
+  assert.match(required, /databaseRelevantSupabase/);
+  assert.match(required, /import subprocess,sys,tomllib/);
+  assert.match(required, /norm=lambda config:\{k:v for k,v in config\.items\(\) if k!='functions'\}/);
+  assert.match(required, /supabaseConfigDatabaseRelevant/);
+  assert.match(required, /databaseRelevantSupabase \|\| supabaseConfigDatabaseRelevant/);
 });
 
 
