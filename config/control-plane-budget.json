@@ -1,0 +1,43 @@
+{
+  "version": 1,
+  "mode": "ratchet",
+  "budgets": {
+    "github": {
+      "maxTopLevelTriggeredWorkflows": 15,
+      "maxOpenImplementationPRs": 10,
+      "maxLivePRsPerObligation": 1,
+      "maxSuccessorDepth": 1
+    },
+    "netlify": {
+      "maxActiveBedrijfsgeheugenProjects": 5,
+      "defaultEphemeralTtlDays": 7
+    },
+    "supabase": {
+      "maxActiveEdgeFunctions": 40
+    },
+    "notion": {
+      "maxPrivateRootItems": 50
+    },
+    "runtime": {
+      "maxPollingSeconds": 120,
+      "maxIdenticalDeploysPer30Minutes": 2
+    }
+  },
+  "baseline": {
+    "github": {
+      "workflowFiles": 126,
+      "openPullRequests": 78
+    },
+    "netlify": {
+      "projects": 16
+    },
+    "supabase": {
+      "edgeFunctions": 115,
+      "migrations": 591
+    },
+    "notion": {
+      "privateRootItems": 374
+    }
+  },
+  "policy": "Existing debt is tolerated only as a ratchet baseline. Any increase above the checked-in baseline fails. Targets become strict after cleanup."
+}
