@@ -46,10 +46,13 @@ test('supply-chain provenance is post-merge while dependency review remains fail
   assert.match(yml, /package-lock\.json/);
 });
 
-test('Required test remains the protected SHA-specific admission authority', () => {
+test('Required remains PR-single-flight while exact-head proof stays inside the protected aggregate', () => {
   const yml = read('.github/workflows/required-test.yml');
-  assert.match(yml, /group:\s*required-test-\$\{\{[\s\S]*?github\.event\.pull_request\.head\.sha/);
+  const concurrency = yml.slice(yml.indexOf('concurrency:'), yml.indexOf('\njobs:'));
+  assert.match(concurrency, /github\.event\.pull_request\.number/);
+  assert.doesNotMatch(concurrency, /github\.event\.pull_request\.head\.sha/);
   assert.match(yml, /cancel-in-progress:\s*true/);
-  assert.match(yml, /test:\n\s+name:\s*test/);
-  assert.match(yml, /needs:\s*\[hygiene, preflight, netlify_build_parity, supabase_preview, backend, portal, automation, website\]/);
+  assert.match(yml, /PR_HEAD_SHA|candidate_sha|change_head_sha/);
+  assert.match(yml, /test:\n\s+name:\s+test/);
+  assert.match(yml, /needs:\s*\[hygiene, preflight, merge_specialist, merge_specialist_node24, netlify_build_parity, supabase_source_contract, supabase_preview, backend, portal, automation, website\]/);
 });
