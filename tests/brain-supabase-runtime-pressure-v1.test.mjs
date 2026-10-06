@@ -142,3 +142,8 @@ test('publication delivery normalizes legacy JSONB strings before merge', () => 
   assert.match(blogQueue, /const deliveryEvidence=jsonObject\(d\.delivery_evidence\)/);
   assert.match(blogQueue, /const generationEvidence=jsonObject\(a\.generation_evidence\)/);
 });
+
+test('production SQL history is classified as non-executable delivery evidence', () => {
+  const policy = JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+  assert.ok(policy.nonExecutableSharedPaths.includes('docs/production-sql-history/'));
+});
