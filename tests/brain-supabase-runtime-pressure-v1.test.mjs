@@ -12,7 +12,7 @@ const repairWorkflow = fs.readFileSync('.github/workflows/supabase-supported-mig
 test('trusted repair workflow rejects direct IPv6 before Supabase CLI execution', () => {
   assert.match(repairWorkflow, /supavisor-session-ipv4/);
   assert.match(repairWorkflow, /DIRECT_IPV6_ROUTE_FORBIDDEN/);
-  assert.ok(repairWorkflow.includes('aws-0-eu-central-1.pooler.supabase.com'));
+  assert.ok(repairWorkflow.split(/\r?\n/).some(line => line.trim() === "const expectedHost = 'aws-0-eu-central-1.pooler.supabase.com';"));
   assert.match(repairWorkflow, /SESSION_POOLER_PORT_REQUIRED/);
   assert.match(repairWorkflow, /SSLMODE_REQUIRE_REQUIRED/);
   assert.match(repairWorkflow, /getent ahostsv4/);
