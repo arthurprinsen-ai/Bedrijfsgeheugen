@@ -50,8 +50,49 @@
       "tools/site-shell/live-contract.mjs",
       "tools/site-shell/test-live-contract.mjs",
       "brain/contracts/production-readback-v1.json",
-      "tools/site-shell/production-supersession.mjs"
-    ]
+      "tools/site-shell/production-supersession.mjs",
+      "tools/site-shell/standalone-visibility-check.mjs",
+      "config/historical-terminal-reconciliation.json"
+    ],
+    "netlifyRuntimePrefixes": [
+      "netlify/functions/",
+      "platform/api/",
+      "platform/saas/",
+      "platform/connectors/",
+      "platform/read-models/",
+      "components/",
+      "assets/",
+      "pages/",
+      "site/",
+      "blog/",
+      "kennis/",
+      "portal/",
+      "portal-next/",
+      "portal-v2/",
+      "tools/site-shell/",
+      "tools/seo-order-engine/",
+      "config/bg-static-i18n-en.d/",
+      "data/i18n/"
+    ],
+    "netlifyRuntimePaths": [
+      "netlify.toml",
+      "_redirects",
+      "_headers",
+      "index.html",
+      "klantportaal.html",
+      "package.json",
+      "config/bg-static-i18n-en.json",
+      "tools/bouw-powerhouse-auth.mjs",
+      "tools/bouw-kennisindex.mjs",
+      "tools/bouw-v18-production.mjs",
+      "tools/apply-tabbladen.mjs",
+      "tools/bouw-v18-views.mjs",
+      "tools/bouw-v18-chrome-alles.mjs",
+      "tools/prijzen-uit-de-homepage.mjs",
+      "tools/normaliseer-site-ui.mjs",
+      "tools/genereer-sitemap.mjs"
+    ],
+    "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json"
   },
   "connectorReadiness": {
     "maxAttempts": 8,

@@ -32,3 +32,15 @@ test('workflow runs automatically when reconciliation authority lands on main', 
   assert.match(workflow, /historical-terminal-reconcile\.mjs/);
   assert.match(workflow, /actions\/upload-artifact@v4/);
 });
+
+
+test('registry revalidation is bound to repaired terminalizer authority and closed migration history', async () => {
+  const config = JSON.parse(await readFile('config/historical-terminal-reconciliation.json', 'utf8'));
+  assert.deepEqual(config.revalidation.terminalizer_authority_prs, [3812, 3822]);
+  assert.deepEqual(config.revalidation.terminalizer_authority_merge_shas, [
+    'b8cdcacac4efbfa40facc8a89dbc05a7805470b3',
+    '2729dfd6dbf07426b1451e4469ea29cf295e692d',
+  ]);
+  assert.equal(config.revalidation.migration_history_closure_pr, 3824);
+  assert.equal(config.revalidation.migration_history_closure_merge_sha, '908e4f03084ac0f446299aa70fcf43cc6e48ef1e');
+});

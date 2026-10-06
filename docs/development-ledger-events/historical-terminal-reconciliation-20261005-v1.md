@@ -19,3 +19,12 @@ Introduces a fail-closed repository-owned reconciliation lane for historical mer
 - Runtime-not-applicable remains explicit and never masquerades as deployment, runtime-function or business-outcome proof.
 - Historical runtime scope without a dedicated authority fails closed.
 - Reconciliation evidence is exact-SHA bound and reproducible from repository history.
+
+## Revalidation event — 2026-10-06
+
+- Failed post-merge terminalizer run on PR #3813: 37360346810.
+- Exact failure: `UNWIRED_NON_NETLIFY_RUNTIME_READBACK` for `config/historical-terminal-reconciliation.json`.
+- Terminalizer authority correction chain: PR #3812 -> PR #3822.
+- Final Supabase migration-history closure authority: PR #3824.
+- Structural fix: add the historical reconciliation registry to canonical `productionTruth.verifierOnlyPaths`.
+- The registry update retriggers historical reconciliation after merge; no runtime deployment or Supabase mutation is introduced.

@@ -9,7 +9,9 @@ const canonicalOrigin = 'https://www.bedrijfsgeheugen.nl';
 const navigationTimeoutMs = Number(process.env.UI_VR_NAVIGATION_TIMEOUT_MS || 8000);
 const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 1500);
 const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
-const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 2 : 4)));
+const isCanonicalProduction = String(baseUrl).replace(/\/$/, '') === canonicalOrigin;
+const requestedRouteConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 2 : 4)));
+const routeConcurrency = isCanonicalProduction ? Math.min(4, requestedRouteConcurrency) : requestedRouteConcurrency;
 const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
 const startedAt = Date.now();
 let cleanupTimedOut = false;
@@ -18,7 +20,8 @@ const viewports = [
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
 ];
-const viewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 1 : viewports.length))));
+const requestedViewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 1 : viewports.length))));
+const viewportConcurrency = isCanonicalProduction ? Math.min(2, requestedViewportConcurrency) : requestedViewportConcurrency;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function closeBounded(label, closeFn) {
