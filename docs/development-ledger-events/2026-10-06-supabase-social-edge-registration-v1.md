@@ -4,7 +4,7 @@ Date: 2026-10-06
 Obligation-ID: supabase-social-edge-registration-20261006-v1
 Delivery-Lane: automation
 Candidate-Type: recovery
-Base-SHA: fcca2c65f3515f3bf9263437ed30233e9c42ef85
+Base-SHA: e6e676c670127b7378143688b684f6ef8ba6294f
 
 Observed:
 - protected-main Supabase production check was successful;
