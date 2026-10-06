@@ -24,3 +24,11 @@ test('daily snapshot requires the canonical Powerhouse controls',()=>{
   assert.ok(s.surfaces.find(x=>x.surface==='skills'));
   assert.ok(s.surfaces.find(x=>x.surface==='delivery'));
 });
+
+
+test('daily self evolution is scheduled/manual only and cannot add PR fanout',()=>{
+  const workflow=fs.readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+  assert.match(workflow,/schedule:/);
+  assert.match(workflow,/workflow_dispatch:/);
+  assert.doesNotMatch(workflow,/^  pull_request:/m);
+});
