@@ -105,7 +105,13 @@ async function composioLinkedInContext(db:any){
 
   const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
   if(error)throw new Error('COMPOSIO_LINKEDIN_STATE_READ:'+error.message);
-  const state=data?.result||{};
+  const rawState=data?.result;
+  let state:any={};
+  if(typeof rawState==='string'){
+    try{state=JSON.parse(rawState)||{};}catch{state={};}
+  }else if(rawState&&typeof rawState==='object'){
+    state=rawState;
+  }
   const expectedPersonUrn=clean(state?.personal_author_urn)||'urn:li:person:N1twnCNCrD';
   const expectedPersonId=expectedPersonUrn.replace(/^urn:li:person:/,'');
   const stateUserId=clean(state?.user_id);
