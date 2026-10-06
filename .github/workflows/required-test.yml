@@ -78,6 +78,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Enforce control-plane growth ratchets
+        run: |
+          node tools/ci/check-control-plane-budget.mjs
+          node tools/ci/check-pr-trigger-ratchet.mjs
       - uses: actions/cache@v4
         with:
           path: ~/.npm
