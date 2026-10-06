@@ -42,10 +42,16 @@ jobs:
         run: |
           set -euo pipefail
           proposed="artifacts/engineering-optimizer/proposed-tuning.json"
-          cmp -s "$proposed" config/powerhouse-engineering-tuning.json && {
-            echo "No bounded tuning change needed today."
+          cp "$proposed" config/powerhouse-engineering-tuning.json
+
+          # At most one proof-backed PR authority is retired per cycle.
+          node scripts/brain/pr-authority-ratchet.mjs --apply-next
+          node scripts/brain/pr-authority-ratchet.mjs --check
+
+          if git diff --quiet -- config/powerhouse-engineering-tuning.json config/pr-authority-ratchet.json .github/workflows; then
+            echo "No bounded tuning or proven PR-authority retirement needed today."
             exit 0
-          }
+          fi
 
           existing="$(gh pr list --state open --search 'in:title "Powerhouse: daily engineering tuning"' --json number --jq '.[0].number // empty')"
           if [ -n "$existing" ]; then
@@ -53,28 +59,30 @@ jobs:
             exit 0
           fi
 
-          cp "$proposed" config/powerhouse-engineering-tuning.json
           branch="automation/engineering-tuning-$GITHUB_RUN_ID"
           git config user.name "Powerhouse Engineering Optimizer"
           git config user.email "actions@users.noreply.github.com"
           git checkout -b "$branch"
-          git add config/powerhouse-engineering-tuning.json
-          git commit -m "Engineering: daily bounded tuning"
+          git add config/powerhouse-engineering-tuning.json config/pr-authority-ratchet.json .github/workflows
+          git commit -m "Engineering: daily bounded tuning and PR authority ratchet"
           git push origin "$branch"
+
           base_sha="$(git rev-parse main)"
+          change_scope="$(git show --pretty='' --name-only HEAD | sed '/^$/d' | paste -sd ',' -)"
+          scope_budget="$(git show --pretty='' --name-only HEAD | sed '/^$/d' | wc -l | tr -d ' ')"
           body="$(cat <<EOF
 Obligation-ID: powerhouse-daily-engineering-tuning-$GITHUB_RUN_ID
 Delivery-Lane: automation
 Candidate-Type: implementation
 Base-SHA: $base_sha
 Supersedes: none
-Change-Scope: config/powerhouse-engineering-tuning.json
-Scope-Budget: 1
+Change-Scope: $change_scope
+Scope-Budget: $scope_budget
 
-Bounded autonomous tuning only. Direct-PR and workflow budgets may only ratchet downward. Safety gates, exact-SHA identity, protected merge and production readback cannot be weakened by this optimizer.
+Bounded autonomous tuning plus at most one proof-backed direct-PR authority retirement. Direct-PR and workflow budgets may only ratchet downward. Safety gates, exact-SHA identity, protected merge and production readback cannot be weakened by this optimizer.
 EOF
 )"
-          url="$(gh pr create --base main --head "$branch" --title "Powerhouse: daily engineering tuning" --body "$body")"
+          url="$(gh pr create --base main --head "$branch" --title "Powerhouse: daily engineering tuning + PR authority ratchet" --body "$body")"
           gh pr merge "$url" --auto --squash || true
       - uses: actions/upload-artifact@v4
         if: always()
