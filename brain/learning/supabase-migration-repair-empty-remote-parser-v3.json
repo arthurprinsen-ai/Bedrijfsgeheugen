@@ -1,0 +1,16 @@
+{
+  "fingerprint": "supabase|migration-repair|cli-empty-remote-normalization|v3",
+  "obligation": "#3742",
+  "failure_class": "GITHUB_DELIVERY",
+  "evidence": {
+    "run_id": 37425004020,
+    "cli_row": "`20260920101150` | ` ` | `2026-09-20 10:11:50`",
+    "observed_error": "REMOTE_ONLY_OR_IDENTITY_DRIFT"
+  },
+  "root_cause": "The parser trimmed before stripping presentation backticks. For a rendered empty remote cell (` `), removing the backticks left a whitespace string, which is truthy.",
+  "prevention": [
+    "normalize each migration-list cell as trim -> strip presentation backticks -> trim",
+    "apply identical normalization before pre-repair and post-repair parity evaluation",
+    "retain exact four-version allowlist and fail-closed remote-only rejection"
+  ]
+}
