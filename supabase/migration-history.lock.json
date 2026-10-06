@@ -2334,38 +2334,6 @@
     {
       "version": "20261006095958",
       "name": "normalize_publication_evidence_objects_v1"
-    },
-    {
-      "version": "20261006102646",
-      "name": "linkedin_company_admin_oauth_live_proof_guard_v1"
-    },
-    {
-      "version": "20261006102754",
-      "name": "linkedin_company_org_oauth_live_proof_guard_v1"
-    },
-    {
-      "version": "20261006103336",
-      "name": "linkedin_company_fresh_oauth_terminal_guard_v2"
-    },
-    {
-      "version": "20261006103408",
-      "name": "linkedin_org_reauth_scoped_setup_v2"
-    },
-    {
-      "version": "20261006103432",
-      "name": "linkedin_company_admin_oauth_function_execute_hardening_v1"
-    },
-    {
-      "version": "20261006103445",
-      "name": "linkedin_company_fresh_oauth_live_proof_guard_v2"
-    },
-    {
-      "version": "20261006103617",
-      "name": "linkedin_company_org_oauth_security_closure_v3"
-    },
-    {
-      "version": "20261006103856",
-      "name": "linkedin_company_live_proof_state_canonical_v3"
     }
   ],
   "replay_baselines_pending_repair": [
@@ -2596,5 +2564,5 @@
     "remote_history_repair": false,
     "direct_schema_migrations_writes_forbidden": true
   },
-  "production_ledger_count": 591
+  "production_ledger_count": 583
 }

@@ -13,14 +13,6 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
-    "supabase/migrations/20261006102646_linkedin_company_admin_oauth_live_proof_guard_v1.sql": "83ea8b26bc1e364262f15e24f43ed796931c3e8a",
-    "supabase/migrations/20261006102754_linkedin_company_org_oauth_live_proof_guard_v1.sql": "1cf7f0c2236a3df15062a72fb2b8528ae8c9ddc4",
-    "supabase/migrations/20261006103336_linkedin_company_fresh_oauth_terminal_guard_v2.sql": "180394a12587c01d67f2a840538ce8edc9fbd36a",
-    "supabase/migrations/20261006103408_linkedin_org_reauth_scoped_setup_v2.sql": "713d5081e90e4b36ace9b168f03297c97cafb82c",
-    "supabase/migrations/20261006103432_linkedin_company_admin_oauth_function_execute_hardening_v1.sql": "0bdec55ec411f4f89cba61444a978b73c4a025b1",
-    "supabase/migrations/20261006103445_linkedin_company_fresh_oauth_live_proof_guard_v2.sql": "bc3a179dfc76f5a57d1d67b39fa593e3f8d611ef",
-    "supabase/migrations/20261006103617_linkedin_company_org_oauth_security_closure_v3.sql": "412f550ec3196b4fc1f204512fac024f593c0c5a",
-    "supabase/migrations/20261006103856_linkedin_company_live_proof_state_canonical_v3.sql": "1b522d67e6b6e1b0872dddde814c92650e6acfd2",
     "supabase/migrations/20261006095958_normalize_publication_evidence_objects_v1.sql": "8e8e651e441effb0ba5e4bb5c84c42474eb32488",
     "supabase/migrations/20261006095838_cache_research_freshness_and_split_one_brain_v1.sql": "3cea4a60c22538334a8e4cefe99a3d0eb6941907",
     "supabase/migrations/20261006095118_remove_account_strategy_correlated_committee_scan_v1.sql": "d7ef9bcb930fe39a469b11f4785f1c15a248fa40",
