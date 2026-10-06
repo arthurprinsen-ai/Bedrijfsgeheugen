@@ -210,8 +210,11 @@ begin
     'best_historical_match',v_best_key
   );
 end;
-$function$
+$function$;
 
+REVOKE ALL ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric,text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric,text) FROM anon;
+REVOKE ALL ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric,text) FROM authenticated;
 
 CREATE OR REPLACE FUNCTION public.powerhouse_issue_social_publish_capability_v1(p_run_date date, p_channel text, p_channel_id text, p_final_text_hash text, p_final_media_sha256 text, p_policy_version text)
  RETURNS jsonb
@@ -314,5 +317,8 @@ begin
   ) returning capability_id into v_id;
   return jsonb_build_object('authorized',true,'token',v_token,'capability_id',v_id,'expires_in_seconds',300,'policy_version',p_policy_version);
 end
-$function$
+$function$;
 
+REVOKE ALL ON FUNCTION public.powerhouse_issue_social_publish_capability_v1(date,text,text,text,text,text) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.powerhouse_issue_social_publish_capability_v1(date,text,text,text,text,text) FROM anon;
+REVOKE ALL ON FUNCTION public.powerhouse_issue_social_publish_capability_v1(date,text,text,text,text,text) FROM authenticated;
