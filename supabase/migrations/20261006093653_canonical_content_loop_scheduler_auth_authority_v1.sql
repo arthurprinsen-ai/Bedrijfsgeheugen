@@ -39,3 +39,9 @@ grant execute on function public.powerhouse_content_closed_loop_tick_v1(timestam
 -- Replay hardening mirrors the current production EXECUTE boundary.
 revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamp with time zone) from public, anon, authenticated;
 grant execute on function public.powerhouse_content_closed_loop_tick_v1(timestamp with time zone) to service_role;
+
+-- Replay hardening mirrors the current production function boundary.
+alter function public.powerhouse_content_closed_loop_tick_v1(timestamp with time zone)
+  set search_path = public, pg_catalog;
+revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamp with time zone) from public, anon, authenticated;
+grant execute on function public.powerhouse_content_closed_loop_tick_v1(timestamp with time zone) to service_role;
