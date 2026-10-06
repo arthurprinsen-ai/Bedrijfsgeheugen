@@ -83,6 +83,8 @@ jobs:
         run: |
           node tools/ci/check-control-plane-budget.mjs
           node tools/ci/check-pr-trigger-ratchet.mjs
+      - name: Verify immutable release artifact identity regression
+        run: node --test tests/release-artifact-identity.test.mjs
       - id: artifact
         name: Compute immutable artifact identity
         run: echo "artifact_id=$(node tools/build/artifact-id.mjs)" >> "$GITHUB_OUTPUT"
