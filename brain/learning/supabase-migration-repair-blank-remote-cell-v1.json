@@ -1,0 +1,27 @@
+{
+  "id": "supabase-migration-repair-blank-remote-cell-v1",
+  "date": "2026-10-06",
+  "issue": 3742,
+  "failure_class": "DELIVERY_CONTROL_PLANE",
+  "finding": "Supabase CLI renders an absent remote migration version as a backtick-wrapped blank cell. Trimming before removing backticks leaves one space and falsely marks the remote side as present.",
+  "rule": "Normalize presentation delimiters first and trim the normalized value before migration identity comparison.",
+  "prevention": [
+    "trim each parsed cell after surrounding backtick removal",
+    "apply identical normalization before and after supported migration repair",
+    "regression-test the exact blank remote-cell representation",
+    "remain fail-closed on real remote-only or identity drift"
+  ],
+  "evidence": [
+    "trusted-main run 37425004020 attempt 4 reached provider readback and showed the four allowlisted local versions with blank remote cells",
+    "the current parser raised REMOTE_ONLY_OR_IDENTITY_DRIFT before provider mutation because the normalized remote value remained a single space"
+  ],
+  "production_mutation": "none in parser fix",
+  "terminal_green_requires": [
+    "trusted repair success",
+    "zero-drift migration-list readback",
+    "canonical recovery exact-head green",
+    "protected merge",
+    "post-merge production readback"
+  ],
+  "fingerprint": "supabase-migration-repair-blank-remote-cell-v1"
+}
