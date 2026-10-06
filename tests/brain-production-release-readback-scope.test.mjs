@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { evaluateProductionReadback } from '../tools/site-shell/verify-production-release.mjs';
+import { classifyProductionDeploymentApplicability } from '../tools/site-shell/production-deployment-applicability.mjs';
 
 const SHA = '9353ecfc8d5a463a89963ae9b671318d3db02d54';
 
@@ -19,18 +20,25 @@ test('website release still fails closed when exact deployed SHA is absent', () 
   );
 });
 
-test('production readback derives website applicability from canonical delivery lanes', async () => {
-  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
-  assert.match(workflow, /createDeliveryPlan/);
-  assert.match(workflow, /deriveRequiredTestSuites/);
+test('production readback derives website applicability from canonical shared authority', async () => {
+  const [workflow,authority] = await Promise.all([
+    readFile('.github/workflows/production-release-readback.yml', 'utf8'),
+    readFile('tools/site-shell/production-deployment-applicability.mjs', 'utf8'),
+  ]);
+  assert.match(workflow, /classifyProductionDeploymentApplicability/);
+  assert.match(authority, /createDeliveryPlan/);
+  assert.match(authority, /deriveRequiredTestSuites/);
   assert.match(workflow, /website_required/);
   assert.match(workflow, /steps\.scope\.outputs\.browser_required == 'true'/);
   assert.match(workflow, /deployment-required/);
 });
 
 test('Netlify-hosted backend function changes require exact production deployment without forcing browser scope', async () => {
-  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
-  assert.match(workflow, /netlify\/functions\//);
+  const [workflow,authority] = await Promise.all([
+    readFile('.github/workflows/production-release-readback.yml', 'utf8'),
+    readFile('tools/site-shell/production-deployment-applicability.mjs', 'utf8'),
+  ]);
+  assert.match(authority, /'netlify\/functions\/'/);
   assert.match(workflow, /deployment_required/);
   assert.match(workflow, /steps\.scope\.outputs\.deployment_required == 'true'/);
   assert.match(workflow, /browser_required/);
@@ -38,19 +46,22 @@ test('Netlify-hosted backend function changes require exact production deploymen
 });
 
 test('shared Netlify runtime dependencies also require exact production deployment', async () => {
-  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  const authority = await readFile('tools/site-shell/production-deployment-applicability.mjs', 'utf8');
   for (const prefix of ['platform/api/','platform/saas/','platform/connectors/','platform/read-models/']) {
-    assert.match(workflow,new RegExp(prefix.replaceAll('/','\\/')));
+    assert.match(authority,new RegExp(prefix.replaceAll('/','\\/')));
   }
-  assert.match(workflow,/netlifyRuntimePrefixes/);
-  assert.match(workflow,/netlifyRuntimeRequired=.*netlifyRuntimePrefixes/);
+  assert.match(authority,/NETLIFY_RUNTIME_PREFIXES/);
+  assert.match(authority,/netlifyRuntimeRequired=.*runtimeChangedPaths\.some/s);
 });
 
 test('Portal V2 changes require exact Netlify deployment and browser readback of the portal shell', async () => {
-  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
-  assert.match(workflow, /portalRequired=.*suites\.portal === true/);
-  assert.match(workflow, /browserRequired=websiteRequired \|\| portalRequired/);
-  assert.match(workflow, /deploymentRequired=browserRequired \|\| netlifyRuntimeRequired/);
+  const [workflow,authority] = await Promise.all([
+    readFile('.github/workflows/production-release-readback.yml', 'utf8'),
+    readFile('tools/site-shell/production-deployment-applicability.mjs', 'utf8'),
+  ]);
+  assert.match(authority, /portalRequired=.*requiredSuites\.portal === true/);
+  assert.match(authority, /browserRequired=websiteRequired \|\| portalRequired \|\| Boolean\(manualReadback\)/);
+  assert.match(authority, /deploymentRequired=Boolean\(manualDeploy\) \|\| browserRequired \|\| netlifyRuntimeRequired/);
   assert.match(workflow, /portalRequired && !routes\.includes\('\/portal-v2\/'\)/);
   assert.match(workflow, /routes\.push\('\/portal-v2\/'\)/);
   assert.match(workflow, /portal_required=/);
@@ -60,10 +71,46 @@ test('Portal V2 changes require exact Netlify deployment and browser readback of
 });
 
 test('production readback treats its own control-plane-only maintenance as website deployment not applicable', async () => {
-  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
-  assert.match(workflow, /production-release-readback\.yml/);
-  assert.match(workflow, /brain-production-release-readback-scope\.test\.mjs/);
+  const [workflow,authority] = await Promise.all([
+    readFile('.github/workflows/production-release-readback.yml', 'utf8'),
+    readFile('tools/site-shell/production-deployment-applicability.mjs', 'utf8'),
+  ]);
+  assert.match(workflow, /classifyProductionDeploymentApplicability/);
   assert.match(workflow, /readbackControlPlaneOnly/);
+  assert.match(authority, /'\.github\/'/);
+  assert.match(authority, /'tools\/ci\/'/);
+  assert.match(authority, /'site\/website-release-risk\.json'/);
+});
+
+test('shared applicability skips governance and Supabase-only changes but keeps Netlify runtime fail-closed', async () => {
+  const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+  const headSha='a'.repeat(40);
+  const governance=classifyProductionDeploymentApplicability({
+    changedPaths:['site/website-release-risk.json','tools/ci/netlify-ignore-build.mjs','.github/workflows/required-test.yml'],
+    headSha,
+    policy,
+  });
+  assert.equal(governance.deploymentRequired,false);
+  assert.deepEqual([...governance.runtimeChangedPaths],[]);
+
+  const supabase=classifyProductionDeploymentApplicability({
+    changedPaths:['supabase/functions/social-recovery-runner/index.ts'],
+    headSha,
+    policy,
+  });
+  assert.equal(supabase.deploymentRequired,false);
+
+  const netlify=classifyProductionDeploymentApplicability({
+    changedPaths:['netlify/functions/example.mjs'],
+    headSha,
+    policy,
+  });
+  assert.equal(netlify.deploymentRequired,true);
+  assert.equal(netlify.netlifyRuntimeRequired,true);
+  assert.equal(netlify.browserRequired,false);
+
+  const manual=classifyProductionDeploymentApplicability({changedPaths:[],headSha,policy,manualDeploy:true});
+  assert.equal(manual.deploymentRequired,true);
 });
 
 test('connector readiness tolerates bounded transient 5xx responses and still fails closed', async () => {
@@ -198,28 +245,28 @@ test('approved-central writer is reconciled after proven production and derives 
 
 
 test('governance-only mixed closure stays non-deployment even with system map and skills', async () => {
-  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
-  assert.match(workflow, /governanceOnlyPrefixes/);
-  assert.match(workflow, /platform\/system-map\/canonical-system-map\.mjs/);
-  assert.match(workflow, /tools\/brain-delivery-system\.mjs/);
-  assert.match(workflow, /runtimeChangedPaths=changedPaths\.filter/);
-  assert.match(workflow, /createDeliveryPlan\(\{changedPaths:runtimeChangedPaths/);
-  assert.match(workflow, /runtimeChangedPaths\.some\(path => netlifyRuntimePrefixes/);
-  assert.match(workflow, /browserRequired=websiteRequired \|\| portalRequired \|\| manualReadback/);
-  assert.doesNotMatch(workflow, /browserRequired=websiteRequired \|\| portalRequired \|\| readbackWorkflowChanged/);
+  const authority = await readFile('tools/site-shell/production-deployment-applicability.mjs', 'utf8');
+  assert.match(authority, /PRODUCTION_DEPLOYMENT_GOVERNANCE_PREFIXES/);
+  assert.match(authority, /platform\/system-map\/canonical-system-map\.mjs/);
+  assert.match(authority, /tools\/brain-delivery-system\.mjs/);
+  assert.match(authority, /runtimeChangedPaths=paths\.filter/);
+  assert.match(authority, /createDeliveryPlan\(\{changedPaths:runtimeChangedPaths/);
+  assert.match(authority, /runtimeChangedPaths\.some/);
+  assert.match(authority, /browserRequired=websiteRequired \|\| portalRequired \|\| Boolean\(manualReadback\)/);
 });
 
-
 test('scheduler governance changes do not start production snapshot or release readback', async () => {
-  const [release,snapshot] = await Promise.all([
+  const [release,snapshot,authority] = await Promise.all([
     readFile('.github/workflows/production-release-readback.yml','utf8'),
     readFile('.github/workflows/production-source-snapshot.yml','utf8'),
+    readFile('tools/site-shell/production-deployment-applicability.mjs','utf8'),
   ]);
   for (const path of [
     'config/powerhouse-agent-delivery-scheduler-v1.json',
     'platform/system-map/canonical-system-map.mjs',
     'tools/brain-delivery-system.mjs',
-  ]) assert.ok(release.includes(path), path);
-  assert.ok(snapshot.includes('config/powerhouse-agent-delivery-scheduler-v1.json'));
-  assert.match(release,/governanceOnlyExact[\s\S]*config\/powerhouse-agent-delivery-scheduler-v1\.json/);
+  ]) assert.ok(authority.includes(path), path);
+  assert.match(release,/classifyProductionDeploymentApplicability/);
+  assert.match(snapshot,/classifyProductionDeploymentApplicability/);
+  assert.match(snapshot,/steps\.scope\.outputs\.deployment_required == 'true'/);
 });

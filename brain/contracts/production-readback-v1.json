@@ -92,7 +92,9 @@
       "tools/normaliseer-site-ui.mjs",
       "tools/genereer-sitemap.mjs"
     ],
-    "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json"
+    "runtimeApplicabilityAuthority": "tools/site-shell/production-deployment-applicability.mjs",
+    "snapshotAndReadbackShareApplicability": true,
+    "nonNetlifyChangesSkipDeployment": true
   },
   "connectorReadiness": {
     "maxAttempts": 8,

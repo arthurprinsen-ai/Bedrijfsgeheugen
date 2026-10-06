@@ -1,0 +1,18 @@
+{
+  "id": "production-deployment-applicability-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|snapshot-readback|shared-deployment-applicability|v1",
+  "compiler": {
+    "failure_class": "UNNECESSARY_NETLIFY_PRODUCTION_DELIVERY"
+  },
+  "root_cause": "Production Source Snapshot treated nearly every non-ignored main push as a Netlify deployment while Production Release Readback maintained a separate inline applicability classifier. The two authorities drifted, so governance-only and Supabase-only commits could start exact-source Netlify transport, browser proof and self-heal even when no Netlify-hosted runtime changed.",
+  "prevention": "Use tools/site-shell/production-deployment-applicability.mjs as the single applicability authority for both Production Source Snapshot and Production Release Readback. Governance/control-plane and non-Netlify backend changes complete without Netlify transport; website, portal and Netlify-hosted runtime changes remain fail-closed.",
+  "evidence": {
+    "failed_snapshot_run": 37470438032,
+    "failed_snapshot_reason": "exact-source Netlify transport returned 401 Unauthorized three times for a CI risk-policy-only main commit",
+    "unnecessary_supabase_snapshot_run": 37471619096,
+    "regression": "tests/brain-production-release-readback-scope.test.mjs",
+    "authority": "tools/site-shell/production-deployment-applicability.mjs"
+  }
+}

@@ -48,58 +48,31 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
-          import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
-          import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
+          import { classifyProductionDeploymentApplicability } from './tools/site-shell/production-deployment-applicability.mjs';
           import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
 
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const changedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const governanceOnlyPrefixes=['docs/','.agents/','tests/','.github/','brain/learning/','brain/policies/','tools/delivery/'];
-          const governanceOnlyExact=new Set([
-            'AGENTS.md',
-            'config/delivery-prevention-rules.json',
-            'config/powerhouse-agent-delivery-scheduler-v1.json',
-            'platform/system-map/canonical-system-map.mjs',
-            'tools/brain-delivery-system.mjs',
-            'tools/site-shell/verify-targeted-website-routes.mjs',
-            'tools/site-shell/contracts.mjs',
-            'tools/site-shell/test-shell-components.mjs',
-            'tools/site-shell/live-contract.mjs',
-            'tools/site-shell/test-live-contract.mjs',
-            'tools/site-shell/production-supersession.mjs',
-            'tools/site-shell/standalone-visibility-check.mjs',
-            'brain/contracts/production-readback-v1.json',
-          ]);
-          const runtimeChangedPaths=changedPaths.filter(path =>
-            !governanceOnlyExact.has(path) &&
-            !governanceOnlyPrefixes.some(prefix => path.startsWith(prefix))
-          );
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
-          const plan=runtimeChangedPaths.length ? createDeliveryPlan({changedPaths:runtimeChangedPaths,headSha:process.env.GITHUB_SHA,policy}) : {lanes:[]};
-          const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane => lane.id)});
-
-          const readbackControlPlanePaths=new Set([
-            '.github/workflows/production-release-readback.yml',
-            'brain/contracts/production-readback-v1.json',
-            'tests/brain-production-release-readback-scope.test.mjs',
-            'tests/brain-production-promotion-observability.test.mjs',
-            'tools/site-shell/verify-production-release.mjs',
-          ]);
-          const readbackControlPlaneOnly=changedPaths.length>0 && runtimeChangedPaths.length===0;
-          const readbackWorkflowChanged=changedPaths.includes('.github/workflows/production-release-readback.yml');
           const manualReadback=process.env.EVENT_NAME === 'workflow_dispatch';
-          const websiteRequired=readbackControlPlaneOnly ? false : suites.website === true;
-          const portalRequired=readbackControlPlaneOnly ? false : suites.portal === true;
-          const browserRequired=websiteRequired || portalRequired || manualReadback;
-          const netlifyRuntimePrefixes=[
-            'netlify/functions/',
-            'platform/api/',
-            'platform/saas/',
-            'platform/connectors/',
-            'platform/read-models/',
-          ];
-          const netlifyRuntimeRequired=!readbackControlPlaneOnly && runtimeChangedPaths.some(path => netlifyRuntimePrefixes.some(prefix => path.startsWith(prefix)));
-          const deploymentRequired=browserRequired || netlifyRuntimeRequired;
+          const applicability=classifyProductionDeploymentApplicability({
+            changedPaths,
+            headSha:process.env.GITHUB_SHA,
+            policy,
+            manualReadback,
+          });
+          const {
+            runtimeChangedPaths,
+            controlPlaneOnly:readbackControlPlaneOnly,
+            deliveryLanes,
+            requiredSuites,
+            websiteRequired,
+            portalRequired,
+            browserRequired,
+            netlifyRuntimeRequired,
+            deploymentRequired,
+          }=applicability;
+          const readbackWorkflowChanged=changedPaths.includes('.github/workflows/production-release-readback.yml');
 
           let routes=[];
           let riskLane='not-applicable';
@@ -119,7 +92,7 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`portal_required=${portalRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
-          console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
+          console.log(JSON.stringify({changedPaths,runtimeChangedPaths,delivery_lanes:deliveryLanes,required_suites:requiredSuites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - name: Persist promotion-required state before waiting
         if: steps.scope.outputs.deployment_required == 'true'
