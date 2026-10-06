@@ -2,8 +2,11 @@
 name: Powerhouse Delivery Recovery Supervisor
 
 on:
-  # Recovery is scheduled/manual only. A main push must never fan out into
-  # another repository-wide recovery scan.
+  # Event-driven continuation wakes immediately when canonical Required finishes.
+  # The schedule is only a bounded fallback for provider/event delivery gaps.
+  workflow_run:
+    workflows: ["Required test"]
+    types: [completed]
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
