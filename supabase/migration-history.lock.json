@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-06T06:57:06.151Z",
+  "captured_at": "2026-10-06T10:16:08.000Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2274,6 +2274,66 @@
     {
       "version": "20261005160410",
       "name": "resource_intelligence_tenant_isolation_recovery_v1"
+    },
+    {
+      "version": "20261006085416",
+      "name": "stagger_cron_database_pressure_v1"
+    },
+    {
+      "version": "20261006090209",
+      "name": "normalize_runtime_event_degraded_state_v1"
+    },
+    {
+      "version": "20261006091309",
+      "name": "bound_runtime_event_hotpaths_and_identity_sync_v1"
+    },
+    {
+      "version": "20261006091918",
+      "name": "bound_loop_assurance_cron_history_scan_v1"
+    },
+    {
+      "version": "20261006092057",
+      "name": "bound_heavy_maintenance_pressure_v2"
+    },
+    {
+      "version": "20261006092322",
+      "name": "repair_revenue_snapshot_projection_v3"
+    },
+    {
+      "version": "20261006092411",
+      "name": "align_revenue_snapshot_v3_dependencies"
+    },
+    {
+      "version": "20261006093306",
+      "name": "runtime_pressure_maintenance_v2"
+    },
+    {
+      "version": "20261006093340",
+      "name": "materialize_revenue_snapshot_from_canonical_nba_v1"
+    },
+    {
+      "version": "20261006093529",
+      "name": "remove_snapshot_truncate_lock_contention_v1"
+    },
+    {
+      "version": "20261006093653",
+      "name": "canonical_content_loop_scheduler_auth_authority_v1"
+    },
+    {
+      "version": "20261006094410",
+      "name": "canonicalize_person_intelligence_alias_joins_v1"
+    },
+    {
+      "version": "20261006095118",
+      "name": "remove_account_strategy_correlated_committee_scan_v1"
+    },
+    {
+      "version": "20261006095838",
+      "name": "cache_research_freshness_and_split_one_brain_v1"
+    },
+    {
+      "version": "20261006095958",
+      "name": "normalize_publication_evidence_objects_v1"
     }
   ],
   "replay_baselines_pending_repair": [
@@ -2504,5 +2564,5 @@
     "remote_history_repair": false,
     "direct_schema_migrations_writes_forbidden": true
   },
-  "production_ledger_count": 568
+  "production_ledger_count": 583
 }
