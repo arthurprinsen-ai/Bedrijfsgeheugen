@@ -1,0 +1,48 @@
+{
+  "fingerprint": "social-recovery|db-transport|runtime-repo-parity|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-daily-publication-no-gap-transport-20261006",
+  "compiler": {
+    "failure_class": "POSTGREST_GATEWAY_DEPENDENCY_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Production had already been repaired to use the EU Supavisor transaction pooler, while repository main and the GitHub recovery workflow still contained PostgREST/Data API dependencies. That created runtime/source drift: the live hotfix worked, but a normal redeploy from main could reintroduce the same HTTP 522 failure. Repeated Vault inspection could not close this because the blocked introspection path was not the failing transport.",
+  "prevention_rule": "Critical content-publication runtime and recovery control-plane code must use the canonical EU Supavisor transaction pooler for internal database access and must not depend on /rest/v1 for scheduler authority or publication-state recovery. Repository source must be reconciled to proven production source before release. Vault values are never introspected as a recovery prerequisite; only bounded authority use and outcome readback are permitted.",
+  "evidence": {
+    "database": [
+      "Direct production SQL succeeded and reported pg_is_in_recovery=false.",
+      "The Supabase project remained ACTIVE_HEALTHY in eu-central-1."
+    ],
+    "failure_domain": [
+      "PostgREST/Data API requests had returned HTTP 522 during the incident.",
+      "The log query backend also returned a backend error while direct SQL remained healthy."
+    ],
+    "runtime": [
+      "content-operations production uses the EU Supavisor transaction pooler.",
+      "powerhouse-social-publisher production uses the EU Supavisor transaction pooler.",
+      "powerhouse-content-orchestrator production uses the EU Supavisor transaction pooler.",
+      "powerhouse-content-loop production uses the EU Supavisor transaction pooler."
+    ],
+    "source_repair": [
+      "fix/canonical-supavisor-runtime-20261006 reconciles the proven production transport into repository source.",
+      "social-publication-recovery.yml delegates to social-recovery-runner and contains no /rest/v1 dependency.",
+      "tests/brain-central-social-publication-authority-v1.test.mjs fails closed if the critical recovery path regresses to PostgREST."
+    ]
+  }
+}
