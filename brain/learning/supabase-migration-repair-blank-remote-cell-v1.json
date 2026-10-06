@@ -23,5 +23,16 @@
     "protected merge",
     "post-merge production readback"
   ],
-  "fingerprint": "supabase-migration-repair-blank-remote-cell-v1"
+  "fingerprint": "supabase-migration-repair-blank-remote-cell-v1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-blank-remote-cell-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  }
 }
