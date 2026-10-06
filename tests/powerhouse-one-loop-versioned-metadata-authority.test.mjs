@@ -5,13 +5,19 @@ import { resolveDeliveryMetadataAuthority } from '../tools/delivery/delivery-met
 const SHA_OLD = 'a'.repeat(40);
 const SHA_CURRENT = 'b'.repeat(40);
 
-const stalePrBody = `Obligation-ID: powerhouse-one-loop-v1
+const completeLivePrBody = `Obligation-ID: powerhouse-one-loop-v1
 Delivery-Lane: automation
 Candidate-Type: implementation
 Base-SHA: ${SHA_OLD}
 Supersedes: none
-Change-Scope: tools/legacy/**
+Change-Scope: tools/live/**
 Scope-Budget: 10`;
+
+const incompletePrBody = `Obligation-ID: powerhouse-one-loop-v1
+Delivery-Lane: automation
+Candidate-Type: implementation
+Base-SHA: ${SHA_OLD}
+Supersedes: none`;
 
 const manifest = {
   version: 'POWERHOUSE-DELIVERY-CANDIDATE-v1',
@@ -24,8 +30,20 @@ const manifest = {
   maxFiles: 60,
 };
 
-test('versioned exact-head manifest overrides stale mutable PR delivery metadata for the same obligation', () => {
-  const resolved = resolveDeliveryMetadataAuthority({ prBody: stalePrBody, manifest });
+test('complete live PR metadata is authoritative over a stale versioned manifest for the same obligation', () => {
+  const resolved = resolveDeliveryMetadataAuthority({ prBody: completeLivePrBody, manifest });
+
+  assert.equal(resolved.source, 'pr-body');
+  assert.equal(resolved.delivery.obligationId, 'powerhouse-one-loop-v1');
+  assert.equal(resolved.delivery.baseSha, SHA_OLD);
+  assert.deepEqual(resolved.expectedPaths, ['tools/live/**']);
+  assert.equal(resolved.maxFiles, 10);
+  assert.equal(resolved.versionedManifestAdvisory.delivery.baseSha, SHA_CURRENT);
+  assert.deepEqual(resolved.versionedManifestAdvisory.expectedPaths, manifest.expectedPaths);
+});
+
+test('incomplete live PR metadata falls back to the exact-head versioned manifest', () => {
+  const resolved = resolveDeliveryMetadataAuthority({ prBody: incompletePrBody, manifest });
 
   assert.equal(resolved.source, 'versioned-manifest');
   assert.equal(resolved.delivery.obligationId, 'powerhouse-one-loop-v1');
