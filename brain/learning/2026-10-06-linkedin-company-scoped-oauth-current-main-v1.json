@@ -1,0 +1,36 @@
+{
+  "fingerprint": "linkedin-company|scoped-oauth|fresh-bound-admin|20261006-v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "linkedin-company-scoped-oauth-20261006",
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_ORG_SCOPE_MISSING",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Generic Composio LinkedIn managed-auth links produced healthy personal member connections but did not request organization-admin/write scopes. Reauthorizing the same generic config therefore could never satisfy the canonical company provider preflight.",
+  "prevention_rule": "Company recovery must create or reuse an auth config that explicitly requests r_organization_admin and w_organization_social, bind verification to the exact newly created connected account, prove the canonical organization through a live ADMINISTRATOR ACL, and only then allow company_ready/resume.",
+  "evidence": {
+    "runtime": [
+      "All previously tested active LinkedIn connections lacked usable organization-admin capability.",
+      "Production setup v18 is preserved as the runtime base; only scoped OAuth creation/binding is added."
+    ],
+    "regression": [
+      "tests/brain-linkedin-company-scoped-oauth-current-main-20261006.test.mjs"
+    ],
+    "source": [
+      "supabase/functions/powerhouse-composio-linkedin-setup/index.ts"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-scoped-oauth-current-main-20261006.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-company-scoped-oauth-current-main-20261006.test.mjs"
+    ]
+  }
+}
