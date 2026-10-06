@@ -27,7 +27,8 @@
     "scheduler secret lookup must use the IPv4 Supavisor pooler or an injected Edge secret",
     "CMS circuit-breaker state must use strong-consistency Blobs",
     "public runtime health endpoints must not open database connections",
-    "runtime verifier credentials must never appear in query strings"
+    "runtime verifier credentials must never appear in query strings",
+    "production health must not create database probe traffic"
   ],
   "service_auth": {
     "authority": "supabase/functions/_shared/powerhouse-scheduler-auth.ts",
@@ -64,5 +65,15 @@
       "powerhouse-commercial-heartbeat-v1"
     ],
     "reason": "Public or bearer-link database probes can leak credentials and amplify outages."
+  },
+  "runtime_health": {
+    "public_database_probe": "retired",
+    "retired_function": "powerhouse-runtime-verifier-v1",
+    "authorities": [
+      "supabase-provider-logs",
+      "supabase-management-api",
+      "powerhouse-commercial-heartbeat-v1"
+    ],
+    "invariant": "production health must not create database probe traffic"
   }
 }
