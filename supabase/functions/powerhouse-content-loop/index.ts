@@ -79,8 +79,11 @@ function providerSideEffectTerminal(o:any){
     || (evidence?.provider_truth_verified===true && ['published','sent','live'].includes(clean(evidence?.provider_status).toLowerCase()));
 }
 function obligationTerminal(o:any){
-  return TERMINAL_GREEN.has(clean(o?.status))
-    || (clean(o?.status)==='PUBLISHED' && providerSideEffectTerminal(o));
+  const status=clean(o?.status);
+  const channel=clean(o?.channel);
+  if(channel==='linkedin_company')return TERMINAL_GREEN.has(status);
+  return TERMINAL_GREEN.has(status)
+    || (status==='PUBLISHED' && providerSideEffectTerminal(o));
 }
 
 async function readBoundedJson(response: Response, maxBytes = 32768) {
@@ -319,7 +322,10 @@ Deno.serve(async (req) => {
     const allOperationalGreen = (obligations || []).length === OPERATIONAL_CHANNELS.length && (obligations || []).every((o: any) => obligationTerminal(o));
     const loopState = blocked > 0 ? 'RED' : allOperationalGreen ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
-      if (['DISPATCHED','PUBLISHED'].includes(clean(o.status)) && ['linkedin_personal','linkedin_company','instagram'].includes(clean(o.channel))) {
+      const status=clean(o.status);
+      const channel=clean(o.channel);
+      if (['DISPATCHED','PUBLISHED'].includes(status) && ['linkedin_personal','linkedin_company','instagram'].includes(channel)) {
+        if(channel==='linkedin_company')return o.evidence?.provider_truth_verified===true;
         return o.evidence?.provider_truth_verified === true || providerSideEffectTerminal(o);
       }
       return true;
