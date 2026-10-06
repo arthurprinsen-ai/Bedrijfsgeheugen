@@ -50,5 +50,5 @@ test('Required test remains the protected SHA-specific admission authority', () 
   assert.match(yml, /group:\s*required-test-\$\{\{[\s\S]*?github\.event\.pull_request\.head\.sha/);
   assert.match(yml, /cancel-in-progress:\s*true/);
   assert.match(yml, /test:\n\s+name:\s*test/);
-  assert.match(yml, /needs:\s*\[hygiene, preflight, backend, portal, automation, website\]/);
+  assert.match(yml, /needs:\s*\[hygiene, preflight, netlify_build_parity, backend, portal, automation, website\]/);
 });

@@ -22,8 +22,12 @@ test('heavy website verification is owned by the canonical website lane, not dup
     const source = await workflow(name);
     assert.doesNotMatch(source, /^\s*pull_request\s*:/m, `${name} must not auto-fan-out on pull requests`);
   }
-  const lane = await workflow('lane-website.yml');
-  assert.match(lane, /Run exact Netlify production build command/);
+  const [required, lane] = await Promise.all([
+    workflow('required-test.yml'),
+    workflow('lane-website.yml'),
+  ]);
+  assert.match(required, /Run exact Netlify production build command once/);
+  assert.doesNotMatch(lane, /^  netlify[-_]build[-_]parity:/m);
   assert.match(lane, /Verify all public pages are visibly rendered/);
   assert.match(lane, /Verify broad high-risk browser contracts/);
 });

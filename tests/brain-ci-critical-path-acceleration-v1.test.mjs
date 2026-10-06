@@ -14,12 +14,18 @@ test('CI acceleration keeps one Required single-flight and removes duplicate gen
   assert.match(required, /hashFiles\('package\.json'\)/);
 });
 
-test('website lane reuses exact preview and does not keep a duplicate page-seo build job', async () => {
-  const website = await read('.github/workflows/lane-website.yml');
+test('website lane reuses exact preview and central Netlify parity without duplicate builds', async () => {
+  const [required, website] = await Promise.all([
+    read('.github/workflows/required-test.yml'),
+    read('.github/workflows/lane-website.yml'),
+  ]);
   assert.doesNotMatch(website, /^  page-seo:/m);
+  assert.doesNotMatch(website, /^  netlify-build-parity:/m);
+  assert.doesNotMatch(website, /^  netlify_build_parity:/m);
+  assert.match(required, /^  netlify_build_parity:/m);
+  assert.match(required, /Run exact Netlify production build command once/);
   assert.match(website, /preview_mode == 'local-exact-candidate'/);
   assert.match(website, /UI_VR_BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
-  assert.match(website, /Verify built artifact contracts/);
 });
 
 test('expensive mutation testing stays off the ordinary pull-request path', async () => {
