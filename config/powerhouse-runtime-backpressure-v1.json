@@ -21,6 +21,32 @@
     "visitor traffic must not fan out synchronously into PostgREST writes",
     "CMS Data API degradation must not return a 5xx to the public static website",
     "growth events remain durable in Netlify Blobs until DataHub persistence succeeds",
-    "a failing backend stops the current drain batch instead of creating retry amplification"
-  ]
+    "a failing backend stops the current drain batch instead of creating retry amplification",
+    "scheduler authentication must not depend on PostgREST before authorization",
+    "scheduler secret lookup must use the IPv4 Supavisor pooler or an injected Edge secret"
+  ],
+  "service_auth": {
+    "authority": "supabase/functions/_shared/powerhouse-scheduler-auth.ts",
+    "transport": "supavisor_ipv4_transaction_pool",
+    "pooler_host": "aws-0-eu-central-1.pooler.supabase.com",
+    "pooler_port": 6543,
+    "max_connections_per_isolate": 1,
+    "cache_ms": 300000,
+    "fallback_env": "POWERHOUSE_DAILY_SCHEDULER_TOKEN",
+    "protected_functions": [
+      "powerhouse-predictive-engine",
+      "powerhouse-forecast-calibrator",
+      "powerhouse-mira-problem-radar",
+      "powerhouse-visual-assurance-sync",
+      "powerhouse-email-reply-loop"
+    ],
+    "true_401": [
+      "TOKEN_REQUIRED",
+      "TOKEN_MISMATCH"
+    ],
+    "infrastructure_503": [
+      "AUTH_SECRET_EMPTY",
+      "AUTH_SECRET_LOOKUP_FAILED"
+    ]
+  }
 }
