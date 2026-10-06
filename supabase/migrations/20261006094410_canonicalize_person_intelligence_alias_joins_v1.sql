@@ -133,3 +133,7 @@ left join event_stats e on e.person_key=c.canonical_person_key
 left join action_stats s on s.person_key=c.canonical_person_key
 left join outcome_stats o on o.person_key=c.canonical_person_key
 left join opp_stats op on op.person_key=c.canonical_person_key;
+
+-- Internal view remains server-only on fresh replay.
+revoke all on public.powerhouse_person_intelligence_v1 from public, anon, authenticated;
+grant select on public.powerhouse_person_intelligence_v1 to service_role;
