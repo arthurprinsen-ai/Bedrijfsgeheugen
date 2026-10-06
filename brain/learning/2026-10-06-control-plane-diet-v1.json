@@ -37,15 +37,19 @@
     "reuse immutable source/artifact identity"
   ],
   "fingerprint": "control-plane|pr-fanout|duplicate-authority|ratchet-v1",
-  "failure_class": "EXCESS_DIRECT_PULL_REQUEST_AUTHORITY_FANOUT",
   "evaluation": {
-    "before": {
+    "historical_replay": [
+      "A candidate with many specialist pull_request workflows must fail the trigger ratchet when direct PR authority grows above the recorded baseline.",
+      "A control-plane reduction must preserve Required and independent security authority while retiring or internalizing duplicate read-only PR assurance."
+    ],
+    "observed_before": {
       "direct_pr_authorities": 38
     },
-    "after": {
+    "observed_after": {
       "direct_pr_authorities": 10,
       "admission_authorities": 5,
-      "lifecycle_recovery_authorities": 5
+      "lifecycle_recovery_authorities": 5,
+      "workflow_files": 123
     },
     "target": "ratchet direct pull_request admission toward Required plus independent security authority without removing assurance"
   },
@@ -62,5 +66,9 @@
       "config/control-plane-budget.json",
       "config/pr-trigger-baseline.json"
     ]
+  },
+  "compiler": {
+    "failure_class": "EXCESS_DIRECT_PULL_REQUEST_AUTHORITY_FANOUT",
+    "machine_enforceable": true
   }
 }
