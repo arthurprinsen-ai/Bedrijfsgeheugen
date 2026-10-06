@@ -15,7 +15,7 @@ function json(body,status=200,cache='miss'){
     'x-bg-cms-cache':cache
   }});
 }
-function storeForContext(context){return context?.deploy?.context==='production'?getStore(STORE):getDeployStore(STORE);}
+function storeForContext(context){return context?.deploy?.context==='production'?getStore(STORE,{consistency:'strong'}):getDeployStore(STORE);}
 function routeKey(surface,locale,route){return 'route/'+surface+'/'+locale+'/'+encodeURIComponent(route);}
 function ageMs(record,now){const t=Date.parse(String(record?.stored_at||''));return Number.isFinite(t)?Math.max(0,now-t):Number.POSITIVE_INFINITY;}
 function publicPayload(record,{degraded=false,reason=null}={}){
