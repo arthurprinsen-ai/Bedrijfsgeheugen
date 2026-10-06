@@ -32,5 +32,12 @@
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs",
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
+    ],
+    "expected": "The trusted repair accepts only the canonical Supavisor session-mode IPv4 transport and fails closed before mutation if direct IPv6 routing or transport identity returns."
+  }
 }
