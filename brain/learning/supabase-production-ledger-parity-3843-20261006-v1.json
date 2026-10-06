@@ -9,7 +9,7 @@
     "scope": "CI",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": true
+    "security_sensitive": false
   },
   "root_cause": "PR #3843 merged with its direct recovery migrations green, but production readback showed the production migration ledger at the #3843 merge snapshot contained 15 applied identities after the prior 568-entry lock while repository history represented only the first three. Historical production mirrors also entered ordinary preview/security gates as if they were newly executable migrations.",
   "prevention": [
@@ -21,8 +21,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-migration-history-integrity.test.mjs",
-      "tests/supabase-production-schema-replay-parity-v1.test.mjs",
+      "tests/brain-supabase-migration-history-parity-v1.test.mjs",
       "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ],
     "expected": "The #3843 recovery snapshot is reproducible from repository history, security remains blob-bound and fail-closed, historical mirrors do not demand a provider preview, and unrelated later production migrations do not expand this obligation."
