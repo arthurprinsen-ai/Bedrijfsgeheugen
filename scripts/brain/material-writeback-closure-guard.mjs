@@ -105,9 +105,9 @@ export function evaluateMaterialWritebackClosure({changedPaths=[],rootDir=null}=
   };
 }
 
-function diffPaths(base,head){
+export function diffPaths(base,head,{cwd=process.cwd()}={}){
   if(!base||!head) throw new Error('BASE_AND_HEAD_REQUIRED');
-  return execFileSync('git',['diff','--name-only',base+'..'+head],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+  return execFileSync('git',['diff','--name-only',base,head],{encoding:'utf8',cwd}).split(/\r?\n/).filter(Boolean);
 }
 
 if(import.meta.url==='file://'+process.argv[1]){
