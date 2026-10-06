@@ -156,3 +156,12 @@ Writer-Lease-Head: ${SHA_B}`;
   assert.equal(result.ok, true);
   assert.equal(result.state, 'LEASE_INACTIVE');
 });
+
+
+test('website lane classifies product-led contract tests', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const delivery = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+  const website = delivery.lanes.find(lane => lane.id === 'website');
+  assert.ok(website);
+  assert.ok(website.paths.includes('tests/product-led-'));
+});
