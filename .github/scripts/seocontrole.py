@@ -151,6 +151,7 @@ GEEN_BALK = {'klantportaal', 'klantportaal-demo', 'index-oud', 'index', 'prototy
 MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
 GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact', 'cms'}
+GEEN_SITEMAP = {'404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt', 'cms'}
 SLECHTE_ANKERS = {'lees meer', 'klik hier', 'meer info', 'hier', 'lees verder', 'meer'}
 
 
@@ -394,9 +395,9 @@ def main():
             in_sitemap.add(pad)
         for url, p in sorted(P.items()):
             naam = os.path.basename(p['bestand'])[:-5]
-            if naam in ('404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt'):
-                continue
-            if 'noindex' in p['ruw']:
+            # Utility/admin routes and every explicit noindex page are intentionally
+            # outside the crawl inventory. Keep sitemap authority aligned with robots.
+            if naam in GEEN_SITEMAP or 'noindex' in p['ruw'].lower():
                 continue
             canonical_path = urlparse(p.get('canon', '')).path.rstrip('/') or '/'
             current_path = url.rstrip('/') or '/'

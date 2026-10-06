@@ -1,0 +1,32 @@
+{
+  "version": "SEO-META-LENGTH-CLOSURE-v1",
+  "date": "2026-10-06",
+  "fingerprint": "seo|meta-description|length|i18n-cache|v1",
+  "obligation_id": "seo-meta-length-current-main-20261006-v1",
+  "root_cause": {
+    "issue": "Two public branch-integration pages exceeded the repository SEO meta-description target and blocked the diagnostic gate.",
+    "secondary": "Shortening the Dutch text introduces new strings that must exist in the fail-closed static English cache."
+  },
+  "prevention": {
+    "seo_gate": "Keep public meta descriptions within the repository's 110-165 character contract.",
+    "i18n_gate": "Any new public Dutch string introduced by the fix must be added to config/bg-static-i18n-en.json in the same change."
+  },
+  "evaluation": {
+    "historical_replay": [
+      ".github/scripts/seocontrole.py",
+      "tools/site-shell/build-localized-routes.mjs --validate-cache"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "SEO_META_DESCRIPTION_LENGTH_AND_I18N_CACHE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true
+  },
+  "evidence": {
+    "tests": [
+      "Pagina- en SEO-controle diagnose",
+      "Required: Validate fail-closed static English cache before merge"
+    ]
+  }
+}
