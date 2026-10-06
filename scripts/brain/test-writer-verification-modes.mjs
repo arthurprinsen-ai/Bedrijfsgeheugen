@@ -18,7 +18,10 @@ for(const writer of ['regelgeving-bijwerken','seo-controle','weekblog']){
 }
 assert.match(canary,/workflow_dispatch:/);
 assert.doesNotMatch(canary,/^\s{2}pull_request:/m);
-assert.match(router,/^\s{2}pull_request:/m);
+assert.doesNotMatch(router,/^\s{2}pull_request:/m);
+assert.match(router,/^\s{2}workflow_run:/m);
+assert.match(router,/workflows:\s*\['Required test'\]/);
+assert.match(router,/workflow_run\.conclusion == 'success'/);
 assert.match(router,/repo-writer-cheap-canary\.yml/);
 assert.match(canary,/createWriterCandidate/);
 assert.match(canary,/validateWriterCandidate/);
