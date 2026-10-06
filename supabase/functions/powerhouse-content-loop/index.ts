@@ -154,12 +154,12 @@ async function claimLoopLease(runDate:string, holder:string) {
        tenant_id,record_id,record_type,record_kind,subject_id,status,observed_at,executed,verified,
        result,payload,idempotency_key,source_revision,stored_at,updated_at
      ) values (
-       $1,$2,'Verification','verification',$3,'IN_PROGRESS',$4,true,false,
+       $1,$2,'Verification','verification',$3::text,'IN_PROGRESS',$4::timestamptz,true,false,
        '{}'::jsonb,
        jsonb_build_object(
-         'holder',$5,
-         'run_date',$3,
-         'expires_at',$6,
+         'holder',$5::text,
+          'run_date',$3::text,
+          'expires_at',$6::timestamptz,
          'lease','content-closed-loop-v1'
        ),
        $2,'content-closed-loop-lease-v1',$4,$4
@@ -180,7 +180,7 @@ async function claimLoopLease(runDate:string, holder:string) {
            ) <= now()
         or (
              jsonb_typeof(public.brain_records.payload)='object'
-             and public.brain_records.payload->>'holder' = $5
+             and public.brain_records.payload->>'holder' = $5::text
            )
      returning record_id`,
     ['canonical',recordId,runDate,now,holder,expiresAt]
@@ -195,7 +195,7 @@ async function releaseLoopLease(runDate:string, holder:string) {
     `update public.brain_records
        set status='VERIFIED',
            verified=true,
-           observed_at=$1,
+           observed_at=$1::timestamptz,
            payload=jsonb_build_object(
              'holder',$2,
              'run_date',$3,
@@ -205,9 +205,9 @@ async function releaseLoopLease(runDate:string, holder:string) {
            ),
            updated_at=$1
      where tenant_id='canonical'
-       and record_id=$4
+       and record_id=$4::text
        and jsonb_typeof(payload)='object'
-       and payload->>'holder'=$2`,
+       and payload->>'holder'=$2::text`,
     [now,holder,runDate,recordId]
   );
 }
@@ -282,8 +282,21 @@ Deno.serve(async (req) => {
     stepResults.push(await invoke(url, expected, 'powerhouse-composio-linkedin-setup', { action: 'status', runDate }));
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
-    // Bounded generation: exactly one artifact attempt per scheduler tick.
-    stepResults.push(await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate }));
+    // Bounded generation: only invoke the heavyweight orchestrator when a publish claim
+    // still needs an artifact. Existing content_ready claims go straight to delivery.
+    const { data: pendingGeneration, error: pendingGenerationError } = await db
+      .from('powerhouse_channel_decisions')
+      .select('channel')
+      .eq('run_date', runDate)
+      .eq('decision', 'publish')
+      .eq('state', 'decided')
+      .limit(1);
+    if (pendingGenerationError) throw new Error('PENDING_GENERATION_READ_FAILED');
+    if (Array.isArray(pendingGeneration) && pendingGeneration.length > 0) {
+      stepResults.push(await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate }));
+    } else {
+      stepResults.push({ name:'powerhouse-content-orchestrator', ok:true, skipped:true, reason:'NO_PENDING_ARTIFACT' });
+    }
 
     // Independent delivery lanes execute in parallel, once per tick.
     const [socialDispatch, blogDispatch] = await Promise.all([
