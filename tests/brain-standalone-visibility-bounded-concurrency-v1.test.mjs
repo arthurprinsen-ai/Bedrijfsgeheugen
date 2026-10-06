@@ -5,7 +5,11 @@ import fs from 'node:fs';
 const source=fs.readFileSync('tools/site-shell/standalone-visibility-check.mjs','utf8');
 
 test('full public visibility sweep keeps complete route and viewport coverage with bounded concurrency',()=>{
-  assert.match(source,/UI_VR_ROUTE_CONCURRENCY \|\| 4/);
+  assert.match(source,/UI_VR_ROUTE_CONCURRENCY/);
+  assert.match(source,/requestedRouteConcurrency/);
+  assert.match(source,/isCanonicalProduction \? Math\.min\(4, requestedRouteConcurrency\)/);
+  assert.match(source,/requestedViewportConcurrency/);
+  assert.match(source,/isCanonicalProduction \? Math\.min\(2, requestedViewportConcurrency\)/);
   assert.match(source,/Math\.min\(routeConcurrency, routes\.length\)/);
   assert.match(source,/Promise\.all\(Array\.from\(\{ length: workerCount \}/);
   assert.match(source,/routeIndex \+= workerCount/);
