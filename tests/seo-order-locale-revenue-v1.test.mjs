@@ -53,12 +53,12 @@ test('sitemap emits reciprocal hreflang for NL and EN canonicals',()=>{
   assert.match(xml,/hreflang="x-default"/);
 });
 
-test('production build projects revenue links before final sitemap and validates locales before release evidence',async()=>{
-  const netlify=await readFile('netlify.toml','utf8');
-  const link=netlify.indexOf('node tools/seo-order-engine/apply-revenue-links.mjs');
-  const sitemap=netlify.indexOf('node tools/genereer-sitemap.mjs');
-  const validate=netlify.indexOf('node tools/seo-order-engine/validate-locales.mjs');
-  const evidence=netlify.indexOf('node tools/bouw-release-evidence.mjs');
+test('canonical production build projects revenue links before final sitemap and validates locales before release evidence',async()=>{
+  const runner=await readFile('tools/ci/netlify-build-entry.mjs','utf8');
+  const link=runner.indexOf("['revenue-links','tools/seo-order-engine/apply-revenue-links.mjs']");
+  const sitemap=runner.indexOf("['sitemap','tools/genereer-sitemap.mjs']");
+  const validate=runner.indexOf("['locale-validation','tools/seo-order-engine/validate-locales.mjs']");
+  const evidence=runner.indexOf("['release-evidence','tools/bouw-release-evidence.mjs']");
   assert.ok(link>=0&&sitemap>link&&validate>sitemap&&evidence>validate);
 });
 
