@@ -52,7 +52,7 @@ test('historical autonomous trigger repair is replay-idempotent but still fail-c
 
 test('preview applicability is fail-closed but skips exact immutable production mirrors', async () => {
   const workflow = await readFile('.github/workflows/supabase-preview-applicability.yml', 'utf8');
-  assert.match(workflow, /migration-history\\.lock\\.json/);
+  assert.match(workflow, /migration-history\.lock\.json/);
   assert.match(workflow, /HISTORICAL_PRODUCTION_MIRROR_BLOBS/);
   assert.match(workflow, /git', 'hash-object', path/);
   assert.match(workflow, /actual != expected/);
