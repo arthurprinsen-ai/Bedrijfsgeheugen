@@ -1,14 +1,7 @@
 name: Supabase PR Preview Contract
 
 on:
-  pull_request:
-    # Hosted Supabase branching is only useful when the Supabase source changes.
-    # Portal/UI/Netlify code is verified by the canonical Required test lanes and
-    # must not allocate a database preview branch or an extra PR runner.
-    paths:
-      - 'supabase/**'
-      - '.github/workflows/supabase-pr-preview.yml'
-
+  workflow_dispatch:
 permissions:
   contents: read
   pull-requests: read
