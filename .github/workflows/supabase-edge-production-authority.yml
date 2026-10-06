@@ -9,25 +9,25 @@ on:
   workflow_dispatch:
     inputs:
       functions:
-        description: 'Comma-separated function slugs to attest from exact current main; blank derives from the current main commit'
+        description: 'Comma-separated function slugs to promote from protected main; blank derives from the current main commit'
         required: false
         type: string
 
 permissions:
   contents: read
-  checks: read
 
 concurrency:
   group: supabase-edge-production-authority
   cancel-in-progress: false
 
 jobs:
-  attest:
+  promote:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     environment: production
     env:
       PROJECT_REF: adhjwmvyoixzjtmiroln
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
     steps:
       - name: Checkout exact protected-main candidate
         uses: actions/checkout@v5
@@ -81,14 +81,24 @@ jobs:
               sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' /tmp/changed-paths.txt | grep -Ev '^_' | sort -u > /tmp/functions.txt
             fi
           fi
+
+          if grep -Eq '^(powerhouse-social-publisher|social-recovery-runner)$' /tmp/functions.txt; then
+            printf '%s\n' powerhouse-social-publisher social-recovery-runner >> /tmp/functions.txt
+            sort -u /tmp/functions.txt -o /tmp/functions.txt
+            echo "social_pair=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "social_pair=false" >> "$GITHUB_OUTPUT"
+          fi
+
           while IFS= read -r fn; do
             [ -d "supabase/functions/$fn" ] || {
               echo "::error::SUPABASE_EDGE_FUNCTION_NOT_IN_CURRENT_MAIN:$fn"
               exit 78
             }
           done < /tmp/functions.txt
+
           if [ ! -s /tmp/functions.txt ]; then
-            echo "No Supabase Edge function source changed; provider attestation not applicable."
+            echo "No Supabase Edge function source changed; promotion not applicable."
             echo "applicable=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -96,12 +106,47 @@ jobs:
           echo "Protected-main function set:"
           cat /tmp/functions.txt
 
-      - name: Capture immutable protected-main source identity
+      - name: Require least-privilege Supabase credential
         if: steps.scope.outputs.applicable == 'true'
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p .artifacts/supabase-edge-production-readback
+          test -n "${SUPABASE_ACCESS_TOKEN:-}" || {
+            echo "::error::SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_PROTECTED_MAIN_PROMOTION"
+            exit 78
+          }
+          echo "::add-mask::$SUPABASE_ACCESS_TOKEN"
+          if [[ "$SUPABASE_ACCESS_TOKEN" == sbp_fc* ]]; then
+            echo "SUPABASE_CREDENTIAL_CLASS=SCOPED_PAT" >> "$GITHUB_ENV"
+          else
+            echo "::warning::SUPABASE_CLASSIC_PAT_HAS_BROADER_BLAST_RADIUS_USE_PROJECT_SCOPED_EDGE_FUNCTIONS_READ_WRITE_WHEN_AVAILABLE"
+            echo "SUPABASE_CREDENTIAL_CLASS=CLASSIC_PAT" >> "$GITHUB_ENV"
+          fi
+
+      - name: Install pinned Supabase CLI
+        if: steps.scope.outputs.applicable == 'true'
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Verify pinned CLI contract
+        if: steps.scope.outputs.applicable == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase --version
+          supabase functions deploy --help > /tmp/supabase-functions-deploy-help.txt
+          supabase functions download --help > /tmp/supabase-functions-download-help.txt
+          grep -q -- '--project-ref' /tmp/supabase-functions-deploy-help.txt
+          grep -q -- '--use-api' /tmp/supabase-functions-deploy-help.txt
+          grep -q -- '--project-ref' /tmp/supabase-functions-download-help.txt
+
+      - name: Capture protected-main source identity
+        if: steps.scope.outputs.applicable == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p production-authority-artifacts
           PROJECT_REF="$PROJECT_REF" GITHUB_SHA="$GITHUB_SHA" node --input-type=module - <<'NODE'
           import fs from 'node:fs';
           import path from 'node:path';
@@ -125,125 +170,161 @@ jobs:
             }
             rows.push({function:fn,source_tree_sha256:hash.digest('hex')});
           }
-          fs.writeFileSync('.artifacts/supabase-edge-production-readback/source-tree-sha256.json',JSON.stringify({
+          fs.writeFileSync('production-authority-artifacts/source-tree-sha256.json',JSON.stringify({
             project_ref:process.env.PROJECT_REF,
             protected_main_sha:process.env.GITHUB_SHA,
             functions:rows
           },null,2)+'\n');
           NODE
-          printf 'candidate_sha=%s\nobserved_main=%s\nproject_ref=%s\nprovider_deployer=SUPABASE_GITHUB_INTEGRATION\ngithub_actions_role=ATTESTATION_ONLY\n' \
-            "$GITHUB_SHA" "$OBSERVED_MAIN" "$PROJECT_REF" > .artifacts/supabase-edge-production-readback/authority.txt
 
-      - name: Attest stable Supabase GitHub production deployment
-        id: provider
-        if: steps.scope.outputs.applicable == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node --input-type=module - <<'NODE'
-          import fs from 'node:fs';
-          const repo=process.env.GITHUB_REPOSITORY;
-          const sha=process.env.GITHUB_SHA;
-          const token=process.env.GH_TOKEN;
-          const project=process.env.PROJECT_REF;
-          const productionUrl=`https://supabase.com/dashboard/project/${project}`;
-          const api=`https://api.github.com/repos/${repo}/commits/${sha}/check-runs?per_page=100`;
-          const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-          let stableId='';
-          let stableSuccess=0;
-          let selected=null;
-          let lastObservation=null;
-          for(let attempt=1;attempt<=60;attempt+=1){
-            const response=await fetch(api,{headers:{
-              authorization:`Bearer ${token}`,
-              accept:'application/vnd.github+json',
-              'x-github-api-version':'2022-11-28'
-            }});
-            if(!response.ok) throw new Error(`GITHUB_CHECKS_READ_FAILED:${response.status}`);
-            const payload=await response.json();
-            const checks=(payload.check_runs||[])
-              .filter(check=>check?.app?.slug==='supabase' && check?.name==='Supabase Preview')
-              .filter(check=>String(check?.details_url||'')===productionUrl)
-              .sort((a,b)=>Number(b.id||0)-Number(a.id||0));
-            const check=checks[0]||null;
-            lastObservation=check?{
-              id:check.id,status:check.status,conclusion:check.conclusion,details_url:check.details_url,
-              started_at:check.started_at,completed_at:check.completed_at
-            }:null;
-            if(!check){
-              stableId=''; stableSuccess=0;
-              console.log(`SUPABASE_PRODUCTION_CHECK_WAIT attempt=${attempt}/60 reason=missing`);
-              await sleep(10000);
-              continue;
-            }
-            if(check.status!=='completed'){
-              stableId=''; stableSuccess=0;
-              console.log(`SUPABASE_PRODUCTION_CHECK_WAIT attempt=${attempt}/60 id=${check.id} status=${check.status}`);
-              await sleep(10000);
-              continue;
-            }
-            if(check.conclusion!=='success'){
-              throw new Error(`SUPABASE_PRODUCTION_CHECK_TERMINAL_${String(check.conclusion||'UNKNOWN').toUpperCase()}:id=${check.id}`);
-            }
-            if(String(check.id)===stableId) stableSuccess+=1;
-            else { stableId=String(check.id); stableSuccess=1; }
-            console.log(`SUPABASE_PRODUCTION_CHECK_SUCCESS id=${check.id} stable=${stableSuccess}/2`);
-            if(stableSuccess>=2){ selected=check; break; }
-            await sleep(3000);
-          }
-          if(!selected) throw new Error(`SUPABASE_PRODUCTION_CHECK_TIMEOUT:last=${JSON.stringify(lastObservation)}`);
-          const evidence={
-            contract:'supabase-edge-production-authority-v2',
-            provider:'supabase-github-integration',
-            app_slug:selected.app.slug,
-            check_name:selected.name,
-            check_run_id:selected.id,
-            status:selected.status,
-            conclusion:selected.conclusion,
-            details_url:selected.details_url,
-            started_at:selected.started_at,
-            completed_at:selected.completed_at,
-            protected_main_sha:sha,
-            stable_success_observations:stableSuccess,
-            observed_at:new Date().toISOString()
-          };
-          fs.writeFileSync('.artifacts/supabase-edge-production-readback/provider-check.json',JSON.stringify(evidence,null,2)+'\n');
-          fs.appendFileSync(process.env.GITHUB_OUTPUT,`check_run_id=${selected.id}\n`);
-          NODE
-
-      - name: Prove no newer Supabase runtime superseded the attested SHA
+      - name: Prove source still current before provider write
         if: steps.scope.outputs.applicable == 'true'
         shell: bash
         run: |
           set -euo pipefail
           git fetch --no-tags origin main
-          CURRENT_MAIN="$(git rev-parse origin/main)"
-          git merge-base --is-ancestor "$GITHUB_SHA" "$CURRENT_MAIN" || {
-            echo "::error::SUPABASE_EDGE_ATTESTED_SHA_NOT_MAIN_ANCESTOR current=$CURRENT_MAIN candidate=$GITHUB_SHA"
+          WRITE_MAIN="$(git rev-parse origin/main)"
+          git merge-base --is-ancestor "$GITHUB_SHA" "$WRITE_MAIN" || {
+            echo "::error::SUPABASE_EDGE_WRITE_SHA_NOT_MAIN_ANCESTOR current=$WRITE_MAIN candidate=$GITHUB_SHA"
             exit 78
           }
-          if [ "$CURRENT_MAIN" != "$GITHUB_SHA" ]; then
-            git diff --quiet "$GITHUB_SHA" "$CURRENT_MAIN" -- supabase/functions supabase/config.toml || {
-              echo "::error::SUPABASE_EDGE_ATTESTATION_SUPERSEDED_BY_RUNTIME_CHANGE current=$CURRENT_MAIN candidate=$GITHUB_SHA"
+          if [ "$WRITE_MAIN" != "$GITHUB_SHA" ]; then
+            git diff --quiet "$GITHUB_SHA" "$WRITE_MAIN" -- supabase/functions supabase/config.toml || {
+              echo "::error::SUPABASE_EDGE_WRITE_SUPERSEDED_BY_RUNTIME_CHANGE current=$WRITE_MAIN candidate=$GITHUB_SHA"
               exit 78
             }
           fi
-          printf 'attested_main=%s\nprovider_check_run_id=%s\n' "$CURRENT_MAIN" "${{ steps.provider.outputs.check_run_id }}" >> .artifacts/supabase-edge-production-readback/authority.txt
+          echo "WRITE_MAIN=$WRITE_MAIN" >> "$GITHUB_ENV"
+
+      - name: Deploy exact protected-main Edge source
+        if: steps.scope.outputs.applicable == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r fn; do
+            echo "PROMOTE_SUPABASE_EDGE:$fn:$GITHUB_SHA"
+            supabase functions deploy "$fn" --project-ref "$PROJECT_REF" --use-api
+          done < /tmp/functions.txt
+
+      - name: Byte-for-byte provider source readback
+        if: steps.scope.outputs.applicable == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/supabase-provider-readback
+          mkdir -p /tmp/supabase-provider-readback
+          : > /tmp/provider-roots.tsv
+
+          while IFS= read -r fn; do
+            root="/tmp/supabase-provider-readback/$fn"
+            mkdir -p "$root"
+            (
+              cd "$root"
+              supabase functions download "$fn" --project-ref "$PROJECT_REF"
+            )
+            provider="$root/supabase/functions/$fn"
+            if [ ! -d "$provider" ]; then
+              provider="$(find "$root" -type f -path "*/$fn/index.ts" -printf '%h\n' | head -n1)"
+            fi
+            test -n "$provider" && test -d "$provider" || {
+              echo "::error::SUPABASE_EDGE_PROVIDER_SOURCE_READBACK_MISSING:$fn"
+              exit 78
+            }
+            printf '%s\t%s\n' "$fn" "$provider" >> /tmp/provider-roots.tsv
+          done < /tmp/functions.txt
+
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          import path from 'node:path';
+          import crypto from 'node:crypto';
+
+          const mappings=new Map(
+            fs.readFileSync('/tmp/provider-roots.tsv','utf8')
+              .split(/\r?\n/).filter(Boolean)
+              .map(line=>{const i=line.indexOf('\t'); return [line.slice(0,i),line.slice(i+1)];})
+          );
+          const functions=fs.readFileSync('/tmp/functions.txt','utf8').split(/\r?\n/).filter(Boolean);
+
+          const walk=(root,dir=root,out=[])=>{
+            for(const name of fs.readdirSync(dir).sort()){
+              const full=path.join(dir,name);
+              const stat=fs.statSync(full);
+              if(stat.isDirectory()) walk(root,full,out);
+              else if(stat.isFile()) out.push([path.relative(root,full).replaceAll('\\','/'),full]);
+            }
+            return out;
+          };
+          const tree=(root)=>{
+            const hash=crypto.createHash('sha256');
+            const files=walk(root);
+            for(const [relative,full] of files){
+              hash.update(relative); hash.update('\0'); hash.update(fs.readFileSync(full)); hash.update('\0');
+            }
+            return {hash:hash.digest('hex'),files};
+          };
+
+          const rows=[];
+          for(const fn of functions){
+            const sourceRoot=path.join('supabase','functions',fn);
+            const providerRoot=mappings.get(fn);
+            if(!providerRoot) throw new Error('SUPABASE_EDGE_PROVIDER_MAPPING_MISSING:'+fn);
+            const source=tree(sourceRoot);
+            const provider=tree(providerRoot);
+            const sourceNames=source.files.map(([name])=>name);
+            const providerNames=provider.files.map(([name])=>name);
+            if(JSON.stringify(sourceNames)!==JSON.stringify(providerNames)){
+              throw new Error('SUPABASE_EDGE_PROVIDER_FILESET_DRIFT:'+fn+':source='+JSON.stringify(sourceNames)+':provider='+JSON.stringify(providerNames));
+            }
+            for(let i=0;i<source.files.length;i++){
+              const [name,sourcePath]=source.files[i];
+              const [,providerPath]=provider.files[i];
+              if(!fs.readFileSync(sourcePath).equals(fs.readFileSync(providerPath))){
+                throw new Error('SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT:'+fn+':'+name);
+              }
+            }
+            if(source.hash!==provider.hash) throw new Error('SUPABASE_EDGE_PROVIDER_TREE_HASH_DRIFT:'+fn);
+            rows.push({function:fn,source_tree_sha256:source.hash,provider_tree_sha256:provider.hash,byte_for_byte:true});
+          }
+          fs.writeFileSync('production-authority-artifacts/provider-readback.json',JSON.stringify({
+            contract:'supabase-edge-production-authority-v3',
+            project_ref:process.env.PROJECT_REF,
+            protected_main_sha:process.env.GITHUB_SHA,
+            functions:rows,
+            observed_at:new Date().toISOString()
+          },null,2)+'\n');
+          NODE
+
+      - name: Prove no newer Supabase runtime superseded readback
+        if: steps.scope.outputs.applicable == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin main
+          READBACK_MAIN="$(git rev-parse origin/main)"
+          git merge-base --is-ancestor "$GITHUB_SHA" "$READBACK_MAIN" || {
+            echo "::error::SUPABASE_EDGE_READBACK_SHA_NOT_MAIN_ANCESTOR current=$READBACK_MAIN candidate=$GITHUB_SHA"
+            exit 78
+          }
+          if [ "$READBACK_MAIN" != "$GITHUB_SHA" ]; then
+            git diff --quiet "$GITHUB_SHA" "$READBACK_MAIN" -- supabase/functions supabase/config.toml || {
+              echo "::error::SUPABASE_EDGE_READBACK_SUPERSEDED_BY_RUNTIME_CHANGE current=$READBACK_MAIN candidate=$GITHUB_SHA"
+              exit 78
+            }
+          fi
+          printf 'candidate_sha=%s\nwrite_main=%s\nreadback_main=%s\nproject_ref=%s\nprovider_deployer=GITHUB_ACTIONS_SUPABASE_CLI\ngithub_actions_role=SOLE_DEPLOYER_AND_BYTE_READBACK\ncredential_class=%s\nreadback=BYTE_FOR_BYTE_PROVIDER_SOURCE_TREE\n'             "$GITHUB_SHA" "$WRITE_MAIN" "$READBACK_MAIN" "$PROJECT_REF" "$SUPABASE_CREDENTIAL_CLASS"             > production-authority-artifacts/authority.txt
 
       - name: Record non-applicable authority state
         if: steps.scope.outputs.applicable != 'true'
         shell: bash
         run: |
-          mkdir -p .artifacts/supabase-edge-production-readback
-          printf 'candidate_sha=%s\nproject_ref=%s\nstate=NOT_APPLICABLE\n' "$GITHUB_SHA" "$PROJECT_REF" > .artifacts/supabase-edge-production-readback/authority.txt
+          mkdir -p production-authority-artifacts
+          printf 'candidate_sha=%s\nproject_ref=%s\nstate=NOT_APPLICABLE\n' "$GITHUB_SHA" "$PROJECT_REF" > production-authority-artifacts/authority.txt
 
       - name: Upload immutable production authority evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: supabase-edge-production-authority-${{ github.sha }}
-          path: .artifacts/supabase-edge-production-readback/
+          path: production-authority-artifacts/
           if-no-files-found: error
           retention-days: 90
