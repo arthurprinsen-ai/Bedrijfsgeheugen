@@ -346,7 +346,7 @@ jobs:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
           STATIC_I18N_BUILD_SHARDS: '2'
-        run: node tools/ci/run-netlify-build.mjs
+        run: node tools/netlify-build/run-netlify-build.mjs
       - name: Verify built artifact contracts
         run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs
       - id: prebuilt
