@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const read=path=>fs.readFileSync(new URL('../'+path,import.meta.url),'utf8');
 
 test('CMS database authority is private-by-default and versioned',()=>{
-  const sql=read('supabase/migrations/20261002180500_canonical_cms_website_portal_v1.sql');
+  const sql=read('supabase/migration-history/repository-only/20261002180500_canonical_cms_website_portal_v1.sql');
   assert.match(sql,/create table if not exists public\.cms_content_items/i);
   assert.match(sql,/create table if not exists public\.cms_content_revisions/i);
   assert.match(sql,/alter table public\.cms_content_items enable row level security/i);
