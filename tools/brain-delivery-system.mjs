@@ -29,14 +29,6 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend',
   'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation',
   'schemas/delivery-evidence.schema.json': 'backend',
-  'tools/build/': 'backend',
-  'tools/netlify/': 'backend',
-  'tools/notion/': 'backend',
-  'tools/supabase/': 'backend',
-  'tests/build/': 'backend',
-  'tests/netlify/': 'backend',
-  'tests/notion/': 'backend',
-  'tests/supabase/': 'backend',
   'tests/release-artifact-identity.test.mjs': 'backend'
 });
 
@@ -102,6 +94,16 @@ const REGULATORY_AUTOMATION_PATHS = Object.freeze([
   'tools/regulatory-',
   'tests/regulatory-'
 ]);
+const CONTROL_PLANE_HELPER_BACKEND_PATHS = Object.freeze([
+  'tools/build/',
+  'tools/netlify/',
+  'tools/notion/',
+  'tools/supabase/',
+  'tests/build/',
+  'tests/netlify/',
+  'tests/notion/',
+  'tests/supabase/'
+]);
 const DELIVERY_CONTROL_PLANE_BACKEND_PATHS = Object.freeze([
   '.github/workflows/obligation-terminal-closure.yml',
   '.github/workflows/production-release-readback.yml',
@@ -121,6 +123,7 @@ function scopedLaneForPath(path, policy = {}) {
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
   if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
   if (matches(path, REGULATORY_AUTOMATION_PATHS)) return 'automation';
+  if (matches(path, CONTROL_PLANE_HELPER_BACKEND_PATHS)) return 'backend';
   if (matches(path, DELIVERY_CONTROL_PLANE_BACKEND_PATHS)) return 'backend';
   if (path.startsWith('.github/workflows/')) {
     const explicitPolicyLane=(policy.lanes || []).find(lane => matches(path, lane.paths || []));
