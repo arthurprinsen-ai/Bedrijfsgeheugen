@@ -167,8 +167,7 @@ test('Portal evidence is post-admission while production push readback remains i
 });
 
 test('Powerhouse CodeQL is the single PR CodeQL authority for JS/TS and Python', () => {
-  assert.throws(() => readFileSync('.github/workflows/codeql.yml', 'utf8'));
-  const source = readFileSync('.github/workflows/powerhouse-codeql.yml', 'utf8');
+  const source = readFileSync('.github/workflows/codeql.yml', 'utf8');
   assert.match(source, /^  pull_request:/m);
   assert.ok(source.includes('run_js:'));
   assert.ok(source.includes('run_python:'));
@@ -179,17 +178,17 @@ test('Powerhouse CodeQL is the single PR CodeQL authority for JS/TS and Python',
 
 
 test('consolidated CodeQL workflow has one scope and one job per language', () => {
-  const source = readFileSync('.github/workflows/powerhouse-codeql.yml', 'utf8');
+  const source = readFileSync('.github/workflows/codeql.yml', 'utf8');
   assert.equal((source.match(/^  scope:/gm) || []).length, 1);
   assert.equal((source.match(/^  analyze:/gm) || []).length, 1);
-  assert.equal((source.match(/^  analyze_python:/gm) || []).length, 1);
-  assert.ok(source.includes("if: needs.scope.outputs.run_js == 'true'"));
-  assert.ok(source.includes("if: needs.scope.outputs.run_python == 'true'"));
+  assert.doesNotMatch(source, /^  analyze_python:/m);
+  assert.ok(source.includes('matrix:'));
+  assert.ok(source.includes('language: [javascript-typescript, python]'));
 });
 
 test('PR admission baseline is exactly Required plus Powerhouse CodeQL', () => {
   const baseline = JSON.parse(readFileSync('config/pr-trigger-baseline.json', 'utf8'));
   assert.equal(baseline.admissionPullRequestWorkflowCount, 2);
   assert.equal(baseline.directPullRequestWorkflowCount, 7);
-  assert.deepEqual([...baseline.admissionPullRequestWorkflows].sort(), ['powerhouse-codeql.yml','required-test.yml']);
+  assert.deepEqual([...baseline.admissionPullRequestWorkflows].sort(), ['codeql.yml','required-test.yml']);
 });
