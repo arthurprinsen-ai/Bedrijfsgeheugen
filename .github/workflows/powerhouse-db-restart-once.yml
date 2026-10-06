@@ -46,3 +46,44 @@ jobs:
             exit 1
           fi
           echo "Supabase accepted the production Postgres restart request."
+
+      - name: Quarantine POWERHOUSE cron herd after restart
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROJECT_REF: adhjwmvyoixzjtmiroln
+        run: |
+          set -euo pipefail
+          cat >/tmp/quarantine.sql <<'SQL'
+          do $do$
+          declare r record;
+          begin
+            for r in
+              select jobid
+              from cron.job
+              where active
+                and jobname like 'powerhouse-%'
+            loop
+              perform cron.alter_job(job_id := r.jobid, active := false);
+            end loop;
+          end
+          $do$;
+          SQL
+          jq -n --rawfile query /tmp/quarantine.sql '{query:$query,read_only:false}' >/tmp/quarantine-request.json
+
+          success=0
+          for attempt in 1 2 3 4 5 6 7 8; do
+            code="$(
+              curl --silent --show-error                 --connect-timeout 10                 --max-time 30                 --output /tmp/quarantine-response.json                 --write-out '%{http_code}'                 --request POST                 --header "Authorization: Bearer ${SUPABASE_ACCESS_TOKEN}"                 --header 'Content-Type: application/json'                 --data-binary @/tmp/quarantine-request.json                 "https://api.supabase.com/v1/projects/${PROJECT_REF}/database/query" || true
+            )"
+            if [ "$code" = "201" ]; then
+              success=1
+              echo "POWERHOUSE cron herd quarantined after database restart."
+              break
+            fi
+            echo "Database not ready for quarantine on attempt ${attempt}; HTTP ${code:-000}."
+            sleep 5
+          done
+          if [ "$success" != "1" ]; then
+            echo "::error::Database restart completed but cron quarantine could not acquire a database connection."
+            exit 1
+          fi
