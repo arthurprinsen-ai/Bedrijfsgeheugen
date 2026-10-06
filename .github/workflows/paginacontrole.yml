@@ -28,6 +28,7 @@ permissions:
   contents: write
   pull-requests: write
   issues: write
+  actions: write
 
 # PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
 # Alle niet-PR-runs kunnen naar main schrijven en delen daarom het niet-annuleerbare repo-slot.
@@ -320,6 +321,7 @@ jobs:
           console.log(candidate.branch);
           NODE
           )
+          echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
           git push origin "HEAD:$CANDIDATE_BRANCH"
           existing=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
           if [ -z "$existing" ]; then
@@ -332,6 +334,24 @@ jobs:
             echo "Candidate PR bestaat al: #$existing"
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
+
+
+      - name: Dispatch immutable writer shadow verification
+        if: steps.candidate.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          PR_NUMBER="$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')"
+          [ -n "$PR_NUMBER" ] || { echo "::error::WRITER_CANDIDATE_PR_MISSING:$CANDIDATE_BRANCH"; exit 1; }
+          PR_BASE_SHA="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.base.sha')"
+          PR_HEAD_SHA="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          PR_HEAD_REF="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.ref')"
+          [ "$PR_BASE_SHA" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$PR_BASE_SHA"; exit 1; }
+          [ "$PR_HEAD_REF" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$PR_HEAD_REF"; exit 1; }
+          gh workflow run repo-writer-candidate-shadow.yml             --repo "$GITHUB_REPOSITORY"             --ref main             -f pr_number="$PR_NUMBER"             -f base_sha="$PR_BASE_SHA"             -f head_sha="$PR_HEAD_SHA"             -f candidate_branch="$PR_HEAD_REF"             -f verification_only=false
 
       - name: Rapporten samenvoegen
         if: always()

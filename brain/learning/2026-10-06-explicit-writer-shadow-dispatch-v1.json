@@ -1,0 +1,25 @@
+{
+  "version": "EXPLICIT-WRITER-SHADOW-DISPATCH-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|writer-shadow|global-pr-trigger-waste",
+  "obligation_id": "explicit-writer-shadow-dispatch-20261006-v1",
+  "root_cause": "Repository Writer Candidate Shadow was globally triggered for every PR even though its verify job only applied to writer/* candidates. Ordinary PRs therefore allocated a workflow run that immediately skipped. Three writers already dispatched Shadow explicitly, while four still relied on the global trigger.",
+  "prevention": "All seven repository writers must dispatch Candidate Shadow explicitly with immutable PR number, base SHA, head SHA and candidate branch. Candidate Shadow is workflow_dispatch-only. The regression test rejects any return of a global pull_request trigger or any writer that lacks explicit dispatch.",
+  "compiler": {
+    "failure_class": "REDUNDANT_GLOBAL_WRITER_SHADOW_PR_FANOUT",
+    "machine_enforceable": true
+  },
+  "evidence": {
+    "regression": [
+      "tests/repo-writer-shadow.test.mjs"
+    ],
+    "workflows": [
+      ".github/workflows/repo-writer-candidate-shadow.yml",
+      ".github/workflows/regelgeving-bijwerken.yml",
+      ".github/workflows/seo-controle.yml",
+      ".github/workflows/paginacontrole.yml",
+      ".github/workflows/weekblog.yml"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION"
+}

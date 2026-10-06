@@ -23,6 +23,7 @@ permissions:
   contents: write
   pull-requests: write
   id-token: write
+  actions: write
 
 concurrency:
   group: repo-schrijven
@@ -395,6 +396,24 @@ jobs:
             --title "Weekblog candidate: $SLUG" \
             --body "Gecontroleerde candidate uit weekblog. Base SHA: $BASE_SHA. Notion blijft Gepland totdat de wijziging werkelijk is gepromoveerd. Deze workflow merge't zichzelf niet."
 
+
+
+      - name: Dispatch immutable writer shadow verification
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          PR_NUMBER="$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')"
+          [ -n "$PR_NUMBER" ] || { echo "::error::WRITER_CANDIDATE_PR_MISSING:$CANDIDATE_BRANCH"; exit 1; }
+          PR_BASE_SHA="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.base.sha')"
+          PR_HEAD_SHA="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.sha')"
+          PR_HEAD_REF="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.head.ref')"
+          [ "$PR_BASE_SHA" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$PR_BASE_SHA"; exit 1; }
+          [ "$PR_HEAD_REF" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$PR_HEAD_REF"; exit 1; }
+          gh workflow run repo-writer-candidate-shadow.yml             --repo "$GITHUB_REPOSITORY"             --ref main             -f pr_number="$PR_NUMBER"             -f base_sha="$PR_BASE_SHA"             -f head_sha="$PR_HEAD_SHA"             -f candidate_branch="$PR_HEAD_REF"             -f verification_only=false
 
       - name: Niets te doen
         if: steps.kalender.outputs.gevonden != 'true'
