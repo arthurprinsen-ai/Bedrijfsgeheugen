@@ -26,5 +26,11 @@
     "repository_lock_count": 591
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+    ],
+    "expected": "The terminalizer recognizes current production-ledger parity recoveries as non-runtime historical migration reconciliation while preserving the existing path allowlist and continuing to reject Supabase Edge function paths from the parity bypass."
+  }
 }
