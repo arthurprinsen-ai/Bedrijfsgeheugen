@@ -52,7 +52,19 @@
       "brain/contracts/production-readback-v1.json",
       "tools/site-shell/production-supersession.mjs",
       "tools/site-shell/standalone-visibility-check.mjs",
-      "config/historical-terminal-reconciliation.json"
+      "config/historical-terminal-reconciliation.json",
+      "AGENTS.md",
+      "platform/system-map/canonical-system-map.mjs",
+      "tools/brain-delivery-system.mjs",
+      "config/powerhouse-agent-delivery-scheduler-v1.json",
+      "config/brain-delivery-system.json",
+      "config/powerhouse-quality-surface-contracts.json",
+      "config/build-contract.json",
+      "config/control-plane-budget.json",
+      "config/netlify-project-registry.json",
+      "config/notion-root-lifecycle.json",
+      "config/pr-trigger-baseline.json",
+      "config/supabase-edge-functions.json"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",
@@ -95,7 +107,24 @@
     "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json",
     "netlifyApplicabilityAuthority": "tools/delivery/netlify-deployment-applicability.mjs",
     "nonNetlifyBackendDeploymentRequired": false,
-    "supabaseOnlyNetlifyDeploymentRequired": false
+    "supabaseOnlyNetlifyDeploymentRequired": false,
+    "verifierOnlyPrefixes": [
+      "docs/",
+      ".agents/",
+      "tests/",
+      ".github/",
+      "brain/learning/",
+      "brain/policies/",
+      "schemas/",
+      "scripts/brain/",
+      "scripts/ci/",
+      "tools/delivery/",
+      "tools/ci/",
+      "tools/build/",
+      "tools/netlify/",
+      "tools/notion/",
+      "tools/supabase/"
+    ]
   },
   "connectorReadiness": {
     "maxAttempts": 8,
