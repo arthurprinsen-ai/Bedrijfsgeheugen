@@ -17,6 +17,7 @@ on:
         type: string
 
 permissions:
+  actions: read
   contents: read
   statuses: read
 
@@ -221,8 +222,45 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Build and serve exact local candidate only when Netlify preview is unavailable
+      - id: build-reuse
+        name: Reuse central Netlify parity artifact when preview is unavailable
         if: needs.preview-ready.outputs.preview_mode == 'local-exact-candidate'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_NAME: netlify-build-reuse-${{ inputs.candidate_sha }}
+          EXPECTED_CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/netlify-build-reuse
+          reused=false
+          for attempt in $(seq 1 15); do
+            artifacts_json="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100" || echo '{"artifacts":[]}')"
+            artifact_id="$(ARTIFACTS_JSON="$artifacts_json" node -e 'const x=JSON.parse(process.env.ARTIFACTS_JSON||"{\"artifacts\":[]}");const a=(x.artifacts||[]).find(v=>v.name===process.env.ARTIFACT_NAME&&!v.expired);process.stdout.write(a?String(a.id):"")')"
+            if [ -n "$artifact_id" ]; then
+              curl -fsSL -L \
+                -H "Authorization: Bearer $GH_TOKEN" \
+                -H "Accept: application/vnd.github+json" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/artifacts/${artifact_id}/zip" \
+                -o /tmp/netlify-build-reuse.zip
+              unzip -qo /tmp/netlify-build-reuse.zip -d /tmp/netlify-build-reuse
+              test -f /tmp/netlify-build-reuse/netlify-build-reuse.json
+              test -f /tmp/netlify-build-reuse/netlify-static-build.tgz
+              observed="$(node -e 'const x=require(process.argv[1]);process.stdout.write(String(x.candidate_sha||""))' /tmp/netlify-build-reuse/netlify-build-reuse.json)"
+              test "$observed" = "$EXPECTED_CANDIDATE_SHA"
+              tar -xzf /tmp/netlify-build-reuse/netlify-static-build.tgz -C "$GITHUB_WORKSPACE"
+              echo "reused=true" >> "$GITHUB_OUTPUT"
+              echo "NETLIFY_BUILD_ARTIFACT_REUSED:$EXPECTED_CANDIDATE_SHA"
+              reused=true
+              break
+            fi
+            sleep 4
+          done
+          if [ "$reused" != true ]; then
+            echo "reused=false" >> "$GITHUB_OUTPUT"
+            echo "NETLIFY_BUILD_ARTIFACT_NOT_READY:$EXPECTED_CANDIDATE_SHA"
+          fi
+      - name: Build exact local candidate only when reusable artifact is unavailable
+        if: needs.preview-ready.outputs.preview_mode == 'local-exact-candidate' && steps.build-reuse.outputs.reused != 'true'
         env:
           COMMIT_REF: ${{ inputs.candidate_sha }}
           CONTEXT: deploy-preview
@@ -233,7 +271,11 @@ jobs:
         run: |
           npm install --prefer-offline --no-audit --no-fund --silent
           node tools/ci/run-netlify-build.mjs
+      - name: Serve exact local candidate
+        if: needs.preview-ready.outputs.preview_mode == 'local-exact-candidate'
+        run: |
           nohup python3 tools/ci/serve-clean-urls.py --port 4173 --bind 127.0.0.1 >/tmp/bg-local-site.log 2>&1 &
+
           for attempt in $(seq 1 20); do
             if curl -fsS http://127.0.0.1:4173/ >/dev/null && curl -fsS http://127.0.0.1:4173/ai-act >/dev/null && curl -fsS http://127.0.0.1:4173/benchmark >/dev/null; then
               echo 'Exact local candidate clean URLs are reachable.'
