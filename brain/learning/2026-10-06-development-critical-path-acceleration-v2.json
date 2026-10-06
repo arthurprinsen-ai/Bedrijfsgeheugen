@@ -8,13 +8,13 @@
       "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
     ]
   },
-  "root_cause": "Delivery latency was dominated by orchestration fan-out and superseded work. Remaining hotspots included candidate-shadow/canary flights, JS/TS CodeQL initialization on non-JS/TS PRs, Supabase applicability checkout on non-Supabase PRs, and Netlify builds for changes already classified as non-deployment.",
-  "prevention_rule": "Keep required check contexts visible while moving applicability decisions ahead of expensive work; cancel stale logical flights by PR/ref; skip Netlify only for a fail-open allowlist of proven non-Netlify paths.",
+  "root_cause": "Delivery latency was dominated by orchestration fan-out and superseded work. Current main had already gained PR-scoped writer gate/operational cancellation plus a fail-open Netlify ignore controller; the remaining hotspots were candidate-shadow/canary flights, JS/TS CodeQL initialization on non-JS/TS PRs, and Supabase applicability checkout on non-Supabase PRs.",
+  "prevention_rule": "Always read current main before adding acceleration mechanisms; keep required check contexts visible while moving applicability decisions ahead of expensive work; cancel stale logical flights by PR/ref; never duplicate an existing provider build controller.",
   "evidence": [
     "Repository audit observed 124 workflow files.",
     "Latest sampled 100 Actions runs: 45 queued, 7 in progress, 18 cancelled, 10 successful.",
-    "Inspected Netlify production deploy reported 122 seconds deploy_time and about 6m41 created-to-published.",
-    "Current main already contains PR-scoped cancellation for writer gate dispatch and operational verification.",
+    "Current main already contains PR-scoped cancellation for writer gate dispatch and operational verification plus tools/ci/netlify-ignore-build.mjs.",
+    "First exact-head run caught a duplicate Netlify ignore key and an inline YAML comment parsing bug; both are removed in the same candidate.",
     "Regression: tests/brain-ci-critical-path-acceleration-v2.test.mjs"
   ]
 }

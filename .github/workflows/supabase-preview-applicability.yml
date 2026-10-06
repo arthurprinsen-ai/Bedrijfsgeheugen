@@ -37,7 +37,8 @@ jobs:
 
       - name: Record provider preview not applicable without checkout
         if: steps.scope.outputs.supabase_changed != 'true'
-        run: echo "SUPABASE_PREVIEW_NOT_APPLICABLE no supabase/** changes on PR #${{ github.event.pull_request.number }}"
+        run: |
+          echo "SUPABASE_PREVIEW_NOT_APPLICABLE no supabase/** changes on PR ${{ github.event.pull_request.number }}"
 
       - uses: actions/checkout@v5
         if: steps.scope.outputs.supabase_changed == 'true'
