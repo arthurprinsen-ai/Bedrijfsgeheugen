@@ -31,8 +31,10 @@ permissions:
   actions: write
 
 concurrency:
-  group: repo-writer-gates-${{ inputs.pr_number }}-${{ inputs.head_sha }}
-  cancel-in-progress: false
+  # Only the newest immutable candidate for a PR is useful. Exact-head identity is
+  # still validated in the first job, so stale candidates can be cancelled safely.
+  group: repo-writer-gates-${{ inputs.pr_number }}
+  cancel-in-progress: true
 
 jobs:
   validate:
