@@ -13,6 +13,8 @@ Iedere chat/agent voorspelt vóór een repository- of providerwrite wat de write
 - alleen de korte overlappende terminal landing wordt geserialiseerd;
 - queue pressure en voorspelde fan-out worden vóór de write beoordeeld; bij overbelasting bundelen/hergebruiken in plaats van meer workflows starten;
 - vóór externe wait wordt een `POWERHOUSE-ASYNC-CHECKPOINT-v1` vastgelegd met obligation, exact head, main epoch, open gates, bewezen side effects en volgende veilige actie;
+- actief pollen op GitHub Actions, Netlify, Supabase of andere providers is verboden zodra de externe wait langer dan 30 seconden kan duren; schrijf `WAITING_EXTERNAL`, leg exact PR/HEAD/run-id vast en geef de actieve agentbeurt vrij;
+- hervatten gebeurt event-driven op workflow/provider-statuswijziging en anders via de bounded recovery-schedule; hervatten gebruikt exact dezelfde immutable HEAD/run-identiteit en start geen nieuwe lineage;
 - `queued`, `pending`, `waiting`, `requested`, `in_progress` betekenen nooit stop: ga door met onafhankelijk werk en hervat automatisch;
 - nieuwere authoritative main supersedeert stale omkeerbare production snapshot/readback work; nooit onomkeerbare side effects of verplichte security/quality evidence;
 - geen agent vraagt de gebruiker om “ga door” om niet-terminale delivery te vervolgen.
