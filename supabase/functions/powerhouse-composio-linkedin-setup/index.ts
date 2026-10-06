@@ -178,7 +178,8 @@ Deno.serve(async(req:Request)=>{
     const requestedOrgWrite=freshOauthBound&&priorRequestedScopes.includes('w_organization_social');
     const requestedOrgRead=freshOauthBound&&priorRequestedScopes.includes('r_organization_social');
     const hasOrgAdminScope=grantedScopes.includes('r_organization_admin')||grantedScopes.includes('rw_organization_admin')||(adminAclVerified&&requestedOrgAdmin);
-    const hasOrgWriteScope=grantedScopes.includes('w_organization_social')||grantedScopes.includes('w_organization_social_feed')||requestedOrgWrite;
+    const tokenOrgWriteScopePresent=grantedScopes.includes('w_organization_social')||grantedScopes.includes('w_organization_social_feed');
+    const hasOrgWriteScope=tokenOrgWriteScopePresent||requestedOrgWrite;
     const hasOrgReadScope=grantedScopes.includes('r_organization_social')||grantedScopes.includes('r_organization_social_feed')||requestedOrgRead;
     const companyAuthorConfigured=adminAclVerified;
     const personalReadbackReady=personalReady&&hasMemberReadScope;
@@ -218,12 +219,13 @@ Deno.serve(async(req:Request)=>{
       company_admin_read_ready:companyAdminReadReady,
       company_admin_read_scope_required:companyAdminReadReady?null:'r_organization_admin',
       company_admin_scope_present:hasOrgAdminScope,
-      company_write_scope_present:hasOrgWriteScope,
+      company_write_scope_present:tokenOrgWriteScopePresent,
+      organization_write_scope_requested:companyOauthFreshVerified&&hasOrgWriteScope,
       linkedin_company_admin_oauth_proven:companyOauthFreshVerified,
-      organization_write_scope_verified:companyOauthFreshVerified&&hasOrgWriteScope,
+      organization_write_scope_verified:false,
       company_oauth_connection_id:companyOauthFreshVerified?accountId:null,
       company_oauth_verified_at:companyOauthFreshVerified?(clean(priorState?.company_oauth_verified_at)||new Date().toISOString()):null,
-      company_live_proven_eligible:companyOauthFreshVerified&&companyReadbackReady,
+      company_live_proven_eligible:false,
       company_author_source:discoveredOrgUrns.includes(configuredOrg)?'live_org_acl':'configured_canonical_urn',
       company_readback_ready:companyReadbackReady,
       company_read_scope_present:hasOrgReadScope,
