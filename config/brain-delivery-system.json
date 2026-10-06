@@ -527,23 +527,24 @@
       "paths": [
         "automation/",
         "data/regulatory-source-state.json",
+        "docs/powerhouse/",
         "make/",
         "notion/",
+        "skills/",
+        "tests/brain-terminal-obligation-",
         "tests/delivery-",
         "tests/github-delivery-state-machine",
         "tests/github-delivery-state-machine-",
         "tests/github-pr-workflow-single-flight.test.mjs",
         "tests/menu-balk-writer-noop-proof.test.mjs",
+        "tests/paginacontrole-",
         "tests/powerhouse-github-learning.test.mjs",
         "tests/powerhouse-one-loop-",
         "tests/regulatory-",
         "tests/repository-writer-permission-boundary.test.mjs",
         "tests/repository-writer-slow-canary-sla.test.mjs",
         "tests/terminal-writer-lease-",
-        "tools/regulatory-",
-        "tests/brain-terminal-obligation-",
-        "skills/",
-        "docs/powerhouse/"
+        "tools/regulatory-"
       ],
       "requiredContracts": [
         "BG166",
