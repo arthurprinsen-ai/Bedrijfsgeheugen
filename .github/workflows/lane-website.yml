@@ -31,7 +31,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ inputs.candidate_sha }}
-          fetch-depth: 0
+          fetch-depth: 2
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -45,7 +45,13 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
           import { classifyWebsiteRelease } from './tools/site-shell/website-release-risk.mjs';
-          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.CHANGE_HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          try {
+            execFileSync('git',['cat-file','-e',`${process.env.BASE_SHA}^{commit}`],{stdio:'ignore'});
+          } catch {
+            console.log(`TARGETED_BASE_FETCH:${process.env.BASE_SHA}`);
+            execFileSync('git',['fetch','--no-tags','--depth=1','origin',process.env.BASE_SHA],{stdio:'inherit'});
+          }
+          const changedPaths=execFileSync('git',['diff','--name-only',process.env.BASE_SHA,process.env.CHANGE_HEAD_SHA],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const riskConfig=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
           const acceptedBaseline=JSON.parse(await readFile('site/accepted-baseline.json','utf8'));
           let result=classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline});
@@ -54,7 +60,7 @@ jobs:
           // classified as non-artifact. Keep real build/header/security config edits
           // high-risk, but avoid a full-site browser sweep for redirect-only work.
           if(changedPaths.includes('netlify.toml')){
-            const diff=execFileSync('git',['diff','--unified=0',`${process.env.BASE_SHA}...${process.env.CHANGE_HEAD_SHA}`,'--','netlify.toml'],{encoding:'utf8'});
+            const diff=execFileSync('git',['diff','--unified=0',process.env.BASE_SHA,process.env.CHANGE_HEAD_SHA,'--','netlify.toml'],{encoding:'utf8'});
             const changed=diff.split(/\r?\n/).filter(line=>line && !line.startsWith('diff ') && !line.startsWith('index ') && !line.startsWith('@@') && !line.startsWith('+++') && !line.startsWith('---'));
             const removed=changed.filter(line=>line.startsWith('-'));
             const added=changed.filter(line=>line.startsWith('+')).map(line=>line.slice(1).trim());
