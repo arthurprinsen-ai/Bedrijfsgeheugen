@@ -10,7 +10,7 @@ on:
       - '.github/workflows/main-write-integrity-regression.yml'
 
 jobs:
-  test:
+  main-write-integrity-regression:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5

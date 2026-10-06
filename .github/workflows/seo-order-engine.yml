@@ -55,7 +55,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  seo-order:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

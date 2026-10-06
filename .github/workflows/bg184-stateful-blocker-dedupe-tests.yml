@@ -15,7 +15,7 @@ on:
       - '.github/workflows/bg184-stateful-blocker-dedupe-tests.yml'
 
 jobs:
-  test:
+  stateful-blocker-dedupe:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

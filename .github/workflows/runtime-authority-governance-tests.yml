@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  runtime-authority:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
