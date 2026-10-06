@@ -105,9 +105,25 @@ export function evaluateMaterialWritebackClosure({changedPaths=[],rootDir=null}=
   };
 }
 
+const SHA40=/^[0-9a-f]{40}$/i;
+
+function ensureExplicitCommit(ref,label){
+  const value=String(ref||'').trim();
+  if(!value) throw new Error('BASE_AND_HEAD_REQUIRED');
+  if(!SHA40.test(value)) return;
+  try{
+    execFileSync('git',['cat-file','-e',value+'^{commit}'],{stdio:'ignore'});
+  }catch{
+    console.log(`TARGETED_${label}_FETCH:${value}`);
+    execFileSync('git',['fetch','--no-tags','--depth=1','origin',value],{stdio:'inherit'});
+  }
+}
+
 function diffPaths(base,head){
   if(!base||!head) throw new Error('BASE_AND_HEAD_REQUIRED');
-  return execFileSync('git',['diff','--name-only',base+'...'+head],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+  ensureExplicitCommit(base,'BASE');
+  ensureExplicitCommit(head,'HEAD');
+  return execFileSync('git',['diff','--name-only',base,head],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
 }
 
 if(import.meta.url==='file://'+process.argv[1]){
