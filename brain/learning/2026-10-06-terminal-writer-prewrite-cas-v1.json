@@ -16,5 +16,8 @@
   "regression": [
     "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
   ],
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "STALE_TERMINAL_WRITER_PREWRITE_MUTATION"
+  }
 }
