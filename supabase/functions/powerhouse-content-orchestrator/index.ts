@@ -47,7 +47,7 @@ const DB_DEFAULT_CONFLICT=new Map([
 ]);
 function dbIdent(value:string){const m=value.match(/^[A-Za-z_][A-Za-z0-9_]*/)?.[0]||'';if(m!==value)throw new Error('DB_IDENTIFIER_REJECTED');return '"'+value.replaceAll('"','""')+'"';}
 function dbPoolerUrl(){const raw=Deno.env.get('SUPABASE_DB_URL')||'';if(!raw)throw new Error('SUPABASE_DB_URL_MISSING');const u=new URL(raw);u.hostname=DB_POOLER_HOST;u.port='6543';u.username='postgres.'+DB_REF;return u.toString();}
-const directSql=postgres(dbPoolerUrl(),{max:4,prepare:false,connect_timeout:6,idle_timeout:10,max_lifetime:60});
+const directSql=postgres(dbPoolerUrl(),{max:2,prepare:false,connect_timeout:6,idle_timeout:10,max_lifetime:45});
 function scalarParam(value:any,values:any[],cast=''){values.push(value);return String.fromCharCode(36)+values.length+(cast?'::'+cast:'');}
 function valueExpr(table:string,column:string,value:any,values:any[]){
  const key=table+'.'+column;
@@ -301,15 +301,15 @@ Deno.serve(async (req) => {
     if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
     stage = 'load-context';
     const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult] = await Promise.all([
-      db.from('powerhouse_daily_runs').select('*').eq('run_date',runDate).maybeSingle(),
+      db.from('powerhouse_daily_runs').select('run_date').eq('run_date',runDate).maybeSingle(),
       db.from('powerhouse_content_recommendations').select('recommendation_id,topic_key,target_channel,recommendation_type,priority,reason,evidence,status').eq('run_date',runDate).order('priority',{ascending:false}).limit(50),
       db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status').eq('status','actief').order('vertrouwen',{ascending:false}).limit(30),
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle(),
-      db.from('powerhouse_channel_decisions').select('*').eq('run_date',runDate),
-      db.from('content_publication_obligations').select('*').eq('tenant_id','canonical').eq('publication_date',runDate),
-      db.from('powerhouse_media_proof_evidence_v1').select('*').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle(),
+      db.from('powerhouse_channel_decisions').select('channel,decision,state,priority,delivery_ref,delivery_evidence').eq('run_date',runDate),
+      db.from('content_publication_obligations').select('channel,evidence').eq('tenant_id','canonical').eq('publication_date',runDate),
+      db.from('powerhouse_media_proof_evidence_v1').select('exact_media_retrievable,exact_media_sha256,identity_gate_result,media_url,proof_lineage,fingerprint').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle(),
     ]);
-    const winnerResult = await db.from('powerhouse_instagram_daily_winners_v1').select('*').eq('run_date',runDate).maybeSingle();
+    const winnerResult = await db.from('powerhouse_instagram_daily_winners_v1').select('recommendation_id,score_version,selected_format').eq('run_date',runDate).maybeSingle();
     if (winnerResult.error) throw new Error('INSTAGRAM_DAILY_WINNER_READ_FAILED');
     const instagramWinner = winnerResult.data || null;
     const run = runResult.data, recs = recResult.data || [], rules = rulesResult.data || [], gov = governanceResult.data;
@@ -360,7 +360,7 @@ Deno.serve(async (req) => {
 
     stage = 'select-pending';
     const {data:pendingRows,error:pendingError} = await db.from('powerhouse_channel_decisions')
-      .select('*')
+      .select('channel,priority,rationale,delivery_evidence')
       .eq('run_date',runDate)
       .eq('decision','publish')
       .eq('state','decided')
