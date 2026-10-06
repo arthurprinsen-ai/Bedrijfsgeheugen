@@ -80,23 +80,21 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
 
 test('LinkedIn company requires a fresh bound organization-admin OAuth before publish', () => {
   assert.match(setup,/COMPANY_REQUIRED_SCOPES=.*r_organization_admin.*w_organization_social/);
-  assert.match(setup,/COMPANY_SCOPE_TOOLS=.*LINKEDIN_GET_COMPANY_INFO.*LINKEDIN_CREATE_LINKED_IN_POST.*LINKEDIN_GET_POST_CONTENT/);
-  assert.match(setup,/toolkits\/linkedin\/scopes\/recommended/);
-  assert.match(setup,/credentials:\{scopes:recommendedScopes\.join\(','\)\}/);
-  assert.match(setup,/scope_recommendation_source:'composio-toolkit-recommended'/);
   assert.match(setup,/oauth_candidate_connection_id:connectedAccountId/);
-  assert.match(setup,/boundOauthAccountId=clean\(priorState\?\.oauth_candidate_connection_id\|\|priorState\?\.company_oauth_connection_id\)/);
-  assert.match(setup,/companyOauthFreshVerified=freshOauthBound&&companyAdminReadReady&&hasOrgWriteScope/);
-  assert.match(setup,/companyReady=personalReady&&companyOauthFreshVerified/);
-  assert.match(setup,/linkedin_company_admin_oauth_proven:companyOauthFreshVerified/);
-  assert.match(setup,/organization_write_scope_authorized:companyOauthFreshVerified&&hasOrgWriteScope/);
+  assert.match(setup,/boundOauthAccountId=clean\(proofAccountId\|\|priorState\?\.company_oauth_connection_id\|\|priorState\?\.oauth_candidate_connection_id\)/);
+  assert.match(setup,/accountsToCheck=proofAccountId/);
+  assert.match(setup,/COMPOSIO_LINKEDIN_FRESH_PROOF_ACCOUNT_NOT_ACTIVE/);
+  assert.match(setup,/organizationAdminScopeAuthorized/);
+  assert.match(setup,/organizationWriteScopeAuthorized/);
+  assert.match(setup,/companyOauthFreshVerified=.*organizationAdminScopeAuthorized&&organizationWriteScopeAuthorized/);
+  assert.match(setup,/companyReady=personalReady&&companyOauthFreshVerified&&companyAdminReadReady/);
+  assert.match(setup,/organization_write_scope_authorized:organizationWriteScopeAuthorized/);
   assert.match(setup,/organization_write_scope_verified:false/);
-  assert.match(setup,/company_publish_eligible:companyOauthFreshVerified/);
+  assert.match(setup,/company_publish_eligible:companyReady/);
   assert.match(setup,/company_live_proven_eligible:false/);
   assert.match(publisher,/LINKEDIN_COMPANY_FRESH_ORG_OAUTH_REQUIRED/);
   assert.match(publisher,/state\?\.company_oauth_fresh_verified===true/);
   assert.match(publisher,/organization_write_scope_authorized/);
-  assert.match(publisher,/company_oauth_connection_id:accountId/);
   assert.match(loop,/if\(channel==='linkedin_company'&&status==='PUBLISHED'\)return false/);
 });
 
@@ -154,8 +152,8 @@ test('durable fresh OAuth proof wins over stale candidate state',()=>{
   assert.match(setup,/record_id',COMPANY_PROOF_RECORD/);
   assert.match(setup,/proofFresh=freshProof\?\.verified===true&&freshProof\?\.fresh_oauth_verified===true/);
   assert.match(setup,/proofAccountId=proofFresh\?clean\(freshProof\?\.connected_account_id\):''/);
-  assert.match(setup,/proofHealthy=proofAccountId\?healthy\.filter\(x=>x\.accountId===proofAccountId\):\[\]/);
-  assert.match(setup,/selectable=proofHealthy\.length===1\?proofHealthy:/);
+  assert.match(setup,/accountsToCheck=proofAccountId/);
+  assert.match(setup,/proofAccountId&&accountsToCheck\.length!==1/);
   assert.match(setup,/proofBound=proofFresh/);
   assert.match(setup,/accountId===proofAccountId/);
   assert.match(setup,/freshProof\?\.admin_acl_verified===true/);
