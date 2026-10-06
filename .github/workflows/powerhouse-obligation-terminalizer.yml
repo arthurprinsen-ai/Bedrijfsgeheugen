@@ -151,15 +151,12 @@ jobs:
             exit 0
           fi
 
-          netlify_required=false
-          while IFS= read -r path; do
-            [ -z "$path" ] && continue
-            case "$path" in
-              netlify/functions/*|platform/api/*|platform/saas/*|platform/connectors/*|platform/read-models/*|components/*|assets/*|pages/*|site/*|blog/*|kennis/*|portal/*|portal-next/*|portal-v2/*|netlify.toml|_redirects|_headers|index.html|klantportaal.html)
-                netlify_required=true
-                ;;
-            esac
-          done <<< "$non_governance_paths"
+          netlify_required="$(NON_GOVERNANCE_PATHS="$non_governance_paths" node --input-type=module - <<'NODE'
+          import { isNetlifyRuntimePath } from './tools/site-shell/production-supersession.mjs';
+          const paths=String(process.env.NON_GOVERNANCE_PATHS||'').split(/\r?\n/).filter(Boolean);
+          process.stdout.write(paths.some(path => isNetlifyRuntimePath(path)) ? 'true' : 'false');
+          NODE
+          )"
 
           if [ "$netlify_required" != true ]; then
             echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
