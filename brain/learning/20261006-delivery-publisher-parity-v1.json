@@ -24,11 +24,12 @@
       "tests/social-learning-instagram-media-provider-routing-v1.test.mjs"
     ],
     "production_readback": {
-      "publisher_version": 106,
+      "publisher_version": 107,
       "blog_queue_version": 11,
       "linkedin_company_state": "APPROVED",
       "linkedin_company_provider_side_effect": false,
-      "linkedin_company_blocker": "organization-scoped LinkedIn OAuth not available on any existing active connection"
+      "linkedin_company_blocker": "organization-scoped LinkedIn OAuth not available on any existing active connection",
+      "publisher_sha256": "a7dfb0f03079126148ab09919147ebf830fa525398c3d4aa36b37ff7672ce758"
     }
   },
   "evaluation": {
