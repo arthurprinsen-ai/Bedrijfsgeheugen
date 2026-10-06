@@ -119,8 +119,27 @@ jobs:
           test -n "$oidc_token"
           bridge_json="$(curl -fsSL --max-time 20 -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' --data "$(node -e 'process.stdout.write(JSON.stringify({expected_sha:process.env.GITHUB_SHA}))')" "$BRIDGE_URL")"
           db_url="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.db_url||""))' "$bridge_json")"
+          transport="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.transport||""))' "$bridge_json")"
           test -n "$db_url"
+          test "$transport" = "supavisor-session-ipv4" || {
+            echo "::error::OIDC bridge returned a non-canonical database transport"
+            exit 78
+          }
           case "$db_url" in postgres://*|postgresql://*) ;; *) echo "::error::OIDC bridge returned invalid database transport"; exit 78;; esac
+          DB_URL="$db_url" node --input-type=module - <<'NODE'
+          const u = new URL(process.env.DB_URL || '');
+          const ref = 'adhjwmvyoixzjtmiroln';
+          if (u.hostname === ('db.'+ref+'.supabase.co')) throw new Error('DIRECT_IPV6_ROUTE_FORBIDDEN');
+          if (u.hostname !== 'aws-0-eu-central-1.pooler.supabase.com') throw new Error('SUPAVISOR_HOST_REQUIRED:'+u.hostname);
+          if (u.port !== '5432') throw new Error('SUPAVISOR_SESSION_PORT_REQUIRED:'+u.port);
+          if (decodeURIComponent(u.username) !== ('postgres.'+ref)) throw new Error('SUPAVISOR_USERNAME_REQUIRED');
+          if (u.searchParams.get('sslmode') !== 'require') throw new Error('SSLMODE_REQUIRE_REQUIRED');
+          NODE
+          pooler_host="$(DB_URL="$db_url" node -e 'process.stdout.write(new URL(process.env.DB_URL).hostname)')"
+          getent ahostsv4 "$pooler_host" >/dev/null || {
+            echo "::error::Canonical Supavisor endpoint has no IPv4 resolution from this runner"
+            exit 1
+          }
           echo "::add-mask::$db_url"
           printf 'SUPABASE_DB_URL=%s\n' "$db_url" >> "$GITHUB_ENV"
 
