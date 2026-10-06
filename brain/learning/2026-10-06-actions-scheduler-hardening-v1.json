@@ -1,0 +1,22 @@
+{
+  "version": "ACTIONS-SCHEDULER-HARDENING-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|actions|scheduler|workflow-concurrency|orphan-queue",
+  "obligation_id": "actions-scheduler-hardening-20261006-v1",
+  "root_cause": [
+    "Required used workflow-level PR concurrency, so a new exact-head run could enter pending while GitHub released the predecessor even when no content gate was blocking.",
+    "Closed historical PRs could leave queued/pending Actions runs behind because PR Janitor closed PRs but did not cancel orphaned workflow runs."
+  ],
+  "prevention": [
+    "Start Required workflows without a top-level concurrency lock; fail fast when the live PR head no longer equals the classified head.",
+    "Apply cancellable concurrency only to expensive provider and delivery lanes.",
+    "On PR close and scheduled fallback, cancel only queued/pending/waiting/requested pull-request runs whose head SHA/ref is not owned by any open PR."
+  ],
+  "safety": {
+    "active_open_pr_heads_are_never_cancelled": true,
+    "release_gates_removed": false,
+    "security_gates_removed": false,
+    "provider_mutation": false
+  },
+  "status": "ACTIVE_PREVENTION"
+}

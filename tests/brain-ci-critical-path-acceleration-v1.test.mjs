@@ -4,9 +4,14 @@ import { readFile } from 'node:fs/promises';
 
 const read = path => readFile(path, 'utf8');
 
-test('CI acceleration keeps one Required single-flight and removes duplicate generic domain work', async () => {
+test('CI acceleration starts Required immediately and cancels only stale heavy lanes', async () => {
   const required = await read('.github/workflows/required-test.yml');
-  assert.match(required, /group: required-test-/);
+  const header=required.slice(0,required.indexOf('\njobs:'));
+  assert.doesNotMatch(header,/^concurrency:/m);
+  assert.match(required,/REQUIRED_STALE_HEAD_YIELD/);
+  for(const lane of ['netlify','supabase','backend','portal','automation','website']){
+    assert.match(required,new RegExp(`group: required-${lane}-`));
+  }
   assert.match(required, /cancel-in-progress:\s*true/);
   assert.doesNotMatch(required, /Prove Supabase security gate blocks known unsafe patterns/);
   assert.doesNotMatch(required, /Verify Portal V2 suite/);

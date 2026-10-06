@@ -1,11 +1,14 @@
 name: PR Janitor
 
 on:
+  pull_request:
+    types: [closed]
   schedule:
     - cron: '17 */6 * * *'
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: read
   pull-requests: write
 
@@ -24,7 +27,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Close same-obligation superseded and long-stale generated PRs
+      - name: Close superseded PRs and cancel orphaned queued Actions
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          CLOSED_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || '' }}
+          CLOSED_PR_HEAD_REF: ${{ github.event.pull_request.head.ref || '' }}
         run: node .github/scripts/pr-janitor.mjs
