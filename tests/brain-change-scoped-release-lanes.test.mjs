@@ -311,15 +311,13 @@ test('material writeback closure guard stays backend-only and never activates we
 });
 
 
-test('latency control-plane workflows stay backend-only and avoid website browser proof', () => {
-  for (const path of [
-    '.github/workflows/powerhouse-delivery-hygiene.yml',
-    '.github/workflows/repo-writer-operational-verification.yml'
-  ]) {
-    assert.deepEqual(suitesFor([path]), {
-      shared:true, backend:true, portal:false, website:false, automation:false
-    }, path);
-  }
+test('latency control-plane workflows stay off website browser proof with canonical ownership', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/powerhouse-delivery-hygiene.yml']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+  assert.deepEqual(suitesFor(['.github/workflows/repo-writer-operational-verification.yml']), {
+    shared:true, backend:false, portal:false, website:false, automation:true
+  });
 });
 
 
