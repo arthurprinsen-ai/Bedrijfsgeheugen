@@ -49,6 +49,13 @@ export function evaluateRuntimeAuthority(registry){
   if(controls.runtime_drift_detector!=='ENABLED') violations.push({code:'RUNTIME_DRIFT_DETECTOR_DISABLED'});
   if(controls.interrupted_run_recovery!=='EXISTING_BRAIN_OBLIGATION_RUNTIME') violations.push({code:'NON_CANONICAL_RECOVERY_RUNTIME'});
   if(controls.writeback_route!=='public.brain_append_record') violations.push({code:'NON_CANONICAL_WRITEBACK_ROUTE'});
+  if(controls.supabase_edge_production_authority!=='PROTECTED_MAIN_ONLY') violations.push({code:'SUPABASE_EDGE_PRODUCTION_AUTHORITY_NOT_PROTECTED_MAIN'});
+  if(controls.supabase_edge_source_of_truth!=='GITHUB_PROTECTED_MAIN') violations.push({code:'SUPABASE_EDGE_SOURCE_OF_TRUTH_NOT_PROTECTED_MAIN'});
+  if(controls.supabase_edge_direct_provider_deploy!=='FORBIDDEN') violations.push({code:'DIRECT_SUPABASE_EDGE_PROVIDER_DEPLOY_NOT_FORBIDDEN'});
+  if(controls.supabase_edge_manual_recovery!=='TRUSTED_CURRENT_MAIN_ONLY') violations.push({code:'SUPABASE_EDGE_MANUAL_RECOVERY_NOT_TRUSTED_MAIN_ONLY'});
+  if(controls.supabase_edge_drift_policy!=='FAIL_CLOSED') violations.push({code:'SUPABASE_EDGE_DRIFT_NOT_FAIL_CLOSED'});
+  if(controls.supabase_edge_promotion_workflow!=='.github/workflows/supabase-edge-production-authority.yml') violations.push({code:'SUPABASE_EDGE_PROMOTION_WORKFLOW_DRIFT'});
+  if(controls.supabase_edge_cli_version!=='2.119.0') violations.push({code:'SUPABASE_EDGE_CLI_VERSION_DRIFT'});
 
   return {ready:violations.length===0,violations};
 }

@@ -1018,3 +1018,17 @@ Every current and future chat/agent that creates a free guide, PDF, calculator, 
 Fingerprint: `powerhouse-need-discovery-v1`.
 
 Website, posts, blogs, e-mail, echte LinkedIn-DM, verkoopgesprekken en Portal V2 gebruiken één gedeelde fasering: gewenst resultaat → huidige aanpak → concreet probleem → zakelijke impact → urgentie → gewenste waarde → besluitvorming → vervolgstap. Directe interacties stellen één logische vraag per beurt en leggen het antwoord vast in de woorden van de klant. Likes, kliks, opens en algemene engagement bevestigen geen probleem, impact, urgentie, budget of koopintentie. Een aanbod mag pas worden gekozen wanneer probleem, impact en urgentie expliciet zijn bevestigd. Alle uitkomsten lopen terug via reply → gesprek → scan → voorstel → betaalde order → gerealiseerde omzet → learning. Canonieke skill: `.agents/skills/powerhouse-need-discovery/SKILL.md`.
+
+## Supabase Edge production authority — protected main only
+
+Fingerprint: `supabase-edge|production-promotion|protected-main-only|v1`.
+
+Voor alle huidige en toekomstige chats, agents, recovery-workers en tools geldt:
+- productieproject `adhjwmvyoixzjtmiroln` mag voor `supabase/functions/**` **niet rechtstreeks** via een chat/agent/provider deploy worden gemuteerd;
+- `mcp__Supabase__deploy_edge_function`, dashboard editor-deploys en lokale CLI-deploys naar productie zijn geen geldige normale delivery-route;
+- source gaat eerst naar Git, door exact-HEAD gates en protected merge naar `main`;
+- uitsluitend `.github/workflows/supabase-edge-production-authority.yml` promoveert exact current-main naar production;
+- de workflow is single-flight, pinned op Supabase CLI 2.119.0 en leest provider-source na deployment terug;
+- ontbrekende GitHub production credential, stale main, provider/source mismatch of onbekende function scope is fail-closed;
+- break-glass providerdeploy is alleen toegestaan na expliciete menselijke noodautorisatie en verplicht onmiddellijke source-projectie + protected-main reconciliation;
+- een production Edge-versie zonder protected-main lineage is `RUNTIME_AUTHORITY_DRIFT`, nooit nieuwe source authority en nooit reden om een stale PR te laten inhalen.

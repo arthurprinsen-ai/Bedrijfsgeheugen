@@ -1,0 +1,45 @@
+{
+  "fingerprint": "supabase-edge|production-promotion|parallel-writer-drift|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-edge-protected-main-authority-20261006-v1",
+  "compiler": {
+    "failure_class": "PARALLEL_SUPABASE_EDGE_PRODUCTION_WRITER",
+    "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Supabase Edge production could be mutated directly by chat/agent provider tools while protected Git recovery candidates were still running. The publisher advanced v109 -> v111 -> v113 without a protected-main merge, repeatedly invalidating exact-HEAD source parity and causing successor PR churn.",
+  "prevention_rule": "Supabase Edge production promotion is a distinct material obligation with exactly one active owner: protected current-main GitHub Actions. Direct chat/agent/provider deployment is forbidden; provider source must be read back after the current-main deploy and any drift fails closed.",
+  "evidence": {
+    "observed_runtime_drift": [
+      "powerhouse-composio-linkedin-setup ACTIVE v23 differed from current main",
+      "powerhouse-content-loop ACTIVE v31 differed from current main",
+      "powerhouse-social-publisher advanced through v109, v111 and v113 while no matching protected-main merge occurred"
+    ],
+    "production_project": "adhjwmvyoixzjtmiroln",
+    "tests": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "control_plane": [
+      "config/powerhouse-runtime-authority.json",
+      "brain/operating-loop/runtime-authority-governance.mjs",
+      ".github/workflows/supabase-edge-production-authority.yml",
+      "brain/contracts/supabase-edge-production-authority-v1.json",
+      "AGENTS.md"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}

@@ -1,0 +1,148 @@
+name: Supabase Edge Production Authority
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/functions/**'
+      - 'supabase/config.toml'
+  workflow_dispatch:
+    inputs:
+      functions:
+        description: 'Comma-separated function slugs to redeploy from exact current main; blank derives from the current main commit'
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-edge-production-authority
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    env:
+      PROJECT_REF: adhjwmvyoixzjtmiroln
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - name: Checkout exact protected-main candidate
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Prove trusted current-main authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main" || {
+            echo "::error::SUPABASE_EDGE_PRODUCTION_NON_MAIN_FORBIDDEN"
+            exit 78
+          }
+          git fetch --no-tags origin main
+          CURRENT_MAIN="$(git rev-parse origin/main)"
+          test "$CURRENT_MAIN" = "$GITHUB_SHA" || {
+            echo "::error::SUPABASE_EDGE_PRODUCTION_STALE_MAIN expected=$CURRENT_MAIN candidate=$GITHUB_SHA"
+            exit 78
+          }
+          test -n "${SUPABASE_ACCESS_TOKEN:-}" || {
+            echo "::error::SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_PROTECTED_MAIN_PROMOTION"
+            exit 78
+          }
+          echo "CURRENT_MAIN=$CURRENT_MAIN" >> "$GITHUB_ENV"
+
+      - name: Resolve exact function set
+        id: scope
+        shell: bash
+        env:
+          REQUESTED_FUNCTIONS: ${{ inputs.functions || '' }}
+          BEFORE_SHA: ${{ github.event.before || '' }}
+        run: |
+          set -euo pipefail
+          : > /tmp/functions.txt
+          if [ -n "${REQUESTED_FUNCTIONS// /}" ]; then
+            tr ',' '\n' <<<"$REQUESTED_FUNCTIONS" | sed 's/^ *//;s/ *$//' | grep -E '^[a-z0-9][a-z0-9-]*$' | sort -u > /tmp/functions.txt
+          else
+            base="$BEFORE_SHA"
+            if ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
+              base="${GITHUB_SHA}^"
+            fi
+            git diff --name-only "$base" "$GITHUB_SHA" > /tmp/changed-paths.txt
+            if grep -Eq '^supabase/(config\.toml|functions/_shared/)' /tmp/changed-paths.txt; then
+              find supabase/functions -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -Ev '^_' | sort -u > /tmp/functions.txt
+            else
+              sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' /tmp/changed-paths.txt | grep -Ev '^_' | sort -u > /tmp/functions.txt
+            fi
+          fi
+          while IFS= read -r fn; do
+            [ -d "supabase/functions/$fn" ] || {
+              echo "::error::SUPABASE_EDGE_FUNCTION_NOT_IN_CURRENT_MAIN:$fn"
+              exit 78
+            }
+          done < /tmp/functions.txt
+          test -s /tmp/functions.txt || {
+            echo "No Supabase Edge function source changed; promotion not applicable."
+            echo "applicable=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          }
+          echo "applicable=true" >> "$GITHUB_OUTPUT"
+          echo "Protected-main function set:"
+          cat /tmp/functions.txt
+
+      - name: Install pinned Supabase CLI
+        if: steps.scope.outputs.applicable == 'true'
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Deploy exact current-main Edge source
+        if: steps.scope.outputs.applicable == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r fn; do
+            echo "PROMOTE_SUPABASE_EDGE:$fn:$GITHUB_SHA"
+            supabase functions deploy "$fn" --project-ref "$PROJECT_REF" --use-api
+          done < /tmp/functions.txt
+
+      - name: Read back provider source
+        if: steps.scope.outputs.applicable == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts/supabase-edge-production-readback
+          while IFS= read -r fn; do
+            root="/tmp/supabase-readback/$fn"
+            rm -rf "$root"
+            mkdir -p "$root"
+            (
+              cd "$root"
+              supabase functions download "$fn" --project-ref "$PROJECT_REF"
+            )
+            provider="$root/supabase/functions/$fn/index.ts"
+            source="supabase/functions/$fn/index.ts"
+            test -f "$provider" || {
+              echo "::error::SUPABASE_EDGE_PROVIDER_SOURCE_READBACK_MISSING:$fn"
+              exit 78
+            }
+            cmp "$source" "$provider" || {
+              echo "::error::SUPABASE_EDGE_PROVIDER_SOURCE_DRIFT:$fn"
+              exit 78
+            }
+            sha256sum "$source" | awk -v fn="$fn" -v rev="$GITHUB_SHA" '{print fn" "$1" "rev}' >> .artifacts/supabase-edge-production-readback/source-sha256.txt
+          done < /tmp/functions.txt
+          printf 'main_sha=%s\nproject_ref=%s\n' "$GITHUB_SHA" "$PROJECT_REF" > .artifacts/supabase-edge-production-readback/authority.txt
+
+      - name: Upload immutable production authority evidence
+        if: steps.scope.outputs.applicable == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-edge-production-authority-${{ github.sha }}
+          path: .artifacts/supabase-edge-production-readback/
+          if-no-files-found: error
+          retention-days: 90

@@ -1,6 +1,8 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import postgres from "npm:postgres@3.4.7";
 
+// Protected-main promotion bootstrap: social provider-truth contract v1.
+
 const REF = "adhjwmvyoixzjtmiroln";
 const POOLER = "aws-0-eu-central-1.pooler.supabase.com";
 const SOCIAL_CHANNELS = ["linkedin_personal", "linkedin_company", "instagram_company"] as const;
