@@ -24,6 +24,12 @@ test('delivery classification policy is governance rather than runtime deploymen
   assert.match(workflow,/config\/brain-delivery-system\.json/);
 });
 
+test('current-production Supabase ledger recovery uses the bounded parity readback path',()=>{
+  assert.match(workflow,/supabase-current-production-ledger-parity-/);
+  assert.match(workflow,/readback_mode=supabase_history_parity_recovery/);
+  assert.match(workflow,/SUPABASE_PARITY_RECOVERY_CONTAINS_RUNTIME_PATH/);
+});
+
 test('terminal evidence accepts provider-proven Supabase runtime modes',()=>{
   assert.match(workflow,/runtimeReadbackModes=\['netlify_runtime','supabase_edge_provider','netlify_runtime_supabase_provider'\]/);
   assert.match(workflow,/supabase_provider_readback/);

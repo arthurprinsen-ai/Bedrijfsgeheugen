@@ -1,0 +1,28 @@
+{
+  "fingerprint": "powerhouse|terminalizer|current-supabase-ledger-parity|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "github-terminalizer-current-supabase-ledger-parity-replay-3899",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The post-merge terminalizer recognized only legacy supabase-migration-history parity/canonical obligation IDs. The canonical 591-ledger recovery used the newer supabase-current-production-ledger-parity family, so migration-history-only files fell through to the unknown-runtime branch and failed with UNWIRED_NON_NETLIFY_RUNTIME_READBACK despite verified main containment and production ledger parity.",
+  "prevention_rule": "Classify the current-production Supabase ledger parity obligation family as supabase_history_parity_recovery only when Candidate-Type is recovery and every non-governance path remains inside the existing migration/history/security-verifier allowlist. Any runtime path remains fail-closed.",
+  "evidence": {
+    "merged_target_pr": 3899,
+    "merged_target_sha": "dddc30c5f0d6efa4c1cd88b86d3fa454b11bf342",
+    "production_migration_count": 591,
+    "production_latest_version": "20261006103856",
+    "regression_test": "tests/brain-obligation-terminalizer-supabase-provider-readback.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-obligation-terminalizer-supabase-provider-readback.test.mjs"
+    ]
+  }
+}
