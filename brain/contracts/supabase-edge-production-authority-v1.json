@@ -1,11 +1,11 @@
 {
   "id": "supabase-edge-production-authority-v1",
-  "fingerprint": "supabase-edge|production-promotion|protected-main-git-integration-declared-scope-provider-readback|v5",
+  "fingerprint": "supabase-edge|production-promotion|protected-main-api-source-readback|v6",
   "status": "canonical",
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source_of_truth": "GITHUB_PROTECTED_MAIN",
   "sole_promotion_workflow": ".github/workflows/supabase-edge-production-authority.yml",
-  "cli_version": "2.119.0_READBACK_ONLY",
+  "cli_version": "2.119.0_READBACK_ONLY_USE_API",
   "provider": "supabase",
   "direct_chat_agent_provider_deploy": "FORBIDDEN",
   "direct_dashboard_production_deploy": "FORBIDDEN_EXCEPT_HARD_BREAK_GLASS",
@@ -14,10 +14,10 @@
   "drift_policy": "FAIL_CLOSED",
   "concurrency": "SINGLE_FLIGHT",
   "deployment_scope": "Supabase GitHub Integration deploys only Edge Functions declared in supabase/config.toml. Production authority scopes config.toml/_shared changes to that declared set and rejects any directly changed function that is undeclared.",
-  "readback": "exact-SHA Supabase GitHub App production check must complete success and remain stable across two observations; GitHub Actions then uses a read-only SUPABASE_ACCESS_TOKEN to download only the declared/selected provider functions and byte-compare their complete file sets against protected main",
-  "terminal_truth": "protected merge -> declared-function Supabase GitHub Integration production deployment -> exact-SHA stable provider check -> read-only CLI provider download -> byte-for-byte provider-source parity -> no newer Supabase runtime drift",
+  "readback": "exact-SHA Supabase GitHub App production check must complete success and remain stable across two observations; GitHub Actions then uses a scoped read-only SUPABASE_ACCESS_TOKEN with `supabase functions download --use-api` so Supabase performs server-side unbundling, after which the complete provider source file set is byte-compared against protected main",
+  "terminal_truth": "protected merge -> declared-function Supabase GitHub Integration production deployment -> exact-SHA stable provider check -> scoped PAT server-side source readback via --use-api -> byte-for-byte provider-source parity -> no newer Supabase runtime drift",
   "secret_requirement": "GitHub production environment secret SUPABASE_ACCESS_TOKEN; scoped to the production project with Edge Functions Read only when scoped PATs are available; never used for deployment",
-  "rationale": "preserve Supabase GitHub Integration as the sole production writer, prevent undeclared functions from escaping deployment scope, and prevent config changes from expanding parity checks to unrelated function directories",
+  "rationale": "preserve Supabase GitHub Integration as the sole production writer while avoiding false byte-drift introduced by local Docker/ESZIP extraction in the default CLI download path",
   "provider_deployer": "SUPABASE_GITHUB_INTEGRATION",
   "github_actions_role": "ATTESTATION_ONLY_WITH_READ_ONLY_PROVIDER_PARITY",
   "provider_check": {
@@ -41,5 +41,7 @@
   "registration_policy": "FAIL_CLOSED_IF_SELECTED_FUNCTION_IS_NOT_DECLARED_IN_SUPABASE_CONFIG",
   "provider_source_parity": "BYTE_FOR_BYTE_REQUIRED_FOR_TERMINAL_GREEN",
   "readback_token_policy": "READ_ONLY_EDGE_FUNCTIONS_READ; SUPABASE_ACCESS_TOKEN MUST NOT AUTHORIZE OR EXECUTE PRODUCTION DEPLOYMENT",
-  "config_scope_policy": "CONFIG_OR_SHARED_CHANGE_RESOLVES_TO_DECLARED_FUNCTIONS_ONLY"
+  "config_scope_policy": "CONFIG_OR_SHARED_CHANGE_RESOLVES_TO_DECLARED_FUNCTIONS_ONLY",
+  "provider_source_readback_mode": "SUPABASE_CLI_DOWNLOAD_USE_API_SERVER_SIDE_UNBUNDLE",
+  "local_eszip_extraction_for_terminal_parity": "FORBIDDEN"
 }
