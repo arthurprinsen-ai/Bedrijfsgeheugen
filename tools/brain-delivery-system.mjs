@@ -26,7 +26,10 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tests/brain-autonomous-engineering-fabric-v3.test.mjs': 'automation',
   'tests/brain-ci-calibration-engine-v1.test.mjs': 'backend',
   'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend',
-  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation'
+  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation',
+  'brain/contracts/supabase-edge-production-authority-v1.json': 'backend',
+  'scripts/brain/material-writeback-closure-guard.mjs': 'backend',
+  'scripts/brain/test-writer-verification-modes.mjs': 'automation'
 });
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
@@ -48,7 +51,18 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/powerhouse-daily-self-evolution.yml': 'automation',
-  '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml': 'automation'
+  '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml': 'automation',
+  '.github/workflows/powerhouse-terminal-writer-lease-closure-guard.yml': 'automation',
+  '.github/workflows/powerhouse-delivery-hygiene.yml': 'backend',
+  '.github/workflows/repo-writer-operational-verification.yml': 'automation',
+  '.github/workflows/repo-writer-candidate-shadow.yml': 'automation',
+  '.github/workflows/paginacontrole.yml': 'automation',
+  '.github/workflows/seo-controle.yml': 'automation',
+  '.github/workflows/weekblog.yml': 'automation',
+  '.github/workflows/supabase-edge-production-authority.yml': 'backend',
+  '.github/workflows/supabase-preview-applicability.yml': 'backend',
+  '.github/workflows/required-gate-watchdog.yml': 'automation',
+  '.github/workflows/pr-janitor.yml': 'automation'
 });
 const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
   'brain/learning/',
@@ -140,7 +154,8 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   const nonExecutablePatterns = effectiveNonExecutableSharedPaths(policy);
   const nonExecutableShared = paths.filter(path => matches(path, nonExecutablePatterns) || isScopedNonExecutable(path));
   const scopedLanePaths = paths.filter(path => scopedLaneForPath(path));
-  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !matches(path, policy.ignoredPaths) && !scopedLaneForPath(path) && !isScopedNonExecutable(path));
+  const hasConfiguredLane = path => Boolean(scopedLaneForPath(path)) || policy.lanes.some(lane => matches(path, lane.paths));
+  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !matches(path, policy.ignoredPaths) && !hasConfiguredLane(path) && !isScopedNonExecutable(path));
   const ignored = paths.filter(path => matches(path, policy.ignoredPaths) || isScopedNonExecutable(path));
   const lanes = policy.lanes
     .filter(lane => sharedExecutable || scopedLanePaths.some(path => scopedLaneForPath(path) === lane.id) || paths.some(path => !matches(path, nonExecutablePatterns) && !scopedLaneForPath(path) && !isScopedNonExecutable(path) && matches(path, lane.paths)))
