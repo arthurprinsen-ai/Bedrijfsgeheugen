@@ -3,9 +3,12 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { assessQueuePressure } from '../tools/delivery/predictive-controller.mjs';
 
-test('recovery supervisor is scheduled/manual only and applies repository backpressure', async () => {
+test('recovery supervisor is event-driven with scheduled fallback and applies repository backpressure', async () => {
   const yml = await readFile('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.doesNotMatch(yml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
+  assert.match(yml,/workflow_run:/);
+  assert.match(yml,/workflows: \["Required test"\]/);
+  assert.match(yml,/types: \[completed\]/);
   assert.match(yml,/workflow_dispatch:/);
   assert.match(yml,/cron:\s*'\*\/5 \* \* \* \*'/);
   assert.match(yml,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'12'/);
