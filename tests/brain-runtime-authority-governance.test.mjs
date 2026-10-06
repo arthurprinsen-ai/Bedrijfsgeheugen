@@ -119,6 +119,8 @@ test('Supabase Edge production workflow is current-main-only, single-writer and 
   assert.match(workflow,/Supabase Preview/);
   assert.match(workflow,/stableSuccess>=2/);
   assert.match(workflow,/source-tree-sha256\.json/);
+  assert.match(workflow,/SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG/);
+  assert.match(workflow,/sed -nE 's\/\^\\\[functions\\\.\(\[\^\]\]\+\)\\\]\$\/\\1\/p' supabase\/config\.toml/);
   assert.match(workflow,/SUPABASE_EDGE_ATTESTATION_SUPERSEDED_BY_RUNTIME_CHANGE/);
   assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
@@ -154,4 +156,12 @@ test('Supabase Git production registration includes all social authority-critica
   const config=await readFile('supabase/config.toml','utf8');
   assert.match(config,/\[functions\.powerhouse-social-publisher\][\s\S]*?enabled\s*=\s*true[\s\S]*?verify_jwt\s*=\s*false[\s\S]*?entrypoint\s*=\s*"\.\/functions\/powerhouse-social-publisher\/index\.ts"/);
   assert.match(config,/\[functions\.social-recovery-runner\][\s\S]*?enabled\s*=\s*true[\s\S]*?verify_jwt\s*=\s*true[\s\S]*?entrypoint\s*=\s*"\.\/functions\/social-recovery-runner\/index\.ts"/);
+});
+
+
+test('Supabase Edge config changes are scoped to declared functions only',async()=>{
+  const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
+  assert.match(workflow,/SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG/);
+  assert.match(workflow,/supabase\/config\.toml/);
+  assert.doesNotMatch(workflow,/find supabase\/functions -mindepth 1 -maxdepth 1 -type d -printf/);
 });
