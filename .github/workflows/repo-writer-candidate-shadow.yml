@@ -1,9 +1,6 @@
 name: Repository Writer Candidate Shadow
 
 on:
-  pull_request:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       pr_number:
@@ -39,7 +36,7 @@ concurrency:
 
 jobs:
   verify:
-    if: startsWith(github.head_ref, 'writer/') || (github.event_name == 'workflow_dispatch' && startsWith(inputs.candidate_branch, 'writer/'))
+    if: github.event_name == 'workflow_dispatch' && startsWith(inputs.candidate_branch, 'writer/')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
