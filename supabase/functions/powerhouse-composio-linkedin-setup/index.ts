@@ -39,6 +39,7 @@ function deepFindStrings(value:any,keys:string[],out:string[]=[]){
 }
 function normalizePersonUrn(raw:string){const v=clean(raw);if(!v)return'';if(v.startsWith('urn:li:person:'))return v;if(v.startsWith('urn:li:'))return v;return `urn:li:person:${v}`;}
 function normalizeOrganizationUrn(raw:string){const v=clean(raw);if(!v)return'';if(v.startsWith('urn:li:organization:'))return v;if(v.startsWith('urn:li:'))return v;return `urn:li:organization:${v}`;}
+function jsonObject(value:any){if(!value)return{};if(typeof value==='string'){try{const parsed=JSON.parse(value);return parsed&&typeof parsed==='object'&&!Array.isArray(parsed)?parsed:{};}catch{return {};}}return typeof value==='object'&&!Array.isArray(value)?value:{};}
 async function writeState(db:any,state:string,result:any){
   const now=new Date().toISOString();
   await db.from('brain_records').upsert({
@@ -69,6 +70,11 @@ Deno.serve(async(req:Request)=>{
       return json({ok:true,...result});
     }
 
+    const {data:priorStateRow}=await db.from('brain_records').select('status,result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
+    const priorState=jsonObject(priorStateRow?.result);
+    const priorRequestedScopes=Array.isArray(priorState?.requested_company_scopes)?priorState.requested_company_scopes.map(clean).filter(Boolean):[];
+    const boundOauthAccountId=clean(priorState?.oauth_candidate_connection_id||priorState?.company_oauth_connection_id);
+
     if(action==='create_link'){
       const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&is_composio_managed=true&show_disabled=false&limit=50');
       const configs=(Array.isArray(configsBody?.items)?configsBody.items:[])
@@ -97,8 +103,9 @@ Deno.serve(async(req:Request)=>{
       if(!authConfigId)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTH_CONFIG_ID_MISSING');
       const link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:USER_ID,alias:ALIAS})});
       const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
-      if(!redirectUrl)throw new Error('COMPOSIO_LINKEDIN_REDIRECT_URL_MISSING');
-      const result={ready:false,state:'AUTH_LINK_READY',reason:'LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED',api_key_present:true,auth_config_id:authConfigId,connected_account_id:connectedAccountId||null,link_available:true,expires_at:clean(link?.expires_at)||null,production_workspace:true,requested_company_scopes:COMPANY_OAUTH_SCOPES,canonical_alias:ALIAS};
+      if(!redirectUrl||!connectedAccountId)throw new Error('COMPOSIO_LINKEDIN_SCOPED_REDIRECT_OR_ACCOUNT_MISSING');
+      const oauthRequestedAt=new Date().toISOString();
+      const result={ready:false,state:'AUTH_LINK_READY',reason:'LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED',api_key_present:true,auth_config_id:authConfigId,connected_account_id:connectedAccountId,oauth_candidate_connection_id:connectedAccountId,link_available:true,expires_at:clean(link?.expires_at)||null,production_workspace:true,requested_company_scopes:COMPANY_OAUTH_SCOPES,canonical_alias:ALIAS,oauth_requested_at:oauthRequestedAt,company_oauth_fresh_verified:false};
       await writeState(db,'AUTH_LINK_READY',result);
       return json({ok:true,...result,redirect_url:redirectUrl});
     }
@@ -133,10 +140,12 @@ Deno.serve(async(req:Request)=>{
       const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_LINKEDIN_REAUTH_REQUIRED',api_key_present:true,active_accounts:accounts.length,healthy_accounts:0,rejected_accounts:rejected,personal_ready:false,company_ready:false};
       await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result},409);
     }
+    const bound=boundOauthAccountId?healthy.filter(x=>x.accountId===boundOauthAccountId):[];
     const canonical=healthy.filter(x=>clean(x.account?.alias)===ALIAS);
-    const selectable=canonical.length===1?canonical:healthy;
+    const selectable=boundOauthAccountId?bound:(canonical.length===1?canonical:healthy);
     if(selectable.length!==1){
-      const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_LINKEDIN_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,personal_ready:false,company_ready:false};
+      const reason=boundOauthAccountId?'COMPOSIO_LINKEDIN_BOUND_OAUTH_NOT_HEALTHY':'COMPOSIO_LINKEDIN_CONNECTION_AMBIGUOUS';
+      const result={ready:false,state:'AMBIGUOUS',reason,api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,personal_ready:false,company_ready:false,auth_config_id:clean(priorState?.auth_config_id)||null,oauth_candidate_connection_id:boundOauthAccountId||null,requested_company_scopes:priorRequestedScopes,oauth_requested_at:clean(priorState?.oauth_requested_at)||null,company_oauth_fresh_verified:false};
       await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
     }
 
@@ -162,18 +171,26 @@ Deno.serve(async(req:Request)=>{
 
     const personalReady=!!personAuthor;
     const hasMemberReadScope=grantedScopes.includes('r_member_social');
-    const hasOrgAdminScope=grantedScopes.includes('r_organization_admin')||grantedScopes.includes('rw_organization_admin');
-    const hasOrgWriteScope=grantedScopes.includes('w_organization_social')||grantedScopes.includes('w_organization_social_feed');
-    const hasOrgReadScope=grantedScopes.includes('r_organization_social')||grantedScopes.includes('r_organization_social_feed');
-    const companyAuthorConfigured=orgUrns.includes(configuredOrg);
+    const adminAclVerified=!companyError&&discoveredOrgUrns.includes(configuredOrg);
+    const freshOauthBound=!!boundOauthAccountId&&accountId===boundOauthAccountId&&!!clean(priorState?.oauth_requested_at);
+    const requestedOrgAdmin=freshOauthBound&&(priorRequestedScopes.includes('r_organization_admin')||priorRequestedScopes.includes('rw_organization_admin'));
+    const requestedOrgWrite=freshOauthBound&&priorRequestedScopes.includes('w_organization_social');
+    const requestedOrgRead=freshOauthBound&&priorRequestedScopes.includes('r_organization_social');
+    const hasOrgAdminScope=grantedScopes.includes('r_organization_admin')||grantedScopes.includes('rw_organization_admin')||(adminAclVerified&&requestedOrgAdmin);
+    const hasOrgWriteScope=grantedScopes.includes('w_organization_social')||grantedScopes.includes('w_organization_social_feed')||requestedOrgWrite;
+    const hasOrgReadScope=grantedScopes.includes('r_organization_social')||grantedScopes.includes('r_organization_social_feed')||requestedOrgRead;
+    const companyAuthorConfigured=adminAclVerified;
     const personalReadbackReady=personalReady&&hasMemberReadScope;
-    const companyAdminReadReady=companyAuthorConfigured&&hasOrgAdminScope&&!companyError&&discoveredOrgUrns.includes(configuredOrg);
-    const companyReady=personalReady&&companyAuthorConfigured&&hasOrgWriteScope&&companyAdminReadReady;
+    const companyAdminReadReady=companyAuthorConfigured&&hasOrgAdminScope;
+    const companyOauthFreshVerified=freshOauthBound&&companyAdminReadReady&&hasOrgWriteScope;
+    const companyReady=personalReady&&companyOauthFreshVerified;
     const companyReadbackReady=companyReady&&hasOrgReadScope;
+    const companyState=companyReady?'ACTIVE':personalReady?'COMPANY_AUTH_REQUIRED':'CAPABILITY_UNVERIFIED';
+    const companyReason=companyReady?null:personalReady?'LINKEDIN_COMPANY_ORG_OAUTH_REQUIRED':'LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED';
     const result={
       ready:personalReady,
-      state:personalReady?'ACTIVE':'CAPABILITY_UNVERIFIED',
-      reason:personalReady?null:'LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED',
+      state:companyState,
+      reason:companyReason,
       api_key_present:true,
       active_accounts:accounts.length,
       healthy_accounts:healthy.length,
@@ -181,6 +198,11 @@ Deno.serve(async(req:Request)=>{
       health_verified:true,
       canonical_alias_selected:clean(account?.alias)===ALIAS,
       connected_account_id:accountId,
+      auth_config_id:clean(priorState?.auth_config_id)||null,
+      oauth_candidate_connection_id:boundOauthAccountId||null,
+      requested_company_scopes:priorRequestedScopes,
+      oauth_requested_at:clean(priorState?.oauth_requested_at)||null,
+      company_oauth_fresh_verified:companyOauthFreshVerified,
       user_id:userId,
       alias:clean(account?.alias),
       granted_scopes:grantedScopes,
@@ -196,11 +218,11 @@ Deno.serve(async(req:Request)=>{
       company_admin_read_scope_required:companyAdminReadReady?null:'r_organization_admin',
       company_admin_scope_present:hasOrgAdminScope,
       company_write_scope_present:hasOrgWriteScope,
-      linkedin_company_admin_oauth_proven:companyAdminReadReady&&hasOrgWriteScope,
-      organization_write_scope_verified:hasOrgWriteScope,
-      company_oauth_connection_id:companyReady?accountId:null,
-      company_oauth_verified_at:companyReady?new Date().toISOString():null,
-      company_live_proven_eligible:companyReady,
+      linkedin_company_admin_oauth_proven:companyOauthFreshVerified,
+      organization_write_scope_verified:companyOauthFreshVerified&&hasOrgWriteScope,
+      company_oauth_connection_id:companyOauthFreshVerified?accountId:null,
+      company_oauth_verified_at:companyOauthFreshVerified?(clean(priorState?.company_oauth_verified_at)||new Date().toISOString()):null,
+      company_live_proven_eligible:companyOauthFreshVerified&&companyReadbackReady,
       company_author_source:discoveredOrgUrns.includes(configuredOrg)?'live_org_acl':'configured_canonical_urn',
       company_readback_ready:companyReadbackReady,
       company_read_scope_present:hasOrgReadScope,
@@ -208,7 +230,7 @@ Deno.serve(async(req:Request)=>{
       company_capability_error:companyError?companyError.slice(0,220):null,
       toolkit_version_policy:'latest'
     };
-    if(action==='resume'&&personalReady){
+    if(action==='resume'&&companyReady){
       if(!expected)return json({ok:false,error:'SCHEDULER_AUTH_REQUIRED'},503);
       const publisherResponse=await fetch(url+'/functions/v1/powerhouse-social-publisher',{
         method:'POST',
@@ -223,7 +245,7 @@ Deno.serve(async(req:Request)=>{
       await writeState(db,result.publisher_ok?'ACTIVE_RESUMED':'ACTIVE_RESUME_FAILED',result);
       return json({ok:result.publisher_ok,...result},result.publisher_ok?200:502);
     }
-    await writeState(db,personalReady?'ACTIVE':'CAPABILITY_UNVERIFIED',result);
+    await writeState(db,companyState,result);
     return json({ok:true,...result});
   }catch(error){
     const detail=error instanceof Error?error.message:'unknown';
