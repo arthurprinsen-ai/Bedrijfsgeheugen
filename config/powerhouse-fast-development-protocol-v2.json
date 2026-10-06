@@ -130,8 +130,13 @@
       "run_id",
       "provider",
       "last_observed_status",
-      "next_action"
+      "next_action",
+      "resume_condition",
+      "observed_at"
     ],
-    "independent_work_continues": true
+    "independent_work_continues": true,
+    "max_status_reads_per_turn": 2,
+    "checkpoint_required_before_yield": true,
+    "user_continue_required": false
   }
 }

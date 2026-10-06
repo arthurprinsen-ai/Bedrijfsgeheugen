@@ -178,6 +178,8 @@ Voor alle huidige en toekomstige chats, agents en delivery-nodes geldt aanvullen
 - exact dezelfde head krijgt maximaal één actieve run per verplichte workflow; duplicaten worden niet opnieuw gedispatched;
 - nieuwere `main` supersedeert oudere nog niet terminale productie-snapshot/readback runs wanneer die oudere run geen unieke onomkeerbare side-effect meer hoeft af te ronden;
 - synchroon wachten/pollen op GitHub, Netlify, Supabase, Composio of een andere externe executor heeft een harde totale chat/agent-budgetgrens van **30 seconden**; daarna wordt de state `WAITING_EXTERNAL`, wordt exact PR + candidate SHA + run-id + providerstatus + next safe action gecheckpoint en eindigt actief pollen;
+- binnen die 30 seconden zijn maximaal **twee** status-readbacks op dezelfde externe dependency toegestaan; extra polling zonder nieuwe evidence is contractbreuk en wordt vervangen door checkpoint + hervatten;
+- vóór `RUNNING → WAITING_EXTERNAL` is een duurzaam checkpoint verplicht met obligation-id, PR, candidate SHA, run-id, provider, laatst waargenomen status, resume-conditie, next safe action en observed-at; hervatten mag nooit afhangen van een nieuwe gebruikersprompt of “ga door”;
 - `WAITING_EXTERNAL` is hervatbare execution-state (`RUNNING → WAITING_EXTERNAL → TERMINAL`), geen fout en geen reden om opnieuw vanaf nul te onderzoeken;
 - de agent bewaart een checkpoint met obligation, exacte candidate/head, huidige main, open gates en eerstvolgende herstelactie zodat een volgende execution-node direct kan hervatten;
 - tijdens remote wachttijd gaat de owner door met werk dat niet van die gate afhangt;

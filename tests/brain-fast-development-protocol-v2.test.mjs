@@ -29,6 +29,10 @@ test('Fast Development Protocol v2 preserves canonical authorities and flow', as
   assert.equal(policy.waiting_external.synchronous_wait_budget_seconds, 30);
   assert.equal(policy.waiting_external.long_polling_forbidden, true);
   assert.equal(policy.waiting_external.resume_from_checkpoint, true);
+  assert.equal(policy.waiting_external.max_status_reads_per_turn, 2);
+  assert.equal(policy.waiting_external.checkpoint_required_before_yield, true);
+  assert.equal(policy.waiting_external.user_continue_required, false);
+  for (const field of ['obligation_id','pr_number','candidate_sha','run_id','provider','last_observed_status','next_action','resume_condition','observed_at']) assert.ok(policy.waiting_external.checkpoint_fields.includes(field));
 });
 
 test('Engineering OS packet discovers the fast protocol without replacing Engineering OS authority', () => {

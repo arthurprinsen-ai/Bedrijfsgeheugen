@@ -41,6 +41,12 @@ export async function validateFastDevelopmentProtocolV2() {
   if (policy.waiting_external?.synchronous_wait_budget_seconds !== 30) errors.push('external synchronous wait budget must be 30s');
   if (policy.waiting_external?.long_polling_forbidden !== true) errors.push('long polling must be forbidden');
   if (policy.waiting_external?.resume_from_checkpoint !== true) errors.push('external waits must resume from checkpoint');
+  if (policy.waiting_external?.max_status_reads_per_turn !== 2) errors.push('external wait polling must be capped at two status reads per turn');
+  if (policy.waiting_external?.checkpoint_required_before_yield !== true) errors.push('checkpoint is required before yielding external wait');
+  if (policy.waiting_external?.user_continue_required !== false) errors.push('external wait recovery may not depend on the user saying continue');
+  for (const field of ['obligation_id','pr_number','candidate_sha','run_id','provider','last_observed_status','next_action','resume_condition','observed_at']) {
+    if (!policy.waiting_external?.checkpoint_fields?.includes(field)) errors.push(`external wait checkpoint missing field: ${field}`);
+  }
   if (JSON.stringify(policy.waiting_external?.state_machine) !== JSON.stringify(['RUNNING','WAITING_EXTERNAL','TERMINAL'])) errors.push('WAITING_EXTERNAL state machine drift');
 
   if (engineeringOS.fingerprint !== 'powerhouse-engineering-os-v1') errors.push('engineering OS authority drift');
