@@ -126,14 +126,20 @@ async function claimLoopLease(runDate:string, holder:string) {
   const recordId = `runtime-lease:content-closed-loop:${runDate}`;
   const now = new Date().toISOString();
   const expiresAt = new Date(Date.now() + LOOP_LEASE_MS).toISOString();
-  const payload = JSON.stringify({ holder, run_date: runDate, expires_at: expiresAt, lease: 'content-closed-loop-v1' });
   const rows:any[] = await directSql.unsafe(
     `insert into public.brain_records(
        tenant_id,record_id,record_type,record_kind,subject_id,status,observed_at,executed,verified,
        result,payload,idempotency_key,source_revision,stored_at,updated_at
      ) values (
        $1,$2,'Verification','verification',$3,'IN_PROGRESS',$4,true,false,
-       '{}'::jsonb,$5::jsonb,$2,'content-closed-loop-lease-v1',$4,$4
+       '{}'::jsonb,
+       jsonb_build_object(
+         'holder',$5,
+         'run_date',$3,
+         'expires_at',$6,
+         'lease','content-closed-loop-v1'
+       ),
+       $2,'content-closed-loop-lease-v1',$4,$4
      )
      on conflict (tenant_id,record_id) do update set
        status='IN_PROGRESS',
@@ -143,10 +149,18 @@ async function claimLoopLease(runDate:string, holder:string) {
        payload=excluded.payload,
        source_revision=excluded.source_revision,
        updated_at=excluded.updated_at
-     where coalesce((public.brain_records.payload->>'expires_at')::timestamptz,'epoch'::timestamptz) <= now()
-        or public.brain_records.payload->>'holder' = $6
+     where coalesce(
+             case when jsonb_typeof(public.brain_records.payload)='object'
+                  then (public.brain_records.payload->>'expires_at')::timestamptz
+                  else null end,
+             'epoch'::timestamptz
+           ) <= now()
+        or (
+             jsonb_typeof(public.brain_records.payload)='object'
+             and public.brain_records.payload->>'holder' = $5
+           )
      returning record_id`,
-    ['canonical',recordId,runDate,now,payload,holder]
+    ['canonical',recordId,runDate,now,holder,expiresAt]
   );
   return rows.length === 1;
 }
@@ -154,12 +168,24 @@ async function claimLoopLease(runDate:string, holder:string) {
 async function releaseLoopLease(runDate:string, holder:string) {
   const recordId = `runtime-lease:content-closed-loop:${runDate}`;
   const now = new Date().toISOString();
-  const payload = JSON.stringify({ holder, run_date: runDate, expires_at: now, released_at: now, lease: 'content-closed-loop-v1' });
   await directSql.unsafe(
     `update public.brain_records
-       set status='VERIFIED', verified=true, observed_at=$1, payload=$2::jsonb, updated_at=$1
-     where tenant_id='canonical' and record_id=$3 and payload->>'holder'=$4`,
-    [now,payload,recordId,holder]
+       set status='VERIFIED',
+           verified=true,
+           observed_at=$1,
+           payload=jsonb_build_object(
+             'holder',$2,
+             'run_date',$3,
+             'expires_at',$1,
+             'released_at',$1,
+             'lease','content-closed-loop-v1'
+           ),
+           updated_at=$1
+     where tenant_id='canonical'
+       and record_id=$4
+       and jsonb_typeof(payload)='object'
+       and payload->>'holder'=$2`,
+    [now,holder,runDate,recordId]
   );
 }
 
