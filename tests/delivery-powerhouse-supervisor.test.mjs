@@ -95,10 +95,15 @@ test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
 });
 
 
-test('same-lineage moving-main recovery requires terminal lease and never merges the PR itself',()=>{
+test('same-lineage moving-main recovery requires terminal lease, zero overlap and never merges the PR itself',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(yaml,/contents:\s*write/);
-  assert.match(yaml,/MERGE_CONFLICT_RECOVERY/);
+  assert.match(yaml,/MERGE_CONFLICT_RECOVERY\\|MAIN_DRIFT_RECOVERY/);
+  assert.match(yaml,/pull-requests:\\s*write/);
+  assert.match(yaml,/behind_by/);
+  assert.match(yaml,/merge_base/);
+  assert.match(yaml,/path_overlap/);
+  assert.match(yaml,/comm -12/);
   assert.match(yaml,/lease_state/);
   assert.match(yaml,/lease_owner/);
   assert.match(yaml,/lease_head/);
@@ -109,7 +114,7 @@ test('same-lineage moving-main recovery requires terminal lease and never merges
   assert.match(yaml,/head_repo/);
   assert.match(yaml,/repos\/\$repo\/merges/);
   assert.match(yaml,/-f base="\$branch"/);
-  assert.match(yaml,/-f head="\$default_branch"/);
+  assert.match(yaml,/-f head="\$refresh_main_sha"/);
   assert.match(yaml,/Writer-Lease-Head/);
   assert.match(yaml,/Writer-Lease-Main-Epoch/);
   assert.match(yaml,/Base-SHA/);
