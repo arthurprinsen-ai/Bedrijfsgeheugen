@@ -52,3 +52,7 @@ $function$;
 
 revoke all on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() from public,anon,authenticated;
 grant execute on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() to service_role;
+
+-- Replay hardening mirrors the current production EXECUTE boundary.
+revoke execute on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() from public, anon, authenticated;
+grant execute on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() to service_role;
