@@ -48,3 +48,13 @@ test('historical autonomous trigger repair is replay-idempotent but still fail-c
   assert.match(sql, /elsif v_before ~\* 'powerhouse_sync_forecast_calibration_obligation/);
   assert.match(sql, /raise exception 'autonomy calibration trigger-call patch did not match current function body'/);
 });
+
+
+test('preview applicability is fail-closed but skips exact immutable production mirrors', async () => {
+  const workflow = await readFile('.github/workflows/supabase-preview-applicability.yml', 'utf8');
+  assert.match(workflow, /migration-history\\.lock\\.json/);
+  assert.match(workflow, /HISTORICAL_PRODUCTION_MIRROR_BLOBS/);
+  assert.match(workflow, /git', 'hash-object', path/);
+  assert.match(workflow, /actual != expected/);
+  assert.match(workflow, /immutable reviewed production migration mirrors/);
+});
