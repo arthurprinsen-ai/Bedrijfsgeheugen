@@ -65,6 +65,13 @@
       "email": "execute all due eligible warm/consented messages up to the canonical runtime limit",
       "followup": "100% of due eligible non-suppressed follow-ups receive an action or an evidence-backed wait state",
       "seo_content": "at least one order-path action when current evidence identifies a safe high-confidence opportunity"
+    },
+    "execution_closure_invariant": {
+      "version": "powerhouse-commercial-action-closure-v1",
+      "rule": "research/preparation/scheduler activity is never commercial execution; stale internal research must close OBSERVE, and external actions remain owned until provider proof or an evidence-backed terminal decision",
+      "runtime_watchdog": "public.powerhouse_commercial_action_closure_watchdog_v1",
+      "cadence": "every 10 minutes",
+      "provider_proof_required_for_execution_claim": true
     }
   },
   "outbound_policy": {
@@ -101,5 +108,5 @@
       "invented ROI or intent"
     ]
   },
-  "terminal_definition": "A commercial run is terminal only after execution/readback or an evidence-backed wait/suppression decision, then outcome measurement and learning writeback."
+  "terminal_definition": "A commercial run is terminal only after provider-backed execution/readback or an explicit evidence-backed WAIT/NURTURE/OBSERVE/SUPPRESS decision. Research, preparation, scheduling, dispatch attempts and merged content are non-terminal and may never be reported as execution."
 }
