@@ -32,7 +32,7 @@ test('canonical orchestrator marks company artifact as final-copy approved only 
 });
 
 test('personal scheduled or published artifacts require explicit verified truth from nested or legacy evidence',()=>{
-  const path='supabase/migrations/20260917235906_linkedin_personal_verified_truth_schedule_guard.sql';
+  const path=migrationPath('20260917235906_linkedin_personal_verified_truth_schedule_guard.sql');
   assert.equal(existsSync(path),true,'verified-truth schedule guard migration must exist');
   const migration=readFileSync(path,'utf8');
   assert.match(migration,/identity_gate_evidence/);
