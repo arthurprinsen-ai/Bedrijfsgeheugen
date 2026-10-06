@@ -106,3 +106,7 @@ begin
   return v_row;
 end;
 $function$;
+
+revoke all on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from public;
+revoke all on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from anon;
+revoke all on function public.record_content_publication_state(text,date,text,text,text,text,text,text,jsonb,jsonb,text,text) from authenticated;
