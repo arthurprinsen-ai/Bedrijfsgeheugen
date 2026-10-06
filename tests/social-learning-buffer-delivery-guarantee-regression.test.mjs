@@ -4,6 +4,12 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { deliveryDecision } from '../platform/social-delivery-guarantee.mjs';
 
+const migrationPath=(name)=>{
+  const executable=`supabase/migrations/${name}`;
+  const history=`supabase/migration-history/repository-only/${name}`;
+  return existsSync(executable)?executable:history;
+};
+
 const badIdea={id:'idea-brief',content:{text:"Absurdistische kandidaat. Format: interieurmagazine over dashboards die prachtig hangen maar waarop nog nooit een besluit is genomen. Frictie: rapporteren zonder actie. Origineel, droog en visueel in taal. Test 'Dashboarddecoratie' als nieuw begrip."}};
 
 test('linkedin company never publishes directly from an idea or internal creative brief',()=>{
@@ -37,7 +43,7 @@ test('personal scheduled or published artifacts require explicit verified truth 
 
 
 test('reconciler never promotes a provider-sent post whose content integrity was invalidated',()=>{
-  const path='supabase/migrations/20260917235907_social_content_integrity_invalidation_guard.sql';
+  const path=migrationPath('20260917235907_social_content_integrity_invalidation_guard.sql');
   assert.equal(existsSync(path),true,'content-integrity invalidation guard migration must exist');
   const migration=readFileSync(path,'utf8');
   assert.match(migration,/content_integrity_invalidated/);
@@ -61,6 +67,6 @@ test('social publisher atomically claims content_ready before any provider side 
 });
 
 test('content-integrity reconciler migration terminates function before privilege statements',()=>{
-  const migration=readFileSync('supabase/migrations/20260917235907_social_content_integrity_invalidation_guard.sql','utf8');
+  const migration=readFileSync(migrationPath('20260917235907_social_content_integrity_invalidation_guard.sql'),'utf8');
   assert.match(migration,/\$function\$;\s*revoke execute on function public\.powerhouse_reconcile_content_outcomes_v1/);
 });
