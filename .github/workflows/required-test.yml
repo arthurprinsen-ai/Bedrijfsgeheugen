@@ -70,10 +70,11 @@ jobs:
       affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
       netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
       supabase_preview_required: ${{ steps.scope.outputs.supabase_preview_required }}
+      full_assurance: ${{ steps.scope.outputs.full_assurance }}
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 2
           ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
@@ -129,6 +130,8 @@ jobs:
             ? JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${context.prNumber}`],{encoding:'utf8'})).body || ''
             : '');
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
+          const engineeringTuning=JSON.parse(await readFile('config/powerhouse-engineering-tuning.json','utf8'));
+          const fullAssurance = process.env.EVENT_NAME === 'merge_group' || process.env.EVENT_NAME === 'workflow_dispatch' || engineeringTuning.ci?.pr_full_assurance !== false;
           const metadataAuthority=resolveDeliveryMetadataAuthority({
             prBody: livePrBody,
             manifest: oneLoopPolicy.deliveryCandidate,
@@ -139,6 +142,12 @@ jobs:
           if(metadataAuthority.source === 'versioned-manifest' && metadataAuthority.delivery.baseSha !== context.baseSha) {
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
+          try {
+            execFileSync('git',['cat-file','-e',`${comparisonBaseSha}^{commit}`],{stdio:'ignore'});
+          } catch {
+            console.log(`TARGETED_BASE_FETCH:${comparisonBaseSha}`);
+            execFileSync('git',['fetch','--no-tags','--depth=1','origin',comparisonBaseSha],{stdio:'inherit'});
+          }
           const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
@@ -146,19 +155,30 @@ jobs:
           const netlifyBuildExact=new Set(['netlify.toml','_redirects','_headers','index.html','klantportaal.html','package.json','package-lock.json']);
           const netlifyGovernanceExact=new Set(['site/website-release-risk.json']);
           const netlifyBuildRequired=changedPaths.some(path=>!netlifyGovernanceExact.has(path)&&(netlifyBuildExact.has(path)||netlifyBuildPrefixes.some(prefix=>path.startsWith(prefix))));
-          const supabasePreviewRequired=changedPaths.some(path =>
+          const databaseRelevantSupabase=changedPaths.some(path =>
             path.startsWith('supabase/') &&
             !path.startsWith('supabase/functions/') &&
             path !== 'supabase/config.toml'
           );
+          let supabaseConfigDatabaseRelevant=false;
+          if(changedPaths.includes('supabase/config.toml')){
+            const probe="import subprocess,sys,tomllib; base,head=sys.argv[1:3]; load=lambda ref: tomllib.loads(subprocess.check_output(['git','show',f'{ref}:supabase/config.toml']).decode('utf-8')); norm=lambda config:{k:v for k,v in config.items() if k!='functions'}; raise_code=0 if norm(load(base))==norm(load(head)) else 1; sys.exit(raise_code)";
+            try {
+              execFileSync('python3',['-c',probe,comparisonBaseSha,context.changeHeadSha],{stdio:'pipe'});
+              supabaseConfigDatabaseRelevant=false;
+            } catch {
+              supabaseConfigDatabaseRelevant=true;
+            }
+          }
+          const supabasePreviewRequired=databaseRelevantSupabase || supabaseConfigDatabaseRelevant;
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\n`);
-          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\nfull_assurance=${fullAssurance}\n`);
+          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites,fullAssurance,ciMode:engineeringTuning.ci?.mode ?? 'safe-transition'},null,2));
           NODE
       - id: integration
         name: Compile one-write integration bundle
@@ -191,17 +211,25 @@ jobs:
         run: node scripts/brain/material-writeback-closure-guard.mjs "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify material writeback closure regression
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
+      - name: Verify bounded fast PR control plane
+        if: steps.scope.outputs.full_assurance != 'true'
+        run: >-
+          node --test
+          tests/brain-ci-critical-path-acceleration-v1.test.mjs
+          tests/brain-ci-critical-path-acceleration-v2.test.mjs
+          tests/brain-ci-adaptive-control-plane-v2.test.mjs
+          tests/delivery-hygiene-required-wiring.test.mjs
       - name: Install runtime dependencies for the unwired contracts
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: steps.scope.outputs.full_assurance == 'true' && steps.integration.outputs.full_shared_suite == 'true'
         run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Validate fail-closed static English cache before merge
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: steps.scope.outputs.full_assurance == 'true' && steps.integration.outputs.full_shared_suite == 'true'
         env:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
         run: node tools/site-shell/build-localized-routes.mjs --validate-cache
       - name: Verify previously unwired test contracts
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: steps.scope.outputs.full_assurance == 'true' && steps.integration.outputs.full_shared_suite == 'true'
         run: >-
           node --test
           tests/agents-delivery-contract.test.mjs
@@ -268,9 +296,19 @@ jobs:
           tests/unified-brain-production-handoff.test.mjs
           tests/v18-chrome-scoper.test.mjs
           tests/v18-standalone-compositor-safety.test.mjs
+          tests/brain-ci-adaptive-control-plane-v2.test.mjs
+          tests/brain-powerhouse-engineering-closed-loop.test.mjs
+          tests/powerhouse-daily-self-evolution.test.mjs
+          tests/brain-self-improvement-layer-v1.test.mjs
+          tests/ai-model-intelligence-freshness-v1.test.mjs
+          tests/powerhouse-foresight-autonomy.test.mjs
+          tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs
+          tests/portal-visual-density-contract.test.mjs
+          tests/portal-visual-density-delivery-classification.test.mjs
+          tests/revenue-content-intelligence.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: steps.scope.outputs.full_assurance == 'true' && steps.integration.outputs.full_shared_suite == 'true'
         run: >-
           node --test --test-concurrency=1
           tests/brain-fast-development-protocol-v2.test.mjs
@@ -294,16 +332,16 @@ jobs:
           tests/portal-v2-release-identity-invariant.test.mjs
           tests/website-static-syntax-preflight.test.mjs
       - name: Verify Fast Development Protocol v2 authority contract
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: steps.scope.outputs.full_assurance == 'true' && steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/powerhouse-fast-development-protocol-v2.mjs --check
       - name: Verify Autonomous Engineering Fabric v3 authority contract
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: steps.scope.outputs.full_assurance == 'true' && steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
 
 
   netlify_build_parity:
     needs: preflight
-    if: needs.preflight.outputs.netlify_build_required == 'true'
+    if: needs.preflight.outputs.full_assurance == 'true' && needs.preflight.outputs.netlify_build_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -361,7 +399,7 @@ jobs:
 
   supabase_preview:
     needs: preflight
-    if: needs.preflight.outputs.supabase_preview_required == 'true'
+    if: needs.preflight.outputs.full_assurance == 'true' && needs.preflight.outputs.supabase_preview_required == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 12
     permissions:
@@ -429,28 +467,28 @@ jobs:
 
   backend:
     needs: preflight
-    if: needs.preflight.outputs.backend == 'true'
+    if: needs.preflight.outputs.full_assurance == 'true' && needs.preflight.outputs.backend == 'true'
     uses: ./.github/workflows/lane-backend.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   portal:
     needs: preflight
-    if: needs.preflight.outputs.portal == 'true'
+    if: needs.preflight.outputs.full_assurance == 'true' && needs.preflight.outputs.portal == 'true'
     uses: ./.github/workflows/lane-portal.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   automation:
     needs: preflight
-    if: needs.preflight.outputs.automation == 'true'
+    if: needs.preflight.outputs.full_assurance == 'true' && needs.preflight.outputs.automation == 'true'
     uses: ./.github/workflows/lane-automation.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   website:
     needs: preflight
-    if: needs.preflight.outputs.website == 'true'
+    if: needs.preflight.outputs.full_assurance == 'true' && needs.preflight.outputs.website == 'true'
     uses: ./.github/workflows/lane-website.yml
     with:
       base_sha: ${{ needs.preflight.outputs.base_sha }}
@@ -468,6 +506,7 @@ jobs:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
+      FULL_ASSURANCE: ${{ needs.preflight.outputs.full_assurance }}
       SELECT_SUPABASE_PREVIEW: ${{ needs.preflight.outputs.supabase_preview_required }}
       SUPABASE_PREVIEW: ${{ needs.supabase_preview.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
@@ -491,10 +530,10 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
-          [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
-          [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
-          [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
-          [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
-          [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
-          [ "$SELECT_WEBSITE" != true ] || [ "$WEBSITE" = success ]
+          [ "$FULL_ASSURANCE" != true ] || [ "$NETLIFY_BUILD_REQUIRED" != true ] || [ "$NETLIFY_BUILD" = success ]
+          [ "$FULL_ASSURANCE" != true ] || [ "$SELECT_SUPABASE_PREVIEW" != true ] || [ "$SUPABASE_PREVIEW" = success ]
+          [ "$FULL_ASSURANCE" != true ] || [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
+          [ "$FULL_ASSURANCE" != true ] || [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
+          [ "$FULL_ASSURANCE" != true ] || [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
+          [ "$FULL_ASSURANCE" != true ] || [ "$SELECT_WEBSITE" != true ] || [ "$WEBSITE" = success ]
           echo "Delivery hygiene and selected release lanes are green."
