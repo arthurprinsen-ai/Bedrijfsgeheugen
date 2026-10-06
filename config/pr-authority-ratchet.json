@@ -1,8 +1,8 @@
 {
   "version": "pr-authority-ratchet-v1",
   "target_direct_pr_workflows": 2,
-  "initial_ceiling": 56,
-  "budget": 56,
+  "initial_ceiling": 55,
+  "budget": 55,
   "max_retirements_per_cycle": 1,
   "canonical_direct_pr_workflows": [
     "required-test.yml",
