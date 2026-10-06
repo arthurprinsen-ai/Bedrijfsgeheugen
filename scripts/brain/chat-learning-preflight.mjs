@@ -34,7 +34,8 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/learning/chat-runtime-truth-preflight-2026-08-31.json',
   'brain/learning/homepage-video-release-preflight-2026-09-08.json'
 ];
-const DEFAULT_MAX_SOURCES = 96;
+const DEFAULT_MAX_SOURCES = 128;
+const DEFAULT_MAX_BYTES = 256_000;
 const EXPECTED_FLOW = ['INTENT','EXECUTION_PACKET_V2','NO_OP_DEDUP','IMPACT_GRAPH','EXECUTION_DAG','TARGETED_TESTS','CANDIDATE','FULL_RELEASE_GATES','EXACT_SHA_PROD_READBACK','DELTA_WRITEBACK'];
 const EXPECTED_CLASSES = ['FAST','STANDARD','CRITICAL','WAITING_EXTERNAL'];
 
@@ -136,14 +137,16 @@ function validateUniversalIngressPolicy(policy) {
   });
 }
 
-export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000, executionContext = {} } = {}) {
+export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = null, maxBytes = null, executionContext = {} } = {}) {
   const preflightStarted = nowMs();
-  if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
-  if (!Number.isInteger(maxBytes) || maxBytes < 1) throw new Error('maxBytes must be a positive integer');
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
   if (!fs.existsSync(contractLocation.absolute)) throw new Error(`missing chat-learning contract: ${contractPath}`);
   const contractRaw = fs.readFileSync(contractLocation.absolute, 'utf8');
   const contract = JSON.parse(contractRaw);
+  const effectiveMaxSources = Number(maxSources ?? contract.preflightBudget?.maxSources ?? DEFAULT_MAX_SOURCES);
+  const effectiveMaxBytes = Number(maxBytes ?? contract.preflightBudget?.maxBytes ?? DEFAULT_MAX_BYTES);
+  if (!Number.isInteger(effectiveMaxSources) || effectiveMaxSources < 1) throw new Error('maxSources must be a positive integer');
+  if (!Number.isInteger(effectiveMaxBytes) || effectiveMaxBytes < 1) throw new Error('maxBytes must be a positive integer');
   if (contract.preflightRequired !== true || contract.newAgentsMustReadBeforeExecution !== true) throw new Error('chat-learning preflight contract is not mandatory');
   if (!Array.isArray(contract.canonicalSources) || contract.canonicalSources.length === 0) throw new Error('chat-learning contract has no canonicalSources');
 
@@ -161,7 +164,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     const requested = queue.shift();
     const { normalized, absolute } = normalizeSourcePath(rootDir, requested);
     if (visited.has(normalized)) continue;
-    if (visited.size + 1 > maxSources) throw new Error(`maxSources exceeded: ${visited.size + 1} > ${maxSources}`);
+    if (visited.size + 1 > effectiveMaxSources) throw new Error(`maxSources exceeded: ${visited.size + 1} > ${effectiveMaxSources}`);
     if (!fs.existsSync(absolute)) throw new Error(`missing learning source: ${normalized}`);
     const raw = fs.readFileSync(absolute, 'utf8');
     const bytes = Buffer.byteLength(raw, 'utf8');
@@ -286,7 +289,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     resume_contracts: stableUnique(signals.resumeContracts)
   };
   const totalBytes = serializedPacketBytes(packet);
-  if (totalBytes > maxBytes) throw new Error(`maxBytes exceeded: ${totalBytes} > ${maxBytes}`);
+  if (totalBytes > effectiveMaxBytes) throw new Error(`maxBytes exceeded: ${totalBytes} > ${effectiveMaxBytes}`);
   return { ...packet, totalBytes };
 }
 
