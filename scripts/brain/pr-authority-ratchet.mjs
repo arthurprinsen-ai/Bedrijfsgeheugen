@@ -36,6 +36,18 @@ export function isDirectPullRequestWorkflow(source){
   return !/types:\s*\[\s*closed\s*\]/.test(block);
 }
 
+export function hasRunnableTrigger(source){
+  const lines=source.split(/\r?\n/);
+  const onIndex=lines.findIndex(line=>/^on:\s*$/.test(line));
+  if(onIndex<0) return /^on:\s*\[[^\]]+\]\s*$/m.test(source);
+  for(let i=onIndex+1;i<lines.length;i+=1){
+    const line=lines[i];
+    if(/^[A-Za-z][A-Za-z0-9_-]*:\s*/.test(line)) break;
+    if(/^  [A-Za-z0-9_-]+:\s*/.test(line)) return true;
+  }
+  return false;
+}
+
 export async function directPullRequestWorkflows(root='.'){
   const dir=path.join(root,WORKFLOW_DIR);
   const names=(await readdir(dir)).filter(name=>/\.ya?ml$/.test(name)).sort();
@@ -97,6 +109,7 @@ export async function applyNext(root='.'){
     const source=await readFile(workflowPath,'utf8');
     const next=removeEventBlock(source,'pull_request');
     if(next===source) continue;
+    if(!hasRunnableTrigger(next)) throw new Error(`refusing to retire ${candidate.workflow}: workflow would become triggerless`);
     await writeFile(workflowPath,next);
 
     const after=await directPullRequestWorkflows(root);
