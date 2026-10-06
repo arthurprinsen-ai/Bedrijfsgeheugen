@@ -1,0 +1,28 @@
+{
+  "version": "NETLIFY-PREBUILT-ARTIFACT-REUSE-v1",
+  "date": "2026-10-06",
+  "fingerprint": "netlify|build-latency|tree-keyed-prebuilt-reuse|v1",
+  "obligation_id": "netlify-prebuilt-artifact-reuse-20261006-v1",
+  "root_cause": {
+    "duplicate_work": "The exact deterministic website transform is proven before merge and then repeated by Netlify after merge.",
+    "hot_step": "Static localized-route generation processes the public route set serially even when production uses a complete offline translation cache."
+  },
+  "prevention": {
+    "single_runner": "Netlify production, deploy-preview and Required invoke one canonical build runner.",
+    "parallel_i18n": "Offline localized-route generation shards independent routes across bounded child processes.",
+    "artifact_reuse": "Required uploads the proven post-build workspace under the immutable source Git tree SHA. Production may reuse it only when current main has the same tree SHA.",
+    "fallback": "Missing, expired or mismatched artifacts fall back to the unchanged full canonical Netlify source build."
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_BUILD_DUPLICATION_AND_SERIAL_HOTPATH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION"
+}
