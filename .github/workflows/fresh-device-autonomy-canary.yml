@@ -1,13 +1,6 @@
 name: Fresh Device Autonomy Canary
 
 on:
-  pull_request:
-    paths:
-      - ".github/workflows/fresh-device-autonomy-canary.yml"
-      - "scripts/brain/device-certify.mjs"
-      - "tests/brain-fresh-device-canary.test.mjs"
-      - ".github/workflows/repo-writer-candidate-shadow.yml"
-      - ".github/workflows/repo-writer-operational-verification.yml"
   workflow_dispatch:
 
 permissions:
