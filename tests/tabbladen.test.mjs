@@ -10,9 +10,9 @@ test('de tabbladlaag draait in de canonieke Netlify-build, na de v18-productiebo
   assert.ok(existsSync('tools/apply-tabbladen.mjs'), 'tabbladlaag moet bestaan');
   assert.ok(existsSync('site/tabtitels.json'), 'tabtitels moeten in config staan');
   const netlify = await readFile('netlify.toml', 'utf8');
-  const runner = await readFile('tools/ci/run-netlify-build.mjs', 'utf8');
+  const runner = await readFile('tools/netlify-build/run-netlify-build.mjs', 'utf8');
   const commands=[...netlify.matchAll(/command = "([^"]+)"/g)].map(match=>match[1]);
-  assert.deepEqual(commands,['node tools/ci/run-netlify-build.mjs','node tools/ci/run-netlify-build.mjs']);
+  assert.deepEqual(commands,['node tools/netlify-build/run-netlify-build.mjs','node tools/netlify-build/run-netlify-build.mjs']);
   assert.match(runner,/tools\/apply-tabbladen\.mjs/);
   assert.ok(
     runner.indexOf('tools/bouw-v18-production.mjs') < runner.indexOf('tools/apply-tabbladen.mjs'),
