@@ -15,3 +15,14 @@ test('historical replay: click remains a real interactability check and retries 
   assert.match(source, /clickStableTab\('#homepage-expertise-tab'\)/);
   assert.match(source, /clickStableTab\('#homepage-platform-tab'\)/);
 });
+
+
+test('homepage toggle navigation does not depend on networkidle and retries boundedly', () => {
+  assert.doesNotMatch(source, /page\.goto\([^\n]+waitUntil:\s*['"]networkidle['"]/);
+  assert.match(source, /async function gotoWithRetry/);
+  assert.match(source, /attempt <= attempts/);
+  assert.match(source, /attempts = 3/);
+  assert.match(source, /waitUntil:\s*['"]domcontentloaded['"]/);
+  assert.match(source, /#homepage-expertise-tab/);
+  assert.match(source, /#homepage-platform-tab/);
+});
