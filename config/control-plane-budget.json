@@ -30,9 +30,7 @@
       "openPullRequests": 78,
       "directPrTriggerWorkflows": [
         "blog-technical-seo-gate.yml",
-        "business-os-intelligence.yml",
         "business-os-live-preview.yml",
-        "chat-learning-preflight-pr.yml",
         "codeql.yml",
         "component-preview.yml",
         "engineering-supply-chain-trust.yml",
@@ -54,7 +52,6 @@
         "powerhouse-security-operations-closure.yml",
         "powerhouse-supabase-security-contract.yml",
         "powerhouse-terminal-writer-lease-closure-guard.yml",
-        "regelgeving-actueel.yml",
         "repo-writer-candidate-shadow.yml",
         "repo-writer-cheap-canary.yml",
         "repo-writer-operational-verification.yml",
@@ -71,7 +68,7 @@
         "verify-approved-central-blog.yml",
         "writer-production-reconcile.yml"
       ],
-      "directPrTriggerCount": 41
+      "directPrTriggerCount": 38
     },
     "netlify": {
       "projects": 16

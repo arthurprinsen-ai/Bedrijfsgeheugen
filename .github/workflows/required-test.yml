@@ -146,6 +146,27 @@ jobs:
           console.log(`Hero static media contract PASS: ${sha}; bytes=${bytes.length}`);
           NODE
 
+      - name: Run intelligence, chat and regulation merge assurance
+        if: github.event_name == 'merge_group'
+        run: |
+          node --test tests/brain-chat-learning-fast-development-v2.test.mjs
+          node scripts/brain/test-chat-learning-preflight-compiler.mjs
+          node scripts/brain/chat-learning-preflight.mjs
+          node --test tests/delivery-regelgeving-actueel.test.mjs
+          node scripts/brain/continuous-improvement/run-autonomous-improvement.mjs
+          node --test \
+            tests/brain-autonomous-improvement-runtime.test.mjs \
+            tests/brain-autonomous-improvement-production-cycle.test.mjs \
+            tests/brain-autonomous-backlog-intake.test.mjs \
+            tests/brain-github-backlog-source.test.mjs
+          node --test tests/agent-fabric.test.mjs
+          if [ -f tests/agent-fabric-gateway.test.mjs ]; then node --test tests/agent-fabric-gateway.test.mjs; fi
+          node --test \
+            tests/brain-acceptance.test.mjs \
+            tests/brain-api-gateway.test.mjs \
+            tests/brain-production-ai.test.mjs \
+            tests/brain-storage-port.test.mjs
+
       - name: Run consolidated business and portal merge assurance
         if: github.event_name == 'merge_group'
         run: |
