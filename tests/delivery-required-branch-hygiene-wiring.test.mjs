@@ -66,6 +66,14 @@ test('delivery hygiene does not silently ignore conflict-contract API read failu
 });
 
 
+test('delivery hygiene admits only direct-parent same-tree terminal identity refreshes', () => {
+  assert.match(hygieneWorkflow, /TERMINAL_IDENTITY_REFRESH_ALLOWED/);
+  assert.match(hygieneWorkflow, /parents\.length === 1/);
+  assert.match(hygieneWorkflow, /parents\[0\] === expectedTerminalHead/);
+  assert.match(hygieneWorkflow, /currentTree === previousTree/);
+  assert.match(hygieneWorkflow, /TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION/);
+});
+
 test('delivery hygiene uses event lease only on first attempt and live lease on reruns', () => {
   assert.match(hygieneWorkflow, /RUN_ATTEMPT:\s*\$\{\{ github\.run_attempt \}\}/);
   assert.match(hygieneWorkflow, /const rerun = Number\(process\.env\.RUN_ATTEMPT \|\| '1'\) > 1/);
