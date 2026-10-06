@@ -19,3 +19,9 @@ Implemented:
 
 Terminal condition:
 the incident closes only when the full loop reports provider-side truth for the required publication(s) and independent provider feed readback confirms the live post/media.
+
+
+Recovery re-trigger after degraded-preparation failover merge
+- trigger date: 2026-10-06
+- source merge: #3837 / 1ed76ebbedde4d112fa8b3d1b17752f5b259f1db
+- intent: re-run the same-day canonical recovery on main after the failover fix; no alternate writer.
