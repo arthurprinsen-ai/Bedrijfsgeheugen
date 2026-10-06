@@ -14,5 +14,12 @@
       "tests/brain-writer-shadow-explicit-dispatch-v1.test.mjs"
     ]
   },
+  "evidence": {
+    "observed_failure": "Ordinary non-writer PRs allocated Repository Writer Candidate Shadow and immediately concluded skipped.",
+    "regression": [
+      "tests/brain-writer-shadow-explicit-dispatch-v1.test.mjs"
+    ],
+    "proof_boundary": "All seven canonical writers explicitly dispatch exact PR/base/head/branch identity; the shadow workflow has no pull_request trigger."
+  },
   "status": "ACTIVE_PREVENTION"
 }
