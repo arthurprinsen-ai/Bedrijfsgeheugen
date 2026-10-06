@@ -44,3 +44,29 @@ test('sync fails closed per decision and reports errors instead of claiming succ
   assert.equal(result.failed,1);
   assert.match(result.errors[0].message,/notion unavailable/);
 });
+
+
+test('sync uses bounded parallelism while preserving complete idempotent coverage',async()=>{
+  const many={...projection,companyDecisions:Array.from({length:7},(_,index)=>({
+    ...projection.companyDecisions[0],
+    id:`d${index+1}`,
+    title:`Besluit ${index+1}`
+  }))};
+  let active=0;
+  let maxActive=0;
+  const seen=[];
+  const writer={upsert:async row=>{
+    active++;
+    maxActive=Math.max(maxActive,active);
+    seen.push(row.decisionId);
+    await new Promise(resolve=>setTimeout(resolve,5));
+    active--;
+    return {ok:true,id:`notion:${row.decisionId}`};
+  }};
+  const result=await syncCompanyDecisionsToNotion(many,{writer,concurrency:3});
+  assert.equal(result.attempted,7);
+  assert.equal(result.succeeded,7);
+  assert.equal(result.failed,0);
+  assert.equal(maxActive,3);
+  assert.equal(new Set(seen).size,7);
+});
