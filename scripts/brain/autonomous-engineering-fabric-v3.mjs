@@ -119,21 +119,28 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const jobs = Math.max(1, Number(metrics.sampled_jobs ?? metrics.total_jobs ?? 1));
   const failureRate = failed / jobs;
   const skippedRate = skipped / jobs;
-  const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
+  const fanoutP95 = Number(metrics.pr_workflow_fanout_per_sha_p95 ?? metrics.workflow_fanout_per_sha_p95 ?? 0);
+  const fastTotalP95 = Number(metrics.required_fast_total_seconds_p95 ?? executionP95);
+  const pendingRuns = Number(metrics.pending_runs ?? 0);
+  const queuedRuns = Number(metrics.queued_runs ?? 0);
+  const wastedCancelledSeconds = Number(metrics.wasted_cancelled_execution_seconds ?? 0);
 
   const calibrationRecommendations = Array.isArray(calibration?.recommendations) ? calibration.recommendations : [];
   const highCalibrationWarnings = calibrationRecommendations.filter(item => item?.priority === 'high');
   const calibrationVeto = highCalibrationWarnings.length > 0;
-  const runnerPressure = queueP95 > 120 || cancelled > 8;
-  const orchestrationWaste = fanoutP95 > 10 || skippedRate > 0.45;
+  const runnerPressure = queueP95 > Number(current.ci_fast_gate_queue_target_seconds ?? 30) || queuedRuns > 2;
+  const concurrencyPressure = pendingRuns > 2;
+  const orchestrationWaste = fanoutP95 > 1 || skippedRate > 0.45 || wastedCancelledSeconds > 300;
 
-  if (runnerPressure || orchestrationWaste) {
+  if (runnerPressure || concurrencyPressure || orchestrationWaste) {
     const before=Number(next.max_parallel_packages ?? 4);
     next.max_parallel_packages=clamp(before-1,2,8);
+    next.ci_background_max_parallel=clamp(Number(next.ci_background_max_parallel ?? 4)-1,1,6);
     next.candidate_batch_window_seconds=clamp(Number(next.candidate_batch_window_seconds ?? 20)+(orchestrationWaste?10:5),10,60);
-    decisions.push(orchestrationWaste?'reduce-fanout-and-batch-more':'reduce-runner-pressure-and-batch-more');
-  } else if (!calibrationVeto && queueP95 < 30 && fanoutP95 <= 6 && failureRate < 0.05 && skippedRate < 0.25) {
+    decisions.push(orchestrationWaste?'reduce-fanout-and-batch-more':concurrencyPressure?'reduce-concurrency-lock-pressure':'reduce-runner-pressure-and-batch-more');
+  } else if (!calibrationVeto && queueP95 < 15 && fastTotalP95 < 90 && fanoutP95 <= 1 && failureRate < 0.05 && skippedRate < 0.25) {
     next.max_parallel_packages=clamp(Number(next.max_parallel_packages ?? 4)+1,2,8);
+    next.ci_background_max_parallel=clamp(Number(next.ci_background_max_parallel ?? 4)+1,1,6);
     decisions.push('increase-safe-parallelism');
   }
   if (executionP95 > 600) {
@@ -151,12 +158,16 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     queue_wait_seconds_p95:queueP95,
     execution_seconds_p95:executionP95,
     workflow_fanout_per_sha_p95:fanoutP95,
+    required_fast_total_seconds_p95:fastTotalP95,
+    pending_runs:pendingRuns,
+    queued_runs:queuedRuns,
+    wasted_cancelled_execution_seconds:wastedCancelledSeconds,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
     calibration_mode:String(calibration?.mode || 'NONE'),
     calibration_high_priority_recommendations:Object.freeze(highCalibrationWarnings.map(item => String(item.id || '')).filter(Boolean))
   });
-  next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true };
+  next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true, canonical_required_gate:true, merge_group_full_assurance:true, pull_request_head_workflow_budget:true };
   return Object.freeze({ changed:JSON.stringify(next)!==JSON.stringify(current), decisions:Object.freeze(decisions), signals, tuning:Object.freeze(next) });
 }
 
@@ -173,7 +184,10 @@ export async function validateAutonomousEngineeringFabricV3() {
   if(policy.closure_compiler?.late_bound!==true) errors.push('closure must be late bound');
   if(policy.daily_optimizer?.enabled!==true) errors.push('daily optimizer required');
   if(policy.daily_optimizer?.auto_merge_only_after_protected_gates!==true) errors.push('protected-gate auto merge required');
-  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  for(const key of ['required_release_gate','security_gate','production_readback','protected_merge','exact_sha_identity','canonical_required_gate','merge_group_full_assurance','pull_request_head_workflow_budget']) if(tuning.safety?.[key]!==true) errors.push(`safety drift: ${key}`);
+  if(Number(tuning.ci_fast_gate_queue_target_seconds)>30) errors.push('fast queue target weakened');
+  if(Number(tuning.ci_fast_gate_total_target_seconds)>120) errors.push('fast total target weakened');
+  if(Number(tuning.ci_agent_active_wait_limit_seconds)>30) errors.push('agent external wait limit weakened');
   return { ok:errors.length===0, errors, fingerprint:policy.fingerprint };
 }
 
