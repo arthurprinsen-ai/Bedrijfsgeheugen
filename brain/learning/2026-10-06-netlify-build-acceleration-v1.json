@@ -11,7 +11,7 @@
     "security_sensitive": false
   },
   "root_cause": "Netlify production, deploy-preview and exact-local fallback carried independent copies of the same long mutation pipeline. Static locale generation parsed and serialized every public route serially, and a missing provider preview could trigger a second identical local build instead of reusing the already-required parity output.",
-  "prevention": "One canonical runner owns the build order and emits per-step timing evidence. Static localized routes are sharded deterministically across a bounded worker count. Required publishes an immutable candidate-SHA build artifact; the browser fallback waits boundedly for and verifies that artifact before rebuilding.",
+  "prevention": "One canonical runner owns the build order and emits per-step timing evidence. Static localized routes are sharded deterministically across a bounded worker count. Required publishes an immutable candidate-SHA build artifact; the browser fallback waits boundedly for and verifies that artifact before rebuilding. Material writeback closure must remain shallow-safe by fetching explicit missing BASE/HEAD commits and using exact two-tree diff rather than merge-base-dependent triple-dot diff.",
   "evidence": {
     "observed_build_seconds": 69,
     "observed_i18n_seconds": 19,
@@ -20,13 +20,15 @@
     "max_route_workers": 4,
     "profile_artifact": "netlify-build-profile-<candidate-sha>",
     "reuse_artifact": "netlify-build-reuse-<candidate-sha>",
-    "regression": "tests/brain-netlify-build-acceleration-v1.test.mjs"
+    "regression": "tests/brain-netlify-build-acceleration-v1.test.mjs",
+    "shallow_closure_regression": "tests/brain-material-writeback-closure-guard.test.mjs"
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-netlify-build-acceleration-v1.test.mjs",
       "tests/seo-locale-revenue-nl-en-v1.test.mjs",
-      "tests/seo-order-locale-revenue-v1.test.mjs"
+      "tests/seo-order-locale-revenue-v1.test.mjs",
+      "tests/brain-material-writeback-closure-guard.test.mjs"
     ]
   }
 }
