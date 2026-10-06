@@ -1094,6 +1094,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_freshness_contradiction_cache_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261006095838_cache_research_freshness_and_split_one_brain_v1.sql",
+      "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_growth_play_catalog_v1",
       "type": "table",
       "authority": "supabase/migrations/20260928124000_powerhouse_growth_swarm_activation_v1.sql",
