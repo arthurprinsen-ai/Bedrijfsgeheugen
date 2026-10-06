@@ -84,10 +84,12 @@ test('same-lineage moving-main recovery requires terminal lease and never merges
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(yaml,/contents:\s*write/);
   assert.match(yaml,/MERGE_CONFLICT_RECOVERY/);
-  assert.match(yaml,/Writer-Lease-State: TERMINAL_DELIVERY/);
+  assert.match(yaml,/s\/\^Writer-Lease-State: \/\/p/);
+  assert.match(yaml,/lease_state/);
+  assert.match(yaml,/TERMINAL_DELIVERY/);
   assert.match(yaml,/lease_owner/);
   assert.match(yaml,/lease_head/);
-  assert.match(yaml,/Writer-Lease-State: TERMINAL_DELIVERY/);
+  assert.match(yaml,/\$lease_state.*TERMINAL_DELIVERY/);
   assert.match(yaml,/head_repo/);
   assert.match(yaml,/repos\/\$repo\/merges/);
   assert.match(yaml,/-f base="\$branch"/);
