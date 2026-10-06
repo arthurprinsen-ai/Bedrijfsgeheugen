@@ -98,8 +98,8 @@ test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
 test('same-lineage moving-main recovery requires terminal lease, zero overlap and never merges the PR itself',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(yaml,/contents:\s*write/);
-  assert.match(yaml,/MERGE_CONFLICT_RECOVERY\\|MAIN_DRIFT_RECOVERY/);
-  assert.match(yaml,/pull-requests:\\s*write/);
+  assert.ok(yaml.includes('MERGE_CONFLICT_RECOVERY|MAIN_DRIFT_RECOVERY'));
+  assert.ok(yaml.includes('pull-requests: write'));
   assert.match(yaml,/behind_by/);
   assert.match(yaml,/merge_base/);
   assert.match(yaml,/path_overlap/);
