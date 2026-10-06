@@ -58,3 +58,26 @@ test('completion supervisor requires channel policy authorization evidence',()=>
   assert.equal(result.success,false);
   assert.ok(result.required_evidence.includes('CHANNEL_POLICY_AUTHORIZATION'));
 });
+
+
+test('social publication recovery retries at most every ten minutes',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  assert.match(delivery,/schedule:\s*'\*\/10 \* \* \* \*'/);
+  assert.match(delivery,/triggerCanonicalPublisher/);
+  assert.match(delivery,/runSocialPublicationDelivery/);
+});
+
+test('production deploy recovery delegates to the same canonical publisher',()=>{
+  const hook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
+  assert.match(hook,/runSocialPublicationDelivery/);
+  assert.match(hook,/deploySucceeded/);
+  assert.match(hook,/event\?\.deploy\?\.context\s*!==\s*'production'/);
+  assert.doesNotMatch(hook,/LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH|createPost\(/);
+});
+
+test('social recovery remains bounded by the publication window and canonical single-writer route',()=>{
+  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
+  assert.match(delivery,/local\.hour < 7 \|\| local\.hour > 20/);
+  assert.match(delivery,/powerhouse-social-publisher/);
+  assert.match(delivery,/canonical publication runs before any Buffer read/i);
+});
