@@ -1,4 +1,4 @@
-import { mkdir, writeFile, appendFile, readFile } from 'node:fs/promises';
+import { mkdir, writeFile, appendFile, readFile, readdir } from 'node:fs/promises';
 import { calibrateCi } from '../../tools/delivery/ci-calibration-engine.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
@@ -21,6 +21,18 @@ const now = Date.now();
 const since = now - 7 * 24 * 60 * 60 * 1000;
 const runsPayload = await api('/actions/runs?per_page=100');
 const runs = (runsPayload.workflow_runs || []).filter(run => Date.parse(run.created_at) >= since);
+
+const workflowFiles=(await readdir('.github/workflows')).filter(name=>/\.ya?ml$/.test(name)).sort();
+const directPullRequestWorkflows=[];
+for(const name of workflowFiles){
+  const source=await readFile(`.github/workflows/${name}`,'utf8');
+  const match=source.match(/\n  pull_request:\s*\n([\s\S]*?)(?=\n  [A-Za-z0-9_-]+:|\n[A-Za-z][A-Za-z0-9_-]*:|$)/);
+  if(!match) continue;
+  const block=match[1]||'';
+  if(/types:\s*\[\s*closed\s*\]/.test(block)) continue;
+  directPullRequestWorkflows.push(name);
+}
+
 
 const sample = runs.slice(0, 30);
 const jobRows = [];
@@ -50,6 +62,13 @@ const p95 = values => {
   return sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * 0.95))];
 };
 
+const requiredJobRows=jobRows.filter(row=>row.workflow==='Required test');
+const requiredQueueSeconds=numeric(requiredJobRows,'queue_seconds');
+const requiredRuns=runs.filter(run=>run.name==='Required test' && run.status==='completed' && run.updated_at);
+const requiredTotalSeconds=requiredRuns
+  .map(run=>Math.max(0,Math.round((Date.parse(run.updated_at)-Date.parse(run.created_at))/1000)))
+  .filter(Number.isFinite);
+
 const queues = numeric(jobRows, 'queue_seconds');
 const executions = numeric(jobRows, 'execution_seconds');
 const failed = jobRows.filter(row => row.conclusion === 'failure').length;
@@ -75,6 +94,9 @@ const baseReport = {
     skipped_jobs: skipped,
     workflow_fanout_per_sha_avg: avg(fanoutValues),
     workflow_fanout_per_sha_p95: p95(fanoutValues),
+    required_queue_wait_seconds_p95: p95(requiredQueueSeconds),
+    required_total_seconds_p95: p95(requiredTotalSeconds),
+    direct_pull_request_workflow_count: directPullRequestWorkflows.length,
   },
   optimization_policy: {
     stale_same_pr_runs_cancelled: true,
@@ -84,7 +106,9 @@ const baseReport = {
     website_netlify_preview_reuse: true,
     local_browser_build_is_fallback_only: true,
     duplicate_preflight_domain_checks_removed: true,
+    direct_pr_workflow_budget_ratchet: true,
   },
+  direct_pull_request_workflows: directPullRequestWorkflows,
   jobs: jobRows,
 };
 

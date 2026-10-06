@@ -12,5 +12,9 @@
     "production_readback": true,
     "protected_merge": true,
     "exact_sha_identity": true
+  },
+  "ci": {
+    "direct_pr_workflow_budget": 100,
+    "direct_pr_workflow_target": 2
   }
 }
