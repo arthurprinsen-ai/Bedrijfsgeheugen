@@ -24,7 +24,7 @@ test('dependency risk is fail-closed in Required merge-group specialist assuranc
 });
 
 test('consolidated Powerhouse CodeQL is the single security authority on PR and merge queue', () => {
-  const yml = read('.github/workflows/powerhouse-codeql.yml');
+  const yml = read('.github/workflows/codeql.yml');
   assert.match(yml, /security-events:\s*write/);
   assert.match(yml, /github\/codeql-action\/analyze@/);
   assert.match(yml, /^  pull_request:/m);
