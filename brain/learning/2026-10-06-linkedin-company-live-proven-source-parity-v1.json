@@ -1,0 +1,49 @@
+{
+  "fingerprint": "linkedin-company|live-proven|runtime-source-parity|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "linkedin-company-live-proven-source-parity-20261006",
+  "root_cause": "The LinkedIn company same-day recovery escaped repository authority in four layers: company identity was still compared against a hardcoded person id instead of the provider-verified setup state; same-claim uniqueness required raw-hash/story-fingerprint identity even when normalized content was identical; expired unconsumed publication capabilities remained behind the daily unique fence; and exact company readback treated LinkedIn URL/escaping normalization as a material content mismatch. The existing reconciliation path also left an otherwise fully proven company obligation at PUBLISHED instead of LIVE_PROVEN.",
+  "prevention_rule": "Production and source must share one contract: bind company identity to personal_author_urn from the fresh proof-bound setup account; treat the same daily claim as idempotent only when normalized_hash is exactly equal; auto-revoke only expired unconsumed capability leases while consumed capabilities remain the daily side-effect fence; require exact post id, organization author and PUBLISHED lifecycle plus exact canonical normalized commentary; and promote the publication obligation to LIVE_PROVEN only when provider truth, fresh organization OAuth, admin proof and organization-write verification are all true.",
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_RECOVERY_PARITY_ESCAPE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ]
+  },
+  "evidence": {
+    "runtime_sources": [
+      "powerhouse-composio-linkedin-setup v23",
+      "powerhouse-content-loop v31",
+      "powerhouse-social-publisher v115"
+    ],
+    "database": [
+      "supabase/migrations/20261006113430_linkedin_company_live_proven_resume_guards_v1.sql"
+    ],
+    "regression": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "terminal": {
+      "channel": "linkedin_company",
+      "provider_post_id": "urn:li:share:7513196691630575616",
+      "provider_truth_verified": true,
+      "linkedin_company_admin_oauth_proven": true,
+      "organization_write_scope_verified": true,
+      "company_oauth_fresh_verified": true,
+      "obligation_status": "LIVE_PROVEN"
+    }
+  }
+}
