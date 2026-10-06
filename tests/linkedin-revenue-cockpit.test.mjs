@@ -123,9 +123,10 @@ test('LinkedIn cockpit autopilot requires concrete post context and exact commen
   assert.match(source, /Comment text: \$\{message\}/);
 });
 
-test('canonical publisher exposes dedicated autopilot mode and runs it during normal delivery', () => {
+test('canonical publisher isolates cockpit autopilot from normal publication delivery', () => {
   const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
   assert.match(source, /mode === 'cockpit_autopilot'/);
+  assert.match(source, /const cockpit_autopilot: any\[\] = \[\]/);
   const calls = (source.match(/await runLinkedInCockpitAutopilot\(db\)/g) || []).length;
-  assert.ok(calls >= 2);
+  assert.equal(calls, 1);
 });
