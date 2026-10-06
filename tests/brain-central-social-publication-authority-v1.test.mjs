@@ -86,3 +86,14 @@ test('social recovery remains bounded by the publication window and canonical si
   assert.match(delivery,/powerhouse-social-publisher/);
   assert.match(delivery,/canonical publication runs before any Buffer read/i);
 });
+
+test('manual recovery workflow is same-day only and delegates to the canonical publisher',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
+  assert.match(workflow,/workflow_dispatch:/);
+  assert.match(workflow,/Europe\/Amsterdam/);
+  assert.match(workflow,/SAME_DAY_RECOVERY_ONLY/);
+  assert.match(workflow,/rest\/v1\/rpc\/bg_geheim/);
+  assert.match(workflow,/functions\/v1\/powerhouse-social-publisher/);
+  assert.match(workflow,/x-powerhouse-token/);
+  assert.doesNotMatch(workflow,/api\.buffer\.com|LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
+});

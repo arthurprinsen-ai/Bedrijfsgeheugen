@@ -1,0 +1,32 @@
+{
+  "fingerprint": "social-publication|manual-recovery-control-plane|same-day|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-publication-manual-recovery-control-plane-20261006",
+  "root_cause": "The canonical publisher and automated recovery existed, but operators had no trusted same-day control-plane path to invoke the canonical publisher and inspect its exact result when the Netlify scheduled endpoint was externally protected with HTTP 403 and direct Supabase SQL access was unavailable.",
+  "prevention_rule": "Provide a same-day-only GitHub workflow that uses existing GitHub-held Supabase credentials to retrieve the scheduler token without logging it, invoke only the canonical powerhouse-social-publisher, and read back canonical decision state. Never introduce a second provider writer or bypass publication capabilities, uniqueness gates, identity gates, or provider readback.",
+  "compiler": {
+    "failure_class": "SOCIAL_PUBLICATION_RECOVERY_CONTROL_PLANE_GAP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "runtime": [
+      ".github/workflows/social-publication-recovery.yml"
+    ],
+    "regression": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  }
+}
