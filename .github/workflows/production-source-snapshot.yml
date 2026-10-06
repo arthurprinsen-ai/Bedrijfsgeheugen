@@ -67,7 +67,9 @@ on:
         default: false
 
 permissions:
+  actions: read
   contents: read
+  pull-requests: read
   id-token: write
 
 concurrency:
@@ -137,6 +139,104 @@ jobs:
           if-no-files-found: error
           retention-days: 1
  
+      - id: prebuilt
+        name: Resolve exact-tree Required prebuilt artifact
+        if: steps.scope.outputs.deployment_required == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "available=false" >> "$GITHUB_OUTPUT"
+          main_tree="$(git rev-parse 'HEAD^{tree}')"
+          echo "main_tree=$main_tree" >> "$GITHUB_OUTPUT"
+
+          pulls_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" 2>/dev/null || printf '[]')"
+          pr_head="$(node -e '
+            const rows=JSON.parse(process.argv[1]||"[]");
+            const merged=rows.filter(x=>x&&x.merged_at).sort((a,b)=>String(b.merged_at).localeCompare(String(a.merged_at)));
+            process.stdout.write(String(merged[0]?.head?.sha||""));
+          ' "$pulls_json")"
+          if [ -z "$pr_head" ]; then
+            echo "NETLIFY_PREBUILT_REUSE_MISS:no-associated-merged-pr"
+            exit 0
+          fi
+
+          runs_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/required-test.yml/runs?event=pull_request&status=success&per_page=50" 2>/dev/null || printf '{"workflow_runs":[]}')"
+          required_run_id="$(node -e '
+            const payload=JSON.parse(process.argv[1]||"{\"workflow_runs\":[]}");
+            const head=process.argv[2];
+            const run=(payload.workflow_runs||[])
+              .filter(x=>x?.head_sha===head && x?.conclusion==="success")
+              .sort((a,b)=>Number(b.id||0)-Number(a.id||0))[0];
+            process.stdout.write(String(run?.id||""));
+          ' "$runs_json" "$pr_head")"
+          if [ -z "$required_run_id" ]; then
+            echo "NETLIFY_PREBUILT_REUSE_MISS:no-successful-required-run:$pr_head"
+            exit 0
+          fi
+
+          artifacts_json="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$required_run_id/artifacts?per_page=100" 2>/dev/null || printf '{"artifacts":[]}')"
+          artifact_id="$(node -e '
+            const payload=JSON.parse(process.argv[1]||"{\"artifacts\":[]}");
+            const artifact=(payload.artifacts||[])
+              .filter(x=>x && !x.expired && String(x.name||"").startsWith("netlify-prebuilt-"))
+              .sort((a,b)=>Number(b.id||0)-Number(a.id||0))[0];
+            process.stdout.write(String(artifact?.id||""));
+          ' "$artifacts_json")"
+          if [ -z "$artifact_id" ]; then
+            echo "NETLIFY_PREBUILT_REUSE_MISS:no-prebuilt-artifact:$required_run_id"
+            exit 0
+          fi
+
+          download_dir="$RUNNER_TEMP/required-prebuilt-download"
+          prebuilt_dir="$RUNNER_TEMP/netlify-prebuilt"
+          rm -rf "$download_dir" "$prebuilt_dir"
+          mkdir -p "$download_dir" "$prebuilt_dir"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > "$RUNNER_TEMP/required-prebuilt.zip"
+          unzip -q -o "$RUNNER_TEMP/required-prebuilt.zip" -d "$download_dir"
+
+          manifest="$(find "$download_dir" -name netlify-prebuilt-manifest.json -print -quit)"
+          archive="$(find "$download_dir" -name netlify-prebuilt.tar -print -quit)"
+          test -n "$manifest"
+          test -n "$archive"
+          artifact_tree="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.source_tree_sha||""))' "$manifest")"
+          if [ "$artifact_tree" != "$main_tree" ]; then
+            echo "PREBUILT_TREE_MISMATCH expected=$main_tree observed=$artifact_tree"
+            exit 0
+          fi
+
+          tar -xf "$archive" -C "$prebuilt_dir"
+          test -f "$prebuilt_dir/netlify.toml"
+          test -f "$prebuilt_dir/tools/site-shell/stamp-release-identity.mjs"
+          printf '%s\n' "$GITHUB_SHA" > "$prebuilt_dir/.bg-source-commit"
+
+          node --input-type=module - "$prebuilt_dir" <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { join } from 'node:path';
+          const root=process.argv[2];
+          const file=join(root,'netlify.toml');
+          const lines=(await readFile(file,'utf8')).split(/\r?\n/);
+          let inBuild=false;
+          let replaced=false;
+          const next=lines.map(line=>{
+            if(/^\[build\]\s*$/.test(line)){ inBuild=true; return line; }
+            if(inBuild && /^\[/.test(line)){ inBuild=false; }
+            if(inBuild && /^\s*command\s*=/.test(line)){
+              replaced=true;
+              return '  command = "node tools/site-shell/stamp-release-identity.mjs"';
+            }
+            return line;
+          });
+          if(!replaced) throw new Error('PREBUILT_BUILD_COMMAND_NOT_FOUND');
+          await writeFile(file,next.join('\n'),'utf8');
+          NODE
+
+          echo "available=true" >> "$GITHUB_OUTPUT"
+          echo "directory=$prebuilt_dir" >> "$GITHUB_OUTPUT"
+          echo "required_run_id=$required_run_id" >> "$GITHUB_OUTPUT"
+          echo "artifact_id=$artifact_id" >> "$GITHUB_OUTPUT"
+          echo "NETLIFY_PREBUILT_REUSE_READY tree=$main_tree required_run=$required_run_id artifact=$artifact_id"
+
       - name: Acquire Netlify deploy transport through GitHub OIDC
         if: steps.scope.outputs.deployment_required == 'true'
         env:
@@ -158,6 +258,9 @@ jobs:
         if: steps.scope.outputs.deployment_required == 'true'
         env:
           EXPECTED_SHA: ${{ github.sha }}
+          PREBUILT_AVAILABLE: ${{ steps.prebuilt.outputs.available }}
+          PREBUILT_DIR: ${{ steps.prebuilt.outputs.directory }}
+          PREBUILT_REQUIRED_RUN_ID: ${{ steps.prebuilt.outputs.required_run_id }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 3); do
@@ -174,6 +277,7 @@ jobs:
             fi
             sleep 10
           done
+          if [ "${PREBUILT_AVAILABLE:-false}" != "true" ]; then
           request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=bedrijfsgeheugen-netlify-deploy-bridge"
           token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
           oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
@@ -241,9 +345,19 @@ jobs:
             fi
           fi
 
+          else
+            echo "NETLIFY_PREBUILT_REUSE required_run=${PREBUILT_REQUIRED_RUN_ID:-unknown} directory=$PREBUILT_DIR"
+          fi
+
           # The Netlify proxy is intentionally short-lived. Acquisition success is
           # not proof that the following upload is authorized, so a provider 401
           # must refresh OIDC + bridge proxy inside the same exact-source attempt.
+          deploy_dir="$GITHUB_WORKSPACE"
+          if [ "${PREBUILT_AVAILABLE:-false}" = "true" ]; then
+            test -n "$PREBUILT_DIR"
+            test -d "$PREBUILT_DIR"
+            deploy_dir="$PREBUILT_DIR"
+          fi
           deploy_log="$(mktemp)"
           deploy_ok=false
           for transport_attempt in $(seq 1 3); do
@@ -261,7 +375,7 @@ jobs:
 
             : > "$deploy_log"
             set +e
-            npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH" 2>&1 | tee "$deploy_log"
+            (cd "$deploy_dir" && npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH") 2>&1 | tee "$deploy_log"
             deploy_status=${PIPESTATUS[0]}
             set -e
             if [ "$deploy_status" -eq 0 ]; then
