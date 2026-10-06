@@ -8,7 +8,7 @@
   "source": "baseline",
   "ci": {
     "direct_pr_workflow_target": 2,
-    "direct_pr_workflow_budget": 56,
+    "direct_pr_workflow_budget": 55,
     "max_pr_workflows_per_head": 5,
     "required_queue_p95_slo_seconds": 30,
     "required_total_p95_slo_seconds": 120,
