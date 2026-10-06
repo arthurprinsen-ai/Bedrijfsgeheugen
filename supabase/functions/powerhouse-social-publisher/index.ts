@@ -1032,7 +1032,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
-  const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
+  const cockpit_autopilot = publishOnly ? [] : await runLinkedInCockpitAutopilot(db);
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
       .select('channel,scheduled_for,delivery_evidence,priority')
