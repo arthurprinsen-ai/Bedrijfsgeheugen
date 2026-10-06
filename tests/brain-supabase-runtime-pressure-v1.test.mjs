@@ -132,3 +132,16 @@ test('direct DB adapters normalize JSONB strings before spread and write',()=>{
     assert.match(source,/normalizeJsonValue\(rows\?\.\[0\]\?\.result\?\?null\)/);
   }
 });
+
+test('publication delivery normalizes legacy JSONB strings before merge', () => {
+  const publisher = fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+  const blogQueue = fs.readFileSync('supabase/functions/powerhouse-blog-queue/index.ts','utf8');
+  const migration = fs.readFileSync('supabase/migrations/20261006095958_normalize_publication_evidence_objects_v1.sql','utf8');
+  assert.match(publisher, /delivery_evidence: jsonObject\(row\.delivery_evidence\)/);
+  assert.match(publisher, /generation_evidence: jsonObject\(artifact\.generation_evidence\)/);
+  assert.match(blogQueue, /const deliveryEvidence=jsonObject\(d\.delivery_evidence\)/);
+  assert.match(blogQueue, /const generationEvidence=jsonObject\(a\.generation_evidence\)/);
+  assert.match(migration, /powerhouse_jsonb_object_v1/);
+  assert.match(migration, /powerhouse_reconcile_content_outcomes_v1/);
+  assert.match(migration, /record_content_publication_state/);
+});
