@@ -19,3 +19,13 @@ test('terminal readers use canonical scope',()=>{
   assert.ok(terminalizer.includes("path==='supabase/config.toml'"));
   assert.ok(terminalizer.includes('edge-runtime-scope.mjs'));
 });
+
+
+test('provider publisher keeps network readback out of local files',()=>{
+  const publisher=readFileSync('tools/supabase/publish-edge-provider-readback.mjs','utf8');
+  assert.doesNotMatch(publisher,/writeFileSync/);
+  assert.doesNotMatch(publisher,/mkdirSync/);
+  assert.doesNotMatch(publisher,/provider-manifest\.json/);
+  assert.doesNotMatch(publisher,/provider-readbacks\.txt/);
+  assert.match(publisher,/SUPABASE_PROVIDER_PR_WRITEBACK_PROVEN/);
+});
