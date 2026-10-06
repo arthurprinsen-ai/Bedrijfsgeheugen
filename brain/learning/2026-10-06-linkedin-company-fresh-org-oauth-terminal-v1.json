@@ -19,6 +19,9 @@
     ],
     "shadow": [
       "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
     ]
   },
   "evidence": {
