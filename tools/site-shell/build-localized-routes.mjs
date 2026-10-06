@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { spawn } from 'node:child_process';
 import { parse, serialize } from 'parse5';
 
 const ROOT = process.cwd();
@@ -721,14 +722,128 @@ const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(ro
 const aliases = routeAliases(files);
 if (!files.length) throw new Error('No public HTML files selected for localized build');
 console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length}));
-const allStrings = new Set();
+function routeCacheContext(translations,productionTranslationRequired){
+  const enabled=Boolean(STATIC_I18N_BUILD_CACHE_DIR) && productionTranslationRequired && translations instanceof Map;
+  if(!enabled) return {enabled:false,fingerprint:'',dir:''};
+  const fullCache=loadCache();
+  const fingerprint=sha256(
+    STATIC_I18N_BUILD_CACHE_VERSION,
+    fs.readFileSync(new URL(import.meta.url),'utf8'),
+    fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'),
+    JSON.stringify(Object.entries(fullCache).sort(([a],[b])=>a.localeCompare(b))),
+    JSON.stringify({
+      files,
+      publicRoutes:[...publicRoutes].sort(),
+      aliases:[...aliases.entries()].sort(([a],[b])=>a.localeCompare(b)),
+    }),
+  );
+  return {enabled:true,fingerprint,dir:STATIC_I18N_BUILD_CACHE_DIR};
+}
 
+function buildLocalizedFiles(selectedFiles,translations,productionTranslationRequired,cacheContext){
+  let translatedRoutes=0;
+  let partialRoutes=0;
+  let untranslatedRefs=0;
+  let cacheHits=0;
+  let cacheMisses=0;
+  for(const file of selectedFiles){
+    const sourceHtml=fs.readFileSync(path.join(ROOT,file),'utf8');
+    const route=routeFor(file);
+    const routeCacheKey=cacheContext.enabled
+      ? sha256(cacheContext.fingerprint,file,normalizeReleaseIdentityForCache(sourceHtml))
+      : '';
+    const routeCachePath=cacheContext.enabled ? path.join(cacheContext.dir,routeCacheKey) : '';
+    const cachedNl=cacheContext.enabled ? path.join(routeCachePath,'nl.html') : '';
+    const cachedEn=cacheContext.enabled ? path.join(routeCachePath,'en.html') : '';
+    if(cacheContext.enabled && fs.existsSync(cachedNl) && fs.existsSync(cachedEn)){
+      const nlSerialized=fs.readFileSync(cachedNl,'utf8');
+      const enSerialized=fs.readFileSync(cachedEn,'utf8');
+      const nlOut=outputPath('nl',file);
+      const enOut=outputPath('en',file);
+      ensureDir(nlOut);
+      ensureDir(enOut);
+      fs.writeFileSync(nlOut,nlSerialized);
+      fs.writeFileSync(path.join(ROOT,file),nlSerialized);
+      fs.writeFileSync(enOut,enSerialized);
+      translatedRoutes++;
+      cacheHits++;
+      continue;
+    }
+
+    const nlDoc=parse(sourceHtml);
+    enforceStaticLocaleTitleOwnership(nlDoc);
+    rewriteLinks(nlDoc,file,'nl',aliases);
+    rewriteLanguageSwitchers(nlDoc,route,'nl');
+    setLocaleMetadata(nlDoc,'nl',route,true);
+    applyLocaleRevenueMetadata(nlDoc,'nl',route);
+    localizeStructuredData(nlDoc,'nl',route,translations);
+    const nlOut=outputPath('nl',file);
+    ensureDir(nlOut);
+    const nlSerialized=serialize(nlDoc);
+    fs.writeFileSync(nlOut,nlSerialized);
+    fs.writeFileSync(path.join(ROOT,file),nlSerialized);
+
+    const enDoc=parse(sourceHtml);
+    enforceStaticLocaleTitleOwnership(enDoc);
+    const enRefs=collectTranslatables(enDoc);
+    const missingForRoute=translations
+      ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
+      : enRefs.map(ref=>ref.source);
+    untranslatedRefs+=missingForRoute.length;
+    if(missingForRoute.length) partialRoutes++;
+    else translatedRoutes++;
+    rewriteLinks(enDoc,file,'en',aliases);
+    rewriteLanguageSwitchers(enDoc,route,'en');
+    setLocaleMetadata(enDoc,'en',route,missingForRoute.length===0);
+    applyLocaleRevenueMetadata(enDoc,'en',route);
+    localizeStructuredData(enDoc,'en',route,translations);
+    const enOut=outputPath('en',file);
+    ensureDir(enOut);
+    const enSerialized=serialize(enDoc);
+    fs.writeFileSync(enOut,enSerialized);
+
+    if(cacheContext.enabled && missingForRoute.length===0){
+      fs.mkdirSync(routeCachePath,{recursive:true});
+      fs.writeFileSync(cachedNl,nlSerialized);
+      fs.writeFileSync(cachedEn,enSerialized);
+      cacheMisses++;
+    }
+  }
+  return {files:selectedFiles.length,translatedRoutes,partialRoutes,untranslatedRefs,cacheHits,cacheMisses};
+}
+
+const shardArg=process.argv.find(arg=>arg.startsWith('--route-shard='));
+if(shardArg){
+  const match=shardArg.match(/^--route-shard=(\d+)\/(\d+)$/);
+  if(!match) throw new Error('STATIC_I18N_SHARD_INVALID: '+shardArg);
+  const shardIndex=Number(match[1]);
+  const shardTotal=Number(match[2]);
+  if(!Number.isInteger(shardIndex)||!Number.isInteger(shardTotal)||shardTotal<1||shardIndex<0||shardIndex>=shardTotal){
+    throw new Error('STATIC_I18N_SHARD_INVALID: '+shardArg);
+  }
+  if(String(process.env.STATIC_I18N_NETWORK||'').trim()==='1'){
+    throw new Error('STATIC_I18N_SHARD_NETWORK_FORBIDDEN');
+  }
+  const productionTranslationRequired=String(process.env.STATIC_I18N_REQUIRE_CACHE||'').trim()==='1';
+  if(!productionTranslationRequired) throw new Error('STATIC_I18N_SHARD_REQUIRES_FAIL_CLOSED_CACHE');
+  const cache=loadCache();
+  const translations=new Map(Object.entries(cache).filter(([,value])=>typeof value==='string'&&value.trim()));
+  const selected=files.filter((_,index)=>index%shardTotal===shardIndex);
+  const cacheContext=routeCacheContext(translations,productionTranslationRequired);
+  const result=buildLocalizedFiles(selected,translations,productionTranslationRequired,cacheContext);
+  const shardDir=path.resolve(ROOT,String(process.env.STATIC_I18N_SHARD_DIR||'.bg-build/static-i18n-shards'));
+  fs.mkdirSync(shardDir,{recursive:true});
+  fs.writeFileSync(path.join(shardDir,`shard-${shardIndex}.json`),JSON.stringify(result,null,2)+'\n');
+  console.log('STATIC_I18N_SHARD_DONE',JSON.stringify({shard:shardIndex,total:shardTotal,...result}));
+  process.exit(0);
+}
+
+const allStrings = new Set();
 for (const file of files) {
   const html = fs.readFileSync(path.join(ROOT,file),'utf8');
   const doc = parse(html,{sourceCodeLocationInfo:false});
   const refs = collectTranslatables(doc);
   refs.forEach(ref=>allStrings.add(ref.source));
-  // Do not retain parse5 document trees across routes: 100+ full DOM trees can exceed the Netlify build memory limit.
 }
 
 const cacheValidationOnly = process.argv.includes('--validate-cache');
@@ -748,99 +863,50 @@ const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CAC
 if (productionTranslationRequired && !translations) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
-const routeCacheEnabled=Boolean(STATIC_I18N_BUILD_CACHE_DIR) && productionTranslationRequired && translations instanceof Map;
-const routeCacheFingerprint=routeCacheEnabled ? sha256(
-  STATIC_I18N_BUILD_CACHE_VERSION,
-  fs.readFileSync(new URL(import.meta.url),'utf8'),
-  fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'),
-  JSON.stringify([...translations.entries()].sort(([a],[b])=>a.localeCompare(b))),
-  JSON.stringify({
-    files,
-    publicRoutes:[...publicRoutes].sort(),
-    aliases:[...aliases.entries()].sort(([a],[b])=>a.localeCompare(b)),
-  }),
-) : '';
-let translatedRoutes = 0;
-let partialRoutes = 0;
-let untranslatedRefs = 0;
-let cacheHits = 0;
-let cacheMisses = 0;
-for (const file of files) {
-  const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
-  const route = routeFor(file);
-  const routeCacheKey=routeCacheEnabled
-    ? sha256(routeCacheFingerprint,file,normalizeReleaseIdentityForCache(sourceHtml))
-    : '';
-  const routeCachePath=routeCacheEnabled ? path.join(STATIC_I18N_BUILD_CACHE_DIR,routeCacheKey) : '';
-  const cachedNl=routeCacheEnabled ? path.join(routeCachePath,'nl.html') : '';
-  const cachedEn=routeCacheEnabled ? path.join(routeCachePath,'en.html') : '';
-  if(routeCacheEnabled && fs.existsSync(cachedNl) && fs.existsSync(cachedEn)){
-    const nlSerialized=fs.readFileSync(cachedNl,'utf8');
-    const enSerialized=fs.readFileSync(cachedEn,'utf8');
-    const nlOut=outputPath('nl',file);
-    const enOut=outputPath('en',file);
-    ensureDir(nlOut);
-    ensureDir(enOut);
-    fs.writeFileSync(nlOut,nlSerialized);
-    fs.writeFileSync(path.join(ROOT,file),nlSerialized);
-    fs.writeFileSync(enOut,enSerialized);
-    translatedRoutes++;
-    cacheHits++;
-    continue;
+
+const networkAllowed=String(process.env.STATIC_I18N_NETWORK||'').trim()==='1';
+const requestedWorkers=Math.max(1,Math.min(4,Number(process.env.STATIC_I18N_ROUTE_WORKERS||2)||2));
+const routeWorkers=productionTranslationRequired && !networkAllowed ? Math.min(requestedWorkers,files.length) : 1;
+const cacheContext=routeCacheContext(translations,productionTranslationRequired);
+let aggregate={files:0,translatedRoutes:0,partialRoutes:0,untranslatedRefs:0,cacheHits:0,cacheMisses:0};
+
+if(routeWorkers===1){
+  aggregate=buildLocalizedFiles(files,translations,productionTranslationRequired,cacheContext);
+}else{
+  const shardDir=path.join(ROOT,'.bg-build',`static-i18n-shards-${process.pid}`);
+  fs.mkdirSync(shardDir,{recursive:true});
+  const runShard=shardIndex=>new Promise((resolve,reject)=>{
+    const child=spawn(process.execPath,[process.argv[1],`--route-shard=${shardIndex}/${routeWorkers}`],{
+      cwd:ROOT,
+      stdio:'inherit',
+      env:{...process.env,STATIC_I18N_ROUTE_WORKERS:'1',STATIC_I18N_SHARD_DIR:shardDir},
+    });
+    child.on('error',reject);
+    child.on('exit',(code,signal)=>code===0?resolve():reject(new Error(`STATIC_I18N_SHARD_FAILED:${shardIndex}:${code}:${signal||''}`)));
+  });
+  console.log('STATIC_I18N_PARALLEL_START',JSON.stringify({workers:routeWorkers,files:files.length}));
+  await Promise.all(Array.from({length:routeWorkers},(_,index)=>runShard(index)));
+  for(let index=0;index<routeWorkers;index++){
+    const shard=JSON.parse(fs.readFileSync(path.join(shardDir,`shard-${index}.json`),'utf8'));
+    for(const key of Object.keys(aggregate)) aggregate[key]+=Number(shard[key]||0);
   }
-
-  const nlDoc = parse(sourceHtml);
-  enforceStaticLocaleTitleOwnership(nlDoc);
-  rewriteLinks(nlDoc,file,'nl',aliases);
-  rewriteLanguageSwitchers(nlDoc,route,'nl');
-  setLocaleMetadata(nlDoc,'nl',route,true);
-  applyLocaleRevenueMetadata(nlDoc,'nl',route);
-  localizeStructuredData(nlDoc,'nl',route,translations);
-  const nlOut = outputPath('nl',file);
-  ensureDir(nlOut);
-  const nlSerialized=serialize(nlDoc);
-  fs.writeFileSync(nlOut,nlSerialized);
-  fs.writeFileSync(path.join(ROOT,file),nlSerialized);
-
-  const enDoc = parse(sourceHtml);
-  enforceStaticLocaleTitleOwnership(enDoc);
-  const enRefs = collectTranslatables(enDoc);
-  const missingForRoute = translations
-    ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
-    : enRefs.map(ref=>ref.source);
-  untranslatedRefs += missingForRoute.length;
-  if (missingForRoute.length) partialRoutes++;
-  else translatedRoutes++;
-  rewriteLinks(enDoc,file,'en',aliases);
-  rewriteLanguageSwitchers(enDoc,route,'en');
-  setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
-  applyLocaleRevenueMetadata(enDoc,'en',route);
-  localizeStructuredData(enDoc,'en',route,translations);
-  const enOut = outputPath('en',file);
-  ensureDir(enOut);
-  const enSerialized=serialize(enDoc);
-  fs.writeFileSync(enOut,enSerialized);
-
-  if(routeCacheEnabled && missingForRoute.length===0){
-    fs.mkdirSync(routeCachePath,{recursive:true});
-    fs.writeFileSync(cachedNl,nlSerialized);
-    fs.writeFileSync(cachedEn,enSerialized);
-    cacheMisses++;
-  }
+  fs.rmSync(shardDir,{recursive:true,force:true});
+  console.log('STATIC_I18N_PARALLEL_DONE',JSON.stringify({workers:routeWorkers,files:aggregate.files}));
 }
 
 console.log('STATIC_I18N_ROUTES',JSON.stringify({
-  files:files.length,
+  files:aggregate.files,
   strings:allStrings.size,
   nl:true,
   en:true,
   staticEnglish:Boolean(translations?.size),
-  translatedRoutes,
-  partialRoutes,
-  untranslatedRefs,
-  runtimeFallback:!translations || untranslatedRefs > 0,
-  cacheEnabled:routeCacheEnabled,
-  cacheHits,
-  cacheMisses,
-  cacheDir:routeCacheEnabled?STATIC_I18N_BUILD_CACHE_DIR:null
+  translatedRoutes:aggregate.translatedRoutes,
+  partialRoutes:aggregate.partialRoutes,
+  untranslatedRefs:aggregate.untranslatedRefs,
+  routeWorkers,
+  runtimeFallback:!translations || aggregate.untranslatedRefs > 0,
+  cacheEnabled:cacheContext.enabled,
+  cacheHits:aggregate.cacheHits,
+  cacheMisses:aggregate.cacheMisses,
+  cacheDir:cacheContext.enabled?cacheContext.dir:null
 }));
