@@ -9,8 +9,9 @@ test('LinkedIn capability discovery is read-only and uses active Composio accoun
   assert.match(setup,/toolkit_slugs=linkedin&statuses=ACTIVE/);
   assert.match(setup,/LINKEDIN_GET_MY_INFO/);
   assert.match(setup,/LINKEDIN_GET_COMPANY_INFO/);
-  assert.doesNotMatch(setup,/LINKEDIN_CREATE_LINKED_IN_POST/);
-  assert.doesNotMatch(setup,/LINKEDIN_CREATE_VIDEO_POST/);
+  assert.match(setup,/restrict_to_following_tools:\['LINKEDIN_GET_MY_INFO','LINKEDIN_GET_COMPANY_INFO','LINKEDIN_CREATE_LINKED_IN_POST','LINKEDIN_GET_POST_CONTENT'\]/);
+  assert.doesNotMatch(setup,/execute\(key,[^\n]*'LINKEDIN_CREATE_LINKED_IN_POST'/);
+  assert.doesNotMatch(setup,/execute\(key,[^\n]*'LINKEDIN_CREATE_VIDEO_POST'/);
 });
 
 test('LinkedIn personal and company capability are proven separately',()=>{
