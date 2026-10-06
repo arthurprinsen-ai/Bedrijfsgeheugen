@@ -22,8 +22,8 @@
       "tests/brain-central-social-publication-authority-v1.test.mjs"
     ]
   },
-  "root_cause": "Production had already been repaired to use the EU Supavisor transaction pooler, while repository main and the GitHub recovery workflow still contained PostgREST/Data API dependencies. That created runtime/source drift: the live hotfix worked, but a normal redeploy from main could reintroduce the same HTTP 522 failure. Repeated Vault inspection could not close this because the blocked introspection path was not the failing transport.",
-  "prevention_rule": "Critical content-publication runtime and recovery control-plane code must use the canonical EU Supavisor transaction pooler for internal database access and must not depend on /rest/v1 for scheduler authority or publication-state recovery. Repository source must be reconciled to proven production source before release. Vault values are never introspected as a recovery prerequisite; only bounded authority use and outcome readback are permitted.",
+  "root_cause": "Production recovery had already moved its canonical state readback to the EU Supavisor pooler, while repository main still lacked the source-controlled recovery runner and the GitHub workflow still encoded the older recovery topology. That runtime/source drift meant a normal redeploy could reintroduce the same PostgREST-dependent failure path.",
+  "prevention_rule": "The social-publication recovery control plane must use the source-controlled social-recovery-runner with direct EU Supavisor state readback, bounded preparation, bounded per-channel publish_only delegation to the canonical publisher, and fail-closed final readback. Provider runtime parity is owned separately by the publication-delivery recovery lane.",
   "evidence": {
     "database": [
       "Direct production SQL succeeded and reported pg_is_in_recovery=false.",
@@ -34,15 +34,14 @@
       "The log query backend also returned a backend error while direct SQL remained healthy."
     ],
     "runtime": [
-      "content-operations production uses the EU Supavisor transaction pooler.",
-      "powerhouse-social-publisher production uses the EU Supavisor transaction pooler.",
-      "powerhouse-content-orchestrator production uses the EU Supavisor transaction pooler.",
-      "powerhouse-content-loop production uses the EU Supavisor transaction pooler."
+      "social-recovery-runner production uses the EU Supavisor transaction pooler.",
+      "The deployed runner v6 skips heavyweight preparation for content_ready claims and otherwise bounds preparation to 60 seconds.",
+      "The deployed runner delegates only bounded per-channel publish_only work to powerhouse-social-publisher."
     ],
     "source_repair": [
-      "fix/canonical-supavisor-runtime-20261006 reconciles the proven production transport into repository source.",
       "social-publication-recovery.yml delegates to social-recovery-runner and contains no /rest/v1 dependency.",
-      "tests/brain-central-social-publication-authority-v1.test.mjs fails closed if the critical recovery path regresses to PostgREST."
+      "supabase/functions/social-recovery-runner/index.ts is reconciled exactly to deployed runner v6.",
+      "tests/brain-central-social-publication-authority-v1.test.mjs fails closed if recovery regresses to direct provider primitives or PostgREST."
     ]
   }
 }
