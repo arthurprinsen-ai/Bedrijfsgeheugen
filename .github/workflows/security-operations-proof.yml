@@ -1,13 +1,6 @@
 name: Security Operations Proof
 
 on:
-  pull_request:
-    paths:
-      - 'scripts/security-operations-proof.mjs'
-      - 'tests/security-operations-proof.test.mjs'
-      - 'powerhouse/assurance/security-operations-closure.json'
-      - 'docs/powerhouse/POWERHOUSE_SECURITY_OPERATIONS_CLOSURE.md'
-      - '.github/workflows/security-operations-proof.yml'
   push:
     branches: [main]
     paths:
