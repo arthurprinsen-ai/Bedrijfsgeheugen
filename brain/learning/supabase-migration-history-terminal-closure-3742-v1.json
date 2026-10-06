@@ -1,0 +1,40 @@
+{
+  "id": "supabase-migration-history-terminal-closure-3742-v1",
+  "date": "2026-10-06",
+  "type": "terminal_closure",
+  "source": "issue-3742-pr-3766-supported-repair",
+  "fingerprint": "powerhouse|supabase-migration-history|terminal-closure|3742|v1",
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Migration-history parity required separate proof for provider tracking repair, immutable repository history, fresh replay and post-merge delivery evidence. Earlier lanes either mixed historical SQL into the executable lane or terminalized through the wrong runtime authority.",
+  "prevention": [
+    "Bind provider repair to a trusted-main workflow run and immutable production-ledger lock.",
+    "Require all replay-only baseline identities to appear in the production ledger before closure.",
+    "Trigger a fresh hosted Supabase Preview from the terminal closure candidate.",
+    "Require exact-head Required and CodeQL gates before protected merge.",
+    "Require the current terminalizer to emit post-merge evidence through supabase_history_parity_recovery routing."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-migration-history-terminal-closure-v1.test.mjs"
+    ],
+    "expected": "Issue 3742 can close only after this exact closure candidate passes hosted preview, exact-head gates, protected merge and post-merge terminalizer evidence."
+  },
+  "evidence": {
+    "canonical_recovery_pr": 3766,
+    "canonical_recovery_merge_sha": "ccdf134ca4de73e547e54c9de00298d771f87be5",
+    "trusted_repair_run": 37426469433,
+    "trusted_repair_post_drift": 0,
+    "production_ledger_count": 568,
+    "terminalizer_restore_pr": 3822,
+    "terminalizer_restore_merge_sha": "2729dfd6dbf07426b1451e4469ea29cf295e692d",
+    "closure_contract": "supabase/production-baseline/migration-history-terminal-closure-3742-v1.json"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
