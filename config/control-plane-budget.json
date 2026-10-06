@@ -32,8 +32,8 @@
       "workflowFiles": 123,
       "openPullRequests": 78,
       "directPrTriggerWorkflows": [
+        "codeql.yml",
         "obligation-terminal-closure.yml",
-        "powerhouse-codeql.yml",
         "powerhouse-merged-branch-cleanup.yml",
         "powerhouse-obligation-terminalizer.yml",
         "powerhouse-terminal-writer-lease-closure-guard.yml",
@@ -50,7 +50,7 @@
       ],
       "lifecyclePrAuthorityCount": 5,
       "directPrAdmissionWorkflows": [
-        "powerhouse-codeql.yml",
+        "codeql.yml",
         "required-test.yml"
       ],
       "directPrAdmissionCount": 2
