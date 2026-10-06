@@ -73,7 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 2
           ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
@@ -140,14 +140,31 @@ jobs:
           if(metadataAuthority.source === 'versioned-manifest' && metadataAuthority.delivery.baseSha !== context.baseSha) {
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
-          const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          try {
+            execFileSync('git',['cat-file','-e',`${comparisonBaseSha}^{commit}`],{stdio:'ignore'});
+          } catch {
+            console.log(`TARGETED_BASE_FETCH:${comparisonBaseSha}`);
+            execFileSync('git',['fetch','--no-tags','--depth=1','origin',comparisonBaseSha],{stdio:'inherit'});
+          }
+          const changedPaths=execFileSync('git',['diff','--name-only',comparisonBaseSha,context.changeHeadSha],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles,delivery:metadataAuthority.delivery};
-          const supabasePreviewRequired=changedPaths.some(path =>
+          const databaseRelevantSupabase=changedPaths.some(path =>
             path.startsWith('supabase/') &&
             !path.startsWith('supabase/functions/') &&
             path !== 'supabase/config.toml'
           );
+          let supabaseConfigDatabaseRelevant=false;
+          if(changedPaths.includes('supabase/config.toml')){
+            const probe="import subprocess,sys,tomllib; base,head=sys.argv[1:3]; load=lambda ref: tomllib.loads(subprocess.check_output(['git','show',f'{ref}:supabase/config.toml']).decode('utf-8')); norm=lambda config:{k:v for k,v in config.items() if k!='functions'}; raise_code=0 if norm(load(base))==norm(load(head)) else 1; sys.exit(raise_code)";
+            try {
+              execFileSync('python3',['-c',probe,comparisonBaseSha,context.changeHeadSha],{stdio:'pipe'});
+              supabaseConfigDatabaseRelevant=false;
+            } catch {
+              supabaseConfigDatabaseRelevant=true;
+            }
+          }
+          const supabasePreviewRequired=databaseRelevantSupabase || supabaseConfigDatabaseRelevant;
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));

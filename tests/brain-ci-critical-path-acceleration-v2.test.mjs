@@ -15,24 +15,29 @@ test('existing Netlify build suppression remains single-source and fail-open',as
 });
 
 test('critical-path workflows keep visible checks while eliminating stale work',async()=>{
-  const [gate,operational,shadow,canary,codeql,supabase]=await Promise.all([
+  const [gate,operational,shadow,canary,codeql,required]=await Promise.all([
     readFile('.github/workflows/repo-writer-gate-dispatch.yml','utf8'),
     readFile('.github/workflows/repo-writer-operational-verification.yml','utf8'),
     readFile('.github/workflows/repo-writer-candidate-shadow.yml','utf8'),
     readFile('.github/workflows/repo-writer-cheap-canary.yml','utf8'),
     readFile('.github/workflows/powerhouse-codeql.yml','utf8'),
-    readFile('.github/workflows/supabase-preview-applicability.yml','utf8'),
+    readFile('.github/workflows/required-test.yml','utf8'),
   ]);
   assert.match(gate,/group: repo-writer-gates-\$\{\{ inputs\.pr_number \}\}[\s\S]*cancel-in-progress: true/);
   assert.match(operational,/group: repo-writer-operational-[\s\S]*cancel-in-progress: true/);
   assert.match(shadow,/group: repo-writer-candidate-shadow-[\s\S]*cancel-in-progress: true/);
   assert.match(canary,/group: repo-writer-cheap-canary-[\s\S]*cancel-in-progress: true/);
   assert.match(codeql,/CodeQL scope[\s\S]*pulls\/\$PR_NUMBER\/files[\s\S]*needs: scope[\s\S]*needs\.scope\.outputs\.run_codeql == 'true'/);
-  assert.match(supabase,/Fast-path Supabase applicability[\s\S]*pulls\/\$PR_NUMBER\/files[\s\S]*checkout@v5[\s\S]*supabase_changed == 'true'/);
+  assert.match(required,/supabase_preview_required[\s\S]*Verify provider-owned Supabase Preview on exact candidate head/);
 });
 
-test('Supabase non-applicable fast path is a valid multiline shell step',async()=>{
-  const workflow=await readFile('.github/workflows/supabase-preview-applicability.yml','utf8');
-  assert.match(workflow,/Record provider preview not applicable without checkout[\s\S]*run: \|[\s\S]*SUPABASE_PREVIEW_NOT_APPLICABLE/);
-  assert.doesNotMatch(workflow,/run: echo "SUPABASE_PREVIEW_NOT_APPLICABLE[^\n]*#/);
+test('Supabase applicability is owned by Required test without a standalone PR runner',async()=>{
+  const required=await readFile('.github/workflows/required-test.yml','utf8');
+  assert.match(required,/supabase_preview_required/);
+  assert.match(required,/^  supabase_preview:/m);
+  assert.match(required,/SUPABASE_PREVIEW_PROVIDER_VERIFIED/);
+  await assert.rejects(
+    () => readFile('.github/workflows/supabase-preview-applicability.yml','utf8'),
+    error => error?.code === 'ENOENT'
+  );
 });

@@ -12,12 +12,6 @@ on:
       - 'assets/**'
       - '_redirects'
       - '.github/workflows/paginacontrole.yml'
-  pull_request:
-    paths:
-      - '**.html'
-      - 'assets/**'
-      - '_redirects'
-      - '.github/workflows/paginacontrole.yml'
   workflow_dispatch:
     inputs:
       delivery_mode:
@@ -38,8 +32,8 @@ permissions:
 # PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
 # Alle niet-PR-runs kunnen naar main schrijven en delen daarom het niet-annuleerbare repo-slot.
 concurrency:
-  group: ${{ github.event_name == 'pull_request' && format('paginacontrole-{0}', github.event.pull_request.number) || 'repo-schrijven' }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: repo-schrijven
+  cancel-in-progress: false
 
 jobs:
   controle:
@@ -49,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Exacte basis vastleggen
         id: base
