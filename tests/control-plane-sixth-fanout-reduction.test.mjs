@@ -172,7 +172,7 @@ test('Powerhouse CodeQL is the single PR CodeQL authority for JS/TS and Python',
   assert.match(source, /^  merge_group:/m);
   assert.ok(source.includes('language: [javascript-typescript, python]'));
   assert.ok(source.includes('languages: ${{ matrix.language }}'));
-  assert.ok(source.includes('category: /language:${{ matrix.language }}'));
+  assert.doesNotMatch(source, /^\s+category:/m);
 });
 
 
