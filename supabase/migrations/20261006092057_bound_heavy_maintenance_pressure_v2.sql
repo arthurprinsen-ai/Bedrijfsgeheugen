@@ -337,3 +337,9 @@ begin
   end if;
 end
 $scheduler$;
+
+-- Replay hardening mirrors the current production EXECUTE boundary.
+revoke execute on function public.powerhouse_sync_identity_graph_batch_v1(integer) from public, anon, authenticated;
+grant execute on function public.powerhouse_sync_identity_graph_batch_v1(integer) to service_role;
+revoke execute on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() from public, anon, authenticated;
+grant execute on function public.powerhouse_refresh_revenue_intelligence_snapshot_v1() to service_role;
