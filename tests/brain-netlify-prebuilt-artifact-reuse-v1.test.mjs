@@ -64,6 +64,10 @@ test('static locale rendering uses content-addressed persistent cache and bounde
   assert.match(builder,/cacheHits/);
   assert.match(builder,/cacheMisses/);
   assert.match(builder,/bg-release-commit/);
+  assert.match(builder,/bgx-stempel/);
+  assert.match(builder,/__BUILD_VERSION_STAMP__/);
+  assert.match(builder,/var\\s\+mijn/);
+  assert.match(builder,/__BUILD_VERSION__/);
   assert.match(builder,/STATIC_I18N_ROUTE_WORKERS/);
   assert.match(builder,/STATIC_I18N_PARALLEL_START/);
   assert.match(builder,/Math\.min\(4/);
