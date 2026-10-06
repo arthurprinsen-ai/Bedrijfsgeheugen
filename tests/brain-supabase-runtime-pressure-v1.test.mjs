@@ -12,7 +12,7 @@ const repairWorkflow = fs.readFileSync('.github/workflows/supabase-supported-mig
 test('trusted repair workflow rejects direct IPv6 before Supabase CLI execution', () => {
   assert.match(repairWorkflow, /supavisor-session-ipv4/);
   assert.match(repairWorkflow, /DIRECT_IPV6_ROUTE_FORBIDDEN/);
-  assert.match(repairWorkflow, /aws-0-eu-central-1\.pooler\.supabase\.com/);
+  assert.ok(repairWorkflow.includes('aws-0-eu-central-1.pooler.supabase.com'));
   assert.match(repairWorkflow, /SUPAVISOR_SESSION_PORT_REQUIRED/);
   assert.match(repairWorkflow, /SSLMODE_REQUIRE_REQUIRED/);
   assert.match(repairWorkflow, /getent ahostsv4/);
@@ -115,6 +115,7 @@ test('publisher separates audit, cockpit and dispatch critical paths', () => {
   const publisher = fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
   assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'publish_only' \}/);
   assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'audit_only' \}/);
+  assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'cockpit_autopilot' \}/);
   assert.match(publisher, /if \(mode === 'cockpit_autopilot'\)/);
   assert.match(publisher, /const cockpit_autopilot: any\[\] = \[\]/);
   assert.doesNotMatch(publisher, /const cockpit_autopilot = publishOnly \? \[\] : await runLinkedInCockpitAutopilot/);
