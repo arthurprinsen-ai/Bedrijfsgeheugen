@@ -12,7 +12,27 @@ function dbIdent(value:string){const m=value.match(/^[A-Za-z_][A-Za-z0-9_]*/)?.[
 function dbPoolerUrl(){const raw=Deno.env.get('SUPABASE_DB_URL')||'';if(!raw)throw new Error('SUPABASE_DB_URL_MISSING');const u=new URL(raw);u.hostname=DB_POOLER_HOST;u.port='6543';u.username='postgres.'+DB_REF;return u.toString();}
 const directSql=postgres(dbPoolerUrl(),{max:2,prepare:false,connect_timeout:6,idle_timeout:10,max_lifetime:45});
 function scalarParam(value:any,values:any[],cast=''){values.push(value);return String.fromCharCode(36)+values.length+(cast?'::'+cast:'');}
-function valueExpr(table:string,column:string,value:any,values:any[]){const key=table+'.'+column;if(DB_JSON_COLUMNS.has(key))return scalarParam(JSON.stringify(value??null),values,'jsonb');const arrCast=DB_ARRAY_CASTS.get(key);if(arrCast&&Array.isArray(value)){if(!value.length)return 'ARRAY[]::'+arrCast;return 'ARRAY['+value.map(v=>scalarParam(v,values)).join(',')+']::'+arrCast;}return scalarParam(value,values);}
+function normalizeJsonValue(value:any){
+ let current=value;
+ for(let i=0;i<3&&typeof current==='string';i++){
+   const raw=current.trim();
+   if(!raw)return current;
+   try{current=JSON.parse(raw);}catch{return current;}
+ }
+ return current;
+}
+function normalizeRowJson(table:string,row:any){
+ if(!row||typeof row!=='object'||Array.isArray(row))return row;
+ const prefix=table+'.';
+ for(const key of DB_JSON_COLUMNS){
+   if(!key.startsWith(prefix))continue;
+   const column=key.slice(prefix.length);
+   if(Object.prototype.hasOwnProperty.call(row,column))row[column]=normalizeJsonValue(row[column]);
+ }
+ return row;
+}
+
+function valueExpr(table:string,column:string,value:any,values:any[]){const key=table+'.'+column;if(DB_JSON_COLUMNS.has(key)) return scalarParam(JSON.stringify(normalizeJsonValue(value)??null),values,'jsonb');const arrCast=DB_ARRAY_CASTS.get(key);if(arrCast&&Array.isArray(value)){if(!value.length)return 'ARRAY[]::'+arrCast;return 'ARRAY['+value.map(v=>scalarParam(v,values)).join(',')+']::'+arrCast;}return scalarParam(value,values);}
 function rpcExpr(value:any,values:any[]){return value!==null&&typeof value==='object'?scalarParam(JSON.stringify(value),values,'jsonb'):scalarParam(value,values);}
 class DirectQuery{
  table:string;op='select';columns='*';payload:any=null;returning='';filters:any[]=[];orders:any[]=[];limitValue:number|null=null;singleMode='';conflict='';ignoreDuplicates=false;
@@ -29,9 +49,9 @@ class DirectQuery{
  else if(this.op==='insert'){const items=Array.isArray(this.payload)?this.payload:[this.payload];if(!items.length||!items[0])throw new Error('DB_EMPTY_INSERT');const cols=Object.keys(items[0]);q='insert into public.'+dbIdent(this.table)+' ('+cols.map(dbIdent).join(',')+') values '+items.map((item:any)=>'('+cols.map(c=>valueExpr(this.table,c,item[c],values)).join(',')+')').join(',');if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='update'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPDATE');q='update public.'+dbIdent(this.table)+' set '+entries.map(([k,v])=>dbIdent(k)+' = '+valueExpr(this.table,k,v,values)).join(',')+this.where(values);if(this.returning)q+=' returning '+this.selectList(this.returning);}
  else if(this.op==='upsert'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPSERT');const cols=entries.map(([k])=>dbIdent(k));const vals=entries.map(([k,v])=>valueExpr(this.table,k,v,values));q='insert into public.'+dbIdent(this.table)+' ('+cols.join(',')+') values ('+vals.join(',')+')';const conflict=this.conflict.split(',').map(x=>x.trim()).filter(Boolean);if(!conflict.length)throw new Error('DB_UPSERT_CONFLICT_REQUIRED');q+=' on conflict ('+conflict.map(dbIdent).join(',')+') ';if(this.ignoreDuplicates)q+='do nothing';else{const set=new Set(conflict);const ups=entries.map(([k])=>k).filter(k=>!set.has(k));q+=ups.length?'do update set '+ups.map(k=>dbIdent(k)+' = excluded.'+dbIdent(k)).join(','):'do nothing';}if(this.returning)q+=' returning '+this.selectList(this.returning);}
- else throw new Error('DB_OPERATION_REJECTED');const rows:any[]=await directSql.unsafe(q,values);let data:any;if(['insert','update','upsert'].includes(this.op)&&!this.returning)data=null;else if(this.singleMode)data=rows[0]||null;else data=rows;return {data,error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
+ else throw new Error('DB_OPERATION_REJECTED');const rows:any[]=await directSql.unsafe(q,values);const normalized=rows.map((row:any)=>normalizeRowJson(this.table,row));let data:any;if(['insert','update','upsert'].includes(this.op)&&!this.returning)data=null;else if(this.singleMode)data=normalized[0]||null;else data=normalized;return {data,error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
 }
-async function directRpc(name:string,args:Record<string,any>={}){try{if(!DIRECT_RPCS.has(name))throw new Error('DB_RPC_REJECTED:'+name);const values:any[]=[];const call=Object.entries(args||{}).map(([k,v])=>dbIdent(k)+' := '+rpcExpr(v,values)).join(',');const q='select to_jsonb(public.'+dbIdent(name)+'('+call+')) as result';const rows:any[]=await directSql.unsafe(q,values);return {data:rows?.[0]?.result??null,error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
+async function directRpc(name:string,args:Record<string,any>={}){try{if(!DIRECT_RPCS.has(name))throw new Error('DB_RPC_REJECTED:'+name);const values:any[]=[];const call=Object.entries(args||{}).map(([k,v])=>dbIdent(k)+' := '+rpcExpr(v,values)).join(',');const q='select to_jsonb(public.'+dbIdent(name)+'('+call+')) as result';const rows:any[]=await directSql.unsafe(q,values);return {data:normalizeJsonValue(rows?.[0]?.result??null),error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
 function createDirectDb(){return {from:(table:string)=>new DirectQuery(table),rpc:(name:string,args:any={})=>directRpc(name,args)};}
 
 const clean = (v: unknown) => String(v ?? '').trim();
@@ -268,6 +288,10 @@ Deno.serve(async (req) => {
       invoke(url, expected, 'powerhouse-blog-queue', { runDate }),
     ]);
     stepResults.push(socialDispatch, blogDispatch);
+
+    // Commercial engagement is a separate non-publication lane: preserve cockpit automation
+    // without putting Composio comment execution back onto the publication critical path.
+    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'cockpit_autopilot' }));
 
     // Buffer is legacy telemetry only and is deliberately absent from the critical path.
     stepResults.push({ name:'bg-buffer-sync', ok:true, skipped:true, non_blocking:true, linkedin_authority:'composio', reason:'LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH' });

@@ -12,7 +12,7 @@ const repairWorkflow = fs.readFileSync('.github/workflows/supabase-supported-mig
 test('trusted repair workflow rejects direct IPv6 before Supabase CLI execution', () => {
   assert.match(repairWorkflow, /supavisor-session-ipv4/);
   assert.match(repairWorkflow, /DIRECT_IPV6_ROUTE_FORBIDDEN/);
-  assert.match(repairWorkflow, /aws-0-eu-central-1\.pooler\.supabase\.com/);
+  assert.ok(repairWorkflow.includes('aws-0-eu-central-1.pooler.supabase.com'));
   assert.match(repairWorkflow, /SESSION_POOLER_PORT_REQUIRED/);
   assert.match(repairWorkflow, /SSLMODE_REQUIRE_REQUIRED/);
   assert.match(repairWorkflow, /getent ahostsv4/);
@@ -115,7 +115,20 @@ test('publisher separates audit, cockpit and dispatch critical paths', () => {
   const publisher = fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
   assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'publish_only' \}/);
   assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'audit_only' \}/);
+  assert.match(loop, /powerhouse-social-publisher', \{ runDate, mode: 'cockpit_autopilot' \}/);
   assert.match(publisher, /if \(mode === 'cockpit_autopilot'\)/);
   assert.match(publisher, /const cockpit_autopilot: any\[\] = \[\]/);
   assert.doesNotMatch(publisher, /const cockpit_autopilot = publishOnly \? \[\] : await runLinkedInCockpitAutopilot/);
+});
+
+
+test('direct DB adapters normalize JSONB strings before spread and write',()=>{
+  for(const source of [contentLoop,orchestrator]){
+    assert.match(source,/function normalizeJsonValue\(value:any\)/);
+    assert.match(source,/JSON\.parse\(raw\)/);
+    assert.match(source,/function normalizeRowJson\(table:string,row:any\)/);
+    assert.match(source,/normalizeJsonValue\(value\)\?\?null/);
+    assert.match(source,/rows\.map\(\(row:any\)=>normalizeRowJson\(this\.table,row\)\)/);
+    assert.match(source,/normalizeJsonValue\(rows\?\.\[0\]\?\.result\?\?null\)/);
+  }
 });
