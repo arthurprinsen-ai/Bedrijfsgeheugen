@@ -54,7 +54,7 @@ async function schedulerToken() {
   });
 }
 
-async function directReadback(runDate: string) {
+async function readCanonicalState(runDate: string) {
   return await withSql(async (sql) => {
     const decisions = await sql.unsafe(
       `select channel,decision,state,delivery_ref,delivery_evidence,updated_at
@@ -142,33 +142,78 @@ Deno.serve(async (req: Request) => {
   }
   if (!token) return json({ ok: false, error: "SCHEDULER_TOKEN_EMPTY" }, 503);
 
-  const loop = await invokeFunction(url, token, "powerhouse-content-loop", { runDate }, 90_000);
-  let degradedPreparation = !loop.ok;
+  let initial: any;
+  try {
+    initial = await readCanonicalState(runDate);
+  } catch (error) {
+    console.error("SOCIAL_RECOVERY_POOLER_INITIAL_READ_FAILED", clean((error as Error)?.message || error).slice(0, 160));
+    return json({ ok: false, runDate, error: "CANONICAL_INITIAL_STATE_UNAVAILABLE" }, 503);
+  }
+
+  const initialDecisions = Array.isArray(initial?.decisions) ? initial.decisions : [];
+  const initialRequired = initialDecisions.filter((d: any) => SOCIAL_CHANNELS.includes(d?.channel) && d?.decision === "publish");
+  const readyOrTerminal = initialRequired.length > 0
+    && initialRequired.every((d: any) => ["content_ready", "published", "scheduled"].includes(clean(d?.state).toLowerCase()));
+  const readyChannels = initialRequired
+    .filter((d: any) => clean(d?.state).toLowerCase() === "content_ready")
+    .map((d: any) => clean(d?.channel))
+    .filter((channel: string) => SOCIAL_CHANNELS.includes(channel as any));
+
+  let loop: any = {
+    ok: true,
+    http: 200,
+    timed_out: false,
+    body: { loop_state: "SKIPPED", reason: "CANONICAL_CONTENT_ALREADY_READY_OR_TERMINAL" },
+  };
+  let degradedPreparation = false;
   let fallback: any[] = [];
 
-  if (degradedPreparation) {
-    console.error("SOCIAL_RECOVERY_PREPARATION_DEGRADED", loop.http, loop.timed_out);
-    fallback = await Promise.all(SOCIAL_CHANNELS.map(async (channel) => {
-      const result = await invokeFunction(
-        url,
-        token,
-        "powerhouse-social-publisher",
-        { runDate, mode: "publish_only", channels: [channel] },
-        40_000,
-      );
-      return {
-        channel,
-        ok: result.ok,
-        http: result.http,
-        timed_out: result.timed_out,
-        error: result.ok ? null : (result.error || clean(result.body?.error) || "PUBLISH_ONLY_FAILED"),
-      };
-    }));
+  if (readyOrTerminal) {
+    if (readyChannels.length) {
+      fallback = await Promise.all(readyChannels.map(async (channel: string) => {
+        const result = await invokeFunction(
+          url,
+          token,
+          "powerhouse-social-publisher",
+          { runDate, mode: "publish_only", channels: [channel] },
+          40_000,
+        );
+        return {
+          channel,
+          ok: result.ok,
+          http: result.http,
+          timed_out: result.timed_out,
+          error: result.ok ? null : (result.error || clean(result.body?.error) || "PUBLISH_ONLY_FAILED"),
+        };
+      }));
+    }
+  } else {
+    loop = await invokeFunction(url, token, "powerhouse-content-loop", { runDate }, 90_000);
+    degradedPreparation = !loop.ok;
+    if (degradedPreparation) {
+      console.error("SOCIAL_RECOVERY_PREPARATION_DEGRADED", loop.http, loop.timed_out);
+      fallback = await Promise.all(SOCIAL_CHANNELS.map(async (channel) => {
+        const result = await invokeFunction(
+          url,
+          token,
+          "powerhouse-social-publisher",
+          { runDate, mode: "publish_only", channels: [channel] },
+          40_000,
+        );
+        return {
+          channel,
+          ok: result.ok,
+          http: result.http,
+          timed_out: result.timed_out,
+          error: result.ok ? null : (result.error || clean(result.body?.error) || "PUBLISH_ONLY_FAILED"),
+        };
+      }));
+    }
   }
 
   let readback: any;
   try {
-    readback = await directReadback(runDate);
+    readback = await readCanonicalState(runDate);
   } catch (error) {
     console.error("SOCIAL_RECOVERY_POOLER_READBACK_FAILED", clean((error as Error)?.message || error).slice(0, 160));
     return json({
