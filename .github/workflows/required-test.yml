@@ -314,7 +314,7 @@ jobs:
           git reset --hard HEAD
           git clean -fd -e node_modules/ -e .artifacts/
 
-  netlify-build-parity:
+  netlify_build_parity:
     needs: preflight
     if: needs.preflight.outputs.netlify_build_required == 'true'
     runs-on: ubuntu-latest
@@ -405,7 +405,7 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, netlify-build-parity, backend, portal, automation, website]
+    needs: [hygiene, preflight, netlify_build_parity, backend, portal, automation, website]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -417,7 +417,7 @@ jobs:
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
       SELECT_WEBSITE: ${{ needs.preflight.outputs.website }}
       NETLIFY_BUILD_REQUIRED: ${{ needs.preflight.outputs.netlify_build_required }}
-      NETLIFY_BUILD: ${{ needs.netlify-build-parity.result }}
+      NETLIFY_BUILD: ${{ needs.netlify_build_parity.result }}
       BACKEND: ${{ needs.backend.result }}
       PORTAL: ${{ needs.portal.result }}
       AUTOMATION: ${{ needs.automation.result }}
