@@ -1,0 +1,29 @@
+{
+  "id": "live-pr-metadata-authority-regression-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|delivery-metadata|live-pr-authority|stale-manifest-regression|v1",
+  "root_cause": "The runtime authority was changed in #3986 so complete live PR metadata wins over a stale versioned manifest, but the existing regression still asserted the former manifest-first behavior. That made correct current-main behavior fail in the automation lane.",
+  "prevention": {
+    "complete_pr_metadata": "authoritative",
+    "same_obligation_stale_manifest": "advisory",
+    "incomplete_pr_metadata": "fallback_to_valid_versioned_manifest",
+    "different_obligation_manifest": "never_authoritative"
+  },
+  "evidence": {
+    "blocked_proof_pr": 3993,
+    "failed_test": "tests/powerhouse-one-loop-versioned-metadata-authority.test.mjs",
+    "runtime_authority_file": "tools/delivery/delivery-metadata-authority.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-one-loop-versioned-metadata-authority.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "STALE_REGRESSION_EXPECTATION",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
