@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { performance } from 'node:perf_hooks';
@@ -47,7 +47,7 @@ const profile={
   status:'running'
 };
 
-const profilePath=String(process.env.NETLIFY_BUILD_PROFILE_PATH||join(tmpdir(),'netlify-build-profile.json'));
+const profilePath=String(process.env.NETLIFY_BUILD_PROFILE_PATH||join(mkdtempSync(join(tmpdir(),'bg-netlify-profile-')),'netlify-build-profile.json'));
 mkdirSync(dirname(profilePath),{recursive:true});
 const persist=()=>{
   profile.duration_ms=Math.round(performance.now()-started);
