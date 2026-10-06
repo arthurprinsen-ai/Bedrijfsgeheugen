@@ -251,6 +251,19 @@ jobs:
           test -f .github/workflows/engineering-os-learning.yml
           test -f config/powerhouse-daily-self-evolution.json
           node scripts/brain/foresight-autonomy.mjs > /tmp/foresight.json
+          node --test tests/components/*.test.mjs
+          node --test \
+            tests/brain-powerhouse-closure-a-f.test.mjs \
+            tests/supabase-powerhouse-closure-db-contract.test.mjs \
+            tests/portal-v2-bcg.test.mjs \
+            tests/portal-v2-parity-integration.test.mjs \
+            tests/brain-quality-powerhouse-closure-intelligence.test.mjs
+          node --test tests/powerhouse-daily-self-evolution.test.mjs tests/brain-self-improvement-layer-v1.test.mjs tests/ai-model-intelligence-freshness-v1.test.mjs
+          node scripts/brain/ai-model-intelligence-audit.mjs
+          node scripts/brain/daily-self-evolution.mjs
+          node scripts/brain/continuous-improvement/capability-inventory.mjs
+          node --test tests/brain-autonomous-engineering-fabric-v3.test.mjs
+          node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
       - uses: actions/cache@v4
         with:
           path: ~/.npm

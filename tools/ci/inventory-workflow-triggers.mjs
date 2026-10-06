@@ -21,6 +21,65 @@ function stripComment(line) {
   return line;
 }
 
+
+function collectPullRequestTypes(source) {
+  const lines = source.split(/\r?\n/);
+  const types = [];
+  let inOn = false;
+  let onIndent = -1;
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const line = stripComment(lines[i]);
+    if (!line.trim()) continue;
+    const indent = line.match(/^\s*/)[0].length;
+    const trimmed = line.trim();
+
+    if (!inOn) {
+      if (indent === 0 && /^on:\s*$/.test(trimmed)) {
+        inOn = true;
+        onIndent = indent;
+      }
+      continue;
+    }
+    if (indent <= onIndent) break;
+
+    const eventMatch = indent === onIndent + 2
+      ? trimmed.match(/^(pull_request|pull_request_target):\s*$/)
+      : null;
+    if (!eventMatch) continue;
+
+    for (let j = i + 1; j < lines.length; j += 1) {
+      const nested = stripComment(lines[j]);
+      if (!nested.trim()) continue;
+      const nestedIndent = nested.match(/^\s*/)[0].length;
+      const nestedTrimmed = nested.trim();
+      if (nestedIndent <= onIndent + 2) break;
+      if (nestedIndent !== onIndent + 4) continue;
+
+      const inline = nestedTrimmed.match(/^types:\s*\[([^\]]+)\]\s*$/);
+      if (inline) {
+        for (const value of inline[1].split(',').map(v => v.trim()).filter(Boolean)) {
+          if (!types.includes(value)) types.push(value);
+        }
+        continue;
+      }
+      const scalar = nestedTrimmed.match(/^types:\s*([A-Za-z_]+)\s*$/);
+      if (scalar && !types.includes(scalar[1])) types.push(scalar[1]);
+      if (/^types:\s*$/.test(nestedTrimmed)) {
+        for (let k = j + 1; k < lines.length; k += 1) {
+          const item = stripComment(lines[k]);
+          if (!item.trim()) continue;
+          const itemIndent = item.match(/^\s*/)[0].length;
+          if (itemIndent <= onIndent + 4) break;
+          const itemMatch = item.trim().match(/^-\s*([A-Za-z_]+)\s*$/);
+          if (itemMatch && !types.includes(itemMatch[1])) types.push(itemMatch[1]);
+        }
+      }
+    }
+  }
+  return types;
+}
+
 export function classifyWorkflowSource(source) {
   const lines = source.split(/\r?\n/);
   let inOn = false;
@@ -65,9 +124,16 @@ export function classifyWorkflowSource(source) {
     }
   }
 
+  const topLevelPrTrigger = triggers.includes('pull_request') || triggers.includes('pull_request_target');
+  const pullRequestTypes = collectPullRequestTypes(source);
+  const prLifecycleOnly = topLevelPrTrigger && pullRequestTypes.length > 0 && pullRequestTypes.every(type => type === 'closed');
+  const prAdmissionTrigger = topLevelPrTrigger && !prLifecycleOnly;
   return {
     triggers,
-    topLevelPrTrigger: triggers.includes('pull_request') || triggers.includes('pull_request_target'),
+    topLevelPrTrigger,
+    pullRequestTypes,
+    prLifecycleOnly,
+    prAdmissionTrigger,
     reusableOnly: triggers.length === 1 && triggers[0] === 'workflow_call'
   };
 }
@@ -89,8 +155,12 @@ if (invokedAsScript) {
   const summary = {
     workflow_count: inventory.length,
     top_level_pr_trigger_count: inventory.filter(item => item.topLevelPrTrigger).length,
+    pr_admission_trigger_count: inventory.filter(item => item.prAdmissionTrigger).length,
+    pr_lifecycle_only_count: inventory.filter(item => item.prLifecycleOnly).length,
     reusable_only_count: inventory.filter(item => item.reusableOnly).length,
     top_level_pr_triggers: inventory.filter(item => item.topLevelPrTrigger).map(item => item.name),
+    pr_admission_triggers: inventory.filter(item => item.prAdmissionTrigger).map(item => item.name),
+    pr_lifecycle_only_triggers: inventory.filter(item => item.prLifecycleOnly).map(item => item.name),
     inventory
   };
   process.stdout.write(JSON.stringify(summary, null, 2) + '\n');

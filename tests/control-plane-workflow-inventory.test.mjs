@@ -17,3 +17,20 @@ test('workflow_call only is reusable-only and not a top-level PR trigger', () =>
   assert.equal(result.topLevelPrTrigger, false);
   assert.equal(result.reusableOnly, true);
 });
+
+
+test('classifies closed-only pull_request workflows as lifecycle authorities, not admission fan-out', () => {
+  const source = `name: Lifecycle\non:\n  pull_request:\n    types: [closed]\njobs: {}\n`;
+  const result = classifyWorkflowSource(source);
+  assert.equal(result.topLevelPrTrigger, true);
+  assert.deepEqual(result.pullRequestTypes, ['closed']);
+  assert.equal(result.prLifecycleOnly, true);
+  assert.equal(result.prAdmissionTrigger, false);
+});
+
+test('classifies opened/synchronize pull_request workflows as admission fan-out', () => {
+  const source = `name: Admission\non:\n  pull_request:\n    types: [opened, synchronize, reopened]\njobs: {}\n`;
+  const result = classifyWorkflowSource(source);
+  assert.equal(result.prLifecycleOnly, false);
+  assert.equal(result.prAdmissionTrigger, true);
+});

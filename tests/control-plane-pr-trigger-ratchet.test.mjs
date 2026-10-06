@@ -29,3 +29,30 @@ test('rejects a new workflow name with a direct PR trigger', () => {
   assert.equal(result.status, 'fail');
   assert.deepEqual(result.addedNames, ['new.yml']);
 });
+
+
+test('tracks closed lifecycle authorities separately from admission fan-out', () => {
+  const lifecycle = 'name: x\non:\n  pull_request:\n    types: [closed]\njobs: {}\n';
+  const dir = makeDir({ 'required-test.yml': pr, 'terminal.yml': lifecycle });
+  const result = evaluatePrTriggerRatchet({
+    workflowDir: dir,
+    baselineNames: ['required-test.yml', 'terminal.yml'],
+    baselineAdmissionNames: ['required-test.yml'],
+    baselineLifecycleNames: ['terminal.yml']
+  });
+  assert.equal(result.status, 'pass');
+  assert.deepEqual(result.currentAdmissionNames, ['required-test.yml']);
+  assert.deepEqual(result.currentLifecycleNames, ['terminal.yml']);
+});
+
+test('rejects converting a lifecycle-only authority into new admission fan-out', () => {
+  const dir = makeDir({ 'required-test.yml': pr, 'terminal.yml': pr });
+  const result = evaluatePrTriggerRatchet({
+    workflowDir: dir,
+    baselineNames: ['required-test.yml', 'terminal.yml'],
+    baselineAdmissionNames: ['required-test.yml'],
+    baselineLifecycleNames: ['terminal.yml']
+  });
+  assert.equal(result.status, 'fail');
+  assert.deepEqual(result.addedAdmissionNames, ['terminal.yml']);
+});

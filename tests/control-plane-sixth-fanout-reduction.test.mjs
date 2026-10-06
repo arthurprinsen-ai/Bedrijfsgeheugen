@@ -28,6 +28,10 @@ const retired = [
   '.github/workflows/verify-approved-central-blog.yml',
   '.github/workflows/powerhouse-assurance.yml',
   '.github/workflows/powerhouse-foresight-autonomy.yml',
+  '.github/workflows/component-preview.yml',
+  '.github/workflows/powerhouse-closure-a-f.yml',
+  '.github/workflows/powerhouse-daily-self-evolution.yml',
+  '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml',
 ];
 
 test('sixth specialist batch no longer fans out directly on pull_request', () => {
@@ -71,6 +75,12 @@ test('Required merge_group preserves sixth-batch assurance', () => {
     'tests/powerhouse-foresight-autonomy.test.mjs',
     'tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs',
     'scripts/brain/foresight-autonomy.mjs',
+    'tests/components/*.test.mjs',
+    'tests/brain-powerhouse-closure-a-f.test.mjs',
+    'tests/powerhouse-daily-self-evolution.test.mjs',
+    'tests/brain-self-improvement-layer-v1.test.mjs',
+    'tests/ai-model-intelligence-freshness-v1.test.mjs',
+    'tests/brain-autonomous-engineering-fabric-v3.test.mjs',
   ]) assert.ok(required.includes(marker), marker);
 });
 
