@@ -34,6 +34,15 @@ test('non-function Supabase changes require the provider-owned check on exact PR
 
 test('skipped or neutral provider outcomes fail closed', async () => {
   const workflow=await readFile(workflowPath,'utf8');
-  assert.match(workflow,/skipped\|neutral/);
+  assert.match(workflow,/skipped:\*\|neutral:\*/);
   assert.match(workflow,/SUPABASE_PREVIEW_PROVIDER_NON_PROOF/);
+});
+
+
+test('latest provider check wins and success must be stable before verification', async () => {
+  const workflow=await readFile(workflowPath,'utf8');
+  assert.match(workflow,/Number\(b\.id\|\|0\)-Number\(a\.id\|\|0\)/);
+  assert.match(workflow,/stable_provider_success_id/);
+  assert.match(workflow,/success:\*/);
+  assert.match(workflow,/requiring a second stable observation/);
 });
