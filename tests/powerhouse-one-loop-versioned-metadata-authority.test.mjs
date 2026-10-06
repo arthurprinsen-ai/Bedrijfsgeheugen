@@ -55,3 +55,21 @@ Scope-Budget: 12`;
   assert.deepEqual(resolved.expectedPaths, ['website/**']);
   assert.equal(resolved.maxFiles, 12);
 });
+
+
+test('incomplete same-obligation PR metadata falls back to the versioned manifest', () => {
+  const incompletePrBody = `Obligation-ID: powerhouse-one-loop-v1
+Delivery-Lane: automation
+Candidate-Type: implementation
+Base-SHA: ${SHA_OLD}`;
+
+  const resolved = resolveDeliveryMetadataAuthority({ prBody: incompletePrBody, manifest });
+
+  assert.equal(resolved.source, 'versioned-manifest');
+  assert.equal(resolved.delivery.obligationId, 'powerhouse-one-loop-v1');
+  assert.equal(resolved.delivery.baseSha, SHA_CURRENT);
+  assert.deepEqual(resolved.expectedPaths, manifest.expectedPaths);
+  assert.equal(resolved.maxFiles, 60);
+  assert.equal(resolved.prBodyDrift.expectedPaths, true);
+  assert.equal(resolved.prBodyDrift.maxFiles, true);
+});
