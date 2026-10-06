@@ -30,10 +30,19 @@ function sha256(...parts) {
 }
 
 function normalizeReleaseIdentityForCache(html) {
-  return String(html).replace(
-    /<meta\b[^>]*name=["']bg-release-commit["'][^>]*>/gi,
-    '<meta name="bg-release-commit" content="__BUILD_COMMIT__">'
-  );
+  return String(html)
+    .replace(
+      /<meta\b[^>]*name=["']bg-release-commit["'][^>]*>/gi,
+      '<meta name="bg-release-commit" content="__BUILD_COMMIT__">'
+    )
+    .replace(
+      /(<p\b[^>]*class=["'][^"']*\bbgx-stempel\b[^"']*["'][^>]*>).*?(<\/p>)/gis,
+      '$1__BUILD_VERSION_STAMP__$2'
+    )
+    .replace(
+      /(\bvar\s+mijn\s*=\s*["'])[^"']+(["'];)/g,
+      '$1__BUILD_VERSION__$2'
+    );
 }
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
