@@ -149,7 +149,7 @@ test('canonical chat learning checkpoints are shared Brain governance work', asy
   assert.equal(plan.integration.required, true);
 });
 
-test('a future workflow defaults to the backend control-plane lane without four-lane fan-out', async () => {
+test('a future unmapped workflow defaults to backend control-plane without product-lane fan-out', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths:['.github/workflows/future-agent-scenario.yml'], headSha:'fedcba1234567890', policy });
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);

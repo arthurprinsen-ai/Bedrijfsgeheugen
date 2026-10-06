@@ -1,0 +1,37 @@
+{
+  "version": "TERMINAL-PREWRITE-EVENT-GUARD-v1",
+  "date": "2026-10-06",
+  "fingerprint": "delivery|terminal-writer|prewrite-event-lease-transition|v1",
+  "obligation_id": "terminal-prewrite-event-guard-20261006-v1",
+  "root_cause": "A branch writer could push a content commit while the PR still carried Writer-Lease-State TERMINAL_DELIVERY and then advance Writer-Lease-Head afterward. The post-write lease metadata became internally consistent, but the forbidden content mutation had already occurred and restarted exact-head CI.",
+  "prevention": "Canonical delivery hygiene now fails any pull_request synchronize event whose event snapshot still carries TERMINAL_DELIVERY. Legitimate moving-main refresh first transitions the existing lease to MAIN_SYNC and pins Writer-Lease-Main-Epoch to the exact main target. The synchronize event is admitted only when the new commit has both the previous leased head and that exact main target as parents. The supervisor then rebinds TERMINAL_DELIVERY to the new head. Repair content must explicitly transition to RECOVERY before mutation.",
+  "compiler": {
+    "failure_class": "TERMINAL_BRANCH_CONTENT_MUTATION_AFTER_LEASE",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "PR #3994 advanced from d5862df4 to eaac0b6e through a content commit while the lineage was terminally leased.",
+      "A synchronize event carrying TERMINAL_DELIVERY must fail admission regardless of a later metadata update.",
+      "A MAIN_SYNC event must prove a merge commit containing the old leased head and exact main target as parents.",
+      "An explicit RECOVERY transition remains the only path for ordinary repair content.",
+      "The guard repair itself must preserve one supervisor YAML document and one exact metadata replaceOne helper."
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/delivery-terminal-prewrite-event-guard.test.mjs"
+    ],
+    "controls": [
+      "pull_request event snapshot is checked before live PR metadata can mask a stale lease",
+      "MAIN_SYNC is parent-bound to previous head and exact main target",
+      "MAIN_SYNC remains premature-close protected",
+      "supervisor restores terminal metadata if the merge call fails",
+      "no new PR workflow is introduced",
+      "recovery supervisor source is reconstructed from clean current main before MAIN_SYNC patching; duplicate YAML/header injection is regression-blocked",
+      "generic unmapped workflow regression follows ci-workflow-lane-fallback-v1 and remains backend-only"
+    ],
+    "observed_failure": "PR #3994 terminal HEAD d5862df405db5f244486dccc153e6d66d5e0429b was followed by content commit eaac0b6e1f4a2ccdf62c09f61dee0ee0a57d8e91 and the lease metadata was advanced afterward."
+  },
+  "status": "ACTIVE_PREVENTION"
+}
