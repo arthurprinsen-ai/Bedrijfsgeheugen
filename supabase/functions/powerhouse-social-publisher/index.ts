@@ -201,9 +201,12 @@ async function composioLinkedInCompanyContext(db:any){
   const userId=clean(item?.user_id)||clean(state?.user_id);
   if(!userId)throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
 
+  const companyExpectedPersonUrn=clean(state?.personal_author_urn);
+  const companyExpectedPersonId=companyExpectedPersonUrn.replace(/^urn:li:person:/,'');
+  if(!companyExpectedPersonId)throw new Error('LINKEDIN_COMPANY_OAUTH_PRINCIPAL_UNVERIFIED');
   const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-  const personId=findExpectedLinkedInPersonId(me?.data||me,'N1twnCNCrD');
-  if(!personId)throw new Error('LINKEDIN_COMPANY_CANONICAL_PERSON_MISMATCH');
+  const personId=findExpectedLinkedInPersonId(me?.data||me,companyExpectedPersonId);
+  if(!personId)throw new Error('LINKEDIN_COMPANY_OAUTH_PRINCIPAL_MISMATCH');
 
   const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
   const raw=JSON.stringify(companies?.data||companies);
@@ -264,6 +267,7 @@ function isLinkedInAuthPreflightError(error:any){
     ||message.includes('ADMIN_OAUTH_REQUIRED')
     ||message.includes('FRESH_ORG_OAUTH_REQUIRED')
     ||message.includes('BOUND_OAUTH_NOT_ACTIVE')
+    ||message.includes('OAUTH_PRINCIPAL')
     ||message.includes('ADMIN_ROLE_REQUIRED')
     ||message.includes('ORGANIZATION_ADMIN')
     ||message.includes('ORGANIZATION PERMISSIONS')
