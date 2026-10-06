@@ -24,15 +24,31 @@ const manifest = {
   maxFiles: 60,
 };
 
-test('versioned exact-head manifest overrides stale mutable PR delivery metadata for the same obligation', () => {
+test('complete PR delivery metadata remains authoritative over a stale same-obligation manifest', () => {
   const resolved = resolveDeliveryMetadataAuthority({ prBody: stalePrBody, manifest });
 
-  assert.equal(resolved.source, 'versioned-manifest');
+  assert.equal(resolved.source, 'pr-body');
   assert.equal(resolved.delivery.obligationId, 'powerhouse-one-loop-v1');
+  assert.equal(resolved.delivery.baseSha, SHA_OLD);
+  assert.deepEqual(resolved.expectedPaths, ['tools/legacy/**']);
+  assert.equal(resolved.maxFiles, 10);
+  assert.equal(resolved.versionedManifestAdvisory.delivery.baseSha, SHA_CURRENT);
+});
+
+test('incomplete same-obligation PR metadata falls back to the versioned manifest', () => {
+  const incompletePrBody = `Obligation-ID: powerhouse-one-loop-v1
+Delivery-Lane: automation
+Candidate-Type: implementation
+Base-SHA: ${SHA_CURRENT}
+Supersedes: none`;
+
+  const resolved = resolveDeliveryMetadataAuthority({ prBody: incompletePrBody, manifest });
+
+  assert.equal(resolved.source, 'versioned-manifest');
   assert.equal(resolved.delivery.baseSha, SHA_CURRENT);
   assert.deepEqual(resolved.expectedPaths, manifest.expectedPaths);
   assert.equal(resolved.maxFiles, 60);
-  assert.equal(resolved.prBodyDrift.baseSha, true);
+  assert.equal(resolved.prBodyDrift.baseSha, false);
   assert.equal(resolved.prBodyDrift.expectedPaths, true);
   assert.equal(resolved.prBodyDrift.maxFiles, true);
 });
