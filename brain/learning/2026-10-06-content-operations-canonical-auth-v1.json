@@ -13,10 +13,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/content-growth-unified-content-operations.test.mjs"
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
     ],
     "shadow": [
-      "tests/content-growth-unified-content-operations.test.mjs"
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
     ]
   },
   "root_cause": "Netlify sent BG_PORTAL_EU_SERVICE_TOKEN to content-operations, while content-operations authenticated only against POWERHOUSE_SHARED_SECRET/POWERHOUSE_TOKEN Edge Function environment variables that were absent. The canonical social publisher already authenticated against bg_geheim('powerhouse_daily_scheduler_token'), so the two adjacent functions had diverged authentication authorities.",
@@ -31,6 +34,7 @@
       "Supabase project region is eu-central-1."
     ],
     "test_evidence": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs",
       "tests/content-growth-unified-content-operations.test.mjs"
     ],
     "production_readback": [
