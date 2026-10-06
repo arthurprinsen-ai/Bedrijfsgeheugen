@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const admissionWorkflows = [
   '.github/workflows/required-test.yml',
-  '.github/workflows/powerhouse-codeql.yml',
+  '.github/workflows/codeql.yml',
 ];
 
 for (const workflow of admissionWorkflows) {
