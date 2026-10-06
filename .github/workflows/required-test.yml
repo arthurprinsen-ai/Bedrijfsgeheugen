@@ -137,6 +137,33 @@ jobs:
           grep -q "./brain.svg" portal-v2/app.js
           grep -q "enhancePortalShell" portal-v2/app.js
           grep -q "openPortalPage" portal-v2/app.js
+      - name: Run consolidated sixth specialist assurance
+        if: github.event_name == 'merge_group'
+        run: |
+          node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-production-hotfix-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs
+          node --test tests/brain-autonomous-improvement-runtime-completion.test.mjs tests/brain-autonomous-improvement-recovery-proof.test.mjs
+          ! grep -RniE 'new_persistent_authority[[:space:]]*[:=][[:space:]]*true|make\.com|hook\.eu[0-9]+\.make\.com' \
+            scripts/brain/continuous-improvement \
+            supabase/migrations/*autonomous_improvement* || {
+              echo '::error::Parallel authority or retired Make dependency detected.'
+              exit 1
+            }
+          npm install --ignore-scripts --no-audit --no-fund
+          node --test \
+            tests/social-learning-buffer-collector.test.mjs \
+            tests/social-learning-buffer-schedule.test.mjs \
+            tests/social-learning-buffer-content-chain.test.mjs \
+            tests/social-learning-buffer-channel-identity-gate.test.mjs \
+            tests/social-learning-buffer-instagram-media-gate.test.mjs \
+            tests/social-learning-instagram-media-provider-routing-v1.test.mjs \
+            tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs \
+            tests/social-learning-buffer-delivery-guarantee-regression.test.mjs \
+            tests/social-learning-buffer-rate-limit-regression.test.mjs
+          python3 tools/config-wacht.py
+          python3 -m unittest tests/portal-parity-source-contract.py -v
+          python3 .github/scripts/portal_parity.py
+          node --test tests/portal-modular-legacy-capability-parity.test.mjs
+          node --test tests/brain-repository-hygiene.test.mjs
       - uses: actions/cache@v4
         with:
           path: ~/.npm
