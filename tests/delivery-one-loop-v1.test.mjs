@@ -96,9 +96,10 @@ test('delivery admission avoids N+1 file reads for ordinary open PRs', () => {
 test('Powerhouse CodeQL is the single PR authority for Python and JavaScript', () => {
   const powerhouse = workflow('codeql.yml');
   assert.match(powerhouse, /^  pull_request:/m);
+  assert.match(powerhouse, /^  merge_group:/m);
   assert.match(powerhouse, /'\*\*\/\*\.py'/);
-  assert.match(powerhouse, /languages:\s*javascript-typescript/);
-  assert.match(powerhouse, /languages:\s*python/);
+  assert.match(powerhouse, /language:\s*\[javascript-typescript, python\]/);
+  assert.match(powerhouse, /languages:\s*\$\{\{ matrix\.language \}\}/);
   assert.match(powerhouse, /queries:\s*security-extended/);
 });
 
