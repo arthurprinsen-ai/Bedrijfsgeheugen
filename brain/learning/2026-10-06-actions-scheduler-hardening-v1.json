@@ -18,5 +18,24 @@
     "security_gates_removed": false,
     "provider_mutation": false
   },
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "ACTIONS_SCHEDULER_STALE_HEAD_AND_ORPHAN_QUEUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-scheduler-hardening-v1.test.mjs",
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed": [
+      "Required entered pending in PR-scoped workflow concurrency after an exact-head refresh.",
+      "Closed historical pull-request workflow runs remained queued after their PR no longer existed."
+    ],
+    "tests": [
+      "tests/brain-actions-scheduler-hardening-v1.test.mjs",
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  }
 }
