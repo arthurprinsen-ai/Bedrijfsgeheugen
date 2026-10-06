@@ -18,3 +18,9 @@ A regression test fails closed if either registration or JWT mode disappears.
 ## Terminal rule
 
 A successful Supabase GitHub check is necessary but no longer sufficient evidence on its own. Terminal closure requires the registered production deployment plus provider-source parity readback for the authority-critical functions.
+
+## Provider-source proof
+
+The GitHub App check is only deployment-phase evidence. The authority workflow now performs an independent read-only provider download after that check and compares the full downloaded function file set byte-for-byte with protected `main`.
+
+`SUPABASE_ACCESS_TOKEN` is therefore a readback credential only. Prefer a scoped PAT limited to this production project with **Edge Functions: Read**. The workflow contains no `supabase functions deploy` command; Supabase GitHub Integration remains the sole normal production writer.
