@@ -18,7 +18,8 @@
     "AGENTS.md",
     "brain/policies/",
     ".agents/skills/",
-    "tools/delivery/"
+    "tools/delivery/",
+    "tools/ci/"
   ],
   "highRiskPaths": [
     "netlify.toml",

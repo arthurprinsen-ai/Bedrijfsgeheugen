@@ -12,6 +12,7 @@ on:
       - 'en/**'
       - 'kennis/**'
       - 'site/**'
+      - '!site/website-release-risk.json'
       - 'config/powerhouse-website-cross-browser-assurance-v1.json'
       - 'tools/site-shell/**'
       - '.github/workflows/website-cross-browser-screenshot-assurance.yml'

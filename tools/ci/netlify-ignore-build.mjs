@@ -19,6 +19,7 @@ const governanceExact = new Set([
   'config/powerhouse-agent-delivery-scheduler-v1.json',
   'platform/system-map/canonical-system-map.mjs',
   'tools/brain-delivery-system.mjs',
+  'site/website-release-risk.json',
   'tools/site-shell/verify-targeted-website-routes.mjs',
   'tools/site-shell/contracts.mjs',
   'tools/site-shell/test-shell-components.mjs',
