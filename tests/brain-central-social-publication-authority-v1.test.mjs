@@ -218,7 +218,7 @@ test('recovery workflow stores evidence in a visible artifact directory',()=>{
 
 
 test('recovery runner skips heavyweight preparation for content-ready canonical claims',()=>{
-  assert.match(recoveryRunner,/directReadback/);
+  assert.match(recoveryRunner,/readCanonicalState/);
   assert.match(recoveryRunner,/preparationNeeded/);
   assert.match(recoveryRunner,/content_ready/);
   assert.match(recoveryRunner,/mode: "publish_only"/);
