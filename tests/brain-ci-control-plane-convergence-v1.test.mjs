@@ -18,7 +18,8 @@ test('heavy duplicate PR fanout is removed while scheduled assurance remains',()
     '.github/workflows/website-cross-browser-screenshot-assurance.yml',
     '.github/workflows/paginacontrole.yml',
     '.github/workflows/powerhouse-quality-intelligence.yml',
-    '.github/workflows/powerhouse-skill-projection.yml'
+    '.github/workflows/powerhouse-skill-projection.yml',
+    '.github/workflows/business-os-migration.yml'
   ]){
     const yaml=read(path);
     assert.doesNotMatch(yaml,/^\s{2}pull_request:/m,path);
