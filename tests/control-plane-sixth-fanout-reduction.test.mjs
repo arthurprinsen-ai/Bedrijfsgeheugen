@@ -165,3 +165,13 @@ test('Powerhouse CodeQL is the single PR CodeQL authority for JS/TS and Python',
   assert.ok(source.includes('languages: python'));
   assert.ok(source.includes("category: '/language:python'"));
 });
+
+
+test('consolidated CodeQL workflow has one scope and one job per language', () => {
+  const source = readFileSync('.github/workflows/powerhouse-codeql.yml', 'utf8');
+  assert.equal((source.match(/^  scope:/gm) || []).length, 1);
+  assert.equal((source.match(/^  analyze:/gm) || []).length, 1);
+  assert.equal((source.match(/^  analyze_python:/gm) || []).length, 1);
+  assert.ok(source.includes("if: needs.scope.outputs.run_js == 'true'"));
+  assert.ok(source.includes("if: needs.scope.outputs.run_python == 'true'"));
+});
