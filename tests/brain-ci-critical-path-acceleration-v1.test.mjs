@@ -85,18 +85,23 @@ test('repository-writer verification cancels superseded candidate work instead o
   assert.match(operational, /cancel-in-progress:\s*true/);
 });
 
-test('Netlify skips only known governance-only commits and fails open for runtime changes', async () => {
-  const [config,ignore] = await Promise.all([
+test('Netlify skip delegates to one canonical applicability authority and fails open on classifier errors', async () => {
+  const [config,ignore,authority] = await Promise.all([
     read('netlify.toml'),
     read('tools/ci/netlify-ignore-build.mjs'),
+    read('tools/delivery/netlify-deployment-applicability.mjs'),
   ]);
   assert.match(config, /ignore = "node \.\/tools\/ci\/netlify-ignore-build\.mjs"/);
+  assert.match(ignore, /deriveNetlifyDeploymentApplicability/);
   assert.match(ignore, /NETLIFY_BUILD_REQUIRED/);
   assert.match(ignore, /NETLIFY_BUILD_SKIPPED/);
   assert.match(ignore, /process\.exit\(1\)/);
-  assert.match(ignore, /brain\/learning\//);
-  assert.match(ignore, /\.github\//);
-  assert.doesNotMatch(ignore, /netlify\/functions\//);
+  assert.doesNotMatch(ignore, /const governancePrefixes/);
+  assert.doesNotMatch(ignore, /const governanceExact/);
+  assert.match(authority, /brain\/learning\//);
+  assert.match(authority, /\.github\//);
+  assert.match(authority, /NETLIFY_RUNTIME_PREFIXES/);
+  assert.match(authority, /netlify\/functions\//);
 });
 
 

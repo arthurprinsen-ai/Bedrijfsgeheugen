@@ -92,7 +92,10 @@
       "tools/normaliseer-site-ui.mjs",
       "tools/genereer-sitemap.mjs"
     ],
-    "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json"
+    "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json",
+    "netlifyApplicabilityAuthority": "tools/delivery/netlify-deployment-applicability.mjs",
+    "nonNetlifyBackendDeploymentRequired": false,
+    "supabaseOnlyNetlifyDeploymentRequired": false
   },
   "connectorReadiness": {
     "maxAttempts": 8,
