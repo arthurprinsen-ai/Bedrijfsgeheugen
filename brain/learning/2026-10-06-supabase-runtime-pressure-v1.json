@@ -1,0 +1,40 @@
+{
+  "fingerprint": "supabase-runtime-pressure|cron-herd|postgrest-522|ipv4-supavisor|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-runtime-pressure-recovery-20261006",
+  "compiler": {
+    "failure_class": "DATABASE_RUNTIME_PRESSURE",
+    "scope": "SUPABASE_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "High-frequency pg_cron jobs were aligned on the same minute boundaries while cron.use_background_workers=off, so each concurrent run consumed a database connection. Under load this caused pg_cron job startup timeouts, Supavisor session-pool checkout timeouts, and PostgREST schema-cache statement timeouts. Noncritical bg-interactie telemetry then amplified the incident by continuing to send a high volume of REST inserts during Data API degradation.",
+  "contributing_causes": [
+    "The project has max_connections=60 while pg_cron allows up to 32 concurrent jobs.",
+    "Five */5 jobs, three */10 jobs, two */15 jobs, six hourly jobs at minute 17, and five daily jobs around 06:20 created deterministic fan-out peaks.",
+    "GitHub-hosted runners cannot rely on the project's direct IPv6 database endpoint; trusted migration repair must use the IPv4 Supavisor session pooler."
+  ],
+  "prevention_rule": "Spread database-backed cron schedules so recurring control-plane load stays bounded; keep GitHub database transport on the canonical IPv4 Supavisor session bridge; and make noncritical telemetry fail-open with a short Data API timeout and circuit breaker.",
+  "evidence": {
+    "incident": [
+      "Supavisor ECHECKOUTTIMEOUT after 15000ms in Session mode",
+      "Supavisor DB connection timeout to the project's IPv6 address on port 5432",
+      "PostgREST failed schema-cache reload with PostgreSQL 57014 statement timeout",
+      "pg_cron job startup timeouts across the 1m/5m/10m/15m clusters",
+      "hundreds of bg-interactie(s) edge/Data-API events per minute during the incident"
+    ],
+    "recovery": [
+      "26 cron schedules were staggered without removing their intended cadence",
+      "the 1-minute watchdog/reconciliation jobs returned to sub-second successful runs",
+      "PostgREST reconnected and loaded its schema cache successfully",
+      "bg-interactie v6 uses a 2500ms Data API budget and a 30s in-memory circuit breaker",
+      "supabase-migration-repair-bridge v4 canonicalizes direct DB input to aws-0-eu-central-1.pooler.supabase.com:5432 and reports supavisor-session-ipv4"
+    ],
+    "tests": [
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
+    ]
+  }
+}
