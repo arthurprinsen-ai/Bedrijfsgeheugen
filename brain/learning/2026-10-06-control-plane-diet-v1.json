@@ -13,7 +13,7 @@
   },
   "admission": [
     "required-test.yml",
-    "powerhouse-codeql.yml"
+    "codeql.yml"
   ],
   "invariants_preserved": [
     "Required canonical PR admission",
