@@ -16,6 +16,8 @@ test('Netlify deterministic build defects are blocked before merge', async()=>{
     'tests/brain-netlify-premerge-build-parity-v1.test.mjs'
   ]) assert.ok(workflow.includes(path), 'missing CI ownership: '+path);
   assert.ok(workflow.includes('Validate fail-closed static English cache before merge'));
+  assert.ok(workflow.includes('Run exact Netlify deploy-preview build parity before merge'));
+  assert.ok(workflow.includes("config['context']['deploy-preview']['command']"));
   assert.ok(workflow.includes('Run exact Netlify production build parity before merge'));
   assert.ok(workflow.includes("netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}"));
   assert.ok(workflow.includes("if: steps.scope.outputs.netlify_build_required == 'true'"));
