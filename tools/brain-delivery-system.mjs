@@ -10,6 +10,7 @@ function matches(path, patterns = []) { return patterns.some(pattern => pattern.
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'AGENTS.md': 'automation',
+  '.github/scripts/pr-janitor.mjs': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
   'tools/delivery/predictive-controller.mjs': 'automation',
   'tools/ci/netlify-ignore-build.mjs': 'backend',
@@ -32,6 +33,7 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/production-source-snapshot.yml': 'automation',
+  '.github/workflows/pr-janitor.yml': 'automation',
   '.github/workflows/powerhouse-obligation-terminalizer.yml': 'automation',
   '.github/workflows/powerhouse-delivery-recovery-supervisor.yml': 'automation',
   '.github/workflows/portal-native-regression-tests.yml': 'automation',

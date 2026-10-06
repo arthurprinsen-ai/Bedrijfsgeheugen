@@ -8,11 +8,16 @@ const preview = await readFile('.github/workflows/live-preview-smoke.yml','utf8'
 const pricing = await readFile('.github/workflows/prijzen-hero-seo-regression.yml','utf8');
 const website = await readFile('.github/workflows/lane-website.yml','utf8');
 
-test('Required test is the single-flight PR aggregate gate', () => {
+test('Required test is the canonical PR aggregate gate without a workflow-level queue lock', () => {
   assert.match(required,/pull_request:[\s\S]*branches:\s*\[main\]/);
   assert.match(required,/merge_group:/);
-  assert.match(required,/group:\s*required-test-/);
-  assert.match(required,/cancel-in-progress:\s*true/);
+  const header = required.slice(0, required.indexOf('\njobs:'));
+  assert.doesNotMatch(header,/^concurrency:/m);
+  for (const lane of ['netlify','supabase','backend','portal','automation','website']) {
+    assert.match(required,new RegExp(`group: required-${lane}-`));
+  }
+  assert.match(required,/REQUIRED_STALE_HEAD_YIELD/);
+  assert.match(required,/REQUIRED_STALE_HEAD_YIELD_BEFORE_FULL_SUITE/);
   assert.match(required,/Confirm canonical single-flight aggregate gate/);
   assert.match(required,/Aggregate admission and selected lane results/);
 });
