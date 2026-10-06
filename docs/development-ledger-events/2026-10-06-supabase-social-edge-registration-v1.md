@@ -4,7 +4,7 @@ Date: 2026-10-06
 Obligation-ID: supabase-social-edge-registration-20261006-v1
 Delivery-Lane: automation
 Candidate-Type: recovery
-Base-SHA: c868595e92ba5fa290de1dfb1eed632ec344802f
+Base-SHA: fcca2c65f3515f3bf9263437ed30233e9c42ef85
 
 Observed:
 - protected-main Supabase production check was successful;
@@ -16,7 +16,14 @@ Change:
 - register both functions explicitly for Supabase Git deployment;
 - preserve current provider JWT behavior;
 - regression-guard registration;
-- strengthen terminal authority contract to require provider-source parity.
+- strengthen terminal authority contract to require provider-source parity;
+- add read-only SUPABASE_ACCESS_TOKEN provider download after the GitHub App check;
+- fail closed on file-set or byte drift while permanently forbidding CLI production deploy.
 
 Terminal criteria:
 exact-HEAD gates -> protected auto-merge -> Supabase production deploy -> exact source parity for publisher + recovery runner -> canonical social recovery -> provider-side-effect truth.
+
+Readback bootstrap:
+- GitHub production environment secret name: `SUPABASE_ACCESS_TOKEN`;
+- intended permission: production project, Edge Functions Read only where scoped PATs are available;
+- no deploy/write operation is authorized by the authority workflow.
