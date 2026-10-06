@@ -5,3 +5,4 @@
 - Root cause: canonical migration-history obligation family was absent from the recovery classifier; immutable history/lock/baseline paths were absent from its bounded path allowlist.
 - Fix: broaden only the Supabase migration-history recovery authority; keep unknown runtime fail-closed.
 - Regression: `tests/brain-production-readback-authority-routing-v1.test.mjs` now pins canonical routing and bounded evidence paths.
+- Candidate purpose: restore terminal post-merge evidence routing for the already-merged #3766 without changing Supabase schema or migration history.
