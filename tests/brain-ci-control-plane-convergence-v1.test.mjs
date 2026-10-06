@@ -53,3 +53,15 @@ test('watchdog and janitor are bounded and lineage-safe',()=>{
   assert.match(janitor,/PR_JANITOR_SKIP_CROSS_OBLIGATION/);
   assert.match(janitor,/30\*24\*60\*60\*1000/);
 });
+
+
+test('paginacontrole concurrency regression remains automation-classified', async () => {
+  const { createDeliveryPlan } = await import('../tools/brain-delivery-system.mjs');
+  const policy = JSON.parse(await read('config/brain-delivery-system.json'));
+  const plan = createDeliveryPlan({
+    changedPaths:['tests/paginacontrole-concurrency.test.mjs'],
+    headSha:'a'.repeat(40),
+    policy,
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
+});
