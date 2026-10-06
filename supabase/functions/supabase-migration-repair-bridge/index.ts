@@ -46,6 +46,8 @@ Deno.serve(async (req: Request) => {
       return new Response("sha mismatch", { status: 403 });
     }
 
+    // SUPABASE_DB_URL is used only as the credential source. The returned
+    // transport is always rewritten to the IPv4-only shared Supavisor session pooler.
     const directDbUrl = Deno.env.get("SUPABASE_DB_URL") || "";
     if (!/^postgres(?:ql)?:\/\//.test(directDbUrl)) throw new Error("database transport unavailable");
     const dbUrl = sessionPoolerUrl(directDbUrl);

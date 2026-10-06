@@ -1,0 +1,42 @@
+{
+  "id": "supabase-ipv4-session-transport-guard-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "supabase-supported-migration-repair-3742",
+  "fingerprint": "supabase|github-actions|ipv6-direct-route|supavisor-session-ipv4|v1",
+  "compiler": {
+    "failure_class": "NETWORK_TRANSPORT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The Supabase direct Postgres hostname is IPv6 by default, while the GitHub-hosted runner path used by the trusted migration repair cannot depend on IPv6 reachability. Retrying the direct endpoint therefore preserved the same network-family failure instead of changing transport.",
+  "prevention": [
+    "Use the shared Supavisor session pooler on port 5432 as the canonical GitHub Actions Postgres transport.",
+    "Canonicalize the OIDC bridge source in the repository and return an explicit supavisor-session-ipv4 transport marker.",
+    "Fail closed unless host, port, username and sslmode exactly match the approved Supavisor session transport.",
+    "Reject the direct db.<project>.supabase.co route in CI.",
+    "Prove IPv4 A-record reachability before any Supabase CLI migration-history operation."
+  ],
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "region": "eu-central-1",
+    "canonical_pooler_host": "aws-0-eu-central-1.pooler.supabase.com",
+    "canonical_port": 5432,
+    "workflow": ".github/workflows/supabase-supported-migration-repair-3742.yml",
+    "bridge": "supabase/functions/supabase-migration-repair-bridge/index.ts",
+    "regression_tests": [
+      "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs",
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-ipv4-session-transport-guard-v1.test.mjs"
+    ],
+    "expected": "The trusted repair accepts only the canonical Supavisor session-mode IPv4 transport, rejects direct IPv6 routing before mutation, and does not falsely demand a database preview for function-only config metadata."
+  }
+}

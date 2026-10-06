@@ -37,9 +37,34 @@ jobs:
             exit 0
           fi
 
-          non_function_supabase="$(grep '^supabase/' <<< "$changed" | grep -v '^supabase/functions/' || true)"
-          if [ -z "$non_function_supabase" ]; then
-            echo "SUPABASE_PREVIEW_NOT_APPLICABLE: Edge Function-only Supabase changes on exact head $HEAD_SHA; provider database preview does not evaluate this surface"
+          database_relevant_supabase="$(grep '^supabase/' <<< "$changed" | grep -v '^supabase/functions/' | grep -v '^supabase/config.toml$' || true)"
+          function_config_only=true
+          if grep -qx 'supabase/config.toml' <<< "$changed"; then
+            if ! BASE_SHA="$BASE_SHA" HEAD_SHA="$HEAD_SHA" python3 - <<'PY'
+          import os
+          import subprocess
+          import tomllib
+
+          def load(ref):
+              raw = subprocess.check_output(['git', 'show', f'{ref}:supabase/config.toml'])
+              return tomllib.loads(raw.decode('utf-8'))
+
+          def without_functions(config):
+              normalized = dict(config)
+              normalized.pop('functions', None)
+              return normalized
+
+          base = load(os.environ['BASE_SHA'])
+          head = load(os.environ['HEAD_SHA'])
+          raise SystemExit(0 if without_functions(base) == without_functions(head) else 1)
+          PY
+            then
+              function_config_only=false
+            fi
+          fi
+
+          if [ -z "$database_relevant_supabase" ] && [ "$function_config_only" = true ]; then
+            echo "SUPABASE_PREVIEW_NOT_APPLICABLE: Edge Function-only Supabase changes, including function-only config.toml metadata, on exact head $HEAD_SHA; provider database preview does not evaluate this surface"
             exit 0
           fi
 
