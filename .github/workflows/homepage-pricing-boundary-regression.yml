@@ -2,6 +2,7 @@ name: Homepage pricing boundary regression
 
 on:
   workflow_dispatch:
+
 permissions:
   contents: read
 
