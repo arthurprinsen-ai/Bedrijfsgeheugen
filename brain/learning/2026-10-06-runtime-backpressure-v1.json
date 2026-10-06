@@ -2,7 +2,7 @@
   "id": "runtime-backpressure-20261006-v1",
   "date": "2026-10-06",
   "type": "incident_prevention",
-  "fingerprint": "powerhouse|supabase|postgrest-522|cms-growth-amplification|v1",
+  "fingerprint": "powerhouse|supabase|postgrest-522|cms-growth-amplification|scheduler-auth-loop|v1",
   "compiler": {
     "failure_class": "DATABASE_RUNTIME_PRESSURE",
     "scope": "NETLIFY_SUPABASE_RUNTIME",
@@ -10,8 +10,8 @@
     "repeat_count": 2,
     "security_sensitive": false
   },
-  "root_cause": "The earlier Supabase pressure recovery removed cron-herd amplification and bounded bg-interactie, but public CMS reads and growth-event ingestion still mapped visitor requests synchronously to Supabase Edge/Data API calls. During a new PostgREST/Supavisor degradation window this produced 963 cms_content_items 522s, 1224 bg_growth_ingest_event 522s, and 960 portal-state-eu 500s in two hours.",
-  "prevention": "Public CMS reads use a 2.5s origin budget, 30s shared circuit breaker and stale cache; the growth visitor path only writes a durable Netlify Blob queue, while a one-minute bounded drain persists at most ten records and stops after the first backend failure.",
+  "root_cause": "The earlier Supabase pressure recovery removed cron-herd amplification and bounded bg-interactie, but public CMS reads and growth-event ingestion still mapped visitor requests synchronously to Supabase Edge/Data API calls. During a new PostgREST/Supavisor degradation window this produced 963 cms_content_items 522s, 1224 bg_growth_ingest_event 522s, and 960 portal-state-eu 500s in two hours. Several internal scheduler functions also re-read powerhouse_daily_scheduler_token through PostgREST before authenticating, so database transport failure was misclassified as HTTP 401.",
+  "prevention": "Public CMS reads use a 2.5s origin budget, 30s shared circuit breaker and stale cache; the growth visitor path only writes a durable Netlify Blob queue, while a one-minute bounded drain persists at most ten records and stops after the first backend failure. Scheduler authentication uses one shared bounded authority that reads the token through the IPv4 Supavisor pooler (or an injected Edge secret), caches it for five minutes, and reserves HTTP 401 for TOKEN_REQUIRED/TOKEN_MISMATCH while infrastructure lookup failures return 503.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-powerhouse-runtime-backpressure-v1.test.mjs"
@@ -21,16 +21,13 @@
   "revision": 1,
   "evidence": {
     "incident": {
-      "window": "2026-10-06T18:00:00Z/2026-10-06T20:00:00Z",
-      "function_edge_401": 14,
-      "function_edge_500": 962,
-      "function_edge_503": 4,
-      "edge_522": 2241,
-      "dominant_paths": {
-        "bg_growth_ingest_event_522": 1224,
-        "cms_content_items_522": 963,
-        "portal_state_eu_500": 960
-      },
+      "status_401": 14,
+      "status_500": 962,
+      "status_503": 4,
+      "status_522": 2241,
+      "cms_content_items_522": 963,
+      "bg_growth_ingest_event_522": 1224,
+      "portal_state_eu_500": 960,
       "management_sql": "Connection terminated due to connection timeout"
     },
     "root_cause_proof": [
@@ -45,6 +42,14 @@
       "netlify/functions/growth-replay.mjs",
       "supabase/functions/_shared/powerhouse-scheduler-auth.ts",
       "tests/brain-powerhouse-runtime-backpressure-v1.test.mjs"
-    ]
+    ],
+    "auth_functions": [
+      "powerhouse-predictive-engine",
+      "powerhouse-forecast-calibrator",
+      "powerhouse-mira-problem-radar",
+      "powerhouse-visual-assurance-sync",
+      "powerhouse-email-reply-loop"
+    ],
+    "auth_authority": "supabase/functions/_shared/powerhouse-scheduler-auth.ts"
   }
 }
