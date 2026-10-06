@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "authority": "POWERHOUSE_RUNTIME_BACKPRESSURE",
+  "cms_public": {
+    "gateway_timeout_ms": 2500,
+    "fresh_cache_ms": 30000,
+    "stale_cache_ms": 900000,
+    "circuit_breaker_ms": 30000,
+    "degraded_response_status": 200,
+    "degraded_mode": "static_html_authority_plus_stale_cms_overlay"
+  },
+  "growth_events": {
+    "visitor_path": "durable_queue_only",
+    "queue_store": "bg-growth-events",
+    "drain_schedule_utc": "* * * * *",
+    "drain_batch_max": 10,
+    "datahub_timeout_ms": 2500,
+    "stop_on_first_backend_failure": true
+  },
+  "invariants": [
+    "visitor traffic must not fan out synchronously into PostgREST writes",
+    "CMS Data API degradation must not return a 5xx to the public static website",
+    "growth events remain durable in Netlify Blobs until DataHub persistence succeeds",
+    "a failing backend stops the current drain batch instead of creating retry amplification"
+  ]
+}
