@@ -39,19 +39,37 @@
   "fingerprint": "control-plane|pr-fanout|duplicate-authority|ratchet-v1",
   "evaluation": {
     "historical_replay": [
-      "A candidate with many specialist pull_request workflows must fail the trigger ratchet when direct PR authority grows above the recorded baseline.",
-      "A control-plane reduction must preserve Required and independent security authority while retiring or internalizing duplicate read-only PR assurance."
+      {
+        "source": "ci-intelligence-run-37494062432",
+        "direct_pull_request_workflows": 59,
+        "workflow_fanout_p95": 9,
+        "required_queue_wait_seconds_p95": 94,
+        "required_total_seconds_p95": 395
+      },
+      {
+        "source": "control-plane-diet-candidate",
+        "direct_pr_authorities_before": 38,
+        "direct_pr_authorities_after": 10,
+        "admission_authorities": 5,
+        "lifecycle_recovery_authorities": 5
+      }
     ],
-    "observed_before": {
-      "direct_pr_authorities": 38
-    },
-    "observed_after": {
-      "direct_pr_authorities": 10,
-      "admission_authorities": 5,
-      "lifecycle_recovery_authorities": 5,
-      "workflow_files": 123
-    },
-    "target": "ratchet direct pull_request admission toward Required plus independent security authority without removing assurance"
+    "summary": {
+      "historical_replay": [
+        "A candidate with many specialist pull_request workflows must fail the trigger ratchet when direct PR authority grows above the recorded baseline.",
+        "A control-plane reduction must preserve Required and independent security authority while retiring or internalizing duplicate read-only PR assurance."
+      ],
+      "observed_before": {
+        "direct_pr_authorities": 38
+      },
+      "observed_after": {
+        "direct_pr_authorities": 10,
+        "admission_authorities": 5,
+        "lifecycle_recovery_authorities": 5,
+        "workflow_files": 123
+      },
+      "target": "ratchet direct pull_request admission toward Required plus independent security authority without removing assurance"
+    }
   },
   "root_cause": "Read-only specialist assurance, lifecycle recovery, writer routing and canonical admission accumulated as independent pull_request workflows, multiplying queueing and duplicate work per candidate SHA.",
   "prevention": "Keep Required as the canonical PR admission orchestrator, preserve independent security authority, move specialist assurance behind reusable/internal lanes or merge_group, keep lifecycle recovery off PR admission, and enforce a downward-only trigger budget.",
