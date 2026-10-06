@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { eventBlock, removeEventBlock, isDirectPullRequestWorkflow, validatePolicy } from '../scripts/brain/pr-authority-ratchet.mjs';
+import { eventBlock, removeEventBlock, isDirectPullRequestWorkflow, hasRunnableTrigger, validatePolicy } from '../scripts/brain/pr-authority-ratchet.mjs';
 
 test('pull_request event parsing is bounded to the event block',()=>{
   const source=`name: Example
@@ -18,6 +18,21 @@ on:
   const retired=removeEventBlock(source);
   assert.doesNotMatch(retired,/^  pull_request:/m);
   assert.match(retired,/^  push:/m);
+});
+
+test('retirement cannot leave a workflow without any trigger',()=>{
+  const onlyPr=`on:
+  pull_request:
+    branches: [main]
+`;
+  const withPush=`on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+`;
+  assert.equal(hasRunnableTrigger(removeEventBlock(onlyPr)),false);
+  assert.equal(hasRunnableTrigger(removeEventBlock(withPush)),true);
 });
 
 test('closed-only PR workflows are not counted as direct PR authorities',()=>{
