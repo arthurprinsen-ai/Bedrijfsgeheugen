@@ -119,3 +119,15 @@ test('publisher separates audit, cockpit and dispatch critical paths', () => {
   assert.match(publisher, /const cockpit_autopilot: any\[\] = \[\]/);
   assert.doesNotMatch(publisher, /const cockpit_autopilot = publishOnly \? \[\] : await runLinkedInCockpitAutopilot/);
 });
+
+
+test('direct DB adapters normalize JSONB strings before spread and write',()=>{
+  for(const source of [contentLoop,orchestrator]){
+    assert.match(source,/function normalizeJsonValue\(value:any\)/);
+    assert.match(source,/JSON\.parse\(raw\)/);
+    assert.match(source,/function normalizeRowJson\(table:string,row:any\)/);
+    assert.match(source,/normalizeJsonValue\(value\)\?\?null/);
+    assert.match(source,/rows\.map\(\(row:any\)=>normalizeRowJson\(this\.table,row\)\)/);
+    assert.match(source,/normalizeJsonValue\(rows\?\.\[0\]\?\.result\?\?null\)/);
+  }
+});
