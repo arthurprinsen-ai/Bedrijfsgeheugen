@@ -22,6 +22,8 @@ test('Required remains canonical and merge-group capable while safe-transition i
   assert.match(required,/\n  merge_group:/);
   assert.match(required,/full_assurance:/);
   assert.match(required,/engineeringTuning\.ci\?\.pr_full_assurance/);
+  assert.doesNotMatch(required,/^import subprocess, sys, tomllib$/m,'embedded probe escaped the YAML run block');
+  assert.match(required,/const probe="import subprocess,sys,tomllib;/);
   assert.equal(tuning.ci.mode,'safe-transition');
   assert.equal(tuning.ci.pr_full_assurance,true);
   assert.equal(tuning.ci.merge_group_full_assurance,true);
