@@ -19,11 +19,12 @@ test('Netlify deterministic build defects are blocked once before merge', async(
   assert.ok(workflow.includes('Validate fail-closed static English cache before merge'));
   assert.doesNotMatch(workflow,/Run exact Netlify deploy-preview build parity before merge/);
   assert.match(workflow,/^  netlify_build_parity:/m);
-  assert.ok(workflow.includes('Run exact Netlify production build command once'));
+  assert.ok(workflow.includes('Run canonical Netlify production build once'));
   assert.ok(workflow.includes("netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}"));
   assert.ok(workflow.includes("if: needs.preflight.outputs.netlify_build_required == 'true'"));
   assert.ok(workflow.includes('deriveNetlifyDeploymentApplicability'));
   assert.ok(authority.includes('NETLIFY_RUNTIME_PREFIXES'));
+  assert.ok(authority.includes('NETLIFY_BUILD_RUNTIME_EXACT'));
   assert.ok(authority.includes("'netlify/functions/'"));
   assert.ok(authority.includes('createDeliveryPlan'));
   assert.doesNotMatch(workflow,/const netlifyBuildPrefixes=/);
