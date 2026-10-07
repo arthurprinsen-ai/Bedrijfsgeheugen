@@ -16,7 +16,7 @@ Do not introduce a parallel source store, crawler, scheduler, action authority, 
 4. **Money is evidence-only.** Keep expected value/loss NULL unless supported by actual company exposure and evidence.
 5. **Unknown stays unknown.** Missing context is not zero and is never promoted to GREEN.
 6. **Raw and derived remain separate.** Raw observations stay in canonical evidence/source observation authorities; classifications, scores and recommendations are projections.
-7. **Execution remains canonical.** Intelligence action candidates do not become a second task system. Material execution must route into the existing Brain/action/obligation authority.
+7. **Execution remains canonical.** Intelligence action candidates do not become a second task system. A candidate may be promoted only when it is `READY` and has a `SCORED` evidence-backed company impact. Promotion uses `powerhouse_materialize_intelligence_action_v1(...)` to create the existing Brain obligation; this is a durable internal action record, not a provider side effect.
 8. **One scheduler.** Reuse `powerhouse_runtime_scheduler_mux_v3` / its canonical cron authority for periodic intelligence refresh.
 9. **Closed-loop assurance.** The `external-intelligence-universe` loop is not GREEN until required input, decision, action, readback, outcome, measurement, learning and guard evidence is current.
 
