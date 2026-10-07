@@ -17,5 +17,36 @@
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "evidence": {
+    "production_migration_ledger": {
+      "count": 605,
+      "latest_version": "20261007083900"
+    },
+    "post_cutover_edge_failures": {
+      "function": "powerhouse-commercial-heartbeat-runner",
+      "status": 503,
+      "error": "HEARTBEAT_DURABLE_READBACK_MISSING",
+      "observed_utc": [
+        "2026-10-07T08:42:08Z",
+        "2026-10-07T08:42:15Z",
+        "2026-10-07T08:42:32Z",
+        "2026-10-07T08:43:04Z"
+      ]
+    },
+    "terminal_lineage_repair": {
+      "new_outcomes": 7,
+      "new_links": 7,
+      "terminal_missing_outcome": 0,
+      "terminal_coverage_pct": 100
+    },
+    "scheduler_owner_readback": {
+      "legacy_pgcron_owners": 0
+    },
+    "transaction_authority_probe": {
+      "key": "powerhouse.external_heartbeat_owner",
+      "value": "netlify-supabase-edge-v1",
+      "readback_verified": true
+    }
+  }
 }
