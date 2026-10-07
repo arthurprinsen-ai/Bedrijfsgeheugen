@@ -121,3 +121,27 @@ test('System Map, Brain learning and engineering skill inherit the truth contrac
   assert.match(learning,/signal_score_is_not_impact_score/);
   assert.match(ledger,/protected merge/);
 });
+
+
+test('evidence-backed company impact gates canonical obligation materialization',async()=>{
+  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  assert.match(sql,/status=case when v_score>=70 then 'READY' else status end/);
+  assert.match(sql,/powerhouse_materialize_intelligence_action_v1/);
+  assert.match(sql,/if a\.status<>'READY'/);
+  assert.match(sql,/i\.status='SCORED'/);
+  assert.match(sql,/brain_create_obligation/);
+  assert.match(sql,/INTELLIGENCE_ACTION_REVIEW/);
+  assert.match(sql,/canonical obligation created; no provider side effect implied/);
+  assert.match(sql,/powerhouse_materialize_ready_intelligence_actions_v1/);
+});
+
+test('system map references only the canonical intelligence projection names',async()=>{
+  const map=await read('platform/system-map/canonical-system-map.mjs');
+  assert.match(map,/source-universe-impact-engine-v1/);
+  assert.match(map,/powerhouse_intelligence_source_catalog_v1/);
+  assert.match(map,/powerhouse_intelligence_company_impact_v1/);
+  assert.match(map,/powerhouse_materialize_intelligence_action_v1/);
+  assert.match(map,/actionPromotionRequiresReadyAndScoredImpact:true/);
+  assert.doesNotMatch(map,/powerhouse_source_catalog_v1/);
+  assert.doesNotMatch(map,/powerhouse_signal_impact_assessment_v1/);
+});
