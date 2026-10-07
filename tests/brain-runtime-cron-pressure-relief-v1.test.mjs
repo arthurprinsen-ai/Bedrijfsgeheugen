@@ -9,6 +9,7 @@ test('runtime maintenance consolidates every-minute watchdog and reconciliation 
   assert.match(sql,/create or replace function public\.powerhouse_runtime_maintenance_tick_v1/i);
   assert.match(sql,/pg_try_advisory_xact_lock/i);
   assert.match(sql,/powerhouse_execution_resilience_watchdog_v1\(\)/i);
+  assert.match(sql,/revoke execute on function public\.powerhouse_runtime_maintenance_tick_v1\(timestamptz\)[\s\S]*from public, anon, authenticated/i);
   assert.match(sql,/powerhouse_reconciliation_worker_v2\(\)/i);
   assert.match(sql,/extract\(minute from p_now\)::int % 5\) <> 0/i);
   assert.match(sql,/powerhouse-execution-resilience-watchdog-v1/i);
