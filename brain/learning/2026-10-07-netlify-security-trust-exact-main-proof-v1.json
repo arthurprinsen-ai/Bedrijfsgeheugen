@@ -1,20 +1,59 @@
 {
-  "version": "NETLIFY_SECURITY_TRUST_EXACT_MAIN_PROOF_V1",
-  "obligation_id": "netlify-security-trust-exact-main-proof-v1",
-  "observed_at": "2026-10-07T19:46:00Z",
-  "state": "DELIVERY_CANDIDATE",
-  "base_main_sha": "d2f7f5f7e8eed492ac7a8a407d037ef55df8790f",
-  "purpose": "Force one canonical deploy-applicable website canary so Netlify production can be read back against the protected merge SHA without weakening paths-ignore semantics.",
-  "root_cause": "Recent main commits were intentionally non-deploying governance/backend changes, so production correctly remained on the latest deploy-applicable ancestor rather than matching repository HEAD.",
-  "correction": "Use the existing website delivery lane with one invisible index.html source canary and preserve the existing deployment applicability policy.",
-  "terminal_evidence_required": [
-    "Required green",
-    "Powerhouse CodeQL green",
-    "Netlify preview green with no secret matches",
-    "protected auto-merge",
-    "Netlify production ready with commit_ref equal to merge SHA",
-    "security-trust and _security-trust-client present",
-    "Security Trust API/page production readback"
+  "id": "netlify-security-trust-exact-main-proof-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|security-trust|exact-main-production-proof|v1",
+  "root_cause": "Netlify production correctly remained on the latest deploy-applicable main ancestor because subsequent repository commits only touched paths intentionally excluded from website delivery. Treating repository HEAD and deploy-applicable website HEAD as identical would create false drift and unnecessary production rebuilds.",
+  "prevention": [
+    "Preserve path-based deployment applicability for backend, governance, tests, learning and documentation-only changes.",
+    "When an exact-main production proof is explicitly required, use the existing website lane with one invisible index.html canary rather than broadening ignore rules or adding a second deployment authority.",
+    "Require exact protected merge SHA readback from Netlify production before claiming exact-main LIVE_PROVEN.",
+    "Close the proof with provider function inventory, secret-scan evidence, and Security Trust page/API readback in the same release lineage."
   ],
-  "live_proven": false
+  "compiler": {
+    "failure_class": "NETLIFY_EXACT_MAIN_PROOF_GAP",
+    "scope": "PRODUCTION_RELEASE_IDENTITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "brain/learning/2026-10-07-netlify-native-git-primary-authority-v1.json"
+    ],
+    "shadow": [
+      "Production Source Snapshot exact-SHA readback contract"
+    ],
+    "canary": [
+      "production-source-canary: security-trust-exact-main-proof-20261007-v1"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Netlify production deploy 6ac692d18140b50008e74167 is ready on commit cfbf6247cd59506d468dd75bca0307c3065b4f67 with security-trust and _security-trust-client deployed.",
+      "That deploy's secret scan reported zero matches.",
+      "Repository main subsequently advanced through intentionally non-deploying paths."
+    ],
+    "current": [
+      "PR #4090 uses the canonical website lane and an invisible index.html marker.",
+      "No deployment applicability rule, Security Trust runtime, secret, or customer-visible behavior is changed by the canary.",
+      "Exact production proof remains pending until the protected merge SHA is observed ready in Netlify production and the Security Trust readback closes."
+    ]
+  },
+  "skill_targets": [
+    "delivery",
+    "security",
+    "continuity"
+  ],
+  "runtime_canary": {
+    "id": "security-trust-exact-main-proof-20261007-v1",
+    "status": "CANDIDATE",
+    "source_marker": "production-source-canary: security-trust-exact-main-proof-20261007-v1",
+    "mutation": "invisible HTML comment only",
+    "protected_merge_sha": null,
+    "netlify_deploy_id": null,
+    "netlify_state": null,
+    "netlify_context": "production",
+    "netlify_commit_ref": null,
+    "terminal_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_READBACK"
+  }
 }
