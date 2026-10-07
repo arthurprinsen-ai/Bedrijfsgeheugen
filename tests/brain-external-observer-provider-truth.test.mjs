@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { evaluateExternalObserverProductionProof } from '../tools/site-shell/external-observer-production-proof.mjs';
+import { evaluateExternalObserverProductionProof } from '../tools/delivery/external-observer-production-proof.mjs';
 
 const SHA='e53c39adfb7dcd945515f2421ac2f233eb6cda5b';
 const deploy={
