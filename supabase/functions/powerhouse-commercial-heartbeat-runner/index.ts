@@ -78,6 +78,10 @@ async function runHeartbeat(){
     const heartbeatRows=await tx.unsafe(
       "select public.powerhouse_commercial_heartbeat_v1(now()) as heartbeat"
     );
+
+    const sovereigntyRows=await tx.unsafe(
+      "select public.powerhouse_refresh_data_sovereignty_v1() as data_sovereignty"
+    );
     const readbackRows=await tx.unsafe(
       "select occurred_at,dedupe_key,state,data_quality,confidence from public.powerhouse_runtime_events where event_type='commercial_heartbeat' and occurred_at >= transaction_timestamp()-interval '2 minutes' order by occurred_at desc limit 1"
     );
@@ -96,7 +100,7 @@ async function runHeartbeat(){
       transport:"supavisor-ipv4-transaction",
       started_at:startedAt,
       completed_at:new Date().toISOString(),
-      heartbeat:heartbeatRows?.[0]?.heartbeat??null,
+      heartbeat:heartbeatRows?.[0]?.heartbeat??null,\n      data_sovereignty:sovereigntyRows?.[0]?.data_sovereignty??null,
       receipt,
       durable_readback_verified:true
     };
