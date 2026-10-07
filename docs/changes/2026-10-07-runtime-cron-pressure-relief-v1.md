@@ -18,3 +18,10 @@ Structural correction:
 - retire the two previous every-minute cron owners and replace them with one maintenance owner.
 
 The commercial heartbeat function and its five-minute schedule are not changed.
+
+
+## Migration identity closure
+
+Production had already applied the heartbeat-aware maintenance migration as `20261007060126_powerhouse_runtime_cron_pressure_relief_v1`. The first repository writeback used the local alias `20261007055200_...`, so the Supabase GitHub integration correctly failed with `Remote migration versions not found in local migrations directory` before replaying DDL.
+
+The repository now uses the exact production identity `20261007060126`, removes the `055200` alias, and updates `supabase/migration-history.lock.json` to the observed 593-entry production ledger. No production DDL is replayed by this identity repair.
