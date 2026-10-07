@@ -42,3 +42,22 @@ test('cached attribution receipt remains explicit and provider-quality gates are
   assert.match(migration,/powerhouse_revenue_event_spine_health_v1/);
   assert.doesNotMatch(migration,/drop function public\.powerhouse_commercial_regression_gate_v1/);
 });
+
+
+test('fresh preview receives the production snapshot schema contract before heartbeat decoupling',()=>{
+  assert.match(migration,/create table if not exists public\.powerhouse_revenue_attribution_snapshot_v1/);
+  for(const column of [
+    'outcome_id uuid not null',
+    'touch_type text not null',
+    'touch_id text not null',
+    'touch_at timestamptz not null',
+    'conversion_at timestamptz not null',
+    "evidence jsonb not null default '{}'::jsonb",
+    'refreshed_at timestamptz not null default now()'
+  ]) assert.ok(migration.includes(column),column);
+  assert.match(migration,/primary key\(outcome_id,touch_type,touch_id\)/);
+  assert.match(migration,/idx_revenue_attribution_snapshot_company_v1/);
+  assert.match(migration,/idx_revenue_attribution_snapshot_conversion_v1/);
+  assert.match(migration,/enable row level security/);
+  assert.match(migration,/to service_role[\s\S]*using \(true\)[\s\S]*with check \(true\)/);
+});
