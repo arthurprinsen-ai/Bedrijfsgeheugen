@@ -245,8 +245,10 @@ jobs:
                 attempt_ok=false
                 break
               fi
-              find "$source_root" -type f -printf '%P\n' | sort > "/tmp/$fn-source-files.txt"
-              find "$provider_root" -type f -printf '%P\n' | sort > "/tmp/$fn-provider-files.txt"
+              # Supabase provider readback returns deployable runtime source, not local function metadata
+              # such as deno.json. Immutable source identity above still hashes every Git file.
+              find "$source_root" -type f ! -name 'deno.json' -printf '%P\n' | sort > "/tmp/$fn-source-files.txt"
+              find "$provider_root" -type f ! -name 'deno.json' -printf '%P\n' | sort > "/tmp/$fn-provider-files.txt"
               if ! cmp -s "/tmp/$fn-source-files.txt" "/tmp/$fn-provider-files.txt"; then
                 attempt_ok=false
                 break
@@ -276,7 +278,7 @@ jobs:
             echo "::error::SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_TIMEOUT"
             exit 78
           }
-          printf 'provider_source_parity=BYTE_FOR_BYTE\nprovider_convergence=BOUNDED\nreadback_auth=SUPABASE_ACCESS_TOKEN_READ_ONLY\n' \
+          printf 'provider_source_parity=BYTE_FOR_BYTE\nprovider_source_scope=RUNTIME_FILES_EXCLUDING_DENO_METADATA\nprovider_convergence=BOUNDED\nreadback_auth=SUPABASE_ACCESS_TOKEN_READ_ONLY\n' \
             >> .artifacts/supabase-edge-production-readback/authority.txt
 
       - name: Publish exact provider readback evidence to merged PR
