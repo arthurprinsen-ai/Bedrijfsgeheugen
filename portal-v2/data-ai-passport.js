@@ -88,7 +88,9 @@ export const PROVIDER_REGISTRY=Object.freeze([
     status:'outside_eu',
     statusLabel:'Opslag standaard VS',
     customerFlow:'direct',
-    data:'Alleen de context die Bedrijfsgeheugen voor een concrete AI-vraag aan de API meestuurt; geen impliciete toegang tot alle tenantdata.',
+    data:'Portalvraag: vraag + request-scoped projectContext (dataclass Confidential). Portalvertaling: zichtbare portaltekst (Confidential). Website-QA en publieke vertaling gebruiken alleen Public-context.',
+    models:'claude-sonnet-5 voor website/portal-QA · claude-haiku-4-5-20251001 voor vertaling',
+    aiControl:'AI-PORTAL-QA en AI-PORTAL-TRANSLATION zijn request-scoped, door de gebruiker geïnitieerd, autonomie L1 en hebben intern NO_PERSISTENCE. Dat voorkomt eigen promptopslag, maar verandert de providerretentie niet.',
     processing:'Anthropic kan verkeer standaard over de VS, Europa, Azië en Australië routeren, tenzij routing contractueel/configuratief wordt beperkt.',
     storage:'Anthropic vermeldt voor commerciële producten/API standaard opslag in de Verenigde Staten.',
     backup:'Providerbeheerd; geen Bedrijfsgeheugen-claim zonder contractbewijs.',
@@ -96,7 +98,7 @@ export const PROVIDER_REGISTRY=Object.freeze([
     retention:'Anthropic API: input en output standaard binnen 30 dagen verwijderd, behoudens productkeuze, ZDR-afspraak, safety/policy of wettelijke uitzonderingen.',
     training:'Commerciële API-input/output wordt volgens Anthropic standaard niet gebruikt voor modeltraining, tenzij expliciet anders gekozen/afgesproken.',
     transfer:'Internationale doorgifte is onderdeel van deze route zolang geen aantoonbare EU-only/ZDR-configuratie is vastgelegd.',
-    evidence:'ANTHROPIC_API_KEY is de productie-AI-config voor /api/vraag; providerlocatie en retentie zijn gebaseerd op actuele Anthropic-documentatie.',
+    evidence:'De runtimecode roept https://api.anthropic.com/v1/messages aan; vraag.mjs en portaalvraag.mjs lezen ANTHROPIC_API_KEY. _brain-ai.mjs registreert model, dataclass, request-scope en human oversight.',
     evidenceType:'repo-config-plus-provider-policy',
     evidenceUrl:'https://privacy.claude.com/en/articles/7996890-where-are-your-servers-located-do-you-host-your-models-on-eu-servers',
     retentionUrl:'https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data',
@@ -207,6 +209,8 @@ function providerCard(provider){
     <p class="dsp-role">${esc(provider.role)}</p>
     <dl>
       ${field('Welke data',provider.data)}
+      ${provider.models?field('AI-model(len)',provider.models):''}
+      ${provider.aiControl?field('AI Act control',provider.aiControl):''}
       ${field('Waar verwerkt',provider.processing)}
       ${field('Waar opgeslagen',provider.storage)}
       ${field('Backup / replica',provider.backup)}
@@ -215,7 +219,7 @@ function providerCard(provider){
       ${field('Modeltraining',provider.training)}
       ${field('Doorgifte',provider.transfer)}
     </dl>
-    <footer><span>Bewijs · ${esc(provider.evidence)} · gecontroleerd ${esc(provider.verifiedAt)}</span><a href="${esc(provider.evidenceUrl)}" target="_blank" rel="noopener noreferrer">Bron ↗</a></footer>
+    <footer><span>Bewijs · ${esc(provider.evidence)} · gecontroleerd ${esc(provider.verifiedAt)}</span><div class="dsp-source-links"><a href="${esc(provider.evidenceUrl)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>${provider.retentionUrl?`<a href="${esc(provider.retentionUrl)}" target="_blank" rel="noopener noreferrer">Retentie ↗</a>`:''}${provider.trainingUrl?`<a href="${esc(provider.trainingUrl)}" target="_blank" rel="noopener noreferrer">Training ↗</a>`:''}</div></footer>
   </article>`;
 }
 
@@ -287,6 +291,6 @@ export function mountDataAiPassport(root,{domainState}={}){
   };
   paint();
   const onRuntime=()=>paint();
-  globalThis.addEventListener?.('bg:runtime-evidence',onRuntime);
+  globalThis.addEventListener?.('bg:runtime-evidence',onRuntime,{once:true});
   return Object.freeze({refresh:paint,destroy:()=>globalThis.removeEventListener?.('bg:runtime-evidence',onRuntime)});
 }
