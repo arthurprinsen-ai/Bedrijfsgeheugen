@@ -18,5 +18,40 @@
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "evidence": {
+    "production_migration_ledger": {
+      "count": 607,
+      "latest_version": "20261007091140",
+      "latest_name": "restore_single_staggered_commercial_heartbeat_owner"
+    },
+    "emergency_scheduler_readback": {
+      "jobid": 167,
+      "jobname": "powerhouse-one-commercial-heartbeat-v1",
+      "schedule": "2-59/5 * * * *",
+      "authority": "LEGACY_PGCRON",
+      "canonical_end_state": "NETLIFY_SUPABASE_EDGE"
+    },
+    "durable_heartbeat_proof": {
+      "receipts": [
+        "commercial-heartbeat:202610070911",
+        "commercial-heartbeat:202610070912"
+      ],
+      "state": "actioned",
+      "data_quality": "VERIFIED",
+      "confidence": 1,
+      "terminal_coverage_pct": 100,
+      "terminal_missing_outcome": 0
+    },
+    "provider_source_gap": {
+      "github_runner_contains_external_owner_marker": true,
+      "current_provider_runner_contains_external_owner_marker": false,
+      "blocker": "remote ledger 607 while GitHub main/lock remained at 606"
+    },
+    "convergence_rule": {
+      "direct_schema_migrations_mutation": false,
+      "provider_bypass": false,
+      "replay_retires_legacy_pgcron": true
+    }
+  }
 }
