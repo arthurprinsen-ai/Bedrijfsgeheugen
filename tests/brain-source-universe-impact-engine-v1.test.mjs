@@ -131,7 +131,7 @@ test('System Map, Brain learning, skill and ledger inherit one canonical lineage
     read('platform/system-map/canonical-system-map.mjs'),
     read('brain/learning/2026-10-07-source-universe-impact-engine-v1.json'),
     read('.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md'),
-    read('docs/source-universe-impact-engine-v1.md'),
+    read('docs/brain/source-universe-impact-engine-v1.md'),
     read('docs/development-ledger-events/2026-10-07-source-universe-impact-engine-v1.md')
   ]);
   for(const source of [map,learning,skill,doc,ledger])assert.match(source,/source.universe|Source Universe/i);
