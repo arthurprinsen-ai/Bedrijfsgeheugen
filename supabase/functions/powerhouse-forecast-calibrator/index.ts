@@ -43,5 +43,11 @@ Deno.serve(async(req:Request)=>{
     }
     await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'ok',detail:`due=${due.length}; calibrated=${calibrated}; uncertain=${uncertain}`,gegevens:{contract:'predictive-first-mover-intelligence-v1',results}});
     return json({ok:true,due:due.length,calibrated,uncertain,results});
-  }catch(e:any){try{await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'fout',detail:String(e?.message||e).slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1'}});}catch{}return json({ok:false,error:String(e?.message||e).slice(0,500)},500);}
+  }catch(e:any){
+    const detail=String(e?.message||e).slice(0,500);
+    const providerDegraded=/^AI_(?:401|402|403|429|5\\d\\d):/.test(detail)||/^AI_400:.*credit balance is too low/i.test(detail);
+    try{await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'fout',detail:detail.slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1',state:providerDegraded?'DEGRADED_AI_PROVIDER':'ERROR',retryable:providerDegraded}});}catch{}
+    if(providerDegraded) return json({ok:false,state:'DEGRADED_AI_PROVIDER',error:'AI_PROVIDER_UNAVAILABLE',retryable:true},200);
+    return json({ok:false,error:detail},500);
+  }
 });
