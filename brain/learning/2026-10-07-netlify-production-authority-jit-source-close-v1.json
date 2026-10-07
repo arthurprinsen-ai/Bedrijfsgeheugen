@@ -18,24 +18,39 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Production Source Snapshot run 37659229217 reached exact-source deployment and received Netlify 401 Unauthorized three times.",
-      "The bridge-level credential preflight converted the hidden stale-proxy failure into an earlier 503 bridge failure rather than forwarding invalid authority."
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
     ],
     "canary": [
-      "Supabase Vault contains COMPOSIO_API_KEY metadata and the live bridge now resolves authority from that stable secret name.",
-      "Supabase Edge Function netlify-deploy-bridge version 15 is active with just-in-time Composio authority acquisition."
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
     ]
   },
   "evidence": {
     "runtime": [
-      "netlify-deploy-bridge ACTIVE version 15",
+      "netlify-deploy-bridge ACTIVE version 20",
+      "Supabase Edge bundle sha256 25b3d6be9c40996ca711cd390d390e24b93ba5d74559291a7988b09a669182fc",
       "COMPOSIO_API_KEY present in Supabase Vault",
       "No persisted netlify_mcp_proxy_current or dated proxy lookup in the JIT bridge source"
+    ],
+    "post_merge_recovery": [
+      "Powerhouse Skill Projection run 37663158817 failed because evaluation fields contained prose instead of tests/brain-*.test.mjs paths.",
+      "Supabase Edge Production Authority run 37663158764 failed because netlify-deploy-bridge was not declared in supabase/config.toml.",
+      "The existing non-Brain bridge test contained a literal backslash-n token between assertions and was repaired."
     ],
     "repository": [
       "supabase/functions/netlify-deploy-bridge/index.ts",
       "supabase/functions/netlify-deploy-bridge/deno.json",
-      "tests/supabase-netlify-deploy-bridge-authority-v1.test.mjs"
+      "supabase/config.toml",
+      "tools/supabase/edge-runtime-scope.mjs",
+      "tests/supabase-netlify-deploy-bridge-authority-v1.test.mjs",
+      "tests/brain-netlify-production-authority-jit-v1.test.mjs"
     ]
-  }
+  },
+  "skill_targets": [
+    "delivery",
+    "security",
+    "data"
+  ]
 }
