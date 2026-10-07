@@ -241,3 +241,10 @@ begin
  return v_result;
 end
 $function$;
+
+
+revoke execute on function public.security_database_posture_v1() from public, anon, authenticated;
+grant execute on function public.security_database_posture_v1() to service_role;
+
+revoke execute on function public.refresh_security_trust_snapshot_v1(text) from public, anon, authenticated;
+grant execute on function public.refresh_security_trust_snapshot_v1(text) to service_role;
