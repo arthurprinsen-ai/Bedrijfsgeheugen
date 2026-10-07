@@ -3,7 +3,7 @@
   "date": "2026-10-07",
   "status": "ACTIVE_PREVENTION",
   "fingerprint": "supabase|remote-migration-history|repository-parity|v2",
-  "root_cause": "Supabase production migration lineage advanced outside repository source control. Six live migrations were initially missing locally; while that recovery was being merged, production also gained 20261007190600_security_definer_browser_execute_closure_v1. This proved that a one-time history capture can become stale during terminal delivery. The parity regression also used fileURLToPath from node:path instead of node:url, so post-merge learning replay failed even though the migration recovery itself was valid.",
+  "root_cause": "Supabase production migration lineage advanced outside repository source control. Six live migrations were initially missing locally; while that recovery was being merged, production also gained 20261007190600_security_definer_browser_execute_closure_v1. This proved that a one-time history capture can become stale during terminal delivery. The parity regression also used fileURLToPath from node:path instead of node:url, so post-merge learning replay failed even though the migration recovery itself was valid. During final closure, an explicit official apply_migration of the already-merged 20261007190653 SQL created an additional provider-stamped immutable version 20261007192514; deleting that history would be unsafe, so the correct recovery is to mirror it back to Git and prevent unobserved post-apply drift.",
   "prevention": [
     "Mirror every already-applied production migration version into supabase/migrations with its real SQL rather than an empty compatibility stub.",
     "Treat migration-history parity as a terminal readback condition: compare production history to the exact current-main migration directory again after protected merge, not only at candidate creation.",
@@ -11,7 +11,8 @@
     "Run tests/brain-supabase-remote-migration-history-parity-v1.test.mjs so every captured remote version must remain replayable from repository files.",
     "Use fileURLToPath from node:url for ESM URL-to-path conversion so canonical learning replay is executable on Node 24.",
     "Keep historical SECURITY DEFINER mirrors least-privilege for fresh replay even when the later live state was hardened by a subsequent migration.",
-    "Never repair migration drift by deleting, renumbering or rewriting production migration-history rows."
+    "Never repair migration drift by deleting, renumbering or rewriting production migration-history rows.",
+    "After any explicit Supabase apply_migration call, immediately re-read production migration history and reconcile any provider-stamped version into Git before declaring parity green."
   ],
   "evaluation": {
     "historical_replay": [
@@ -32,11 +33,18 @@
       "20261007165821",
       "20261007170121",
       "20261007171249",
-      "20261007190600"
+      "20261007190600",
+      "20261007192514"
     ],
     "postmerge_failure_main": "87769c4375f00c0d2252e6f05be65004b9643f7b",
     "pending_repository_migration": "20261007182000",
-    "production_history_count_at_capture": 631
+    "production_history_count_at_capture": 631,
+    "provider_stamped_duplicate": {
+      "version": "20261007192514",
+      "source": "official_supabase_apply_migration",
+      "canonical_source_version": "20261007190653",
+      "handling": "mirror_exact_replay_sql_into_repository_never_delete_remote_history"
+    }
   },
   "skill_targets": [
     "delivery",
