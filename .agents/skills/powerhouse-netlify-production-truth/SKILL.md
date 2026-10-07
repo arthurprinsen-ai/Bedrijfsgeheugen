@@ -200,3 +200,21 @@ For Netlify-hosted website/portal/runtime changes:
 - static localized-route render caching must be content-addressed and include source HTML (with release identity normalized), translation cache, public-route topology, SEO locale map and builder implementation.
 
 Regression: `tests/brain-netlify-prebuilt-artifact-reuse-v1.test.mjs`.
+
+
+## Native Git is the primary production authority
+
+Fingerprint: `netlify|production-authority|native-git-primary|jit-fallback|v1`.
+
+For Netlify-hosted production changes:
+- treat the existing Netlify Git integration as the canonical first deployment authority;
+- wait boundedly for exact-main `release.json` production identity before invoking any fallback transport;
+- only after native Git non-convergence acquire GitHub OIDC and a fresh JIT bridge proxy;
+- keep exactly one exact-source `@netlify/mcp` upload fallback;
+- never reintroduce a second linked-build trigger lane;
+- classify bridge non-200 responses explicitly, re-read production for a race, then fail closed if neither native production nor fallback authority is proven.
+
+A PRIVATE interactive Netlify MCP connection is not project-visible provider authority for the Supabase bridge and must never make an otherwise healthy native Git deployment false-red.
+
+Canonical learning: `brain/learning/2026-10-07-netlify-native-git-primary-authority-v1.json`.
+Regression: `tests/brain-netlify-git-deploy-first-v1.test.mjs`.
