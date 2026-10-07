@@ -18,3 +18,7 @@ Production migration history itself remains untouched. `20261007182000` remains 
 ## Terminal acceptance
 
 Exact-head Required + CodeQL + Supabase Preview green → protected merge → production Supabase check applies `20261007182000` → refreshed production/local version comparison has zero missing remote and zero unexpected local versions → failed post-merge learning/revenue checks are rerun and green.
+## Lineage continuation
+
+This terminal v2 candidate is not a second migration-history obligation. It is the same `supabase-remote-migration-history-parity-20261007-v1` obligation continued after #4079 post-merge evidence exposed one concurrent production migration and one regression implementation defect. #4084 therefore supersedes #4079 under the same obligation identity and retains one terminal writer.
+
