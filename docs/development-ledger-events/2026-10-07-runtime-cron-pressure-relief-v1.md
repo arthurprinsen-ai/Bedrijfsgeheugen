@@ -10,3 +10,7 @@
 - Commercial heartbeat owner/schedule remain unchanged.
 - Regression authority: `tests/brain-runtime-cron-pressure-relief-v1.test.mjs`.
 - Required terminal proof after merge: cron owner readback, reduced startup-timeout evidence, fresh commercial heartbeat, durable event readback.
+
+- Migration-lineage readback: production ledger count 593; latest `20261007060126_powerhouse_runtime_cron_pressure_relief_v1`.
+- Provider failure after #4030: `Remote migration versions not found in local migrations directory` because Git carried alias `20261007055200`.
+- Repository-only repair: exact production version restored, alias removed, lock advanced to 593; no production DDL replayed.

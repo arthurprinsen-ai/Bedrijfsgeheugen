@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const path='supabase/migrations/20261007055200_powerhouse_runtime_cron_pressure_relief_v1.sql';
+const path='supabase/migrations/20261007060126_powerhouse_runtime_cron_pressure_relief_v1.sql';
 const liveBaselinePath='supabase/migrations/20261007055115_consolidate_recovery_cron_and_bound_history_retention.sql';
 
 test('runtime maintenance consolidates every-minute watchdog and reconciliation owners', async()=>{

@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-06T10:16:08.000Z",
+  "captured_at": "2026-10-07T06:08:22.550117Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2366,6 +2366,14 @@
     {
       "version": "20261006103856",
       "name": "linkedin_company_live_proof_state_canonical_v3"
+    },
+    {
+      "version": "20261007055115",
+      "name": "consolidate_recovery_cron_and_bound_history_retention"
+    },
+    {
+      "version": "20261007060126",
+      "name": "powerhouse_runtime_cron_pressure_relief_v1"
     }
   ],
   "replay_baselines_pending_repair": [
@@ -2596,5 +2604,5 @@
     "remote_history_repair": false,
     "direct_schema_migrations_writes_forbidden": true
   },
-  "production_ledger_count": 591
+  "production_ledger_count": 593
 }
