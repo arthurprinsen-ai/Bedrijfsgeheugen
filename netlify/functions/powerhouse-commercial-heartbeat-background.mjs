@@ -41,7 +41,7 @@ async function observeDataSovereignty({siteUrl,baseUrl,token}){
         tenantId:'canonical',
         providerKey:'netlify',
         observedRegion:proof.runtimeRegion,
-        configuredStorageRegion:proof.storageRegion||null,
+        configuredStorageRegion:proof.blobRegionTarget||proof.storageRegion||null,
         deployId:proof.deployId,
         commitRef:proof.commitRef,
         source:'powerhouse-heartbeat',
