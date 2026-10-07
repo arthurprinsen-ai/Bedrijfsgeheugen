@@ -67,6 +67,7 @@
       "config/notion-root-lifecycle.json",
       "config/pr-trigger-baseline.json",
       "config/supabase-edge-functions.json",
+      "supabase/migration-history.lock.json",
       "config/powerhouse-runtime-backpressure-v1.json"
     ],
     "netlifyRuntimePrefixes": [
