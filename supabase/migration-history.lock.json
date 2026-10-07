@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T09:02:55.000Z",
+  "captured_at": "2026-10-07T09:11:40.000Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2426,6 +2426,10 @@
     {
       "version": "20261007090255",
       "name": "external_commercial_heartbeat_scheduler_authority_v1"
+    },
+    {
+      "version": "20261007091140",
+      "name": "restore_single_staggered_commercial_heartbeat_owner"
     }
   ]
 }
