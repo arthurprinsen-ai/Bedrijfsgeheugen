@@ -45,7 +45,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       outputs:Object.freeze(['LIVE_PROVEN_PROVIDER_TRUTH','OBSERVER_UNAVAILABLE','fail-closed evidence mismatch']),
       runtime:Object.freeze({
         contract:'brain/contracts/production-readback-v1.json#externalObserverReadback',
-        evaluator:'tools/site-shell/external-observer-production-proof.mjs',
+        evaluator:'tools/delivery/external-observer-production-proof.mjs',
         regression:'tests/brain-external-observer-provider-truth.test.mjs',
         agentContract:'AGENTS.md',
         learning:'brain/learning/2026-10-07-external-observer-provider-truth-v1.json'
