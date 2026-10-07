@@ -129,6 +129,33 @@ Deno.serve(async(req:Request)=>{
     });
   }
 
+  if(action==='security_trust_get'){
+    const {data,error}=await client.rpc('refresh_security_trust_snapshot_v1',{p_tenant_id:tenantId});
+    if(error)return json({error:'SECURITY_TRUST_READ_FAILED'},500);
+    return json({snapshot:data});
+  }
+
+  if(action==='security_trust_observe'){
+    const observation=body?.observation&&typeof body.observation==='object'&&!Array.isArray(body.observation)?body.observation:null;
+    if(!observation)return json({error:'INVALID_SECURITY_TRUST_OBSERVATION'},400);
+    const {data,error}=await client.rpc('record_security_trust_observation_v1',{
+      p_tenant_id:tenantId,
+      p_provider_key:String(observation.providerKey||'').trim(),
+      p_control_key:String(observation.controlKey||'').trim(),
+      p_category:String(observation.category||'provider').trim(),
+      p_status:String(observation.status||'UNKNOWN').trim(),
+      p_severity:String(observation.severity||'medium').trim(),
+      p_statement:String(observation.statement||'').trim(),
+      p_evidence:observation.evidence&&typeof observation.evidence==='object'&&!Array.isArray(observation.evidence)?observation.evidence:{},
+      p_source_url:observation.sourceUrl==null?null:String(observation.sourceUrl),
+      p_expires_at:observation.expiresAt==null?null:String(observation.expiresAt)
+    });
+    if(error)return json({error:'SECURITY_TRUST_OBSERVATION_WRITE_FAILED'},500);
+    const {data:snapshot,error:refreshError}=await client.rpc('refresh_security_trust_snapshot_v1',{p_tenant_id:tenantId});
+    if(refreshError)return json({error:'SECURITY_TRUST_REFRESH_FAILED'},500);
+    return json({observation:data,snapshot});
+  }
+
   if(action==='data_sovereignty_get'){
     const {data,error}=await client.rpc('refresh_data_sovereignty_snapshot_v1',{p_tenant_id:tenantId});
     if(error)return json({error:'DATA_SOVEREIGNTY_READ_FAILED'},500);
