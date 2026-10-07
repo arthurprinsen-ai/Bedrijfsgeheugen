@@ -48,3 +48,13 @@ test('cutover remains two phase and cannot retire legacy pg_cron before external
   assert.equal(contract.cutover.legacy_pg_cron_job,'powerhouse-one-commercial-heartbeat-v1');
   assert.equal(contract.cutover.legacy_job_retired_only_after_external_live_proof,true);
 });
+
+
+test('overlap cannot count as success without a durable peer receipt',()=>{
+  const runner=read('supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts');
+  const background=read('netlify/functions/powerhouse-commercial-heartbeat-background.mjs');
+  assert.match(runner,/COMPLETED_BY_PEER/);
+  assert.match(runner,/durable_readback_verified:peerDurable/);
+  assert.match(background,/body\?\.durable_readback_verified===true/);
+  assert.doesNotMatch(background,/state==='SKIPPED_OVERLAP'/);
+});
