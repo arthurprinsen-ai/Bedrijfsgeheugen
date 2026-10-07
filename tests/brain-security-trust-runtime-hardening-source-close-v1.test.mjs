@@ -4,14 +4,17 @@ import {readFile} from 'node:fs/promises';
 
 const read=p=>readFile(p,'utf8');
 
-test('exact production security hardening migrations are source closed',async()=>{
+test('exact production security hardening migrations are source closed and replay-safe',async()=>{
  const [a,b,c]=await Promise.all([
   read('supabase/migrations/20261007163124_security_trust_harden_helper_search_path_v1.sql'),
   read('supabase/migrations/20261007163230_security_trust_remove_browser_definer_exposure_v1.sql'),
   read('supabase/migrations/20261007163333_security_trust_posture_precision_v1.sql')
  ]);
+ assert.match(a,/to_regprocedure\('public\.powerhouse_normalize_sales_channel_v1\(text\)'\)/);
  assert.match(a,/set search_path = pg_catalog, public/);
+ assert.match(b,/relkind='v'/);
  assert.match(b,/security_invoker = true/);
+ assert.match(b,/to_regclass\('public\.powerhouse_predictive_commercial_brief_cache_v1'\)/);
  assert.match(b,/revoke all on table public\.powerhouse_predictive_commercial_brief_cache_v1 from anon, authenticated/);
  assert.match(c,/browserReadableDefinerViews/);
  assert.match(c,/privilegedRpcReviewCount/);
@@ -26,4 +29,5 @@ test('security trust source close learning is semantic and fail closed',async()=
  assert.ok(learning.evaluation.shadow.length>0);
  assert.ok(learning.evaluation.canary.length>0);
  assert.ok(learning.evidence.production_migrations.length===3);
+ assert.match(learning.prevention.preview_replay,/object-existence-aware/i);
 });

@@ -67,6 +67,7 @@ jobs:
         env:
           HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+          PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags

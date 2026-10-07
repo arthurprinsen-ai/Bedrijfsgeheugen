@@ -3,9 +3,10 @@
   "date": "2026-10-07",
   "status": "ACTIVE_PREVENTION",
   "fingerprint": "security-trust|runtime-hardening|source-close|v1",
-  "root_cause": "Production security advisor findings were fixed provider-side before the exact production migration versions were present in GitHub, and the first Trust posture scanner over-classified review surfaces as high-risk.",
+  "root_cause": "Production security advisor findings were fixed provider-side before the exact production migration versions were present in GitHub, and the first Trust posture scanner over-classified review surfaces as high-risk. The first source-close replay also assumed every production-only helper/view already existed in a clean preview baseline.",
   "prevention": {
     "migration_parity": "Every provider-side security DDL must be source-closed using the exact production migration version and name.",
+    "preview_replay": "Hardening migrations must be object-existence-aware: harden an object when present, skip it when absent, and never fabricate a production-only helper or view just to make preview replay pass.",
     "exposure_semantics": "Only browser-reachable SECURITY DEFINER views/materialized views are high-risk by default; privileged RPC execute surfaces require authorization review rather than automatic vulnerability classification.",
     "fail_closed": "Provider advisor ERROR/WARN findings stay visible until provider readback is clean."
   },
@@ -17,7 +18,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Supabase security advisor: 8 security_definer_view + 4 function_search_path_mutable + 1 materialized_view_in_api before hardening"
+      "Supabase security advisor: 8 security_definer_view + 4 function_search_path_mutable + 1 materialized_view_in_api before hardening",
+      "Supabase Preview replay failed because public.powerhouse_normalize_sales_channel_v1(text) did not exist in the preview baseline"
     ],
     "shadow": [
       "Database dependency and privilege readback confirmed underlying tables were service-role only"
