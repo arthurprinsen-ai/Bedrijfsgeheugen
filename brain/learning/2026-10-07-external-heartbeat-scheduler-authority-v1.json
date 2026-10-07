@@ -1,0 +1,21 @@
+{
+  "id": "external-heartbeat-scheduler-authority-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "commercial-heartbeat|external-owner|post-cutover-regression-gate|v1",
+  "compiler": {
+    "failure_class": "SCHEDULER_AUTHORITY_CUTOVER",
+    "scope": "SUPABASE_NETLIFY_RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "After the external Netlify to Supabase Edge heartbeat proved live and migration 20261007083900 retired the legacy pg_cron owner, powerhouse_commercial_regression_gate_v1 still counted only pg_cron as scheduler authority. The Edge runner then saw a PARTIAL/non-VERIFIED receipt and intentionally threw, rolling back the transaction and leaving no durable heartbeat event.",
+  "prevention": "The authenticated Edge runner sets a transaction-local external scheduler authority marker. The regression gate counts legacy pg_cron plus the external marker and requires exactly one authority. Manual/direct SQL calls have no marker and remain fail closed; overlapping legacy and external owners count as two and remain unhealthy.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-heartbeat-scheduler-authority-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
