@@ -30,6 +30,7 @@ concurrency:
 permissions:
   contents: read
   pull-requests: read
+  id-token: write
 
 jobs:
   production-readback:
@@ -176,6 +177,91 @@ jobs:
           import { writeFile } from 'node:fs/promises';
           await writeFile('.artifacts/production-promotion-state.json',`${JSON.stringify({promotion_state:'not_applicable',provider:'netlify',expected_sha:process.env.GITHUB_SHA,deployment_required:false,observed_at:new Date().toISOString()},null,2)}\n`);
           NODE
+      - name: Prove authenticated Portal ondernemersdata in production
+        if: steps.scope.outputs.deployment_required == 'true' && steps.deploy.outcome == 'success'
+        env:
+          CANARY_AUDIENCE: bedrijfsgeheugen-portal-production-canary-v1
+          CANARY_URL: https://www.bedrijfsgeheugen.nl/api/internal/portal-auth-canary-session
+          PORTAL_DATA_URL: https://www.bedrijfsgeheugen.nl/api/portal-ondernemersdata
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          oidc_payload="$(curl --fail --silent --show-error \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${CANARY_AUDIENCE}")"
+          oidc_token="$(jq -r '.value // empty' <<<"${oidc_payload}")"
+          test -n "${oidc_token}"
+
+          cookie_jar="$(mktemp)"
+          canary_user_id=""
+          cleanup_canary() {
+            if [ -n "${canary_user_id}" ]; then
+              curl --silent --show-error --fail-with-body \
+                -X DELETE \
+                -H "Authorization: Bearer ${oidc_token}" \
+                -H 'Content-Type: application/json' \
+                -H 'Origin: https://www.bedrijfsgeheugen.nl' \
+                --data "$(jq -cn --arg userId "${canary_user_id}" '{userId:$userId}')" \
+                "${CANARY_URL}" >/dev/null || true
+            fi
+            rm -f "${cookie_jar}"
+          }
+          trap cleanup_canary EXIT
+
+          bootstrap="$(curl --fail --silent --show-error \
+            -X POST \
+            -H "Authorization: Bearer ${oidc_token}" \
+            -H 'Content-Type: application/json' \
+            -H 'Origin: https://www.bedrijfsgeheugen.nl' \
+            -c "${cookie_jar}" \
+            "${CANARY_URL}")"
+          canary_user_id="$(jq -r '.userId // empty' <<<"${bootstrap}")"
+          expected_tenant="$(jq -r '.tenantId // empty' <<<"${bootstrap}")"
+          test -n "${canary_user_id}"
+          test -n "${expected_tenant}"
+          test -s "${cookie_jar}"
+
+          http_status="$(curl --silent --show-error \
+            -o live-portal-ondernemersdata.json \
+            -w '%{http_code}' \
+            -b "${cookie_jar}" \
+            -H 'Accept: application/json' \
+            -H 'Cache-Control: no-cache' \
+            "${PORTAL_DATA_URL}?bg_release_readback=${{ github.sha }}")"
+          if [ "${http_status}" != "200" ]; then
+            echo "::error::Authenticated Portal ondernemersdata returned HTTP ${http_status}, expected 200."
+            cat live-portal-ondernemersdata.json >&2 || true
+            exit 1
+          fi
+
+          EXPECTED_TENANT="${expected_tenant}" HTTP_STATUS="${http_status}" node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const body=JSON.parse(await readFile('live-portal-ondernemersdata.json','utf8'));
+          const expectedTenant=process.env.EXPECTED_TENANT;
+          if(body?.scope?.authenticatedTenant!==expectedTenant) throw new Error('Authenticated tenant readback mismatch');
+          if(body?.intelligence?.tenantId!==expectedTenant) throw new Error('Intelligence tenant readback mismatch');
+          if(!Array.isArray(body.sources)||!Array.isArray(body.publications)||!Array.isArray(body.signals)) throw new Error('Portal ondernemersdata payload shape is incomplete');
+          if(!body.intelligence||!Array.isArray(body.intelligence.domains)||!Array.isArray(body.intelligence.sourceCatalog)||!Array.isArray(body.intelligence.signals)) throw new Error('Portal intelligence payload shape is incomplete');
+          const text=JSON.stringify(body);
+          if(/SUPABASE_SERVICE|SERVICE_ROLE|PASSWORD|API_KEY/i.test(text)) throw new Error('Authenticated production payload exposes a secret-like key');
+          const proof={
+            contract:'portal-authenticated-production-canary-v1',
+            http_status:Number(process.env.HTTP_STATUS),
+            authenticated_tenant:expectedTenant,
+            source_count:body.sources.length,
+            publication_count:body.publications.length,
+            signal_count:body.signals.length,
+            intelligence_domain_count:body.intelligence.domains.length,
+            intelligence_catalog_count:body.intelligence.sourceCatalog.length,
+            intelligence_signal_count:body.intelligence.signals.length,
+            generated_at:body?.stats?.generatedAt||null,
+            observed_at:new Date().toISOString(),
+            credentials_persisted:false,
+          };
+          await writeFile('.artifacts/portal-authenticated-production-canary.json',JSON.stringify(proof,null,2)+'\n');
+          console.log(JSON.stringify(proof));
+          NODE
+
       - name: Verify live connector readiness contract
         run: |
           set -euo pipefail

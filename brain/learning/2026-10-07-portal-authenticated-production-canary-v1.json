@@ -1,0 +1,67 @@
+{
+  "id": "portal-authenticated-production-canary-v1",
+  "date": "2026-10-07",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "portal|production-readback|authenticated-http-200|github-oidc|netlify-identity|v1",
+  "root_cause": "The protected Portal API contract and production data path were separately proven, but the release chain had no durable way to create a real short-lived authenticated Netlify Identity session from CI. That left authenticated HTTP 200 against /api/portal-ondernemersdata as a manual/session-dependent evidence gap.",
+  "fix": "Production Release Readback now obtains a short-lived GitHub Actions OIDC token restricted to this repository, main and the production readback workflow. A Netlify-only canary endpoint verifies its signature and claims, creates an auto-confirmed ephemeral Identity user with a synthetic tenant, performs server-side login, returns only the session cookie, and deletes the canary after the normal protected endpoint returns HTTP 200 with the same tenant scope.",
+  "security": {
+    "permanent_end_user_credentials": false,
+    "canary_auth_bypass_in_business_api": false,
+    "github_oidc_signature_verified": true,
+    "repository_ref_workflow_audience_restricted": true,
+    "legacy_and_immutable_github_subject_formats_supported": true,
+    "synthetic_tenant_only": true,
+    "canary_user_cleanup": true,
+    "payload_secret_scan": true,
+    "repository_id_claim_verified": true,
+    "repository_owner_id_claim_verified": true,
+    "subject_customization_compatible": true
+  },
+  "prevention": [
+    "Protected Portal APIs that are part of production readiness must have a real authenticated HTTP readback, not only unit tests plus database/provider proof.",
+    "CI authentication must use short-lived federated identity where possible; do not store permanent customer credentials for canaries.",
+    "GitHub OIDC subject validation must account for the repository's legacy and immutable owner/repository-ID subject formats while still requiring the same repository, main ref and workflow claims.",
+    "A production canary must exercise the unchanged customer auth boundary and must never introduce a canary header or alternate authentication path inside the business API.",
+    "Canary users and credentials are ephemeral and removed after readback, including failure cleanup.",
+    "When GitHub OIDC subject customization may vary, bind authorization to the exact repository/owner IDs plus repository, ref, workflow and audience claims; subject matching may vary only inside that fixed repository identity, never across repositories."
+  ],
+  "evidence": {
+    "function": "netlify/functions/portal-auth-canary-session.mjs",
+    "workflow": ".github/workflows/production-release-readback.yml",
+    "protected_api": "netlify/functions/portal-ondernemersdata.mjs",
+    "regression": "tests/portal-authenticated-production-canary.test.mjs",
+    "production_claim": "withheld until protected merge, exact-main Netlify deployment and authenticated HTTP 200 artifact"
+  },
+  "delivery_recovery": {
+    "failure_class": "PR_MACHINE_METADATA_INVALID",
+    "observed_run": 37684632285,
+    "observed_head": "2e92e34e31c6280a290527811b4a0414e735256a",
+    "root_cause": "The initial PR description used narrative headings but omitted the repository's exact machine-readable delivery metadata preamble, so admission correctly failed before expensive CI.",
+    "fix": "Write Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA, Supersedes, Change-Scope and Scope-Budget as the first PR-body fields before triggering Required.",
+    "prevention": "Every future candidate in this lineage must preserve the exact machine metadata preamble; narrative sections are supplementary, never a substitute."
+  },
+  "failure_class": "PORTAL_AUTHENTICATED_PRODUCTION_READBACK_GAP",
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-authenticated-production-canary.test.mjs",
+      "tests/brain-portal-source-auth.test.mjs",
+      "portal-v2/tests/entrepreneur-intelligence-auth.test.mjs"
+    ],
+    "production_before_fix": {
+      "protected_portal_contract": "GREEN",
+      "netlify_function_deployed": "PROVEN",
+      "underlying_production_data": "PROVEN",
+      "authenticated_http_200": "SESSION_DEPENDENT_UNPROVEN"
+    },
+    "success_criteria": [
+      "protected Required and CodeQL gates green on exact candidate head",
+      "protected merge to main",
+      "exact-main Netlify production deployment",
+      "Production Release Readback receives HTTP 200 from /api/portal-ondernemersdata with a real ephemeral Netlify Identity session",
+      "response tenant scope matches the synthetic canary tenant",
+      "canary user is deleted and no credential or customer payload is persisted"
+    ],
+    "production_claim": "withheld_until_authenticated_production_canary_artifact"
+  }
+}
