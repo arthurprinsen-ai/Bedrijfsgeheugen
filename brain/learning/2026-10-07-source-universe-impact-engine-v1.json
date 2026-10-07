@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|source-universe|impact-action-learning|v1",
+  "date": "2026-10-07",
+  "capability": "source-universe-impact-engine-v1",
+  "problem": "External intelligence existed, but coverage was narrow in the portal and catalog capability, evidence, company-specific impact, action and learning were not presented as one explicit lineage.",
+  "decisions": [
+    "Extend the existing Powerhouse evidence spine; never create a parallel intelligence database.",
+    "Maintain a broad source catalog separately from observed evidence so a possible source is never shown as connected truth.",
+    "Use one taxonomy for 35 external and 10 internal business domains.",
+    "Keep raw observations immutable and derived classifications/scores in separate projections.",
+    "Never invent monetary impact. Impact remains unknown until company exposure, probability and magnitude are evidence-backed.",
+    "Reuse the existing runtime scheduler mux instead of adding another cron writer.",
+    "Derived action candidates are recommendations only; canonical execution/outcome authorities remain unchanged.",
+    "Register the entire lineage in Loop Assurance so missing outcome/learning evidence cannot be reported GREEN."
+  ],
+  "lineage": "source -> evidence -> signal -> company impact -> recommendation -> canonical action -> readback -> outcome -> measurement -> learning -> guard",
+  "truth_rules": {
+    "source_catalog_is_not_connection_truth": true,
+    "external_signal_is_not_company_impact": true,
+    "signal_score_is_not_impact_score": true,
+    "impact_score_requires_probability_magnitude_exposure": true,
+    "financial_value_requires_evidence": true,
+    "missing_context": "UNKNOWN",
+    "historical_green_not_reusable": true
+  },
+  "inheritance": [
+    "All future source/connector work should first map to powerhouse_intelligence_source_catalog_v1.",
+    "All future external intelligence should reuse bg_signaal_onderwerpen/bg_externe_signalen and the canonical source observation spine where applicable.",
+    "All portal surfaces should expose evidence status and unknowns rather than optimistic defaults.",
+    "New intelligence loops must reuse the central scheduler/control plane unless a documented authority exception exists."
+  ]
+}
