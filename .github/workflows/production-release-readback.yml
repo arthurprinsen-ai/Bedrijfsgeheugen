@@ -167,6 +167,59 @@ jobs:
           done
           echo "Production never exposed exact release marker + deploy identity for ${EXPECTED_COMMIT}" >&2
           exit 1
+      - name: Verify authenticated Portal production API proof
+        if: steps.scope.outputs.portal_required == 'true' && steps.deploy.outcome == 'success'
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+          EXPECTED_DEPLOY_ID: ${{ steps.deploy.outputs.deploy_id }}
+        run: |
+          set -euo pipefail
+          proof_url="https://www.bedrijfsgeheugen.nl/api/portal-authenticated-production-proof?sha=${EXPECTED_COMMIT}"
+          for attempt in $(seq 1 30); do
+            nonce="${EXPECTED_COMMIT}-${attempt}-$(date +%s)"
+            if curl -fsSL --connect-timeout 10 --max-time 30 \
+              -H 'Cache-Control: no-cache' \
+              -H 'Pragma: no-cache' \
+              "${proof_url}&attempt=${nonce}" \
+              -o live-portal-authenticated-proof.json; then
+              if EXPECTED_COMMIT="${EXPECTED_COMMIT}" EXPECTED_DEPLOY_ID="${EXPECTED_DEPLOY_ID}" node --input-type=module - <<'NODE'
+          import {readFile} from 'node:fs/promises';
+          const text=await readFile('live-portal-authenticated-proof.json','utf8');
+          const proof=JSON.parse(text);
+          if(proof?.contract!=='PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1')throw new Error('Authenticated Portal proof contract mismatch');
+          if(proof?.status!=='PROVEN')throw new Error(`Authenticated Portal proof is not PROVEN: ${proof?.failure_code||'unknown'}`);
+          if(proof?.commit_ref!==process.env.EXPECTED_COMMIT)throw new Error('Authenticated Portal proof commit mismatch');
+          if(proof?.deploy_id!==process.env.EXPECTED_DEPLOY_ID)throw new Error('Authenticated Portal proof deploy mismatch');
+          if(proof?.http_status!==200)throw new Error('Authenticated Portal proof did not observe HTTP 200');
+          if(proof?.tenant_scope_verified!==true)throw new Error('Authenticated Portal proof did not verify tenant scope');
+          if(proof?.payload_shape_verified!==true)throw new Error('Authenticated Portal proof did not verify response shape');
+          if(proof?.synthetic_user_cleanup!=='DELETED')throw new Error('Authenticated Portal proof did not clean up synthetic user');
+          if(/access_token|refresh_token|password|authorization|@proof\.invalid/i.test(text))throw new Error('Authenticated Portal proof leaked secret or synthetic identity material');
+          console.log(JSON.stringify({
+            contract:proof.contract,
+            status:proof.status,
+            commit_ref:proof.commit_ref,
+            deploy_id:proof.deploy_id,
+            http_status:proof.http_status,
+            tenant_scope_verified:proof.tenant_scope_verified,
+            payload_shape_verified:proof.payload_shape_verified,
+            synthetic_user_cleanup:proof.synthetic_user_cleanup,
+          }));
+          NODE
+              then
+                mkdir -p .artifacts
+                cp live-portal-authenticated-proof.json .artifacts/portal-authenticated-production-proof.json
+                echo "Authenticated Portal production proof verified on attempt ${attempt}/30"
+                break
+              fi
+            fi
+            if [ "${attempt}" -eq 30 ]; then
+              echo "::error::Exact production deploy never produced a valid authenticated Portal HTTP 200 proof."
+              exit 1
+            fi
+            echo "Authenticated Portal production proof not ready; retry ${attempt}/30"
+            sleep 5
+          done
       - name: Record exact deployment not applicable
         if: steps.scope.outputs.deployment_required != 'true'
         run: |

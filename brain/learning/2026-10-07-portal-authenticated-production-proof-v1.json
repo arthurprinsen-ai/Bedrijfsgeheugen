@@ -1,0 +1,34 @@
+{
+  "id": "portal-authenticated-production-proof-v1",
+  "date": "2026-10-07",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|portal|production|authenticated-http-proof|v1",
+  "root_cause": "The release chain proved client bearer wiring, protected portal tests, deployed function identity and live underlying data, but it had no autonomous real end-user Identity JWT to prove an authenticated HTTP 200 against /api/portal-ondernemersdata on the exact immutable production deploy.",
+  "prevention": [
+    "Every production deploy affecting the Portal must create an exact-deploy authenticated proof receipt.",
+    "The proof must use a real short-lived Netlify Identity user JWT, never a service-role bypass or test header.",
+    "Synthetic Identity users must be deleted before a proof can become PROVEN.",
+    "Receipts must contain no token, password, synthetic email or user id.",
+    "Production readback must match both commit SHA and Netlify deploy id and fail closed on missing or stale proof.",
+    "Every netlify/functions/portal-* change must run in the protected Portal lane."
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_AUTHENTICATED_PRODUCTION_HTTP_PROOF_MISSING",
+    "scope": "PORTAL_PRODUCTION_AUTH",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "core": "platform/api/portal-authenticated-production-proof-core.mjs",
+    "event_function": "netlify/functions/portal-authenticated-production-proof.mjs",
+    "readback_function": "netlify/functions/portal-authenticated-production-proof-readback.mjs",
+    "regression_test": "tests/portal-authenticated-production-proof.test.mjs",
+    "production_gate": ".github/workflows/production-release-readback.yml"
+  },
+  "production_claim": "withheld_until_protected_merge_and_exact_production_receipt_is_PROVEN",
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-authenticated-production-proof.test.mjs"
+    ]
+  }
+}

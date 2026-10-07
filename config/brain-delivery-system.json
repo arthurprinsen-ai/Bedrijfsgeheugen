@@ -349,6 +349,7 @@
         "tools/bouw-powerhouse-auth.mjs",
         "tools/customer-portal-",
         "tools/fix-netlify-identity-",
+        "netlify/functions/portal-",
         "netlify/functions/portaalvraag.mjs",
         "netlify/functions/portal-state.mjs",
         "tools/portal-visual-density.mjs",
