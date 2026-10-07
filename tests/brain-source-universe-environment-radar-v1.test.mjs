@@ -17,14 +17,17 @@ test('Source Universe reuses the existing external signal and evidence spine',as
 });
 
 test('Source Universe covers broad business environment categories',async()=>{
-  const sql=await read('supabase/migrations/20261007195000_source_universe_environment_radar_v1.sql');
+  const sql=(await read('supabase/migrations/20261007195000_source_universe_environment_radar_v1.sql'))+
+    (await read('supabase/migrations/20261007195500_source_universe_expansion_v1.sql'));
   for(const marker of [
     'AI-wetgeving en toezicht','Cyberdreigingen en kwetsbaarheden','AI-modellen en agents',
     'Marktvraag en klantgedrag','Concurrenten en prijsbewegingen','Subsidies en fondsen',
     'Rente en financiering','Arbeidsmarkt en personeel','Energieprijzen en netcongestie',
     'Leveranciers en supply chain','Geopolitiek en sancties','Publieke aanbestedingen',
     'Patenten merken en IP','Fraude AML en sanctielijsten','Vastgoed en bedrijfslocaties',
-    'Demografie en regionale ontwikkeling'
+    'Demografie en regionale ontwikkeling','ISO standards','RIVM','World Trade Organization',
+    'AFAS','Dynamics 365','Microsoft Fabric','Snowflake','Databricks','TOPdesk',
+    'Google Ads','Meta Ads','Supplier master & contracts','Production / MES / operations'
   ]) assert.ok(sql.includes(marker),marker);
 });
 
