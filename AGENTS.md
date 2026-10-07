@@ -1068,19 +1068,20 @@ Voor alle huidige en toekomstige chats/agents die GitHub Actions of andere remot
 - een actieve workflow wordt gecheckpoint en de agent gaat door met onafhankelijk werk; een chat/toolketen mag nooit openstaan uitsluitend voor polling;
 - remote CI, auto-merge en protected gates blijven zelfstandig doorlopen; snelheid wordt nooit verkregen door Required, CodeQL, exact-HEAD identity, branch protection of provider-readback te verzwakken.
 
-## Source Universe & Environment Radar — inherited
+## Source Universe & Company Impact Engine — inherited
 
-Fingerprint: `powerhouse|source-universe|environment-radar|impact|action|outcome|learning|v1`.
+Fingerprint: `powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1`.
 
 All current and future chats/agents that use external or internal business signals inherit:
 - reuse `bg_signaal_onderwerpen`, `bg_externe_signalen` and the existing evidence spine; do not create a parallel signal/news store;
-- `CATALOGUED` source capability never means connected, observed or live;
-- separate source evidence, AI interpretation, company exposure, expected impact and realized outcome;
-- never synthesize tenant exposure or euro impact when company evidence is absent;
-- route material recommendations through the existing Brain/action/obligation authority;
+- use `powerhouse_intelligence_source_catalog_v1` for source capability and keep catalog capability separate from connection/runtime evidence;
+- keep raw evidence, derived signal, company impact, recommendation, canonical action and observed outcome as separate truth classes;
+- company impact is not scored until probability, magnitude and exposure are evidence-backed;
+- financial value/loss remains NULL when company evidence is absent;
+- only a `READY` candidate with `SCORED` company impact may be promoted through `powerhouse_materialize_intelligence_action_v1`;
+- canonical materialization creates a Brain obligation only and never implies an external provider side effect;
 - only observed outcomes may feed Outcome Memory and verified learning;
-- reuse the existing evidence-maintenance heartbeat; no parallel intelligence scheduler;
-- project decision-useful intelligence into Portal V2, including `omgevingsradar`, while unknown remains visibly unknown;
-- register and assure the loop through Loop Assurance key `environment-radar`;
-- protected-main + provider/runtime + portal readback are required before LIVE_PROVEN.
-
+- reuse `powerhouse_runtime_scheduler_mux_v3`; no parallel intelligence scheduler;
+- project decision-useful intelligence into Portal V2 `omgevingsradar`, while unknown remains visibly unknown;
+- register and assure the loop through Loop Assurance key `external-intelligence-universe`;
+- protected-main + Supabase runtime + Netlify/API/Portal readback are required before LIVE_PROVEN.
