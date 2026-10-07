@@ -18,12 +18,15 @@ Deno.serve(async req=>{
  if(!token||req.headers.get('x-powerhouse-token')!==token)return json({ok:false,error:'UNAUTHORIZED'},401);
  let input:any={};try{input=await req.json()}catch{}
  const runDate=clean(input.runDate||input.publicationDate)||today(),action=clean(input.action)||'preflight';
+ const jobColumns=action==='submit_asset'
+   ? 'post_type,status,replacement_of_external_id,attempts,required_provider,selected_provider,asset_manifest,proof_manifest,provider_connection_state,last_error,next_action'
+   : 'post_type,status,replacement_of_external_id,attempts,required_provider,selected_provider,provider_connection_state,last_error,next_action';
  const [{data:ob},{data:art},{data:rec},{data:ints},{data:job}]=await Promise.all([
-  db.from('content_publication_obligations').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle(),
-  db.from('powerhouse_content_artifacts').select('*').eq('run_date',runDate).eq('channel','instagram_company').maybeSingle(),
-  db.from('powerhouse_content_recommendations').select('*').eq('run_date',runDate).in('target_channel',['instagram','instagram_company']).order('priority',{ascending:false}).limit(1).maybeSingle(),
+  db.from('content_publication_obligations').select('status,external_id,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle(),
+  db.from('powerhouse_content_artifacts').select('generation_evidence').eq('run_date',runDate).eq('channel','instagram_company').maybeSingle(),
+  db.from('powerhouse_content_recommendations').select('recommendation_type,evidence,priority,target_channel').eq('run_date',runDate).in('target_channel',['instagram','instagram_company']).order('priority',{ascending:false}).limit(1).maybeSingle(),
   db.from('bg_integrations').select('integration,status').in('integration',['openart','openart_mcp','placid']),
-  db.from('powerhouse_instagram_media_jobs_v1').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
+  db.from('powerhouse_instagram_media_jobs_v1').select(jobColumns).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
  ]);
  const postType=inferType(input.postType,job?.post_type,ob?.evidence?.post_type,ob?.evidence?.media_type,art?.generation_evidence?.daily_winner_format,art?.generation_evidence?.post_type,art?.generation_evidence?.media_type,art?.generation_evidence?.format,rec?.evidence?.format,rec?.recommendation_type);
  if(!['image','reel'].includes(postType))return json({ok:false,error:'INSTAGRAM_MIRA_VISUAL_OR_REEL_ONLY',postType},422);
