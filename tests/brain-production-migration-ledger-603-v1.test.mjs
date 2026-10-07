@@ -72,3 +72,17 @@ test('ledger identities are unique by production version and file identity',()=>
     assert.deepEqual(matches,[version+'_'+name+'.sql']);
   }
 });
+
+
+test('identity graph foundation is reproducible before the first runtime function uses it',()=>{
+  const path='supabase/migrations/20261005140225_powerhouse_bounded_identity_spine_v1.sql';
+  const sql=fs.readFileSync(path,'utf8');
+  const createAt=sql.search(/create\s+table\s+if\s+not\s+exists\s+public\.powerhouse_identity_graph_v1/i);
+  const firstUseAt=sql.search(/create\s+or\s+replace\s+function\s+public\.powerhouse_sync_identity_graph_batch_v1/i);
+  assert.ok(createAt>=0,'canonical identity graph create is missing');
+  assert.ok(firstUseAt>createAt,'identity graph must exist before the first runtime function references it');
+  assert.match(sql,/unique\s*\(\s*entity_type\s*,\s*identifier_type\s*,\s*identifier_hash\s*\)/i);
+  assert.match(sql,/alter\s+table\s+public\.powerhouse_identity_graph_v1\s+enable\s+row\s+level\s+security/i);
+  assert.match(sql,/create\s+policy\s+powerhouse_identity_graph_service_v1/i);
+  assert.match(sql,/grant\s+all\s+on\s+table\s+public\.powerhouse_identity_graph_v1\s+to\s+service_role/i);
+});
