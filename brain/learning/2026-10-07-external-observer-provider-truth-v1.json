@@ -22,5 +22,5 @@
     ]
   },
   "regression_test": "tests/brain-external-observer-provider-truth.test.mjs",
-  "evaluator": "tools/site-shell/external-observer-production-proof.mjs"
+  "evaluator": "tools/delivery/external-observer-production-proof.mjs"
 }
