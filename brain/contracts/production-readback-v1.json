@@ -126,7 +126,23 @@
       "tools/netlify/",
       "tools/notion/",
       "tools/supabase/"
-    ]
+    ],
+    "supabaseMigrationReadback": {
+      "requiredForMigrationRuntime": true,
+      "marker": "Terminal-Supabase-Migration-Readback",
+      "projectRef": "adhjwmvyoixzjtmiroln",
+      "state": "APPLIED",
+      "requiredFields": [
+        "version",
+        "name",
+        "state",
+        "project",
+        "observed_at"
+      ],
+      "versionPattern": "^[0-9]{14}$",
+      "observedAtFormat": "UTC_ISO8601_SECONDS",
+      "failClosedWhenMissing": true
+    }
   },
   "connectorReadiness": {
     "maxAttempts": 8,
