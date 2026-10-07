@@ -63,5 +63,10 @@
       "canary user is deleted and no credential or customer payload is persisted"
     ],
     "production_claim": "withheld_until_authenticated_production_canary_artifact"
+  },
+  "compiler": {
+    "failure_class": "PORTAL_AUTHENTICATED_PRODUCTION_READBACK_GAP",
+    "machine_enforceable": true,
+    "scope": "PORTAL_PRODUCTION_AUTHENTICATED_READBACK"
   }
 }

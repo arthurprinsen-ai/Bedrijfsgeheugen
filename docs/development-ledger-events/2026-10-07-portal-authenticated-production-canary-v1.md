@@ -12,5 +12,6 @@
 - Production closure: withheld until protected gates, merge, Netlify exact-main deployment and canary HTTP 200 artifact succeed.
 
 - PR_MACHINE_METADATA_INVALID recovery: Required run 37684632285 correctly failed admission because the first PR body omitted the exact machine-readable delivery metadata preamble. The PR body now starts with Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA, Supersedes, Change-Scope and Scope-Budget; this is a prevention rule, not a gate bypass.
-- Semantic learning closure: added top-level `failure_class` and `evaluation` after Required preflight correctly rejected the first learning artifact as semantically incomplete.
+- Semantic learning closure: added `compiler.failure_class` plus `evaluation.historical_replay` after Required preflight correctly exposed the exact semantic schema expected by the material-writeback guard.
 - OIDC subject customization: verifier now binds exact owner/repository numeric IDs and accepts only subject prefixes for this exact repo identity, while `ref`, `workflow_ref`, audience and signature stay independently exact.
+- Required successor preflight 37685671461 proved `evaluation` green and isolated the remaining semantic gap to `compiler.failure_class`; no quality gate was bypassed.
