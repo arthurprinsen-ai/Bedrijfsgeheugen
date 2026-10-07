@@ -721,7 +721,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path to 'public','pg_catalog'
-as $
+as $$
 declare
   o public.powerhouse_evidence_source_observations%rowtype;
   d public.powerhouse_intelligence_domain_registry_v1%rowtype;
@@ -785,7 +785,7 @@ begin
     'source_observation_id',p_source_observation_id
   );
 end
-$;
+$$;
 
 create or replace function public.powerhouse_refresh_signal_relations_v1(
   p_tenant_id text default 'canonical',
@@ -795,7 +795,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path to 'public','pg_catalog'
-as $
+as $$
 declare
   v_shared integer:=0;
   v_dependency integer:=0;
@@ -886,7 +886,7 @@ begin
     'executed_at',now()
   );
 end
-$;
+$$;
 
 create or replace function public.powerhouse_upsert_intelligence_company_impact_v1(
   p_tenant_id text,
