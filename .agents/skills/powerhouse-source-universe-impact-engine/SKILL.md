@@ -62,3 +62,9 @@ All intelligence projection tables are server-only:
 ## Production proof
 
 Do not claim LIVE from source or CI. Required: protected merge → Supabase migration/readback → canonical refresh evidence → Netlify exact-main deploy/readback → authenticated Portal/API verification → Loop Assurance evidence. Only then promote the System Map capability from `CANDIDATE_PROTECTED_DELIVERY`.
+
+## Internal evidence and signal relations
+
+- Internal signals may only be projected from a source observation whose evidence explicitly resolves to the same tenant (`tenant_id`, `organisatie_id` or the same key inside `scope`). If that identity is absent or different, fail closed with `TENANT_SOURCE_OBSERVATION_SCOPE_REQUIRED`.
+- Relation generation may automatically create only `SHARED_DOMAIN` and `COMPANY_DEPENDENCY` relations from bounded evidence.
+- **Correlation is not causality.** Automatic relation logic must keep `causality_claimed=false`; a `CAUSAL_HYPOTHESIS` needs separate explicit evidence and may not be inferred from co-occurrence, timing, shared domain or shared company exposure alone.
