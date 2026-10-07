@@ -11,9 +11,9 @@ const MODEL = 'claude-sonnet-5';
 const TRANSLATION_MODEL_ID = 'ANTHROPIC-HAIKU';
 const TRANSLATION_MODEL = 'claude-haiku-4-5-20251001';
 
-async function assertTenantAiAllowed(tenantId){
+async function assertTenantAiAllowed(tenantId,sovereigntyClient=null){
   if(!tenantId)throw Object.assign(new Error('DATA_SOVEREIGNTY_TENANT_REQUIRED'),{code:'DATA_SOVEREIGNTY_TENANT_REQUIRED'});
-  return createDataSovereigntyClient().assertAiAllowed(tenantId);
+  return (sovereigntyClient??createDataSovereigntyClient()).assertAiAllowed(tenantId);
 }
 
 const providerRegistry = createProviderRegistry([
@@ -86,8 +86,8 @@ export async function runWebsiteAnswer({ question, fragments, apiKey, system, fe
   return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore, usageContext:{ ...(usageContext ?? {}), tenantId:'PUBLIC', activityType:'website_qa' } });
 }
 
-export async function runPortalAnswer({ question, projectContext, tenantId, apiKey, system, fetchImpl = fetch, usageStore, usageContext, requestId = crypto.randomUUID() }) {
-  await assertTenantAiAllowed(tenantId);
+export async function runPortalAnswer({ question, projectContext, tenantId, apiKey, system, fetchImpl = fetch, usageStore, usageContext, sovereigntyClient=null, requestId = crypto.randomUUID() }) {
+  await assertTenantAiAllowed(tenantId,sovereigntyClient);
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'REQUEST_SCOPED', requesterId:'portal-requester', aiUseCaseId:'AI-PORTAL-QA', purpose:'portal-project-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Confidential', context:{ question, projectContext } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','projectContext'], pseudonymizeFields:[] },
@@ -97,9 +97,9 @@ export async function runPortalAnswer({ question, projectContext, tenantId, apiK
 }
 
 
-export async function runTranslation({ strings, source='nl', target='en', dataClass='Public', tenantId=null, apiKey, fetchImpl=fetch, usageStore, requestId=crypto.randomUUID() }) {
+export async function runTranslation({ strings, source='nl', target='en', dataClass='Public', tenantId=null, apiKey, fetchImpl=fetch, usageStore, sovereigntyClient=null, requestId=crypto.randomUUID() }) {
   const isPortal = dataClass === 'Confidential';
-  if(isPortal)await assertTenantAiAllowed(tenantId);
+  if(isPortal)await assertTenantAiAllowed(tenantId,sovereigntyClient);
   const policyTenantId = isPortal ? 'REQUEST_SCOPED' : 'PUBLIC';
   const requesterId = isPortal ? 'portal-requester' : 'public-visitor';
   const aiUseCaseId = isPortal ? 'AI-PORTAL-TRANSLATION' : 'AI-PUBLIC-TRANSLATION';
