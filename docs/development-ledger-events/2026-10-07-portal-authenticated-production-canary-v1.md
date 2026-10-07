@@ -1,0 +1,12 @@
+# Development ledger — Authenticated Portal production canary v1
+
+- Obligation: `portal-authenticated-production-canary-v1`
+- Date: 2026-10-07
+- Failure class: `PORTAL_AUTHENTICATED_PRODUCTION_READBACK_GAP`
+- Root cause: CI had no durable authenticated Netlify Identity session for the protected ondernemersdata production endpoint.
+- Existing truth preserved: `portal-ondernemersdata.mjs` remains protected exclusively by normal Netlify Identity `getUser()` plus tenant resolution.
+- Fix: short-lived GitHub Actions OIDC → verified Netlify canary session → real cookie-authenticated GET → tenant/read-model assertions → ephemeral user cleanup.
+- Permanent test credentials: none.
+- Business API auth bypass: none.
+- Regression: `tests/portal-authenticated-production-canary.test.mjs`.
+- Production closure: withheld until protected gates, merge, Netlify exact-main deployment and canary HTTP 200 artifact succeed.

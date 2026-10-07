@@ -218,3 +218,23 @@ A PRIVATE interactive Netlify MCP connection is not project-visible provider aut
 
 Canonical learning: `brain/learning/2026-10-07-netlify-native-git-primary-authority-v1.json`.
 Regression: `tests/brain-netlify-git-deploy-first-v1.test.mjs`.
+
+
+## Authenticated protected-Portal production readback
+
+Fingerprint: `portal|production-readback|authenticated-http-200|github-oidc|netlify-identity|v1`.
+
+For protected Portal endpoints that are part of production readiness, static tests plus provider/database evidence are not sufficient when an actual user-authenticated HTTP path can be exercised safely.
+
+Required pattern:
+- GitHub Actions uses short-lived OIDC; do not persist an end-user password in GitHub or Netlify for the canary;
+- the OIDC verifier is fail-closed on issuer, audience, repository, `refs/heads/main`, workflow ref, subject, event and token lifetime;
+- the canary creates an ephemeral Netlify Identity user with a synthetic tenant and performs the normal server-side Identity login;
+- the production readback uses the resulting real session cookie against the unchanged protected business endpoint;
+- HTTP 200 and exact synthetic tenant scope must both match before the readback is green;
+- no canary header, alternate auth branch or privileged service credential may be accepted by the business endpoint;
+- delete the canary user after readback and keep a failure-safe cleanup path;
+- persist only summary evidence; never persist the token, password, session cookie or customer payload.
+
+Canonical learning: `brain/learning/2026-10-07-portal-authenticated-production-canary-v1.json`.
+Regression: `tests/portal-authenticated-production-canary.test.mjs`.

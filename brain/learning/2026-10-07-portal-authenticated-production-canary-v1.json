@@ -1,0 +1,30 @@
+{
+  "id": "portal-authenticated-production-canary-v1",
+  "date": "2026-10-07",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "portal|production-readback|authenticated-http-200|github-oidc|netlify-identity|v1",
+  "root_cause": "The protected Portal API contract and production data path were separately proven, but the release chain had no durable way to create a real short-lived authenticated Netlify Identity session from CI. That left authenticated HTTP 200 against /api/portal-ondernemersdata as a manual/session-dependent evidence gap.",
+  "fix": "Production Release Readback now obtains a short-lived GitHub Actions OIDC token restricted to this repository, main and the production readback workflow. A Netlify-only canary endpoint verifies its signature and claims, creates an auto-confirmed ephemeral Identity user with a synthetic tenant, performs server-side login, returns only the session cookie, and deletes the canary after the normal protected endpoint returns HTTP 200 with the same tenant scope.",
+  "security": {
+    "permanent_end_user_credentials": false,
+    "canary_auth_bypass_in_business_api": false,
+    "github_oidc_signature_verified": true,
+    "repository_ref_workflow_audience_restricted": true,
+    "synthetic_tenant_only": true,
+    "canary_user_cleanup": true,
+    "payload_secret_scan": true
+  },
+  "prevention": [
+    "Protected Portal APIs that are part of production readiness must have a real authenticated HTTP readback, not only unit tests plus database/provider proof.",
+    "CI authentication must use short-lived federated identity where possible; do not store permanent customer credentials for canaries.",
+    "A production canary must exercise the unchanged customer auth boundary and must never introduce a canary header or alternate authentication path inside the business API.",
+    "Canary users and credentials are ephemeral and removed after readback, including failure cleanup."
+  ],
+  "evidence": {
+    "function": "netlify/functions/portal-auth-canary-session.mjs",
+    "workflow": ".github/workflows/production-release-readback.yml",
+    "protected_api": "netlify/functions/portal-ondernemersdata.mjs",
+    "regression": "tests/portal-authenticated-production-canary.test.mjs",
+    "production_claim": "withheld until protected merge, exact-main Netlify deployment and authenticated HTTP 200 artifact"
+  }
+}
