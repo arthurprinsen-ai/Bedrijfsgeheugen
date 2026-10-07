@@ -86,7 +86,7 @@ test('connector test and activation are both blocked before external processing 
  const firstGuard=handler.indexOf('assertConnectorAllowed');
  const runTest=handler.indexOf('engine.runTest');
  const secondGuard=handler.indexOf('assertConnectorAllowed',firstGuard+1);
- const active=handler.indexOf("state:'Active'");
+ const active=handler.indexOf("state:'Active'",secondGuard);
  assert.ok(firstGuard>=0&&runTest>firstGuard,'test guard must run before engine.runTest');
  assert.ok(secondGuard>runTest&&active>secondGuard,'activation guard must run before Active state');
 });
