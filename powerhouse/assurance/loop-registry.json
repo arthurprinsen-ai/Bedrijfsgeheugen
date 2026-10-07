@@ -255,23 +255,6 @@
         "learning",
         "guard"
       ]
-    },
-    {
-      "loop_key": "environment-radar",
-      "runtime_source": "powerhouse-environment-radar-v1",
-      "cron_jobname": "powerhouse-evidence-maintenance-hourly-v1",
-      "expected_cadence_minutes": 60,
-      "critical": false,
-      "required_stages": [
-        "input",
-        "decision",
-        "action",
-        "readback",
-        "outcome",
-        "measurement",
-        "learning",
-        "guard"
-      ]
     }
   ]
 }
