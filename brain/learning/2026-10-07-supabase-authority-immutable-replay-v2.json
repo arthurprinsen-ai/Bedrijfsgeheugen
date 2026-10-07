@@ -1,0 +1,36 @@
+{
+  "id": "supabase-authority-immutable-replay-v2-20261007",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "supabase|authority|workflow-integrity|immutable-replay|v2",
+  "compiler": {
+    "failure_class": "DELIVERY_CONTROL_PLANE",
+    "scope": "SUPABASE_PRODUCTION_AUTHORITY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "A stale/reconcile writer reintroduced a truncated scope-resolver into the post-merge Supabase production authority. PR tests validated contracts but the push-only workflow itself was not parsed by GitHub during pull_request admission, so syntactic corruption reached main.",
+  "prevention": "Rebuild the authority from the last known-good immutable source, structurally validate one resolver/capture/observer/parity chain before write, add a regression assertion for the exact complete slug regex and replay target wiring, and retain provider source parity as canonical fail-closed authority.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-edge-production-writeback-v1.test.mjs",
+      "tests/supabase-edge-provider-readback-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_main_sha": "7f422aab334dd09a85d6c1d635ee2ab87f82933f",
+    "failed_workflow_run": 37576825013,
+    "recovered_from_clean_head": "90d1b205a238664300f1f96f3efa54207309b003",
+    "structural_validation": {
+      "resolver_count": 1,
+      "capture_count": 1,
+      "observer_count": 1,
+      "parity_retry_count": 1,
+      "replay_present": true,
+      "truncated_regex_present": false
+    }
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 2
+}
