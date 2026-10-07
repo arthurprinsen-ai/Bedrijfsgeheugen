@@ -47,3 +47,31 @@ test('unknown non-Netlify and non-Supabase runtime paths remain fail-closed', as
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
   assert.match(workflow,/exit 78/);
 });
+
+
+test('migration runtime requires explicit provider-applied evidence', async()=>{
+  const [workflow,contract] = await Promise.all([
+    readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8'),
+    readFile('brain/contracts/production-readback-v1.json','utf8').then(JSON.parse),
+  ]);
+  const migration=contract.productionTruth.supabaseMigrationReadback;
+  assert.equal(migration.requiredForMigrationRuntime,true);
+  assert.equal(migration.marker,'Terminal-Supabase-Migration-Readback');
+  assert.equal(migration.projectRef,'adhjwmvyoixzjtmiroln');
+  assert.equal(migration.state,'APPLIED');
+  assert.equal(migration.failClosedWhenMissing,true);
+
+  assert.match(workflow,/const migrations=paths\.filter/);
+  assert.match(workflow,/Terminal-Supabase-Migration-Readback/);
+  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
+  assert.match(workflow,/supabase_migration_provider/);
+  assert.match(workflow,/supabase_edge_and_migration_provider/);
+  assert.match(workflow,/TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING/);
+  assert.match(workflow,/project=adhjwmvyoixzjtmiroln/);
+});
+
+test('unknown backend paths remain fail-closed after migration routing', async()=>{
+  const workflow=await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  assert.match(workflow,/!migrations\.includes\(path\)/);
+  assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
+});

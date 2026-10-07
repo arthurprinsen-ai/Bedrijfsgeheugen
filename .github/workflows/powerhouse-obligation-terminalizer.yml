@@ -223,9 +223,10 @@ jobs:
           import { isNetlifyRuntimePath } from './tools/site-shell/production-supersession.mjs';
           const paths=String(process.env.NON_GOVERNANCE_PATHS||'').split(/\r?\n/).filter(Boolean);
           const supabase=paths.filter(path=>path==='supabase/config.toml'||/^supabase\/functions\/[^/]+\//.test(path));
+          const migrations=paths.filter(path=>/^supabase\/migrations\/\d{14}_[^/]+\.sql$/.test(path));
           const netlify=paths.filter(path=>isNetlifyRuntimePath(path));
-          const unknown=paths.filter(path=>!supabase.includes(path)&&!netlify.includes(path));
-          process.stdout.write(JSON.stringify({supabase,netlify,unknown}));
+          const unknown=paths.filter(path=>!supabase.includes(path)&&!migrations.includes(path)&&!netlify.includes(path));
+          process.stdout.write(JSON.stringify({supabase,migrations,netlify,unknown}));
           NODE
           )"
           unknown_runtime_paths="$(jq -r '.unknown[]?' <<<"$runtime_classes")"
@@ -273,16 +274,49 @@ jobs:
             printf '%s\n' "$readbacks" > .artifacts/supabase-provider-readbacks.json
           fi
 
+          mapfile -t changed_migrations < <(jq -r '.migrations[]?' <<<"$runtime_classes")
+          migration_required=false
+          printf '[]\n' > .artifacts/supabase-migration-readbacks.json
+          if [ "${#changed_migrations[@]}" -gt 0 ]; then
+            migration_required=true
+            live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+            migration_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Migration-Readback:[[:space:]]*//p')"
+            migration_readbacks='[]'
+            for migration_path in "${changed_migrations[@]}"; do
+              file="$(basename "$migration_path")"
+              version="${file%%_*}"
+              name="${file#${version}_}"
+              name="${name%.sql}"
+              line="$(printf '%s\n' "$migration_lines" | grep -E "^version=${version};name=${name};state=APPLIED;project=adhjwmvyoixzjtmiroln;observed_at=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" | tail -n1 || true)"
+              if [ -z "$line" ]; then
+                echo "::error::SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING:$migration_path"
+                exit 78
+              fi
+              observed_at="$(sed -nE 's/.*;observed_at=([^;]+)$/\1/p' <<<"$line")"
+              migration_readbacks="$(jq -c --arg path "$migration_path" --arg version "$version" --arg name "$name" --arg observed_at "$observed_at" '. + [{path:$path,version:$version,name:$name,state:"APPLIED",project:"adhjwmvyoixzjtmiroln",observed_at:$observed_at}]' <<<"$migration_readbacks")"
+              echo "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:$line"
+            done
+            printf '%s\n' "$migration_readbacks" > .artifacts/supabase-migration-readbacks.json
+          fi
+
           netlify_required="$(jq -r '(.netlify|length)>0' <<<"$runtime_classes")"
           if [ "$netlify_required" != true ]; then
-            [ "$supabase_required" = true ] || {
+            if [ "$supabase_required" != true ] && [ "$migration_required" != true ]; then
               echo "::error::UNWIRED_NON_NETLIFY_RUNTIME_READBACK"
               printf '%s' "$non_governance_paths"
               exit 78
-            }
+            fi
             prove_main_containment
-            echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
-            echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            if [ "$supabase_required" = true ] && [ "$migration_required" = true ]; then
+              echo "readback_mode=supabase_edge_and_migration_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_AND_MIGRATION_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} migrations=${changed_migrations[*]} merge=$MERGE_SHA"
+            elif [ "$supabase_required" = true ]; then
+              echo "readback_mode=supabase_edge_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_EDGE_PROVIDER_READBACK_PROVEN:functions=${changed_functions[*]} merge=$MERGE_SHA"
+            else
+              echo "readback_mode=supabase_migration_provider" >> "$GITHUB_OUTPUT"
+              echo "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:migrations=${changed_migrations[*]} merge=$MERGE_SHA"
+            fi
             exit 0
           fi
 
@@ -340,7 +374,10 @@ jobs:
           const providerReadbacks=existsSync('.artifacts/supabase-provider-readbacks.json')
             ? JSON.parse(readFileSync('.artifacts/supabase-provider-readbacks.json','utf8'))
             : [];
-          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','netlify_runtime_supabase_provider'];
+          const migrationReadbacks=existsSync('.artifacts/supabase-migration-readbacks.json')
+            ? JSON.parse(readFileSync('.artifacts/supabase-migration-readbacks.json','utf8'))
+            : [];
+          const runtimeReadbackModes=['netlify_runtime','supabase_edge_provider','supabase_migration_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider'];
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -358,12 +395,14 @@ jobs:
               deploy_promotion_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               runtime_function_readback:runtimeReadbackModes.includes(process.env.READBACK_MODE),
               production_readback_not_applicable:['non_runtime','supabase_history_parity_recovery'].includes(process.env.READBACK_MODE),
-              supabase_provider_readback:['supabase_edge_provider','netlify_runtime_supabase_provider'].includes(process.env.READBACK_MODE),
+              supabase_provider_readback:['supabase_edge_provider','supabase_edge_and_migration_provider','netlify_runtime_supabase_provider'].includes(process.env.READBACK_MODE),
+              supabase_migration_readback:['supabase_migration_provider','supabase_edge_and_migration_provider'].includes(process.env.READBACK_MODE),
               outcome_evidence:true,
               learning_projection:preflight?.status==='READY',
               skill_projection:true
             },
-            supabase_provider_readbacks:providerReadbacks
+            supabase_provider_readbacks:providerReadbacks,
+            supabase_migration_readbacks:migrationReadbacks
           };
           if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
@@ -372,6 +411,9 @@ jobs:
           }
           if(evidence.checks.supabase_provider_readback && providerReadbacks.length===0) {
             throw new Error('TERMINAL_SUPABASE_PROVIDER_READBACK_EVIDENCE_MISSING');
+          }
+          if(evidence.checks.supabase_migration_readback && migrationReadbacks.length===0) {
+            throw new Error('TERMINAL_SUPABASE_MIGRATION_READBACK_EVIDENCE_MISSING');
           }
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));
