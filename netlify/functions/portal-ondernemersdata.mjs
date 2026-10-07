@@ -131,23 +131,29 @@ export default async request=>{
   try{
     const tenant=enc(tenantId);
     const [
-      sources,publications,signalsRaw,domains,sourceCatalog,signalsCanonical,
-      tenantImpacts,canonicalActions,tenantActions,baseSnapshots
+      sources,publications,signalsRaw,domains,sourceCatalog,signalsCanonical,tenantSignals,
+      tenantImpacts,canonicalActions,tenantActions,canonicalRelations,tenantRelations,baseSnapshots
     ]=await Promise.all([
       table('bronnen?select=id,naam,uitgever,soort,controle_frequentie,laatst_gecontroleerd,laatste_controle_gelukt,actief,trefwoorden&actief=eq.true&order=uitgever.asc,naam.asc',key),
       table('bronpublicaties?select=id,bron_id,titel,samenvatting,publicatiedatum,url,opgehaald_op,goedgekeurd,uitgever_url&order=publicatiedatum.desc.nullslast&limit=350',key),
       table('bg_externe_signalen?select=url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,brontrouw,bevestiging,versheid,relevantie,vertrouwen,toegestaan,opgehaald_op,deadline&toegestaan=eq.true&order=gepubliceerd_op.desc.nullslast&limit=250',key),
       table('powerhouse_intelligence_domain_registry_v1?select=domain_key,label,pillar,scope,description,default_signal_type,default_action_type,default_horizon_days,active,metadata&active=eq.true&order=scope.asc,pillar.asc,label.asc',key),
       table('powerhouse_intelligence_source_catalog_v1?select=source_key,label,publisher,scope,domain_keys,source_kind,authority_tier,activation_mode,canonical_url,adapter_key,update_cadence,jurisdiction,availability_state,last_observed_at,evidence_source_key,active,metadata&active=eq.true&order=scope.asc,authority_tier.desc,label.asc&limit=500',key),
-      table('powerhouse_intelligence_signal_projection_v1?select=tenant_id,signal_key,source_observation_id,source_key,external_event_id,external_url,domain_key,signal_type,direction,title,summary,published_at,observed_at,deadline,source_trust,confirmation,freshness,relevance,source_confidence,urgency,signal_score,time_horizon_days,status,evidence&tenant_id=eq.canonical&status=neq.DISMISSED&order=signal_score.desc,observed_at.desc&limit=300',key),
-      table(`powerhouse_intelligence_company_impact_v1?select=tenant_id,impact_key,signal_key,target_node_key,target_node_type,target_label,relevance,probability,magnitude,urgency,exposure,source_confidence,reversibility,impact_score,estimated_value_eur,estimated_loss_eur,impact_dimensions,rationale,evidence,status,observed_at,updated_at&tenant_id=eq.${tenant}&status=neq.DISMISSED&order=impact_score.desc.nullslast,observed_at.desc&limit=500`,key),
-      table('powerhouse_intelligence_action_candidate_v1?select=tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status,evidence&tenant_id=eq.canonical&status=in.(CANDIDATE,READY,MATERIALIZED)&order=priority_score.desc&limit=100',key),
-      table(`powerhouse_intelligence_action_candidate_v1?select=tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status,evidence&tenant_id=eq.${tenant}&status=in.(CANDIDATE,READY,MATERIALIZED,DONE)&order=priority_score.desc&limit=100`,key),
+      table('powerhouse_intelligence_signal_projection_v1?select=tenant_id,signal_key,source_observation_id,source_key,external_event_id,external_url,domain_key,signal_type,direction,title,summary,published_at,observed_at,deadline,source_trust,confirmation,freshness,relevance,source_confidence,urgency,signal_score,time_horizon_days,status&tenant_id=eq.canonical&status=neq.DISMISSED&order=signal_score.desc,observed_at.desc&limit=300',key),
+      table(`powerhouse_intelligence_signal_projection_v1?select=tenant_id,signal_key,source_observation_id,source_key,external_event_id,external_url,domain_key,signal_type,direction,title,summary,published_at,observed_at,deadline,source_trust,confirmation,freshness,relevance,source_confidence,urgency,signal_score,time_horizon_days,status&tenant_id=eq.${tenant}&status=neq.DISMISSED&order=signal_score.desc,observed_at.desc&limit=300`,key),
+      table(`powerhouse_intelligence_company_impact_v1?select=tenant_id,impact_key,signal_key,target_node_key,target_node_type,target_label,relevance,probability,magnitude,urgency,exposure,source_confidence,reversibility,impact_score,estimated_value_eur,estimated_loss_eur,impact_dimensions,rationale,status,observed_at,updated_at&tenant_id=eq.${tenant}&status=neq.DISMISSED&order=impact_score.desc.nullslast,observed_at.desc&limit=500`,key),
+      table('powerhouse_intelligence_action_candidate_v1?select=tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status&tenant_id=eq.canonical&status=in.(CANDIDATE,READY,MATERIALIZED)&order=priority_score.desc&limit=100',key),
+      table(`powerhouse_intelligence_action_candidate_v1?select=tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status&tenant_id=eq.${tenant}&status=in.(CANDIDATE,READY,MATERIALIZED,DONE)&order=priority_score.desc&limit=100`,key),
+      table('powerhouse_intelligence_signal_relation_v1?select=tenant_id,relation_key,left_signal_key,right_signal_key,relation_type,confidence,rationale,status,observed_at&tenant_id=eq.canonical&status=neq.DISMISSED&order=confidence.desc.nullslast,observed_at.desc&limit=100',key),
+      table(`powerhouse_intelligence_signal_relation_v1?select=tenant_id,relation_key,left_signal_key,right_signal_key,relation_type,confidence,rationale,status,observed_at&tenant_id=eq.${tenant}&status=neq.DISMISSED&order=confidence.desc.nullslast,observed_at.desc&limit=100`,key),
       table('powerhouse_intelligence_snapshot_v1?select=*&tenant_id=eq.canonical&limit=1',key)
     ]);
 
-    const intelligenceSignals=mergeSignals(signalsCanonical,tenantImpacts);
+    const visibleSignals=[...list(signalsCanonical),...list(tenantSignals)];
+    const intelligenceSignals=mergeSignals(visibleSignals,tenantImpacts);
     const actions=mergeActions(canonicalActions,tenantActions);
+    const relations=[...list(tenantRelations),...list(canonicalRelations)]
+      .sort((a,b)=>(finite(b.confidence)||0)-(finite(a.confidence)||0));
     const snapshot=buildSnapshot(baseSnapshots[0]||null,domains,sourceCatalog,intelligenceSignals,tenantImpacts,actions);
 
     return json({
@@ -156,18 +162,20 @@ export default async request=>{
       signals:signalsRaw,
       intelligence:{
         tenantId,
-        projectionScope:'canonical external baseline + authenticated tenant impact overlay',
+        projectionScope:'canonical external baseline + authenticated tenant internal signals + authenticated tenant impact overlay',
         domains,
         sourceCatalog,
         signals:intelligenceSignals,
         companyImpacts:tenantImpacts,
         actionCandidates:actions,
+        relations,
         snapshot,
         truthPolicy:'measured_or_evidence_backed_else_unknown'
       },
       scope:{
         authenticatedTenant:tenantId,
         externalSignalTenant:'canonical',
+        tenantInternalSignalCount:tenantSignals.length,
         tenantExposureApplied:tenantImpacts.length>0,
         tenantImpactCount:tenantImpacts.length,
         monetaryImpactSynthesized:false,
@@ -182,6 +190,8 @@ export default async request=>{
         intelligenceCatalogCount:sourceCatalog.length,
         intelligenceSignalCount:intelligenceSignals.length,
         intelligenceActionCount:actions.length,
+        intelligenceRelationCount:relations.length,
+        tenantInternalSignalCount:tenantSignals.length,
         connectedOrObservedSourceCount:sourceCatalog.filter(item=>['CONNECTED','OBSERVED','LIVE'].includes(item.availability_state)).length
       }
     });
