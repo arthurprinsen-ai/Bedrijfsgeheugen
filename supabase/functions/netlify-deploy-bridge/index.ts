@@ -134,9 +134,21 @@ Deno.serve(async (req: Request) => {
     const message = error instanceof Error ? error.message : String(error);
     console.error("NETLIFY_DEPLOY_BRIDGE_FAILED", JSON.stringify({ phase, elapsed_ms:Date.now()-startedAt, message:message.slice(0,180) }));
     const authPhase = phase === "request" || phase === "oidc_verify";
-    return Response.json({ ok:false, error:authPhase ? "unauthorized" : "bridge_unavailable", phase }, {
-      status: authPhase ? 401 : 503,
-      headers:{ "Cache-Control":"no-store" }
+    let errorCode = authPhase ? "oidc_auth_failed" : "bridge_unavailable";
+    let status = authPhase ? 401 : 503;
+    if (!authPhase && /secret unavailable|vault read timeout|database auth unavailable/i.test(message)) {
+      errorCode = "vault_authority_unavailable";
+      status = 503;
+    } else if (!authPhase && /composio netlify authority/i.test(message)) {
+      errorCode = "composio_authority_failed";
+      status = 424;
+    } else if (!authPhase && /fresh netlify proxy not issued/i.test(message)) {
+      errorCode = "proxy_issuance_invalid";
+      status = 502;
+    }
+    return Response.json({ ok:false, error:errorCode, phase }, {
+      status,
+      headers:{ "Cache-Control":"no-store", "X-BG-Bridge-Error": errorCode }
     });
   }
 });
