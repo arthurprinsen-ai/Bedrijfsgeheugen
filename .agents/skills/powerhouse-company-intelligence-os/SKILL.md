@@ -136,3 +136,20 @@ Powerhouse projecteert de publieke categorie `Company Brain` als acquisitiesigna
 `Company Brain / knowledge-context → signals → impact → decision → action → observed outcome → learning`.
 
 De publieke hoofdclaim **Een Company Brain is waar Bedrijfsgeheugen begint** beschrijft dus de productarchitectuur: context is een inputlaag, niet de terminale capability. Company-Brain-intentie, CTA-progressie, scanuitkomst, lead/proposal/order en gerealiseerde omzet moeten als één lineage terugstromen naar bestaande evidence, outcome memory en compound learning. Verkeer zonder downstream outcome mag nooit als bewezen commerciële waarde worden opgeslagen.
+
+
+## Canonical Source Universe inheritance
+
+Fingerprint: `powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1`.
+
+Any Company Intelligence work using environmental or internal-source signals must inherit `.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md`.
+
+Hard inheritance:
+- canonical external signals remain separate from tenant-specific company impact;
+- internal signals require an existing evidence observation;
+- source catalog state never proves connection or freshness;
+- signal co-occurrence never proves causality;
+- only READY + SCORED tenant impact may materialize into the existing Brain obligation authority;
+- only verified Outcome Memory can make an intelligence action DONE;
+- the existing compound-learning authority consumes verified outcomes; no parallel learning ledger is allowed;
+- Portal projections must show scope, uncertainty and provenance and must not expose raw internal evidence payloads.
