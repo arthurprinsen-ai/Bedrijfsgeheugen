@@ -46,6 +46,23 @@ Er wordt geen tweede crawler store, scheduler, task engine, outcome memory of le
 
 De externe signal projection is canonical/global. Tenant-impact staat uitsluitend in de company-impact projection en verwijst naar de canonical signal key.
 
+## Interne evidence-signalen
+
+Interne systemen en connectors worden niet als live beschouwd omdat ze in de catalogus staan. Zodra een echte canonical evidence-observation bestaat, kan `powerhouse_project_internal_evidence_signal_v1(...)` daar een tenant-signaal van maken. De projection bewaart alleen de evidence-referentie en afgeleide signaalmetadata; de ruwe evidence-payload wordt niet naar het Portal-readmodel gekopieerd.
+
+## Verbanden tussen signalen
+
+`powerhouse_intelligence_signal_relation_v1` legt evidence-bounded relaties vast.
+
+Automatisch toegestaan:
+- `SHARED_DOMAIN`: zelfde intelligence-domein binnen een begrensde tijdsperiode;
+- `COMPANY_DEPENDENCY`: meerdere gescoorde signalen raken aantoonbaar dezelfde tenant-afhankelijkheid.
+
+Niet automatisch toegestaan:
+- `CAUSAL_HYPOTHESIS`.
+
+Tijdelijke samenloop, correlatie of hetzelfde onderwerp is geen bewijs dat het ene signaal het andere veroorzaakt. Causaliteit vraagt expliciete evidence.
+
 ## Impactmodel
 
 De generieke signaalscore gebruikt bron- en observatie-evidence: relevantie, brontrouw, bevestiging, versheid en confidence.
@@ -64,7 +81,7 @@ Daarna kan het bestaande daily compound-learning proces het geverifieerde outcom
 
 ## Portal
 
-Portal V2 bevat **Actueel & externe data → Omgevingsradar**.
+Portal V2 bevat **Actueel & externe data → Omgevingsradar** plus de werkviews **Wat raakt mijn bedrijf?**, **Kansen**, **Risico’s**, **Acties & beslissingen**, **Verbanden** en **Sinds gisteren**.
 
 De serverprojectie bestaat uit:
 - canonical external signals;
