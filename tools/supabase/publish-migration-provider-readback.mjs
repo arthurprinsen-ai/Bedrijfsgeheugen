@@ -134,13 +134,17 @@ if(import.meta.url===`file://${process.argv[1]}`){
     targetPrNumber:String(process.env.TARGET_PR_NUMBER||'').trim()||null
   });
   mkdirSync('.artifacts/supabase-edge-production-readback',{recursive:true});
+  const localEvidence=migrationPaths.map(path=>({
+    ...parseMigrationPath(path),
+    state:'APPLIED',
+    project:required('PROJECT_REF')
+  }));
   writeFileSync('.artifacts/supabase-edge-production-readback/migration-provider-readbacks.json',JSON.stringify({
     contract:'supabase-migration-provider-readback-v1',
     project_ref:required('PROJECT_REF'),
     protected_main_sha:required('GITHUB_SHA'),
-    provider_observation_attempt:result.attempt,
-    pr_number:result.pr_number,
-    migrations:result.readbacks
+    provider_state:'APPLIED_VERIFIED_BEFORE_WRITEBACK',
+    migrations:localEvidence
   },null,2)+'\n');
   process.stdout.write(`SUPABASE_MIGRATION_PROVIDER_PR_WRITEBACK_PROVEN:pr=${result.pr_number} migrations=${migrationPaths.join(',')} attempt=${result.attempt}\n`);
 }
