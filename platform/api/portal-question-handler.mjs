@@ -20,10 +20,10 @@ export function createPortalQuestionHandler({getUser,store,runAnswer,apiKey,maxQ
    let projectContext='';try{projectContext=JSON.stringify({sourceUpdatedAt:record.sourceUpdatedAt||record.updatedAt||now(),...record.data}).slice(0,maxContext)}catch{projectContext=''}
    if(projectContext.length<20) return reply({antwoord:'Ik zie nog onvoldoende bedrijfsdata om deze vraag betrouwbaar te beantwoorden.'},404);
    try{
-     const result=await runAnswer({question:vraag,projectContext,apiKey,system});
+     const result=await runAnswer({question:vraag,projectContext,apiKey,system,tenantId});
      if(!result?.text) throw new Error('empty answer');
      const sourceUpdatedAt=record.sourceUpdatedAt||record.updatedAt||null;
      return reply({antwoord:result.text,bron:'Bedrijfsgeheugen serverstate',bijgewerkt:sourceUpdatedAt,assurance:{status:'grounded',source:'Bedrijfsgeheugen serverstate',sourceUpdatedAt,evidencePolicy:'tenant-bound-server-context-only',claimVerification:'not_independently_verified',limitations:['Het antwoord is brongebonden aan de tenantcontext, maar afzonderlijke claims zijn niet onafhankelijk geverifieerd.','Ontbrekende of verouderde gegevens kunnen het antwoord onvolledig maken.']}});
-   }catch{return reply({fout:'De vraagfunctie is even niet bereikbaar.'},502)}
+   }catch(error){if(error?.code==='DATA_SOVEREIGNTY_AI_BLOCKED')return reply({fout:'AI-verwerking is geblokkeerd door je EU-only databeleid.',code:error.code},409);return reply({fout:'De vraagfunctie is even niet bereikbaar.'},502)}
  };
 }

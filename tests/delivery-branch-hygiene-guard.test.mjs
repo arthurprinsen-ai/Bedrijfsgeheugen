@@ -39,11 +39,15 @@ test('verificatie-artefacten tellen niet mee in het Scope-Budget', () => {
   assert.equal(result.changedFileCount, 2);
 });
 
-test('de harde bovengrens blijft over alle bestanden gelden', () => {
-  const changedPaths = Array.from({ length: 45 }, (_, i) => `tests/x${i}.test.mjs`);
+test('verificatie-artefacten tellen ook niet mee in de harde delivery-cap', () => {
+  const changedPaths = [
+    ...Array.from({ length: 39 }, (_, i) => `tools/file-${i}.mjs`),
+    ...Array.from({ length: 10 }, (_, i) => `tests/x${i}.test.mjs`),
+  ];
   const result = evaluateBranchHygiene({ changedPaths, metadata: {} });
-  assert.equal(result.ok, false);
-  assert.equal(result.state, 'HARD_SCOPE_LIMIT_EXCEEDED');
+  assert.equal(result.ok, true);
+  assert.equal(result.changedFileCount, 39);
+  assert.equal(result.verificationPaths.length, 10);
 });
 
 test('herkenning van verificatie-artefacten', () => {

@@ -130,6 +130,8 @@ test('portal-state-eu adds admin cockpit readback without weakening canonical te
   assert.match(src,/powerhouse_control_plane_metrics_v1/);
   assert.match(src,/bg_portal_state_get_internal/);
   assert.match(src,/bg_portal_state_put_internal/);
-  const block=src.slice(src.indexOf("if(action==='control_plane_cockpit')"),src.indexOf("if(action==='governance')"));
+  const cockpitStart=src.indexOf("if(action==='control_plane_cockpit')");
+  const nextAction=src.indexOf("\n  if(action===",cockpitStart+1);
+  const block=src.slice(cockpitStart,nextAction);
   assert.doesNotMatch(block,/bg_portal_state_put_internal|\.insert\(|\.update\(|\.delete\(|\.upsert\(/);
 });

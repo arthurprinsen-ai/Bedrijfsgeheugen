@@ -10,7 +10,7 @@ function executionEvidence(row){return row?.evidence&&typeof row.evidence==='obj
 const fingerprintPart=value=>String(value||'unknown').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'unknown';
 function recoveryFingerprint(connectorId,failedStage,errorClass){return `connector-${fingerprintPart(connectorId)}-${fingerprintPart(failedStage)}-${fingerprintPart(errorClass)}`;}
 
-export async function handlePortalConnectorsRequest({request,user,store,engine}={}){
+export async function handlePortalConnectorsRequest({request,user,store,engine,sovereignty}={}){
   if(!user?.id)return json({error:'UNAUTHORIZED'},401);
   if(!store?.configured&&store?.configured!==undefined)return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
   let tenantId=tenantFromUser(user);if(!tenantId&&typeof store?.resolveTenant==='function')tenantId=await store.resolveTenant(user);if(!tenantId)return json({error:'TENANT_NOT_CONFIGURED'},403);
@@ -36,6 +36,12 @@ export async function handlePortalConnectorsRequest({request,user,store,engine}=
   if(normalized.method==='POST'&&id&&action==='test'){
     if(typeof engine?.runTest!=='function')return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
+    if(typeof sovereignty?.assertConnectorAllowed==='function'){
+      try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch(error){
+        if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:error.code,details:clean(error.details||[])},409);
+        throw error;
+      }
+    }
     const body=clean(await requestBody(request,normalized));let result;
     try{
       result=await engine.runTest({tenantId,connector,input:body.sample,user});
@@ -70,6 +76,12 @@ export async function handlePortalConnectorsRequest({request,user,store,engine}=
   }
   if(normalized.method==='POST'&&id&&action==='activate'){
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
+    if(typeof sovereignty?.assertConnectorAllowed==='function'){
+      try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch(error){
+        if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:error.code,details:clean(error.details||[])},409);
+        throw error;
+      }
+    }
     const body=clean(await requestBody(request,normalized)),testExecutionId=body.testExecutionId;
     if(!testExecutionId)return json({error:'TEST_EVIDENCE_REQUIRED'},409);
     if(typeof store?.getExecution!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
