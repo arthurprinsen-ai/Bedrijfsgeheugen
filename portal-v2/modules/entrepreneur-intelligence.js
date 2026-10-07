@@ -82,8 +82,8 @@ function renderEnvironmentRadar(data){
   const knownRisk=snap.known_risk_value_eur==null?'Nog niet bewezen':euro(snap.known_risk_value_eur);
   const sinceYesterday=signals.filter(s=>isFresh(s.observed_at,1));
   const companyImpact=signals.filter(s=>s.impact_status==='SCORED');
-  const opportunities=signals.filter(s=>['OPPORTUNITY','BOTH'].includes(String(s.signal_type||'').toUpperCase()));
-  const risks=signals.filter(s=>['RISK','BOTH'].includes(String(s.signal_type||'').toUpperCase()));
+  const opportunities=signals.filter(s=>/(OPPORTUNITY|SEARCH_DEMAND|DEMAND_CHANGE|TECH_CHANGE|IP_CHANGE)/.test(String(s.signal_type||'').toUpperCase()));
+  const risks=signals.filter(s=>/(RISK|CYBER|FRAUD|DISRUPTION|PHYSICAL|SUPPLY_RISK)/.test(String(s.signal_type||'').toUpperCase()));
   const contextGaps=signals.filter(s=>s.impact_status!=='SCORED'&&score(s.signal_score)>=65);
   const body=`${nav()}<section class="eikpis">
     <button type="button"><small>Domeinen</small><strong>${esc(snap.domain_count??domains.length)}</strong><span>extern + intern</span></button>
@@ -112,7 +112,7 @@ function renderHub(data){
   const cbs=publisherFilter(publications,['CBS']);
   const nextLaws=komendeMijlpalen(new Date().toISOString().slice(0,10),365).slice(0,5);
   const cards=[
-    ['Omgevingsradar',stats.intelligenceDomainCount||0,'domeinen','omgevingsradar'],
+    ['Omgevingsradar',stats.sourceDomainCount||0,'domeinen','omgevingsradar'],
     ['Wet- & regelgeving',REGELGEVING.length,'actuele regels','wet-regelgeving'],
     ['UWV arbeidsmarkt',uwv.length,'recente publicaties','arbeidsmarkt-personeel'],
     ['RVO regelingen',rvo.length,'recente publicaties','subsidies-regelingen'],
