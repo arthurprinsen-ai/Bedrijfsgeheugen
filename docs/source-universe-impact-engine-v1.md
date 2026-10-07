@@ -98,3 +98,9 @@ Alle nieuwe public-schema projections:
 ## Productie-eindbewijs
 
 Source/CI/merge alleen is niet LIVE_PROVEN. Vereist zijn provider/database readback, exact-main Netlify production readback en functionele Portal/API readback.
+
+## Interne signalen en relaties
+
+Interne signalen kunnen via `powerhouse_project_internal_evidence_signal_v1` in dezelfde signal projection komen, maar alleen wanneer de onderliggende evidence-observation expliciet dezelfde tenant-identiteit bevat. Oude of generieke observations zonder tenant-id worden bewust niet gepromoveerd.
+
+`powerhouse_intelligence_signal_relation_v1` legt evidence-bounded samenhang vast. Automatisch worden uitsluitend shared-domain en gedeelde company-dependency relaties gemaakt. Die relaties leggen samenhang of gedeelde exposure vast, geen oorzaak-gevolg. `causality_claimed` blijft false; causaliteit vereist apart bewijs.
