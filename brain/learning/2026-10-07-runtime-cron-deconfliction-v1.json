@@ -29,5 +29,36 @@
     "historical_replay": [
       "tests/brain-powerhouse-runtime-cron-deconfliction-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "provider_log_window_utc": "2026-10-07T05:20:00Z/2026-10-07T06:00:00Z",
+    "startup_timeouts": {
+      "powerhouse_reconciliation_worker_v2": 19,
+      "powerhouse_execution_resilience_watchdog_v1": 19,
+      "powerhouse_public_rls_guard_scan": 4,
+      "powerhouse_content_closed_loop_v1": 4,
+      "powerhouse_one_commercial_heartbeat_v1": 4
+    },
+    "observed_peak_cron_starts_per_minute": 11,
+    "current_schedule_readback": {
+      "powerhouse_reconciliation_worker_v2": "* * * * *",
+      "powerhouse_execution_resilience_watchdog_v1": "* * * * *",
+      "powerhouse_data_spine_watchdog_v1": "0,10,20,30,40,50 * * * *",
+      "powerhouse_revenue_intelligence_snapshot_15m": "7,22,37,52 * * * *",
+      "powerhouse_revenue_attribution_snapshot_v1": "7,22,37,52 * * * *",
+      "powerhouse_one_commercial_heartbeat_v1": "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
+    },
+    "database_transport_symptoms": [
+      "pg_cron job startup timeout",
+      "management SQL connection timeout",
+      "PostgREST statement timeout"
+    ],
+    "platform": {
+      "postgres_version": "17.6.1.155",
+      "supabase_cron_seconds_supported": true,
+      "supabase_recommended_concurrent_jobs_max": 8
+    },
+    "source_migration": "supabase/migrations/20261007055200_powerhouse_runtime_cron_deconfliction_v1.sql",
+    "regression_test": "tests/brain-powerhouse-runtime-cron-deconfliction-v1.test.mjs"
   }
 }
