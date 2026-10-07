@@ -9,4 +9,4 @@ const euStore=createSupabasePortalProjectionStore();
 const store=createEuPrimaryPortalStore({euStore,fallbackStore});
 const handler=createPortalStateHandler({getUser,store});
 export default async request=>handler(request);
-export const config={path:'/api/portal-state',region:'fra'};
+export const config={path:'/api/portal-state'};
