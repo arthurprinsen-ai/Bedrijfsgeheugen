@@ -29,5 +29,12 @@
     "scope": "DELIVERY_CONTROL_PLANE",
     "machine_enforceable": true,
     "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-provider-readback-publisher-v1.test.mjs",
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ],
+    "expected": "A merged migration change receives exact provider APPLIED evidence automatically and the terminalizer converges within the bounded readback window; missing provider evidence remains fail-closed."
   }
 }
