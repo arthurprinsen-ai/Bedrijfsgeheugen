@@ -1,0 +1,45 @@
+{
+  "id": "data-sovereignty-control-plane-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "data-sovereignty|provider-residency|evidence-first|fail-closed|v1",
+  "root_cause": "Providernaam, gewenste configuratie of een eenmalige runtime-locatie is geen bewijs van dataresidentie. Tijdens deze delivery bleek dat een eerdere Frankfurt-aanname voor Netlify niet overeenkwam met de platform-readback: de PR-preview rapporteerde Functions in iad/us-east-1 en Blobs in us-east-1. Zonder evidence-first semantiek kan een dashboard daardoor ten onrechte EU-only suggereren.",
+  "prevention": {
+    "truth_policy": "measured_or_evidence_backed_else_unknown",
+    "provider_claims": "Een provider/regio wordt alleen VERIFIED wanneer runtime- of provider-evidence de relevante opslag, verwerking en doorgifte daadwerkelijk bewijst.",
+    "runtime_observation": "Een runtime-locatie is observatiebewijs en certificeert nooit zelfstandig residency.",
+    "desired_state": "Een gewenste AI-provider of regio blijft desired state totdat runtime, contract en evidence aantonen dat de route werkelijk actief en toegestaan is.",
+    "eu_only": "EU_ONLY blokkeert vertrouwelijke AI-verwerking en connector-test/activatie wanneer regio, cross-border transfer of evidence onbekend, onvoldoende of niet-EU is.",
+    "supabase_edge": "Klantgebonden Supabase Edge-aanroepen gebruiken expliciet x-region eu-central-1.",
+    "netlify": "Netlify klantportal compute en Blob-opslag blijven niet-EU-bewezen zolang de actuele site/runtime geen afdwingbare EU-residency voor deze routes aantoont."
+  },
+  "evidence": {
+    "pull_request": 4052,
+    "source_candidate_sha": "d3a9f3cd4591084c72e554d02a058e96969166c6",
+    "main_epoch_sha": "93e2e89299b6208a151aacd90b357e9d7bd82f53",
+    "netlify_preview_deploy_id": "6ac62cf0bef0c10008081966",
+    "netlify_functions_region": "iad",
+    "netlify_function_runtime_region": "us-east-1",
+    "netlify_blobs_region": "us-east-1",
+    "netlify_region_overrides": [
+      "social-publication-delivery",
+      "social-publication-delivery-deploy"
+    ],
+    "supabase_project_region": "eu-central-1",
+    "supabase_netlify_truth": "PLATFORM_ROUTED_UNPINNED / PLATFORM_MANAGED_UNKNOWN_REGION / PARTIAL",
+    "supabase_storage_truth": "EU_FRANKFURT_PINNED / EU_FRANKFURT / VERIFIED"
+  },
+  "evaluation": {
+    "regression": [
+      "tests/data-sovereignty-control-plane.test.mjs"
+    ],
+    "dashboard": "portal-next/compliance.html + portal-next/data-sovereignty-panel.js",
+    "heartbeat": "powerhouse_refresh_data_sovereignty_v1"
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN_DATA_RESIDENCY",
+    "scope": "RUNTIME_PORTAL_SUPABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}
