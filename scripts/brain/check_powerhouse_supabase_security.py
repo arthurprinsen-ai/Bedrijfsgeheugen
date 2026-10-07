@@ -13,6 +13,13 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
+    "supabase/migrations/20261007111449_correct_netlify_sovereignty_truth_v1.sql": "cb6f52905e4404f0b574e994379fada6894a2ef9",
+    "supabase/migrations/20261007112233_powerhouse_end_to_end_one_heart_runtime_v2.sql": "5e78c8d2f39adb4b63a4df0b2d266ae297e0f70f",
+    "supabase/migrations/20261007112514_powerhouse_autonomous_email_economics_v1.sql": "125cf7ac9f46f1a4dcb02a9becc995778a51dfdc",
+    "supabase/migrations/20261007112817_powerhouse_ai_native_builder_personal_content_v1.sql": "070b58a181b3db245b248ddc9c2cabc46b930784",
+    "supabase/migrations/20261007113609_linkedin_personal_ai_native_builder_obligation_gate_v2.sql": "aab63acbfaa44e201809076b6a3d64ed72665a76",
+    "supabase/migrations/20261007113723_linkedin_personal_ai_native_builder_artifact_gate_v1.sql": "abbb385c40cd0209558fed0feba83a4515351ce8",
+    "supabase/migrations/20261007113951_powerhouse_reconciler_accept_ai_native_builder_v1.sql": "4aeea4778a070460750357d44432fa2c7c8d1a74",
     "supabase/migrations/20261006102646_linkedin_company_admin_oauth_live_proof_guard_v1.sql": "83ea8b26bc1e364262f15e24f43ed796931c3e8a",
     "supabase/migrations/20261006102754_linkedin_company_org_oauth_live_proof_guard_v1.sql": "1cf7f0c2236a3df15062a72fb2b8528ae8c9ddc4",
     "supabase/migrations/20261006103336_linkedin_company_fresh_oauth_terminal_guard_v2.sql": "180394a12587c01d67f2a840538ce8edc9fbd36a",
