@@ -13,4 +13,4 @@ export default async request=>{
   const submissionKey=String(body?.submission_key||'').trim();if(!submissionKey)return json({error:'INVALID_SUBMISSION_KEY'},422);
   return edge({action:'claim',tenant_id:tenantId,submission_key:submissionKey});
 };
-export const config={path:'/api/portal-scans'};
+export const config={path:'/api/portal-scans',region:'fra'};
