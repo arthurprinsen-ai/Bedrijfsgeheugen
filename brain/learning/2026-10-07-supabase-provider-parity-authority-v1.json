@@ -14,9 +14,7 @@
   "prevention": "Use bounded byte-for-byte Supabase Management API/CLI source parity as canonical production authority, keep GitHub provider checks non-blocking, allow successor replay only when current Supabase runtime is byte-equivalent to the target merge, route provider evidence to the replay target PR, and classify the exact runtime-backpressure config as verifier-only control-plane state.",
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-edge-production-writeback-v1.test.mjs",
-      "tests/supabase-edge-provider-readback-v1.test.mjs",
-      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+      "tests/brain-supabase-production-authority-integrity-v1.test.mjs"
     ]
   },
   "status": "ACTIVE_PREVENTION",
