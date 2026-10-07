@@ -1,5 +1,5 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
-import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
+import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell, isProtectedTrustPage, hasProtectedTrustAccess } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
 import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
@@ -95,7 +95,17 @@ function drawFlow(flow){
 }
 function render(){const flow=deriveFlowState({source:selection.source,module:selection.module,runtime,preview:previewMode});renderFocus();renderCopy(flow);requestAnimationFrame(()=>drawFlow(flow))}
 
+async function promptProtectedTrustLogin(){
+ const identity=await ensureIdentityWidget();
+ identity?.open?.('login');
+}
 function gatedOpenPage(pageId){
+ if(isProtectedTrustPage(pageId)&&!hasProtectedTrustAccess()){
+   closePortalPage();closeHub();
+   navigatePortal('overzicht',{replace:true});
+   promptProtectedTrustLogin().catch(()=>null);
+   return false;
+ }
  if(portalSubscription?.plan && !planAllowsPage(portalSubscription.plan,pageId)){
    location.href=`https://www.bedrijfsgeheugen.nl/prijzen#saas?upgrade=${encodeURIComponent(minPlanForPage(pageId))}`;
    return;
@@ -150,6 +160,7 @@ function renderHubGroups(hubId='portal'){
   const section=document.createElement('section');section.className='group';section.innerHTML=`<h4>${group.label}</h4>`;
   for(const page of group.pages){
    const target=page.target||page.id;
+   if(isProtectedTrustPage(target)&&!hasProtectedTrustAccess())continue;
    const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=target;
    b.addEventListener('click',()=>{closeHub();navigatePortal(target)});
    section.appendChild(b);
@@ -164,6 +175,7 @@ function mountCanonicalDesktopNavigation(){
    const section=document.createElement('section');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
    const heading=document.createElement('h2');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
    for(const page of group.pages){
+     if(isProtectedTrustPage(page.target)&&!hasProtectedTrustAccess())continue;
      const button=document.createElement('button');button.type='button';
      button.dataset.navTarget=page.target;button.dataset.navGroup=group.id;button.dataset.navPage=page.id;
      button.innerHTML=`<span class="ico">${group.icon}</span><span>${page.label}</span>`;
@@ -214,8 +226,19 @@ const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
 const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
-configurePortalShell({domainState:portalDomainState});
-portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
+configurePortalShell({domainState:portalDomainState,stateClient:portalStateClient});
+portalStateClient.subscribe(snap=>{
+ applyCustomerBranding({state:snap.state||{},user:snap.user});
+ const authenticated=snap.mode==='authenticated'&&!portalStateClient.isDemo();
+ document.documentElement.classList.toggle('portal-customer-authenticated',authenticated);
+ mountCanonicalDesktopNavigation();
+ if(el('allPages')?.classList.contains('open'))renderHubGroups(el('allPages').dataset.hub||'portal');
+ const requested=new URL(location.href).searchParams.get('page');
+ if(requested&&isProtectedTrustPage(requested)&&!authenticated){
+   closePortalPage();
+   navigatePortal('overzicht',{replace:true});
+ }
+});
 portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
