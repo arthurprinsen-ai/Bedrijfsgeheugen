@@ -1,0 +1,33 @@
+{
+  "id": "terminalizer-migration-readback-autopublish-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "terminalizer|supabase-migration-readback-race|autopublish|v1",
+  "root_cause": "Merged PR #4075 changed a canonical Supabase migration. The migration became APPLIED in production, but the post-merge terminalizer read the PR body once before a Terminal-Supabase-Migration-Readback marker existed. It failed with SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING even though the provider later showed the migration as applied. Manual marker writeback plus a failed-job rerun closed the incident, proving the missing piece was evidence orchestration rather than runtime correctness.",
+  "prevention": [
+    "Reuse the existing Supabase production-authority workflow instead of adding another scheduler or runtime.",
+    "On protected-main migration changes, query the Supabase Management API migration history with the existing production access token and require exact version plus exact migration name.",
+    "Write the canonical Terminal-Supabase-Migration-Readback marker back to the merged PR automatically.",
+    "Make the terminalizer wait in a bounded 24x5-second window for the canonical marker so push-side provider attestation and pull-request terminalization can converge without a race.",
+    "Keep the terminalizer fail-closed when the exact migration never appears in provider history.",
+    "Never treat repository presence, preview success or migration filename alone as production proof."
+  ],
+  "evidence": {
+    "source_pr": 4075,
+    "source_merge_sha": "b4e9531b57bc72c038f525427c6202701b858da0",
+    "failed_terminalizer_run": 37671638045,
+    "failed_attempt": 1,
+    "failure": "SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING:supabase/migrations/20261007182000_personal_linkedin_predictive_dream_journey_v1.sql",
+    "migration_version": "20261007182000",
+    "migration_name": "personal_linkedin_predictive_dream_journey_v1",
+    "provider_state": "APPLIED",
+    "recovery_attempt": 2,
+    "recovery_conclusion": "success"
+  },
+  "compiler": {
+    "failure_class": "TERMINALIZER_EVIDENCE_RACE",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
