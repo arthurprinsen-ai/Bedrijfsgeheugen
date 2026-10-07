@@ -19,6 +19,22 @@ test('migration provider readback derives exact canonical identity from migratio
   assert.throws(()=>parseMigrationPath('supabase/migrations/not-canonical.sql'),/SUPABASE_MIGRATION_PATH_INVALID/);
 });
 
+test('migration provider readback accepts wrapped migration history shapes',()=>{
+  const paths=['supabase/migrations/20261007182000_personal_linkedin_predictive_dream_journey_v1.sql'];
+  for(const payload of [
+    [{version:'20261007182000',name:'personal_linkedin_predictive_dream_journey_v1'}],
+    {migrations:[{version:'20261007182000',name:'personal_linkedin_predictive_dream_journey_v1'}]},
+    {data:[{version:'20261007182000',name:'personal_linkedin_predictive_dream_journey_v1'}]},
+  ]){
+    const rows=readbacksForMigrationPaths(
+      payload,
+      paths,
+      {projectRef:'adhjwmvyoixzjtmiroln',observedAt:'2026-10-07T20:08:25Z'},
+    );
+    assert.equal(rows[0].state,'APPLIED');
+  }
+});
+
 test('migration provider readback requires exact remote version and name',()=>{
   const paths=['supabase/migrations/20261007182000_personal_linkedin_predictive_dream_journey_v1.sql'];
   const readbacks=readbacksForMigrationPaths(
