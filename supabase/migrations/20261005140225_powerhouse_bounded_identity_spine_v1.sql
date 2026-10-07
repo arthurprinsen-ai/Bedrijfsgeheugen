@@ -41,7 +41,7 @@ revoke all on table public.powerhouse_identity_graph_v1 from public, anon, authe
 grant all on table public.powerhouse_identity_graph_v1 to service_role;
 
 create or replace function public.powerhouse_sync_identity_graph_batch_v1(p_batch_size integer default 500)
-returns jsonb language plpgsql security definer set search_path='public','pg_catalog' as $$
+returns jsonb language plpgsql security definer set search_path = public, pg_catalog as $$
 declare v_now timestamptz:=now(); v_contacts int:=0; v_opps int:=0; v_events int:=0;
 begin
   with candidates as (
@@ -166,7 +166,7 @@ grant execute on function public.powerhouse_sync_identity_graph_batch_v1(integer
 create or replace function public.powerhouse_revenue_event_spine_cycle_v1(
  p_run_date date default ((now() at time zone 'Europe/Amsterdam'))::date
 )
-returns jsonb language plpgsql security definer set search_path='pg_catalog','public' as $$
+returns jsonb language plpgsql security definer set search_path = pg_catalog, public as $$
 declare v_identity jsonb; v_attribution jsonb; v_health jsonb; v_result jsonb;
 begin
   v_identity:=public.powerhouse_sync_identity_graph_batch_v1(500);
