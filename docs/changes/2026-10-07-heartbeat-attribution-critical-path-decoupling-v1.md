@@ -26,3 +26,7 @@ The runtime scheduler also refreshed attribution at minutes **7/22/37/52**, whic
 ## Terminal proof required
 
 After protected merge: Supabase migration readback → external Edge heartbeat returns durable VERIFIED receipt → legacy pg_cron heartbeat job 154 retires → fresh 401/500/503/522 window → POWERHOUSE_ONE / LIVE_PROVEN.
+
+## Fresh replay correction
+
+The first Supabase Preview reached the new migration and failed with SQLSTATE `42P01`: `powerhouse_revenue_attribution_snapshot_v1` existed in production but was absent from fresh migration replay. The same migration now projects the exact production table contract idempotently before creating the new index: 20 columns, composite primary key, company/conversion indexes, RLS and the service-role-only ALL policy. Production already matches this contract, so the projection is a no-op there and authoritative for fresh branches.
