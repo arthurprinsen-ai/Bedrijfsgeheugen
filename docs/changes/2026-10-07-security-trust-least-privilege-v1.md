@@ -24,3 +24,6 @@ Geen algemene revoke op onbekende functies, geen wijziging van RLS-policies, gee
 
 ## Terminal bewijs
 Source candidate: `fix/security-trust-least-privilege-v1`. Runtime promotie en production readback zijn verplicht voordat deze hardening LIVE_PROVEN mag heten.
+
+## Transactionele dry-run
+Op 7 oktober 2026 16:03 UTC is de volledige hardening in één expliciete Supabase-transactie uitgevoerd met een deliberatieve rollback-marker. De postconditions bereikten: anon SECURITY DEFINER = 0, authenticated SECURITY DEFINER = 0, client-exposed definer-views = 0, client-readable materialized views = 0 en highRiskCount = 0. Private definer-views bleven als aparte metric 12; RLS deny-all/no-policy bleef 166. De bewuste exception rolde de volledige transactie terug. Directe production readback daarna bevestigde de oorspronkelijke 28/12/1 exposure nog aanwezig. Er is dus **geen provider-state vóór protected delivery gewijzigd**.

@@ -19,3 +19,6 @@ Evidence:
 - trigger/cron/internal-call classification;
 - 24h PostgREST access logs with zero direct use of targeted external surfaces;
 - function definition inspection for privileged publisher/sales/intelligence routines.
+
+
+Dry-run evidence 16:03 UTC: full migration transaction reached projected highRiskCount=0 (anon SD=0, auth SD=0, exposed definer views=0, materialized API views=0), then deliberate rollback. Immediate production readback remained 28/28/12/1 and highRiskCount=41, proving no persistent provider mutation occurred.

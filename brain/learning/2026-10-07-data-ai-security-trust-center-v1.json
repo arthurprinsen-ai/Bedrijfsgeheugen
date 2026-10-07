@@ -45,7 +45,28 @@
       "OpenAI",
       "Anthropic"
     ],
-    "pull_request": 4058
+    "pull_request": 4058,
+    "transactional_dry_run": {
+      "executed_at": "2026-10-07T16:03:53Z",
+      "rolled_back": true,
+      "projected_posture": {
+        "anonSecurityDefinerFunctions": 0,
+        "authenticatedSecurityDefinerFunctions": 0,
+        "viewsWithoutSecurityInvoker": 0,
+        "materializedViewsApiReadable": 0,
+        "highRiskCount": 0,
+        "privateViewsWithoutSecurityInvoker": 12,
+        "rlsDenyAllTables": 166
+      },
+      "production_readback_after_rollback": {
+        "anonSecurityDefinerFunctions": 28,
+        "authenticatedSecurityDefinerFunctions": 28,
+        "viewsWithoutSecurityInvoker": 12,
+        "materializedViewsApiReadable": 1,
+        "highRiskCount": 41
+      },
+      "interpretation": "Migration syntax and postconditions passed in one explicit transaction; deliberate exception rolled the transaction back. Production remained unchanged."
+    }
   },
   "evaluation": {
     "historical_replay": [
@@ -56,7 +77,8 @@
     "connector_event_contract": "new_or_changed_connector_updates_sovereignty_and_security_transactionally",
     "shadow": [
       "tests/brain-security-trust-center-v1.test.mjs",
-      "24h zero-direct-use access-log observation before privilege hardening"
+      "24h zero-direct-use access-log observation before privilege hardening",
+      "Supabase transactional privilege hardening dry-run: PASS then rollback"
     ],
     "canary": [
       "tests/brain-security-trust-center-v1.test.mjs",
