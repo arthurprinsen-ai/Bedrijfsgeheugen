@@ -79,6 +79,27 @@ create table if not exists public.powerhouse_intelligence_signal_projection_v1 (
   primary key (signal_key)
 );
 
+
+create table if not exists public.powerhouse_intelligence_signal_relation_v1 (
+  tenant_id text not null default 'canonical',
+  relation_key text not null,
+  left_signal_key text not null references public.powerhouse_intelligence_signal_projection_v1(signal_key) on delete cascade,
+  right_signal_key text not null references public.powerhouse_intelligence_signal_projection_v1(signal_key) on delete cascade,
+  relation_type text not null
+    check (relation_type in ('SHARED_DOMAIN','COMPANY_DEPENDENCY','CAUSAL_HYPOTHESIS')),
+  confidence numeric check (confidence is null or confidence between 0 and 1),
+  rationale text not null,
+  evidence jsonb not null default '{}'::jsonb,
+  status text not null default 'ACTIVE' check (status in ('ACTIVE','DISMISSED','CONFIRMED')),
+  observed_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  primary key (tenant_id,relation_key),
+  check (left_signal_key<>right_signal_key)
+);
+
+comment on table public.powerhouse_intelligence_signal_relation_v1 is
+  'Evidence-bounded relationships between signals. Automatic logic may assert shared-domain or shared-company-dependency relations; causal hypotheses require explicit evidence and are never inferred from co-occurrence alone.';
+
 create table if not exists public.powerhouse_intelligence_company_impact_v1 (
   tenant_id text not null,
   impact_key text not null,
@@ -174,6 +195,8 @@ create index if not exists powerhouse_intelligence_signal_projection_v1_rank_idx
   on public.powerhouse_intelligence_signal_projection_v1(tenant_id,signal_score desc,observed_at desc);
 create index if not exists powerhouse_intelligence_signal_projection_v1_domain_idx
   on public.powerhouse_intelligence_signal_projection_v1(tenant_id,domain_key,observed_at desc);
+create index if not exists powerhouse_intelligence_signal_relation_v1_rank_idx
+  on public.powerhouse_intelligence_signal_relation_v1(tenant_id,confidence desc,observed_at desc);
 create index if not exists powerhouse_intelligence_company_impact_v1_signal_idx
   on public.powerhouse_intelligence_company_impact_v1(tenant_id,signal_key,impact_score desc nulls last);
 create index if not exists powerhouse_intelligence_action_candidate_v1_rank_idx
@@ -184,6 +207,7 @@ create index if not exists powerhouse_intelligence_source_catalog_v1_scope_idx
 alter table public.powerhouse_intelligence_domain_registry_v1 enable row level security;
 alter table public.powerhouse_intelligence_source_catalog_v1 enable row level security;
 alter table public.powerhouse_intelligence_signal_projection_v1 enable row level security;
+alter table public.powerhouse_intelligence_signal_relation_v1 enable row level security;
 alter table public.powerhouse_intelligence_company_impact_v1 enable row level security;
 alter table public.powerhouse_intelligence_action_candidate_v1 enable row level security;
 alter table public.powerhouse_intelligence_snapshot_v1 enable row level security;
@@ -191,6 +215,7 @@ alter table public.powerhouse_intelligence_snapshot_v1 enable row level security
 revoke all on table public.powerhouse_intelligence_domain_registry_v1 from public, anon, authenticated;
 revoke all on table public.powerhouse_intelligence_source_catalog_v1 from public, anon, authenticated;
 revoke all on table public.powerhouse_intelligence_signal_projection_v1 from public, anon, authenticated;
+revoke all on table public.powerhouse_intelligence_signal_relation_v1 from public, anon, authenticated;
 revoke all on table public.powerhouse_intelligence_company_impact_v1 from public, anon, authenticated;
 revoke all on table public.powerhouse_intelligence_action_candidate_v1 from public, anon, authenticated;
 revoke all on table public.powerhouse_intelligence_snapshot_v1 from public, anon, authenticated;
@@ -198,6 +223,7 @@ revoke all on table public.powerhouse_intelligence_snapshot_v1 from public, anon
 grant select,insert,update,delete on table public.powerhouse_intelligence_domain_registry_v1 to service_role;
 grant select,insert,update,delete on table public.powerhouse_intelligence_source_catalog_v1 to service_role;
 grant select,insert,update,delete on table public.powerhouse_intelligence_signal_projection_v1 to service_role;
+grant select,insert,update,delete on table public.powerhouse_intelligence_signal_relation_v1 to service_role;
 grant select,insert,update,delete on table public.powerhouse_intelligence_company_impact_v1 to service_role;
 grant select,insert,update,delete on table public.powerhouse_intelligence_action_candidate_v1 to service_role;
 grant select,insert,update,delete on table public.powerhouse_intelligence_snapshot_v1 to service_role;
@@ -467,6 +493,45 @@ values
 on conflict (onderwerp) do update set
   zoekvraag=excluded.zoekvraag,actief=true,segmenten=excluded.segmenten,contentpijler=excluded.contentpijler;
 
+
+insert into public.powerhouse_intelligence_source_catalog_v1
+(source_key,label,publisher,scope,domain_keys,source_kind,authority_tier,activation_mode,canonical_url,adapter_key,update_cadence,jurisdiction,metadata)
+values
+('supabase-internal','Supabase','Supabase','internal',array['internal-systems-data'],'data-platform',5,'CONNECTOR_REQUIRED','https://supabase.com/','supabase',interval '1 hour','Global','{"capability_only":true}'),
+('github-internal','GitHub repositories & delivery','GitHub','internal',array['internal-systems-data','internal-projects','internal-documents-knowledge'],'engineering-platform',5,'CONNECTOR_REQUIRED','https://github.com/','github',interval '1 hour','Global','{"capability_only":true}'),
+('netlify-internal','Netlify','Netlify','internal',array['internal-systems-data','internal-marketing-digital'],'deployment-platform',5,'CONNECTOR_REQUIRED','https://www.netlify.com/','netlify',interval '1 hour','Global','{"capability_only":true}'),
+('notion-internal','Notion','Notion','internal',array['internal-documents-knowledge','internal-projects'],'knowledge-platform',5,'CONNECTOR_REQUIRED','https://www.notion.so/','notion',interval '1 hour','Global','{"capability_only":true}'),
+('google-drive-internal','Google Drive / Docs / Sheets / Slides','Google','internal',array['internal-documents-knowledge','internal-projects'],'workspace-platform',5,'CONNECTOR_REQUIRED','https://workspace.google.com/','google-drive',interval '1 hour','Global','{"capability_only":true}'),
+('gmail-internal','Gmail','Google','internal',array['internal-documents-knowledge','internal-customers-sales'],'communication-platform',5,'CONNECTOR_REQUIRED','https://mail.google.com/','gmail',interval '1 hour','Global','{"capability_only":true}'),
+('google-calendar-internal','Google Calendar','Google','internal',array['internal-projects','internal-customers-sales'],'calendar-platform',5,'CONNECTOR_REQUIRED','https://calendar.google.com/','google-calendar',interval '1 hour','Global','{"capability_only":true}'),
+('microsoft365-internal','Microsoft 365','Microsoft','internal',array['internal-documents-knowledge','internal-projects'],'workspace-platform',5,'CONNECTOR_REQUIRED','https://www.microsoft.com/microsoft-365','microsoft365',interval '1 hour','Global','{"capability_only":true}'),
+('sharepoint-internal','SharePoint','Microsoft','internal',array['internal-documents-knowledge','internal-projects'],'knowledge-platform',5,'CONNECTOR_REQUIRED','https://www.microsoft.com/microsoft-365/sharepoint/collaboration','sharepoint',interval '1 hour','Global','{"capability_only":true}'),
+('teams-internal','Microsoft Teams','Microsoft','internal',array['internal-documents-knowledge','internal-projects'],'communication-platform',5,'CONNECTOR_REQUIRED','https://www.microsoft.com/microsoft-teams/','teams',interval '1 hour','Global','{"capability_only":true}'),
+('slack-internal','Slack','Salesforce','internal',array['internal-documents-knowledge','internal-projects'],'communication-platform',5,'CONNECTOR_REQUIRED','https://slack.com/','slack',interval '1 hour','Global','{"capability_only":true}'),
+('salesforce-internal','Salesforce','Salesforce','internal',array['internal-customers-sales'],'crm-platform',5,'CONNECTOR_REQUIRED','https://www.salesforce.com/','salesforce',interval '1 hour','Global','{"capability_only":true}'),
+('hubspot-internal','HubSpot','HubSpot','internal',array['internal-customers-sales','internal-marketing-digital'],'crm-marketing-platform',5,'CONNECTOR_REQUIRED','https://www.hubspot.com/','hubspot',interval '1 hour','Global','{"capability_only":true}'),
+('dynamics365-internal','Dynamics 365','Microsoft','internal',array['internal-customers-sales','internal-finance','internal-operations'],'erp-crm-platform',5,'CONNECTOR_REQUIRED','https://www.microsoft.com/dynamics-365','dynamics365',interval '1 hour','Global','{"capability_only":true}'),
+('sap-internal','SAP','SAP','internal',array['internal-finance','internal-operations','internal-suppliers-procurement'],'erp-platform',5,'CONNECTOR_REQUIRED','https://www.sap.com/','sap',interval '1 hour','Global','{"capability_only":true}'),
+('afas-internal','AFAS','AFAS Software','internal',array['internal-finance','internal-people-hr','internal-operations'],'erp-hr-platform',5,'CONNECTOR_REQUIRED','https://www.afas.nl/','afas',interval '1 hour','NL','{"capability_only":true}'),
+('exact-internal','Exact','Exact','internal',array['internal-finance','internal-operations'],'accounting-erp-platform',5,'CONNECTOR_REQUIRED','https://www.exact.com/','exact',interval '1 hour','Global','{"capability_only":true}'),
+('topdesk-internal','TOPdesk','TOPdesk','internal',array['internal-service-quality','internal-systems-data'],'service-management-platform',5,'CONNECTOR_REQUIRED','https://www.topdesk.com/','topdesk',interval '1 hour','Global','{"capability_only":true}'),
+('snowflake-internal','Snowflake','Snowflake','internal',array['internal-systems-data'],'data-platform',5,'CONNECTOR_REQUIRED','https://www.snowflake.com/','snowflake',interval '1 hour','Global','{"capability_only":true}'),
+('databricks-internal','Databricks','Databricks','internal',array['internal-systems-data'],'data-ai-platform',5,'CONNECTOR_REQUIRED','https://www.databricks.com/','databricks',interval '1 hour','Global','{"capability_only":true}'),
+('bigquery-internal','BigQuery','Google Cloud','internal',array['internal-systems-data'],'data-platform',5,'CONNECTOR_REQUIRED','https://cloud.google.com/bigquery','bigquery',interval '1 hour','Global','{"capability_only":true}'),
+('powerbi-internal','Power BI / Fabric','Microsoft','internal',array['internal-systems-data','internal-finance','internal-operations'],'analytics-platform',5,'CONNECTOR_REQUIRED','https://www.microsoft.com/power-platform/products/power-bi','powerbi',interval '1 hour','Global','{"capability_only":true}'),
+('azure-internal','Microsoft Azure','Microsoft','internal',array['internal-systems-data'],'cloud-platform',5,'CONNECTOR_REQUIRED','https://azure.microsoft.com/','azure',interval '1 hour','Global','{"capability_only":true}'),
+('aws-internal','Amazon Web Services','Amazon','internal',array['internal-systems-data'],'cloud-platform',5,'CONNECTOR_REQUIRED','https://aws.amazon.com/','aws',interval '1 hour','Global','{"capability_only":true}'),
+('gcp-internal','Google Cloud','Google','internal',array['internal-systems-data'],'cloud-platform',5,'CONNECTOR_REQUIRED','https://cloud.google.com/','gcp',interval '1 hour','Global','{"capability_only":true}'),
+('stripe-internal','Stripe','Stripe','internal',array['internal-finance','internal-customers-sales'],'payments-platform',5,'CONNECTOR_REQUIRED','https://stripe.com/','stripe',interval '1 hour','Global','{"capability_only":true}'),
+('shopify-internal','Shopify','Shopify','internal',array['internal-customers-sales','internal-operations','internal-marketing-digital'],'commerce-platform',5,'CONNECTOR_REQUIRED','https://www.shopify.com/','shopify',interval '1 hour','Global','{"capability_only":true}'),
+('jira-internal','Jira','Atlassian','internal',array['internal-projects','internal-systems-data'],'work-management-platform',5,'CONNECTOR_REQUIRED','https://www.atlassian.com/software/jira','jira',interval '1 hour','Global','{"capability_only":true}'),
+('confluence-internal','Confluence','Atlassian','internal',array['internal-documents-knowledge','internal-projects'],'knowledge-platform',5,'CONNECTOR_REQUIRED','https://www.atlassian.com/software/confluence','confluence',interval '1 hour','Global','{"capability_only":true}')
+on conflict (source_key) do update set
+  label=excluded.label,publisher=excluded.publisher,scope=excluded.scope,domain_keys=excluded.domain_keys,
+  source_kind=excluded.source_kind,authority_tier=excluded.authority_tier,activation_mode=excluded.activation_mode,
+  canonical_url=excluded.canonical_url,adapter_key=excluded.adapter_key,update_cadence=excluded.update_cadence,
+  jurisdiction=excluded.jurisdiction,metadata=excluded.metadata,active=true,updated_at=now();
+
 create or replace function public.powerhouse_intelligence_domain_from_text_v1(p_text text)
 returns text
 language sql
@@ -638,6 +703,191 @@ end
 $$;
 
 
+
+create or replace function public.powerhouse_project_internal_evidence_signal_v1(
+  p_tenant_id text,
+  p_source_observation_id uuid,
+  p_domain_key text,
+  p_title text,
+  p_summary text default null,
+  p_signal_type text default 'INTERNAL_SIGNAL',
+  p_direction text default 'UNKNOWN',
+  p_relevance numeric default null,
+  p_source_confidence numeric default null,
+  p_urgency numeric default null,
+  p_metadata jsonb default '{}'::jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'public','pg_catalog'
+as $
+declare
+  o public.powerhouse_evidence_source_observations%rowtype;
+  d public.powerhouse_intelligence_domain_registry_v1%rowtype;
+  v_signal_key text;
+  v_score numeric;
+begin
+  if nullif(btrim(p_tenant_id),'') is null or p_tenant_id='canonical' then
+    raise exception 'TENANT_INTERNAL_SIGNAL_REQUIRED';
+  end if;
+  if nullif(btrim(p_title),'') is null then raise exception 'INTERNAL_SIGNAL_TITLE_REQUIRED'; end if;
+  if p_direction not in ('UP','DOWN','MIXED','UNKNOWN') then raise exception 'INTERNAL_SIGNAL_DIRECTION_INVALID'; end if;
+
+  select * into o
+  from public.powerhouse_evidence_source_observations
+  where observation_id=p_source_observation_id;
+  if not found then raise exception 'SOURCE_OBSERVATION_NOT_FOUND:%',p_source_observation_id; end if;
+
+  select * into d
+  from public.powerhouse_intelligence_domain_registry_v1
+  where domain_key=p_domain_key and active=true and scope='internal';
+  if not found then raise exception 'INTERNAL_INTELLIGENCE_DOMAIN_REQUIRED:%',p_domain_key; end if;
+
+  v_signal_key:=md5(p_tenant_id||'|'||o.observation_id::text||'|'||p_domain_key||'|'||p_title);
+  v_score:=round(100*(
+    0.45*least(1,greatest(0,coalesce(p_relevance,0.5)))+
+    0.35*least(1,greatest(0,coalesce(p_source_confidence,0.5)))+
+    0.20*least(1,greatest(0,coalesce(p_urgency,0.5)))
+  ),1);
+
+  insert into public.powerhouse_intelligence_signal_projection_v1(
+    tenant_id,signal_key,source_observation_id,source_key,external_event_id,external_url,
+    domain_key,signal_type,direction,title,summary,published_at,observed_at,deadline,
+    source_trust,confirmation,freshness,relevance,source_confidence,urgency,signal_score,
+    impact_score,impact_status,time_horizon_days,status,evidence,updated_at
+  ) values (
+    p_tenant_id,v_signal_key,o.observation_id,o.source_key,o.external_event_id,null,
+    p_domain_key,coalesce(nullif(p_signal_type,''),d.default_signal_type),p_direction,p_title,p_summary,
+    null,o.observed_at,null,null,null,null,p_relevance,p_source_confidence,p_urgency,v_score,
+    null,'NEEDS_COMPANY_CONTEXT',d.default_horizon_days,
+    case when v_score>=70 then 'WATCH' else 'ACTIVE' end,
+    jsonb_build_object(
+      'truth_class','OBSERVED_INTERNAL_SIGNAL',
+      'source_observation_ref',o.observation_id,
+      'raw_evidence_not_projected',true,
+      'tenant_scope',p_tenant_id
+    )||coalesce(p_metadata,'{}'::jsonb),
+    now()
+  )
+  on conflict (signal_key) do update set
+    title=excluded.title,summary=excluded.summary,direction=excluded.direction,
+    relevance=excluded.relevance,source_confidence=excluded.source_confidence,
+    urgency=excluded.urgency,signal_score=excluded.signal_score,status=excluded.status,
+    evidence=public.powerhouse_intelligence_signal_projection_v1.evidence||excluded.evidence,
+    observed_at=excluded.observed_at,updated_at=now();
+
+  return jsonb_build_object(
+    'tenant_id',p_tenant_id,
+    'signal_key',v_signal_key,
+    'domain_key',p_domain_key,
+    'signal_score',v_score,
+    'source_observation_id',p_source_observation_id
+  );
+end
+$;
+
+create or replace function public.powerhouse_refresh_signal_relations_v1(
+  p_tenant_id text default 'canonical',
+  p_days integer default 14
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'public','pg_catalog'
+as $
+declare
+  v_shared integer:=0;
+  v_dependency integer:=0;
+begin
+  if nullif(btrim(p_tenant_id),'') is null then raise exception 'TENANT_REQUIRED'; end if;
+
+  with visible as (
+    select *
+    from public.powerhouse_intelligence_signal_projection_v1
+    where status<>'DISMISSED'
+      and observed_at>=now()-make_interval(days=>greatest(1,least(coalesce(p_days,14),90)))
+      and (tenant_id='canonical' or tenant_id=p_tenant_id)
+  ),
+  pairs as (
+    select
+      a.signal_key left_key,b.signal_key right_key,a.domain_key,
+      greatest(0.20,least(0.95,
+        0.45+
+        0.25*least(a.signal_score,b.signal_score)/100+
+        0.25*(1-least(1,abs(extract(epoch from (a.observed_at-b.observed_at)))/604800))
+      )) confidence
+    from visible a
+    join visible b on a.signal_key<b.signal_key and a.domain_key=b.domain_key
+  ),
+  ins as (
+    insert into public.powerhouse_intelligence_signal_relation_v1(
+      tenant_id,relation_key,left_signal_key,right_signal_key,relation_type,confidence,rationale,evidence,status,observed_at,updated_at
+    )
+    select
+      p_tenant_id,
+      md5(p_tenant_id||'|SHARED_DOMAIN|'||left_key||'|'||right_key),
+      left_key,right_key,'SHARED_DOMAIN',confidence,
+      'De signalen vallen in hetzelfde intelligence-domein en zijn in dezelfde periode waargenomen. Dit is samenhang, geen bewezen causaliteit.',
+      jsonb_build_object('domain_key',domain_key,'causality_claimed',false,'method','shared-domain-time-window'),
+      'ACTIVE',now(),now()
+    from pairs
+    on conflict (tenant_id,relation_key) do update set
+      confidence=excluded.confidence,rationale=excluded.rationale,evidence=excluded.evidence,
+      status='ACTIVE',observed_at=excluded.observed_at,updated_at=now()
+    returning 1
+  )
+  select count(*) into v_shared from ins;
+
+  if p_tenant_id<>'canonical' then
+    with pairs as (
+      select distinct
+        least(a.signal_key,b.signal_key) left_key,
+        greatest(a.signal_key,b.signal_key) right_key,
+        a.target_node_key,
+        a.target_node_type,
+        greatest(coalesce(a.impact_score,0),coalesce(b.impact_score,0))/100 confidence
+      from public.powerhouse_intelligence_company_impact_v1 a
+      join public.powerhouse_intelligence_company_impact_v1 b
+        on a.tenant_id=b.tenant_id
+       and a.impact_key<b.impact_key
+       and a.signal_key<>b.signal_key
+       and a.target_node_key is not null
+       and a.target_node_key=b.target_node_key
+       and coalesce(a.target_node_type,'')=coalesce(b.target_node_type,'')
+      where a.tenant_id=p_tenant_id
+        and a.status='SCORED' and b.status='SCORED'
+    ),
+    ins as (
+      insert into public.powerhouse_intelligence_signal_relation_v1(
+        tenant_id,relation_key,left_signal_key,right_signal_key,relation_type,confidence,rationale,evidence,status,observed_at,updated_at
+      )
+      select
+        p_tenant_id,
+        md5(p_tenant_id||'|COMPANY_DEPENDENCY|'||left_key||'|'||right_key||'|'||target_node_key),
+        left_key,right_key,'COMPANY_DEPENDENCY',least(1,greatest(0.2,confidence)),
+        'Beide signalen hebben evidence-backed impact op dezelfde bedrijfsafhankelijkheid. Dit bewijst gedeelde exposure, niet dat het ene signaal het andere veroorzaakt.',
+        jsonb_build_object('target_node_key',target_node_key,'target_node_type',target_node_type,'causality_claimed',false),
+        'ACTIVE',now(),now()
+      from pairs
+      on conflict (tenant_id,relation_key) do update set
+        confidence=excluded.confidence,rationale=excluded.rationale,evidence=excluded.evidence,
+        status='ACTIVE',observed_at=excluded.observed_at,updated_at=now()
+      returning 1
+    )
+    select count(*) into v_dependency from ins;
+  end if;
+
+  return jsonb_build_object(
+    'tenant_id',p_tenant_id,
+    'shared_domain_relations',v_shared,
+    'company_dependency_relations',v_dependency,
+    'causal_hypotheses_synthesized',false,
+    'executed_at',now()
+  );
+end
+$;
+
 create or replace function public.powerhouse_upsert_intelligence_company_impact_v1(
   p_tenant_id text,
   p_signal_key text,
@@ -679,7 +929,7 @@ begin
   end if;
   if not exists (
     select 1 from public.powerhouse_intelligence_signal_projection_v1
-    where signal_key=p_signal_key and tenant_id='canonical'
+    where signal_key=p_signal_key and (tenant_id='canonical' or tenant_id=p_tenant_id)
   ) then
     raise exception 'INTELLIGENCE_SIGNAL_NOT_FOUND:%',p_signal_key;
   end if;
@@ -740,7 +990,7 @@ begin
     now()
   from public.powerhouse_intelligence_signal_projection_v1 s
   join public.powerhouse_intelligence_domain_registry_v1 d on d.domain_key=s.domain_key
-  where s.signal_key=p_signal_key and s.tenant_id='canonical'
+  where s.signal_key=p_signal_key and (s.tenant_id='canonical' or s.tenant_id=p_tenant_id)
   on conflict (tenant_id,action_key) do update set
     impact_key=excluded.impact_key,domain_key=excluded.domain_key,title=excluded.title,
     rationale=excluded.rationale,action_type=excluded.action_type,priority_score=excluded.priority_score,
@@ -753,6 +1003,8 @@ begin
     end,
     evidence=public.powerhouse_intelligence_action_candidate_v1.evidence||excluded.evidence,
     updated_at=now();
+
+  perform public.powerhouse_refresh_signal_relations_v1(p_tenant_id,30);
 
   return jsonb_build_object(
     'tenant_id',p_tenant_id,
@@ -1214,6 +1466,7 @@ begin
     evidence=excluded.evidence,
     updated_at=v_now;
 
+  perform public.powerhouse_refresh_signal_relations_v1('canonical',14);
   v_materialized:=public.powerhouse_materialize_ready_intelligence_actions_v1(null,50);
   v_outcomes:=public.powerhouse_reconcile_intelligence_outcomes_v1(null);
 
@@ -1334,6 +1587,8 @@ revoke all on function public.powerhouse_intelligence_domain_from_text_v1(text) 
 revoke all on function public.powerhouse_intelligence_impact_score_v1(numeric,numeric,numeric,numeric,numeric,numeric) from public,anon,authenticated;
 revoke all on function public.powerhouse_sync_connector_sources_to_intelligence_v1() from public,anon,authenticated;
 revoke all on function public.powerhouse_refresh_intelligence_source_availability_v1() from public,anon,authenticated;
+revoke all on function public.powerhouse_project_internal_evidence_signal_v1(text,uuid,text,text,text,text,text,numeric,numeric,numeric,jsonb) from public,anon,authenticated;
+revoke all on function public.powerhouse_refresh_signal_relations_v1(text,integer) from public,anon,authenticated;
 revoke all on function public.powerhouse_upsert_intelligence_company_impact_v1(text,text,text,text,text,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,jsonb,text,jsonb) from public,anon,authenticated;
 revoke all on function public.powerhouse_materialize_intelligence_action_v1(text,text) from public,anon,authenticated;
 revoke all on function public.powerhouse_materialize_ready_intelligence_actions_v1(text,integer) from public,anon,authenticated;
@@ -1344,6 +1599,8 @@ grant execute on function public.powerhouse_intelligence_domain_from_text_v1(tex
 grant execute on function public.powerhouse_intelligence_impact_score_v1(numeric,numeric,numeric,numeric,numeric,numeric) to service_role;
 grant execute on function public.powerhouse_sync_connector_sources_to_intelligence_v1() to service_role;
 grant execute on function public.powerhouse_refresh_intelligence_source_availability_v1() to service_role;
+grant execute on function public.powerhouse_project_internal_evidence_signal_v1(text,uuid,text,text,text,text,text,numeric,numeric,numeric,jsonb) to service_role;
+grant execute on function public.powerhouse_refresh_signal_relations_v1(text,integer) to service_role;
 grant execute on function public.powerhouse_upsert_intelligence_company_impact_v1(text,text,text,text,text,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,jsonb,text,jsonb) to service_role;
 grant execute on function public.powerhouse_materialize_intelligence_action_v1(text,text) to service_role;
 grant execute on function public.powerhouse_materialize_ready_intelligence_actions_v1(text,integer) to service_role;
