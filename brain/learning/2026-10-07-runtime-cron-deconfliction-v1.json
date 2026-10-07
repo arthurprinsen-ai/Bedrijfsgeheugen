@@ -1,0 +1,33 @@
+{
+  "id": "runtime-cron-deconfliction-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|postgres|pg-cron-startup-timeout|scheduler-herd|v1",
+  "failure_class": "DATABASE_RUNTIME_PRESSURE",
+  "root_cause": [
+    "Two canonical recovery jobs started on every minute boundary, creating permanent baseline concurrency.",
+    "The data-spine watchdog shared commercial-heartbeat minute zero, and revenue-attribution shared every 15-minute slot with the revenue-intelligence snapshot.",
+    "Provider logs recorded repeated pg_cron job startup timeout events and management/PostgREST statement timeouts while application 500s had already been removed."
+  ],
+  "prevention": [
+    "Dephase the reconciliation worker to a 59-second interval while keeping its canonical job active.",
+    "Move the data-spine watchdog away from commercial-heartbeat minutes without reducing its ten-minute cadence.",
+    "Move revenue-attribution away from the revenue-intelligence snapshot without reducing its fifteen-minute cadence.",
+    "Require exact cron.job schedule readback in the migration.",
+    "Do not disable canonical runtime owners or weaken commercial heartbeat cadence."
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "SUPABASE_DATABASE_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-runtime-cron-deconfliction-v1.test.mjs"
+    ]
+  }
+}
