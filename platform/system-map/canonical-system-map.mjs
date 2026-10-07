@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-10-05T04:19:00Z',
+  observedAt:'2026-10-07T13:23:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,34 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'external-observer-provider-truth-v1',
+      label:'External Observer Isolation & Netlify Provider Truth',
+      authority:'github-lineage+netlify-provider-readback',
+      owner:'delivery-control-plane',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['expected production SHA','Netlify published deploy','external observer availability','expected function names when applicable']),
+      outputs:Object.freeze(['LIVE_PROVEN_PROVIDER_TRUTH','OBSERVER_UNAVAILABLE','fail-closed evidence mismatch']),
+      runtime:Object.freeze({
+        contract:'brain/contracts/production-readback-v1.json#externalObserverReadback',
+        evaluator:'tools/site-shell/external-observer-production-proof.mjs',
+        regression:'tests/brain-external-observer-provider-truth.test.mjs',
+        agentContract:'AGENTS.md',
+        learning:'brain/learning/2026-10-07-external-observer-provider-truth-v1.json'
+      }),
+      invariants:Object.freeze({
+        observerIsNotProductionAuthority:true,
+        observerRefusalIsNotOriginFailure:true,
+        providerStateReadyRequired:true,
+        productionContextRequired:true,
+        productionAliasRequired:true,
+        exactCommitRefRequired:true,
+        expectedFunctionsMustBePresent:true,
+        immutableGithubLineageRequired:true,
+        canonicalRunnerLiveReadbackNotWeakened:true,
+        fabricatedOriginSuccessForbidden:true
+      })
+    }),
     Object.freeze({
       id:'universal-connected-app-cost-governor-v1',
       label:'Universal Connected-App Cost Governor',
