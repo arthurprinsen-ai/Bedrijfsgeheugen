@@ -1067,3 +1067,20 @@ Voor alle huidige en toekomstige chats/agents die GitHub Actions of andere remot
 - succesvolle of skipped sibling jobs worden niet steeds opnieuw uitgelezen;
 - een actieve workflow wordt gecheckpoint en de agent gaat door met onafhankelijk werk; een chat/toolketen mag nooit openstaan uitsluitend voor polling;
 - remote CI, auto-merge en protected gates blijven zelfstandig doorlopen; snelheid wordt nooit verkregen door Required, CodeQL, exact-HEAD identity, branch protection of provider-readback te verzwakken.
+
+## Source Universe & Environment Radar — inherited
+
+Fingerprint: `powerhouse|source-universe|environment-radar|impact|action|outcome|learning|v1`.
+
+All current and future chats/agents that use external or internal business signals inherit:
+- reuse `bg_signaal_onderwerpen`, `bg_externe_signalen` and the existing evidence spine; do not create a parallel signal/news store;
+- `CATALOGUED` source capability never means connected, observed or live;
+- separate source evidence, AI interpretation, company exposure, expected impact and realized outcome;
+- never synthesize tenant exposure or euro impact when company evidence is absent;
+- route material recommendations through the existing Brain/action/obligation authority;
+- only observed outcomes may feed Outcome Memory and verified learning;
+- reuse the existing evidence-maintenance heartbeat; no parallel intelligence scheduler;
+- project decision-useful intelligence into Portal V2, including `omgevingsradar`, while unknown remains visibly unknown;
+- register and assure the loop through Loop Assurance key `environment-radar`;
+- protected-main + provider/runtime + portal readback are required before LIVE_PROVEN.
+
