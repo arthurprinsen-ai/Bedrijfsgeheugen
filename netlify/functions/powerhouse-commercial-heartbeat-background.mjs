@@ -35,7 +35,8 @@ export default async function handler(request){
         method:'POST',
         headers:{
           'content-type':'application/json',
-          'x-bg-service-token':token
+          'x-bg-service-token':token,
+          'x-region':'eu-central-1'
         },
         body:JSON.stringify({source:'netlify-background',attempt}),
         signal:AbortSignal.timeout(EDGE_TIMEOUT_MS)
@@ -62,3 +63,5 @@ export default async function handler(request){
 
   throw new Error('COMMERCIAL_HEARTBEAT_DELIVERY_FAILED:'+lastFailure);
 }
+
+export const config={region:'fra'};
