@@ -18,5 +18,18 @@
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 1,
+  "evidence": {
+    "production": [
+      "External commercial heartbeat produced durable VERIFIED receipts under NETLIFY_SUPABASE_EDGE on 2026-10-07.",
+      "Fresh post-#4045 application runtime window contained 0 HTTP 401/500/503/522 responses.",
+      "Output assurance repeatedly reported DEGRADED_NO_CURRENT_DAILY_ACTION_SET.",
+      "No active cron scheduler owned prepare_quality_social_comments, canonical social autopilot dispatch, or daily-set reconciliation.",
+      "One NBA-v5 LinkedIn action remained prepared while source URL, post context, exact message hash and social quality gate were all verified."
+    ],
+    "repository": [
+      "supabase/migrations/20261007094500_commercial_heartbeat_current_set_v2.sql",
+      "tests/brain-commercial-heartbeat-current-set-v2.test.mjs"
+    ]
+  }
 }
