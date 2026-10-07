@@ -36,10 +36,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
-      id:'source-universe-environment-radar-v1',
-      fingerprint:'powerhouse|source-universe|environment-radar|impact|action|outcome|learning|v1',
+      id:'source-universe-impact-engine-v1',
+      fingerprint:'powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1',
       label:'Source Universe & Environment Radar',
-      authority:'supabase-evidence-spine+portal-v2',
+      authority:'supabase-evidence-spine+intelligence-projection+canonical-obligations+portal-v2',
       owner:'ONE BRAIN / Signals & External Intelligence',
       status:'CANDIDATE_PROTECTED_DELIVERY',
       inputs:Object.freeze([
@@ -52,23 +52,30 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       outputs:Object.freeze([
         'source-universe coverage',
         'environment signals',
-        'deterministic impact baseline',
-        'context-required impact assessments',
-        'next-action candidates',
+        'explainable signal ranking',
+        'evidence-backed company impact assessments',
+        'context-gated next-action candidates',
+        'canonical Brain obligations for READY/SCORED actions',
         'portal environment radar'
       ]),
       runtime:Object.freeze({
-        sourceCatalog:'public.powerhouse_source_catalog_v1',
-        impactProjection:'public.powerhouse_signal_impact_assessment_v1',
+        domainRegistry:'public.powerhouse_intelligence_domain_registry_v1',
+        sourceCatalog:'public.powerhouse_intelligence_source_catalog_v1',
+        signalProjection:'public.powerhouse_intelligence_signal_projection_v1',
+        impactProjection:'public.powerhouse_intelligence_company_impact_v1',
+        actionCandidates:'public.powerhouse_intelligence_action_candidate_v1',
+        snapshot:'public.powerhouse_intelligence_snapshot_v1',
         sourceObservations:'public.powerhouse_evidence_source_observations',
         externalSignals:'public.bg_externe_signalen',
-        refresh:'public.powerhouse_refresh_environment_radar_v1(text)',
-        heartbeat:'public.powerhouse_evidence_daily_maintenance_v1()',
-        loopAssurance:'environment-radar',
+        refresh:'public.powerhouse_refresh_external_intelligence_universe_v1(text,integer)',
+        impactWrite:'public.powerhouse_upsert_intelligence_company_impact_v1(...)',
+        actionPromotion:'public.powerhouse_materialize_intelligence_action_v1(text,text)',
+        heartbeat:'public.powerhouse_runtime_scheduler_mux_v3(timestamptz) @ minute 54',
+        loopAssurance:'external-intelligence-universe',
         api:'netlify/functions/portal-ondernemersdata.mjs',
-        portal:'/portal-v2/?page=omgevingsradar',
-        learning:'brain/learning/2026-10-07-source-universe-environment-radar-v1.json',
-        regression:'tests/brain-source-universe-environment-radar-v1.test.mjs'
+        portal:'https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar',
+        learning:'brain/learning/2026-10-07-source-universe-impact-engine-v1.json',
+        regression:'tests/brain-source-universe-impact-engine-v1.test.mjs'
       }),
       invariants:Object.freeze({
         existingStateFirst:true,
@@ -80,6 +87,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         monetaryImpactNeverSynthesized:true,
         unknownRemainsUnknown:true,
         canonicalActionAuthorityReused:true,
+        actionPromotionRequiresReadyAndScoredImpact:true,
         observedOutcomeRequiredForLearning:true,
         portalProjectionRequired:true,
         loopAssuranceRequired:true,
