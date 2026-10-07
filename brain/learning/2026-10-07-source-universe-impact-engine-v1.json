@@ -41,5 +41,43 @@
     "external_domains": 35,
     "internal_domains": 10,
     "portal_page": "https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar"
+  },
+  "compiler": {
+    "failure_class": "FRAGMENTED_INTELLIGENCE_AUTHORITY_AND_TRUTH_BOUNDARY_GAPS",
+    "closure_fingerprint": "powerhouse|error-live|semantic-learning-closure|required|v2"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case": "broad source coverage without explicit source-state truth",
+        "prior_risk": "catalogued capability could be mistaken for connected/live evidence",
+        "prevention": "availability_state separates CATALOGUED, AVAILABLE, CONNECTED, OBSERVED, LIVE, STALE and ERROR"
+      },
+      {
+        "case": "external signal reused as company-specific impact",
+        "prior_risk": "generic relevance could be presented as tenant impact or synthetic euro value",
+        "prevention": "canonical signal projection is separated from tenant-scoped impact and money remains NULL without evidence"
+      },
+      {
+        "case": "workflow completion reused as business outcome",
+        "prior_risk": "FULFILLED obligation could be mistaken for realized value",
+        "prevention": "DONE requires verified powerhouse_outcome_memory_v1 evidence"
+      },
+      {
+        "case": "co-occurring signals inferred as causal",
+        "prior_risk": "shared domain/time or shared company exposure could be overinterpreted",
+        "prevention": "automatic relations keep causality_claimed=false and causal hypotheses require separate evidence"
+      }
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-source-universe-impact-engine-v1.test.mjs"
+    ],
+    "ci": {
+      "admission": "Required run 11742 hygiene/admission passed on head 403f23b203e4bf6aa62e7bd44ad3883502f82d9d",
+      "semantic_closure_previous_blocker": "material-writeback closure identified missing failure_class before heavy lanes"
+    },
+    "production_readback": "PENDING_PROTECTED_MERGE_AND_PROVIDER_READBACK"
   }
 }
