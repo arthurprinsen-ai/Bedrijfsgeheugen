@@ -30,3 +30,13 @@ Native Git becomes the primary production authority. The workflow now performs b
 Canonical regression: `tests/brain-netlify-git-deploy-first-v1.test.mjs`.
 
 Terminal acceptance: exact-head Required + CodeQL, protected merge, post-merge control-plane green, and subsequent applicable production delivery must prefer native Git and only enter JIT fallback after bounded non-convergence.
+
+## Protected runtime canary
+
+Canary `netlify-native-git-primary-runtime-20261007-v1` changes only an invisible HTML comment in `index.html`. It exists solely to prove the merged native-Git-first authority against real production.
+
+Required evidence after protected merge:
+- exact canary merge SHA is the ready Netlify production `commit_ref`;
+- Production Source Snapshot sees that SHA during the native Git wait and exits before JIT fallback;
+- no `NETLIFY_NATIVE_GIT_PRIMARY_TIMEOUT` or bridge acquisition is executed;
+- Production Release Readback is successful for the same SHA.

@@ -43,5 +43,18 @@
     "delivery",
     "security",
     "continuity"
-  ]
+  ],
+  "runtime_canary": {
+    "id": "netlify-native-git-primary-runtime-20261007-v1",
+    "status": "PLANNED_PROTECTED_DELIVERY",
+    "source_marker": "production-source-canary: netlify-native-git-primary-runtime-20261007-v1",
+    "mutation": "invisible HTML comment only",
+    "expected_proof": [
+      "protected canary merge becomes exact Netlify production commit_ref through native Git",
+      "Production Source Snapshot observes exact SHA during NETLIFY_NATIVE_GIT_PRIMARY_WAIT",
+      "NETLIFY_NATIVE_GIT_PRIMARY_TIMEOUT is not reached",
+      "JIT fallback is not invoked",
+      "Production Release Readback succeeds on the same exact SHA"
+    ]
+  }
 }
