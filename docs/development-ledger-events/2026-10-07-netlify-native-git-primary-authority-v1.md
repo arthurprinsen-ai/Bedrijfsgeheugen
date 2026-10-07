@@ -30,3 +30,32 @@ Native Git becomes the primary production authority. The workflow now performs b
 Canonical regression: `tests/brain-netlify-git-deploy-first-v1.test.mjs`.
 
 Terminal acceptance: exact-head Required + CodeQL, protected merge, post-merge control-plane green, and subsequent applicable production delivery must prefer native Git and only enter JIT fallback after bounded non-convergence.
+
+## Protected runtime canary
+
+Canary `netlify-native-git-primary-runtime-20261007-v1` changes only an invisible HTML comment in `index.html`. It exists solely to prove the merged native-Git-first authority against real production.
+
+Required evidence after protected merge:
+- exact canary merge SHA is the ready Netlify production `commit_ref`;
+- Production Source Snapshot sees that SHA during the native Git wait and exits before JIT fallback;
+- no `NETLIFY_NATIVE_GIT_PRIMARY_TIMEOUT` or bridge acquisition is executed;
+- Production Release Readback is successful for the same SHA.
+
+## Terminal runtime proof
+
+Protected canary PR #4074 merged to `cfbf6247cd59506d468dd75bca0307c3065b4f67`.
+
+Provider readback:
+- Netlify deploy `6ac692d18140b50008e74167`;
+- state `ready`;
+- context `production`;
+- exact `commit_ref=cfbf6247cd59506d468dd75bca0307c3065b4f67`.
+
+Workflow proof:
+- Production Source Snapshot `37669016310`: success;
+- runtime log: `NETLIFY_NATIVE_GIT_PRIMARY_WAIT expected_sha=cfbf6247cd59506d468dd75bca0307c3065b4f67`;
+- runtime log then observed exact live SHA and exited with no transport side effect required;
+- no executed timeout/JIT fallback path;
+- Production Release Readback `37669016607`: success.
+
+Terminal classification: `LIVE_PROVEN`.

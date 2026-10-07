@@ -43,5 +43,27 @@
     "delivery",
     "security",
     "continuity"
-  ]
+  ],
+  "runtime_canary": {
+    "id": "netlify-native-git-primary-runtime-20261007-v1",
+    "status": "VERIFIED_RUNTIME",
+    "source_marker": "production-source-canary: netlify-native-git-primary-runtime-20261007-v1",
+    "mutation": "invisible HTML comment only",
+    "protected_merge_sha": "cfbf6247cd59506d468dd75bca0307c3065b4f67",
+    "netlify_deploy_id": "6ac692d18140b50008e74167",
+    "netlify_state": "ready",
+    "netlify_context": "production",
+    "netlify_commit_ref": "cfbf6247cd59506d468dd75bca0307c3065b4f67",
+    "production_source_snapshot_run": 37669016310,
+    "production_release_readback_run": 37669016607,
+    "observed_sequence": [
+      "NETLIFY_NATIVE_GIT_PRIMARY_WAIT started for exact protected merge SHA.",
+      "Exact protected merge SHA became production during the native Git wait.",
+      "Snapshot exited with no transport side effect required.",
+      "JIT fallback was not invoked.",
+      "Production Source Snapshot completed success.",
+      "Production Release Readback completed success on the same exact SHA."
+    ],
+    "terminal_state": "LIVE_PROVEN"
+  }
 }

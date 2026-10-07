@@ -5,6 +5,7 @@ const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PERSONAL_GATE = 'channel-identity-hard-gate-v3';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
 const PERSONAL_LIFE_ONLY_POLICY = 'personal-linkedin-personal-life-only-v1';
+const PERSONAL_AI_NATIVE_POLICY = 'personal-linkedin-ai-native-builder-v1';
 const VERSION = 'v10-closed-loop';
 const COVERED_STATES = new Set(['content_ready','scheduled','published','measured','learned','skipped']);
 const executor_capabilities: Record<string, { executable: boolean; executor: string | null; reason?: string }> = {
@@ -21,7 +22,7 @@ const executor_capabilities: Record<string, { executable: boolean; executor: str
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
 const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts"]);
-const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v1"]);
+const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2"]);
 const DB_JSON_COLUMNS=new Set([
  'bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload',
  'content_publication_obligations.evidence','content_publication_obligations.metrics',
@@ -193,10 +194,20 @@ function validPersonalSource(row:any) {
   const eligibleStatus = ['suggested','accepted'].includes(clean(row?.status));
   const truthMode = e.personal_truth_verified === true && e.arthur_anchor_verified === true && e.first_person_claims_verified === true;
   const observationalMode = e.observational_personal_theme_verified === true && e.public_theme_source_verified === true && e.first_person_claims_present === false;
-  return eligibleStatus && row?.target_channel === 'linkedin_personal' && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
-    && !!clean(e.content_id) && lineage && (truthMode || observationalMode)
+  const builderMode = e.ai_native_builder_story_verified === true
+    && e.ai_native_builder_policy === PERSONAL_AI_NATIVE_POLICY
+    && e.build_event_verified === true
+    && e.arthur_anchor_verified === true
+    && e.source_backed === true
+    && e.business_topic === true
+    && e.corporate_voice === false
+    && e.company_page_interchangeable === false;
+  const legacyPersonal = (truthMode || observationalMode)
     && e.personal_life_topic === true && e.business_topic === false
-    && (e.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY || e.personal_life_only_verified === true)
+    && (e.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY || e.personal_life_only_verified === true);
+  return eligibleStatus && row?.target_channel === 'linkedin_personal'
+    && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
+    && !!clean(e.content_id) && lineage && (builderMode || legacyPersonal)
     && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
     && (e.sensitive_private_detail !== true || e.sensitive_private_approval === true);
 }
@@ -239,6 +250,12 @@ function personalFinalCopyValid(body:string, evidence:any) {
   const text=clean(body).toLowerCase();
   const source=clean(evidence?.source_text).toLowerCase();
   const hasFirstPerson=/\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(body);
+  if (evidence?.ai_native_builder_story_verified === true) {
+    const buildSignal=/\b(ai|bedrijfsgeheugen|bouwen|gebouwd|bouw|systeem|bedrijf|bedrijven|ondernemer|ondernemers|probleem|oplossen|helpen|leren|veranderen|geloof|droom)\b/i.test(body);
+    const salesPitch=/\b(boek|koop|plan een afspraak|dm me|download|meld je aan|gratis scan|frisse blik)\b/i.test(body);
+    const technicalJargon=/\b(runtime|heartbeat|workflow|pipeline|orchestration|readback|materializer|supabase|github|netlify|postgres(?:ql)?|database|sql|endpoint|deploy|commit|sha|idempotenc(?:y|ie)|lineage|source[_ -]?health|recovery[_ -]?due|evidence[_ -]?gap|architecture[_ -]?state|learning[_ -]?state|content[_ -]?loop)\b|\b[a-z][a-z0-9]*_[a-z0-9_]+\b/i.test(body);
+    return hasFirstPerson && buildSignal && !technicalJargon && !salesPitch && clean(body).length >= 280;
+  }
   const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|klant|opdrachtgever|mkb|sales|lead|omzet|offerte|strategie|business|propositie|dienstverlening|dashboard|governance|roadmap|stakeholder|data-platform|datawarehouse/i.test(body);
   if (evidence?.observational_personal_theme_verified === true) {
     const dailyLife=/\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline)\b/i.test(body);
@@ -317,13 +334,13 @@ Deno.serve(async (req) => {
   const runDate = clean(request.runDate) || localDate();
   let stage = 'materialize-source-backed-candidates';
   try {
-    const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v1',{p_date:runDate});
+    const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
     if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
     stage = 'load-context';
     const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult] = await Promise.all([
       db.from('powerhouse_daily_runs').select('run_date').eq('run_date',runDate).maybeSingle(),
       db.from('powerhouse_content_recommendations').select('recommendation_id,topic_key,target_channel,recommendation_type,priority,reason,evidence,status').eq('run_date',runDate).order('priority',{ascending:false}).limit(50),
-      db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status').eq('status','actief').order('vertrouwen',{ascending:false}).limit(30),
+      db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status').eq('status','actief').order('vertrouwen',{ascending:false}).order('bijgewerkt_op',{ascending:false}).limit(30),
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle(),
       db.from('powerhouse_channel_decisions').select('channel,decision,state,priority,delivery_ref,delivery_evidence').eq('run_date',runDate),
       db.from('content_publication_obligations').select('channel,evidence').eq('tenant_id','canonical').eq('publication_date',runDate),
@@ -423,9 +440,12 @@ Deno.serve(async (req) => {
       if(linkError) throw new Error('COMPANY_TRACKING_LINK_WRITE_FAILED');
     }
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
+    const personalBuilder = pending.channel==='linkedin_personal' && personalSource?.evidence?.ai_native_builder_story_verified === true;
     const personalObservational = pending.channel==='linkedin_personal' && personalSource?.evidence?.observational_personal_theme_verified === true;
     const system = pending.channel==='linkedin_personal'
-      ? (personalObservational
+      ? (personalBuilder
+        ? `Schrijf voor Arthur persoonlijk LinkedIn vanuit een aantoonbare AI-native bouwgebeurtenis. Policy ${PERSONAL_AI_NATIVE_POLICY}. Gebruik uitsluitend de meegeleverde Powerhouse/Brain evidence, maar vertaal die volledig naar gewone ondernemerstaal. Dit is het doorlopende verhaal dat ik mijn droom bouw: AI die echte problemen van bedrijven oplost en echt meewerkt. Vaste verhaallijn: wat wilde ik bereiken → welk concreet bedrijfsprobleem wil ik oplossen → wat gebeurde er echt of ging mis → wat heb ik veranderd/geleerd → wat kan AI daardoor nu concreet beter → waar geloof ik in over hoe bedrijven en AI straks samenwerken. Schrijf in de ik-vorm, warm, concreet en begrijpelijk voor iemand zonder technische kennis. Publieke copy mag NOOIT interne stack-, architectuur-, database-, pipeline-, job-, event-, status-, contract- of foutcodetaal bevatten; noem geen Supabase, GitHub, Netlify, runtime, heartbeat, workflow, readback, materializer, interne functienamen of ALL_CAPS/underscore-statussen. Techniek is alleen bronbewijs onder de motorkap en wordt voor publicatie vertaald naar menselijke gevolgen en bedrijfswaarde. Geen generieke AI-content, geen productpitch, geen verzonnen gevoel/ervaring, geen claims buiten de evidence en geen CTA naar een verkoopgesprek. Gebruik daarnaast actief de meegeleverde entrepreneur_problem_sources en search_demand_sources: kies alleen een ondernemersprobleem dat aantoonbaar relevant is voor de bouwgebeurtenis en vertaal brondata naar het onderliggende menselijke bedrijfsprobleem. Behandel externe bronfeiten nooit als Arthurs eigen ervaring. Arthurs vaste overtuiging mag als rode draad terugkomen: wereld, technologie, regels, markten en klantverwachtingen veranderen sneller, dus bedrijven moeten eerder signaleren, anticiperen, leren en bijsturen; AI helpt daarbij, maar mensen houden richting en verantwoordelijkheid. Maak er iedere dag één nieuw hoofdstuk van, geen losse post. Gebruik journey_snapshot om in gewone taal te laten zien wat er inmiddels aantoonbaar staat en gebeurt: bijvoorbeeld hoeveel AI-modellen actief en goedgekeurd zijn, hoeveel pagina’s werkelijk worden gemeten, hoeveel bronnen worden gevolgd, hoeveel acties zijn beoordeeld of vandaag uitgevoerd en welke uitkomsten/waarde daadwerkelijk zijn gemeten. Selecteer alleen cijfers die het verhaal helpen en benoem precies wat ze meten; maak nooit een cijferdump. Laat expliciet ook iets zien dat niet goed ging of nog niet werkt, wat daardoor is aangepast en wat nog niet bewezen is. Gebruik recent_personal_chapters om de voorgaande hoofdstukken te kennen, niet dezelfde anekdote/les opnieuw te vertellen en waar passend natuurlijk aan te sluiten op gisteren/eerdere dagen. De inhoudelijke cirkel is: zien wat verandert → waarde/prioriteit bepalen → adviseren → actie uitzetten → controleren of het echt gebeurt → uitkomst meten → leren → volgende prioriteit. Noem AI expliciet als wezenlijk onderdeel van wat ik bouw, maar nooit als losse hype of chatbotlaag. Laat waar relevant zien dat ik een nieuwe generatie slimme software probeer te bouwen waarin klassieke software, bedrijfsdata, BI/analytics en AI samenkomen. De AI bestaat uit meerdere gespecialiseerde vormen van intelligentie die elk een ander deel van een bedrijf begrijpen — bijvoorbeeld strategie, markt, klant, processen, risico, regelgeving, commerciële kansen, uitvoering, waarde en leren — en die samen tot één prioriteit of volgende stap komen. Als de evidence een actuele total_layers-waarde bevat, mag die als begrijpelijk schaalbewijs worden gebruikt, bijvoorbeeld '32 verschillende intelligentielagen werken inmiddels samen', maar alleen als het getal die dag letterlijk door de bron wordt bevestigd. Vermijd architectuurtaal: de pointe is dat software niet alleen registreert en dashboards niet alleen terugkijken; de combinatie van software + data + BI + AI kan begrijpen, voorspellen, prioriteren, adviseren, handelen en leren. Gebruik ook predictive_forecasts wanneer aanwezig. Vertaal een voorspelling altijd van buiten naar binnen: welk extern signaal of patroon verandert → welk concreet deel van het bedrijf kan hierdoor geraakt worden → wanneer/horizon → mogelijke impact → probability/confidence → wat gebeurt er bij niets doen → welke eerstvolgende actie verdient prioriteit → hoe meten we later of de voorspelling en actie klopten. Maak nooit van een forecast een feit. Wetgeving, AI-regels, cyber, technologie, markt, klantgedrag, concurrentie, subsidies, rente/financiering, arbeidsmarkt/skills, energie en keten mogen als externe radar terugkomen wanneer actuele evidence ze ondersteunt. De sterke belofte is niet 'meer nieuws', maar eerder zien wat waarschijnlijk relevant wordt en de strategie/actie op tijd herijken. Schrijf precies in de taal die in verified_personal_source.evidence.intended_language staat: 'nl' = Nederlands, 'en' = natuurlijk zakelijk Engels. Maak op Engelse dagen een origineel volgend hoofdstuk, geen vertaling of herhaling van een Nederlandse post. Publiceer nooit twee talen in dezelfde persoonlijke LinkedIn-post.`
+        : personalObservational
         ? `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn als herkenbare observatie uit het dagelijks leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. Gebruik source_text alleen als feitelijke inspiratie. Gebruik GEEN ik/mijn/mij/me-vorm, suggereer niet dat Arthur dit zelf heeft meegemaakt en verzin geen persoonlijke ervaring. Toegestaan: telefoon/schermtijd, huis, vervoer, boodschappen, sport, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Schrijf menselijk, concreet en met lichte humor waar passend.`
         : `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`)
       : pending.channel==='linkedin_company'
@@ -466,7 +486,11 @@ Deno.serve(async (req) => {
       observational_personal_theme_verified:personalSource.evidence?.observational_personal_theme_verified===true,
       public_theme_source_verified:personalSource.evidence?.public_theme_source_verified===true,
       first_person_claims_present:personalSource.evidence?.first_person_claims_present===false?false:true,
-      personal_life_only_policy:PERSONAL_LIFE_ONLY_POLICY,personal_life_only_verified:true,
+      ai_native_builder_policy:personalSource.evidence?.ai_native_builder_story_verified===true?PERSONAL_AI_NATIVE_POLICY:null,
+      ai_native_builder_story_verified:personalSource.evidence?.ai_native_builder_story_verified===true,
+      build_event_verified:personalSource.evidence?.build_event_verified===true,
+      personal_life_only_policy:personalSource.evidence?.ai_native_builder_story_verified===true?null:PERSONAL_LIFE_ONLY_POLICY,
+      personal_life_only_verified:personalSource.evidence?.ai_native_builder_story_verified===true?false:true,
       prediction_lineage_present:true,prior_prediction_decision_id:`decision:${runDate}:linkedin_personal`,publication_intent:'publish',final_text_hash:finalTextHash} : null;
     const instagramEvidence = pending.channel==='instagram_company' ? {...instagramProof,exact_final_media_proven:true,final_media_sha256:instagramProof.final_media_sha256,media_url:instagramProof.media_url,mira_gate_passed:true} : null;
     const artifactType = pending.channel==='blog'?'blog':pending.channel==='instagram_company'?'instagram_post':'linkedin_post';
