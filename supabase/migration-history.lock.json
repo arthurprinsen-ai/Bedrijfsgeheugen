@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T09:11:40.000Z",
+  "captured_at": "2026-10-07T19:04:32.661Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2430,6 +2430,102 @@
     {
       "version": "20261007091140",
       "name": "restore_single_staggered_commercial_heartbeat_owner"
+    },
+    {
+      "version": "20261007094500",
+      "name": "commercial_heartbeat_current_set_v2"
+    },
+    {
+      "version": "20261007101156",
+      "name": "close_current_set_provider_errors_v1"
+    },
+    {
+      "version": "20261007104712",
+      "name": "data_sovereignty_control_plane_v1"
+    },
+    {
+      "version": "20261007110248",
+      "name": "data_sovereignty_runtime_and_connector_truth_v1"
+    },
+    {
+      "version": "20261007111449",
+      "name": "correct_netlify_sovereignty_truth_v1"
+    },
+    {
+      "version": "20261007111513",
+      "name": "netlify_sovereignty_truth_hardening_v1"
+    },
+    {
+      "version": "20261007112233",
+      "name": "powerhouse_end_to_end_one_heart_runtime_v2"
+    },
+    {
+      "version": "20261007112412",
+      "name": "netlify_runtime_residency_truth_v2"
+    },
+    {
+      "version": "20261007112514",
+      "name": "powerhouse_autonomous_email_economics_v1"
+    },
+    {
+      "version": "20261007112817",
+      "name": "powerhouse_ai_native_builder_personal_content_v1"
+    },
+    {
+      "version": "20261007113609",
+      "name": "linkedin_personal_ai_native_builder_obligation_gate_v2"
+    },
+    {
+      "version": "20261007113723",
+      "name": "linkedin_personal_ai_native_builder_artifact_gate_v1"
+    },
+    {
+      "version": "20261007113951",
+      "name": "powerhouse_reconciler_accept_ai_native_builder_v1"
+    },
+    {
+      "version": "20261007155500",
+      "name": "data_ai_security_trust_center_v1"
+    },
+    {
+      "version": "20261007163124",
+      "name": "security_trust_harden_helper_search_path_v1"
+    },
+    {
+      "version": "20261007163230",
+      "name": "security_trust_remove_browser_definer_exposure_v1"
+    },
+    {
+      "version": "20261007163333",
+      "name": "security_trust_posture_precision_v1"
+    },
+    {
+      "version": "20261007165737",
+      "name": "personal_linkedin_dream_builder_human_language_v1"
+    },
+    {
+      "version": "20261007165811",
+      "name": "personal_linkedin_closed_loop_policy_refresh_v1"
+    },
+    {
+      "version": "20261007165818",
+      "name": "personal_linkedin_daily_experiment_copy_refresh_v1"
+    },
+    {
+      "version": "20261007165821",
+      "name": "personal_linkedin_human_language_guard_v1"
+    },
+    {
+      "version": "20261007170121",
+      "name": "instagram_personal_no_mira_scope_v1"
+    },
+    {
+      "version": "20261007171249",
+      "name": "personal_linkedin_founder_journey_problem_sources_v1"
+    },
+    {
+      "version": "20261007190600",
+      "name": "security_definer_browser_execute_closure_v1"
     }
   ]
 }
