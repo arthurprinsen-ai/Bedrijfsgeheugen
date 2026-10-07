@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const read=(path)=>fs.readFileSync(path,'utf8');
 const runner=read('supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts');
-const migration=read('supabase/migrations/20261007084700_external_commercial_heartbeat_scheduler_authority_v1.sql');
+const migration=read('supabase/migrations/20261007090255_external_commercial_heartbeat_scheduler_authority_v1.sql');
 
 test('authenticated external runner marks scheduler authority inside the heartbeat transaction',()=>{
   assert.match(runner,/set_config\('powerhouse\.external_heartbeat_owner','netlify-supabase-edge-v1',true\)/);
