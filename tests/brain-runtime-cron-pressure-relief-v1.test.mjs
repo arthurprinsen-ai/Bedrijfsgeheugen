@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const path='supabase/migrations/20261007055200_powerhouse_runtime_cron_pressure_relief_v1.sql';
+const liveBaselinePath='supabase/migrations/20261007055115_consolidate_recovery_cron_and_bound_history_retention.sql';
 
 test('runtime maintenance consolidates every-minute watchdog and reconciliation owners', async()=>{
   const sql=await readFile(path,'utf8');
@@ -23,4 +24,15 @@ test('commercial heartbeat owner is not altered by runtime maintenance migration
   assert.doesNotMatch(sql,/cron\.unschedule\([^)]*powerhouse-one-commercial-heartbeat-v1/i);
   assert.doesNotMatch(sql,/cron\.alter_job\([^)]*powerhouse-one-commercial-heartbeat-v1/i);
   assert.match(sql,/commercial_heartbeat_slot/);
+});
+
+
+test('successor retires the live temporary recovery owner and preserves bounded history retention', async()=>{
+  const sql=await readFile(path,'utf8');
+  const baseline=await readFile(liveBaselinePath,'utf8');
+  assert.match(baseline,/powerhouse-recovery-control-plane-v1/i);
+  assert.match(baseline,/powerhouse-cron-history-retention-v1/i);
+  assert.match(baseline,/20261007055115|Live recovery consolidation/i);
+  assert.match(sql,/powerhouse-recovery-control-plane-v1/i);
+  assert.match(sql,/powerhouse-runtime-maintenance-v1/i);
 });
