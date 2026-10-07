@@ -43,7 +43,8 @@ const COPY = {
   mensen:['Mensen','Breng rollen, capaciteit, expertise, afhankelijkheden en kennisrisico’s in kaart.'],
   'branche-markt':['Branche en markt','Vergelijk de organisatie met marktontwikkelingen, concurrentie en relevante benchmarks.'],
   onderzoek:['Onderzoek','Bundel analyses, hypotheses, bevindingen, bronnen en conclusies in één traceerbaar overzicht.'],
-  ondernemersdata:['Actueel & externe data','Zie wat er buiten je bedrijf verandert: wetgeving, arbeidsmarkt, subsidies, economie, branche, AI en technologie.'],
+  ondernemersdata:['Actueel & externe data','Zie wat er buiten je bedrijf verandert: wetgeving, markt, technologie, cyber, economie, keten, mensen, energie, kapitaal en meer.'],
+  omgevingsradar:['Omgevingsradar','Eén levende radar van bronnen naar signalen, bedrijfsspecifieke impact, volgende acties, outcomes en leren.'],
   'wet-regelgeving':['Wet- & regelgeving','Volg wettelijke verplichtingen, toepasselijkheid, mijlpalen, deadlines, bron en laatste controle.'],
   'arbeidsmarkt-personeel':['Arbeidsmarkt & personeel','Volg UWV-, CBS- en andere arbeidsmarktsignalen die personeelsplanning, schaarste, verzuim en lonen kunnen raken.'],
   'subsidies-regelingen':['Subsidies & regelingen','Volg RVO-regelingen, subsidies en relevante ondernemersregelingen vanuit de bron.'],
@@ -89,7 +90,7 @@ const COPY = {
 
 const BRAIN_PAGES=new Set(['sales-intelligence','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
-const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
+const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','omgevingsradar','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek','compliance-governance']);
 export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','compliance-governance','compliance-command-center','eu-ai-act-audit']);
