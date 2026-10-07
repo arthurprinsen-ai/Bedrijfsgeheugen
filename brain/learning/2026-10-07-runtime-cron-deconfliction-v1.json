@@ -59,6 +59,14 @@
       "supabase_recommended_concurrent_jobs_max": 8
     },
     "source_migration": "supabase/migrations/20261007055200_powerhouse_runtime_cron_deconfliction_v1.sql",
-    "regression_test": "tests/brain-powerhouse-runtime-cron-deconfliction-v1.test.mjs"
+    "regression_test": "tests/brain-powerhouse-runtime-cron-deconfliction-v1.test.mjs",
+    "supabase_preview_capacity_recovery": {
+      "stale_preview_pr": 4015,
+      "stale_preview_branch": "fix/supabase-edge-production-source-anchor-60d41da-20261006",
+      "stale_preview_retired_at": "2026-10-07T06:01:25Z",
+      "retirement_basis": "Superseded by #4025 terminal provider readbacks and #4029 canonical runtime-file provider parity.",
+      "branch_readback_after_retirement": "Only main remains in Supabase branches.",
+      "purpose": "Allow current migration preview to be evaluated without stale preview-branch occupancy."
+    }
   }
 }
