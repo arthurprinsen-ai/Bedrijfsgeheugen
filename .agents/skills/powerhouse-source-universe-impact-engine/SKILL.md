@@ -22,6 +22,20 @@ Never introduce a parallel source store, crawler authority, scheduler, CRM, task
 10. **One scheduler.** Reuse `powerhouse_runtime_scheduler_mux_v3`; never add a second cron writer for this loop.
 11. **Closed-loop assurance.** `external-intelligence-universe` requires input, decision, action, readback, outcome, measurement, learning and guard. Missing downstream evidence keeps the loop non-GREEN.
 
+## Internal evidence projection
+
+Internal company signals must start from an existing `powerhouse_evidence_source_observations.observation_id` and use `powerhouse_project_internal_evidence_signal_v1(...)`. The signal projection stores the evidence reference and derived interpretation, not the raw observation payload. Internal signal keys are tenant-scoped by construction.
+
+## Signal relationships
+
+Use `powerhouse_refresh_signal_relations_v1(text,integer)` and `powerhouse_intelligence_signal_relation_v1`.
+
+Automatic relationship types are bounded:
+- `SHARED_DOMAIN`: two visible signals share a domain and time window;
+- `COMPANY_DEPENDENCY`: two scored tenant impacts reference the same company node/dependency.
+
+`CAUSAL_HYPOTHESIS` exists only as an evidence-backed semantic type. Never auto-create it from co-occurrence. The Portal must state that a discovered relationship is not automatically causal.
+
 ## Domain universe
 
 External (35): regulation, cyber, AI/technology, competition, customer/market behaviour, macro-economy, finance/capital, subsidies/tax, labour, skills, energy, climate/physical risk, commodities, supply chain/logistics, geopolitics, international trade, sustainability/ESG, demography, socio-cultural change, media/news, social communities, search/internet demand, pricing, real estate/location, mobility, public procurement, business registers, M&A/investment, patents/IP, standards, reputation/trust, insurance, fraud/financial crime, health/disruption and local environment.
