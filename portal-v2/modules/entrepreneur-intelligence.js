@@ -80,16 +80,25 @@ function renderEnvironmentRadar(data){
   const domainGroups=Object.entries(grouped).map(([pillar,items])=>`<details class="eicard"><summary><b>${esc(pillar)}</b> · ${items.length} domeinen</summary><div class="trust-detail">${items.map(d=>`<p><b>${esc(d.label)}</b><br><span>${esc(d.description)}</span></p>`).join('')}</div></details>`);
   const knownValue=snap.known_opportunity_value_eur==null?'Nog niet bewezen':euro(snap.known_opportunity_value_eur);
   const knownRisk=snap.known_risk_value_eur==null?'Nog niet bewezen':euro(snap.known_risk_value_eur);
+  const sinceYesterday=signals.filter(s=>isFresh(s.observed_at,1));
+  const companyImpact=signals.filter(s=>s.impact_status==='SCORED');
+  const opportunities=signals.filter(s=>['OPPORTUNITY','BOTH'].includes(String(s.signal_type||'').toUpperCase()));
+  const risks=signals.filter(s=>['RISK','BOTH'].includes(String(s.signal_type||'').toUpperCase()));
+  const contextGaps=signals.filter(s=>s.impact_status!=='SCORED'&&score(s.signal_score)>=65);
   const body=`${nav()}<section class="eikpis">
     <button type="button"><small>Domeinen</small><strong>${esc(snap.domain_count??domains.length)}</strong><span>extern + intern</span></button>
     <button type="button"><small>Bronmogelijkheden</small><strong>${esc(snap.catalog_source_count??catalog.length)}</strong><span>publiek + koppelingen</span></button>
-    <button type="button"><small>Signalen 7 dagen</small><strong>${esc(snap.signals_7d??signals.filter(s=>isFresh(s.observed_at,7)).length)}</strong><span>evidence-backed</span></button>
+    <button type="button"><small>Sinds gisteren</small><strong>${esc(snap.signals_24h??sinceYesterday.length)}</strong><span>nieuwe signalen</span></button>
     <button type="button"><small>Aandacht</small><strong>${esc(snap.high_attention_count??signals.filter(s=>score(s.signal_score)>=70).length)}</strong><span>score ≥ 70</span></button>
     <button type="button"><small>Kansen €</small><strong>${esc(knownValue)}</strong><span>alleen bewezen bedragen</span></button>
     <button type="button"><small>Risico €</small><strong>${esc(knownRisk)}</strong><span>alleen bewezen bedragen</span></button>
   </section>
   <section class="eisection"><div class="pvmodulehead"><span>•</span><h3>Van buitenwereld naar bedrijfsactie</h3></div><article class="eicard"><h4>Source → evidence → signal → impact → actie → outcome → learning</h4><p>Een nieuwsfeit is nog geen bedrijfsimpact. De radar scheidt bronbewijs, signaalscore en bedrijfsspecifieke impact. Bedragen blijven onbekend totdat eigen exposure en bewijs bestaan.</p><div class="eifact"><b>Projectiescope</b><span>${esc(intelligence.projectionScope||'canonical')}</span></div><div class="eifact"><b>Truth policy</b><span>${esc(intelligence.truthPolicy||'measured_or_evidence_backed_else_unknown')}</span></div></article></section>
-  ${section('Hoogste aandacht',signals.slice(0,12).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen verwerkte externe signalen. De broncatalogus en taxonomie zijn wel beschikbaar.')}
+  ${section('Sinds gisteren veranderd',sinceYesterday.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Sinds gisteren zijn geen nieuwe verwerkte signalen beschikbaar.')}
+  ${section('Wat raakt mijn bedrijf?',companyImpact.slice(0,12).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen signalen hebben voldoende eigen bedrijfscontext om bedrijfsspecifieke impact te claimen.')}
+  ${section('Kansen',opportunities.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele kanssignalen met voldoende bronbewijs.')}
+  ${section('Risico’s',risks.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele risicosignalen met voldoende bronbewijs.')}
+  ${section('Context nodig vóór impactclaim',contextGaps.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Geen open contextgaten bij hoog scorende signalen.')}
   ${section('Volgende acties',actions.slice(0,10).map(a=>`<article class="eicard"><div class="eimeta"><span>${esc(domainMap.get(a.domain_key)?.label||a.domain_key)}</span><span class="eistatus">${esc(score(a.priority_score))}/100</span></div><h4>${esc(a.title)}</h4><p>${esc(a.rationale)}</p><footer><span>${esc(a.status)}</span><span>${a.due_at?`voor ${esc(nlDate(a.due_at))}`:'geen harde deadline'}</span></footer></article>`),'Nog geen action candidates. Een kandidaat ontstaat alleen bij voldoende signaalbewijs.')}
   ${section('Volledig domeinuniversum',domainGroups)}
   ${section('Bronuniversum',catalog.slice(0,24).map(sourceCapabilityCard),'Nog geen broncatalogus beschikbaar.')}
