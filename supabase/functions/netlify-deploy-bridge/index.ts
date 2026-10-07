@@ -40,24 +40,30 @@ async function getVaultSecret(name: string) {
 async function getProxy() {
   const apiKey = await getVaultSecret("COMPOSIO_API_KEY");
   const base = "https://backend.composio.dev/api/v3.1";
-  const accountId = "netlify_mcp_retax-divide";
   const toolSlug = "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER";
   const headers = {
     "content-type": "application/json",
     "x-api-key": apiKey,
-    "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/6",
+    "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/7",
   };
 
-  const accountRes = await fetch(base + "/connected_accounts/" + encodeURIComponent(accountId), {
+  const accountsRes = await fetch(base + "/connected_accounts?limit=100&account_type=ALL", {
     method: "GET",
     headers,
   });
-  const accountRaw = await accountRes.text();
-  if (!accountRes.ok) throw new Error("composio connected account " + accountRes.status);
-  let account: any = {};
-  try { account = JSON.parse(accountRaw); } catch {}
+  const accountsRaw = await accountsRes.text();
+  if (!accountsRes.ok) throw new Error("composio connected accounts " + accountsRes.status);
+  let accountsPayload: any = {};
+  try { accountsPayload = JSON.parse(accountsRaw); } catch {}
+  const items = Array.isArray(accountsPayload?.items) ? accountsPayload.items : [];
+  const account = items.find((item: any) =>
+    String(item?.toolkit?.slug || "").toLowerCase() === "netlify_mcp" &&
+    /active/i.test(String(item?.status || "")) &&
+    !item?.is_disabled
+  );
+  const accountId = String(account?.id || "").trim();
   const userId = String(account?.user_id || "").trim();
-  if (!userId) throw new Error("composio connected account user missing");
+  if (!accountId || !userId) throw new Error("composio netlify connected account unavailable");
 
   const sessionRes = await fetch(base + "/tool_router/session", {
     method: "POST",
@@ -172,7 +178,7 @@ Deno.serve(async (req: Request) => {
     if (!authPhase && /secret unavailable|vault read timeout|database auth unavailable/i.test(message)) {
       errorCode = "vault_authority_unavailable";
       status = 503;
-    } else if (!authPhase && /composio connected account/i.test(message)) {
+    } else if (!authPhase && /composio connected accounts|composio netlify connected account unavailable/i.test(message)) {
       errorCode = "composio_connected_account_failed";
       status = 421;
     } else if (!authPhase && /composio session create/i.test(message)) {
