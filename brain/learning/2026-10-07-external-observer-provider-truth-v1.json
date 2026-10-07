@@ -1,0 +1,39 @@
+{
+  "id": "external-observer-provider-truth-v1",
+  "fingerprint": "delivery|external-observer|provider-truth-fallback|v1",
+  "event_kind": "IMPROVEMENT",
+  "date": "2026-10-07",
+  "status": "PROVEN",
+  "problem": "A public/chat web observer can refuse a direct fetch to bedrijfsgeheugen.nl even while Netlify production is healthy, creating a false-negative final verification if observer reachability is treated as production truth.",
+  "root_cause": "Observer policy/capability was conflated with origin/runtime health.",
+  "failed_approach": "Require every independent chat/web fetcher to reproduce the canonical production HTTP readback before accepting already-proven production.",
+  "fix": "Separate observer availability from production authority. When the external observer is unavailable, require exact Netlify provider proof plus immutable GitHub lineage and expected function inventory; keep the canonical Production Release Readback workflow fail-closed.",
+  "prevention_rule": "OBSERVER_FAILURE_NEVER_OVERRIDES_EXACT_PROVIDER_AND_LINEAGE_TRUTH",
+  "evidence": {
+    "netlify_deploy_id": "6ac63f6b64dc6f000885899d",
+    "netlify_state": "ready",
+    "production_alias": "https://www.bedrijfsgeheugen.nl",
+    "commit_ref": "e53c39adfb7dcd945515f2421ac2f233eb6cda5b",
+    "observed_functions": [
+      "_data-sovereignty-client",
+      "_connector-ai",
+      "_portal-supabase-store",
+      "vraag"
+    ]
+  },
+  "regression_test": "tests/brain-external-observer-provider-truth.test.mjs",
+  "evaluator": "tools/delivery/external-observer-production-proof.mjs",
+  "compiler": {
+    "failure_class": "EXTERNAL_OBSERVER_FALSE_NEGATIVE",
+    "semantic_fingerprint": "powerhouse|error-live|semantic-learning-closure|required|v2"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case": "public_web_fetcher_refused_while_netlify_provider_truth_was_exact",
+        "expected": "OBSERVER_UNAVAILABLE",
+        "result": "provider_truth_fallback_required"
+      }
+    ]
+  }
+}
