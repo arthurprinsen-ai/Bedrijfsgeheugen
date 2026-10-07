@@ -36,6 +36,12 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='POST'&&id&&action==='test'){
     if(typeof engine?.runTest!=='function')return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
+    if(typeof sovereignty?.assertConnectorAllowed==='function'){
+      try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch(error){
+        if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:error.code,details:clean(error.details||[])},409);
+        throw error;
+      }
+    }
     const body=clean(await requestBody(request,normalized));let result;
     try{
       result=await engine.runTest({tenantId,connector,input:body.sample,user});
