@@ -35,6 +35,6 @@ test('explicit tenant evidence augments runtime evidence without losing runtime 
 test('Data & systemen exposes the live Data AI Passport entry point',()=>{
   const html=renderCompany({health:{cards:[],risks:[],actions:[]},graph:{nodes:[]},route:'company/data'});
   assert.match(html,/DATA & AI · LIVE EVIDENCE/);
-  assert.ok(html.includes('href="https://www.bedrijfsgeheugen.nl/portaal/data-ai-passport.html"'));
+  assert.ok(html.includes('href="https://www.bedrijfsgeheugen.nl/portaal?page=data-ai-passport"'));
   assert.match(html,/Open Data & AI Passport/);
 });
