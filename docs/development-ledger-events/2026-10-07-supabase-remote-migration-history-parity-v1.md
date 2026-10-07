@@ -1,29 +1,20 @@
-# 2026-10-07 — Supabase remote migration history parity
+# 2026-10-07 — Supabase terminal history parity v2
 
-## Failure
+## Post-merge evidence
 
-After PR #4075 merged successfully, the production Supabase Git check failed with:
+PR #4079 merged with Required, CodeQL and fresh Supabase Preview green. The preview replay applied all 631 migrations through `20261007182000` and deployed 117 Edge Functions; `powerhouse-content-orchestrator` was ACTIVE v47 with the production hash.
 
-`Remote migration versions not found in local migrations directory.`
+Post-merge main then exposed two residual failures:
 
-Readback identified exactly six remote-only versions:
-- `20261007165737` — `personal_linkedin_dream_builder_human_language_v1`
-- `20261007165811` — `personal_linkedin_closed_loop_policy_refresh_v1`
-- `20261007165818` — `personal_linkedin_daily_experiment_copy_refresh_v1`
-- `20261007165821` — `personal_linkedin_human_language_guard_v1`
-- `20261007170121` — `instagram_personal_no_mira_scope_v1`
-- `20261007171249` — `personal_linkedin_founder_journey_problem_sources_v1`
+1. learning canonicalization failed because the new regression called `path.fileURLToPath`, which does not exist; the correct ESM API is `fileURLToPath` from `node:url`;
+2. production migration history had advanced concurrently with `20261007190600_security_definer_browser_execute_closure_v1`, so current main again lacked one remote migration file.
 
-## Correction
+## Structural correction
 
-The exact migration statements recorded in production history were read back and mirrored into the repository under the same version/name identities. The migration-history lock was refreshed from production. A regression now verifies captured remote history remains locally replayable.
+The exact recorded SQL for `20261007190600` is mirrored to GitHub. The regression uses the correct Node API and explicitly verifies the seventh recovered migration and its least-privilege behavior.
 
-The historical predictive founder materializer mirror is additionally hardened for fresh replay with explicit service-role-only EXECUTE authority. Production history itself is unchanged.
+Production migration history itself remains untouched. `20261007182000` remains the pending repository migration for the Supabase Git integration to apply once remote/local lineage is exact.
 
 ## Terminal acceptance
 
-Exact-head Required + CodeQL + Supabase Preview must be green, protected merge must complete, and the resulting main commit must receive a successful production Supabase check with the new `20261007182000` migration present in production history.
-## Preview capacity recovery
-
-During terminal verification, the Supabase Git integration reported its concurrent preview-branch limit. The only preview removed was PR #4078's non-default Supabase branch, which was already in `MIGRATIONS_FAILED`. Its GitHub branch and PR were not modified. This frees capacity for the exact #4079 recovery candidate without weakening any source, migration, security or production gate.
-
+Exact-head Required + CodeQL + Supabase Preview green → protected merge → production Supabase check applies `20261007182000` → refreshed production/local version comparison has zero missing remote and zero unexpected local versions → failed post-merge learning/revenue checks are rerun and green.
