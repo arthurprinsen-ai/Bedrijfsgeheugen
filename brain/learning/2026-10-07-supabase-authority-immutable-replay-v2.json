@@ -14,8 +14,7 @@
   "prevention": "Rebuild the authority from the last known-good immutable source, structurally validate one resolver/capture/observer/parity chain before write, add a regression assertion for the exact complete slug regex and replay target wiring, and retain provider source parity as canonical fail-closed authority.",
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-edge-production-writeback-v1.test.mjs",
-      "tests/supabase-edge-provider-readback-v1.test.mjs"
+      "tests/brain-supabase-production-authority-integrity-v1.test.mjs"
     ]
   },
   "evidence": {
