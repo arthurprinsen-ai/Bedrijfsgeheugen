@@ -14,6 +14,7 @@ export const PAGE_NAVIGATION = Object.freeze({
   "portfolio-control":["Open portfolio-context",[["Open BCG","model-bcg"],["Open due diligence","due-diligence"],["Open Impact Engine","os:impact-engine"]]],
   profiel:["Werk profiel bij",[["Vul ontbrekende gegevens aan","gegevens-invullen"],["Open eindconclusie","eindconclusie"],["Bekijk wijzigingen","wijzigingen"]]],
   "data-ai":["Prioriteer datakans",[["Open koppelingen","koppelingen"],["Bekijk AI-scan","ai-scan"],["Open bronnenstatus","bronnenstatus"]]],
+  "data-ai-passport":["Controleer datastroom",[["Open compliance","compliance-governance"],["Open audittrail","audittrail"],["Open koppelingen","koppelingen"]]],
   "trust-center":["Controleer bewijs",[["Open bronnenstatus","bronnenstatus"],["Open audittrail","audittrail"],["Bekijk outcomes","outcomes-evidence"]]],
   "ai-scan":["Start kansanalyse",[["Open kansenkaart","kansenkaart"],["Maak businesscase","businesscase"],["Zet actie uit","actieve-acties"]]],
   kansenkaart:["Kies volgende kans",[["Open AI-scan","ai-scan"],["Maak businesscase","businesscase"],["Plan in roadmap","roadmap"]]],
