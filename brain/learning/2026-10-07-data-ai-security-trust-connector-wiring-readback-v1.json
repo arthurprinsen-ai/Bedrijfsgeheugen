@@ -1,0 +1,16 @@
+{
+  "version": "DATA-AI-SECURITY-TRUST-CONNECTOR-WIRING-READBACK-v1",
+  "date": "2026-10-07",
+  "obligation_id": "data-ai-security-trust-center-v1",
+  "status": "BRANCH_READBACK_VERIFIED",
+  "evidence": {
+    "connector_trigger": "connector_definitions_trust_refresh_v1",
+    "event_scope": ["INSERT", "UPDATE", "DELETE"],
+    "same_transaction": true,
+    "sovereignty_refresh": "refresh_data_sovereignty_snapshot_v1",
+    "security_refresh": "refresh_security_trust_snapshot_v1",
+    "tenant_move_refreshes_old_and_new": true,
+    "periodic_authority": "powerhouse_refresh_data_sovereignty_v1"
+  },
+  "truth_rule": "production status remains evidence-gated until protected merge, Supabase migration readback, Netlify exact-main readback and Notion projection."
+}
