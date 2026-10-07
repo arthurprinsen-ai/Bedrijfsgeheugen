@@ -1,0 +1,22 @@
+{
+  "id": "external-heartbeat-ledger-607-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|heartbeat|migration-ledger|emergency-pgcron-restore|607",
+  "compiler": {
+    "failure_class": "PROVIDER_LEDGER_DRIFT",
+    "scope": "SUPABASE_MIGRATION_AUTHORITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "During live heartbeat recovery an emergency migration restored the legacy pg_cron heartbeat owner after the canonical architecture had already cut over to the external Netlify to Supabase Edge scheduler. The remote migration ledger advanced to 607 while GitHub remained at 606, blocking normal Supabase main integration and Edge source promotion.",
+  "prevention": "Represent remote migration 20261007091140 in GitHub, but make replay converge to the canonical external-only state by unscheduling any legacy pg_cron heartbeat owner. Keep the external Edge runner marker and durable readback as the scheduler authority.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-heartbeat-ledger-607-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
