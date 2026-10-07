@@ -31,5 +31,16 @@
     "workflow": ".github/workflows/powerhouse-repository-janitor.yml",
     "failed_run_id": 37595314458,
     "proof_boundary": "retired successor filtering plus merged-successor satisfaction while preserving genuine multi-writer fail-closed behavior"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ],
+    "shadow": [
+      "Powerhouse Repository Janitor run 37595314458 attempt 1"
+    ],
+    "canary": [
+      "Powerhouse Repository Janitor run 37595314458 attempt 2 after retired-PR manual closure"
+    ]
   }
 }
