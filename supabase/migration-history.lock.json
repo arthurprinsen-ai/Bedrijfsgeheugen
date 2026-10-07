@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T19:04:32.661Z",
+  "captured_at": "2026-10-07T19:26:00Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2524,8 +2524,20 @@
       "name": "personal_linkedin_founder_journey_problem_sources_v1"
     },
     {
+      "version": "20261007182000",
+      "name": "personal_linkedin_predictive_dream_journey_v1"
+    },
+    {
       "version": "20261007190600",
       "name": "security_definer_browser_execute_closure_v1"
+    },
+    {
+      "version": "20261007190653",
+      "name": "security_trust_posture_verified_no_open_findings_v1"
+    },
+    {
+      "version": "20261007192514",
+      "name": "security_trust_posture_verified_no_open_findings_v1"
     }
   ]
 }

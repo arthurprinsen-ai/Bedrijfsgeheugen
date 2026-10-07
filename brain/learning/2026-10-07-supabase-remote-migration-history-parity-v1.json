@@ -2,14 +2,16 @@
   "id": "supabase-remote-migration-history-parity-v1",
   "date": "2026-10-07",
   "status": "ACTIVE_PREVENTION",
-  "fingerprint": "supabase|remote-migration-history|repository-parity|v1",
-  "root_cause": "Six production Supabase migrations were applied outside repository source control. PR preview could still pass because a fresh preview only saw local migrations, but after merge production correctly rejected main because remote migration versions were absent from the local migration directory.",
+  "fingerprint": "supabase|remote-migration-history|repository-parity|v2",
+  "root_cause": "Supabase production migration lineage advanced outside repository source control. Six live migrations were initially missing locally; while that recovery was being merged, production also gained 20261007190600_security_definer_browser_execute_closure_v1. This proved that a one-time history capture can become stale during terminal delivery. The parity regression also used fileURLToPath from node:path instead of node:url, so post-merge learning replay failed even though the migration recovery itself was valid.",
   "prevention": [
     "Mirror every already-applied production migration version into supabase/migrations with its real SQL rather than an empty compatibility stub.",
+    "Treat migration-history parity as a terminal readback condition: compare production history to the exact current-main migration directory again after protected merge, not only at candidate creation.",
     "Refresh supabase/migration-history.lock.json from production migration history whenever remote lineage is reconciled.",
     "Run tests/brain-supabase-remote-migration-history-parity-v1.test.mjs so every captured remote version must remain replayable from repository files.",
+    "Use fileURLToPath from node:url for ESM URL-to-path conversion so canonical learning replay is executable on Node 24.",
     "Keep historical SECURITY DEFINER mirrors least-privilege for fresh replay even when the later live state was hardened by a subsequent migration.",
-    "Treat a post-merge Supabase migration-history mismatch as repository lineage debt, never repair it by deleting or rewriting production migration history."
+    "Never repair migration drift by deleting, renumbering or rewriting production migration-history rows."
   ],
   "evaluation": {
     "historical_replay": [
@@ -29,9 +31,14 @@
       "20261007165818",
       "20261007165821",
       "20261007170121",
-      "20261007171249"
+      "20261007171249",
+      "20261007190600",
+      "20261007192514"
     ],
-    "production_history_count_at_capture": 631
+    "postmerge_failure_main": "87769c4375f00c0d2252e6f05be65004b9643f7b",
+    "pending_repository_migration": "20261007182000",
+    "production_history_count_at_capture": 634,
+    "terminal_main_epoch": "80a96c77a4eac555abf66aa3fb03c6848b37a48a"
   },
   "skill_targets": [
     "delivery",
