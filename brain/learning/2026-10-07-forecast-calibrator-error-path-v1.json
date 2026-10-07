@@ -1,0 +1,30 @@
+{
+  "id": "forecast-calibrator-error-path-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|forecast-calibrator|query-builder-catch|500|v1",
+  "compiler": {
+    "failure_class": "EDGE_RUNTIME_EXCEPTION",
+    "scope": "SUPABASE_EDGE_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The forecast calibrator error handler chained .catch() directly onto a Supabase PostgREST query builder. That builder is awaitable but does not expose Promise.catch(), so the error-reporting path itself threw TypeError and converted the original calibration failure into an Edge 500.",
+  "prevention": "Await the best-effort bg_gezondheid insert inside an explicit try/catch block. Keep the original caller-facing failure contract, but never let observability code throw a second exception.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-forecast-calibrator-error-path-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_at_utc": "2026-10-07T09:22:57.133Z",
+    "edge_function": "powerhouse-forecast-calibrator",
+    "provider_version": 49,
+    "http_status": 500,
+    "error": "TypeError: db.from(...).insert(...).catch is not a function",
+    "source_line": 46
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
