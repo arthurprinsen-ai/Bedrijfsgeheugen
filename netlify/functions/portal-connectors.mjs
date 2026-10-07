@@ -9,4 +9,4 @@ const store=createPortalConnectorsStore();
 const engine=createConnectorRuntime({providers:createEnvironmentConnectorProviders()});
 const sovereignty=createDataSovereigntyClient();
 export default async request=>handlePortalConnectorsRequest({request,user:await getUser(),store,engine,sovereignty});
-export const config={path:'/api/connectors/*',excludedPath:'/api/connectors/readiness',region:'fra'};
+export const config={path:'/api/connectors/*',excludedPath:'/api/connectors/readiness'};
