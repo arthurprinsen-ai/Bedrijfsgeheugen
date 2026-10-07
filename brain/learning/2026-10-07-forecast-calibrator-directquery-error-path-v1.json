@@ -1,0 +1,43 @@
+{
+  "id": "forecast-calibrator-directquery-catch-20261007-v1",
+  "fingerprint": "forecast-calibrator|directquery|invalid-catch|v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "source": "production-function-log",
+  "failure_class": "EDGE_RUNTIME_ERROR_PATH",
+  "symptom": [
+    "powerhouse-forecast-calibrator returned HTTP 500 during a pg_net production invocation.",
+    "The function log showed TypeError: db.from(...).insert(...).catch is not a function."
+  ],
+  "root_cause": [
+    "The local DirectQuery adapter is thenable through then() but does not implement catch().",
+    "The calibrator error-reporting branch called catch() on DirectQuery and masked the original calibration failure."
+  ],
+  "prevention": [
+    "Await DirectQuery writes directly and rely on DirectQuery.execute() for bounded error normalization.",
+    "Regression-test that the forecast calibrator never chains catch() onto DirectQuery inserts."
+  ],
+  "evidence": {
+    "runtime": "supabase/functions/powerhouse-forecast-calibrator/index.ts",
+    "regression": "tests/brain-forecast-calibrator-directquery-error-path-v1.test.mjs",
+    "observed_status": 500,
+    "observed_at": "2026-10-07T09:22:57Z"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "compiler": {
+    "failure_class": "RUNTIME_ERROR_HANDLING",
+    "scope": "SUPABASE_EDGE_FUNCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-forecast-calibrator-directquery-error-path-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-forecast-calibrator-directquery-error-path-v1.test.mjs"
+    ]
+  }
+}
