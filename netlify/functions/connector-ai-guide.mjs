@@ -8,4 +8,4 @@ const sovereignty=createDataSovereigntyClient();\nconst handler=createConnectorA
 });
 
 export default async request=>handler(request);
-export const config={path:'/api/connectors/guide',region:'fra'};
+export const config={path:'/api/connectors/guide'};
