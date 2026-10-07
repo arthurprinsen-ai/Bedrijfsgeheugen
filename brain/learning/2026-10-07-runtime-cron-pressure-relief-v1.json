@@ -1,0 +1,33 @@
+{
+  "id": "runtime-cron-pressure-relief-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|supabase|pg-cron-startup-timeout|minute-owner-consolidation|v1",
+  "compiler": {
+    "failure_class": "DATABASE_RUNTIME_PRESSURE",
+    "scope": "SUPABASE_PG_CRON",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Two independent every-minute runtime maintenance cron owners opened separate database sessions while the canonical commercial heartbeat also started every five minutes. Under database pressure pg_cron reported repeated job startup timeouts, including heartbeat job 154, and PostgREST schema-cache loads hit statement timeouts.",
+  "prevention": "Replace the two minute-level cron owners with one advisory-lock-protected runtime maintenance tick. The execution-resilience watchdog still runs every minute; reconciliation runs in the same session except on commercial heartbeat minutes.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-cron-pressure-relief-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "postgres_log_window_utc": "2026-10-07T05:45:00Z/2026-10-07T05:55:00Z",
+    "cron_startup_timeouts": {
+      "powerhouse-execution-resilience-watchdog-v1": 5,
+      "powerhouse-reconciliation-worker-v2": 5,
+      "powerhouse-one-commercial-heartbeat-v1": 2
+    },
+    "postgrest": "schema-cache SELECT cancelled by statement timeout (SQLSTATE 57014)",
+    "management_sql": "intermittent connection termination / statement timeout",
+    "regression": "tests/brain-runtime-cron-pressure-relief-v1.test.mjs"
+  }
+}
