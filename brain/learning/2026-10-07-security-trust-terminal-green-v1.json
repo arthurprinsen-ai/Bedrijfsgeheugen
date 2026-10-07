@@ -36,7 +36,8 @@
         "20261007163124_security_trust_harden_helper_search_path_v1",
         "20261007163230_security_trust_remove_browser_definer_exposure_v1",
         "20261007163333_security_trust_posture_precision_v1",
-        "20261007190600_security_definer_browser_execute_closure_v1"
+        "20261007190600_security_definer_browser_execute_closure_v1",
+        "20261007190653_security_trust_posture_verified_no_open_findings_v1"
       ]
     }
   },
