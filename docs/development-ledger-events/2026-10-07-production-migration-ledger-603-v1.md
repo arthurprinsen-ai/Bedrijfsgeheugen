@@ -12,3 +12,10 @@
 - Business-data mutation: none.
 - Regression authority: `tests/brain-production-migration-ledger-603-v1.test.mjs`.
 - Required next proof: protected merge -> Supabase Preview no longer fails on remote/local migration drift -> #4033 rebased to current migration authority.
+
+
+## Fresh-preview reproducibility recovery
+
+A clean Supabase preview replay exposed that `public.powerhouse_identity_graph_v1` existed in production without a canonical create statement before its first migration-time use. The preview therefore stopped deterministically at `20261007063440` with SQLSTATE 42P01. The live production schema was read back exactly (12 columns, primary/unique identity constraints, entity/person/company indexes, RLS and service-role-only policy/grants) and materialized idempotently at the start of `20261005140225_powerhouse_bounded_identity_spine_v1.sql`.
+
+Prevention: every runtime table referenced by historical migration functions must be created by the migration chain before first use; a fresh empty preview is the mandatory reproducibility proof.
