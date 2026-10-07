@@ -45,6 +45,12 @@ const COPY = {
   onderzoek:['Onderzoek','Bundel analyses, hypotheses, bevindingen, bronnen en conclusies in één traceerbaar overzicht.'],
   ondernemersdata:['Actueel & externe data','Zie wat er buiten je bedrijf verandert: wetgeving, markt, technologie, cyber, economie, keten, mensen, energie, kapitaal en meer.'],
   omgevingsradar:['Omgevingsradar','Eén levende radar van bronnen naar signalen, bedrijfsspecifieke impact, volgende acties, outcomes en leren.'],
+  bedrijfsimpact:['Wat raakt mijn bedrijf?','Alleen signalen met eigen bedrijfscontext en exposure, gescheiden van algemene marktinformatie.'],
+  kansen:['Kansen','Evidence-backed kansen uit markt, subsidies, tenders, technologie, klantvraag en andere bronnen.'],
+  risicos:['Risico’s','Evidence-backed risico’s uit cyber, keten, regelgeving, markt, klimaat, fraude en andere domeinen.'],
+  'acties-beslissingen':['Acties & beslissingen','Geprioriteerde volgende acties, status, bewijs en deadline uit dezelfde intelligence-loop.'],
+  verbanden:['Verbanden','Signalen met aantoonbaar gedeeld domein of gedeelde bedrijfsafhankelijkheid, zonder automatische causaliteitsclaim.'],
+  'sinds-gisteren':['Sinds gisteren','Wat nieuw of veranderd is sinds gisteren en welke signalen nu aandacht vragen.'],
   'wet-regelgeving':['Wet- & regelgeving','Volg wettelijke verplichtingen, toepasselijkheid, mijlpalen, deadlines, bron en laatste controle.'],
   'arbeidsmarkt-personeel':['Arbeidsmarkt & personeel','Volg UWV-, CBS- en andere arbeidsmarktsignalen die personeelsplanning, schaarste, verzuim en lonen kunnen raken.'],
   'subsidies-regelingen':['Subsidies & regelingen','Volg RVO-regelingen, subsidies en relevante ondernemersregelingen vanuit de bron.'],
@@ -90,7 +96,7 @@ const COPY = {
 
 const BRAIN_PAGES=new Set(['sales-intelligence','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
-const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','omgevingsradar','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
+const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','omgevingsradar','bedrijfsimpact','kansen','risicos','acties-beslissingen','verbanden','sinds-gisteren','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek','compliance-governance']);
 export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','compliance-governance','compliance-command-center','eu-ai-act-audit']);
