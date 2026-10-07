@@ -12,7 +12,9 @@
     "action_authority": "brain_obligations",
     "outcome_authority": "powerhouse_outcome_memory_v1",
     "learning_authority": "powerhouse_run_daily_compound_learning_v1",
-    "scheduler_authority": "powerhouse_runtime_scheduler_mux_v3"
+    "scheduler_authority": "powerhouse_runtime_scheduler_mux_v3",
+    "internal_signal_projection": "powerhouse_project_internal_evidence_signal_v1",
+    "signal_relations": "powerhouse_intelligence_signal_relation_v1"
   },
   "truth_rules": {
     "source_catalog_is_not_connection_truth": true,
@@ -25,7 +27,9 @@
     "fulfilled_obligation_is_not_business_outcome": true,
     "done_requires_verified_outcome_memory": true,
     "missing_context": "UNKNOWN",
-    "historical_green_not_reusable": true
+    "historical_green_not_reusable": true,
+    "raw_internal_evidence_is_not_portal_payload": true,
+    "co_occurrence_is_not_causality": true
   },
   "prevention": [
     "Never create a second external signal store, crawler authority, scheduler, task system, outcome ledger or learning store for this capability.",
@@ -35,11 +39,21 @@
     "Only READY actions backed by SCORED company impact may create a canonical Brain obligation.",
     "FULFILLED means an obligation completed, not that business value was realized.",
     "A candidate becomes DONE only after verified Outcome Memory can be linked.",
-    "Portal V2 must show canonical outside-world evidence plus authenticated-tenant impact overlay and explicit unknowns."
+    "Portal V2 must show canonical outside-world evidence plus authenticated-tenant impact overlay and explicit unknowns.",
+    "Internal signals must originate from an existing evidence observation; raw observation payloads are referenced, not copied into customer-facing signal projections.",
+    "Automatic relation discovery may assert shared domain or shared evidence-backed company dependency; causal hypotheses require explicit evidence and are never synthesized from timing/co-occurrence."
   ],
   "scope": {
     "external_domains": 35,
     "internal_domains": 10,
-    "portal_page": "https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar"
+    "portal_page": "https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar",
+    "focused_portal_views": [
+      "bedrijfsimpact",
+      "kansen",
+      "risicos",
+      "acties-beslissingen",
+      "verbanden",
+      "sinds-gisteren"
+    ]
   }
 }
