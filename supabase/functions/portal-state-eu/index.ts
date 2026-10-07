@@ -170,6 +170,22 @@ Deno.serve(async(req:Request)=>{
     return json({snapshot});
   }
 
+  if(action==='data_sovereignty_provider_observe'){
+    const providerKey=String(body?.providerKey||'').trim();
+    if(!providerKey)return json({error:'INVALID_PROVIDER_OBSERVATION'},400);
+    const {data,error}=await client.rpc('record_data_sovereignty_provider_observation_v1',{
+      p_provider_key:providerKey,
+      p_observed_region:body?.observedRegion==null?null:String(body.observedRegion),
+      p_configured_storage_region:body?.configuredStorageRegion==null?null:String(body.configuredStorageRegion),
+      p_source:String(body?.source||'runtime'),
+      p_deploy_id:body?.deployId==null?null:String(body.deployId),
+      p_commit_ref:body?.commitRef==null?null:String(body.commitRef),
+      p_evidence:body?.evidence&&typeof body.evidence==='object'&&!Array.isArray(body.evidence)?body.evidence:{}
+    });
+    if(error)return json({error:'DATA_SOVEREIGNTY_PROVIDER_OBSERVE_FAILED'},500);
+    return json({observation:data});
+  }
+
   if(action==='governance'){
     const {data,error}=await client.from('brain_ai_governance_registry')
       .select('tenant_id,use_case_id,name,provider,model_id,model_revision,purpose,owner_id,lifecycle_status,risk_class,human_oversight,data_categories,prohibited_data_categories,retention_policy,transparency_required,impact_assessment_required,approved,approval_evidence_ids,evidence_ids,last_reviewed_at,next_review_at,inference_platform,training_use,processing_scope,cross_border_transfer,subprocessors,transfer_safeguard,provider_evidence_urls')
