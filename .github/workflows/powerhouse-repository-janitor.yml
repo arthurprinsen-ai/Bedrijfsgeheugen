@@ -128,15 +128,38 @@ jobs:
             obligation="$(printf '%s\n' "$body" | sed -n 's/^Obligation-ID:[[:space:]]*//p' | head -n1)"
             [ -n "$obligation" ] || { echo "::error::TERMINAL_LEASE_CLOSED_WITHOUT_OBLIGATION:#${pr}"; exit 78; }
 
-            successor_count="$(jq -r --arg obligation "$obligation" '[.[] | select(.state=="open") | select((.body // "") | contains("Obligation-ID: " + $obligation))] | length' .artifacts/open-prs-after.json)"
+            # Only non-retired open PRs can be active successors. Retired PRs may stay visible
+            # for provenance but must never create a false multi-writer ambiguity.
+            successor_count="$(jq -r --arg obligation "$obligation" '[.[] |
+              select(.state=="open") |
+              select((.body // "") | contains("Obligation-ID: " + $obligation)) |
+              select((((.title // "") | startswith("RETIRED")) | not)) |
+              select((((.body // "") | contains("Retirement-State: RETIRED_DO_NOT_MERGE")) | not)) |
+              select((((.body // "") | contains("\nRETIRED:")) | not))
+            ] | length' .artifacts/open-prs-after.json)"
+            merged_successor_count="$(jq -r --arg obligation "$obligation" --argjson pr "$pr" '[.[] |
+              select(.number != $pr) |
+              select(.merged_at != null) |
+              select((.body // "") | contains("Obligation-ID: " + $obligation))
+            ] | length' .artifacts/closed-prs-recent.json)"
             if [ "$successor_count" -eq 0 ]; then
-              current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
-              [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
-              [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
-              gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=open >/dev/null
-              jq -cn --arg type AUTO_REOPEN_TERMINAL_LEASE --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"TERMINAL_DELIVERY_CLOSED_UNMERGED_NO_SUCCESSOR"}' >> .artifacts/janitor-runtime-actions.ndjson
+              if [ "$merged_successor_count" -gt 0 ]; then
+                jq -cn --arg type TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR --argjson pr "$pr" --arg obligation "$obligation" --argjson merged_successors "$merged_successor_count" '{type:$type,pr_number:$pr,obligation_id:$obligation,merged_successor_count:$merged_successors}' >> .artifacts/janitor-runtime-actions.ndjson
+              else
+                current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+                [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
+                [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
+                gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=open >/dev/null
+                jq -cn --arg type AUTO_REOPEN_TERMINAL_LEASE --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"TERMINAL_DELIVERY_CLOSED_UNMERGED_NO_SUCCESSOR"}' >> .artifacts/janitor-runtime-actions.ndjson
+              fi
             elif [ "$successor_count" -eq 1 ]; then
-              successor="$(jq -r --arg obligation "$obligation" '[.[] | select(.state=="open") | select((.body // "") | contains("Obligation-ID: " + $obligation))][0].number' .artifacts/open-prs-after.json)"
+              successor="$(jq -r --arg obligation "$obligation" '[.[] |
+                select(.state=="open") |
+                select((.body // "") | contains("Obligation-ID: " + $obligation)) |
+                select((((.title // "") | startswith("RETIRED")) | not)) |
+                select((((.body // "") | contains("Retirement-State: RETIRED_DO_NOT_MERGE")) | not)) |
+                select((((.body // "") | contains("\nRETIRED:")) | not))
+              ][0].number' .artifacts/open-prs-after.json)"
               jq -cn --arg type TERMINAL_LEASE_SUCCESSOR_EXISTS --argjson pr "$pr" --argjson successor "$successor" --arg obligation "$obligation" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation}' >> .artifacts/janitor-runtime-actions.ndjson
             else
               echo "::error::TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS:#${pr}:obligation=${obligation}:count=${successor_count}"

@@ -1,0 +1,46 @@
+{
+  "version": "REPOSITORY-JANITOR-RETIRED-SUCCESSOR-DEADLOCK-v1",
+  "date": "2026-10-07",
+  "fingerprint": "github|janitor|retired-successor-filter|merged-successor-satisfaction|v1",
+  "obligation_id": "repository-janitor-retired-successor-deadlock-20261007-v1",
+  "root_cause": {
+    "escaped_defect": "Repository Janitor counted explicitly retired open PRs as active terminal-delivery successors and could auto-reopen an old unmerged terminal lease even when a later same-obligation successor had already merged.",
+    "evidence": "Janitor run 37595314458 attempt 1 failed on #3928 with three retired successors. After manual closure, attempt 2 auto-reopened retired leases and failed again on #3953 with the same ambiguity class."
+  },
+  "prevention": {
+    "active_successor": "Only non-retired open PRs may count as active successors.",
+    "retired_markers": [
+      "title starts with RETIRED",
+      "Retirement-State: RETIRED_DO_NOT_MERGE",
+      "RETIRED: body marker"
+    ],
+    "merged_successor": "A merged same-obligation successor satisfies the old closed terminal lease and prevents unsafe auto-reopen.",
+    "fail_closed": "Multiple genuine non-retired active successors remain a terminal ambiguity and still fail closed.",
+    "stale_actions": "Existing normal cancel -> force-cancel -> delete-fallback escalation remains unchanged."
+  },
+  "regression": [
+    "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "RETIRED_PR_FALSE_ACTIVE_SUCCESSOR_DEADLOCK",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true
+  },
+  "evidence": {
+    "workflow": ".github/workflows/powerhouse-repository-janitor.yml",
+    "failed_run_id": 37595314458,
+    "proof_boundary": "retired successor filtering plus merged-successor satisfaction while preserving genuine multi-writer fail-closed behavior"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ],
+    "shadow": [
+      "Powerhouse Repository Janitor run 37595314458 attempt 1"
+    ],
+    "canary": [
+      "Powerhouse Repository Janitor run 37595314458 attempt 2 after retired-PR manual closure"
+    ]
+  }
+}

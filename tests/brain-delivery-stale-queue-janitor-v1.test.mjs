@@ -28,3 +28,11 @@ test('janitor escalates proven obsolete runs through force-cancel and delete fal
   assert.match(source,/cancel_mode=force-cancel/);
   assert.match(source,/cancel_mode=delete-fallback/);
 });
+
+
+test('terminal lease reconciliation excludes retired open successors and accepts a merged successor',()=>{
+  assert.match(source,/startswith\("RETIRED"\)/);
+  assert.match(source,/Retirement-State: RETIRED_DO_NOT_MERGE/);
+  assert.match(source,/merged_successor_count=/);
+  assert.match(source,/TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR/);
+});
