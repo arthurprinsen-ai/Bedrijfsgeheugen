@@ -83,12 +83,14 @@ test('connector test and activation are both blocked before external processing 
  const fn=await read('netlify/functions/portal-connectors.mjs');
  const handler=await read('platform/api/portal-connectors-handler.mjs');
  assert.match(fn,/createDataSovereigntyClient/);
- const firstGuard=handler.indexOf('assertConnectorAllowed');
- const runTest=handler.indexOf('engine.runTest');
- const secondGuard=handler.indexOf('assertConnectorAllowed',firstGuard+1);
- const active=handler.indexOf("state:'Active'",secondGuard);
- assert.ok(firstGuard>=0&&runTest>firstGuard,'test guard must run before engine.runTest');
- assert.ok(secondGuard>runTest&&active>secondGuard,'activation guard must run before Active state');
+ const testAction=handler.indexOf("action==='test'");
+ const activateAction=handler.indexOf("action==='activate'");
+ const testGuard=handler.indexOf('assertConnectorAllowed',testAction);
+ const runTest=handler.indexOf('engine.runTest',testGuard);
+ const activationGuard=handler.indexOf('assertConnectorAllowed',activateAction);
+ const active=handler.indexOf("state:'Active'",activationGuard);
+ assert.ok(testAction>=0&&testGuard>testAction&&runTest>testGuard,'test guard must run before engine.runTest');
+ assert.ok(activateAction>=0&&activationGuard>activateAction&&active>activationGuard,'activation guard must run before Active state');
 });
 
 test('sovereignty files contain no interruption escape artifacts',async()=>{
