@@ -6,10 +6,8 @@ on:
     paths:
       - 'supabase/functions/**'
       - 'supabase/config.toml'
-      - 'supabase/migrations/**'
       - '.github/workflows/supabase-edge-production-authority.yml'
       - 'tools/supabase/publish-edge-provider-readback.mjs'
-      - 'tools/supabase/publish-migration-provider-readback.mjs'
       - 'brain/contracts/production-readback-v1.json'
   workflow_dispatch:
     inputs:
@@ -127,59 +125,6 @@ jobs:
           echo "applicable=true" >> "$GITHUB_OUTPUT"
           echo "Protected-main function set:"
           cat /tmp/functions.txt
-
-      - id: migration_scope
-        name: Resolve exact migration set
-        shell: bash
-        env:
-          BEFORE_SHA: ${{ github.event.before || '' }}
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          : > /tmp/migrations.txt
-          base="$BEFORE_SHA"
-          if ! git cat-file -e "${base}^{commit}" 2>/dev/null; then
-            base="${GITHUB_SHA}^"
-          fi
-          git diff --name-only "$base" "$GITHUB_SHA" \
-            | grep -E '^supabase/migrations/[0-9]{14}_[A-Za-z0-9_]+\.sql$' \
-            | sort -u > /tmp/migrations.txt || true
-
-          if [ ! -s /tmp/migrations.txt ]; then
-            echo "No Supabase migration changed; migration provider attestation not applicable."
-            echo "applicable=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
-
-          target_pr="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls" \
-            --jq '[.[] | select(.merged_at != null)] | sort_by(.merged_at) | last | .number // empty')"
-          [ -n "$target_pr" ] || {
-            echo "::error::SUPABASE_MIGRATION_TARGET_PR_MISSING:${GITHUB_SHA}"
-            exit 78
-          }
-
-          while IFS= read -r migration_path; do
-            [ -f "$migration_path" ] || {
-              echo "::error::SUPABASE_MIGRATION_NOT_IN_CURRENT_MAIN:$migration_path"
-              exit 78
-            }
-          done < /tmp/migrations.txt
-
-          echo "target_pr=$target_pr" >> "$GITHUB_OUTPUT"
-          echo "applicable=true" >> "$GITHUB_OUTPUT"
-          echo "Protected-main migration set:"
-          cat /tmp/migrations.txt
-
-      - name: Publish exact migration provider readback evidence to merged PR
-        if: steps.migration_scope.outputs.applicable == 'true'
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_PR_NUMBER: ${{ steps.migration_scope.outputs.target_pr }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/supabase/publish-migration-provider-readback.mjs
 
       - name: Capture immutable protected-main source identity
         if: steps.scope.outputs.applicable == 'true'
