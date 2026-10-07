@@ -404,13 +404,13 @@ def check_sql(sql: str, label: str):
 
     if SECURITY_DEFINER.search(sql):
         intentional = "POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL" in sql
-        revoke_exec = "revoke execute on function" in low and "from public" in low and "anon" in low and "authenticated" in low
+        revoke_exec = ("revoke execute on function" in low or "revoke all on function" in low) and "from public" in low and "anon" in low and "authenticated" in low
         if not intentional and not revoke_exec:
             errors.append(f"{label}: SECURITY DEFINER introduced without fail-closed EXECUTE revocation or explicit POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL marker")
 
     for fn in CREATE_FUNCTION.findall(sql):
         fn_mentioned = re.search(rf"alter\s+function\s+public\.{re.escape(fn)}\s*\([^;]*\)\s+set\s+search_path", sql, re.I | re.S)
-        body_has_set = re.search(r"set\s+search_path\s+(?:to|=)", sql, re.I)
+        body_has_set = re.search(r"set\s+search_path\s*(?:to|=)", sql, re.I)
         if not fn_mentioned and not body_has_set:
             errors.append(f"{label}: public.{fn} is created/replaced without deterministic search_path")
     return errors
@@ -438,6 +438,8 @@ def self_test():
     assert check_sql(safe_inline_view, "safe_inline_view") == []
     assert check_sql(public_view_exception, "public_view_exception") == []
     assert check_sql(safe_fn, "safe_fn") == []
+    safe_fn_equivalent = "create function public.good_fn_equivalent() returns void language plpgsql security definer set search_path=\'public\' as $ begin null; end $; revoke all on function public.good_fn_equivalent() from public, anon, authenticated; grant execute on function public.good_fn_equivalent() to service_role;"
+    assert check_sql(safe_fn_equivalent, "safe_fn_equivalent") == []
     assert check_sql(public_exception, "public_exception") == []
     print("Powerhouse Supabase security contract self-test passed: unsafe tables/views/functions blocked, safe fixtures accepted.")
 
