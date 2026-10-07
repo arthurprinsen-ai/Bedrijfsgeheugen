@@ -11,7 +11,7 @@
     "security_sensitive": false
   },
   "root_cause": "Two independent every-minute runtime maintenance cron owners opened separate database sessions while the canonical commercial heartbeat also started every five minutes. Under database pressure pg_cron reported repeated job startup timeouts, including heartbeat job 154, and PostgREST schema-cache loads hit statement timeouts.",
-  "prevention": "Replace the two minute-level cron owners with one advisory-lock-protected runtime maintenance tick. The execution-resilience watchdog still runs every minute; reconciliation runs in the same session except on commercial heartbeat minutes.",
+  "prevention": "Replace the two minute-level cron owners with one advisory-lock-protected runtime maintenance tick. The execution-resilience watchdog still runs every minute; reconciliation runs in the same session except on commercial heartbeat minutes. Production migration version/name identity is authoritative: if a live recovery migration is later committed, Git must use the exact production version and must remove any timestamp alias rather than replay already-applied DDL.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-runtime-cron-pressure-relief-v1.test.mjs"
@@ -28,6 +28,16 @@
     },
     "postgrest": "schema-cache SELECT cancelled by statement timeout (SQLSTATE 57014)",
     "management_sql": "intermittent connection termination / statement timeout",
-    "regression": "tests/brain-runtime-cron-pressure-relief-v1.test.mjs"
+    "regression": "tests/brain-runtime-cron-pressure-relief-v1.test.mjs",
+    "migration_identity_repair": {
+      "provider_failure": "Remote migration versions not found in local migrations directory.",
+      "production_ledger_count": 593,
+      "production_latest_version": "20261007060126",
+      "exact_production_identity": "20261007060126_powerhouse_runtime_cron_pressure_relief_v1",
+      "removed_repository_alias": "20261007055200_powerhouse_runtime_cron_pressure_relief_v1",
+      "production_sql_replayed": false,
+      "production_behavior_changed": false,
+      "repair_mode": "repository identity reconciliation to existing production ledger"
+    }
   }
 }
