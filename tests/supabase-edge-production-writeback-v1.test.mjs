@@ -50,3 +50,18 @@ test('successor replay targets the original merged runtime PR without weakening 
   assert.ok(production.includes('TARGET_PR_NUMBER: ${{ steps.scope.outputs.target_pr }}'));
   assert.ok(production.includes("pulls/$target_pr/files?per_page=100"));
 });
+
+
+test('scope resolver remains single and syntactically complete',()=>{
+  const starts=(production.match(/- name: Resolve exact function set/g)||[]).length;
+  const captures=(production.match(/- name: Capture immutable protected-main source identity/g)||[]).length;
+  const observers=(production.match(/- name: Observe Supabase GitHub deployment check/g)||[]).length;
+  const retries=(production.match(/for attempt in \$\(seq 1 24\)/g)||[]).length;
+  assert.equal(starts,1);
+  assert.equal(captures,1);
+  assert.equal(observers,1);
+  assert.equal(retries,1);
+  assert.match(production,/grep -E '\^\[a-z0-9\]\[a-z0-9-\]\*\$' \| sort -u > \/tmp\/functions\.txt/);
+  assert.match(production,/Terminal-Replay-PR/);
+  assert.match(production,/TARGET_PR_NUMBER: \$\{\{ steps\.scope\.outputs\.target_pr \}\}/);
+});
