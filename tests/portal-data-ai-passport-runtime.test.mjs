@@ -32,9 +32,11 @@ test('explicit tenant evidence augments runtime evidence without losing runtime 
   assert.equal(retention.claim,'30 dagen');
 });
 
-test('Data & systemen exposes the live Data AI Passport entry point',()=>{
+test('Data & systemen exposes the live Data AI Passport and Security Trust Center entry points',()=>{
   const html=renderCompany({health:{cards:[],risks:[],actions:[]},graph:{nodes:[]},route:'company/data'});
   assert.match(html,/DATA & AI · LIVE EVIDENCE/);
-  assert.match(html,/href="\/portal\/data-ai-passport\.html"/);
+  assert.match(html,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal\/data-ai-passport\.html"/);
   assert.match(html,/Open Data & AI Passport/);
+  assert.match(html,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\/security\.html"/);
+  assert.match(html,/Open Security Trust Center/);
 });
