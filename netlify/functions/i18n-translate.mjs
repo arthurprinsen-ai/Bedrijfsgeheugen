@@ -37,4 +37,4 @@ export default async (request) => {
     return Response.json({error:'translation_failed'},{status:502});
   }
 };
-export const config={path:'/api/i18n-translate',region:'fra'};
+export const config={path:'/api/i18n-translate'};
