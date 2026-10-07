@@ -28,4 +28,4 @@ export default async ()=>{
     return json({error:'EXTERNAL_DATA_READ_FAILED',message:error?.message||String(error)},502);
   }
 };
-export const config={path:'/api/portal-ondernemersdata',region:'fra'};
+export const config={path:'/api/portal-ondernemersdata'};
