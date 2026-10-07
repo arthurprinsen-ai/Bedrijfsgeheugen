@@ -279,8 +279,33 @@ jobs:
           printf '[]\n' > .artifacts/supabase-migration-readbacks.json
           if [ "${#changed_migrations[@]}" -gt 0 ]; then
             migration_required=true
-            live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
-            migration_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Migration-Readback:[[:space:]]*//p')"
+            migration_lines=""
+            migration_complete=false
+            for attempt in $(seq 1 24); do
+              live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+              migration_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Migration-Readback:[[:space:]]*//p')"
+              migration_complete=true
+              for migration_path in "${changed_migrations[@]}"; do
+                file="$(basename "$migration_path")"
+                version="${file%%_*}"
+                name="${file#${version}_}"
+                name="${name%.sql}"
+                line="$(printf '%s\n' "$migration_lines" | grep -E "^version=${version};name=${name};state=APPLIED;project=adhjwmvyoixzjtmiroln;observed_at=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" | tail -n1 || true)"
+                if [ -z "$line" ]; then
+                  migration_complete=false
+                  break
+                fi
+              done
+              [ "$migration_complete" = true ] && break
+              echo "Waiting for canonical Supabase migration provider readback: attempt=$attempt/24"
+              sleep 5
+            done
+
+            if [ "$migration_complete" != true ]; then
+              echo "::error::SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING:migrations=${changed_migrations[*]}"
+              exit 78
+            fi
+
             migration_readbacks='[]'
             for migration_path in "${changed_migrations[@]}"; do
               file="$(basename "$migration_path")"
@@ -288,10 +313,10 @@ jobs:
               name="${file#${version}_}"
               name="${name%.sql}"
               line="$(printf '%s\n' "$migration_lines" | grep -E "^version=${version};name=${name};state=APPLIED;project=adhjwmvyoixzjtmiroln;observed_at=[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$" | tail -n1 || true)"
-              if [ -z "$line" ]; then
-                echo "::error::SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING:$migration_path"
+              [ -n "$line" ] || {
+                echo "::error::SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE:$migration_path"
                 exit 78
-              fi
+              }
               observed_at="$(sed -nE 's/.*;observed_at=([^;]+)$/\1/p' <<<"$line")"
               migration_readbacks="$(jq -c --arg path "$migration_path" --arg version "$version" --arg name "$name" --arg observed_at "$observed_at" '. + [{path:$path,version:$version,name:$name,state:"APPLIED",project:"adhjwmvyoixzjtmiroln",observed_at:$observed_at}]' <<<"$migration_readbacks")"
               echo "SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:$line"
