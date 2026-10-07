@@ -15,7 +15,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'netlify',label:'Netlify',role:'Website, Portal V2, Identity, thin API boundary, production deploy/readback',authority:true}),
     Object.freeze({id:'supabase',label:'Supabase',role:'Canonical runtime, Postgres, RLS, Edge Functions, cron, operating loop, evidence, outcomes, learning',authority:true}),
     Object.freeze({id:'notion',label:'Notion',role:'Human-readable System Map, handbook, current state, activity log and verified-state projection',authority:true}),
-    Object.freeze({id:'portal',label:'Portal V2',role:'Human control surface over canonical runtime truth',authority:false}),
+    Object.freeze({id:'portal',label:'Portal',role:'Single human control surface over canonical runtime truth; portal/, portal-next/ and portal-v2/ are implementation paths, not product variants',authority:false}),
     Object.freeze({id:'external',label:'External providers',role:'Buffer, DataForSEO, Tavily, Google, OpenArt and future connectors; provider truth/readback',authority:false})
   ]),
   intelligenceLayers:Object.freeze([
@@ -123,13 +123,15 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         heartbeat:'public.powerhouse_refresh_data_sovereignty_v1()',
         tenantGateway:'supabase/functions/portal-state-eu/index.ts',
         netlifyApi:'netlify/functions/security-trust.mjs',
-        portal:'https://www.bedrijfsgeheugen.nl/portal-v2/?page=trust-center',
-        sovereigntyPortal:'https://www.bedrijfsgeheugen.nl/portal-v2/?page=data-ai-passport',
+        portal:'https://www.bedrijfsgeheugen.nl/portaal?page=trust-center',
+        sovereigntyPortal:'https://www.bedrijfsgeheugen.nl/portaal?page=data-ai-passport',
         accessBoundary:'authenticated customer tenant or Powerhouse admin; demo/public forbidden',
         learning:'brain/learning/2026-10-07-data-ai-security-trust-center-v1.json'
       }),
       invariants:Object.freeze({
         oneHeartbeatAuthority:true,
+        onePortalProduct:true,
+        technicalPortalPathsAreImplementationOnly:true,
         connectorMutationsRefreshTrustTransactionally:true,
         newConnectorsAutoEnrolled:true,
         connectorTenantMovesRefreshOldAndNewTenant:true,

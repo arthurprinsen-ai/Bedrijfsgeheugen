@@ -25,7 +25,7 @@ Projectie bevat AVG/GDPR, EU AI Act, NIS2/Cyberbeveiligingswet, ISO 27001/27017/
 - security refresh: public.refresh_security_trust_snapshot_v1(tenant)
 - combined heartbeat: public.powerhouse_refresh_data_sovereignty_v1()
 - authenticated API: /api/security-trust
-- portal: https://www.bedrijfsgeheugen.nl/portal-next/security.html
+- portal: https://www.bedrijfsgeheugen.nl/portaal?page=trust-center
 
 ## Security truth
 Known database findings are deliberately visible as findings. Een groene UI volgt alleen wanneer catalogus/advisor-evidence het onderliggende issue niet meer rapporteert. RLS enabled zonder policy blijft informatief omdat deny-all bewust kan zijn.
@@ -38,3 +38,6 @@ De bestaande `public.powerhouse_refresh_data_sovereignty_v1()` heartbeat blijft 
 
 ## Post-merge terminal recovery
 Protected merge `b8f3195ec7d77df09b1abd522bce215508dc2155` bewees de database/migration-runtime, maar post-merge assurance vond twee contractgaten: `portal-state-eu` ontbrak in `supabase/config.toml` en security-sensitive learning had alleen historical replay, terwijl canonicalization ook shadow + canary vereist. De recovery declareert de bestaande actieve Edge Function expliciet in config en gebruikt dezelfde canonieke security regression voor historical replay, shadow en canary. Er wordt geen nieuwe scheduler, Edge Function of truth store toegevoegd.
+
+## Eén Portal
+Bedrijfsgeheugen heeft één Portal-product en één gebruikerservaring. `portal/`, `portal-next/` en `portal-v2/` zijn uitsluitend technische source-, migratie- of runtimepaden. Ze zijn geen afzonderlijke portals, authorities of productvarianten. De canonieke gebruikersingang is https://www.bedrijfsgeheugen.nl/portaal; Trust Center, Data & AI Passport en Compliance zijn modules binnen diezelfde Portal-shell.

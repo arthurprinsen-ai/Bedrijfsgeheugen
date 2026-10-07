@@ -12,3 +12,6 @@ No second scheduler, no parallel customer-data store, no implicit certification 
 Connector event topology: `connector_definitions INSERT/UPDATE/DELETE → connector_definitions_trust_refresh_v1 → refresh_data_sovereignty_snapshot_v1(tenant) + refresh_security_trust_snapshot_v1(tenant) → tenant snapshots → Portal/Powerhouse`. Tenant moves refresh both old and new tenants. The existing Powerhouse sovereignty heartbeat remains the periodic verification/recovery owner.
 
 Post-merge recovery: Supabase Edge Production Authority blokkeerde op `SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:portal-state-eu`; Skill Projection blokkeerde op `LEARNING_EVALUATION_TESTS_REQUIRED:shadow`. Recovery is bounded tot declaratieve Edge config + shadow/canary evaluation metadata en behoudt dezelfde runtime/topology.
+
+## Portal single-product correction
+Portal, portal-next and portal-v2 are not separate products. The canonical user-facing product is Portal at https://www.bedrijfsgeheugen.nl/portaal. Technical directories remain implementation details only; Trust Center, Data & AI Passport and Compliance remain modules in the same Portal authority and tenant shell.

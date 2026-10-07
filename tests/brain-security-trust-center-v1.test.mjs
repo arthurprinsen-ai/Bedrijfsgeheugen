@@ -114,3 +114,19 @@ test('system map makes connector auto-enrolment and single heartbeat explicit',a
  assert.match(map,/connectorTenantMovesRefreshOldAndNewTenant:true/);
  assert.match(map,/oneHeartbeatAuthority:true/);
 });
+
+
+test('Portal is one product across technical source paths',async()=>{
+ const [map,security,compliance,company]=await Promise.all([
+  read('platform/system-map/canonical-system-map.mjs'),
+  read('portal-next/security.html'),
+  read('portal-next/compliance.html'),
+  read('portal/render-company.mjs')
+ ]);
+ assert.match(map,/label:'Portal'/);
+ assert.match(map,/onePortalProduct:true/);
+ assert.match(map,/technicalPortalPathsAreImplementationOnly:true/);
+ for(const source of [security,compliance,company]) assert.match(source,/https:\/\/www\.bedrijfsgeheugen\.nl\/portaal/);
+ assert.doesNotMatch(security,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
+ assert.doesNotMatch(compliance,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
+});

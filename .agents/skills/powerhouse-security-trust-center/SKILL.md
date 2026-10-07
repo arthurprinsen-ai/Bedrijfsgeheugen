@@ -8,6 +8,7 @@ description: Use for every material change to security, privacy, provider assura
 Fingerprint: `powerhouse|security-trust|evidence-first|v1`.
 
 ## Invariants
+- Portal is one product: `portal/`, `portal-next/` and `portal-v2/` are technical implementation paths only, never separate portals, authorities or UX shells.
 - Trust surfaces are private portal capabilities: only authenticated customers and Bedrijfsgeheugen administrators may see them; demo/public access is forbidden.
 - Customer trust APIs must resolve the tenant server-side; canonical Bedrijfsgeheugen scope is admin-only.
 - Legacy standalone URLs may only deep-link into authenticated Portal V2 and must never render independent trust data.
