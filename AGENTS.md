@@ -1,3 +1,20 @@
+## External observer isolation — provider truth blijft autoritatief
+
+Fingerprint: `delivery|external-observer|provider-truth-fallback|v1`.
+
+Een chat-, browser- of publieke web-fetcher is een **observer**, geen productieautoriteit. Wanneer zo'n observer een directe HTTP-fetch naar `bedrijfsgeheugen.nl` weigert, blokkeert of niet ondersteunt, mag dat een reeds bewezen productie-release nooit terugzetten naar onbewezen status.
+
+Verplicht gedrag:
+- onderscheid `ORIGIN_UNHEALTHY` van `OBSERVER_UNAVAILABLE`; een tool-policy/refusal zonder origin-response is uitsluitend `OBSERVER_UNAVAILABLE`;
+- gebruik bij `OBSERVER_UNAVAILABLE` de canonieke provider-truth via Netlify: production/current deploy, `state=ready`, production alias, exact `commit_ref`, production context en — wanneer runtime-functions onderdeel van de wijziging zijn — de daadwerkelijk gedeployde function inventory;
+- koppel provider-truth aan de immutable GitHub delivery-lineage/readback-evidence; provider-state zonder exact SHA/lineage is nooit voldoende;
+- de fallback verzwakt de normale `Production Release Readback` workflow niet: wanneer de origin vanuit de canonieke runner wél bereikbaar hoort te zijn, blijven live content/routes en connector-readiness fail-closed;
+- een externe observer mag nooit een onbewezen origin-success fabriceren. Status wordt `LIVE_PROVEN_PROVIDER_TRUTH` alleen wanneer provider + lineage exact kloppen; anders blijft de release niet terminal groen;
+- leg `observer_status`, `provider_deploy_id`, `provider_commit_ref`, alias en function evidence vast zodat iedere volgende agent dezelfde conclusie kan reproduceren.
+
+Canonieke evaluator: `tools/site-shell/external-observer-production-proof.mjs`.
+Contract: `brain/contracts/production-readback-v1.json#externalObserverReadback`.
+
 ## Terminal closure heeft één eigenaar
 
 Voor `Writer-Lease-State: TERMINAL_DELIVERY` is `Powerhouse Obligation Terminalizer` de enige automatische post-merge owner. Start geen tweede terminal-closure lineage voor dezelfde obligation. Governance-only scheduler/System Map/delivery-classifier wijzigingen starten geen Netlify productiesnapshot of productie-readback; runtimewijzigingen behouden alle normale productie-evidence.
