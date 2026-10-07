@@ -363,6 +363,8 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20261005141555_powerhouse_verified_linkedin_post_context_gate_v1.sql": "50e475c60ddcb18ba870f68f8067bfb622170ac2",
     "supabase/migrations/20261005142034_powerhouse_exact_message_hash_and_linkedin_dedupe_v1.sql": "5e3854283a7189562b10727b2c311a1b4a7a3305",
     "supabase/migrations/20261005142118_powerhouse_social_exact_hash_two_phase_v2.sql": "9cc840e7bda664a23fabce57b4b0a29f6bea0a4e",
+    "supabase/migrations/20261007063439_bound_identity_graph_hotpath_and_heartbeat_batch.sql": "e84fa337b7b99979e768c269b3f359056091c285",
+    "supabase/migrations/20261007063948_fold_prediction_audit_and_retire_duplicate_runtime_cron.sql": "06753550c7edc51b8bdc3977334393a5ef993ac1",
 }
 
 

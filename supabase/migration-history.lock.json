@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T06:08:22.550117Z",
+  "captured_at": "2026-10-07T07:00:00.000Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2374,235 +2374,46 @@
     {
       "version": "20261007060126",
       "name": "powerhouse_runtime_cron_pressure_relief_v1"
+    },
+    {
+      "version": "20261007061626",
+      "name": "powerhouse_runtime_cron_pressure_relief_v1"
+    },
+    {
+      "version": "20261007062150",
+      "name": "powerhouse_identity_graph_watermark_incremental_v1"
+    },
+    {
+      "version": "20261007063127",
+      "name": "powerhouse_runtime_scheduler_mux_v1"
+    },
+    {
+      "version": "20261007063348",
+      "name": "separate_runtime_maintenance_from_heartbeat_minutes"
+    },
+    {
+      "version": "20261007063439",
+      "name": "bound_identity_graph_hotpath_and_heartbeat_batch"
+    },
+    {
+      "version": "20261007063440",
+      "name": "bound_commercial_identity_graph_runtime_v2"
+    },
+    {
+      "version": "20261007063948",
+      "name": "fold_prediction_audit_and_retire_duplicate_runtime_cron"
+    },
+    {
+      "version": "20261007064533",
+      "name": "separate_runtime_mux_from_commercial_heartbeat_slots_v1"
+    },
+    {
+      "version": "20261007064605",
+      "name": "remove_revenue_attribution_truncate_lock_and_duplicate_refresh"
+    },
+    {
+      "version": "20261007064948",
+      "name": "align_commercial_closure_with_outbound_quality_gate_v1"
     }
-  ],
-  "replay_baselines_pending_repair": [
-    {
-      "version": "20260920101150",
-      "name": "p0_proof_replay_baseline_v1",
-      "status": "REPAIRED_APPLIED_VERIFIED",
-      "production_effect_readback": {
-        "rows": 1,
-        "max_version": 2,
-        "artifact_version": "production-truth-proof-20260831-v1-retired"
-      },
-      "repair_readback": {
-        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
-        "provider": "supabase-cli",
-        "github_run_id": "37426469433"
-      }
-    },
-    {
-      "version": "20260920102450",
-      "name": "instagram_daily_winner_table_replay_baseline_v1",
-      "status": "REPAIRED_APPLIED_VERIFIED",
-      "production_effect_readback": {
-        "table": "public.powerhouse_instagram_daily_winners_v1",
-        "column_count": 9,
-        "recommendation_fk": true
-      },
-      "repair_readback": {
-        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
-        "provider": "supabase-cli",
-        "github_run_id": "37426469433"
-      }
-    },
-    {
-      "version": "20260925080500",
-      "name": "instagram_media_reserve_replay_baseline_v1",
-      "status": "REPAIRED_APPLIED_VERIFIED",
-      "production_effect_readback": {
-        "table": "public.powerhouse_instagram_media_reserve_v1",
-        "column_count": 14,
-        "has_exact_media_sha256": true,
-        "rls_enabled": true
-      },
-      "repair_readback": {
-        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
-        "provider": "supabase-cli",
-        "github_run_id": "37426469433"
-      }
-    },
-    {
-      "version": "20261005133951",
-      "name": "outbound_message_quality_ready_replay_baseline_v1",
-      "status": "REPAIRED_APPLIED_VERIFIED",
-      "production_effect_readback": {
-        "function": "public.powerhouse_outbound_message_quality_ready_v1(uuid)",
-        "function_exists": true,
-        "table": "public.powerhouse_message_quality_v1",
-        "table_column_count": 11,
-        "deterministic_search_path": true,
-        "execute_revoked_from_browser_roles": true
-      },
-      "repair_readback": {
-        "source": "supabase migration repair --status applied --db-url + supabase migration list --db-url",
-        "provider": "supabase-cli",
-        "github_run_id": "37426469433"
-      }
-    }
-  ],
-  "forbidden_repository_only_versions": [
-    "20260914125000",
-    "20260914133500",
-    "20260915090000",
-    "20260915101500",
-    "20260915104000",
-    "20260915110000",
-    "20260915110500",
-    "20260915121000",
-    "20260915123100",
-    "20260915123500",
-    "20260915124000",
-    "20260915124500",
-    "20260915125500",
-    "20260915125800",
-    "20260915130000",
-    "20260915131500",
-    "20260915132500",
-    "20260915133000",
-    "20260915133100",
-    "20260915133500",
-    "20260915140200",
-    "20260915140300",
-    "20260915140500",
-    "20260915143000",
-    "20260915145500",
-    "20260915162000",
-    "20260915165000",
-    "20260915170000",
-    "20260915181000",
-    "20260915203000",
-    "20260916053000",
-    "20260916071400",
-    "20260916090823",
-    "20260916091000",
-    "20260916092330",
-    "20260916092740",
-    "20260916124000",
-    "20260916144500",
-    "20260916151600",
-    "20260916152000",
-    "20260916154500",
-    "20260916154600",
-    "20260916154700",
-    "20260916163500",
-    "20260916174000",
-    "20260916182000",
-    "20260916195000",
-    "20260916215000",
-    "20260917083000",
-    "20260917093000",
-    "20260917113000",
-    "20260917140700",
-    "20260917140900",
-    "20260917170556",
-    "20260917180600",
-    "20260917181200",
-    "20260917235901",
-    "20260917235902",
-    "20260917235903",
-    "20260917235904",
-    "20260917235906",
-    "20260917235907",
-    "20260918054200",
-    "20260918073000",
-    "20260918081000",
-    "20260918090000",
-    "20260918094000",
-    "20260918095000",
-    "20260918100000",
-    "20260918101000",
-    "20260918102000",
-    "20260918103100",
-    "20260918104500",
-    "20260918105000",
-    "20260918110000",
-    "20260918113000",
-    "20260918130000",
-    "20260918131000",
-    "20260918141000",
-    "20260919123730",
-    "20260920095500",
-    "20260920095700",
-    "20260920102000",
-    "20260920102500",
-    "20260920110000",
-    "20260920113500",
-    "20260921090000",
-    "20260921152000",
-    "20260922080500",
-    "20260922082500",
-    "20260924072500",
-    "20260924131500",
-    "20260925080700",
-    "20260925081000",
-    "20260925081800",
-    "20260925083200",
-    "20260925124500",
-    "20260927153500",
-    "20260928105800",
-    "20260928112500",
-    "20260928112800",
-    "20260928113300",
-    "20260928114500",
-    "20260928115000",
-    "20260928115300",
-    "20260928115800",
-    "20260928121500",
-    "20260928122000",
-    "20260928123500",
-    "20260928124000",
-    "20260928130500",
-    "20260928152400",
-    "20260928161000",
-    "20260928162500",
-    "20260928162600",
-    "20260928173100",
-    "20260928175500",
-    "20260928180500",
-    "20260928193000",
-    "20260928194500",
-    "20260928203000",
-    "20260928203500",
-    "20260929150500",
-    "20260929161500",
-    "20260929162000",
-    "20260929163500",
-    "20260929165000",
-    "20260929171000",
-    "20260929173500",
-    "20260929201000",
-    "20260929205000",
-    "20260929211000",
-    "20260929211500",
-    "20260929212500",
-    "20260929214500",
-    "20260929215500",
-    "20260929222500",
-    "20260929223000",
-    "20260929223500",
-    "20260930071500",
-    "20260930113000",
-    "20260930202000",
-    "20261002180500",
-    "20261003104500",
-    "20261003105500",
-    "20261003152500",
-    "20261004133000",
-    "20261005113000",
-    "20261005122000",
-    "20261005123000",
-    "20261005135000",
-    "20261005140000",
-    "20261005160500"
-  ],
-  "recovery_governance": {
-    "mode": "fail-closed",
-    "issue": 3742,
-    "candidate_pr": 3766,
-    "remote_history_repair": false,
-    "direct_schema_migrations_writes_forbidden": true
-  },
-  "production_ledger_count": 593
+  ]
 }
