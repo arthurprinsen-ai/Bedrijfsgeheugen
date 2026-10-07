@@ -38,6 +38,17 @@ set -euo pipefail
 PLAYWRIGHT_PACKAGE="${PLAYWRIGHT_PACKAGE:-@playwright/test@1.55.0}"
 PLAYWRIGHT_CLI="${PLAYWRIGHT_CLI:-npx playwright}"
 POGINGEN="${POGINGEN:-3}"
+NPM_INSTALL_TIMEOUT_SECONDS="${NPM_INSTALL_TIMEOUT_SECONDS:-120}"
+PLAYWRIGHT_INSTALL_TIMEOUT_SECONDS="${PLAYWRIGHT_INSTALL_TIMEOUT_SECONDS:-180}"
+APT_UPDATE_TIMEOUT_SECONDS="${APT_UPDATE_TIMEOUT_SECONDS:-60}"
+
+run_bounded() {
+  local seconds="$1"
+  shift
+  timeout --signal=TERM --kill-after=15s "${seconds}s" "$@"
+}
+
+read -r -a PLAYWRIGHT_CLI_ARGS <<< "$PLAYWRIGHT_CLI"
 
 verwijder_overbodige_apt_bronnen() {
   local bron
@@ -52,20 +63,23 @@ verwijder_overbodige_apt_bronnen() {
 }
 
 if [ "$PLAYWRIGHT_PACKAGE" != "none" ]; then
-  npm install --no-save --package-lock=false "$PLAYWRIGHT_PACKAGE"
+  if ! run_bounded "$NPM_INSTALL_TIMEOUT_SECONDS" npm install --no-save --package-lock=false "$PLAYWRIGHT_PACKAGE"; then
+    echo "::error::Playwright npm-installatie overschreed ${NPM_INSTALL_TIMEOUT_SECONDS}s of faalde."
+    exit 1
+  fi
 fi
 
 verwijder_overbodige_apt_bronnen
 
 for poging in $(seq 1 "$POGINGEN"); do
-  if $PLAYWRIGHT_CLI install --with-deps chromium; then
+  if run_bounded "$PLAYWRIGHT_INSTALL_TIMEOUT_SECONDS" "${PLAYWRIGHT_CLI_ARGS[@]}" install --with-deps chromium; then
     echo "Chromium geïnstalleerd (poging $poging)."
     exit 0
   fi
   echo "::warning::Chromium-installatie mislukt bij poging $poging van $POGINGEN."
   if [ "$poging" -lt "$POGINGEN" ]; then
     sudo rm -rf /var/lib/apt/lists/*
-    sudo apt-get update -o Acquire::Retries=3 >/dev/null 2>&1 || true
+    run_bounded "$APT_UPDATE_TIMEOUT_SECONDS" sudo apt-get update -o Acquire::Retries=3 >/dev/null 2>&1 || true
     sleep 15
   fi
 done
