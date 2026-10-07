@@ -3,4 +3,4 @@ import {createPortalProjectHandler} from '../../platform/api/portal-project-hand
 import {createPortalProjectStore} from './_portal-project-store.mjs';
 
 export default createPortalProjectHandler({getUser,store:createPortalProjectStore()});
-export const config={path:'/api/portal-project',region:'fra'};
+export const config={path:'/api/portal-project'};
