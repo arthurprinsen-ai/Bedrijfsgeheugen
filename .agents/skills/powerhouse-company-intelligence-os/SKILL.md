@@ -137,31 +137,32 @@ Powerhouse projecteert de publieke categorie `Company Brain` als acquisitiesigna
 
 De publieke hoofdclaim **Een Company Brain is waar Bedrijfsgeheugen begint** beschrijft dus de productarchitectuur: context is een inputlaag, niet de terminale capability. Company-Brain-intentie, CTA-progressie, scanuitkomst, lead/proposal/order en gerealiseerde omzet moeten als één lineage terugstromen naar bestaande evidence, outcome memory en compound learning. Verkeer zonder downstream outcome mag nooit als bewezen commerciële waarde worden opgeslagen.
 
-## Source Universe & Environment Radar inheritance
+## Source Universe & Company Impact Engine inheritance
 
-Fingerprint: `powerhouse|source-universe|environment-radar|impact|action|outcome|learning|v1`.
+Fingerprint: `powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1`.
 
-Every current and future Company Intelligence task that uses external or internal signals must inherit the Source Universe truth model.
+Every current and future Company Intelligence task that uses external or internal signals inherits the canonical Source Universe contract in `.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md`.
 
 Canonical runtime:
-- source capability catalog: `public.powerhouse_source_catalog_v1`;
+- domain registry: `public.powerhouse_intelligence_domain_registry_v1`;
+- source capability catalog: `public.powerhouse_intelligence_source_catalog_v1`;
 - existing raw external signal authority: `public.bg_externe_signalen`;
 - existing evidence observations: `public.powerhouse_evidence_source_observations`;
-- impact projection: `public.powerhouse_signal_impact_assessment_v1`;
-- refresh owner: `public.powerhouse_refresh_environment_radar_v1(text)`;
-- heartbeat owner: `public.powerhouse_evidence_daily_maintenance_v1()`;
-- Loop Assurance key: `environment-radar`;
-- Portal V2: `/portal-v2/?page=omgevingsradar`.
+- derived signal projection: `public.powerhouse_intelligence_signal_projection_v1`;
+- company impact projection: `public.powerhouse_intelligence_company_impact_v1`;
+- action candidates: `public.powerhouse_intelligence_action_candidate_v1`;
+- action promotion: `public.powerhouse_materialize_intelligence_action_v1(text,text)`;
+- refresh owner: `public.powerhouse_refresh_external_intelligence_universe_v1(text,integer)`;
+- scheduler owner: `public.powerhouse_runtime_scheduler_mux_v3(timestamptz)`;
+- Loop Assurance key: `external-intelligence-universe`;
+- Portal V2: `https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar`.
 
 Non-negotiable truth rules:
-- `CATALOGUED` means Bedrijfsgeheugen knows a source and its intended role; it never means connected, observed or live.
-- Reuse `bg_signaal_onderwerpen` and `bg_externe_signalen`; never create a second external-news/signal store.
-- Generic external relevance and urgency may be scored deterministically from observed evidence.
-- Company exposure, financial magnitude and euro impact must remain unknown until supported by tenant/company evidence.
-- Unknown exposure must never be silently replaced by a sector assumption, demo value, global average or model guess.
-- A radar recommendation is not an executed action. Materialization must reuse the existing Brain/action/obligation authority.
-- An executed action is not an outcome. Only observed business evidence may populate Outcome Memory or verified learning.
-- The loop is `source → evidence → signal → company context → impact → recommendation → canonical action → observed outcome → measurement → learning → next decision`.
-- The existing evidence-maintenance heartbeat is the periodic refresh owner; a new intelligence feature may not add a parallel scheduler unless the canonical owner cannot satisfy the cadence and architecture review proves the need.
-- Customer UI must distinguish source capability, live evidence, AI interpretation and company-specific impact visibly.
-
+- catalog capability never proves a connector/provider is live;
+- raw evidence, derived signal, company impact, action and outcome remain separate truth classes;
+- company probability, magnitude and exposure are required before impact can be scored;
+- financial value/loss remains NULL until evidence-backed;
+- a candidate becomes READY only after evidence-backed company impact is SCORED;
+- canonical materialization creates a Brain obligation only; it does not imply a provider side effect;
+- observed outcomes alone may feed Outcome Memory and verified learning;
+- no second external-signal store, action queue, scheduler, CRM or learning store may be introduced.
