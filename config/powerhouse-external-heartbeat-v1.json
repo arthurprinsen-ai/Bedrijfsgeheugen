@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "authority": "POWERHOUSE_EXTERNAL_COMMERCIAL_HEARTBEAT",
+  "scheduler": {
+    "provider": "netlify",
+    "schedule_utc": "2-57/5 * * * *",
+    "dispatch_timeout_ms": 5000,
+    "background_delivery": true
+  },
+  "runner": {
+    "provider": "supabase-edge",
+    "transport": "supavisor-ipv4-transaction",
+    "pooler_host": "aws-0-eu-central-1.pooler.supabase.com",
+    "pooler_port": 6543,
+    "max_connections_per_isolate": 1,
+    "statement_timeout_ms": 90000,
+    "advisory_lock": "powerhouse-commercial-heartbeat-external-v1",
+    "durable_readback_required": true
+  },
+  "delivery": {
+    "max_attempts": 4,
+    "retry_delays_ms": [0,5000,15000,30000],
+    "edge_timeout_ms": 120000,
+    "auth_header": "x-bg-service-token"
+  },
+  "cutover": {
+    "legacy_pg_cron_job": "powerhouse-one-commercial-heartbeat-v1",
+    "legacy_job_retired_only_after_external_live_proof": true
+  },
+  "invariants": [
+    "commercial heartbeat scheduling must not depend on pg_cron client connection startup",
+    "scheduled dispatch must return quickly and hand work to a background function",
+    "database execution must use IPv4 Supavisor transaction transport with max one connection per isolate",
+    "heartbeat success requires durable commercial_heartbeat runtime-event readback",
+    "outbound quality gates remain fail closed"
+  ]
+}
