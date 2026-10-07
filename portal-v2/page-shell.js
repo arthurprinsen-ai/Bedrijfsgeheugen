@@ -23,12 +23,14 @@ import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 import { mountContextualForesight } from './foresight-context-ui.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
+import { mountDataAiPassport } from './data-ai-passport.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
   profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
   'sales-intelligence':['Sales Intelligence & behoefte','Zie wat de klant aantoonbaar wil bereiken, welk probleem en effect zijn bevestigd, welke vraag nu volgt en wanneer een aanbod past.'],
   'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
+  'data-ai-passport':['Data & AI Passport','Volg per provider welke data wordt verwerkt, waar die wordt verwerkt en opgeslagen, welke doorgifte plaatsvindt, hoe lang data blijft en welk bewijs dat ondersteunt.'],
   'trust-center':['AI Trust Center','Controleer waarop Powerhouse vertrouwt: bronnen, actualiteit, bewijs, onzekerheid, verificatie en audittrail.'],
   'ai-scan':['AI-scan: kansenkaart','Prioriteer AI-kansen op waarde, haalbaarheid, risico en benodigde data.'],
   kansenkaart:['Kansenkaart','Eén overzicht van commerciële, operationele en digitale verbeterkansen.'],
@@ -288,6 +290,7 @@ export function openPortalPage(pageId){
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
+  else if(pageId==='data-ai-passport'){native.innerHTML='';mountDataAiPassport(native,{domainState:portalContext.domainState});}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
   else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
