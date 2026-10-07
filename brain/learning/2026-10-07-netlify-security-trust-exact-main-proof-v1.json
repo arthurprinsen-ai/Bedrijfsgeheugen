@@ -1,0 +1,20 @@
+{
+  "version": "NETLIFY_SECURITY_TRUST_EXACT_MAIN_PROOF_V1",
+  "obligation_id": "netlify-security-trust-exact-main-proof-v1",
+  "observed_at": "2026-10-07T19:46:00Z",
+  "state": "DELIVERY_CANDIDATE",
+  "base_main_sha": "d2f7f5f7e8eed492ac7a8a407d037ef55df8790f",
+  "purpose": "Force one canonical deploy-applicable website canary so Netlify production can be read back against the protected merge SHA without weakening paths-ignore semantics.",
+  "root_cause": "Recent main commits were intentionally non-deploying governance/backend changes, so production correctly remained on the latest deploy-applicable ancestor rather than matching repository HEAD.",
+  "correction": "Use the existing website delivery lane with one invisible index.html source canary and preserve the existing deployment applicability policy.",
+  "terminal_evidence_required": [
+    "Required green",
+    "Powerhouse CodeQL green",
+    "Netlify preview green with no secret matches",
+    "protected auto-merge",
+    "Netlify production ready with commit_ref equal to merge SHA",
+    "security-trust and _security-trust-client present",
+    "Security Trust API/page production readback"
+  ],
+  "live_proven": false
+}
