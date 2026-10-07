@@ -85,6 +85,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         sourceEvidenceSeparatedFromAiInterpretation:true,
         tenantExposureNeverSynthesized:true,
         monetaryImpactNeverSynthesized:true,
+        financialValueNullUntilEvidenceBacked:true,
         unknownRemainsUnknown:true,
         canonicalActionAuthorityReused:true,
         actionPromotionRequiresReadyAndScoredImpact:true,
