@@ -192,6 +192,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         productionTransportRegression:'tests/brain-netlify-proxy-auth-self-heal-v2.test.mjs',
         requiredGate:'.github/workflows/required-test.yml',
         recoverySupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
+        terminalClosure:'.github/workflows/obligation-terminal-closure.yml',
         learning:'brain/learning/2026-09-30-async-workflow-continuation-v1.json'
       }),
       invariants:Object.freeze({
@@ -205,6 +206,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         netlifyAuthRetryBounded:true,
         nonAuthTransportFailureFailClosed:true,
         exactShaReadbackAfterRecovery:true,
+        mergedPrBodyForwardingRequired:true,
         netlifyDeploymentApplicabilityShared:true,
         nonNetlifyBackendSkipsNetlifyMutation:true,
         supabaseOnlySkipsNetlifyMutation:true
