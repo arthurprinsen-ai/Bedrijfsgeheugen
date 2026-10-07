@@ -39,30 +39,63 @@ async function getVaultSecret(name: string) {
 
 async function getProxy() {
   const apiKey = await getVaultSecret("COMPOSIO_API_KEY");
-  const endpoint = "https://backend.composio.dev/api/v3.1/tools/execute/NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER";
-  const payload = {
-    connected_account_id: "netlify_mcp_retax-divide",
-    version: "latest",
-    arguments: {
-      selectSchema: {
-        operation: "deploy-site",
-        params: { siteId },
-        aiAgentName: "Powerhouse GitHub OIDC deploy bridge",
-        llmModelName: "gpt-5.6",
-      },
-    },
+  const base = "https://backend.composio.dev/api/v3.1";
+  const accountId = "netlify_mcp_retax-divide";
+  const toolSlug = "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER";
+  const headers = {
+    "content-type": "application/json",
+    "x-api-key": apiKey,
+    "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/6",
   };
-  const out = await fetch(endpoint, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/5",
-    },
-    body: JSON.stringify(payload),
+
+  const accountRes = await fetch(base + "/connected_accounts/" + encodeURIComponent(accountId), {
+    method: "GET",
+    headers,
   });
-  const raw = await out.text();
-  if (!out.ok) throw new Error("composio netlify authority " + out.status);
+  const accountRaw = await accountRes.text();
+  if (!accountRes.ok) throw new Error("composio connected account " + accountRes.status);
+  let account: any = {};
+  try { account = JSON.parse(accountRaw); } catch {}
+  const userId = String(account?.user_id || "").trim();
+  if (!userId) throw new Error("composio connected account user missing");
+
+  const sessionRes = await fetch(base + "/tool_router/session", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      user_id: userId,
+      toolkits: { enabled: ["netlify_mcp"] },
+      connected_accounts: { netlify_mcp: [accountId] },
+      tools: { netlify_mcp: { enabled: [toolSlug] } },
+      search: { enable: false },
+      execute: { enable_multi_execute: false },
+    }),
+  });
+  const sessionRaw = await sessionRes.text();
+  if (!sessionRes.ok) throw new Error("composio session create " + sessionRes.status);
+  let session: any = {};
+  try { session = JSON.parse(sessionRaw); } catch {}
+  const sessionId = String(session?.session_id || "").trim();
+  if (!sessionId) throw new Error("composio session id missing");
+
+  const executeRes = await fetch(base + "/tool_router/session/" + encodeURIComponent(sessionId) + "/execute", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      tool_slug: toolSlug,
+      account: accountId,
+      arguments: {
+        selectSchema: {
+          operation: "deploy-site",
+          params: { siteId },
+          aiAgentName: "Powerhouse GitHub OIDC deploy bridge",
+          llmModelName: "gpt-5.6",
+        },
+      },
+    }),
+  });
+  const raw = await executeRes.text();
+  if (!executeRes.ok) throw new Error("composio session execute " + executeRes.status);
   const match = raw.match(/https:\/\/netlify-mcp\.netlify\.app\/proxy\/[A-Za-z0-9._~-]+/);
   if (!match) throw new Error("fresh netlify proxy not issued");
   return match[0];
@@ -139,7 +172,7 @@ Deno.serve(async (req: Request) => {
     if (!authPhase && /secret unavailable|vault read timeout|database auth unavailable/i.test(message)) {
       errorCode = "vault_authority_unavailable";
       status = 503;
-    } else if (!authPhase && /composio netlify authority/i.test(message)) {
+    } else if (!authPhase && /composio (connected account|session create|session execute)/i.test(message)) {
       errorCode = "composio_authority_failed";
       status = 424;
     } else if (!authPhase && /fresh netlify proxy not issued/i.test(message)) {
