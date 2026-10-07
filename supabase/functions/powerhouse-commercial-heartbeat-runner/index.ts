@@ -100,7 +100,8 @@ async function runHeartbeat(){
       transport:"supavisor-ipv4-transaction",
       started_at:startedAt,
       completed_at:new Date().toISOString(),
-      heartbeat:heartbeatRows?.[0]?.heartbeat??null,\n      data_sovereignty:sovereigntyRows?.[0]?.data_sovereignty??null,
+      heartbeat:heartbeatRows?.[0]?.heartbeat??null,
+      data_sovereignty:sovereigntyRows?.[0]?.data_sovereignty??null,
       receipt,
       durable_readback_verified:true
     };
