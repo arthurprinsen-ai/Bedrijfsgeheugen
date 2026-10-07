@@ -12,13 +12,37 @@
     "Treat a post-merge Supabase migration-history mismatch as repository lineage debt, never repair it by deleting or rewriting production migration history."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"],
-    "shadow": ["tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"],
-    "canary": ["tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"
+    ]
   },
   "evidence": {
-    "recovered_versions": ["20261007165737","20261007165811","20261007165818","20261007165821","20261007170121","20261007171249"],
+    "recovered_versions": [
+      "20261007165737",
+      "20261007165811",
+      "20261007165818",
+      "20261007165821",
+      "20261007170121",
+      "20261007171249"
+    ],
     "production_history_count_at_capture": 631
   },
-  "skill_targets": ["delivery","supabase","continuity","security"]
+  "skill_targets": [
+    "delivery",
+    "supabase",
+    "continuity",
+    "security"
+  ],
+  "compiler": {
+    "failure_class": "SUPABASE_REMOTE_MIGRATION_HISTORY_DRIFT",
+    "scope": "PRODUCTION_MIGRATION_LINEAGE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
 }
