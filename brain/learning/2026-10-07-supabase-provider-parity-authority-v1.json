@@ -1,0 +1,33 @@
+{
+  "id": "supabase-provider-parity-authority-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "supabase|production-authority|provider-parity|successor-replay|v1",
+  "compiler": {
+    "failure_class": "DELIVERY_CONTROL_PLANE",
+    "scope": "SUPABASE_PRODUCTION_AUTHORITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Post-merge authority treated a timing-sensitive Supabase GitHub check as blocking production truth, while the provider runtime had already converged. The terminalizer also misclassified the runtime-backpressure configuration contract as unknown runtime and successor evidence had no explicit route back to the original merged PR.",
+  "prevention": "Use bounded byte-for-byte Supabase Management API/CLI source parity as canonical production authority, keep GitHub provider checks non-blocking, allow successor replay only when current Supabase runtime is byte-equivalent to the target merge, route provider evidence to the replay target PR, and classify the exact runtime-backpressure config as verifier-only control-plane state.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-edge-production-writeback-v1.test.mjs",
+      "tests/supabase-edge-provider-readback-v1.test.mjs",
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "source_runtime_pr": 4025,
+    "source_merge_sha": "c56d46c851ef4963cd33da995c077eb4ddafe820",
+    "failed_supabase_authority_run": 37575776430,
+    "failed_terminalizer_run": 37575776455,
+    "provider_state": "ACTIVE",
+    "production_source_snapshot": "SUCCESS",
+    "production_release_readback": "SUCCESS"
+  }
+}

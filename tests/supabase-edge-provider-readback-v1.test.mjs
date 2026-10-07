@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { readbacksForFunctions, mergeProviderLines } from '../tools/supabase/publish-edge-provider-readback.mjs';
 
 test('ACTIVE provider metadata becomes terminal readback evidence',()=>{
@@ -17,4 +18,12 @@ test('provider line replacement is idempotent',()=>{
   const second=mergeProviderLines(first,[row]);
   assert.equal(second,first);
   assert.match(first,/function=a;version=2;/);
+});
+
+
+test('publisher supports an explicit target PR for successor replay',()=>{
+  const source=readFileSync('tools/supabase/publish-edge-provider-readback.mjs','utf8');
+  assert.match(source,/targetPrNumber=null/);
+  assert.match(source,/SUPABASE_PROVIDER_TARGET_PR_NOT_MERGED/);
+  assert.match(source,/TARGET_PR_NUMBER/);
 });

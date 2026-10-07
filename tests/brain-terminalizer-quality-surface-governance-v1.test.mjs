@@ -34,6 +34,7 @@ test('control-plane config changed by PR 3984 is verifier-only without widening 
     'config/pr-trigger-baseline.json',
     'config/supabase-edge-functions.json',
     'config/powerhouse-quality-surface-contracts.json',
+    'config/powerhouse-runtime-backpressure-v1.json',
     'config/brain-delivery-system.json',
     'config/powerhouse-agent-delivery-scheduler-v1.json',
   ]) assert.ok(paths.includes(path), path);

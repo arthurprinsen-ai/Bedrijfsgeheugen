@@ -29,3 +29,24 @@ test('provider publisher keeps network readback out of local files',()=>{
   assert.doesNotMatch(publisher,/provider-readbacks\.txt/);
   assert.match(publisher,/SUPABASE_PROVIDER_PR_WRITEBACK_PROVEN/);
 });
+
+
+test('provider source parity is canonical and GitHub provider checks are non-blocking observability',()=>{
+  assert.ok(production.includes('Observe Supabase GitHub deployment check'));
+  assert.ok(production.includes("blocking:false"));
+  assert.ok(production.includes("authority:'provider-source-parity'"));
+  assert.ok(production.includes('for attempt in $(seq 1 24)'));
+  assert.ok(production.includes('SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_CONVERGED'));
+  assert.ok(production.includes('SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_TIMEOUT'));
+  assert.ok(production.includes('provider_convergence=BOUNDED'));
+  assert.ok(!production.includes('SUPABASE_PRODUCTION_DEPLOYMENT_ANCHOR_NOT_FOUND'));
+});
+
+
+test('successor replay targets the original merged runtime PR without weakening runtime equality',()=>{
+  assert.ok(production.includes('Terminal-Replay-PR'));
+  assert.ok(production.includes('SUPABASE_REPLAY_RUNTIME_SUPERSEDED'));
+  assert.ok(production.includes('target_pr=$target_pr'));
+  assert.ok(production.includes('TARGET_PR_NUMBER: ${{ steps.scope.outputs.target_pr }}'));
+  assert.ok(production.includes("pulls/$target_pr/files?per_page=100"));
+});

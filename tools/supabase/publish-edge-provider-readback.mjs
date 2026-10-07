@@ -51,23 +51,36 @@ async function jsonFetch(url,options={}){
 }
 
 export async function publishProviderReadback({
-  projectRef,accessToken,githubToken,repository,sha,functions
+  projectRef,accessToken,githubToken,repository,sha,functions,targetPrNumber=null
 }){
   const payload=await jsonFetch(`https://api.supabase.com/v1/projects/${projectRef}/functions`,{
     headers:{authorization:`Bearer ${accessToken}`}
   });
   const readbacks=readbacksForFunctions(payload,functions);
 
-  const pulls=await jsonFetch(`https://api.github.com/repos/${repository}/commits/${sha}/pulls`,{
-    headers:{
-      authorization:`Bearer ${githubToken}`,
-      accept:'application/vnd.github+json',
-      'x-github-api-version':'2022-11-28'
-    }
-  });
-  const merged=(Array.isArray(pulls)?pulls:[]).filter(pr=>pr?.merged_at)
-    .sort((a,b)=>Date.parse(a.merged_at)-Date.parse(b.merged_at));
-  const pr=merged.at(-1)||null;
+  let pr=null;
+  if(targetPrNumber){
+    const explicit=await jsonFetch(`https://api.github.com/repos/${repository}/pulls/${targetPrNumber}`,{
+      headers:{
+        authorization:`Bearer ${githubToken}`,
+        accept:'application/vnd.github+json',
+        'x-github-api-version':'2022-11-28'
+      }
+    });
+    if(!explicit?.merged_at)throw new Error('SUPABASE_PROVIDER_TARGET_PR_NOT_MERGED:'+targetPrNumber);
+    pr=explicit;
+  }else{
+    const pulls=await jsonFetch(`https://api.github.com/repos/${repository}/commits/${sha}/pulls`,{
+      headers:{
+        authorization:`Bearer ${githubToken}`,
+        accept:'application/vnd.github+json',
+        'x-github-api-version':'2022-11-28'
+      }
+    });
+    const merged=(Array.isArray(pulls)?pulls:[]).filter(pr=>pr?.merged_at)
+      .sort((a,b)=>Date.parse(a.merged_at)-Date.parse(b.merged_at));
+    pr=merged.at(-1)||null;
+  }
   if(!pr)return {readbacks,pr_number:null,writeback:false};
 
   const current=await jsonFetch(`https://api.github.com/repos/${repository}/pulls/${pr.number}`,{
@@ -101,7 +114,8 @@ if(import.meta.url===`file://${process.argv[1]}`){
     githubToken:required('GITHUB_TOKEN'),
     repository:required('GITHUB_REPOSITORY'),
     sha:required('GITHUB_SHA'),
-    functions
+    functions,
+    targetPrNumber:String(process.env.TARGET_PR_NUMBER||'').trim()||null
   });
   process.stdout.write(`SUPABASE_PROVIDER_PR_WRITEBACK_PROVEN:pr=${result.pr_number||'NONE'} functions=${functions.join(',')}\n`);
 }
