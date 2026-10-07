@@ -1,3 +1,44 @@
+-- Fresh-environment reproducibility for the canonical identity graph.
+-- Production already contains this exact contract; this idempotent definition
+-- closes the historical out-of-band schema gap before the first function uses it.
+create table if not exists public.powerhouse_identity_graph_v1 (
+  graph_id uuid primary key default gen_random_uuid(),
+  entity_type text not null check (entity_type in ('person','company')),
+  entity_key text not null,
+  person_key text,
+  company_key text,
+  identifier_type text not null,
+  identifier_hash text not null,
+  source text not null,
+  confidence numeric not null default 0.5 check (confidence >= 0 and confidence <= 1),
+  first_seen_at timestamptz not null default now(),
+  last_seen_at timestamptz not null default now(),
+  evidence jsonb not null default '{}'::jsonb,
+  unique (entity_type,identifier_type,identifier_hash)
+);
+
+create index if not exists idx_powerhouse_identity_graph_entity
+  on public.powerhouse_identity_graph_v1(entity_type,entity_key);
+create index if not exists idx_powerhouse_identity_graph_person
+  on public.powerhouse_identity_graph_v1(person_key)
+  where person_key is not null;
+create index if not exists idx_powerhouse_identity_graph_company
+  on public.powerhouse_identity_graph_v1(company_key)
+  where company_key is not null;
+
+alter table public.powerhouse_identity_graph_v1 enable row level security;
+
+drop policy if exists powerhouse_identity_graph_service_v1
+  on public.powerhouse_identity_graph_v1;
+create policy powerhouse_identity_graph_service_v1
+  on public.powerhouse_identity_graph_v1
+  for all
+  to service_role
+  using (true)
+  with check (true);
+
+revoke all on table public.powerhouse_identity_graph_v1 from public, anon, authenticated;
+grant all on table public.powerhouse_identity_graph_v1 to service_role;
 
 create or replace function public.powerhouse_sync_identity_graph_batch_v1(p_batch_size integer default 500)
 returns jsonb language plpgsql security definer set search_path='public','pg_catalog' as $$
