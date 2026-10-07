@@ -79,26 +79,20 @@ test('migration marker writeback is idempotent for the same migration identity',
   assert.match(next,/Terminal-Supabase-Provider-Readback: function=example/);
 });
 
-test('production authority auto-publishes migration readback and terminalizer waits boundedly',async()=>{
+test('terminalizer owns exact migration provider readback without a second authority',async()=>{
   const [authority,terminalizer]=await Promise.all([
     readFile('.github/workflows/supabase-edge-production-authority.yml','utf8'),
     readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8'),
   ]);
 
-  assert.match(authority,/supabase\/migrations\/\*\*/);
-  assert.match(authority,/Resolve exact migration set/);
-  assert.match(authority,/publish-migration-provider-readback\.mjs/);
-  assert.match(authority,/SUPABASE_ACCESS_TOKEN/);
-  assert.match(authority,/SUPABASE_MIGRATION_TARGET_PR_MISSING/);
-  assert.ok(
-    authority.indexOf('Publish exact migration provider readback evidence to merged PR') <
-      authority.indexOf('Prove byte-for-byte provider source parity'),
-    'migration readback must publish before slower Edge provider parity',
-  );
+  assert.doesNotMatch(authority,/supabase\/migrations\/\*\*/);
+  assert.doesNotMatch(authority,/publish-migration-provider-readback\.mjs/);
 
-  assert.match(terminalizer,/migration_complete=false/);
-  assert.match(terminalizer,/for attempt in \$\(seq 1 24\)/);
-  assert.match(terminalizer,/Waiting for canonical Supabase migration provider readback/);
-  assert.match(terminalizer,/sleep 5/);
-  assert.match(terminalizer,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
+  assert.match(terminalizer,/pull-requests: write/);
+  assert.match(terminalizer,/environment: production/);
+  assert.match(terminalizer,/SUPABASE_ACCESS_TOKEN: \$\{\{ secrets\.SUPABASE_ACCESS_TOKEN \}\}/);
+  assert.match(terminalizer,/publish-migration-provider-readback\.mjs/);
+  assert.match(terminalizer,/SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_MIGRATION_PROVIDER_READBACK/);
+  assert.match(terminalizer,/SUPABASE_MIGRATION_PROVIDER_READBACK_INCOMPLETE/);
+  assert.doesNotMatch(terminalizer,/Waiting for canonical Supabase migration provider readback/);
 });
