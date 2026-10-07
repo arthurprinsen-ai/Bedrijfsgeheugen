@@ -25,4 +25,4 @@ const sovereignty=createDataSovereigntyClient();\nconst handler=createPortalQues
 });
 
 export default async request=>handler(request);
-export const config={path:'/api/portaalvraag',region:'fra'};
+export const config={path:'/api/portaalvraag'};
