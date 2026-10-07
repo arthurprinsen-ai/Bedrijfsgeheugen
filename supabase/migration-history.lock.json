@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T07:00:00.000Z",
+  "captured_at": "2026-10-07T08:39:00.000Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2414,6 +2414,14 @@
     {
       "version": "20261007064948",
       "name": "align_commercial_closure_with_outbound_quality_gate_v1"
+    },
+    {
+      "version": "20261007081000",
+      "name": "decouple_attribution_from_commercial_heartbeat_v1"
+    },
+    {
+      "version": "20261007083900",
+      "name": "retire_legacy_pgcron_commercial_heartbeat_after_external_proof"
     }
   ]
 }
