@@ -46,7 +46,7 @@ begin
 end
 $function$;
 
-revoke all on function public.powerhouse_runtime_maintenance_tick_v1(timestamptz)
+revoke execute on function public.powerhouse_runtime_maintenance_tick_v1(timestamptz)
   from public, anon, authenticated;
 grant execute on function public.powerhouse_runtime_maintenance_tick_v1(timestamptz)
   to service_role;
