@@ -41,7 +41,7 @@ test('external signals are canonical and tenant impact is separate',async()=>{
   assert.match(sql,/foreign key \(signal_key\)\s+references public\.powerhouse_intelligence_signal_projection_v1\(signal_key\)/s);
   assert.match(sql,/EXTERNAL_REFRESH_CANONICAL_ONLY/);
   assert.match(sql,/TENANT_COMPANY_CONTEXT_REQUIRED/);
-  assert.match(sql,/where signal_key=p_signal_key and tenant_id='canonical'/);
+  assert.match(sql,/where signal_key=p_signal_key and \(tenant_id='canonical' or tenant_id=p_tenant_id\)/);
   assert.doesNotMatch(sql,/references public\.powerhouse_intelligence_signal_projection_v1\(tenant_id,signal_key\)/);
 });
 
@@ -76,6 +76,39 @@ test('fulfilled obligation is not treated as outcome; DONE requires verified Out
   assert.match(sql,/learning_authority','powerhouse_run_daily_compound_learning_v1/);
 });
 
+
+test('internal evidence joins the same signal engine without projecting raw source payloads',async()=>{
+  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  assert.match(sql,/powerhouse_project_internal_evidence_signal_v1/);
+  assert.match(sql,/SOURCE_OBSERVATION_NOT_FOUND/);
+  assert.match(sql,/scope='internal'/);
+  assert.match(sql,/raw_evidence_not_projected',true/);
+  assert.match(sql,/TENANT_INTERNAL_SIGNAL_REQUIRED/);
+});
+
+test('signal relationships are bounded and automatic logic never invents causality',async()=>{
+  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  assert.match(sql,/powerhouse_intelligence_signal_relation_v1/);
+  assert.match(sql,/SHARED_DOMAIN/);
+  assert.match(sql,/COMPANY_DEPENDENCY/);
+  assert.match(sql,/CAUSAL_HYPOTHESIS/);
+  assert.match(sql,/causal_hypotheses_synthesized',false/);
+  assert.match(sql,/causality_claimed',false/);
+});
+
+test('source universe includes official sources and major internal providers with absolute URLs',async()=>{
+  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  for(const marker of [
+    "'eur-lex'","'ncsc-nl'","'cbs'","'rvo'","'uwv'","'ecb'","'tenderned'","'epo'",
+    "'supabase-internal'","'github-internal'","'netlify-internal'","'notion-internal'",
+    "'sap-internal'","'afas-internal'","'exact-internal'","'snowflake-internal'",
+    "'databricks-internal'","'bigquery-internal'","'powerbi-internal'"
+  ])assert.ok(sql.includes(marker),marker);
+  assert.match(sql,/https:\/\/eur-lex\.europa\.eu\//);
+  assert.match(sql,/https:\/\/supabase\.com\//);
+  assert.match(sql,/https:\/\/www\.sap\.com\//);
+});
+
 test('intelligence reuses existing scheduler mux and creates no parallel cron writer',async()=>{
   const [sql,registry]=await Promise.all([
     read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql'),
@@ -94,6 +127,7 @@ test('new intelligence surfaces are server-only and RLS protected',async()=>{
     'powerhouse_intelligence_domain_registry_v1',
     'powerhouse_intelligence_source_catalog_v1',
     'powerhouse_intelligence_signal_projection_v1',
+    'powerhouse_intelligence_signal_relation_v1',
     'powerhouse_intelligence_company_impact_v1',
     'powerhouse_intelligence_action_candidate_v1',
     'powerhouse_intelligence_snapshot_v1'
@@ -117,13 +151,20 @@ test('Portal projects canonical outside world plus authenticated tenant impact o
   assert.match(api,/resolveIdentityTenant/);
   assert.match(api,/tenant_id=eq\.canonical/);
   assert.match(api,/powerhouse_intelligence_company_impact_v1/);
+  assert.match(api,/powerhouse_intelligence_signal_relation_v1/);
+  assert.match(api,/tenantInternalSignalCount/);
   assert.match(api,/tenant_id=eq\.\$\{tenant\}/);
   assert.match(api,/monetaryImpactSynthesized:false/);
   assert.match(api,/catalogCapabilityIsConnectionTruth:false/);
   assert.match(module,/Source → evidence → signal → impact → actie → outcome → learning/);
   assert.match(module,/Nog niet bewezen · eigen bedrijfscontext nodig/);
-  assert.match(registry,/omgevingsradar/);
-  assert.match(shell,/omgevingsradar/);
+  assert.match(module,/Verband, geen automatische causaliteitsclaim/);
+  assert.match(module,/availability_state/);
+  for(const marker of ['omgevingsradar','bedrijfsimpact','kansen','risicos','acties-beslissingen','verbanden','sinds-gisteren']){
+    assert.ok(module.includes(marker),marker);
+    assert.ok(registry.includes(marker),marker);
+    assert.ok(shell.includes(marker),marker);
+  }
 });
 
 test('System Map, Brain learning, skill and ledger inherit one canonical lineage',async()=>{
@@ -151,4 +192,10 @@ test('changed JavaScript parses under Node',()=>{
     'portal-v2/page-shell.js',
     'platform/system-map/canonical-system-map.mjs'
   ])execFileSync(process.execPath,['--check',path],{stdio:'pipe'});
+});
+
+test('migration contains balanced dollar-quoted function bodies after concurrent-writer recovery',async()=>{
+  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  assert.doesNotMatch(sql,/\nas \$(?!\$)/);
+  assert.doesNotMatch(sql,/\n\$;\n/);
 });
