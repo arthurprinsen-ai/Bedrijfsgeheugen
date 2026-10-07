@@ -671,7 +671,7 @@ begin
 
   return jsonb_build_object('impact_key',v_impact_key,'impact_score',v_score,'status',v_status);
 end
-$;
+$$;
 
 create or replace function public.powerhouse_materialize_intelligence_action_v1(
   p_tenant_id text,
@@ -681,7 +681,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path to 'public','pg_catalog'
-as $
+as $$
 declare
   a public.powerhouse_intelligence_action_candidate_v1%rowtype;
   o public.brain_obligations%rowtype;
@@ -752,7 +752,7 @@ begin
     'status','MATERIALIZED'
   );
 end
-$;
+$$;
 
 create or replace function public.powerhouse_materialize_ready_intelligence_actions_v1(
   p_tenant_id text default 'canonical',
@@ -762,7 +762,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path to 'public','pg_catalog'
-as $
+as $$
 declare
   r record;
   v_one jsonb;
@@ -786,7 +786,7 @@ begin
   end loop;
   return jsonb_build_object('materialized_count',v_count,'results',v_results,'executed_at',now());
 end
-$;
+$$;
 
 create or replace function public.powerhouse_refresh_external_intelligence_universe_v1(
   p_tenant_id text default 'canonical',
