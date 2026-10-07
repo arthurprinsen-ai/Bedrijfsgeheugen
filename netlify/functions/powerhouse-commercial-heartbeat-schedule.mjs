@@ -32,4 +32,4 @@ export default async function handler(){
   }));
 }
 
-export const config={schedule:'2-57/5 * * * *'};
+export const config={schedule:'2-57/5 * * * *',region:'fra'};
