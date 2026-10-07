@@ -12,7 +12,8 @@
     "noMakeDependency": true,
     "exactReleaseIdentity": true,
     "contentReadbackRequired": true,
-    "transient5xxPolicy": "bounded-retry-then-fail-closed"
+    "transient5xxPolicy": "bounded-retry-then-fail-closed",
+    "externalObserverIsNonAuthoritative": true
   },
   "productionTruth": {
     "requiredStatusContext": "test",
@@ -197,5 +198,27 @@
       "required_intervention",
       "next_escalation_at"
     ]
+  },
+  "externalObserverReadback": {
+    "fingerprint": "delivery|external-observer|provider-truth-fallback|v1",
+    "role": "supplemental_observer",
+    "blockedByObserverIsOriginFailure": false,
+    "blockedByObserverCanInvalidateProvenProduction": false,
+    "providerAuthority": "netlify",
+    "immutableLineageAuthority": "github",
+    "evaluator": "tools/site-shell/external-observer-production-proof.mjs",
+    "regressionTest": "tests/brain-external-observer-provider-truth.test.mjs",
+    "liveProvenState": "LIVE_PROVEN_PROVIDER_TRUTH",
+    "requiredProviderEvidence": [
+      "deploy_id",
+      "state_ready",
+      "context_production",
+      "production_alias",
+      "exact_commit_ref"
+    ],
+    "functionInventoryRequiredWhenExpected": true,
+    "exactShaRequired": true,
+    "publicFetchStillRequiredInsideCanonicalRunner": true,
+    "noFabricatedOriginSuccess": true
   }
 }
