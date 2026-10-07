@@ -1069,7 +1069,7 @@ begin
     'expected_value_eur',a.expected_value_eur,
     'estimated_loss_avoided_eur',a.estimated_loss_avoided_eur
   )::text;
-  v_hash:=encode(digest(convert_to(v_payload,'UTF8'),'sha256'),'hex');
+  v_hash:=encode(extensions.digest(convert_to(v_payload,'UTF8'),'sha256'),'hex');
 
   o:=public.brain_create_obligation(
     'INTELLIGENCE_ACTION_REVIEW',
