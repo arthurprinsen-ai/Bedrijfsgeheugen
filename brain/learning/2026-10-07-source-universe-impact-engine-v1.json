@@ -1,0 +1,45 @@
+{
+  "id": "source-universe-impact-engine-v1",
+  "date": "2026-10-07",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1",
+  "root_cause": "External intelligence was useful but fragmented. Source capability, observed evidence, generic external relevance, tenant exposure, monetary impact, action execution and observed outcomes were not one explicit truth-bounded lineage.",
+  "architecture": {
+    "lineage": "source capability -> observed evidence -> canonical external signal -> tenant company impact -> recommendation -> canonical Brain obligation -> verified outcome -> existing compound learning",
+    "external_signal_authority": "bg_externe_signalen + powerhouse evidence observations",
+    "signal_projection_scope": "canonical only",
+    "tenant_impact_scope": "authenticated tenant only",
+    "action_authority": "brain_obligations",
+    "outcome_authority": "powerhouse_outcome_memory_v1",
+    "learning_authority": "powerhouse_run_daily_compound_learning_v1",
+    "scheduler_authority": "powerhouse_runtime_scheduler_mux_v3"
+  },
+  "truth_rules": {
+    "source_catalog_is_not_connection_truth": true,
+    "available_is_not_live": true,
+    "external_signal_is_not_company_impact": true,
+    "signal_score_is_not_impact_score": true,
+    "impact_score_requires_probability_magnitude_exposure": true,
+    "financial_value_requires_evidence": true,
+    "canonical_external_signals_never_receive_tenant_impact": true,
+    "fulfilled_obligation_is_not_business_outcome": true,
+    "done_requires_verified_outcome_memory": true,
+    "missing_context": "UNKNOWN",
+    "historical_green_not_reusable": true
+  },
+  "prevention": [
+    "Never create a second external signal store, crawler authority, scheduler, task system, outcome ledger or learning store for this capability.",
+    "Only public source capability is seeded. CONNECTED/OBSERVED/LIVE require current provider/evidence observations.",
+    "Company impact is written only for a real tenant and references a canonical signal.",
+    "Monetary values remain NULL unless tenant/company evidence supports them.",
+    "Only READY actions backed by SCORED company impact may create a canonical Brain obligation.",
+    "FULFILLED means an obligation completed, not that business value was realized.",
+    "A candidate becomes DONE only after verified Outcome Memory can be linked.",
+    "Portal V2 must show canonical outside-world evidence plus authenticated-tenant impact overlay and explicit unknowns."
+  ],
+  "scope": {
+    "external_domains": 35,
+    "internal_domains": 10,
+    "portal_page": "https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar"
+  }
+}
