@@ -66,3 +66,8 @@ entrypoint = "./functions/powerhouse-commercial-heartbeat-runner/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/portal-state-eu/index.ts"
+
+[functions.netlify-deploy-bridge]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/netlify-deploy-bridge/index.ts"
