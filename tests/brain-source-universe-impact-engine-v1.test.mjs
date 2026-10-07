@@ -191,3 +191,12 @@ test('repo-wide inheritance remains discoverable',async()=>{
   assert.match(change,/35 externe en 10 interne/);
   assert.match(change,/DONE vereist verified Outcome Memory/);
 });
+
+
+test('SQL helper search paths remain pinned and browser execution stays revoked',async()=>{
+  const sql=await read('supabase/migrations/20261007213600_source_universe_function_search_path_hardening_v1.sql');
+  assert.match(sql,/alter function public\.powerhouse_intelligence_domain_from_text_v1\(text\)[\s\S]*set search_path to 'pg_catalog'/i);
+  assert.match(sql,/alter function public\.powerhouse_intelligence_impact_score_v1\([\s\S]*set search_path to 'pg_catalog'/i);
+  assert.match(sql,/revoke execute on function public\.powerhouse_intelligence_domain_from_text_v1\(text\)[\s\S]*from public, anon, authenticated/i);
+  assert.match(sql,/grant execute on function public\.powerhouse_intelligence_impact_score_v1\([\s\S]*to service_role/i);
+});
