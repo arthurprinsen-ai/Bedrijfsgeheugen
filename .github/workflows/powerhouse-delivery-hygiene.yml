@@ -146,10 +146,32 @@ jobs:
             if (process.env.EXPECTED_HEAD_SHA && headSha !== process.env.EXPECTED_HEAD_SHA) {
               throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
             }
-            const eventLease = parseWriterLease(process.env.EVENT_PR_BODY || '');
+            let pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
+            if (String(pr.head?.sha || '') !== headSha) {
+              throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
+            }
             const rerun = Number(process.env.RUN_ATTEMPT || '1') > 1;
             const synchronize = process.env.EVENT_NAME === 'pull_request'
               && process.env.EVENT_ACTION === 'synchronize';
+            let livePrBody = String(pr.body || process.env.EVENT_PR_BODY || '');
+            let eventLease = parseWriterLease(livePrBody);
+            if (synchronize && !rerun && eventLease.state === 'TERMINAL_DELIVERY'
+              && String(eventLease.headSha || '').toLowerCase() !== String(headSha || '').toLowerCase()) {
+              const leaseWaitMs = [750, 1250, 2000, 3000, 5000];
+              for (const delayMs of leaseWaitMs) {
+                await new Promise(resolve => setTimeout(resolve, delayMs));
+                pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
+                if (String(pr.head?.sha || '') !== headSha) {
+                  throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
+                }
+                livePrBody = String(pr.body || process.env.EVENT_PR_BODY || '');
+                eventLease = parseWriterLease(livePrBody);
+                if (String(eventLease.headSha || '').toLowerCase() === String(headSha || '').toLowerCase()) {
+                  console.log(`TERMINAL_LIVE_LEASE_CAUGHT_UP:${headSha}`);
+                  break;
+                }
+              }
+            }
             if (synchronize && !rerun && eventLease.state === 'TERMINAL_DELIVERY'
               && String(eventLease.headSha || '').toLowerCase() !== String(headSha || '').toLowerCase()) {
               const expectedTerminalHead = String(eventLease.headSha || '').toLowerCase();
@@ -185,7 +207,6 @@ jobs:
                 throw new Error(`INVALID_MAIN_SYNC_COMMIT:${expectedPreviousHead || 'missing'}:${expectedMainTarget || 'missing'}:${headSha}`);
               }
             }
-            const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
             const open = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
             const mainRef = await gh(`repos/${process.env.GITHUB_REPOSITORY}/git/ref/heads/main`);
             currentMainSha = String(mainRef?.object?.sha || '').trim();

@@ -133,6 +133,8 @@ jobs:
         env:
           MERGE_SHA: ${{ steps.target.outputs.merge_sha }}
           PR_BODY: ${{ steps.target.outputs.pr_body }}
+          PR_NUMBER: ${{ steps.target.outputs.pr_number }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags
@@ -220,7 +222,7 @@ jobs:
           runtime_classes="$(NON_GOVERNANCE_PATHS="$non_governance_paths" node --input-type=module - <<'NODE'
           import { isNetlifyRuntimePath } from './tools/site-shell/production-supersession.mjs';
           const paths=String(process.env.NON_GOVERNANCE_PATHS||'').split(/\r?\n/).filter(Boolean);
-          const supabase=paths.filter(path=>/^supabase\/functions\/[^/]+\//.test(path));
+          const supabase=paths.filter(path=>path==='supabase/config.toml'||/^supabase\/functions\/[^/]+\//.test(path));
           const netlify=paths.filter(path=>isNetlifyRuntimePath(path));
           const unknown=paths.filter(path=>!supabase.includes(path)&&!netlify.includes(path));
           process.stdout.write(JSON.stringify({supabase,netlify,unknown}));
@@ -233,14 +235,27 @@ jobs:
             exit 78
           fi
 
-          mapfile -t changed_functions < <(jq -r '.supabase[]?' <<<"$runtime_classes" | sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' | sort -u)
+          jq -r '.supabase[]?' <<<"$runtime_classes" > /tmp/supabase-runtime-paths.txt
+          mapfile -t changed_functions < <(node tools/supabase/edge-runtime-scope.mjs /tmp/supabase-runtime-paths.txt)
           supabase_required=false
           printf '[]\n' > .artifacts/supabase-provider-readbacks.json
           if [ "${#changed_functions[@]}" -gt 0 ]; then
             supabase_required=true
-            provider_lines="$(printf '%s\n' "$PR_BODY" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
-            if [ -z "$provider_lines" ]; then
-              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING"
+            provider_lines=""
+            complete=false
+            for attempt in $(seq 1 24); do
+              live_pr_body="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.body // ""')"
+              provider_lines="$(printf '%s\n' "$live_pr_body" | sed -n 's/^Terminal-Supabase-Provider-Readback:[[:space:]]*//p')"
+              complete=true
+              for fn in "${changed_functions[@]}"; do
+                line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
+                if [ -z "$line" ]; then complete=false; break; fi
+              done
+              [ "$complete" = true ] && break
+              sleep 5
+            done
+            if [ "$complete" != true ]; then
+              echo "::error::SUPABASE_PROVIDER_READBACK_MISSING:functions=${changed_functions[*]}"
               exit 78
             fi
             readbacks='[]'

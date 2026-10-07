@@ -34,3 +34,24 @@ entrypoint = "./functions/powerhouse-social-publisher/index.ts"
 enabled = true
 verify_jwt = true
 entrypoint = "./functions/social-recovery-runner/index.ts"
+
+[functions.powerhouse-mira-problem-radar]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-mira-problem-radar/index.ts"
+
+[functions.powerhouse-visual-assurance-sync]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-visual-assurance-sync/index.ts"
+
+[functions.powerhouse-email-reply-loop]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-email-reply-loop/index.ts"
+
+
+[functions.powerhouse-runtime-verifier-v1]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-runtime-verifier-v1/index.ts"
