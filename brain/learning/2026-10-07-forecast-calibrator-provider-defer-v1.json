@@ -1,0 +1,42 @@
+{
+  "id": "forecast-calibrator-provider-defer-20261007-v1",
+  "fingerprint": "forecast-calibrator|anthropic-unavailable|durable-defer|v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "source": "production-live-proof",
+  "failure_class": "UPSTREAM_AI_PROVIDER_UNAVAILABLE",
+  "symptom": [
+    "Provider version 51 was byte-identical to main and no longer had the DirectQuery secondary exception.",
+    "A real due-calibration invocation returned HTTP 500 because Anthropic returned HTTP 400 for insufficient provider credit."
+  ],
+  "root_cause": [
+    "A non-critical forecast calibration dependency failure was promoted to an application server failure.",
+    "One provider outage could abort the whole calibration batch and be retried repeatedly by scheduler-owned paths."
+  ],
+  "prevention": [
+    "Treat external AI provider unavailability as a truthful deferred calibration, never as a fabricated materialized or missed outcome.",
+    "Persist each affected learning obligation with a one-hour retry boundary.",
+    "Open a run-local circuit after the first provider failure so remaining due obligations defer without additional provider calls.",
+    "Return HTTP 200 with degraded evidence only after the defer state is durably stored; storage failure remains fail-closed."
+  ],
+  "evidence": {
+    "runtime": "supabase/functions/powerhouse-forecast-calibrator/index.ts",
+    "regression": "tests/brain-forecast-calibrator-provider-defer-v1.test.mjs",
+    "observed_provider_status": 400,
+    "live_proof_request_id": 143,
+    "provider_version_before_fix": 51
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "compiler": {
+    "failure_class": "RUNTIME_DEPENDENCY_RESILIENCE",
+    "scope": "FORECAST_CALIBRATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-forecast-calibrator-provider-defer-v1.test.mjs"],
+    "canary": ["tests/brain-forecast-calibrator-provider-defer-v1.test.mjs"]
+  }
+}
