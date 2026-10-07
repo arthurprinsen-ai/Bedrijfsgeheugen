@@ -19,4 +19,4 @@ export default async request=>{
     entitlements:subscription.entitlements
   });
 };
-export const config={path:'/api/portal-entitlements'};
+export const config={path:'/api/portal-entitlements',region:'fra'};
