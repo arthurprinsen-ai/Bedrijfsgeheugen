@@ -1,0 +1,45 @@
+{
+  "id": "personal-linkedin-predictive-dream-journey-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "linkedin-personal|founder-journey|predictive|language-rotation|v1",
+  "root_cause": "The live personal LinkedIn founder-journey behavior had advanced beyond repository source, while the repository candidate lacked canonical delivery metadata, a classified Brain regression path, and the three repository closure artifacts required for material Supabase changes. That combination could leave proven live behavior insufficiently protected by GitHub SSOT and regressions.",
+  "prevention": [
+    "Persist the proven personal LinkedIn founder-journey runtime in repository source and migration history instead of leaving behavior live-only.",
+    "Keep the regression under the canonical tests/brain-* backend namespace so delivery classification remains explicit and fail-closed.",
+    "Require machine delivery metadata and writer lease to identify one obligation, one candidate and one exact head SHA.",
+    "Require Brain learning, human change documentation and development-ledger evidence for every material Supabase delta.",
+    "Preserve one personal LinkedIn chapter per day, Tuesday and Friday in English and the other days in Dutch, without duplicate translations.",
+    "Keep forecasts probabilistic and evidence-bound: external signal to company impact to priority to action to measured outcome."
+  ],
+  "compiler": {
+    "failure_class": "PERSONAL_LINKEDIN_FOUNDER_JOURNEY_REPOSITORY_DRIFT",
+    "scope": "CONTENT_ORCHESTRATION_AND_SOURCE_PARITY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-linkedin-predictive-dream-journey-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-linkedin-predictive-dream-journey-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-linkedin-predictive-dream-journey-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "current": [
+      "powerhouse-content-orchestrator uses powerhouse_materialize_source_backed_channel_candidates_v2.",
+      "The orchestrator consumes recent_personal_chapters and predictive_forecasts for the personal founder journey.",
+      "The prompt explicitly forbids presenting forecasts as facts.",
+      "The personal language contract reads verified_personal_source.evidence.intended_language and forbids two languages in one personal LinkedIn post."
+    ]
+  },
+  "skill_targets": [
+    "content",
+    "delivery",
+    "learning"
+  ]
+}
