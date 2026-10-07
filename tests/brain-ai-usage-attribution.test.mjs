@@ -142,6 +142,7 @@ test('portal AI keeps verified tenant/business lineage while pinning portal acti
   });
 
   await runPortalAnswer({
+    tenantId:'tenant-portal-1',
     question:'Welke actie nu?',
     projectContext:'Klantcontext',
     apiKey:'test-key',
