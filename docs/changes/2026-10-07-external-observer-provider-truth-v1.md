@@ -19,7 +19,7 @@ De delivery-control-plane maakt nu expliciet onderscheid tussen `OBSERVER_UNAVAI
 - verwachte gedeployde functions aanwezig in de provider inventory;
 - GitHub delivery-lineage/readback reeds bewezen.
 
-De evaluator staat in `tools/site-shell/external-observer-production-proof.mjs`.
+De evaluator staat in `tools/delivery/external-observer-production-proof.mjs`.
 
 ## Geen verzwakking
 
