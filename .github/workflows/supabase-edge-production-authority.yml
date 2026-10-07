@@ -307,17 +307,6 @@ jobs:
           set -euo pipefail
           node tools/supabase/publish-edge-provider-readback.mjs
 
-      - name: Publish exact migration provider readback evidence to merged PR
-        if: steps.migration_scope.outputs.applicable == 'true'
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TARGET_PR_NUMBER: ${{ steps.migration_scope.outputs.target_pr }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          node tools/supabase/publish-migration-provider-readback.mjs
-
       - name: Prove no newer Supabase runtime superseded the attested SHA
         if: steps.scope.outputs.applicable == 'true'
         shell: bash
@@ -379,6 +368,17 @@ jobs:
           echo "applicable=true" >> "$GITHUB_OUTPUT"
           echo "Protected-main migration set:"
           cat /tmp/migrations.txt
+
+      - name: Publish exact migration provider readback evidence to merged PR
+        if: steps.migration_scope.outputs.applicable == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_PR_NUMBER: ${{ steps.migration_scope.outputs.target_pr }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tools/supabase/publish-migration-provider-readback.mjs
 
       - name: Capture immutable protected-main source identity
         if: steps.scope.outputs.applicable == 'true'
