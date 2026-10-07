@@ -22,3 +22,10 @@ Exact-head Required + CodeQL + Supabase Preview green → protected merge → pr
 
 This terminal v2 candidate is not a second migration-history obligation. It is the same `supabase-remote-migration-history-parity-20261007-v1` obligation continued after #4079 post-merge evidence exposed one concurrent production migration and one regression implementation defect. #4084 therefore supersedes #4079 under the same obligation identity and retains one terminal writer.
 
+
+
+## Final provider-stamped migration event
+
+Production readback after #4083 showed local=633 migrations and production=634, with exactly one remote-only version: `20261007192514`. Direct inspection of `supabase_migrations.schema_migrations` proved that version is named `security_trust_posture_verified_no_open_findings_v1` and contains the posture/refresh SQL submitted through the official migration authority.
+
+Recovery is append-only: mirror the provider-stamped version in Git, never delete or rewrite production migration history, and re-run full local-vs-production version comparison before terminal green.
