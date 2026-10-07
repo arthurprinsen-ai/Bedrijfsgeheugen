@@ -13,8 +13,10 @@ export function parseMigrationPath(path){
 }
 
 export function migrationRows(payload){
-  if(!Array.isArray(payload)) throw new Error('SUPABASE_MIGRATION_HISTORY_SHAPE_INVALID');
-  return payload;
+  if(Array.isArray(payload)) return payload;
+  if(Array.isArray(payload?.migrations)) return payload.migrations;
+  if(Array.isArray(payload?.data)) return payload.data;
+  throw new Error('SUPABASE_MIGRATION_HISTORY_SHAPE_INVALID');
 }
 
 export function readbacksForMigrationPaths(payload,migrationPaths,{projectRef,observedAt}){
