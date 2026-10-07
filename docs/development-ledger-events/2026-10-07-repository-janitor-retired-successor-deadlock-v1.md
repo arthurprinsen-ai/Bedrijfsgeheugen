@@ -14,3 +14,10 @@ Installed prevention:
 - multiple real active successors still fail closed;
 - stale Actions escalation and branch safety checks are unchanged;
 - regression coverage is part of the same delivery lineage.
+
+
+Follow-up production evidence:
+- protected recovery PR #4060 merged and the Janitor was dispatched on its exact main SHA;
+- run 37641738149 passed classification, proving the retired-successor deadlock was removed;
+- apply-safe then closed #3945 (successor #3946) before processing an older action whose successor was #3945, causing `Successor #3945 is no longer open`;
+- prevention: deterministic oldest-first application via `sort_by(.prNumber)`; the successor-state guard remains fail-closed for external drift.
