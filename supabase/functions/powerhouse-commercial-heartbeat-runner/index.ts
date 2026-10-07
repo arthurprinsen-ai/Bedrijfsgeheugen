@@ -4,6 +4,7 @@ import postgres from "npm:postgres@3.4.7";
 const DB_REF="adhjwmvyoixzjtmiroln";
 const DB_POOLER_HOST="aws-0-eu-central-1.pooler.supabase.com";
 const STATEMENT_TIMEOUT_MS=90_000;
+const SERVICE_TOKEN_HASH="0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75";
 
 let sql:ReturnType<typeof postgres>|null=null;
 
@@ -13,13 +14,10 @@ const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{
   headers:{"content-type":"application/json","cache-control":"no-store"}
 });
 
-function constantTimeEqual(left:string,right:string){
-  const a=new TextEncoder().encode(left);
-  const b=new TextEncoder().encode(right);
-  const length=Math.max(a.length,b.length);
-  let diff=a.length^b.length;
-  for(let i=0;i<length;i++)diff|=(a[i]??0)^(b[i]??0);
-  return diff===0;
+async function sha256(value:string){
+  const bytes=new TextEncoder().encode(value);
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 
 function poolerUrl(){
@@ -104,10 +102,8 @@ async function runHeartbeat(){
 Deno.serve(async(req:Request)=>{
   if(req.method!=="POST")return json({ok:false,error:"METHOD_NOT_ALLOWED"},405);
 
-  const expected=clean(Deno.env.get("BG_PORTAL_EU_SERVICE_TOKEN"));
   const provided=clean(req.headers.get("x-bg-service-token"));
-  if(!expected)return json({ok:false,error:"SERVER_AUTH_CONFIG_MISSING"},503);
-  if(!provided||!constantTimeEqual(provided,expected))return json({ok:false,error:"UNAUTHORIZED"},401);
+  if(!provided||await sha256(provided)!==SERVICE_TOKEN_HASH)return json({ok:false,error:"UNAUTHORIZED"},401);
 
   try{
     const result=await runHeartbeat();
