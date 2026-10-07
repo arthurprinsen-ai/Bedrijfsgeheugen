@@ -11,7 +11,7 @@ function createBrainAuthorityClient({fetchFn=globalThis.fetch,baseUrl=process.en
     async append({record,idempotencyKey,sourceRevision,request}){
       const authorization=request?.headers?.get('authorization')||'';
       if(!/^Bearer\s+.+/i.test(authorization))throw new Error('Identity bearer token is required for canonical Brain authority');
-      const response=await fetchFn(endpoint,{method:'POST',headers:{authorization,'content-type':'application/json','accept':'application/json'},body:JSON.stringify({record,idempotencyKey,sourceRevision})});
+      const response=await fetchFn(endpoint,{method:'POST',headers:{authorization,'content-type':'application/json','accept':'application/json','x-region':'eu-central-1'},body:JSON.stringify({record,idempotencyKey,sourceRevision})});
       const payload=await response.json().catch(()=>({}));
       if(!response.ok)throw new Error(payload?.error||`Canonical Brain authority failed (${response.status})`);
       return payload;

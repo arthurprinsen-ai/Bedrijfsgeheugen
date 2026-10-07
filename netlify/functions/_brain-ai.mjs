@@ -4,11 +4,17 @@ import { ACTIONS, DECISIONS } from '../../platform/policy/policy-engine.mjs';
 import { createAIUseCase, AI_RISK_CLASSES, AI_USE_CASE_STATES } from '../../platform/policy/ai-register.mjs';
 import { normalizeProviderTokenUsage } from '../../platform/cost/ai-token-usage.mjs';
 import { createAiUsageStore } from './_ai-usage-store.mjs';
+import { createDataSovereigntyClient } from './_data-sovereignty-client.mjs';
 
 const MODEL_ID = 'ANTHROPIC-SONNET';
 const MODEL = 'claude-sonnet-5';
 const TRANSLATION_MODEL_ID = 'ANTHROPIC-HAIKU';
 const TRANSLATION_MODEL = 'claude-haiku-4-5-20251001';
+
+async function assertTenantAiAllowed(tenantId){
+  if(!tenantId)throw Object.assign(new Error('DATA_SOVEREIGNTY_TENANT_REQUIRED'),{code:'DATA_SOVEREIGNTY_TENANT_REQUIRED'});
+  return createDataSovereigntyClient().assertAiAllowed(tenantId);
+}
 
 const providerRegistry = createProviderRegistry([
   {
@@ -80,7 +86,8 @@ export async function runWebsiteAnswer({ question, fragments, apiKey, system, fe
   return attachTokenUsage(result, { requestId, componentKey:'agent:website-qa', usageStore, usageContext:{ ...(usageContext ?? {}), tenantId:'PUBLIC', activityType:'website_qa' } });
 }
 
-export async function runPortalAnswer({ question, projectContext, apiKey, system, fetchImpl = fetch, usageStore, usageContext, requestId = crypto.randomUUID() }) {
+export async function runPortalAnswer({ question, projectContext, tenantId, apiKey, system, fetchImpl = fetch, usageStore, usageContext, requestId = crypto.randomUUID() }) {
+  await assertTenantAiAllowed(tenantId);
   const result = await runGovernedProductionAI({
     request:{ requestId, tenantId:'REQUEST_SCOPED', requesterId:'portal-requester', aiUseCaseId:'AI-PORTAL-QA', purpose:'portal-project-answer', resourceType:'QuestionContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass:'Confidential', context:{ question, projectContext } },
     policies, providerRegistry, aiUseCases, contextPolicy:{ allowedFields:['question','projectContext'], pseudonymizeFields:[] },
@@ -90,14 +97,15 @@ export async function runPortalAnswer({ question, projectContext, apiKey, system
 }
 
 
-export async function runTranslation({ strings, source='nl', target='en', dataClass='Public', apiKey, fetchImpl=fetch, usageStore, requestId=crypto.randomUUID() }) {
+export async function runTranslation({ strings, source='nl', target='en', dataClass='Public', tenantId=null, apiKey, fetchImpl=fetch, usageStore, requestId=crypto.randomUUID() }) {
   const isPortal = dataClass === 'Confidential';
-  const tenantId = isPortal ? 'REQUEST_SCOPED' : 'PUBLIC';
+  if(isPortal)await assertTenantAiAllowed(tenantId);
+  const policyTenantId = isPortal ? 'REQUEST_SCOPED' : 'PUBLIC';
   const requesterId = isPortal ? 'portal-requester' : 'public-visitor';
   const aiUseCaseId = isPortal ? 'AI-PORTAL-TRANSLATION' : 'AI-PUBLIC-TRANSLATION';
   const system = 'You are the Bedrijfsgeheugen translation layer. Translate faithfully between Dutch and English. Preserve meaning, product names, numbers, currencies, URLs, punctuation and placeholders. Never add claims, explanations or marketing copy. Return ONLY a valid JSON array of strings in the same order and same length as the input.';
   const result = await runGovernedProductionAI({
-    request:{ requestId, tenantId, requesterId, aiUseCaseId, purpose:'ui-translation', resourceType:'TranslationContext', resourceId:requestId, providerModelId:TRANSLATION_MODEL_ID, dataClass, context:{ strings, source, target } },
+    request:{ requestId, tenantId:policyTenantId, requesterId, aiUseCaseId, purpose:'ui-translation', resourceType:'TranslationContext', resourceId:requestId, providerModelId:TRANSLATION_MODEL_ID, dataClass, context:{ strings, source, target } },
     policies, providerRegistry, aiUseCases,
     contextPolicy:{ allowedFields:['strings','source','target'], pseudonymizeFields:[] },
     invokeModel:authorized => anthropic({
@@ -126,7 +134,7 @@ export async function runTranslation({ strings, source='nl', target='en', dataCl
     requestId,
     componentKey:isPortal?'agent:portal-translation':'agent:website-translation',
     usageStore,
-    usageContext:{tenantId,activityType:'ui_translation'}
+    usageContext:{tenantId:tenantId||policyTenantId,activityType:'ui_translation'}
   });
   return Object.freeze({ translations, tokenUsage:metered.tokenUsage, tokenMetering:metered.tokenMetering, canonicalTokenMetering:metered.canonicalTokenMetering });
 }
