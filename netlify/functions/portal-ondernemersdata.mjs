@@ -2,7 +2,7 @@ import { getUser } from '@netlify/identity';
 import { resolveIdentityTenant } from '../../platform/read-models/portal-server-state.mjs';
 
 const PROJECT_URL='https://adhjwmvyoixzjtmiroln.supabase.co';
-const env=name=>String(Netlify.env.get(name)||'').trim();
+const env=name=>String(process.env[name]||'').trim();
 const serviceKey=()=>env('SUPABASE_SERVICE_ROLE_KEY')||env('SUPABASE_SERVICE_KEY')||env('SUPABASE_SECRET_KEY');
 const supabaseUrl=()=>env('SUPABASE_URL')||PROJECT_URL;
 const json=(body,status=200)=>Response.json(body,{status,headers:{

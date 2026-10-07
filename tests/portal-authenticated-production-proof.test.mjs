@@ -150,3 +150,14 @@ test('Netlify wiring and production readback require exact commit/deploy authent
   const portalLane=policy.lanes.find(lane=>lane.id==='portal');
   assert.ok(portalLane.paths.includes('netlify/functions/portal-'),'all portal-* functions must stay in the protected portal lane');
 });
+
+
+test('protected Portal ondernemersdata uses the Netlify serverless process.env runtime for secrets',async()=>{
+  const source=await readFile(new URL('../netlify/functions/portal-ondernemersdata.mjs',import.meta.url),'utf8');
+  assert.match(source,/process\.env\[name\]/);
+  assert.doesNotMatch(source,/Netlify\.env/);
+  assert.match(source,/SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(source,/SUPABASE_SERVICE_KEY/);
+  assert.match(source,/SUPABASE_SECRET_KEY/);
+  assert.match(source,/SUPABASE_SERVICE_KEY_MISSING/);
+});

@@ -1,0 +1,52 @@
+{
+  "id": "portal-authenticated-production-503-serverless-env-v1",
+  "date": "2026-10-07",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|portal|production-proof|503|serverless-env-api|v1",
+  "root_cause": "The real Netlify Identity production canary reached the protected Portal endpoint but /api/portal-ondernemersdata returned HTTP 503. That serverless Function read runtime credentials through Netlify.env, the Edge Functions environment API. Bedrijfsgeheugen had already learned on 2026-09-21 that Netlify serverless Functions must read scoped runtime environment variables through process.env. The configured service credential therefore resolved empty at this boundary and the function failed closed on its SUPABASE_SERVICE_KEY_MISSING path.",
+  "prevention": [
+    "Netlify serverless Functions must read runtime secrets and configuration through process.env; Netlify.env is reserved for Edge Functions.",
+    "Do not add another credential name, permanent test credential or authentication bypass to mask a runtime API mismatch.",
+    "The protected Portal production-proof regression must fail if portal-ondernemersdata reintroduces Netlify.env.",
+    "The authenticated production proof remains fail-closed until the exact protected-main deploy returns HTTP 200, verifies tenant scope and payload shape, and deletes its synthetic Identity user.",
+    "A production 503 observed after successful Identity authentication must be classified against explicit server failure paths before changing authentication or underlying data."
+  ],
+  "compiler": {
+    "failure_class": "EDGE_ENV_API_USED_IN_SERVERLESS_FUNCTION",
+    "scope": "PORTAL_PRODUCTION_AUTH",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "production_sha": "e30cf09cf7a1f0bddffd334e191fcb0c2021b7ea",
+    "netlify_deploy_id": "6ac6b2bc943e4e00084ffce2",
+    "production_readback_run": 37686181317,
+    "observed_proof_failure": "AUTHENTICATED_PORTAL_API_HTTP_503",
+    "server_fail_closed_path": "SUPABASE_SERVICE_KEY_MISSING",
+    "historical_learning": "brain/learning/2026-09-21-netlify-serverless-env-api-v1.json",
+    "runtime": "netlify/functions/portal-ondernemersdata.mjs",
+    "regression": "tests/portal-authenticated-production-proof.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-authenticated-production-proof.test.mjs",
+      "brain/learning/2026-09-21-netlify-serverless-env-api-v1.json"
+    ],
+    "production_before_fix": {
+      "exact_main_deploy": "PROVEN",
+      "netlify_identity_token_flow": "REACHED_PROTECTED_ENDPOINT",
+      "authenticated_http_status": 503,
+      "production_proof_status": "FAILED",
+      "classified_root_cause": "EDGE_ENV_API_USED_IN_SERVERLESS_FUNCTION"
+    },
+    "success_criteria": [
+      "Required and Powerhouse CodeQL green on exact repair head",
+      "protected merge to main",
+      "exact-main Netlify production deployment",
+      "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1 status PROVEN for exact commit and deploy",
+      "http_status 200, tenant_scope_verified true, payload_shape_verified true, synthetic_user_cleanup DELETED"
+    ]
+  },
+  "production_claim": "withheld_until_protected_merge_exact_main_deploy_and_PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1_is_PROVEN"
+}

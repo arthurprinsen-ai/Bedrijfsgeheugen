@@ -218,3 +218,21 @@ A PRIVATE interactive Netlify MCP connection is not project-visible provider aut
 
 Canonical learning: `brain/learning/2026-10-07-netlify-native-git-primary-authority-v1.json`.
 Regression: `tests/brain-netlify-git-deploy-first-v1.test.mjs`.
+
+
+## Serverless runtime secret API at protected Portal boundaries
+
+Fingerprint: `netlify|serverless|runtime-secret-api|portal-auth-proof|v1`.
+
+For Netlify **serverless Functions**, runtime secrets and configuration must be read through `process.env`. `Netlify.env` is an Edge Functions environment API and must not be used as a serverless secret reader.
+
+When a real Netlify Identity production proof reaches a protected Portal Function and then returns its explicit missing-service-credential 503, classify the runtime environment API before changing authentication, tenant logic or underlying data. Do not add another secret alias to conceal the mismatch.
+
+For `/api/portal-ondernemersdata` specifically:
+- keep the normal `getUser()` + server-side tenant boundary unchanged;
+- keep the existing Supabase credential aliases and fail closed when none is present;
+- enforce `process.env` via `tests/portal-authenticated-production-proof.test.mjs`;
+- terminal green still requires the exact-main authenticated production proof receipt with HTTP 200 and synthetic-user cleanup.
+
+Historical learning: `brain/learning/2026-09-21-netlify-serverless-env-api-v1.json`.
+Recurrence learning: `brain/learning/2026-10-07-portal-authenticated-production-503-serverless-env-v1.json`.
