@@ -53,7 +53,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         heartbeat:'public.powerhouse_refresh_data_sovereignty_v1()',
         tenantGateway:'supabase/functions/portal-state-eu/index.ts',
         netlifyApi:'netlify/functions/security-trust.mjs',
-        portal:'https://www.bedrijfsgeheugen.nl/portal-next/security.html',
+        portal:'https://www.bedrijfsgeheugen.nl/portal-v2/?page=trust-center',
+        sovereigntyPortal:'https://www.bedrijfsgeheugen.nl/portal-v2/?page=data-ai-passport',
+        accessBoundary:'authenticated customer tenant or Powerhouse admin; demo/public forbidden',
         learning:'brain/learning/2026-10-07-data-ai-security-trust-center-v1.json'
       }),
       invariants:Object.freeze({
@@ -66,6 +68,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         staleEvidenceNeverGreen:true,
         sameTenantGateway:true,
         unknownIsNotGreen:true,
+        protectedPagesHiddenBeforeLogin:true,
+        publicStandaloneSurfaces:false,
+        demoTrustAccess:false,
+        customerOwnTenantOnly:true,
+        canonicalScopeAdminOnly:true,
         notionProjectionRequired:true,
         productionReadbackRequired:true
       })
