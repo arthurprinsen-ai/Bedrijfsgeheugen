@@ -1,0 +1,5 @@
+contract=NETLIFY_EXACT_MAIN_PROOF_V1
+purpose=force one canonical production deployment through the existing protected GitHub-to-Netlify release path
+base_main_sha=d2f7f5f7e8eed492ac7a8a407d037ef55df8790f
+security_surface=security-trust
+proof_required=commit-ref,page,api,provider-functions,secret-scan
