@@ -152,3 +152,27 @@ test('changed JavaScript parses under Node',()=>{
     'platform/system-map/canonical-system-map.mjs'
   ])execFileSync(process.execPath,['--check',path],{stdio:'pipe'});
 });
+
+
+test('internal evidence projection is tenant-scoped and relation inference never claims causality',async()=>{
+  const [sql,map,skill]=await Promise.all([
+    read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql'),
+    read('platform/system-map/canonical-system-map.mjs'),
+    read('.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md')
+  ]);
+  assert.match(sql,/powerhouse_project_internal_evidence_signal_v1/);
+  assert.match(sql,/TENANT_SOURCE_OBSERVATION_SCOPE_REQUIRED/);
+  assert.match(sql,/powerhouse_intelligence_signal_relation_v1/);
+  assert.match(sql,/powerhouse_refresh_signal_relations_v1/);
+  assert.match(sql,/causality_claimed',false/);
+  assert.match(sql,/causal_hypotheses_synthesized',false/);
+  assert.match(map,/internalSignalsRequireTenantScopedEvidence:true/);
+  assert.match(map,/correlationNeverAutoPromotedToCausality:true/);
+  assert.match(skill,/Correlation is not causality/);
+});
+
+test('SQL function bodies do not contain broken single-dollar delimiters',async()=>{
+  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const bad=sql.split('\n').filter(line=>line.trim()==='as $'||line.trim()==='$;');
+  assert.deepEqual(bad,[]);
+});
