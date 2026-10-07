@@ -65,7 +65,8 @@
       "config/control-plane-budget.json",
       "config/notion-root-lifecycle.json",
       "config/pr-trigger-baseline.json",
-      "config/supabase-edge-functions.json"
+      "config/supabase-edge-functions.json",
+      "config/powerhouse-runtime-backpressure-v1.json"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",
