@@ -1,0 +1,66 @@
+{
+  "id": "data-sovereignty-evidence-first-control-plane-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "source": "pr-4051-data-sovereignty-control-plane",
+  "fingerprint": "powerhouse|data-sovereignty|provider-evidence-before-residency-claim|v1",
+  "compiler": {
+    "failure_class": "DATA_SOVEREIGNTY_TRUTH",
+    "scope": "PORTAL_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "Data-residency assumptions were encoded as if Netlify Functions and Netlify Blobs supported per-function/per-store Frankfurt pinning. Provider contract inspection and deploy readback showed that these assumptions were not valid for the used runtime/API.",
+  "observed_truth": {
+    "supabase": {
+      "project_region": "eu-central-1",
+      "edge_invocation": "x-region: eu-central-1",
+      "evidence_status": "VERIFIED"
+    },
+    "netlify": {
+      "deploy_preview_commit": "a49744c06ce08c7bef4f946c25555ba7566a9df0",
+      "deploy_id": "6ac62c9a0bd4ba000871fe77",
+      "functions_region": "iad",
+      "blobs_region": "us-east-1",
+      "evidence_status": "PARTIAL",
+      "interpretation": "runtime observation only; not an EU residency guarantee"
+    }
+  },
+  "prevention": [
+    "Never infer data residency from a provider name, intended target region, UI selection or one runtime sample.",
+    "Only claim EU-only when configuration is supported by the provider and runtime/provider readback proves the effective region.",
+    "Keep Netlify customer-data paths fail-closed for EU_ONLY while compute/storage residency is not proven.",
+    "Keep Supabase customer-data authority in eu-central-1 and explicitly invoke Edge Functions with x-region eu-central-1.",
+    "Block confidential AI and connector execution before external processing when the tenant sovereignty policy is not satisfied.",
+    "Treat preferred AI provider/region as desired state until the selected provider is ACTIVE and evidence-backed.",
+    "Expose UNKNOWN/PARTIAL states in the portal instead of converting them to green."
+  ],
+  "evaluation": {
+    "regression": [
+      "tests/data-sovereignty-control-plane.test.mjs"
+    ],
+    "runtime_readback": [
+      "Supabase data_sovereignty_snapshot_v1",
+      "Netlify deploy metadata"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "pr": 4051,
+    "truth_policy": "measured_or_evidence_backed_else_unknown",
+    "applied_migrations": [
+      "20261007104712_data_sovereignty_control_plane_v1",
+      "20261007110248_data_sovereignty_runtime_and_connector_truth_v1",
+      "20261007111513_netlify_sovereignty_truth_hardening_v1",
+      "20261007112412_netlify_runtime_residency_truth_v2"
+    ],
+    "canonical_snapshot": {
+      "flow_count": 9,
+      "provider_count": 7,
+      "active_ai_routes": 10,
+      "global_or_unknown_ai_routes": 10
+    }
+  }
+}
