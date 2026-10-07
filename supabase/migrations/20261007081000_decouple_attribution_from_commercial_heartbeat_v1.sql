@@ -1,3 +1,50 @@
+create table if not exists public.powerhouse_revenue_attribution_snapshot_v1(
+  outcome_id uuid not null,
+  touch_type text not null,
+  touch_id text not null,
+  touch_at timestamptz not null,
+  conversion_at timestamptz not null,
+  channel text,
+  campaign_key text,
+  content_key text,
+  opportunity_key text,
+  person_key text,
+  company_key text,
+  revenue_eur numeric not null default 0,
+  attribution_weight numeric not null,
+  attributed_revenue_eur numeric not null,
+  is_first_touch boolean not null,
+  is_conversion_touch boolean not null,
+  attribution_model text not null,
+  attribution_confidence numeric not null,
+  evidence jsonb not null default '{}'::jsonb,
+  refreshed_at timestamptz not null default now(),
+  constraint powerhouse_revenue_attribution_snapshot_v1_pkey
+    primary key(outcome_id,touch_type,touch_id)
+);
+
+create index if not exists idx_revenue_attribution_snapshot_company_v1
+on public.powerhouse_revenue_attribution_snapshot_v1(company_key,conversion_at desc);
+
+create index if not exists idx_revenue_attribution_snapshot_conversion_v1
+on public.powerhouse_revenue_attribution_snapshot_v1(conversion_at desc);
+
+alter table public.powerhouse_revenue_attribution_snapshot_v1 enable row level security;
+
+revoke all on table public.powerhouse_revenue_attribution_snapshot_v1
+  from public, anon, authenticated;
+grant select,insert,update,delete on table public.powerhouse_revenue_attribution_snapshot_v1
+  to service_role;
+
+drop policy if exists powerhouse_revenue_attribution_snapshot_service_v1
+  on public.powerhouse_revenue_attribution_snapshot_v1;
+create policy powerhouse_revenue_attribution_snapshot_service_v1
+  on public.powerhouse_revenue_attribution_snapshot_v1
+  for all
+  to service_role
+  using (true)
+  with check (true);
+
 create index if not exists powerhouse_revenue_attribution_snapshot_refreshed_at_idx
 on public.powerhouse_revenue_attribution_snapshot_v1 (refreshed_at desc);
 
