@@ -1,0 +1,30 @@
+{
+  "id": "netlify-tools-ci-early-trigger-suppression-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|netlify|tools-ci|early-trigger-suppression|v1",
+  "root_cause": "The canonical Netlify applicability authority already classifies tools/ci/** as governance-only, but Production Source Snapshot and Production Release Readback did not mirror that domain in push.paths-ignore. As a result, tools/ci-only main changes still allocated both production runners before the in-job classifier could skip deployment.",
+  "evidence": {
+    "merge_sha": "e902e07fef8b3411451280072b40f0d0aac24bb8",
+    "unnecessary_snapshot_run": 37478237193,
+    "unnecessary_release_readback_run": 37478237085,
+    "in_job_outcome": "Both workflows completed successfully without requiring a Netlify production mutation, proving admission—not runtime deployment logic—was the remaining waste."
+  },
+  "prevention": {
+    "early_trigger": "Production Source Snapshot and Production Release Readback both ignore tools/ci/** when it is the only changed domain.",
+    "canonical_runtime_authority": "tools/delivery/netlify-deployment-applicability.mjs remains authoritative after runner admission.",
+    "mixed_runtime_changes": "A commit that also changes website, portal, or Netlify-hosted runtime remains admitted and fail-closed.",
+    "no_parallel_authority": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
