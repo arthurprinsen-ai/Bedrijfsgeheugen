@@ -11,3 +11,8 @@
 - Success criterion: fresh VERIFIED durable `commercial_heartbeat` runtime-event readback.
 - Legacy pg_cron job 154 remains active until external live proof succeeds.
 - Regression authority: `tests/brain-external-commercial-heartbeat-v1.test.mjs`.
+
+- 2026-10-07 08:37:34 UTC: durable external heartbeat receipt proven: commercial-heartbeat:202610070837, actioned, VERIFIED, confidence 1; Edge HTTP 200.
+- Production migration 20261007083900 retired legacy pg_cron heartbeat by jobname after owner-count guard.
+- Post-cutover cron readback: no powerhouse-one-commercial-heartbeat-v1 owner remains; runtime mux remains active.
+- Production migration ledger now 605 through 20261007083900.
