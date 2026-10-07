@@ -25,3 +25,9 @@ The active Netlify MCP connection is PRIVATE, so a Supabase-side Composio projec
 - keeps exact-SHA production identity/readback authoritative.
 
 No new scheduler, secret store, deployment lane, or customer-facing runtime is introduced.
+
+## Runtime canary
+
+A protected one-line invisible HTML comment named `netlify-native-git-primary-runtime-20261007-v1` is used to exercise the real website deployment path without changing customer-visible content or behavior.
+
+Acceptance is exact and provider-backed: the canary merge SHA must become Netlify production through native Git while Production Source Snapshot is still inside `NETLIFY_NATIVE_GIT_PRIMARY_WAIT`; the timeout/JIT fallback markers must not be reached, and Production Release Readback must succeed on the same SHA.
