@@ -54,12 +54,22 @@ async function runHeartbeat(){
       "select pg_try_advisory_xact_lock(hashtextextended('powerhouse-commercial-heartbeat-external-v1',0)) as locked"
     );
     if(lockRows?.[0]?.locked!==true){
+      const peerRows=await tx.unsafe(
+        "select occurred_at,dedupe_key,state,data_quality,confidence from public.powerhouse_runtime_events where event_type='commercial_heartbeat' and occurred_at >= transaction_timestamp()-interval '2 minutes' order by occurred_at desc limit 1"
+      );
+      const peerReceipt=peerRows?.[0]??null;
+      const peerDurable=Boolean(
+        peerReceipt &&
+        String(peerReceipt.data_quality||"")==="VERIFIED" &&
+        ["actioned","observed","done"].includes(String(peerReceipt.state||""))
+      );
       return {
-        ok:true,
-        state:"SKIPPED_OVERLAP",
+        ok:peerDurable,
+        state:peerDurable?"COMPLETED_BY_PEER":"SKIPPED_OVERLAP",
         contract:"powerhouse-commercial-heartbeat-external-v1",
         started_at:startedAt,
-        durable_readback_verified:false
+        receipt:peerReceipt,
+        durable_readback_verified:peerDurable
       };
     }
 
