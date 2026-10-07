@@ -36,6 +36,23 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'production-proof-commit-status-projection-v1',
+      fingerprint:'production|github-commit-status|post-merge-evidence-projection|v1',
+      label:'Production Proof Commit-Status Projection',
+      authority:'github-actions+netlify-production-readback',
+      owner:'delivery-intelligence',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['exact protected-main merge SHA','Production Source Snapshot result','Production Release Readback result']),
+      outputs:Object.freeze(['production/source-snapshot commit status','production/release-readback commit status','Actions target URL']),
+      invariants:Object.freeze({
+        connectorPushRunVisibilityNotRequired:true,
+        exactMergeShaBinding:true,
+        publicCrawlAloneCannotCloseLiveProof:true,
+        providerTruthRemainsAuthoritative:true,
+        terminalFailureProjected:true
+      })
+    }),
+    Object.freeze({
       id:'universal-connected-app-cost-governor-v1',
       label:'Universal Connected-App Cost Governor',
       authority:'github-policy+supabase-resource-intelligence',

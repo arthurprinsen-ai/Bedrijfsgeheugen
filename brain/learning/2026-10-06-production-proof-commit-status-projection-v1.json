@@ -1,0 +1,27 @@
+{
+  "fingerprint": "production-proof-commit-status-projection-v1",
+  "date": "2026-10-06",
+  "failure_class": "OBSERVABILITY_GAP",
+  "observed_problem": "The connected GitHub commit-workflow reader filters to pull-request-triggered runs, so post-merge push workflows can be healthy while remaining invisible to terminal agents.",
+  "root_cause": "Production evidence existed only inside push workflow runs and uploaded artifacts; there was no connector-readable projection attached directly to the merge commit.",
+  "structural_fix": [
+    "Project Production Source Snapshot lifecycle to commit status production/source-snapshot.",
+    "Project Production Release Readback lifecycle to commit status production/release-readback.",
+    "Bind every status to the exact GITHUB_SHA and canonical Actions run target URL.",
+    "Keep Netlify release identity and functional readback as authority; commit status is only an observable projection."
+  ],
+  "prevention": [
+    "Terminal live checks must prefer combined commit statuses over workflow-list polling.",
+    "Missing required production status is fail-closed and cannot be replaced by crawler freshness.",
+    "Regression test statically enforces statuses: write, stable contexts and terminal always() publication."
+  ],
+  "evidence": {
+    "source_merge_sha": "62b8c91f39474887a3f691ffa3ab550a8876cd09",
+    "merged_pr": 3994,
+    "regression_test": "tests/brain-production-promotion-observability.test.mjs",
+    "workflows": [
+      ".github/workflows/production-source-snapshot.yml",
+      ".github/workflows/production-release-readback.yml"
+    ]
+  }
+}

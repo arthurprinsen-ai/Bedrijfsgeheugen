@@ -71,6 +71,7 @@ permissions:
   actions: read
   contents: read
   id-token: write
+  statuses: write
 
 concurrency:
   group: production-source-snapshot-main-v3
@@ -88,6 +89,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Publish production source snapshot pending status
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: bash .github/scripts/publish-production-proof-status.sh pending production/source-snapshot "Production source snapshot running"
       - id: scope
         name: Derive canonical Netlify deployment applicability
         env:
@@ -456,3 +461,29 @@ jobs:
           BASE_URL: https://www.bedrijfsgeheugen.nl
         run: node tools/site-shell/verify-pricing-i18n-production.mjs
 # Operational snapshot refresh: 2026-09-22 goal-scenario-lever-cockpit
+
+      - name: Publish production source snapshot terminal status
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          JOB_STATUS: ${{ job.status }}
+          DEPLOYMENT_REQUIRED: ${{ steps.scope.outputs.deployment_required || 'unknown' }}
+          PREBUILT_REUSE: ${{ steps.prebuilt.outputs.reuse || 'false' }}
+        run: |
+          case "$JOB_STATUS" in
+            success) state=success ;;
+            cancelled) state=error ;;
+            *) state=failure ;;
+          esac
+          if [ "$state" = "success" ]; then
+            if [ "$DEPLOYMENT_REQUIRED" != "true" ]; then
+              description="Source snapshot verified; Netlify deploy not applicable"
+            elif [ "$PREBUILT_REUSE" = "true" ]; then
+              description="Source snapshot verified; Required prebuilt artifact reused"
+            else
+              description="Source snapshot verified; canonical build fallback used"
+            fi
+          else
+            description="Production source snapshot $JOB_STATUS"
+          fi
+          bash .github/scripts/publish-production-proof-status.sh "$state" production/source-snapshot "$description"

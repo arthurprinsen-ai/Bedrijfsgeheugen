@@ -38,3 +38,20 @@ test('canonical release identity stamper emits deploy identity in release.json',
   assert.match(stamper,/commit_ref/);
   assert.match(stamper,/release\.json/);
 });
+
+
+test('production proof is projected onto merge-SHA commit statuses',async()=>{
+  const source=await readFile('.github/workflows/production-source-snapshot.yml','utf8');
+  const readback=await readFile('.github/workflows/production-release-readback.yml','utf8');
+  const publisher=await readFile('.github/scripts/publish-production-proof-status.sh','utf8');
+
+  assert.match(source,/statuses:\s*write/);
+  assert.match(source,/production\/source-snapshot/);
+  assert.match(source,/if:\s*always\(\)/);
+  assert.match(readback,/statuses:\s*write/);
+  assert.match(readback,/production\/release-readback/);
+  assert.match(readback,/if:\s*always\(\)/);
+  assert.match(publisher,/repos\/\$\{GITHUB_REPOSITORY\}\/statuses\/\$\{GITHUB_SHA\}/);
+  assert.match(publisher,/target_url/);
+  assert.match(publisher,/GITHUB_RUN_ID/);
+});
