@@ -26,7 +26,24 @@ const DOMAIN_META=Object.freeze({
   GENERAL_ENVIRONMENT:{label:'Algemene omgeving',pillar:'Maatschappij',description:'Demografie, gezondheid, maatschappelijke trends, media en overige externe veranderingen.'},
   COMPANY_MARKET:{label:'Bedrijfsregisters & marktstructuur',pillar:'Markt & klant',description:'Bedrijfsregisters, oprichtingen, bestuurderswissels, M&A en marktstructuur.'},
   LOCAL_ENVIRONMENT:{label:'Lokale omgeving',pillar:'Assets & locatie',description:'Gemeente, provincie, lokale vergunningen, infrastructuur, economie en arbeidsmarkt.'},
-  INTERNAL_OPERATIONS:{label:'Interne bedrijfsbronnen',pillar:'Binnen het bedrijf',description:'ERP, CRM, HR, projecten, service, contracten, documenten, e-mail en andere gekoppelde bedrijfsdata.'}
+  STANDARDS_GOVERNANCE:{label:'Normen & standaarden',pillar:'Regels & vertrouwen',description:'ISO, NEN, CEN/CENELEC en andere management-, security-, quality- en AI-standaarden.'},
+  HEALTH_DISRUPTION:{label:'Gezondheid & verstoringen',pillar:'Maatschappij',description:'Publieke gezondheid, ziekteverzuim en verstoringen die workforce of keten kunnen raken.'},
+  DEMOGRAPHY_SOCIAL:{label:'Demografie & maatschappij',pillar:'Maatschappij',description:'Vergrijzing, migratie, huishoudens, regionale ontwikkeling en sociaal-culturele trends.'},
+  MEDIA_COMMUNITIES:{label:'Media & communities',pillar:'Markt & klant',description:'Vakmedia, nieuws, LinkedIn, Reddit, YouTube en andere publieke conversaties als signaal.'},
+  SEARCH_DIGITAL_DEMAND:{label:'Zoek- & digitale vraag',pillar:'Markt & klant',description:'Zoekvolume, SERP’s, SEO, digitale intentie en opkomende klantvragen.'},
+  PRICING:{label:'Prijsinformatie',pillar:'Markt & klant',description:'Concurrentprijzen, leveranciersprijzen, marktprijzen, indexaties en prijsbewegingen.'},
+  INSURANCE:{label:'Verzekering & verzekerbaarheid',pillar:'Economie & kapitaal',description:'Premies, dekking, cyberverzekering, aansprakelijkheid en acceptatievoorwaarden.'},
+  BUSINESS_REGISTERS_MA:{label:'Bedrijfsregisters & M&A',pillar:'Markt & klant',description:'Bedrijfsstatus, filings, bestuurderswissels, overnames, investeringen en consolidatie.'},
+  INTERNAL_FINANCE:{label:'Financiën & cashflow',pillar:'Binnen het bedrijf',description:'Boekhouding, omzet, marge, cashflow, betalingen, budget en financiering.'},
+  INTERNAL_CUSTOMERS_SALES:{label:'Klanten & sales',pillar:'Binnen het bedrijf',description:'CRM, pipeline, offertes, orders, klantwaarde, churn, behoeften en commerciële uitkomsten.'},
+  INTERNAL_PEOPLE:{label:'Mensen & HR',pillar:'Binnen het bedrijf',description:'Capaciteit, verzuim, skills, verloop, engagement en workforce planning.'},
+  INTERNAL_PROJECTS:{label:'Projecten & delivery',pillar:'Binnen het bedrijf',description:'Portfolio, projecten, milestones, dependencies, issues, tijd en budget.'},
+  INTERNAL_SYSTEMS_DATA:{label:'Systemen & data',pillar:'Binnen het bedrijf',description:'Applicaties, integraties, data-platforms, BI, datakwaliteit en technische afhankelijkheden.'},
+  INTERNAL_KNOWLEDGE:{label:'Documenten & kennis',pillar:'Binnen het bedrijf',description:'Documenten, contracten, besluiten, procedures, e-mailcontext en bedrijfskennis.'},
+  INTERNAL_SUPPLIERS:{label:'Leveranciers & inkoop',pillar:'Binnen het bedrijf',description:'Leveranciers, contracten, spend, afhankelijkheden, kwaliteit en supplier performance.'},
+  INTERNAL_MARKETING:{label:'Marketing & digitaal',pillar:'Binnen het bedrijf',description:'Website, analytics, advertenties, content, SEO, campagnes en conversie.'},
+  INTERNAL_SERVICE:{label:'Service & kwaliteit',pillar:'Binnen het bedrijf',description:'Helpdesk, klachten, NPS, SLA, servicekwaliteit, defecten en herstel.'},
+  INTERNAL_OPERATIONS:{label:'Processen & operatie',pillar:'Binnen het bedrijf',description:'ERP, productie, voorraad, kwaliteit, doorlooptijden en operationele afwijkingen.'}
 });
 
 async function table(path,key){
