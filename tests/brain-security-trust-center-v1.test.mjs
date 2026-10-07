@@ -114,3 +114,18 @@ test('system map makes connector auto-enrolment and single heartbeat explicit',a
  assert.match(map,/connectorTenantMovesRefreshOldAndNewTenant:true/);
  assert.match(map,/oneHeartbeatAuthority:true/);
 });
+
+
+test('least-privilege hardening removes direct client access and measures only exposed definer views',async()=>{
+ const sql=await read('supabase/migrations/20261007161500_security_trust_least_privilege_v1.sql');
+ assert.match(sql,/revoke execute on function %s from public, anon, authenticated/i);
+ assert.match(sql,/powerhouse_run_linkedin_company_platform_publisher_v1/);
+ assert.match(sql,/powerhouse_sales_machine_core_v1/);
+ assert.match(sql,/revoke select on table public\.%I from public, anon, authenticated/i);
+ assert.match(sql,/powerhouse_predictive_commercial_brief_cache_v1/);
+ assert.match(sql,/has_table_privilege\('anon',c\.oid,'SELECT'\)/);
+ assert.match(sql,/has_table_privilege\('authenticated',c\.oid,'SELECT'\)/);
+ assert.match(sql,/privateViewsWithoutSecurityInvoker/);
+ assert.match(sql,/SECURITY_TRUST_RPC_PRIVILEGE_HARDENING_FAILED/);
+ assert.match(sql,/SECURITY_TRUST_VIEW_PRIVILEGE_HARDENING_FAILED/);
+});

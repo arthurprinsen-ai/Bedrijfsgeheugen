@@ -54,7 +54,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         tenantGateway:'supabase/functions/portal-state-eu/index.ts',
         netlifyApi:'netlify/functions/security-trust.mjs',
         portal:'https://www.bedrijfsgeheugen.nl/portal-next/security.html',
-        learning:'brain/learning/2026-10-07-data-ai-security-trust-center-v1.json'
+        learning:'brain/learning/2026-10-07-data-ai-security-trust-center-v1.json',
+        leastPrivilegeHardening:'supabase/migrations/20261007161500_security_trust_least_privilege_v1.sql'
       }),
       invariants:Object.freeze({
         oneHeartbeatAuthority:true,
@@ -67,7 +68,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         sameTenantGateway:true,
         unknownIsNotGreen:true,
         notionProjectionRequired:true,
-        productionReadbackRequired:true
+        productionReadbackRequired:true,
+        privilegedInternalRpcClientAccessDeniedByDefault:true,
+        internalIntelligenceViewsClientAccessDeniedByDefault:true,
+        databasePostureCountsActualClientExposure:true
       })
     }),
     Object.freeze({

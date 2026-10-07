@@ -26,3 +26,11 @@ Fingerprint: `powerhouse|security-trust|evidence-first|v1`.
 - `public.security_trust_snapshot_v1`
 - `public.security_database_posture_v1()`
 - `public.powerhouse_refresh_data_sovereignty_v1()`
+
+
+## Least-privilege client exposure
+- Direct client privilege is deny-by-default for `SECURITY DEFINER` functions, internal intelligence views and materialized views.
+- A `SECURITY DEFINER` function may be executable by `anon` or `authenticated` only when a browser/client use-case is explicitly documented, tenant/auth boundaries are enforced, and runtime access evidence proves the route is needed.
+- Internal triggers, cron routines, backfills, publisher/sales routines and server-side intelligence helpers must be service-role-only.
+- A view without `security_invoker` is high-risk only when a client role can actually SELECT it; private definer views remain observable but are not falsely classified as client exposure.
+- Before revoking existing client privileges, check call graph plus recent PostgREST access evidence; preserve service-role and database-owner execution paths.
