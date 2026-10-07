@@ -20,6 +20,8 @@ test('Resource Intelligence runtime surfaces stay registered in the Quality cont
     'rpc:bg_portal_state_get_internal',
     'rpc:bg_portal_state_put_internal',
     'rpc:brain_record_resource_usage',
+    'rpc:record_data_sovereignty_provider_observation_v1',
+    'rpc:refresh_data_sovereignty_snapshot_v1',
   ]);
 
   const notRegistered = buildDiscoveryObligations({
