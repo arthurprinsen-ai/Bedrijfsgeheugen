@@ -176,3 +176,18 @@ test('SQL function bodies do not contain broken single-dollar delimiters',async(
   const bad=sql.split('\n').filter(line=>line.trim()==='as $'||line.trim()==='$;');
   assert.deepEqual(bad,[]);
 });
+
+
+test('repo-wide inheritance remains discoverable',async()=>{
+  const [agents,companySkill,change]=await Promise.all([
+    read('AGENTS.md'),
+    read('.agents/skills/powerhouse-company-intelligence-os/SKILL.md'),
+    read('docs/changes/2026-10-07-source-universe-impact-engine-v1.md')
+  ]);
+  assert.match(agents,/Source Universe & Company Impact Engine — inherited/);
+  assert.match(agents,/FULFILLED obligation is not realized business outcome/);
+  assert.match(companySkill,/Source Universe & Company Impact Engine inheritance/);
+  assert.match(companySkill,/correlation\/shared exposure never proves causality/);
+  assert.match(change,/35 externe en 10 interne/);
+  assert.match(change,/DONE vereist verified Outcome Memory/);
+});
