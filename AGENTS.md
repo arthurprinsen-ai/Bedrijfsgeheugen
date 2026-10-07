@@ -12,7 +12,7 @@ Verplicht gedrag:
 - een externe observer mag nooit een onbewezen origin-success fabriceren. Status wordt `LIVE_PROVEN_PROVIDER_TRUTH` alleen wanneer provider + lineage exact kloppen; anders blijft de release niet terminal groen;
 - leg `observer_status`, `provider_deploy_id`, `provider_commit_ref`, alias en function evidence vast zodat iedere volgende agent dezelfde conclusie kan reproduceren.
 
-Canonieke evaluator: `tools/site-shell/external-observer-production-proof.mjs`.
+Canonieke evaluator: `tools/delivery/external-observer-production-proof.mjs`.
 Contract: `brain/contracts/production-readback-v1.json#externalObserverReadback`.
 
 ## Terminal closure heeft één eigenaar
