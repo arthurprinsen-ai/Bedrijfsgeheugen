@@ -103,6 +103,7 @@ function renderHub(data){
   const cbs=publisherFilter(publications,['CBS']);
   const nextLaws=komendeMijlpalen(new Date().toISOString().slice(0,10),365).slice(0,5);
   const cards=[
+    ['Omgevingsradar',stats.intelligenceDomainCount||0,'domeinen','omgevingsradar'],
     ['Wet- & regelgeving',REGELGEVING.length,'actuele regels','wet-regelgeving'],
     ['UWV arbeidsmarkt',uwv.length,'recente publicaties','arbeidsmarkt-personeel'],
     ['RVO regelingen',rvo.length,'recente publicaties','subsidies-regelingen'],
