@@ -18,3 +18,11 @@ test('provider line replacement is idempotent',()=>{
   assert.equal(second,first);
   assert.match(first,/function=a;version=2;/);
 });
+
+
+test('publisher supports an explicit target PR for successor replay',()=>{
+  const source=readFileSync('tools/supabase/publish-edge-provider-readback.mjs','utf8');
+  assert.match(source,/targetPrNumber=null/);
+  assert.match(source,/SUPABASE_PROVIDER_TARGET_PR_NOT_MERGED/);
+  assert.match(source,/TARGET_PR_NUMBER/);
+});
