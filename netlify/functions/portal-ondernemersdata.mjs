@@ -12,6 +12,10 @@ async function table(path,key){
   if(!response.ok)throw new Error(`Supabase ${response.status}: ${await response.text()}`);
   return response.json();
 }
+const chooseScope=(rows,tenantId)=>{
+  const tenantRows=rows.filter(row=>row.tenant_id===tenantId);
+  return tenantRows.length?{scope:tenantId,rows:tenantRows}:{scope:'canonical',rows:rows.filter(row=>row.tenant_id==='canonical')};
+};
 
 export default async request=>{
   const user=await getUser(request).catch(()=>null);
@@ -20,41 +24,50 @@ export default async request=>{
   if(!tenantId)return json({error:'TENANT_SCOPE_REQUIRED'},403);
   const key=serviceKey();
   if(!key)return json({error:'SUPABASE_SERVICE_KEY_MISSING'},503);
+  const tenantFilter=encodeURIComponent(tenantId);
   try{
-    const [sources,publications,signals,sourceUniverse,radar]=await Promise.all([
+    const [sources,publications,signals,domains,sourceCatalog,scopedSignals,scopedActions,scopedSnapshots]=await Promise.all([
       table('bronnen?select=id,naam,uitgever,soort,controle_frequentie,laatst_gecontroleerd,laatste_controle_gelukt,actief,trefwoorden&actief=eq.true&order=uitgever.asc,naam.asc',key),
       table('bronpublicaties?select=id,bron_id,titel,samenvatting,publicatiedatum,url,opgehaald_op,goedgekeurd,uitgever_url&order=publicatiedatum.desc.nullslast&limit=350',key),
       table('bg_externe_signalen?select=url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,brontrouw,bevestiging,versheid,relevantie,vertrouwen,toegestaan,opgehaald_op,deadline&toegestaan=eq.true&order=gepubliceerd_op.desc.nullslast&limit=250',key),
-      table('powerhouse_source_catalog_v1?select=source_key,domain_key,source_type,provider,label,authority_tier,geography,acquisition_mode,official_url,refresh_cadence,availability_state,description,updated_at&enabled=eq.true&order=domain_key.asc,authority_tier.asc,label.asc&limit=500',key),
-      table('powerhouse_signal_impact_assessment_v1?select=tenant_id,signal_key,source_url,domain_key,signal_title,observed_at,nature,relevance,magnitude,likelihood,urgency,exposure,confidence,impact_score,value_eur,downside_eur,time_horizon,impacted_dimensions,action_status,recommended_action,assessment_basis,evidence,updated_at&tenant_id=eq.canonical&order=impact_score.desc,observed_at.desc&limit=250',key)
+      table('powerhouse_intelligence_domain_registry_v1?select=domain_key,label,pillar,scope,description,default_signal_type,default_action_type,default_horizon_days&active=eq.true&order=scope.asc,pillar.asc,label.asc&limit=200',key),
+      table('powerhouse_intelligence_source_catalog_v1?select=source_key,label,publisher,scope,domain_keys,source_kind,authority_tier,activation_mode,canonical_url,adapter_key,update_cadence,jurisdiction,metadata&active=eq.true&order=scope.asc,authority_tier.desc,label.asc&limit=500',key),
+      table(`powerhouse_intelligence_signal_projection_v1?select=tenant_id,signal_key,source_observation_id,source_key,external_event_id,external_url,domain_key,signal_type,direction,title,summary,published_at,observed_at,deadline,source_trust,confirmation,freshness,relevance,source_confidence,probability,magnitude,exposure,urgency,reversibility,signal_score,impact_score,impact_status,estimated_value_eur,estimated_loss_eur,time_horizon_days,status,evidence,updated_at&tenant_id=in.(canonical,${tenantFilter})&status=neq.DISMISSED&order=signal_score.desc,observed_at.desc&limit=250`,key),
+      table(`powerhouse_intelligence_action_candidate_v1?select=tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status,evidence,updated_at&tenant_id=in.(canonical,${tenantFilter})&status=in.(CANDIDATE,READY,MATERIALIZED)&order=priority_score.desc,updated_at.desc&limit=100`,key),
+      table(`powerhouse_intelligence_snapshot_v1?select=tenant_id,refreshed_at,catalog_source_count,public_source_count,connector_source_count,domain_count,observed_signal_count,signals_24h,signals_7d,high_attention_count,scored_impact_count,action_candidate_count,known_opportunity_value_eur,known_risk_value_eur,top_domains,source_health,status,evidence,updated_at&tenant_id=in.(canonical,${tenantFilter})`,key)
     ]);
-    const liveSources=sourceUniverse.filter(item=>['OBSERVED','LIVE'].includes(item.availability_state)).length;
-    const connectedSources=sourceUniverse.filter(item=>['CONNECTED','OBSERVED','LIVE'].includes(item.availability_state)).length;
-    const domainCount=new Set(sourceUniverse.map(item=>item.domain_key)).size;
-    const highAttention=radar.filter(item=>Number(item.impact_score)>=70).length;
+
+    const chosenSignals=chooseScope(scopedSignals,tenantId);
+    const chosenActions=chooseScope(scopedActions,tenantId);
+    const chosenSnapshots=chooseScope(scopedSnapshots,tenantId);
+    const projectionScope=chosenSignals.scope;
+    const snapshot=chosenSnapshots.rows[0]||null;
+
     return json({
       sources,
       publications,
       signals,
-      sourceUniverse,
-      radar,
-      scope:{
-        tenantId,
-        impactScope:'GENERIC_EXTERNAL_BASELINE',
-        tenantExposureApplied:false,
-        monetaryImpactSynthesized:false
+      intelligence:{
+        domains,
+        sourceCatalog,
+        signals:chosenSignals.rows,
+        actionCandidates:chosenActions.scope===projectionScope?chosenActions.rows:scopedActions.filter(row=>row.tenant_id===projectionScope),
+        snapshot,
+        projectionScope,
+        requestedTenantId:tenantId,
+        tenantSpecificProjection:projectionScope===tenantId,
+        truthPolicy:'measured_or_evidence_backed_else_unknown',
+        lineage:'source→evidence→signal→company impact→recommendation→canonical action→outcome→learning'
       },
       stats:{
         generatedAt:new Date().toISOString(),
         sourceCount:sources.length,
         publicationCount:publications.length,
         signalCount:signals.length,
-        sourceUniverseCount:sourceUniverse.length,
-        connectedSourceCount:connectedSources,
-        observedSourceCount:liveSources,
-        sourceDomainCount:domainCount,
-        radarCount:radar.length,
-        highAttentionCount:highAttention
+        sourceUniverseCount:sourceCatalog.length,
+        sourceDomainCount:domains.length,
+        intelligenceSignalCount:chosenSignals.rows.length,
+        actionCandidateCount:(chosenActions.scope===projectionScope?chosenActions.rows:[]).length
       }
     });
   }catch(error){
