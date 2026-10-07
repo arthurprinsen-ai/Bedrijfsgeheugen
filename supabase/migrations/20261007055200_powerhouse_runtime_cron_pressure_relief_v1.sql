@@ -61,6 +61,7 @@ begin
     where jobname in (
       'powerhouse-execution-resilience-watchdog-v1',
       'powerhouse-reconciliation-worker-v2',
+      'powerhouse-recovery-control-plane-v1',
       'powerhouse-runtime-maintenance-v1'
     )
   loop
