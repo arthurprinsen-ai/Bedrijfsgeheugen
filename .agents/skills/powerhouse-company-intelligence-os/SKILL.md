@@ -136,3 +136,38 @@ Powerhouse projecteert de publieke categorie `Company Brain` als acquisitiesigna
 `Company Brain / knowledge-context → signals → impact → decision → action → observed outcome → learning`.
 
 De publieke hoofdclaim **Een Company Brain is waar Bedrijfsgeheugen begint** beschrijft dus de productarchitectuur: context is een inputlaag, niet de terminale capability. Company-Brain-intentie, CTA-progressie, scanuitkomst, lead/proposal/order en gerealiseerde omzet moeten als één lineage terugstromen naar bestaande evidence, outcome memory en compound learning. Verkeer zonder downstream outcome mag nooit als bewezen commerciële waarde worden opgeslagen.
+
+
+## Source Universe & Company Impact Engine inheritance
+
+Fingerprint: `powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1`.
+
+Every current and future Company Intelligence task that uses external or internal signals inherits the canonical Source Universe contract in `.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md`.
+
+Canonical runtime:
+- domain registry: `public.powerhouse_intelligence_domain_registry_v1`;
+- source capability catalog: `public.powerhouse_intelligence_source_catalog_v1`;
+- existing raw external signal authority: `public.bg_externe_signalen`;
+- existing evidence observations: `public.powerhouse_evidence_source_observations`;
+- derived signal projection: `public.powerhouse_intelligence_signal_projection_v1`;
+- signal relations: `public.powerhouse_intelligence_signal_relation_v1`;
+- tenant company impact: `public.powerhouse_intelligence_company_impact_v1`;
+- action candidates: `public.powerhouse_intelligence_action_candidate_v1`;
+- action promotion: `public.powerhouse_materialize_intelligence_action_v1(text,text)`;
+- verified outcome reconciliation: `public.powerhouse_reconcile_intelligence_outcomes_v1(text)`;
+- refresh owner: `public.powerhouse_refresh_external_intelligence_universe_v1(text,integer)`;
+- scheduler owner: `public.powerhouse_runtime_scheduler_mux_v3(timestamptz)`;
+- Loop Assurance key: `external-intelligence-universe`;
+- Portal V2: `https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar`.
+
+Non-negotiable truth rules:
+- catalog capability never proves a connector/provider is live;
+- raw evidence, derived signal, company impact, action and outcome remain separate truth classes;
+- internal signals require evidence that resolves to the same tenant;
+- correlation/shared exposure never proves causality;
+- probability, magnitude and exposure are required before company impact can be scored;
+- financial value/loss remains NULL until evidence-backed;
+- only READY + SCORED tenant impact may create a canonical Brain obligation;
+- fulfilled obligation is not realized business outcome;
+- DONE requires verified Outcome Memory;
+- no second signal store, action queue, scheduler, CRM, outcome ledger or learning store may be introduced.
