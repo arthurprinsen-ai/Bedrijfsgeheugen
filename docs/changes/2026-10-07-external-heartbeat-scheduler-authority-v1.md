@@ -17,3 +17,10 @@ Production evidence before this change:
 - no legacy powerhouse-one-commercial-heartbeat-v1 cron job;
 - seven internal research_enrichment terminal actions were closed through the canonical terminalizer, restoring terminal coverage to 100%;
 - post-cutover runner invocations reached Supabase Edge but returned 503 with HEARTBEAT_DURABLE_READBACK_MISSING.
+
+## Production identity reconciliation
+
+- Production applied the scheduler-authority migration as `20261007090255_external_commercial_heartbeat_scheduler_authority_v1`.
+- The earlier local filename `20261007084700_...` was a repository alias and caused the Supabase main integration to fail with “Remote migration versions not found in local migrations directory.”
+- The alias is removed, the exact provider identity is canonical in Git, and migration-history.lock.json advances to the proven production ledger count 606.
+- SQL bytes and runtime behavior are unchanged by this reconciliation.

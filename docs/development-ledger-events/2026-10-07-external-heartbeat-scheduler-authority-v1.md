@@ -9,3 +9,7 @@
 - Remaining cause: regression gate still modeled pg_cron as the only scheduler authority.
 - Correction: transaction-local external-owner marker + exact-one-authority gate.
 - No auth weakening, no fabricated business outcomes, no parallel scheduler owner.
+
+- Production apply assigned canonical migration identity 20261007090255; repository alias 20261007084700 caused main provider deployment to stop before Edge function promotion.
+- Reconciliation: remove 084700 alias, add exact 090255 identity with identical SQL, advance migration-history lock to proven 606.
+- This is repository/provider lineage repair only; no additional production DDL is required.

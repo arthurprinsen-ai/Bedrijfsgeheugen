@@ -17,11 +17,11 @@
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1,
+  "revision": 2,
   "evidence": {
     "production_migration_ledger": {
-      "count": 605,
-      "latest_version": "20261007083900"
+      "count": 606,
+      "latest_version": "20261007090255"
     },
     "post_cutover_edge_failures": {
       "function": "powerhouse-commercial-heartbeat-runner",
@@ -47,6 +47,12 @@
       "key": "powerhouse.external_heartbeat_owner",
       "value": "netlify-supabase-edge-v1",
       "readback_verified": true
+    },
+    "provider_identity_reconciliation": {
+      "local_alias_retired": "20261007084700",
+      "canonical_provider_version": "20261007090255",
+      "reason": "Supabase apply_migration assigned the production ledger version at apply time; GitHub source must use the exact provider identity before the GitHub integration can deploy Edge source.",
+      "production_check_failure": "Remote migration versions not found in local migrations directory."
     }
   }
 }
