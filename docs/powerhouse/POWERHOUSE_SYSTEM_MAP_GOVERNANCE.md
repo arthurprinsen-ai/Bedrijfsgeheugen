@@ -224,4 +224,10 @@ Governance invariants:
 - no second CRM, lead store, outcome store or learning loop is introduced.
 
 The capability is structurally registered in the canonical System Map. Production status remains evidence-gated by protected merge, exact-main Netlify deployment and public functional readback.
-\n\n## Security Trust Center & Evidence Control Plane\n\nFingerprint: \`security-trust|evidence-first|provider-assurance-separated|heartbeat-wired|v1\`.\n\nCanonical relation: provider/runtime evidence + PostgreSQL security catalog + Data Sovereignty → Security Trust snapshot → Compliance Command Center / Security Trust Center → customer question → evidence drill-down. Provider certifications never imply Bedrijfsgeheugen certification, and stale evidence must downgrade automatically.\n
+
+
+## Security Trust Center & Evidence Control Plane
+
+Fingerprint: `security-trust|evidence-first|provider-assurance-separated|heartbeat-wired|v1`.
+
+Canonical relation: provider/runtime evidence + PostgreSQL security catalog + Data Sovereignty → Security Trust snapshot → Compliance Command Center / Security Trust Center → customer question → evidence drill-down. Provider certifications never imply Bedrijfsgeheugen certification, and stale evidence must downgrade automatically.

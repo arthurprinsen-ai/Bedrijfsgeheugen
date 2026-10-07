@@ -36,6 +36,35 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'security-trust-center-v1',
+      label:'Security Trust Center & Evidence Control Plane',
+      authority:'supabase-security-catalog+provider-readback+data-sovereignty+portal',
+      owner:'Powerhouse Trust, Security & Compliance',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['PostgreSQL security catalog','provider/IAM observations','data-sovereignty snapshots','official framework/provider evidence']),
+      outputs:Object.freeze(['customer trust answers','security domain posture','provider assurance boundary','open findings','framework scope matrix','heartbeat-refreshed security snapshot']),
+      runtime:Object.freeze({
+        portal:'portal-next/security-trust-center.js',
+        portalStyle:'portal-next/security-trust-center.css',
+        api:'netlify/functions/security-trust.mjs',
+        euGateway:'supabase/functions/portal-state-eu/index.ts',
+        controlPlane:'supabase/migrations/20261007154500_security_trust_control_plane_v1.sql',
+        heartbeat:'public.powerhouse_refresh_data_sovereignty_v1()',
+        learning:'brain/learning/2026-10-07-security-trust-center-v1.json',
+        regression:'tests/security-trust-center.test.mjs + tests/security-trust-control-plane.test.mjs'
+      }),
+      invariants:Object.freeze({
+        evidenceFirst:true,
+        providerCertificationDoesNotTransfer:true,
+        staleEvidenceNeverGreen:true,
+        legalScopeSeparateFromTechnicalAlignment:true,
+        liveDatabaseCatalogPosture:true,
+        oneHeartbeatOwner:true,
+        customerQuestionFirstUX:true,
+        productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'external-observer-provider-truth-v1',
       label:'External Observer Isolation & Netlify Provider Truth',
       authority:'github-lineage+netlify-provider-readback',
