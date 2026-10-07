@@ -721,7 +721,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path to 'public','pg_catalog'
-as $
+as $$
 declare
   o public.powerhouse_evidence_source_observations%rowtype;
   d public.powerhouse_intelligence_domain_registry_v1%rowtype;
@@ -738,6 +738,15 @@ begin
   from public.powerhouse_evidence_source_observations
   where observation_id=p_source_observation_id;
   if not found then raise exception 'SOURCE_OBSERVATION_NOT_FOUND:%',p_source_observation_id; end if;
+
+  if coalesce(
+    nullif(o.evidence->>'tenant_id',''),
+    nullif(o.evidence->>'organisatie_id',''),
+    nullif(o.evidence->'scope'->>'tenant_id',''),
+    nullif(o.evidence->'scope'->>'organisatie_id','')
+  ) is distinct from p_tenant_id then
+    raise exception 'TENANT_SOURCE_OBSERVATION_SCOPE_REQUIRED';
+  end if;
 
   select * into d
   from public.powerhouse_intelligence_domain_registry_v1
@@ -785,7 +794,7 @@ begin
     'source_observation_id',p_source_observation_id
   );
 end
-$;
+$$;
 
 create or replace function public.powerhouse_refresh_signal_relations_v1(
   p_tenant_id text default 'canonical',
@@ -795,7 +804,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path to 'public','pg_catalog'
-as $
+as $$
 declare
   v_shared integer:=0;
   v_dependency integer:=0;
@@ -886,7 +895,7 @@ begin
     'executed_at',now()
   );
 end
-$;
+$$;
 
 create or replace function public.powerhouse_upsert_intelligence_company_impact_v1(
   p_tenant_id text,
