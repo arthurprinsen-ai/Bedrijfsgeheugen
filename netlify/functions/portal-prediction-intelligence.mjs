@@ -37,4 +37,4 @@ export default async ()=>{
     return json({error:'PREDICTION_CONTROL_READ_FAILED',message:error?.message||String(error)},502);
   }
 };
-export const config={path:'/api/portal-prediction-intelligence',region:'fra'};
+export const config={path:'/api/portal-prediction-intelligence'};
