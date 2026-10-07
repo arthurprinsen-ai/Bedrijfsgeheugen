@@ -10,6 +10,7 @@ const sourcePublisher=(sourceMap,id)=>sourceMap.get(id)?.uitgever||'Onbekend';
 
 const VIEWS=Object.freeze({
   ondernemersdata:{title:'Actueel & externe data',subtitle:'Wat buiten je bedrijf verandert en wat dat voor jouw onderneming kan betekenen.'},
+  omgevingsradar:{title:'Omgevingsradar',subtitle:'Van bron naar signaal, impact en volgende actie — over markt, technologie, economie, mensen, keten, regelgeving en meer.'},
   'wet-regelgeving':{title:'Wet- & regelgeving',subtitle:'Verplichtingen, mijlpalen en herzienmomenten die ondernemers kunnen raken.'},
   'arbeidsmarkt-personeel':{title:'Arbeidsmarkt & personeel',subtitle:'UWV-, CBS- en andere arbeidsmarktsignalen op één plek.'},
   'subsidies-regelingen':{title:'Subsidies & regelingen',subtitle:'Nieuwe en gewijzigde RVO-regelingen en andere ondernemersregelingen.'},
@@ -24,7 +25,7 @@ function shell(title,subtitle,body){
 }
 function nav(){
   const links=[
-    ['Overzicht','ondernemersdata'],['Wet- & regelgeving','wet-regelgeving'],['Arbeidsmarkt','arbeidsmarkt-personeel'],
+    ['Overzicht','ondernemersdata'],['Omgevingsradar','omgevingsradar'],['Wet- & regelgeving','wet-regelgeving'],['Arbeidsmarkt','arbeidsmarkt-personeel'],
     ['Subsidies','subsidies-regelingen'],['Economie','economie-branche-actueel'],['AI & technologie','ai-technologie-actueel'],
     ['Deadlines','deadlines'],['Bronnen','bronnenbibliotheek'],['Bronstatus','bronnenstatus']
   ];
@@ -52,7 +53,57 @@ function publisherFilter(rows,publishers){const set=new Set(publishers.map(x=>x.
 function enrich(data){
   const sourceMap=new Map(arr(data.sources).map(s=>[s.id,s]));
   const publications=arr(data.publications).map(p=>({...p,publisher:sourcePublisher(sourceMap,p.bron_id),sourceName:sourceName(sourceMap,p.bron_id)}));
-  return {sourceMap,publications,signals:arr(data.signals),sources:arr(data.sources),stats:data.stats||{}};
+  return {sourceMap,publications,signals:arr(data.signals),sources:arr(data.sources),stats:data.stats||{},intelligence:data.intelligence||{}};
+}
+
+function euro(value){
+  if(value==null||value==='')return 'onbekend';
+  const n=Number(value);if(!Number.isFinite(n))return 'onbekend';
+  return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+}
+function score(value){const n=Number(value);return Number.isFinite(n)?Math.round(n):0;}
+function intelligenceSignalCard(item,domains){
+  const domain=domains.get(item.domain_key)?.label||item.domain_key||'Signaal';
+  const money=item.estimated_value_eur!=null||item.estimated_loss_eur!=null
+    ? `<div class="eifact"><b>Bekende waarde</b><span>${item.estimated_value_eur!=null?`kans ${esc(euro(item.estimated_value_eur))}`:''}${item.estimated_value_eur!=null&&item.estimated_loss_eur!=null?' · ':''}${item.estimated_loss_eur!=null?`risico ${esc(euro(item.estimated_loss_eur))}`:''}</span></div>`
+    : `<div class="eifact"><b>€ impact</b><span>Nog niet bewezen · eigen bedrijfscontext nodig</span></div>`;
+  return `<article class="eicard"><div class="eimeta"><span>${esc(domain)}</span><time>${esc(nlDate(item.observed_at||item.published_at))}</time></div><h4>${esc(item.title||'Signaal')}</h4>${item.summary?`<p>${esc(item.summary).slice(0,520)}</p>`:''}<div class="eifact"><b>Signaalscore</b><span>${esc(score(item.signal_score))}/100 · impact ${item.impact_score==null?'nog niet gescoord':esc(score(item.impact_score)+'/100')}</span></div>${money}<footer><span>${esc(item.impact_status||'NEEDS_COMPANY_CONTEXT')}</span>${item.external_url?`<a href="${esc(item.external_url)}" target="_blank" rel="noopener noreferrer">Open bron ↗</a>`:''}</footer></article>`;
+}
+function sourceCapabilityCard(item){
+  const mode=item.activation_mode==='PUBLIC_ALWAYS'?'publieke bron':item.activation_mode==='CONNECTOR_REQUIRED'?'koppeling nodig':item.activation_mode==='PROVIDER_REQUIRED'?'provider nodig':'handmatig bewijs';
+  return `<article class="eicard compact"><div class="eimeta"><span>${esc(item.scope==='internal'?'Binnen bedrijf':'Buiten bedrijf')}</span><span class="eistatus">${esc(mode)}</span></div><h4>${esc(item.label)}</h4><p>${esc(item.publisher||'')} · authority ${esc(item.authority_tier||'—')}/5</p><footer><span>${esc(arr(item.domain_keys).length)} domeinen</span>${item.canonical_url?`<a href="${esc(item.canonical_url)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>`:''}</footer></article>`;
+}
+function renderEnvironmentRadar(data){
+  const {intelligence}=enrich(data),domains=arr(intelligence.domains),catalog=arr(intelligence.sourceCatalog),signals=arr(intelligence.signals),actions=arr(intelligence.actionCandidates),snap=intelligence.snapshot||{};
+  const domainMap=new Map(domains.map(d=>[d.domain_key,d]));
+  const grouped=domains.reduce((acc,d)=>{(acc[d.pillar]??=[]).push(d);return acc;},{});
+  const domainGroups=Object.entries(grouped).map(([pillar,items])=>`<details class="eicard"><summary><b>${esc(pillar)}</b> · ${items.length} domeinen</summary><div class="trust-detail">${items.map(d=>`<p><b>${esc(d.label)}</b><br><span>${esc(d.description)}</span></p>`).join('')}</div></details>`);
+  const knownValue=snap.known_opportunity_value_eur==null?'Nog niet bewezen':euro(snap.known_opportunity_value_eur);
+  const knownRisk=snap.known_risk_value_eur==null?'Nog niet bewezen':euro(snap.known_risk_value_eur);
+  const sinceYesterday=signals.filter(s=>isFresh(s.observed_at,1));
+  const companyImpact=signals.filter(s=>s.impact_status==='SCORED');
+  const opportunities=signals.filter(s=>/(OPPORTUNITY|SEARCH_DEMAND|DEMAND_CHANGE|TECH_CHANGE|IP_CHANGE)/.test(String(s.signal_type||'').toUpperCase()));
+  const risks=signals.filter(s=>/(RISK|CYBER|FRAUD|DISRUPTION|PHYSICAL|SUPPLY_RISK)/.test(String(s.signal_type||'').toUpperCase()));
+  const contextGaps=signals.filter(s=>s.impact_status!=='SCORED'&&score(s.signal_score)>=65);
+  const body=`${nav()}<section class="eikpis">
+    <button type="button"><small>Domeinen</small><strong>${esc(snap.domain_count??domains.length)}</strong><span>extern + intern</span></button>
+    <button type="button"><small>Bronmogelijkheden</small><strong>${esc(snap.catalog_source_count??catalog.length)}</strong><span>publiek + koppelingen</span></button>
+    <button type="button"><small>Sinds gisteren</small><strong>${esc(snap.signals_24h??sinceYesterday.length)}</strong><span>nieuwe signalen</span></button>
+    <button type="button"><small>Aandacht</small><strong>${esc(snap.high_attention_count??signals.filter(s=>score(s.signal_score)>=70).length)}</strong><span>score ≥ 70</span></button>
+    <button type="button"><small>Kansen €</small><strong>${esc(knownValue)}</strong><span>alleen bewezen bedragen</span></button>
+    <button type="button"><small>Risico €</small><strong>${esc(knownRisk)}</strong><span>alleen bewezen bedragen</span></button>
+  </section>
+  <section class="eisection"><div class="pvmodulehead"><span>•</span><h3>Van buitenwereld naar bedrijfsactie</h3></div><article class="eicard"><h4>Source → evidence → signal → impact → actie → outcome → learning</h4><p>Een nieuwsfeit is nog geen bedrijfsimpact. De radar scheidt bronbewijs, signaalscore en bedrijfsspecifieke impact. Bedragen blijven onbekend totdat eigen exposure en bewijs bestaan.</p><div class="eifact"><b>Projectiescope</b><span>${esc(intelligence.projectionScope||'canonical')}</span></div><div class="eifact"><b>Truth policy</b><span>${esc(intelligence.truthPolicy||'measured_or_evidence_backed_else_unknown')}</span></div></article></section>
+  ${section('Sinds gisteren veranderd',sinceYesterday.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Sinds gisteren zijn geen nieuwe verwerkte signalen beschikbaar.')}
+  ${section('Wat raakt mijn bedrijf?',companyImpact.slice(0,12).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen signalen hebben voldoende eigen bedrijfscontext om bedrijfsspecifieke impact te claimen.')}
+  ${section('Kansen',opportunities.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele kanssignalen met voldoende bronbewijs.')}
+  ${section('Risico’s',risks.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele risicosignalen met voldoende bronbewijs.')}
+  ${section('Context nodig vóór impactclaim',contextGaps.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Geen open contextgaten bij hoog scorende signalen.')}
+  ${section('Volgende acties',actions.slice(0,10).map(a=>`<article class="eicard"><div class="eimeta"><span>${esc(domainMap.get(a.domain_key)?.label||a.domain_key)}</span><span class="eistatus">${esc(score(a.priority_score))}/100</span></div><h4>${esc(a.title)}</h4><p>${esc(a.rationale)}</p><footer><span>${esc(a.status)}</span><span>${a.due_at?`voor ${esc(nlDate(a.due_at))}`:'geen harde deadline'}</span></footer></article>`),'Nog geen action candidates. Een kandidaat ontstaat alleen bij voldoende signaalbewijs.')}
+  ${section('Volledig domeinuniversum',domainGroups)}
+  ${section('Bronuniversum',catalog.slice(0,24).map(sourceCapabilityCard),'Nog geen broncatalogus beschikbaar.')}
+  <p class="eifootnote">${esc(snap.status||'EMPTY')} · bijgewerkt ${esc(nlDate(snap.refreshed_at||data.stats?.generatedAt))} · catalogus betekent mogelijkheid, niet automatisch een actieve koppeling.</p>`;
+  return shell(VIEWS.omgevingsradar.title,VIEWS.omgevingsradar.subtitle,body);
 }
 function renderHub(data){
   const {sourceMap,publications,signals,sources,stats}=enrich(data);
@@ -61,6 +112,7 @@ function renderHub(data){
   const cbs=publisherFilter(publications,['CBS']);
   const nextLaws=komendeMijlpalen(new Date().toISOString().slice(0,10),365).slice(0,5);
   const cards=[
+    ['Omgevingsradar',stats.sourceDomainCount||0,'domeinen','omgevingsradar'],
     ['Wet- & regelgeving',REGELGEVING.length,'actuele regels','wet-regelgeving'],
     ['UWV arbeidsmarkt',uwv.length,'recente publicaties','arbeidsmarkt-personeel'],
     ['RVO regelingen',rvo.length,'recente publicaties','subsidies-regelingen'],
@@ -76,8 +128,9 @@ function renderHub(data){
 }
 function renderView(pageId,data){
   if(pageId==='ondernemersdata')return renderHub(data);
+  if(pageId==='omgevingsradar')return renderEnvironmentRadar(data);
   const view=VIEWS[pageId]||VIEWS.ondernemersdata;
-  const {sourceMap,publications,signals,sources}=enrich(data);
+  const {sourceMap,publications,signals,sources,intelligence}=enrich(data);
   let content=[];
   if(pageId==='wet-regelgeving') content=REGELGEVING.map(lawCard);
   if(pageId==='arbeidsmarkt-personeel') content=publications.filter(x=>['UWV','CBS'].includes(x.publisher)&&(/arbeid|personeel|loon|vacature|beroep|verzuim|werk/i.test(`${x.titel} ${x.samenvatting} ${x.sourceName}`)||x.publisher==='UWV')).map(x=>sourceCard(x,sourceMap));
@@ -91,7 +144,8 @@ function renderView(pageId,data){
   }
   if(pageId==='bronnenbibliotheek'){
     const sourceRows=sources.map(s=>`<article class="eicard compact"><div class="eimeta"><span>${esc(s.uitgever||'Bron')}</span><span class="eistatus ${s.laatste_controle_gelukt===false?'bad':''}">${s.laatste_controle_gelukt===false?'aandacht':'actief'}</span></div><h4>${esc(s.naam)}</h4><p>${esc(s.controle_frequentie||'Periodiek')} · laatst gecontroleerd ${esc(nlDate(s.laatst_gecontroleerd))}</p></article>`);
-    return shell(view.title,view.subtitle,`${nav()}${section('Geregistreerde bronnen',sourceRows)}${section('Laatste publicaties',publications.slice(0,30).map(x=>sourceCard(x,sourceMap)))}`);
+    const capabilityRows=arr(intelligence.sourceCatalog).map(sourceCapabilityCard);
+    return shell(view.title,view.subtitle,`${nav()}${section('Live geregistreerde bronnen',sourceRows)}${section('Source Universe · beschikbare bronmogelijkheden',capabilityRows,'Nog geen Source Universe catalogus beschikbaar.')}${section('Laatste publicaties',publications.slice(0,30).map(x=>sourceCard(x,sourceMap)))}`);
   }
   return shell(view.title,view.subtitle,`${nav()}${section(view.title,content,'Voor deze selectie zijn nu geen actuele records beschikbaar.')}`);
 }
