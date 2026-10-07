@@ -129,6 +129,47 @@ Deno.serve(async(req:Request)=>{
     });
   }
 
+  if(action==='data_sovereignty_get'){
+    const {data,error}=await client.rpc('refresh_data_sovereignty_snapshot_v1',{p_tenant_id:tenantId});
+    if(error)return json({error:'DATA_SOVEREIGNTY_READ_FAILED'},500);
+    return json({snapshot:data});
+  }
+
+  if(action==='data_sovereignty_policy_set'){
+    const policy=body?.policy&&typeof body.policy==='object'&&!Array.isArray(body.policy)?body.policy:null;
+    if(!policy)return json({error:'INVALID_SOVEREIGNTY_POLICY'},400);
+    const mode=String(policy.mode||'').trim();
+    const preferredAiProvider=policy.preferredAiProvider==null?null:String(policy.preferredAiProvider).trim()||null;
+    const preferredAiRegion=policy.preferredAiRegion==null?null:String(policy.preferredAiRegion).trim()||null;
+    if(!['TRANSPARENT_GLOBAL','EU_STORAGE','EU_ONLY','CUSTOM'].includes(mode))return json({error:'INVALID_SOVEREIGNTY_MODE'},400);
+    if(preferredAiProvider){
+      const {data:provider,error:providerError}=await client.from('data_sovereignty_provider_registry_v1').select('provider_key,runtime_status').eq('provider_key',preferredAiProvider).maybeSingle();
+      if(providerError)return json({error:'SOVEREIGNTY_PROVIDER_READ_FAILED'},500);
+      if(!provider)return json({error:'UNKNOWN_AI_PROVIDER'},400);
+    }
+    const {data:existing,error:existingError}=await client.from('tenant_data_sovereignty_policy_v1').select('policy_version').eq('tenant_id',tenantId).maybeSingle();
+    if(existingError)return json({error:'SOVEREIGNTY_POLICY_READ_FAILED'},500);
+    const strict=mode==='EU_ONLY';
+    const storageStrict=mode==='EU_STORAGE';
+    const next={
+      tenant_id:tenantId,
+      mode,
+      preferred_ai_provider:preferredAiProvider,
+      preferred_ai_region:preferredAiRegion,
+      allow_cross_border:strict?false:true,
+      block_unknown_region:strict||storageStrict,
+      enforcement_mode:strict||storageStrict?'BLOCK':'OBSERVE',
+      policy_version:Number(existing?.policy_version||0)+1,
+      updated_by:String(body?.actor||'portal-user').slice(0,320),
+      updated_at:new Date().toISOString()
+    };
+    const {error:saveError}=await client.from('tenant_data_sovereignty_policy_v1').upsert(next,{onConflict:'tenant_id'});
+    if(saveError)return json({error:'SOVEREIGNTY_POLICY_WRITE_FAILED'},500);
+    const {data:snapshot,error:refreshError}=await client.rpc('refresh_data_sovereignty_snapshot_v1',{p_tenant_id:tenantId});
+    if(refreshError)return json({error:'DATA_SOVEREIGNTY_REFRESH_FAILED'},500);
+    return json({snapshot});
+  }
+
   if(action==='governance'){
     const {data,error}=await client.from('brain_ai_governance_registry')
       .select('tenant_id,use_case_id,name,provider,model_id,model_revision,purpose,owner_id,lifecycle_status,risk_class,human_oversight,data_categories,prohibited_data_categories,retention_policy,transparency_required,impact_assessment_required,approved,approval_evidence_ids,evidence_ids,last_reviewed_at,next_review_at,inference_platform,training_use,processing_scope,cross_border_transfer,subprocessors,transfer_safeguard,provider_evidence_urls')
