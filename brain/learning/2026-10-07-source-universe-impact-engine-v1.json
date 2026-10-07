@@ -11,7 +11,8 @@
     "Never invent monetary impact. Impact remains unknown until company exposure, probability and magnitude are evidence-backed.",
     "Reuse the existing runtime scheduler mux instead of adding another cron writer.",
     "Derived action candidates are recommendations only; canonical execution/outcome authorities remain unchanged.",
-    "Register the entire lineage in Loop Assurance so missing outcome/learning evidence cannot be reported GREEN."
+    "Register the entire lineage in Loop Assurance so missing outcome/learning evidence cannot be reported GREEN.",
+    "Only READY candidates with a SCORED evidence-backed company impact may be materialized into the canonical Brain obligation authority."
   ],
   "lineage": "source -> evidence -> signal -> company impact -> recommendation -> canonical action -> readback -> outcome -> measurement -> learning -> guard",
   "truth_rules": {
@@ -21,12 +22,15 @@
     "impact_score_requires_probability_magnitude_exposure": true,
     "financial_value_requires_evidence": true,
     "missing_context": "UNKNOWN",
-    "historical_green_not_reusable": true
+    "historical_green_not_reusable": true,
+    "action_materialization_requires_ready_and_scored_impact": true,
+    "materialization_is_not_provider_side_effect": true
   },
   "inheritance": [
     "All future source/connector work should first map to powerhouse_intelligence_source_catalog_v1.",
     "All future external intelligence should reuse bg_signaal_onderwerpen/bg_externe_signalen and the canonical source observation spine where applicable.",
     "All portal surfaces should expose evidence status and unknowns rather than optimistic defaults.",
-    "New intelligence loops must reuse the central scheduler/control plane unless a documented authority exception exists."
+    "New intelligence loops must reuse the central scheduler/control plane unless a documented authority exception exists.",
+    "Future intelligence actions must use powerhouse_materialize_intelligence_action_v1 or an explicit successor; direct provider execution from a signal projection is forbidden."
   ]
 }
