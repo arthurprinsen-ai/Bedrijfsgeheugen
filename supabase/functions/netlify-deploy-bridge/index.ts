@@ -12,30 +12,9 @@ const expectedWorkflowRef =
   "arthurprinsen-ai/Bedrijfsgeheugen/.github/workflows/production-source-snapshot.yml@refs/heads/main";
 const siteId = "fd527056-493a-4d8a-8125-d00370104fa3";
 
-async function validateProxy(proxy: string) {
-  const endpoint = proxy + "/api/v1/sites/" + siteId;
-  const out = await fetch(endpoint, {
-    method: "GET",
-    headers: {"user-agent":"bedrijfsgeheugen-oidc-netlify-bridge/4"},
-  });
-  if (out.status === 401 || out.status === 403) {
-    throw new Error("netlify proxy unauthorized");
-  }
-  if (!out.ok) {
-    throw new Error("netlify proxy preflight " + out.status);
-  }
-  return proxy;
-}
-
-async function getProxy() {
-  const envProxy = (Deno.env.get("NETLIFY_MCP_PROXY_PATH") || "").trim().replace(/\/$/, "");
-  if (envProxy.startsWith("https://netlify-mcp.netlify.app/proxy/")) {
-    return await validateProxy(envProxy);
-  }
-
+async function getVaultSecret(name: string) {
   const dbUrl = Deno.env.get("SUPABASE_DB_URL") || "";
   if (!dbUrl) throw new Error("database auth unavailable");
-
   const sql = postgres(dbUrl, {
     max: 1,
     prepare: false,
@@ -43,28 +22,50 @@ async function getProxy() {
     idle_timeout: 1,
     max_lifetime: 30,
   });
-
   try {
     const rows = await Promise.race([
-      sql<{ decrypted_secret:string }[]>`
-        select decrypted_secret
-        from vault.decrypted_secrets
-        where name = 'netlify_mcp_proxy_current'
-        order by created_at desc
-        limit 1
-      `,
+      sql.unsafe("select decrypted_secret from vault.decrypted_secrets where name = $1 order by created_at desc limit 1", [name]),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("proxy db read timeout")), 4000)
+        setTimeout(() => reject(new Error("vault read timeout")), 4000)
       ),
     ]);
-    const data = rows?.[0]?.decrypted_secret;
-    if (typeof data !== "string" || !data.startsWith("https://netlify-mcp.netlify.app/proxy/")) {
-      throw new Error("deploy credential unavailable");
-    }
-    return await validateProxy(data.replace(/\/$/, ""));
+    const value = (rows as any)?.[0]?.decrypted_secret;
+    if (typeof value !== "string" || !value.trim()) throw new Error("secret unavailable: " + name);
+    return value.trim();
   } finally {
     try { await sql.end({ timeout: 1 }); } catch {}
   }
+}
+
+async function getProxy() {
+  const apiKey = await getVaultSecret("COMPOSIO_API_KEY");
+  const endpoint = "https://backend.composio.dev/api/v3.1/tools/execute/NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER";
+  const payload = {
+    connected_account_id: "netlify_mcp_retax-divide",
+    version: "latest",
+    arguments: {
+      selectSchema: {
+        operation: "deploy-site",
+        params: { siteId },
+        aiAgentName: "Powerhouse GitHub OIDC deploy bridge",
+        llmModelName: "gpt-5.6",
+      },
+    },
+  };
+  const out = await fetch(endpoint, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/5",
+    },
+    body: JSON.stringify(payload),
+  });
+  const raw = await out.text();
+  if (!out.ok) throw new Error("composio netlify authority " + out.status);
+  const match = raw.match(/https:\/\/netlify-mcp\.netlify\.app\/proxy\/[A-Za-z0-9._~-]+/);
+  if (!match) throw new Error("fresh netlify proxy not issued");
+  return match[0];
 }
 const safe=(x:any)=>({
   id:x?.id||null,state:x?.state||null,done:x?.done??null,error:x?.error||null,
@@ -95,7 +96,7 @@ Deno.serve(async (req: Request) => {
     console.log("NETLIFY_DEPLOY_BRIDGE_PHASE", JSON.stringify({ phase:"proxy_ready", elapsed_ms:Date.now()-startedAt }));
     const action = String(body.action || "proxy");
     if (action === "health") {
-      return Response.json({ok:true,credential:"verified"},{headers:{"Cache-Control":"no-store"}});
+      return Response.json({ok:true,authority:"composio_jit"},{headers:{"Cache-Control":"no-store"}});
     }
 
     if (action === "trigger_build") {
