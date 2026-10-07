@@ -55,3 +55,9 @@ entrypoint = "./functions/powerhouse-email-reply-loop/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-runtime-verifier-v1/index.ts"
+
+
+[functions.powerhouse-commercial-heartbeat-runner]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-commercial-heartbeat-runner/index.ts"
