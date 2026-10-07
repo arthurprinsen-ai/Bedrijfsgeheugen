@@ -138,7 +138,7 @@ test('Netlify wiring and production readback require exact commit/deploy authent
   const policy=JSON.parse(await readFile(new URL('../config/brain-delivery-system.json',import.meta.url),'utf8'));
 
   assert.match(event,/deploySucceeded/);
-  assert.match(event,/deploy\.context!=='production'/);
+  assert.match(event,/deploy\?\.context!=='production'/);
   assert.match(event,/admin,getIdentityConfig/);
   assert.match(event,/setJSON\(portalAuthProofKey\(deploy\.commitRef\),proof\)/);
   assert.match(reader,/portal-authenticated-production-proof/);
