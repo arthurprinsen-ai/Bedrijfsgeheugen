@@ -3,12 +3,12 @@
   "date": "2026-10-07",
   "status": "ACTIVE_PREVENTION",
   "fingerprint": "terminalizer|supabase-migration-readback-race|autopublish|v1",
-  "root_cause": "Merged PR #4075 changed a canonical Supabase migration. The migration became APPLIED in production, but the post-merge terminalizer read the PR body once before a Terminal-Supabase-Migration-Readback marker existed. It failed with SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING even though the provider later showed the migration as applied. Manual marker writeback plus a failed-job rerun closed the incident, proving the missing piece was evidence orchestration rather than runtime correctness.",
+  "root_cause": "Merged PR #4075 changed a canonical Supabase migration. The migration was APPLIED in production, but the post-merge terminalizer depended on a machine-readable PR marker that no canonical owner produced for migrations. It failed with SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING even though the provider later showed the exact migration as applied. Manual marker writeback plus failed-job rerun closed the incident, proving the missing piece was migration evidence ownership rather than runtime correctness.",
   "prevention": [
-    "Reuse the existing Supabase production-authority workflow instead of adding another scheduler or runtime.",
-    "On protected-main migration changes, query the Supabase Management API migration history with the existing production access token and require exact version plus exact migration name.",
-    "Write the canonical Terminal-Supabase-Migration-Readback marker back to the merged PR automatically.",
-    "Make the terminalizer wait in a bounded 24x5-second window for the canonical marker so push-side provider attestation and pull-request terminalization can converge without a race.",
+    "Make the existing post-merge obligation terminalizer the single owner for migration provider readback; do not widen the Edge production authority or introduce a second scheduler.",
+    "Run migration readback only for trusted merged PRs in the production environment, using the existing Supabase access token and GitHub token.",
+    "Query Supabase Management API migration history with bounded retries and require exact migration version plus exact migration name.",
+    "Write the canonical Terminal-Supabase-Migration-Readback marker to the merged PR before terminal evidence is evaluated.",
     "Keep the terminalizer fail-closed when the exact migration never appears in provider history.",
     "Never treat repository presence, preview success or migration filename alone as production proof."
   ],
@@ -35,6 +35,6 @@
       "tests/brain-supabase-migration-provider-readback-publisher-v1.test.mjs",
       "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
     ],
-    "expected": "A merged migration change receives exact provider APPLIED evidence automatically and the terminalizer converges within the bounded readback window; missing provider evidence remains fail-closed."
+    "expected": "The single post-merge terminalizer proves the exact migration from provider history, writes the canonical APPLIED marker, consumes that marker in the same lineage, and remains fail-closed if the provider never proves it."
   }
 }
