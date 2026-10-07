@@ -102,8 +102,8 @@ export function hasProtectedTrustAccess(){
   return snap?.mode==='authenticated'&&!portalContext.stateClient?.isDemo?.();
 }
 export function configurePortalShell(context={}){
-  portalContext.domainState=context.domainState||null;
-  portalContext.stateClient=context.stateClient||null;
+  if(Object.prototype.hasOwnProperty.call(context,'domainState'))portalContext.domainState=context.domainState||null;
+  if(Object.prototype.hasOwnProperty.call(context,'stateClient'))portalContext.stateClient=context.stateClient||null;
   return portalContext;
 }
 

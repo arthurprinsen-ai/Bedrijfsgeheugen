@@ -226,7 +226,8 @@ const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
 const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
-configurePortalShell({domainState:portalDomainState,stateClient:portalStateClient});
+configurePortalShell({domainState:portalDomainState});
+configurePortalShell({stateClient:portalStateClient});
 portalStateClient.subscribe(snap=>{
  applyCustomerBranding({state:snap.state||{},user:snap.user});
  const authenticated=snap.mode==='authenticated'&&!portalStateClient.isDemo();
