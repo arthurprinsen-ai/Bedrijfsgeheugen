@@ -38,6 +38,10 @@ Een bedrijfsspecifieke impactscore wordt pas berekend wanneer minimaal **waarsch
 
 Eurobedragen worden nooit uit de lucht gegrepen. Kansen- en risicowaarde blijven `NULL` totdat evidence ze ondersteunt.
 
+## Actiepromotie
+
+Een extern signaal wordt niet autonoom uitgevoerd. Eerst moet bedrijfsspecifieke impact via `powerhouse_upsert_intelligence_company_impact_v1(...)` met evidence worden vastgelegd. Pas wanneer de impact `SCORED` is en de kandidaat `READY` is, mag `powerhouse_materialize_intelligence_action_v1(...)` een bestaande `brain_obligations`-actie aanmaken. Die materialisatie is alleen een canoniek intern actie-/reviewrecord; zij impliceert geen provider write of andere externe side-effect.
+
 ## Portal
 
 Portal V2 krijgt **Actueel & externe data → Omgevingsradar**. De radar toont:
