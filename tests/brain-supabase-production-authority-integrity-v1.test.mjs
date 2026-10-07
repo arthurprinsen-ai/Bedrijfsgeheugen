@@ -23,3 +23,12 @@ test('GitHub Supabase check is observability and provider source parity remains 
   assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_CONVERGED/);
   assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_TIMEOUT/);
 });
+
+
+test('provider parity compares runtime files while immutable Git identity still includes local metadata',()=>{
+  assert.match(workflow,/find "\$source_root" -type f ! -name 'deno\.json'/);
+  assert.match(workflow,/find "\$provider_root" -type f ! -name 'deno\.json'/);
+  assert.match(workflow,/provider_source_scope=RUNTIME_FILES_EXCLUDING_DENO_METADATA/);
+  assert.match(workflow,/source_tree_sha256/);
+  assert.doesNotMatch(workflow,/find "\$source_root" -type f -printf/);
+});
