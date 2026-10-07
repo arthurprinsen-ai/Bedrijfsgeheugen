@@ -36,6 +36,57 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'source-universe-environment-radar-v1',
+      fingerprint:'powerhouse|source-universe|environment-radar|impact|action|outcome|learning|v1',
+      label:'Source Universe & Environment Radar',
+      authority:'supabase-evidence-spine+portal-v2',
+      owner:'ONE BRAIN / Signals & External Intelligence',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze([
+        'official/public source catalog',
+        'existing bg_signaal_onderwerpen taxonomy',
+        'bg_externe_signalen observations',
+        'tenant/company context when available',
+        'existing evidence sources and source observations'
+      ]),
+      outputs:Object.freeze([
+        'source-universe coverage',
+        'environment signals',
+        'deterministic impact baseline',
+        'context-required impact assessments',
+        'next-action candidates',
+        'portal environment radar'
+      ]),
+      runtime:Object.freeze({
+        sourceCatalog:'public.powerhouse_source_catalog_v1',
+        impactProjection:'public.powerhouse_signal_impact_assessment_v1',
+        sourceObservations:'public.powerhouse_evidence_source_observations',
+        externalSignals:'public.bg_externe_signalen',
+        refresh:'public.powerhouse_refresh_environment_radar_v1(text)',
+        heartbeat:'public.powerhouse_evidence_daily_maintenance_v1()',
+        loopAssurance:'environment-radar',
+        api:'netlify/functions/portal-ondernemersdata.mjs',
+        portal:'/portal-v2/?page=omgevingsradar',
+        learning:'brain/learning/2026-10-07-source-universe-environment-radar-v1.json',
+        regression:'tests/brain-source-universe-environment-radar-v1.test.mjs'
+      }),
+      invariants:Object.freeze({
+        existingStateFirst:true,
+        oneExternalSignalStore:true,
+        noParallelScheduler:true,
+        cataloguedDoesNotMeanConnected:true,
+        sourceEvidenceSeparatedFromAiInterpretation:true,
+        tenantExposureNeverSynthesized:true,
+        monetaryImpactNeverSynthesized:true,
+        unknownRemainsUnknown:true,
+        canonicalActionAuthorityReused:true,
+        observedOutcomeRequiredForLearning:true,
+        portalProjectionRequired:true,
+        loopAssuranceRequired:true,
+        productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'data-ai-security-trust-center-v1',
       fingerprint:'powerhouse|security-trust|sovereignty|connector-auto-enrolment|evidence-first|v1',
       label:'Data, AI Sovereignty & Security Trust Center',
