@@ -23,3 +23,7 @@ The historical predictive founder materializer mirror is additionally hardened f
 ## Terminal acceptance
 
 Exact-head Required + CodeQL + Supabase Preview must be green, protected merge must complete, and the resulting main commit must receive a successful production Supabase check with the new `20261007182000` migration present in production history.
+## Preview capacity recovery
+
+During terminal verification, the Supabase Git integration reported its concurrent preview-branch limit. The only preview removed was PR #4078's non-default Supabase branch, which was already in `MIGRATIONS_FAILED`. Its GitHub branch and PR were not modified. This frees capacity for the exact #4079 recovery candidate without weakening any source, migration, security or production gate.
+
