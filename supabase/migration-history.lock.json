@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T08:39:00.000Z",
+  "captured_at": "2026-10-07T09:02:55.000Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2422,6 +2422,10 @@
     {
       "version": "20261007083900",
       "name": "retire_legacy_pgcron_commercial_heartbeat_after_external_proof"
+    },
+    {
+      "version": "20261007090255",
+      "name": "external_commercial_heartbeat_scheduler_authority_v1"
     }
   ]
 }
