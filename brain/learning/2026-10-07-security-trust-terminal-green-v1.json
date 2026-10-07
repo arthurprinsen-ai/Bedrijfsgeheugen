@@ -1,0 +1,60 @@
+{
+  "id": "security-trust-terminal-green-v1",
+  "date": "2026-10-07",
+  "status": "LIVE_PROVEN_SOURCE_CLOSING",
+  "fingerprint": "security-trust|browser-boundary|intentional-rls-deny-all|terminal-green|v1",
+  "root_cause": "The database posture treated every RLS-enabled table without a policy as unresolved even when anon/authenticated had no table privileges, while 28 internal SECURITY DEFINER functions still inherited browser-role EXECUTE. This kept the canonical Trust Center at EVIDENCE_PARTIAL despite no high-risk findings.",
+  "prevention": {
+    "privileged_rpc_boundary": "Every browser-executable SECURITY DEFINER function is revoked from PUBLIC, anon and authenticated, while service_role retains execution.",
+    "rls_classification": "RLS-without-policy is split into browser-granted review surface versus service-only intentional deny-all.",
+    "truth_rule": "Only browser-relevant unresolved surfaces create findings; measured service-only deny-all remains visible evidence but not an open finding.",
+    "heartbeat": "The existing powerhouse_refresh_data_sovereignty_v1 heartbeat remains the refresh authority; no second scheduler is introduced."
+  },
+  "evidence": {
+    "production": {
+      "browser_executable_security_definers": 0,
+      "rls_no_policy_total": 166,
+      "rls_no_policy_browser_grants": 0,
+      "rls_no_policy_service_only": 166,
+      "snapshot_posture": "VERIFIED_NO_OPEN_FINDINGS",
+      "finding_count": 0,
+      "high_risk_finding_count": 0,
+      "evidence_coverage": 100,
+      "provider_assurance_count": 6,
+      "current_management_evidence": 9
+    },
+    "netlify": {
+      "deploy_id": "6ac692d18140b50008e74167",
+      "commit_ref": "cfbf6247cd59506d468dd75bca0307c3065b4f67",
+      "contains_security_trust_merge": true
+    },
+    "supabase": {
+      "project_ref": "adhjwmvyoixzjtmiroln",
+      "portal_state_eu_version": 11,
+      "security_migrations_present": [
+        "20261007155500_data_ai_security_trust_center_v1",
+        "20261007163124_security_trust_harden_helper_search_path_v1",
+        "20261007163230_security_trust_remove_browser_definer_exposure_v1",
+        "20261007163333_security_trust_posture_precision_v1",
+        "20261007190600_security_definer_browser_execute_closure_v1"
+      ]
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-trust-terminal-green-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FALSE_PARTIAL_SECURITY_POSTURE",
+    "scope": "DATA_AI_SECURITY_TRUST",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}
