@@ -10,3 +10,7 @@
 - Recovery migration: `20261007081000_decouple_attribution_from_commercial_heartbeat_v1.sql`.
 - Regression authority: `tests/brain-heartbeat-attribution-decoupling-v1.test.mjs`.
 - No quality gate, authentication contract or provider-write authority is weakened.
+
+- First preview replay reached migration 20261007081000 and failed SQLSTATE 42P01 because the attribution snapshot table was production-only schema drift.
+- Production schema readback captured the exact 20-column/composite-PK/index/RLS/service-role-policy contract.
+- Recovery migration now materializes that contract idempotently before index/helper creation; previous preview failure is stale after the new branch HEAD.
