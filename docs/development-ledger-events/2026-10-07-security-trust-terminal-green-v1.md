@@ -27,3 +27,7 @@ Candidate-Type: security
 - evidenceCoverage = 100.
 
 No second scheduler, no parallel trust store and no weakened RLS boundary were introduced.
+
+
+## Preview-capacity recovery
+A concurrent preview for PR #4081 was created even though that candidate had already failed at hygiene/admission and all Supabase validation jobs were skipped. That orphan preview was deleted without changing PR #4081 source or state. This frees provider capacity so this exact security candidate can obtain its own Supabase Preview evidence; no preview gate is bypassed.
