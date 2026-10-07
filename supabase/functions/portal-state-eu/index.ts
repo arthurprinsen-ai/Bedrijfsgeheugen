@@ -186,6 +186,35 @@ Deno.serve(async(req:Request)=>{
     return json({observation:data});
   }
 
+  if(action==='security_trust_get'){
+    const {data,error}=await client.rpc('refresh_security_trust_snapshot_v1',{p_tenant_id:tenantId});
+    if(error)return json({error:'SECURITY_TRUST_READ_FAILED'},500);
+    return json({snapshot:data});
+  }
+
+  if(action==='security_trust_observe'){
+    const observation=body?.observation&&typeof body.observation==='object'&&!Array.isArray(body.observation)?body.observation:null;
+    if(!observation)return json({error:'INVALID_SECURITY_OBSERVATION'},400);
+    const providerKey=String(observation.providerKey||'').trim();
+    const controlKey=String(observation.controlKey||'').trim();
+    const status=String(observation.status||'').trim().toUpperCase();
+    const source=String(observation.source||'runtime').trim();
+    const expiresAt=observation.expiresAt==null?null:String(observation.expiresAt);
+    if(!providerKey||!controlKey||!['VERIFIED','PASS','PARTIAL','WARN','FAIL','UNKNOWN'].includes(status))return json({error:'INVALID_SECURITY_OBSERVATION'},400);
+    const {data,error}=await client.rpc('record_security_management_observation_v1',{
+      p_tenant_id:tenantId,
+      p_provider_key:providerKey,
+      p_control_key:controlKey,
+      p_status:status,
+      p_evidence:observation.evidence&&typeof observation.evidence==='object'&&!Array.isArray(observation.evidence)?observation.evidence:{},
+      p_source:source,
+      p_expires_at:expiresAt,
+      p_observed_by:String(body?.actor||'powerhouse-observer').slice(0,320)
+    });
+    if(error)return json({error:'SECURITY_TRUST_OBSERVE_FAILED'},500);
+    return json({observation:data});
+  }
+
   if(action==='governance'){
     const {data,error}=await client.from('brain_ai_governance_registry')
       .select('tenant_id,use_case_id,name,provider,model_id,model_revision,purpose,owner_id,lifecycle_status,risk_class,human_oversight,data_categories,prohibited_data_categories,retention_policy,transparency_required,impact_assessment_required,approved,approval_evidence_ids,evidence_ids,last_reviewed_at,next_review_at,inference_platform,training_use,processing_scope,cross_border_transfer,subprocessors,transfer_safeguard,provider_evidence_urls')
