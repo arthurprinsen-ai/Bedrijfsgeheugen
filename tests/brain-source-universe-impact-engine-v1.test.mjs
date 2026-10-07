@@ -6,7 +6,7 @@ import {execFileSync} from 'node:child_process';
 const read=p=>readFile(p,'utf8');
 
 test('source universe covers 35 external and 10 internal domains',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   const external=[
     'legal-regulation','cyber-threats','ai-technology','competition','customer-market-behavior',
     'macro-economy','finance-capital','subsidies-tax','labor-market','skills-capabilities',
@@ -27,7 +27,7 @@ test('source universe covers 35 external and 10 internal domains',async()=>{
 });
 
 test('catalog capability, availability and evidence are distinct truths',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   assert.match(sql,/availability_state text not null default 'CATALOGUED'/);
   for(const state of ['CATALOGUED','AVAILABLE','CONNECTED','OBSERVED','LIVE','STALE','ERROR'])assert.ok(sql.includes(`'${state}'`),state);
   assert.match(sql,/powerhouse_refresh_intelligence_source_availability_v1/);
@@ -36,7 +36,7 @@ test('catalog capability, availability and evidence are distinct truths',async()
 });
 
 test('external signals are canonical and tenant impact is separate',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   assert.match(sql,/primary key \(signal_key\)/);
   assert.match(sql,/foreign key \(signal_key\)\s+references public\.powerhouse_intelligence_signal_projection_v1\(signal_key\)/s);
   assert.match(sql,/EXTERNAL_REFRESH_CANONICAL_ONLY/);
@@ -46,7 +46,7 @@ test('external signals are canonical and tenant impact is separate',async()=>{
 });
 
 test('impact and euro values fail closed until tenant evidence exists',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   assert.match(sql,/when p_probability is null or p_magnitude is null or p_exposure is null then null/);
   assert.match(sql,/INTELLIGENCE_IMPACT_EVIDENCE_REQUIRED/);
   assert.match(sql,/estimated_value_eur numeric/);
@@ -57,7 +57,7 @@ test('impact and euro values fail closed until tenant evidence exists',async()=>
 });
 
 test('canonical action materialization reuses Brain obligations and requires scored tenant impact',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   assert.match(sql,/powerhouse_materialize_intelligence_action_v1/);
   assert.match(sql,/INTELLIGENCE_ACTION_NOT_READY/);
   assert.match(sql,/INTELLIGENCE_COMPANY_IMPACT_NOT_SCORED/);
@@ -67,7 +67,7 @@ test('canonical action materialization reuses Brain obligations and requires sco
 });
 
 test('fulfilled obligation is not treated as outcome; DONE requires verified Outcome Memory',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   assert.match(sql,/powerhouse_reconcile_intelligence_outcomes_v1/);
   assert.match(sql,/powerhouse_outcome_memory_v1 m/);
   assert.match(sql,/m\.verified=true/);
@@ -78,7 +78,7 @@ test('fulfilled obligation is not treated as outcome; DONE requires verified Out
 
 test('intelligence reuses existing scheduler mux and creates no parallel cron writer',async()=>{
   const [sql,registry]=await Promise.all([
-    read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql'),
+    read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql'),
     read('powerhouse/assurance/loop-registry.json')
   ]);
   assert.match(sql,/create or replace function public\.powerhouse_runtime_scheduler_mux_v3/);
@@ -89,7 +89,7 @@ test('intelligence reuses existing scheduler mux and creates no parallel cron wr
 });
 
 test('new intelligence surfaces are server-only and RLS protected',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   const tables=[
     'powerhouse_intelligence_domain_registry_v1',
     'powerhouse_intelligence_source_catalog_v1',
@@ -156,7 +156,7 @@ test('changed JavaScript parses under Node',()=>{
 
 test('internal evidence projection is tenant-scoped and relation inference never claims causality',async()=>{
   const [sql,map,skill]=await Promise.all([
-    read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql'),
+    read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql'),
     read('platform/system-map/canonical-system-map.mjs'),
     read('.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md')
   ]);
@@ -172,7 +172,7 @@ test('internal evidence projection is tenant-scoped and relation inference never
 });
 
 test('SQL function bodies do not contain broken single-dollar delimiters',async()=>{
-  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  const sql=await read('supabase/migrations/20261007212000_source_universe_impact_engine_v1.sql');
   const bad=sql.split('\n').filter(line=>line.trim()==='as $'||line.trim()==='$;');
   assert.deepEqual(bad,[]);
 });
