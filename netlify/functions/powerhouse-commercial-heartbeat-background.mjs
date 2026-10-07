@@ -41,7 +41,7 @@ export default async function handler(request){
         signal:AbortSignal.timeout(EDGE_TIMEOUT_MS)
       });
       const body=await response.json().catch(()=>null);
-      if(response.ok&&body?.ok===true&&(body?.durable_readback_verified===true||body?.state==='SKIPPED_OVERLAP')){
+      if(response.ok&&body?.ok===true&&body?.durable_readback_verified===true){
         console.log(JSON.stringify({
           event:'powerhouse-commercial-heartbeat',
           state:body.state,
