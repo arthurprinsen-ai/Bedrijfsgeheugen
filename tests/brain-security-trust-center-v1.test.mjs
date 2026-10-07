@@ -14,7 +14,7 @@ test('security trust center is first-class and uses full href URLs',async()=>{
 
 test('trust UI answers customer questions and prevents false certification claims',async()=>{
  const js=await read('portal-next/security-trust-center.js');
- for(const phrase of ['Waar staat mijn data?','Wie kan erbij?','AI-training?','Buiten Europa?','Wat staat open?','Welke normen?'])assert.match(js,new RegExp(phrase.replace(/[?]/g,'\\?')));
+ for(const phrase of ['Waar staat mijn data?','Wie kan erbij?','AI-training?','Buiten Europa?','Wat staat open?','Welke normen?'])assert.ok(js.includes(phrase),phrase);
  assert.match(js,/Provider assurance ≠ eigen certificering/);
  assert.match(js,/Onbekend of verlopen bewijs wordt niet groen/);
 });
