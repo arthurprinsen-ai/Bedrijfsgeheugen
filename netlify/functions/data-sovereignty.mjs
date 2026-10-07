@@ -34,4 +34,4 @@ export default async request=>{
   catch(error){return json({error:error?.code||'DATA_SOVEREIGNTY_WRITE_FAILED'},502);}
 };
 
-export const config={path:'/api/data-sovereignty'};
+export const config={path:'/api/data-sovereignty',region:'fra'};
