@@ -206,7 +206,7 @@
     "blockedByObserverCanInvalidateProvenProduction": false,
     "providerAuthority": "netlify",
     "immutableLineageAuthority": "github",
-    "evaluator": "tools/site-shell/external-observer-production-proof.mjs",
+    "evaluator": "tools/delivery/external-observer-production-proof.mjs",
     "regressionTest": "tests/brain-external-observer-provider-truth.test.mjs",
     "liveProvenState": "LIVE_PROVEN_PROVIDER_TRUTH",
     "requiredProviderEvidence": [
