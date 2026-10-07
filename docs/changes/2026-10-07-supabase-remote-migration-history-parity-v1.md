@@ -11,3 +11,10 @@ Its exact production statement is mirrored into `supabase/migrations`. No produc
 The canonical parity regression is also repaired for Node 24 by importing `fileURLToPath` from `node:url`. It now explicitly verifies all seven recovered production migrations and the security-definer browser-execute closure.
 
 Terminal parity is no longer considered complete from a single early snapshot: production history must be compared with exact current main again after protected merge.
+
+
+## Provider-stamped terminal reconciliation
+
+During final production closure, the official Supabase migration-authority was invoked with the exact merged SQL of `20261007190653_security_trust_posture_verified_no_open_findings_v1`. Supabase preserved that call as a new immutable production migration version `20261007192514`.
+
+That production row is not deleted or rewritten. The repository now mirrors `20261007192514_security_trust_posture_verified_no_open_findings_v1.sql` with the same replay-safe SQL as the canonical `190653` migration. Terminal parity therefore includes a mandatory post-apply production-history readback.
