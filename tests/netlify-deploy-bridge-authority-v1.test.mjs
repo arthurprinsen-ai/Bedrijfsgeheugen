@@ -4,15 +4,18 @@ import fs from 'node:fs';
 
 const source = fs.readFileSync('supabase/functions/netlify-deploy-bridge/index.ts','utf8');
 
-test('Netlify deploy bridge uses stable credential authority', () => {
-  assert.match(source, /netlify_mcp_proxy_current/);
+test('Netlify deploy bridge acquires authority just in time', () => {
+  assert.match(source, /COMPOSIO_API_KEY/);
+  assert.match(source, /backend\.composio\.dev\/api\/v3\.1\/tools\/execute\/NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER/);
+  assert.match(source, /connected_account_id:\s*"netlify_mcp_retax-divide"/);
   assert.doesNotMatch(source, /netlify_mcp_proxy_20260924/);
+  assert.doesNotMatch(source, /netlify_mcp_proxy_current/);
 });
 
-test('Netlify deploy bridge preflights proxy authorization', () => {
-  assert.match(source, /async function validateProxy/);
-  assert.match(source, /out\.status === 401 \|\| out\.status === 403/);
-  assert.match(source, /netlify proxy unauthorized/);
+test('Netlify deploy bridge never persists an issued proxy', () => {
+  assert.match(source, /fresh netlify proxy not issued/);
+  assert.doesNotMatch(source, /vault\.update_secret/);
+  assert.doesNotMatch(source, /vault\.create_secret/);
 });
 
 test('Netlify deploy bridge keeps fail-closed GitHub OIDC scope', () => {
