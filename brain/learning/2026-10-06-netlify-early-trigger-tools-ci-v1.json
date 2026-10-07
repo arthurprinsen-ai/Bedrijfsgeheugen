@@ -1,0 +1,29 @@
+{
+  "id": "netlify-early-trigger-tools-ci-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|netlify|early-trigger|tools-ci-governance|v1",
+  "root_cause": "The canonical Netlify applicability authority correctly classified tools/ci/** as governance-only, but Production Source Snapshot and Production Release Readback had independent push.paths-ignore lists that did not contain tools/ci/**. A control-plane merge therefore still allocated both production workflows before the in-job classifier could say deployment_required=false.",
+  "evidence": {
+    "merge_sha": "e902e07fef8b3411451280072b40f0d0aac24bb8",
+    "production_source_snapshot_run": 37478237193,
+    "production_release_readback_run": 37478237085,
+    "observed_result": "both workflows started for a non-Netlify control-plane merge and completed without requiring a Netlify production mutation"
+  },
+  "prevention": {
+    "early_trigger": "Both Netlify production workflows must ignore tools/ci/** when it is the only affected domain.",
+    "canonical_runtime_authority": "tools/delivery/netlify-deployment-applicability.mjs remains authoritative after admission.",
+    "mixed_change_rule": "A mixed commit containing any non-ignored runtime path still triggers normal Netlify applicability and fail-closed production proof."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

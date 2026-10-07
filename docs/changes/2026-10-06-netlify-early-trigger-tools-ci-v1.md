@@ -1,0 +1,5 @@
+# Netlify early trigger — tools/ci governance
+
+Protected merge `e902e07fef8b3411451280072b40f0d0aac24bb8` proved that the shared Netlify applicability classifier was correct but was reached too late. Because `tools/ci/**` was absent from the two production workflow `push.paths-ignore` lists, Production Source Snapshot run `37478237193` and Production Release Readback run `37478237085` still allocated runners for a control-plane-only merge.
+
+The structural correction is deliberately small: both Netlify production workflows now ignore `tools/ci/**` at trigger admission. The shared `tools/delivery/netlify-deployment-applicability.mjs` module remains the canonical in-job authority. Mixed commits containing website, portal or Netlify-hosted runtime paths still trigger normal exact-SHA production evidence.
