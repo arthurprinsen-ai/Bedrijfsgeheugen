@@ -67,3 +67,8 @@ test('service token uses the proven portal hash contract without an Edge plainte
   assert.doesNotMatch(source,/Deno\.env\.get\("BG_PORTAL_EU_SERVICE_TOKEN"\)/);
   assert.doesNotMatch(source,/SERVER_AUTH_CONFIG_MISSING/);
 });
+
+- 2026-10-07 08:37:34 UTC: durable external heartbeat receipt proven: commercial-heartbeat:202610070837, actioned, VERIFIED, confidence 1; Edge HTTP 200.
+- Production migration 20261007083900 retired legacy pg_cron heartbeat by jobname after owner-count guard.
+- Post-cutover cron readback: no powerhouse-one-commercial-heartbeat-v1 owner remains; runtime mux remains active.
+- Production migration ledger now 605 through 20261007083900.
