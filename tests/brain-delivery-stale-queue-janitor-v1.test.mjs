@@ -36,3 +36,9 @@ test('terminal lease reconciliation excludes retired open successors and accepts
   assert.match(source,/merged_successor_count=/);
   assert.match(source,/TERMINAL_LEASE_SATISFIED_BY_MERGED_SUCCESSOR/);
 });
+
+
+test('janitor applies explicit successor chains oldest-first so it cannot invalidate its own successor readback',()=>{
+  assert.match(source,/sort_by\(\.prNumber\)\[\]/);
+  assert.match(source,/Successor #\$\{successor\} is no longer open/);
+});

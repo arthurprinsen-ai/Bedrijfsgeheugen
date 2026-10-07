@@ -5,7 +5,7 @@
   "obligation_id": "repository-janitor-retired-successor-deadlock-20261007-v1",
   "root_cause": {
     "escaped_defect": "Repository Janitor counted explicitly retired open PRs as active terminal-delivery successors and could auto-reopen an old unmerged terminal lease even when a later same-obligation successor had already merged.",
-    "evidence": "Janitor run 37595314458 attempt 1 failed on #3928 with three retired successors. After manual closure, attempt 2 auto-reopened retired leases and failed again on #3953 with the same ambiguity class."
+    "evidence": "Janitor run 37595314458 attempt 1 failed on #3928 with three retired successors. After manual closure, attempt 2 auto-reopened retired leases and failed again on #3953 with the same ambiguity class. After #4060 merged and removed false retired-successor ambiguity, workflow_dispatch run 37641738149 reached apply-safe cleanup but closed #3945 before validating #3942 -> #3945, proving cleanup ordering itself could invalidate a later action in the same deterministic plan."
   },
   "prevention": {
     "active_successor": "Only non-retired open PRs may count as active successors.",
@@ -16,7 +16,8 @@
     ],
     "merged_successor": "A merged same-obligation successor satisfies the old closed terminal lease and prevents unsafe auto-reopen.",
     "fail_closed": "Multiple genuine non-retired active successors remain a terminal ambiguity and still fail closed.",
-    "stale_actions": "Existing normal cancel -> force-cancel -> delete-fallback escalation remains unchanged."
+    "stale_actions": "Existing normal cancel -> force-cancel -> delete-fallback escalation remains unchanged.",
+    "apply_order": "Cleanup actions are applied oldest-first by PR number. Because an explicit successor is necessarily a newer PR, predecessor validation completes before that successor can itself be closed by the same plan."
   },
   "regression": [
     "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
@@ -29,8 +30,8 @@
   },
   "evidence": {
     "workflow": ".github/workflows/powerhouse-repository-janitor.yml",
-    "failed_run_id": 37595314458,
-    "proof_boundary": "retired successor filtering plus merged-successor satisfaction while preserving genuine multi-writer fail-closed behavior"
+    "failed_run_id": 37641738149,
+    "proof_boundary": "retired successor filtering, merged-successor satisfaction, oldest-first transitive cleanup, and unchanged genuine multi-writer fail-closed behavior"
   },
   "evaluation": {
     "historical_replay": [
@@ -40,7 +41,8 @@
       "Powerhouse Repository Janitor run 37595314458 attempt 1"
     ],
     "canary": [
-      "Powerhouse Repository Janitor run 37595314458 attempt 2 after retired-PR manual closure"
+      "Powerhouse Repository Janitor run 37595314458 attempt 2 after retired-PR manual closure",
+      "Powerhouse Repository Janitor workflow_dispatch run 37641738149 on merged #4060"
     ]
   }
 }
