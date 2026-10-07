@@ -26,4 +26,4 @@ const authority=createBrainAuthorityClient();
 const handler=createPortalBusinessInputHandler({getUser,store,authority});
 
 export default async request=>handler(request);
-export const config={path:'/api/portal-business-input',region:'fra'};
+export const config={path:'/api/portal-business-input'};
