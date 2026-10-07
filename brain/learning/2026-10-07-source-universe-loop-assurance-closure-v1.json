@@ -37,6 +37,12 @@
     "historical_replay": [
       "tests/brain-source-universe-loop-assurance-closure-v1.test.mjs"
     ],
+    "shadow": [
+      "tests/brain-source-universe-loop-assurance-closure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-source-universe-loop-assurance-closure-v1.test.mjs"
+    ],
     "production_before_fix": {
       "status": "AMBER",
       "fresh_stage_count": 4,
@@ -48,11 +54,21 @@
         "outcome"
       ]
     },
-    "production_claim": "not_green_until_exact-head_gates_merge_and_production_8_of_8_readback"
+    "production_after_fix": {
+      "status": "EVIDENCED",
+      "fresh_stage_count": 8,
+      "required_stage_count": 8,
+      "guard_status": "PASS",
+      "business_action_fabricated": false,
+      "outcome_synthesized": false,
+      "learning_synthesized": false
+    },
+    "production_claim": "green_only_when_exact-head_gates_pass_and_production_8_of_8_readback_stays_fresh"
   },
   "evidence": {
     "migration": "supabase/migrations/20261007221130_source_universe_loop_assurance_closure_v1.sql",
     "test": "tests/brain-source-universe-loop-assurance-closure-v1.test.mjs",
-    "source_universe_production_refresh": "CURRENT_50_SIGNALS_31_ACTION_CANDIDATES_NO_FABRICATED_IMPACT"
+    "source_universe_production_refresh": "CURRENT_50_SIGNALS_31_ACTION_CANDIDATES_NO_FABRICATED_IMPACT",
+    "loop_assurance_production_readback": "EIGHT_OF_EIGHT_WITH_GUARD_PASS_AND_TRUTHFUL_NOOPS"
   }
 }
