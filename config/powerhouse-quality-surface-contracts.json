@@ -954,6 +954,20 @@
       "required": true
     },
     {
+      "id": "rpc:record_data_sovereignty_provider_observation_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007112412_netlify_runtime_residency_truth_v2.sql",
+      "evidence_contract": "tests/data-sovereignty-control-plane.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:refresh_data_sovereignty_snapshot_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007110248_data_sovereignty_runtime_and_connector_truth_v1.sql",
+      "evidence_contract": "tests/data-sovereignty-control-plane.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.bg_buffer_ingest_status",
       "type": "table",
       "authority": "supabase/migrations/20260917154000_production_schema_replay_parity_v1.sql",
@@ -1105,6 +1119,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_freshness_contradiction_cache_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261006095838_cache_research_freshness_and_split_one_brain_v1.sql",
+      "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
       "required": true
     },
     {
@@ -1398,13 +1419,6 @@
       "id": "table:public.workshop_portal_intakes",
       "type": "table",
       "authority": "supabase/migrations/20260928110707_workshop_scan_preprovision_customer_portal.sql",
-      "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
-      "required": true
-    },
-    {
-      "id": "table:public.powerhouse_freshness_contradiction_cache_v1",
-      "type": "table",
-      "authority": "supabase/migrations/20261006095838_cache_research_freshness_and_split_one_brain_v1.sql",
       "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
       "required": true
     }
