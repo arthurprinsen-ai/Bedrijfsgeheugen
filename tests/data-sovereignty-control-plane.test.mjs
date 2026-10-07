@@ -25,7 +25,7 @@ test('Netlify Blob stores do not claim an unsupported physical EU region option'
  const feedback=await read('netlify/functions/portal-feedback.mjs');
  assert.doesNotMatch(projection,/region:\s*'eu-central-1'/);
  assert.doesNotMatch(feedback,/region:\s*'eu-central-1'/);
- const correction=await read('supabase/migrations/20261007112300_netlify_runtime_residency_truth_v2.sql');
+ const correction=await read('supabase/migrations/20261007112412_netlify_runtime_residency_truth_v2.sql');
  for(const token of ['PLATFORM_ROUTED_UNPINNED','PLATFORM_MANAGED_UNKNOWN_REGION','POSSIBLE_OUTSIDE_EEA','OBSERVATION_ONLY'])assert.match(correction,new RegExp(token));
 });
 
