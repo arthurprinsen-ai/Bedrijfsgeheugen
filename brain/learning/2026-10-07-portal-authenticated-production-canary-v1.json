@@ -10,6 +10,7 @@
     "canary_auth_bypass_in_business_api": false,
     "github_oidc_signature_verified": true,
     "repository_ref_workflow_audience_restricted": true,
+    "legacy_and_immutable_github_subject_formats_supported": true,
     "synthetic_tenant_only": true,
     "canary_user_cleanup": true,
     "payload_secret_scan": true
@@ -17,6 +18,7 @@
   "prevention": [
     "Protected Portal APIs that are part of production readiness must have a real authenticated HTTP readback, not only unit tests plus database/provider proof.",
     "CI authentication must use short-lived federated identity where possible; do not store permanent customer credentials for canaries.",
+    "GitHub OIDC subject validation must account for the repository's legacy and immutable owner/repository-ID subject formats while still requiring the same repository, main ref and workflow claims.",
     "A production canary must exercise the unchanged customer auth boundary and must never introduce a canary header or alternate authentication path inside the business API.",
     "Canary users and credentials are ephemeral and removed after readback, including failure cleanup."
   ],

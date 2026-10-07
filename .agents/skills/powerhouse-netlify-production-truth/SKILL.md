@@ -228,7 +228,7 @@ For protected Portal endpoints that are part of production readiness, static tes
 
 Required pattern:
 - GitHub Actions uses short-lived OIDC; do not persist an end-user password in GitHub or Netlify for the canary;
-- the OIDC verifier is fail-closed on issuer, audience, repository, `refs/heads/main`, workflow ref, subject, event and token lifetime;
+- the OIDC verifier is fail-closed on issuer, audience, repository, `refs/heads/main`, workflow ref, subject, event and token lifetime; subject validation must support GitHub's exact legacy and immutable owner/repository-ID formats for this repository, never a wildcard subject;
 - the canary creates an ephemeral Netlify Identity user with a synthetic tenant and performs the normal server-side Identity login;
 - the production readback uses the resulting real session cookie against the unchanged protected business endpoint;
 - HTTP 200 and exact synthetic tenant scope must both match before the readback is green;

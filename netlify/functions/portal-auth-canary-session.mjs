@@ -5,6 +5,8 @@ const ISSUER='https://token.actions.githubusercontent.com';
 const JWKS_URL='https://token.actions.githubusercontent.com/.well-known/jwks';
 const AUDIENCE='bedrijfsgeheugen-portal-production-canary-v1';
 const REPOSITORY='arthurprinsen-ai/Bedrijfsgeheugen';
+const OWNER_ID='236997948';
+const REPOSITORY_ID='1303700955';
 const REF='refs/heads/main';
 const WORKFLOW_REF='arthurprinsen-ai/Bedrijfsgeheugen/.github/workflows/production-release-readback.yml@refs/heads/main';
 const ORIGIN='https://www.bedrijfsgeheugen.nl';
@@ -21,6 +23,13 @@ function bearer(request){
 
 function audienceMatches(value){
   return Array.isArray(value)?value.includes(AUDIENCE):value===AUDIENCE;
+}
+
+function subjectMatches(value){
+  const subject=String(value||'');
+  const legacy=`repo:${REPOSITORY}:ref:${REF}`;
+  const immutable=`repo:arthurprinsen-ai@${OWNER_ID}/Bedrijfsgeheugen@${REPOSITORY_ID}:ref:${REF}`;
+  return subject===legacy||subject===immutable;
 }
 
 async function verifyGithubActionsOidc(token){
@@ -62,7 +71,7 @@ async function verifyGithubActionsOidc(token){
   if(claims.repository!==REPOSITORY) throw new Error('OIDC_REPOSITORY_INVALID');
   if(claims.ref!==REF) throw new Error('OIDC_REF_INVALID');
   if(claims.workflow_ref!==WORKFLOW_REF) throw new Error('OIDC_WORKFLOW_INVALID');
-  if(claims.sub!==`repo:${REPOSITORY}:ref:${REF}`) throw new Error('OIDC_SUBJECT_INVALID');
+  if(!subjectMatches(claims.sub)) throw new Error('OIDC_SUBJECT_INVALID');
   if(!['push','workflow_dispatch'].includes(String(claims.event_name||''))) throw new Error('OIDC_EVENT_INVALID');
   if(!/^[0-9a-f]{40}$/i.test(String(claims.sha||''))) throw new Error('OIDC_SHA_INVALID');
   return claims;
