@@ -28,3 +28,12 @@ test('janitor escalates proven obsolete runs through force-cancel and delete fal
   assert.match(source,/cancel_mode=force-cancel/);
   assert.match(source,/cancel_mode=delete-fallback/);
 });
+
+
+test('terminal lease ambiguity fails closed locally but cannot abort independent stale-run reaping',()=>{
+  assert.match(source,/TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS/);
+  assert.match(source,/blocker:"FAIL_CLOSED_LEASE_ONLY"/);
+  assert.match(source,/TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS[\s\S]{0,1200}continue/);
+  assert.doesNotMatch(source,/TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS[^\n]*\n\s*exit 78/);
+  assert.match(source,/# Cancel only stale candidate executions/);
+});

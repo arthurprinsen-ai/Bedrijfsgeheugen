@@ -139,8 +139,11 @@ jobs:
               successor="$(jq -r --arg obligation "$obligation" '[.[] | select(.state=="open") | select((.body // "") | contains("Obligation-ID: " + $obligation))][0].number' .artifacts/open-prs-after.json)"
               jq -cn --arg type TERMINAL_LEASE_SUCCESSOR_EXISTS --argjson pr "$pr" --argjson successor "$successor" --arg obligation "$obligation" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation}' >> .artifacts/janitor-runtime-actions.ndjson
             else
-              echo "::error::TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS:#${pr}:obligation=${obligation}:count=${successor_count}"
-              exit 78
+              # Fail closed for this lease only. An ambiguous terminal lineage must never
+              # abort independent stale-run reaping or merged-branch cleanup.
+              echo "::warning::TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS:#${pr}:obligation=${obligation}:count=${successor_count}"
+              jq -cn --arg type TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS --argjson pr "$pr" --argjson successor_count "$successor_count" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,successor_count:$successor_count,blocker:"FAIL_CLOSED_LEASE_ONLY"}' >> .artifacts/janitor-runtime-actions.ndjson
+              continue
             fi
           done
 
