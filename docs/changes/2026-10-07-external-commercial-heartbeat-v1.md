@@ -13,3 +13,7 @@ Structural correction:
 - The existing outbound-copy quality gates remain fail closed.
 
 Cutover is deliberately two phase. The existing pg_cron heartbeat remains active until the external path has produced live durable evidence. Only then may the legacy cron owner be retired.
+
+## Live cutover proof
+
+At 2026-10-07 08:37:34 UTC the external heartbeat produced durable event `commercial-heartbeat:202610070837` with `state=actioned`, `data_quality=VERIFIED`, confidence 1, while the Edge runner returned HTTP 200. Production migration 20261007083900 then retired the legacy pg_cron heartbeat owner by jobname after an exact owner-count guard. Production migration history is now 605 entries and no `powerhouse-one-commercial-heartbeat-v1` cron job remains.

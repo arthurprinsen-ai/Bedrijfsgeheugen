@@ -17,8 +17,8 @@
       "tests/brain-external-commercial-heartbeat-v1.test.mjs"
     ]
   },
-  "status": "ACTIVE_PREVENTION",
-  "revision": 1,
+  "status": "LIVE_PROVEN_CUTOVER",
+  "revision": 2,
   "evidence": {
     "legacy_pg_cron_job": 154,
     "observed_startup_timeout_utc": "2026-10-07T06:50:15.916Z",
@@ -27,5 +27,17 @@
     "transport": "supavisor-ipv4-transaction",
     "max_connections_per_isolate": 1,
     "durable_readback_required": true
+  },
+  "cutover_evidence": {
+    "heartbeat_dedupe_key": "commercial-heartbeat:202610070837",
+    "occurred_at": "2026-10-07T08:37:34.417752Z",
+    "state": "actioned",
+    "data_quality": "VERIFIED",
+    "confidence": 1,
+    "edge_status": 200,
+    "migration_count": 605,
+    "latest_migration": "20261007083900",
+    "legacy_pgcron_owner_count": 0,
+    "external_scheduler": "Netlify scheduled -> background -> Supabase Edge -> IPv4 Supavisor"
   }
 }
