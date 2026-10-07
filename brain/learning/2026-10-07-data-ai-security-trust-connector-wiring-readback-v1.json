@@ -3,14 +3,41 @@
   "date": "2026-10-07",
   "obligation_id": "data-ai-security-trust-center-v1",
   "status": "BRANCH_READBACK_VERIFIED",
+  "fingerprint": "security-trust|connector-event-refresh|same-transaction|v1",
+  "root_cause": "Connectorwijzigingen konden de data-sovereignty- en security-trustprojectie tijdelijk stale laten wanneer alleen de periodieke heartbeat als refreshpad werd gebruikt.",
+  "prevention": {
+    "connector_event": "Elke INSERT, UPDATE of DELETE op connector_definitions ververst data-sovereignty en security-trust in dezelfde databasetransactie.",
+    "tenant_move": "Bij wijziging van organisatie_id worden zowel de oude als de nieuwe tenant opnieuw geprojecteerd.",
+    "heartbeat_role": "De bestaande heartbeat blijft recovery/verification authority en is niet het enige primaire eventpad.",
+    "truth_rule": "Geen production-green zonder protected merge plus Supabase, Netlify en Notion readback."
+  },
   "evidence": {
     "connector_trigger": "connector_definitions_trust_refresh_v1",
-    "event_scope": ["INSERT", "UPDATE", "DELETE"],
+    "event_scope": [
+      "INSERT",
+      "UPDATE",
+      "DELETE"
+    ],
     "same_transaction": true,
     "sovereignty_refresh": "refresh_data_sovereignty_snapshot_v1",
     "security_refresh": "refresh_security_trust_snapshot_v1",
     "tenant_move_refreshes_old_and_new": true,
-    "periodic_authority": "powerhouse_refresh_data_sovereignty_v1"
+    "periodic_authority": "powerhouse_refresh_data_sovereignty_v1",
+    "tests": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "expected_outcome": "new_or_changed_connector_updates_sovereignty_and_security_transactionally"
+  },
+  "compiler": {
+    "failure_class": "STALE_SECURITY_TRUST_AFTER_CONNECTOR_CHANGE",
+    "scope": "DATA_AI_SECURITY_TRUST",
+    "machine_enforceable": true,
+    "security_sensitive": true
   },
   "truth_rule": "production status remains evidence-gated until protected merge, Supabase migration readback, Netlify exact-main readback and Notion projection."
 }
