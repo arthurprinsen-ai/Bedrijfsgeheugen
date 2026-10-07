@@ -172,9 +172,15 @@ Deno.serve(async (req: Request) => {
     if (!authPhase && /secret unavailable|vault read timeout|database auth unavailable/i.test(message)) {
       errorCode = "vault_authority_unavailable";
       status = 503;
-    } else if (!authPhase && /composio (connected account|session create|session execute)/i.test(message)) {
-      errorCode = "composio_authority_failed";
-      status = 424;
+    } else if (!authPhase && /composio connected account/i.test(message)) {
+      errorCode = "composio_connected_account_failed";
+      status = 421;
+    } else if (!authPhase && /composio session create/i.test(message)) {
+      errorCode = "composio_session_create_failed";
+      status = 422;
+    } else if (!authPhase && /composio session execute/i.test(message)) {
+      errorCode = "composio_session_execute_failed";
+      status = 423;
     } else if (!authPhase && /fresh netlify proxy not issued/i.test(message)) {
       errorCode = "proxy_issuance_invalid";
       status = 502;
