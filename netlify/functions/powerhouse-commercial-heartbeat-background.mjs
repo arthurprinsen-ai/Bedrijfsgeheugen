@@ -20,17 +20,58 @@ function authorized(request){
 
 const sleep=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
 
+async function proveDataSovereignty({siteUrl,baseUrl,token}){
+  const proofResponse=await fetch(siteUrl+'/api/data-sovereignty/runtime-proof',{
+    headers:{accept:'application/json'},
+    signal:AbortSignal.timeout(5_000)
+  });
+  const proof=await proofResponse.json().catch(()=>null);
+  if(!proofResponse.ok||!proof)throw new Error('SOVEREIGNTY_RUNTIME_PROOF_UNAVAILABLE');
+
+  const observationResponse=await fetch(baseUrl+'/functions/v1/portal-state-eu',{
+    method:'POST',
+    headers:{
+      'content-type':'application/json',
+      'x-bg-service-token':token,
+      'x-region':'eu-central-1'
+    },
+    body:JSON.stringify({
+      action:'data_sovereignty_provider_observe',
+      tenantId:'canonical',
+      providerKey:'netlify',
+      observedRegion:proof.runtimeRegion,
+      configuredStorageRegion:proof.configuredStorageRegion,
+      deployId:proof.deployId,
+      commitRef:proof.commitRef,
+      source:'powerhouse-heartbeat',
+      evidence:{
+        contract:proof.contract,
+        functionRegionConfigured:proof.functionRegionConfigured,
+        proofObservedAt:proof.observedAt
+      }
+    }),
+    signal:AbortSignal.timeout(10_000)
+  });
+  const observation=await observationResponse.json().catch(()=>null);
+  if(!observationResponse.ok||observation?.observation?.verified!==true){
+    throw new Error('SOVEREIGNTY_RUNTIME_PROOF_FAILED');
+  }
+  return observation.observation;
+}
+
 export default async function handler(request){
   if(request.method!=='POST')throw new Error('HEARTBEAT_BACKGROUND_POST_ONLY');
   if(!authorized(request))throw new Error('HEARTBEAT_BACKGROUND_UNAUTHORIZED');
 
   const baseUrl=requiredEnv('BG_PORTAL_EU_SUPABASE_URL').replace(/\/$/,'');
+  const siteUrl=requiredEnv('URL').replace(/\/$/,'');
   const token=requiredEnv('BG_PORTAL_EU_SERVICE_TOKEN');
 
   let lastFailure='UNKNOWN';
   for(let attempt=1;attempt<=MAX_ATTEMPTS;attempt++){
     if(DELAYS_MS[attempt-1]>0)await sleep(DELAYS_MS[attempt-1]);
     try{
+      const sovereigntyObservation=await proveDataSovereignty({siteUrl,baseUrl,token});
       const response=await fetch(baseUrl+'/functions/v1/powerhouse-commercial-heartbeat-runner',{
         method:'POST',
         headers:{
@@ -47,6 +88,8 @@ export default async function handler(request){
           event:'powerhouse-commercial-heartbeat',
           state:body.state,
           durable_readback_verified:body.durable_readback_verified===true,
+          sovereignty_verified:sovereigntyObservation?.verified===true,
+          sovereignty_region:sovereigntyObservation?.observedRegion||null,
           attempt,
           receipt:body.receipt||null
         }));
@@ -54,9 +97,10 @@ export default async function handler(request){
       }
       lastFailure='HTTP_'+response.status+':'+String(body?.error||'UNKNOWN');
     }catch(error){
-      lastFailure=error?.name==='TimeoutError'||error?.name==='AbortError'
-        ?'EDGE_TIMEOUT'
-        :'EDGE_NETWORK';
+      const code=String(error?.message||'');
+      lastFailure=code.startsWith('SOVEREIGNTY_')
+        ?code
+        :(error?.name==='TimeoutError'||error?.name==='AbortError'?'EDGE_TIMEOUT':'EDGE_NETWORK');
     }
     console.warn(JSON.stringify({event:'powerhouse-commercial-heartbeat-retry',attempt,lastFailure}));
   }
