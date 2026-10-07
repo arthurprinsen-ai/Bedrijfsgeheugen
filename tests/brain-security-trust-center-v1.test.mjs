@@ -93,3 +93,24 @@ test('canonical internal trust scope is admin-only for both security and soverei
   assert.match(source,/wantsCanonical/);
  }
 });
+
+
+test('connector mutations refresh sovereignty and security in the same database transaction',async()=>{
+ const sql=await read('supabase/migrations/20261007155500_data_ai_security_trust_center_v1.sql');
+ assert.match(sql,/refresh_trust_after_connector_change_v1/);
+ assert.match(sql,/connector_definitions_trust_refresh_v1/);
+ assert.match(sql,/after insert or update or delete on public\.connector_definitions/i);
+ assert.match(sql,/perform public\.refresh_data_sovereignty_snapshot_v1\(v_tenant\)/);
+ assert.match(sql,/perform public\.refresh_security_trust_snapshot_v1\(v_tenant\)/);
+ assert.match(sql,/old\.organisatie_id is distinct from new\.organisatie_id/);
+ assert.match(sql,/refresh_data_sovereignty_snapshot_v1\(v_old_tenant\)/);
+ assert.match(sql,/refresh_security_trust_snapshot_v1\(v_old_tenant\)/);
+});
+
+test('system map makes connector auto-enrolment and single heartbeat explicit',async()=>{
+ const map=await read('platform/system-map/canonical-system-map.mjs');
+ assert.match(map,/newConnectorsAutoEnrolled:true/);
+ assert.match(map,/connectorMutationsRefreshTrustTransactionally:true/);
+ assert.match(map,/connectorTenantMovesRefreshOldAndNewTenant:true/);
+ assert.match(map,/oneHeartbeatAuthority:true/);
+});

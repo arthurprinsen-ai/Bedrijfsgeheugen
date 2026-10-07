@@ -139,6 +139,43 @@ end $$;
 revoke all on function public.record_security_management_observation_v1(text,text,text,text,jsonb,text,timestamptz,text) from public,anon,authenticated;
 grant execute on function public.record_security_management_observation_v1(text,text,text,text,jsonb,text,timestamptz,text) to service_role;
 
+
+create or replace function public.refresh_trust_after_connector_change_v1()
+returns trigger
+language plpgsql
+security definer
+set search_path='public'
+as $$
+declare
+ v_tenant text;
+ v_old_tenant text;
+begin
+ if tg_op='DELETE' then
+  v_tenant:=old.organisatie_id::text;
+ else
+  v_tenant:=new.organisatie_id::text;
+ end if;
+
+ if tg_op='UPDATE' and old.organisatie_id is distinct from new.organisatie_id then
+  v_old_tenant:=old.organisatie_id::text;
+  perform public.refresh_data_sovereignty_snapshot_v1(v_old_tenant);
+  perform public.refresh_security_trust_snapshot_v1(v_old_tenant);
+ end if;
+
+ perform public.refresh_data_sovereignty_snapshot_v1(v_tenant);
+ perform public.refresh_security_trust_snapshot_v1(v_tenant);
+
+ if tg_op='DELETE' then return old; end if;
+ return new;
+end $$;
+revoke all on function public.refresh_trust_after_connector_change_v1() from public,anon,authenticated;
+grant execute on function public.refresh_trust_after_connector_change_v1() to service_role;
+
+drop trigger if exists connector_definitions_trust_refresh_v1 on public.connector_definitions;
+create trigger connector_definitions_trust_refresh_v1
+after insert or update or delete on public.connector_definitions
+for each row execute function public.refresh_trust_after_connector_change_v1();
+
 create or replace function public.powerhouse_refresh_data_sovereignty_v1()
 returns jsonb language plpgsql security definer set search_path='public' as $$
 declare r record;v_count integer:=0;v_blocked integer:=0;v_snapshot jsonb;v_security jsonb;v_security_findings integer:=0;

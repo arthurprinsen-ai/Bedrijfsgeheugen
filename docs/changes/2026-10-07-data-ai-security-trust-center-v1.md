@@ -29,3 +29,9 @@ Projectie bevat AVG/GDPR, EU AI Act, NIS2/Cyberbeveiligingswet, ISO 27001/27017/
 
 ## Security truth
 Known database findings are deliberately visible as findings. Een groene UI volgt alleen wanneer catalogus/advisor-evidence het onderliggende issue niet meer rapporteert. RLS enabled zonder policy blijft informatief omdat deny-all bewust kan zijn.
+
+
+## Automatische connector-herijking
+Een koppeling is onderdeel van dezelfde trust-control-plane en wordt niet pas zichtbaar bij de volgende heartbeat. Iedere `INSERT`, `UPDATE` of `DELETE` op `public.connector_definitions` triggert in dezelfde Supabase-transactie een nieuwe data-sovereignty- én security-trust-snapshot voor de betreffende tenant. Als een connector van tenant wisselt, worden zowel de oude als de nieuwe tenant opnieuw berekend.
+
+De bestaande `public.powerhouse_refresh_data_sovereignty_v1()` heartbeat blijft de enige periodieke authority en fungeert als verificatie/recoverylaag. Er ontstaat dus geen tweede scheduler of parallelle truth store.
