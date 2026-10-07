@@ -34,7 +34,10 @@
       "tests/data-sovereignty-control-plane.test.mjs"
     ],
     "dashboard": "portal-next/compliance.html + portal-next/data-sovereignty-panel.js",
-    "heartbeat": "powerhouse_refresh_data_sovereignty_v1"
+    "heartbeat": "powerhouse_refresh_data_sovereignty_v1",
+    "historical_replay": [
+      "tests/data-sovereignty-control-plane.test.mjs"
+    ]
   },
   "compiler": {
     "failure_class": "FALSE_GREEN_DATA_RESIDENCY",
