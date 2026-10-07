@@ -91,7 +91,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
+          # A successor PR is necessarily newer than its predecessor. Apply cleanup oldest-first so
+          # a transitive chain A -> B -> C never closes B before A has validated B as its successor.
+          jq -c '[.actions[] | select(.perform == true)] | sort_by(.prNumber)[]' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
             pr="$(jq -r '.prNumber' <<<"$action")"
             reason="$(jq -r '.reason' <<<"$action")"
             successor="$(jq -r '.successorNumber // empty' <<<"$action")"
