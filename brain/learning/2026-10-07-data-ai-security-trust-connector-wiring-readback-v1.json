@@ -31,7 +31,13 @@
     "historical_replay": [
       "tests/brain-security-trust-center-v1.test.mjs"
     ],
-    "expected_outcome": "new_or_changed_connector_updates_sovereignty_and_security_transactionally"
+    "expected_outcome": "new_or_changed_connector_updates_sovereignty_and_security_transactionally",
+    "shadow": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ]
   },
   "compiler": {
     "failure_class": "STALE_SECURITY_TRUST_AFTER_CONNECTOR_CHANGE",
