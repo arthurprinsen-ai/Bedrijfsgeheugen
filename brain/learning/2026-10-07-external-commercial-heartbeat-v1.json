@@ -1,0 +1,31 @@
+{
+  "id": "external-commercial-heartbeat-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|commercial-heartbeat|pg-cron-startup-timeout|external-scheduler|v1",
+  "compiler": {
+    "failure_class": "DATABASE_RUNTIME_TRANSPORT",
+    "scope": "NETLIFY_SUPABASE_HEARTBEAT",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "After cron-owner consolidation, commercial heartbeat job 154 still failed with pg_cron job startup timeout while it was the only POWERHOUSE cron starting on the heartbeat minute. Production pg_cron uses client/libpq job connections, so the business heartbeat remained coupled to a proven unreliable connection-start path.",
+  "prevention": "Schedule the heartbeat externally through Netlify at offset minutes, hand execution to a protected background function, and execute the database transaction through a Supabase Edge runner using IPv4 Supavisor transaction transport with one connection per isolate. Keep the legacy pg_cron heartbeat until external durable readback is proven, then retire it.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-commercial-heartbeat-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "legacy_pg_cron_job": 154,
+    "observed_startup_timeout_utc": "2026-10-07T06:50:15.916Z",
+    "same_slot_powerhouse_cron_peers": 0,
+    "scheduler_offset": "2-57/5 * * * *",
+    "transport": "supavisor-ipv4-transaction",
+    "max_connections_per_isolate": 1,
+    "durable_readback_required": true
+  }
+}
