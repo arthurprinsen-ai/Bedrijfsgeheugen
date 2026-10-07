@@ -10,21 +10,43 @@
     "repeat_count": 4,
     "security_sensitive": false
   },
-  "root_cause": "The external heartbeat transport was live and authenticated, but the latency-critical revenue spine still synchronously called powerhouse_refresh_revenue_attribution_snapshot_v1(). Runtime mux also scheduled the same attribution refresh at minutes 7/22/37/52, exactly overlapping the external heartbeat schedule 2/7/12/.../57. Production logs showed ECHECKOUTTIMEOUT, lock timeout and statement timeout while the heartbeat stack was inside attribution refresh.",
-  "prevention": "The commercial heartbeat reads only a cached attribution receipt. Full attribution materialization remains fail-closed maintenance owned by the runtime mux on 4/19/34/49. The mux cron excludes both legacy pg_cron heartbeat slots (0 mod 5) and external heartbeat slots (2 mod 5), and formerly unreachable mux tasks are shifted to reachable non-heartbeat slots.",
+  "root_cause": "The external heartbeat transport was live and authenticated, but the latency-critical revenue spine still synchronously called powerhouse_refresh_revenue_attribution_snapshot_v1(). Runtime mux also scheduled the same attribution refresh at minutes 7/22/37/52, exactly overlapping the external heartbeat schedule 2/7/12/.../57. Production logs showed ECHECKOUTTIMEOUT, lock timeout and statement timeout while the heartbeat stack was inside attribution refresh. The first fresh Supabase Preview also proved the attribution snapshot table itself existed only in production: migration replay failed SQLSTATE 42P01 when creating the refreshed_at index.",
+  "prevention": "The commercial heartbeat reads only a cached attribution receipt. Full attribution materialization remains fail-closed maintenance owned by the runtime mux on 4/19/34/49. The mux cron excludes both legacy pg_cron heartbeat slots (0 mod 5) and external heartbeat slots (2 mod 5), and formerly unreachable mux tasks are shifted to reachable non-heartbeat slots. The recovery migration now idempotently materializes the exact production snapshot table, primary key, indexes, RLS and service-role policy before any new consumer/index so fresh preview and production share one schema authority.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-heartbeat-attribution-decoupling-v1.test.mjs"
     ]
   },
   "status": "ACTIVE_PREVENTION",
-  "revision": 1,
+  "revision": 2,
   "evidence": {
     "external_heartbeat_schedule": "2-57/5 * * * *",
     "legacy_heartbeat_schedule": "0,5,10,15,20,25,30,35,40,45,50,55 * * * *",
-    "old_attribution_slots": [7,22,37,52],
-    "new_attribution_slots": [4,19,34,49],
-    "observed_errors": ["ECHECKOUTTIMEOUT","lock timeout","statement timeout"],
-    "provider_runner": "powerhouse-commercial-heartbeat-runner"
+    "old_attribution_slots": [
+      7,
+      22,
+      37,
+      52
+    ],
+    "new_attribution_slots": [
+      4,
+      19,
+      34,
+      49
+    ],
+    "observed_errors": [
+      "ECHECKOUTTIMEOUT",
+      "lock timeout",
+      "statement timeout"
+    ],
+    "provider_runner": "powerhouse-commercial-heartbeat-runner",
+    "preview_failure": {
+      "project_ref": "wyztfasushrvpzgqoecc",
+      "status": "MIGRATIONS_FAILED",
+      "sqlstate": "42P01",
+      "relation": "public.powerhouse_revenue_attribution_snapshot_v1",
+      "failed_statement": "CREATE INDEX powerhouse_revenue_attribution_snapshot_refreshed_at_idx",
+      "prevention": "exact production schema projected idempotently before use"
+    }
   }
 }
