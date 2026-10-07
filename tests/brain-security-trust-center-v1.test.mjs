@@ -129,4 +129,8 @@ test('Portal is one product across technical source paths',async()=>{
  for(const source of [security,compliance,company]) assert.match(source,/https:\/\/www\.bedrijfsgeheugen\.nl\/portaal/);
  assert.doesNotMatch(security,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
  assert.doesNotMatch(compliance,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-next\//);
+ assert.match(map,/portal:'https:\/\/www\.bedrijfsgeheugen\.nl\/portaal\?page=omgevingsradar'/);
+ assert.doesNotMatch(map,/portal:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
+ assert.doesNotMatch(map,/productionUrl:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
+ assert.match(map,/technicalReadbackUrl:'https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
 });
