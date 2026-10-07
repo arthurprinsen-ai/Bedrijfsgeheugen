@@ -71,6 +71,10 @@ async function runHeartbeat(){
       };
     }
 
+    await tx.unsafe(
+      "select set_config('powerhouse.external_heartbeat_owner','netlify-supabase-edge-v1',true)"
+    );
+
     const heartbeatRows=await tx.unsafe(
       "select public.powerhouse_commercial_heartbeat_v1(now()) as heartbeat"
     );
