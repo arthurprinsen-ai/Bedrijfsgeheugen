@@ -58,3 +58,12 @@ test('overlap cannot count as success without a durable peer receipt',()=>{
   assert.match(background,/body\?\.durable_readback_verified===true/);
   assert.doesNotMatch(background,/state==='SKIPPED_OVERLAP'/);
 });
+
+
+test('service token uses the proven portal hash contract without an Edge plaintext secret dependency',()=>{
+  const source=read('supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts');
+  assert.match(source,/SERVICE_TOKEN_HASH="0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75"/);
+  assert.match(source,/await sha256\(provided\)!==SERVICE_TOKEN_HASH/);
+  assert.doesNotMatch(source,/Deno\.env\.get\("BG_PORTAL_EU_SERVICE_TOKEN"\)/);
+  assert.doesNotMatch(source,/SERVER_AUTH_CONFIG_MISSING/);
+});
