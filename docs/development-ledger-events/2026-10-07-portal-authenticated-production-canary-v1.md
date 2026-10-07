@@ -10,3 +10,5 @@
 - Business API auth bypass: none.
 - Regression: `tests/portal-authenticated-production-canary.test.mjs`.
 - Production closure: withheld until protected gates, merge, Netlify exact-main deployment and canary HTTP 200 artifact succeed.
+
+- PR_MACHINE_METADATA_INVALID recovery: Required run 37684632285 correctly failed admission because the first PR body omitted the exact machine-readable delivery metadata preamble. The PR body now starts with Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA, Supersedes, Change-Scope and Scope-Budget; this is a prevention rule, not a gate bypass.

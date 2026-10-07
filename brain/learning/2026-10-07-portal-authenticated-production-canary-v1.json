@@ -28,5 +28,13 @@
     "protected_api": "netlify/functions/portal-ondernemersdata.mjs",
     "regression": "tests/portal-authenticated-production-canary.test.mjs",
     "production_claim": "withheld until protected merge, exact-main Netlify deployment and authenticated HTTP 200 artifact"
+  },
+  "delivery_recovery": {
+    "failure_class": "PR_MACHINE_METADATA_INVALID",
+    "observed_run": 37684632285,
+    "observed_head": "2e92e34e31c6280a290527811b4a0414e735256a",
+    "root_cause": "The initial PR description used narrative headings but omitted the repository's exact machine-readable delivery metadata preamble, so admission correctly failed before expensive CI.",
+    "fix": "Write Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA, Supersedes, Change-Scope and Scope-Budget as the first PR-body fields before triggering Required.",
+    "prevention": "Every future candidate in this lineage must preserve the exact machine metadata preamble; narrative sections are supplementary, never a substitute."
   }
 }
