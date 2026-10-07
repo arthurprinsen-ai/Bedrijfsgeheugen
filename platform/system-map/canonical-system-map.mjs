@@ -36,6 +36,41 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'data-ai-security-trust-center-v1',
+      fingerprint:'powerhouse|security-trust|sovereignty|connector-auto-enrolment|evidence-first|v1',
+      label:'Data, AI Sovereignty & Security Trust Center',
+      authority:'supabase-security-trust+data-sovereignty+provider-readback',
+      owner:'Powerhouse Trust, Security & Compliance / ONE BRAIN',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['tenant policy','providers','AI routes','connector definitions','database posture','management-plane evidence']),
+      outputs:Object.freeze(['tenant sovereignty snapshot','security trust snapshot','customer trust answers','findings','framework applicability','provider assurance boundaries']),
+      runtime:Object.freeze({
+        securitySnapshot:'public.security_trust_snapshot_v1',
+        sovereigntySnapshot:'public.data_sovereignty_snapshot_v1',
+        securityRefresh:'public.refresh_security_trust_snapshot_v1(text)',
+        sovereigntyRefresh:'public.refresh_data_sovereignty_snapshot_v1(text)',
+        connectorTrigger:'public.connector_definitions -> connector_definitions_trust_refresh_v1',
+        heartbeat:'public.powerhouse_refresh_data_sovereignty_v1()',
+        tenantGateway:'supabase/functions/portal-state-eu/index.ts',
+        netlifyApi:'netlify/functions/security-trust.mjs',
+        portal:'https://www.bedrijfsgeheugen.nl/portal-next/security.html',
+        learning:'brain/learning/2026-10-07-data-ai-security-trust-center-v1.json'
+      }),
+      invariants:Object.freeze({
+        oneHeartbeatAuthority:true,
+        connectorMutationsRefreshTrustTransactionally:true,
+        newConnectorsAutoEnrolled:true,
+        connectorTenantMovesRefreshOldAndNewTenant:true,
+        providerCertificationDoesNotCertifyBedrijfsgeheugen:true,
+        legalApplicabilitySeparatedFromTechnicalEvidence:true,
+        staleEvidenceNeverGreen:true,
+        sameTenantGateway:true,
+        unknownIsNotGreen:true,
+        notionProjectionRequired:true,
+        productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'external-observer-provider-truth-v1',
       label:'External Observer Isolation & Netlify Provider Truth',
       authority:'github-lineage+netlify-provider-readback',
