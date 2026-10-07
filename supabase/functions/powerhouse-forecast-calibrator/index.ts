@@ -43,5 +43,5 @@ Deno.serve(async(req:Request)=>{
     }
     await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'ok',detail:`due=${due.length}; calibrated=${calibrated}; uncertain=${uncertain}`,gegevens:{contract:'predictive-first-mover-intelligence-v1',results}});
     return json({ok:true,due:due.length,calibrated,uncertain,results});
-  }catch(e:any){await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'fout',detail:String(e?.message||e).slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1'}}).catch(()=>{});return json({ok:false,error:String(e?.message||e).slice(0,500)},500);}
+  }catch(e:any){await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'fout',detail:String(e?.message||e).slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1'}});return json({ok:false,error:String(e?.message||e).slice(0,500)},500);}
 });
