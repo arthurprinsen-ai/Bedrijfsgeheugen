@@ -961,10 +961,24 @@
       "required": true
     },
     {
+      "id": "rpc:record_security_management_observation_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007155500_data_ai_security_trust_center_v1.sql",
+      "evidence_contract": "tests/brain-security-trust-center-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:refresh_data_sovereignty_snapshot_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20261007110248_data_sovereignty_runtime_and_connector_truth_v1.sql",
       "evidence_contract": "tests/data-sovereignty-control-plane.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:refresh_security_trust_snapshot_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007155500_data_ai_security_trust_center_v1.sql",
+      "evidence_contract": "tests/brain-security-trust-center-v1.test.mjs",
       "required": true
     },
     {

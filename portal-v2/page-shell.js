@@ -23,13 +23,15 @@ import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 import { mountContextualForesight } from './foresight-context-ui.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
+import { mountSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
   profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
   'sales-intelligence':['Sales Intelligence & behoefte','Zie wat de klant aantoonbaar wil bereiken, welk probleem en effect zijn bevestigd, welke vraag nu volgt en wanneer een aanbod past.'],
   'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
-  'trust-center':['AI Trust Center','Controleer waarop Powerhouse vertrouwt: bronnen, actualiteit, bewijs, onzekerheid, verificatie en audittrail.'],
+  'trust-center':['Security Trust Center','Bekijk aantoonbaar hoe data, toegang, leveranciers, securitycontrols en relevante normen zijn ingericht.'],
+  'data-ai-passport':['Data & AI Sovereignty','Zie waar data wordt opgeslagen en verwerkt, welke AI-routes actief zijn en welke soevereiniteitsbeperkingen gelden.'],
   'ai-scan':['AI-scan: kansenkaart','Prioriteer AI-kansen op waarde, haalbaarheid, risico en benodigde data.'],
   kansenkaart:['Kansenkaart','Eén overzicht van commerciële, operationele en digitale verbeterkansen.'],
   'csrd-impact':['CSRD & Impact','Van CO₂, water en circulariteit tot social, governance, readiness, acties en auditbewijs in één klantwaardige impactcockpit.'],
@@ -41,7 +43,8 @@ const COPY = {
   mensen:['Mensen','Breng rollen, capaciteit, expertise, afhankelijkheden en kennisrisico’s in kaart.'],
   'branche-markt':['Branche en markt','Vergelijk de organisatie met marktontwikkelingen, concurrentie en relevante benchmarks.'],
   onderzoek:['Onderzoek','Bundel analyses, hypotheses, bevindingen, bronnen en conclusies in één traceerbaar overzicht.'],
-  ondernemersdata:['Actueel & externe data','Zie wat er buiten je bedrijf verandert: wetgeving, arbeidsmarkt, subsidies, economie, branche, AI en technologie.'],
+  ondernemersdata:['Actueel & externe data','Zie wat er buiten je bedrijf verandert: wetgeving, markt, technologie, cyber, economie, keten, mensen, energie, kapitaal en meer.'],
+  omgevingsradar:['Omgevingsradar','Eén levende radar van bronnen naar signalen, bedrijfsspecifieke impact, volgende acties, outcomes en leren.'],
   'wet-regelgeving':['Wet- & regelgeving','Volg wettelijke verplichtingen, toepasselijkheid, mijlpalen, deadlines, bron en laatste controle.'],
   'arbeidsmarkt-personeel':['Arbeidsmarkt & personeel','Volg UWV-, CBS- en andere arbeidsmarktsignalen die personeelsplanning, schaarste, verzuim en lonen kunnen raken.'],
   'subsidies-regelingen':['Subsidies & regelingen','Volg RVO-regelingen, subsidies en relevante ondernemersregelingen vanuit de bron.'],
@@ -87,13 +90,21 @@ const COPY = {
 
 const BRAIN_PAGES=new Set(['sales-intelligence','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
-const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
+const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','omgevingsradar','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek','compliance-governance']);
-const portalContext={domainState:null};
+export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','compliance-governance','compliance-command-center','eu-ai-act-audit']);
+const protectedTrustSet=new Set(PROTECTED_TRUST_PAGES);
+const portalContext={domainState:null,stateClient:null};
 
+export function isProtectedTrustPage(pageId=''){return protectedTrustSet.has(String(pageId||''));}
+export function hasProtectedTrustAccess(){
+  const snap=portalContext.stateClient?.getSnapshot?.();
+  return snap?.mode==='authenticated'&&!portalContext.stateClient?.isDemo?.();
+}
 export function configurePortalShell(context={}){
-  portalContext.domainState=context.domainState||null;
+  if(Object.prototype.hasOwnProperty.call(context,'domainState'))portalContext.domainState=context.domainState||null;
+  if(Object.prototype.hasOwnProperty.call(context,'stateClient'))portalContext.stateClient=context.stateClient||null;
   return portalContext;
 }
 
@@ -139,7 +150,7 @@ export function pagePresentation(pageId, state) {
 
 export function searchPortalPages(term='') {
   const q=String(term).trim().toLocaleLowerCase('nl');
-  const pages=listPortalGroups().flatMap(group=>group.pages.map(page=>({...page,groupLabel:group.label})));
+  const pages=listPortalGroups().flatMap(group=>group.pages.map(page=>({...page,groupLabel:group.label}))).filter(page=>!isProtectedTrustPage(page.id)||hasProtectedTrustAccess());
   if(!q) return pages.slice(0,12);
   return pages.filter(page=>`${page.label} ${page.groupLabel} ${page.id}`.toLocaleLowerCase('nl').includes(q)).slice(0,12);
 }
@@ -260,6 +271,7 @@ function renderAiCapabilitiesWorkspace(native,contract,view){
 }
 
 export function openPortalPage(pageId){
+  if(isProtectedTrustPage(pageId)&&!hasProtectedTrustAccess())return false;
   if(typeof location!=='undefined'){
     const url=new URL(location.href);
     const currentPage=url.searchParams.get('page'),currentHub=url.searchParams.get('hub');
@@ -289,6 +301,7 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
+  else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,stateClient:portalContext.stateClient,openPage:openPortalPage});}
   else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
@@ -349,6 +362,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./trusted-advisor-assurance.css');
   ensureStylesheet('./business-context.css');
   ensureStylesheet('./company-intelligence-context.css');
+  ensureStylesheet('./security-trust-workspace.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.quick button','koppelingen','koppelingen');

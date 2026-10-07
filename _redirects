@@ -42,6 +42,9 @@
 /portaal/*  /portal-v2/:splat  200!
 /portaal  /portal-v2/  301!
 /portaal.html  /portal-v2/  301!
+/portal/data-ai-passport.html  /portal-v2/?page=data-ai-passport  301!
+/portal-next/security.html  /portal-v2/?page=trust-center  301!
+/portal-next/compliance.html  /portal-v2/?page=compliance-command-center  301!
 /portal/*  /portal-v2/  301!
 /portal-next/*  /portal-v2/  301!
 /ai-act /ai-act.html 200

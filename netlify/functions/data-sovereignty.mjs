@@ -1,11 +1,13 @@
 import {getUser} from '@netlify/identity';
 import {resolveIdentityTenant} from '../../platform/read-models/portal-server-state.mjs';
+import {isPowerhouseAdmin} from '../../platform/auth/powerhouse-admin.mjs';
 import {createDataSovereigntyClient} from './_data-sovereignty-client.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const allowedModes=new Set(['TRANSPARENT_GLOBAL','EU_STORAGE','EU_ONLY','CUSTOM']);
 const allowedAiProviders=new Set(['','anthropic','openai_eu','composio_groq']);
 const client=createDataSovereigntyClient();
+const adminEmails=()=>String(Netlify.env.get('POWERHOUSE_ADMIN_EMAILS')||'').trim();
 
 export default async request=>{
   if(!['GET','POST'].includes(request.method))return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -16,7 +18,9 @@ export default async request=>{
 
   if(request.method==='GET'){
     const url=new URL(request.url);
-    const tenantId=url.searchParams.get('scope')==='bedrijfsgeheugen'?'canonical':ownTenant;
+    const wantsCanonical=url.searchParams.get('scope')==='bedrijfsgeheugen';
+    if(wantsCanonical&&!isPowerhouseAdmin(user,{allowedEmails:adminEmails()}))return json({error:'POWERHOUSE_ADMIN_REQUIRED'},403);
+    const tenantId=wantsCanonical?'canonical':ownTenant;
     try{return json(await client.get(tenantId));}catch(error){return json({error:error?.code||'DATA_SOVEREIGNTY_READ_FAILED'},502);}
   }
 

@@ -1,0 +1,64 @@
+{
+  "id": "data-ai-security-trust-center-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "security-trust|sovereignty|evidence-first|provider-assurance-separated|v1",
+  "root_cause": "Data-soevereiniteit alleen beantwoordt niet de klantvraag hoe veilig data is, wie kan meekijken en welke securityclaims werkelijk bewezen zijn. Losse compliancepagina's kunnen provider-certificering verwarren met eigen certificering of verouderd IAM-bewijs groen houden.",
+  "prevention": {
+    "truth_policy": "measured_or_evidence_backed_else_unknown",
+    "provider_assurance": "Provider assurance en Bedrijfsgeheugen-certificering zijn verschillende claimtypen.",
+    "expiry": "Account-, IAM- en managementplane-observaties krijgen expires_at en worden daarna STALE.",
+    "database": "Database security posture wordt uit pg_catalog/RLS/privileges afgeleid en niet handmatig groen gezet.",
+    "heartbeat": "Security refresh hangt aan de bestaande data-sovereignty heartbeat; geen tweede scheduler.",
+    "ux": "Vraaggestuurde antwoorden eerst, details on demand; securityinformatie staat in context van de klantvraag.",
+    "connector_event": "Elke INSERT/UPDATE/DELETE op connector_definitions ververst sovereignty en security voor dezelfde tenant binnen dezelfde databasetransactie; tenant-moves verversen zowel oud als nieuw. De heartbeat blijft verificatie/recovery, niet de primaire event-trigger."
+  },
+  "implementation": {
+    "portal": "portal-next/security.html",
+    "component": "portal-next/security-trust-center.js",
+    "api": "netlify/functions/security-trust.mjs",
+    "gateway": "supabase/functions/portal-state-eu/index.ts",
+    "migration": "supabase/migrations/20261007155500_data_ai_security_trust_center_v1.sql",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "regression": "tests/brain-security-trust-center-v1.test.mjs",
+    "connector_trigger": "public.connector_definitions -> connector_definitions_trust_refresh_v1 -> refresh_data_sovereignty_snapshot_v1 + refresh_security_trust_snapshot_v1"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "runtime_sources": [
+      "PostgreSQL pg_catalog/RLS/privileges",
+      "data_sovereignty_snapshot_v1",
+      "security management observations"
+    ],
+    "provider_sources": [
+      "Supabase",
+      "Netlify",
+      "GitHub",
+      "Notion",
+      "OpenAI",
+      "Anthropic"
+    ],
+    "pull_request": 4058
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "truth_rule": "unknown_or_stale_must_not_become_green",
+    "connector_event_contract": "new_or_changed_connector_updates_sovereignty_and_security_transactionally",
+    "shadow": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN_SECURITY_TRUST",
+    "scope": "DATA_AI_SECURITY_TRUST",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}

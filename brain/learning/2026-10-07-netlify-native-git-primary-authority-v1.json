@@ -1,0 +1,69 @@
+{
+  "id": "netlify-native-git-primary-authority-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|production-authority|native-git-primary|jit-fallback|v1",
+  "root_cause": "Production Source Snapshot acquired the JIT Netlify bridge before giving Netlify's already-configured native Git integration time to publish the exact main SHA. The bridge correctly authenticated GitHub OIDC, but its Supabase-side Composio project authority could not discover the active Netlify MCP connection because that connection is PRIVATE. The eager bridge call therefore returned HTTP 420 and made a healthy native production delivery appear red.",
+  "prevention": [
+    "Use Netlify native Git integration as the canonical primary production authority and prove it through bounded exact-SHA release.json readback before any fallback side effect.",
+    "Acquire GitHub OIDC and JIT Netlify MCP authority only after native Git exact-SHA readback times out.",
+    "Keep one exact-source MCP upload fallback; do not maintain a second linked-build trigger lane.",
+    "On JIT bridge failure, classify the provider error explicitly, re-read production once for a deployment race, and fail closed if neither native production nor fallback authority is proven."
+  ],
+  "compiler": {
+    "failure_class": "NETLIFY_DEPLOY_AUTHORITY_ORDERING",
+    "scope": "PRODUCTION_DELIVERY_AUTHORITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-git-deploy-first-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-git-deploy-first-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-git-deploy-first-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Production Source Snapshot run 37664276888 failed at eager Netlify deploy transport acquisition with HTTP 420 after GitHub OIDC succeeded.",
+      "The same main SHA d18db4301a2ef7b8f6599e17596f7dcac95a8627 subsequently reached Netlify production as deploy 6ac68a2989e60100089d4ad8 through the native Git integration.",
+      "Production Release Readback run 37664276918 completed successfully for that production SHA.",
+      "Production Delivery Self-Heal runs 37664348507 and 37664442384 completed successfully after reconciling production state."
+    ],
+    "current": [
+      "Composio reports an ACTIVE Netlify MCP connection whose account type is PRIVATE.",
+      "Supabase netlify-deploy-bridge remains ACTIVE version 20 and therefore remains a fail-closed exact-source fallback, not the primary production authority."
+    ]
+  },
+  "skill_targets": [
+    "delivery",
+    "security",
+    "continuity"
+  ],
+  "runtime_canary": {
+    "id": "netlify-native-git-primary-runtime-20261007-v1",
+    "status": "VERIFIED_RUNTIME",
+    "source_marker": "production-source-canary: netlify-native-git-primary-runtime-20261007-v1",
+    "mutation": "invisible HTML comment only",
+    "protected_merge_sha": "cfbf6247cd59506d468dd75bca0307c3065b4f67",
+    "netlify_deploy_id": "6ac692d18140b50008e74167",
+    "netlify_state": "ready",
+    "netlify_context": "production",
+    "netlify_commit_ref": "cfbf6247cd59506d468dd75bca0307c3065b4f67",
+    "production_source_snapshot_run": 37669016310,
+    "production_release_readback_run": 37669016607,
+    "observed_sequence": [
+      "NETLIFY_NATIVE_GIT_PRIMARY_WAIT started for exact protected merge SHA.",
+      "Exact protected merge SHA became production during the native Git wait.",
+      "Snapshot exited with no transport side effect required.",
+      "JIT fallback was not invoked.",
+      "Production Source Snapshot completed success.",
+      "Production Release Readback completed success on the same exact SHA."
+    ],
+    "terminal_state": "LIVE_PROVEN"
+  }
+}

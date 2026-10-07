@@ -89,3 +89,14 @@ test('terminal closure does not wait for impossible PR workflow events', async()
   assert.match(workflow,/require_pr_triggered_workflow "unified-brain-delivery\.yml" "BRAIN"/);
   assert.doesNotMatch(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
 });
+
+
+test('terminal closure forwards canonical merged PR body into obligation identity parsing', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  const start=workflow.indexOf('name: Verify machine-readable obligation and main containment');
+  const end=workflow.indexOf('- name: Verify exact-head critical delivery gates',start);
+  const identityBlock=workflow.slice(start,end);
+  assert.match(identityBlock,/PR_BODY_B64: \$\{\{ steps\.context\.outputs\.body_b64 \}\}/);
+  assert.match(identityBlock,/export PR_BODY=.*PR_BODY_B64/);
+  assert.match(identityBlock,/parseDeliveryMetadata\(process\.env\.PR_BODY\|\|''\)/);
+});
