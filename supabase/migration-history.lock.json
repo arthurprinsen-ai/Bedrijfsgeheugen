@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T06:34:39.550000Z",
+  "captured_at": "2026-10-07T06:49:48.956000Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2376,12 +2376,44 @@
       "name": "powerhouse_runtime_cron_pressure_relief_v1"
     },
     {
+      "version": "20261007061626",
+      "name": "powerhouse_runtime_cron_pressure_relief_v1"
+    },
+    {
+      "version": "20261007062150",
+      "name": "powerhouse_identity_graph_watermark_incremental_v1"
+    },
+    {
       "version": "20261007062404",
       "name": "bound_commercial_identity_graph_hotpath_v2"
     },
     {
+      "version": "20261007063127",
+      "name": "powerhouse_runtime_scheduler_mux_v1"
+    },
+    {
       "version": "20261007063439",
       "name": "bound_identity_graph_hotpath_and_heartbeat_batch"
+    },
+    {
+      "version": "20261007063440",
+      "name": "bound_commercial_identity_graph_runtime_v2"
+    },
+    {
+      "version": "20261007063919",
+      "name": "bound_commercial_heartbeat_critical_path_v1"
+    },
+    {
+      "version": "20261007063948",
+      "name": "fold_prediction_audit_and_retire_duplicate_runtime_cron"
+    },
+    {
+      "version": "20261007064605",
+      "name": "remove_revenue_attribution_truncate_lock_and_duplicate_refresh"
+    },
+    {
+      "version": "20261007064948",
+      "name": "align_commercial_closure_with_outbound_quality_gate_v1"
     }
   ],
   "replay_baselines_pending_repair": [
