@@ -1,0 +1,39 @@
+{
+  "id": "heartbeat-attribution-decoupling-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|commercial-heartbeat|attribution-full-refresh|statement-lock-timeout|v1",
+  "compiler": {
+    "failure_class": "DATABASE_RUNTIME_LATENCY",
+    "scope": "COMMERCIAL_HEARTBEAT_ATTRIBUTION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "After heartbeat transport was moved to IPv4 Supavisor, the winning external heartbeat transaction still synchronously rebuilt the full 180-day revenue attribution snapshot. That materialization repeatedly hit statement and lock timeouts, so overlap retries returned 202 while no durable VERIFIED commercial heartbeat could complete.",
+  "prevention": "Keep attribution materialization under the existing powerhouse-runtime-scheduler-mux-v1 maintenance owner at minutes 7/22/37/52. The five-minute heartbeat reads the durable attribution snapshot and the canonical revenue-event-spine health projection only; attribution balance, gaps and freshness remain visible evidence, but whole-history refresh is no longer in the latency-critical transaction.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-heartbeat-attribution-decoupling-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "external_runner_function": "powerhouse-commercial-heartbeat-runner",
+    "observed_failures": [
+      "statement timeout",
+      "lock timeout"
+    ],
+    "blocking_function": "powerhouse_refresh_revenue_attribution_snapshot_v1",
+    "heartbeat_refresh_removed": true,
+    "canonical_refresh_owner": "powerhouse-runtime-scheduler-mux-v1",
+    "refresh_minutes": [
+      7,
+      22,
+      37,
+      52
+    ],
+    "durable_readback_still_required": true
+  }
+}
