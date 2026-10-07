@@ -22,3 +22,5 @@ Evidence:
 
 
 Dry-run evidence 16:03 UTC: full migration transaction reached projected highRiskCount=0 (anon SD=0, auth SD=0, exposed definer views=0, materialized API views=0), then deliberate rollback. Immediate production readback remained 28/28/12/1 and highRiskCount=41, proving no persistent provider mutation occurred.
+
+Preview evidence: project dlfcakibwwaadcdnzauu failed on SQLSTATE 42P01 for production-only relation powerhouse_predictive_commercial_brief_cache_v1. Structural correction: conditional to_regclass guard around view hardening; existing targets remain fail-closed, missing fresh-replay objects are skipped.

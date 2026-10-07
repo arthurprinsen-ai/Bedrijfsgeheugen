@@ -61,8 +61,13 @@ begin
     'powerhouse_sales_machine_decision_context_v1'
   ]::text[]
   loop
-    execute format('revoke select on table public.%I from public, anon, authenticated',v_name);
-    execute format('grant select on table public.%I to service_role',v_name);
+    -- Production can contain provider/runtime-created intelligence surfaces that
+    -- are intentionally absent from a fresh migration replay. Harden them when
+    -- present; absence in a clean preview is not a migration failure.
+    if to_regclass(format('public.%I',v_name)) is not null then
+      execute format('revoke select on table public.%I from public, anon, authenticated',v_name);
+      execute format('grant select on table public.%I to service_role',v_name);
+    end if;
   end loop;
 end $$;
 

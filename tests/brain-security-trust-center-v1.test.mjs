@@ -129,3 +129,11 @@ test('least-privilege hardening removes direct client access and measures only e
  assert.match(sql,/SECURITY_TRUST_RPC_PRIVILEGE_HARDENING_FAILED/);
  assert.match(sql,/SECURITY_TRUST_VIEW_PRIVILEGE_HARDENING_FAILED/);
 });
+
+
+test('fresh replay tolerates production-only intelligence surfaces while hardening them when present',async()=>{
+ const sql=await read('supabase/migrations/20261007161500_security_trust_least_privilege_v1.sql');
+ assert.match(sql,/to_regclass\(format\('public\.%I',v_name\)\) is not null/);
+ assert.match(sql,/revoke select on table public\.%I from public, anon, authenticated/i);
+ assert.match(sql,/SECURITY_TRUST_VIEW_PRIVILEGE_HARDENING_FAILED/);
+});

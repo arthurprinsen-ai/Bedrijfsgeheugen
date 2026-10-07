@@ -13,7 +13,8 @@
     "ux": "Vraaggestuurde antwoorden eerst, details on demand; securityinformatie staat in context van de klantvraag.",
     "connector_event": "Elke INSERT/UPDATE/DELETE op connector_definitions ververst sovereignty en security voor dezelfde tenant binnen dezelfde databasetransactie; tenant-moves verversen zowel oud als nieuw. De heartbeat blijft verificatie/recovery, niet de primaire event-trigger.",
     "least_privilege": "Security-definer RPCs en intelligence views zijn alleen direct client-readable/callable wanneer dat expliciet aantoonbaar nodig is. Interne triggers, schedulers, backfills, publishers en intelligence views zijn service-role-only.",
-    "posture_accuracy": "Views zonder security_invoker tellen alleen als high-risk wanneer anon/authenticated daadwerkelijk SELECT hebben; private definer-views blijven zichtbaar als metric maar niet als client-exposure."
+    "posture_accuracy": "Views zonder security_invoker tellen alleen als high-risk wanneer anon/authenticated daadwerkelijk SELECT hebben; private definer-views blijven zichtbaar als metric maar niet als client-exposure.",
+    "fresh_replay_drift": "Least-privilege hardening must conditionally harden runtime/provider-created relations when present; a clean preview may legitimately lack production-only intelligence surfaces and must not fail merely because the object is absent."
   },
   "implementation": {
     "portal": "portal-next/security.html",
@@ -66,12 +67,20 @@
         "highRiskCount": 41
       },
       "interpretation": "Migration syntax and postconditions passed in one explicit transaction; deliberate exception rolled the transaction back. Production remained unchanged."
+    },
+    "preview_failure": {
+      "project_ref": "dlfcakibwwaadcdnzauu",
+      "pr": 4064,
+      "failed_object": "public.powerhouse_predictive_commercial_brief_cache_v1",
+      "sqlstate": "42P01",
+      "root_cause": "production-only/runtime-created relation absent in fresh preview replay"
     }
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-security-trust-center-v1.test.mjs",
-      "least-privilege privilege/readback regression"
+      "least-privilege privilege/readback regression",
+      "fresh preview branch with production-only intelligence relation absent"
     ],
     "truth_rule": "unknown_or_stale_must_not_become_green",
     "connector_event_contract": "new_or_changed_connector_updates_sovereignty_and_security_transactionally",

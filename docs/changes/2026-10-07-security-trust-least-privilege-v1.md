@@ -27,3 +27,6 @@ Source candidate: `fix/security-trust-least-privilege-v1`. Runtime promotie en p
 
 ## Transactionele dry-run
 Op 7 oktober 2026 16:03 UTC is de volledige hardening in één expliciete Supabase-transactie uitgevoerd met een deliberatieve rollback-marker. De postconditions bereikten: anon SECURITY DEFINER = 0, authenticated SECURITY DEFINER = 0, client-exposed definer-views = 0, client-readable materialized views = 0 en highRiskCount = 0. Private definer-views bleven als aparte metric 12; RLS deny-all/no-policy bleef 166. De bewuste exception rolde de volledige transactie terug. Directe production readback daarna bevestigde de oorspronkelijke 28/12/1 exposure nog aanwezig. Er is dus **geen provider-state vóór protected delivery gewijzigd**.
+
+## Fresh-preview driftcorrectie
+De eerste echte Supabase Preview voor #4064 faalde met SQLSTATE 42P01 omdat `public.powerhouse_predictive_commercial_brief_cache_v1` in productie bestaat maar niet in een clean migration replay. De hardening is daarom aangepast naar **harden-if-present**: elke expliciet bekende intelligence surface wordt in productie nog steeds gerevoked/granted, maar afwezigheid in een fresh preview is geen fout. De postcondition blijft fail-closed voor alle doelobjecten die wél bestaan.
