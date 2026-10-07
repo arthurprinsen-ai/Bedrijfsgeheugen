@@ -83,11 +83,11 @@ export function evaluateBranchHygiene({ changedPaths = [], metadata = {}, labels
     });
   }
 
-  if (!broadApproved && paths.length > hardMaxFiles && !bulkRecoveryApproved) {
+  if (!broadApproved && deliveryPaths.length > hardMaxFiles && !bulkRecoveryApproved) {
     return Object.freeze({
       ok: false,
       state: 'HARD_SCOPE_LIMIT_EXCEEDED',
-      changedFileCount: paths.length,
+      changedFileCount: deliveryPaths.length,
       unexpectedPaths: [],
       verificationPaths,
       hardMaxFiles,
