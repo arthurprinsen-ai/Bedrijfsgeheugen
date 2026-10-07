@@ -1,0 +1,24 @@
+{
+  "id": "supabase-remote-migration-history-parity-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "supabase|remote-migration-history|repository-parity|v1",
+  "root_cause": "Six production Supabase migrations were applied outside repository source control. PR preview could still pass because a fresh preview only saw local migrations, but after merge production correctly rejected main because remote migration versions were absent from the local migration directory.",
+  "prevention": [
+    "Mirror every already-applied production migration version into supabase/migrations with its real SQL rather than an empty compatibility stub.",
+    "Refresh supabase/migration-history.lock.json from production migration history whenever remote lineage is reconciled.",
+    "Run tests/brain-supabase-remote-migration-history-parity-v1.test.mjs so every captured remote version must remain replayable from repository files.",
+    "Keep historical SECURITY DEFINER mirrors least-privilege for fresh replay even when the later live state was hardened by a subsequent migration.",
+    "Treat a post-merge Supabase migration-history mismatch as repository lineage debt, never repair it by deleting or rewriting production migration history."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"],
+    "shadow": ["tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"],
+    "canary": ["tests/brain-supabase-remote-migration-history-parity-v1.test.mjs"]
+  },
+  "evidence": {
+    "recovered_versions": ["20261007165737","20261007165811","20261007165818","20261007165821","20261007170121","20261007171249"],
+    "production_history_count_at_capture": 631
+  },
+  "skill_targets": ["delivery","supabase","continuity","security"]
+}
