@@ -1,0 +1,34 @@
+{
+  "id": "terminalizer-supabase-history-lock-evidence-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "terminalizer|supabase-migration-history-lock|verifier-only|v1",
+  "root_cause": "After migration-history parity PR #4087 protected-merged as 1856cfb28e85128c1e526a5c53c457a53b39dd5c, production and GitHub were proven 634/634 with zero local-only and zero remote-only migration versions. The canonical terminalizer still failed because supabase/migration-history.lock.json was left in the generic non-governance path set. The runtime classifier correctly found no Edge Function, SQL migration or Netlify deployment for that lock file and therefore emitted UNWIRED_NON_NETLIFY_RUNTIME_READBACK. The lock is immutable verifier evidence, not executable runtime.",
+  "prevention": [
+    "Classify supabase/migration-history.lock.json centrally in production-readback-v1 as verifier-only evidence.",
+    "Do not classify the supabase/ or supabase/migrations/ prefixes as verifier-only; executable SQL migrations must continue to require provider APPLIED readback.",
+    "Keep unknown non-Netlify/non-Supabase-runtime paths fail-closed.",
+    "Regression-test the lock-file exception in the same canonical terminalizer governance suite."
+  ],
+  "compiler": {
+    "failure_class": "TERMINALIZER_EVIDENCE_FILE_MISCLASSIFIED_AS_RUNTIME",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"],
+    "shadow": ["tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"],
+    "canary": ["tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"]
+  },
+  "evidence": {
+    "failed_terminalizer_run": 37675542111,
+    "merge_sha": "1856cfb28e85128c1e526a5c53c457a53b39dd5c",
+    "error": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK: supabase/migration-history.lock.json",
+    "production_migration_count": 634,
+    "repository_migration_count": 634,
+    "remote_only_count": 0,
+    "local_only_count": 0
+  },
+  "skill_targets": ["delivery","continuity","supabase"]
+}

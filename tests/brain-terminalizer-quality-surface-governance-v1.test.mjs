@@ -75,3 +75,16 @@ test('unknown backend paths remain fail-closed after migration routing', async()
   assert.match(workflow,/!migrations\.includes\(path\)/);
   assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
 });
+
+test('migration-history lock is verifier-only evidence while executable migrations stay provider-readback', async()=>{
+  const [workflow,contract] = await Promise.all([
+    readFile('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8'),
+    readFile('brain/contracts/production-readback-v1.json','utf8').then(JSON.parse),
+  ]);
+  assert.ok(contract.productionTruth.verifierOnlyPaths.includes('supabase/migration-history.lock.json'));
+  assert.equal(contract.productionTruth.verifierOnlyPrefixes.includes('supabase/'),false);
+  assert.equal(contract.productionTruth.verifierOnlyPrefixes.includes('supabase/migrations/'),false);
+  assert.match(workflow,/const migrations=paths\.filter/);
+  assert.match(workflow,/SUPABASE_MIGRATION_PROVIDER_READBACK_MISSING/);
+  assert.match(workflow,/UNWIRED_NON_NETLIFY_RUNTIME_READBACK/);
+});
