@@ -145,3 +145,10 @@ test('system map references only the canonical intelligence projection names',as
   assert.doesNotMatch(map,/powerhouse_source_catalog_v1/);
   assert.doesNotMatch(map,/powerhouse_signal_impact_assessment_v1/);
 });
+
+
+test('canonical obligation materializer schema-qualifies pgcrypto under restricted search_path',async()=>{
+  const sql=await read('supabase/migrations/20261007204500_source_universe_impact_engine_v1.sql');
+  assert.match(sql,/extensions\.digest\(convert_to\(v_payload,'UTF8'\),'sha256'\)/);
+  assert.match(sql,/set search_path to 'public','pg_catalog'/);
+});
