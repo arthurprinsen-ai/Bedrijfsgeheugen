@@ -178,8 +178,23 @@ Deno.serve(async (req: Request) => {
     if (!authPhase && /secret unavailable|vault read timeout|database auth unavailable/i.test(message)) {
       errorCode = "vault_authority_unavailable";
       status = 503;
-    } else if (!authPhase && /composio connected accounts|composio netlify connected account unavailable/i.test(message)) {
-      errorCode = "composio_connected_account_failed";
+    } else if (!authPhase && /composio netlify connected account unavailable/i.test(message)) {
+      errorCode = "composio_netlify_account_not_public";
+      status = 420;
+    } else if (!authPhase && /composio connected accounts 401/i.test(message)) {
+      errorCode = "composio_project_key_unauthorized";
+      status = 431;
+    } else if (!authPhase && /composio connected accounts 403/i.test(message)) {
+      errorCode = "composio_project_key_forbidden";
+      status = 433;
+    } else if (!authPhase && /composio connected accounts 404/i.test(message)) {
+      errorCode = "composio_connected_accounts_not_found";
+      status = 434;
+    } else if (!authPhase && /composio connected accounts 422/i.test(message)) {
+      errorCode = "composio_connected_accounts_invalid";
+      status = 432;
+    } else if (!authPhase && /composio connected accounts/i.test(message)) {
+      errorCode = "composio_connected_accounts_failed";
       status = 421;
     } else if (!authPhase && /composio session create/i.test(message)) {
       errorCode = "composio_session_create_failed";
