@@ -576,9 +576,141 @@ begin
   ) q
   where s.tenant_id=p_tenant_id and s.signal_key=q.signal_key;
 
+  -- A recommendation may become READY only after company-specific impact is evidence-backed.
+  update public.powerhouse_intelligence_action_candidate_v1
+  set status=case when v_score>=70 then 'READY' else status end,
+      impact_key=v_impact_key,
+      expected_value_eur=p_estimated_value_eur,
+      estimated_loss_avoided_eur=p_estimated_loss_eur,
+      evidence=evidence||jsonb_build_object(
+        'company_impact_key',v_impact_key,
+        'company_impact_score',v_score,
+        'company_impact_status',v_status,
+        'company_context_evidence_backed',true
+      ),
+      updated_at=now()
+  where tenant_id=p_tenant_id
+    and signal_key=p_signal_key
+    and status='CANDIDATE';
+
   return jsonb_build_object('impact_key',v_impact_key,'impact_score',v_score,'status',v_status);
 end
-$$;
+$;
+
+create or replace function public.powerhouse_materialize_intelligence_action_v1(
+  p_tenant_id text,
+  p_action_key text
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'public','pg_catalog'
+as $
+declare
+  a public.powerhouse_intelligence_action_candidate_v1%rowtype;
+  o public.brain_obligations%rowtype;
+  v_payload text;
+  v_hash text;
+begin
+  select * into a
+  from public.powerhouse_intelligence_action_candidate_v1
+  where tenant_id=p_tenant_id and action_key=p_action_key
+  for update;
+
+  if not found then raise exception 'INTELLIGENCE_ACTION_NOT_FOUND:%',p_action_key; end if;
+  if a.status='MATERIALIZED' and nullif(a.canonical_action_ref,'') is not null then
+    return jsonb_build_object('action_key',a.action_key,'canonical_action_ref',a.canonical_action_ref,'status',a.status,'replayed',true);
+  end if;
+  if a.status<>'READY' then raise exception 'INTELLIGENCE_ACTION_NOT_READY:%',a.status; end if;
+  if not exists (
+    select 1 from public.powerhouse_intelligence_company_impact_v1 i
+    where i.tenant_id=a.tenant_id
+      and i.signal_key=a.signal_key
+      and i.status='SCORED'
+      and i.impact_score is not null
+  ) then
+    raise exception 'INTELLIGENCE_COMPANY_IMPACT_NOT_SCORED';
+  end if;
+
+  v_payload:=jsonb_build_object(
+    'tenant_id',a.tenant_id,
+    'action_key',a.action_key,
+    'signal_key',a.signal_key,
+    'impact_key',a.impact_key,
+    'domain_key',a.domain_key,
+    'action_type',a.action_type,
+    'priority_score',a.priority_score,
+    'due_at',a.due_at,
+    'expected_value_eur',a.expected_value_eur,
+    'estimated_loss_avoided_eur',a.estimated_loss_avoided_eur
+  )::text;
+  v_hash:=encode(digest(convert_to(v_payload,'UTF8'),'sha256'),'hex');
+
+  o:=public.brain_create_obligation(
+    'INTELLIGENCE_ACTION_REVIEW',
+    'powerhouse-source-universe-impact-engine-v1',
+    a.tenant_id||':'||a.action_key,
+    coalesce(a.due_at::date,current_date)::text,
+    'Europe/Amsterdam',
+    v_hash,
+    a.action_key,
+    coalesce(nullif(a.owner_hint,''),'ONE BRAIN')
+  );
+
+  update public.powerhouse_intelligence_action_candidate_v1
+  set canonical_action_ref='brain_obligation:'||o.id::text,
+      status='MATERIALIZED',
+      evidence=evidence||jsonb_build_object(
+        'canonical_obligation_id',o.id,
+        'canonical_obligation_state',o.state,
+        'materialized_at',now(),
+        'execution_truth','canonical obligation created; no provider side effect implied'
+      ),
+      updated_at=now()
+  where tenant_id=p_tenant_id and action_key=p_action_key;
+
+  return jsonb_build_object(
+    'action_key',p_action_key,
+    'canonical_action_ref','brain_obligation:'||o.id::text,
+    'obligation_state',o.state,
+    'status','MATERIALIZED'
+  );
+end
+$;
+
+create or replace function public.powerhouse_materialize_ready_intelligence_actions_v1(
+  p_tenant_id text default 'canonical',
+  p_limit integer default 50
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path to 'public','pg_catalog'
+as $
+declare
+  r record;
+  v_one jsonb;
+  v_results jsonb:='[]'::jsonb;
+  v_count integer:=0;
+begin
+  for r in
+    select action_key
+    from public.powerhouse_intelligence_action_candidate_v1
+    where tenant_id=p_tenant_id and status='READY'
+    order by priority_score desc,updated_at asc
+    limit greatest(1,least(coalesce(p_limit,50),200))
+  loop
+    begin
+      v_one:=public.powerhouse_materialize_intelligence_action_v1(p_tenant_id,r.action_key);
+      v_results:=v_results||jsonb_build_array(v_one);
+      v_count:=v_count+1;
+    exception when others then
+      v_results:=v_results||jsonb_build_array(jsonb_build_object('action_key',r.action_key,'error',sqlerrm));
+    end;
+  end loop;
+  return jsonb_build_object('materialized_count',v_count,'results',v_results,'executed_at',now());
+end
+$;
 
 create or replace function public.powerhouse_refresh_external_intelligence_universe_v1(
   p_tenant_id text default 'canonical',
@@ -594,6 +726,7 @@ declare
   v_processed integer:=0;
   v_actions integer:=0;
   v_connectors integer:=0;
+  v_materialized jsonb:='{}'::jsonb;
   v_snapshot jsonb;
 begin
   if nullif(btrim(p_tenant_id),'') is null then raise exception 'TENANT_REQUIRED'; end if;
@@ -819,6 +952,8 @@ begin
     evidence=excluded.evidence,
     updated_at=v_now;
 
+  v_materialized:=public.powerhouse_materialize_ready_intelligence_actions_v1(p_tenant_id,50);
+
   select to_jsonb(s) into v_snapshot
   from public.powerhouse_intelligence_snapshot_v1 s
   where s.tenant_id=p_tenant_id;
@@ -836,6 +971,7 @@ begin
     jsonb_build_object(
       'processed_signals',v_processed,
       'action_candidates',v_actions,
+      'canonical_actions_materialized',coalesce((v_materialized->>'materialized_count')::int,0),
       'existing_state_first',true,
       'parallel_scheduler_created',false,
       'financial_impact_fabricated',false
@@ -853,6 +989,8 @@ begin
     'tenant_id',p_tenant_id,
     'processed_signals',v_processed,
     'action_candidates',v_actions,
+    'canonical_actions_materialized',coalesce((v_materialized->>'materialized_count')::int,0),
+    'materialization',v_materialized,
     'connector_catalog_rows',v_connectors,
     'snapshot',v_snapshot,
     'executed_at',v_now
@@ -926,12 +1064,16 @@ revoke all on function public.powerhouse_intelligence_domain_from_text_v1(text) 
 revoke all on function public.powerhouse_intelligence_impact_score_v1(numeric,numeric,numeric,numeric,numeric,numeric) from public,anon,authenticated;
 revoke all on function public.powerhouse_sync_connector_sources_to_intelligence_v1() from public,anon,authenticated;
 revoke all on function public.powerhouse_upsert_intelligence_company_impact_v1(text,text,text,text,text,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,jsonb,text,jsonb) from public,anon,authenticated;
+revoke all on function public.powerhouse_materialize_intelligence_action_v1(text,text) from public,anon,authenticated;
+revoke all on function public.powerhouse_materialize_ready_intelligence_actions_v1(text,integer) from public,anon,authenticated;
 revoke all on function public.powerhouse_refresh_external_intelligence_universe_v1(text,integer) from public,anon,authenticated;
 
 grant execute on function public.powerhouse_intelligence_domain_from_text_v1(text) to service_role;
 grant execute on function public.powerhouse_intelligence_impact_score_v1(numeric,numeric,numeric,numeric,numeric,numeric) to service_role;
 grant execute on function public.powerhouse_sync_connector_sources_to_intelligence_v1() to service_role;
 grant execute on function public.powerhouse_upsert_intelligence_company_impact_v1(text,text,text,text,text,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,numeric,jsonb,text,jsonb) to service_role;
+grant execute on function public.powerhouse_materialize_intelligence_action_v1(text,text) to service_role;
+grant execute on function public.powerhouse_materialize_ready_intelligence_actions_v1(text,integer) to service_role;
 grant execute on function public.powerhouse_refresh_external_intelligence_universe_v1(text,integer) to service_role;
 
 -- The existing scheduler owner/postgres keeps execution authority for mux v3.
