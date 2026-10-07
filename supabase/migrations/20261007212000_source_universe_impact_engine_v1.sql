@@ -536,7 +536,8 @@ create or replace function public.powerhouse_intelligence_domain_from_text_v1(p_
 returns text
 language sql
 immutable
-as $$
+set search_path to 'pg_catalog'
+as $
 select case
   when coalesce(p_text,'') ~* 'cyber|ransom|kwetsbaar|vulnerab|zero.?day|phishing|cve|security advisory' then 'cyber-threats'
   when coalesce(p_text,'') ~* 'subsid|wbso|funding|grant|regeling|innovatiecredit|fisca' then 'subsidies-tax'
@@ -587,7 +588,8 @@ create or replace function public.powerhouse_intelligence_impact_score_v1(
 returns numeric
 language sql
 immutable
-as $$
+set search_path to 'pg_catalog'
+as $
 select case
   when p_probability is null or p_magnitude is null or p_exposure is null then null
   else round(
