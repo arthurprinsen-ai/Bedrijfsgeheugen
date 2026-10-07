@@ -15,6 +15,7 @@ Portal V2 had al externe data voor onder meer wetgeving, arbeid, subsidies, econ
 - Portal V2 Omgevingsradar toegevoegd onder Actueel & externe data.
 - Netlify API blijft geauthenticeerd en server-side; intelligence tables hebben RLS en geen browser grants.
 - Capability geregistreerd in System Map, Brain learning, skill en Loop Assurance.
+- Action candidates krijgen geen provider-side-effect authority: alleen `READY` + `SCORED` company impact kan idempotent worden gematerialiseerd naar de bestaande `brain_obligations` authority.
 
 ## Delivery state
 
