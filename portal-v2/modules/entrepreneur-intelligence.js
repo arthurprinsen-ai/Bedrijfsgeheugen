@@ -11,6 +11,12 @@ const sourcePublisher=(sourceMap,id)=>sourceMap.get(id)?.uitgever||'Onbekend';
 const VIEWS=Object.freeze({
   ondernemersdata:{title:'Actueel & externe data',subtitle:'Wat buiten je bedrijf verandert en wat dat voor jouw onderneming kan betekenen.'},
   omgevingsradar:{title:'Omgevingsradar',subtitle:'Van bron naar signaal, impact en volgende actie — over markt, technologie, economie, mensen, keten, regelgeving en meer.'},
+  bedrijfsimpact:{title:'Wat raakt mijn bedrijf?',subtitle:'Alleen signalen waarvoor eigen bedrijfscontext of exposure bestaat — gescheiden van algemene marktinformatie.'},
+  kansen:{title:'Kansen',subtitle:'Evidence-backed kansen uit subsidies, tenders, vraag, technologie, markt en andere bronnen.'},
+  risicos:{title:'Risico’s',subtitle:'Evidence-backed risico’s uit cyber, keten, regelgeving, markt, klimaat, fraude en andere domeinen.'},
+  'acties-beslissingen':{title:'Acties & beslissingen',subtitle:'De volgende beste review- en actiepunten, met prioriteit, status en deadline.'},
+  verbanden:{title:'Verbanden',subtitle:'Signalen die aantoonbaar hetzelfde domein of dezelfde bedrijfsafhankelijkheid raken — zonder causaliteit te verzinnen.'},
+  'sinds-gisteren':{title:'Sinds gisteren',subtitle:'Wat sinds gisteren nieuw of veranderd is en welke signalen aandacht vragen.'},
   'wet-regelgeving':{title:'Wet- & regelgeving',subtitle:'Verplichtingen, mijlpalen en herzienmomenten die ondernemers kunnen raken.'},
   'arbeidsmarkt-personeel':{title:'Arbeidsmarkt & personeel',subtitle:'UWV-, CBS- en andere arbeidsmarktsignalen op één plek.'},
   'subsidies-regelingen':{title:'Subsidies & regelingen',subtitle:'Nieuwe en gewijzigde RVO-regelingen en andere ondernemersregelingen.'},
@@ -25,7 +31,7 @@ function shell(title,subtitle,body){
 }
 function nav(){
   const links=[
-    ['Overzicht','ondernemersdata'],['Omgevingsradar','omgevingsradar'],['Wet- & regelgeving','wet-regelgeving'],['Arbeidsmarkt','arbeidsmarkt-personeel'],
+    ['Overzicht','ondernemersdata'],['Omgevingsradar','omgevingsradar'],['Wat raakt mij?','bedrijfsimpact'],['Kansen','kansen'],['Risico’s','risicos'],['Acties','acties-beslissingen'],['Verbanden','verbanden'],['Sinds gisteren','sinds-gisteren'],['Wet- & regelgeving','wet-regelgeving'],['Arbeidsmarkt','arbeidsmarkt-personeel'],
     ['Subsidies','subsidies-regelingen'],['Economie','economie-branche-actueel'],['AI & technologie','ai-technologie-actueel'],
     ['Deadlines','deadlines'],['Bronnen','bronnenbibliotheek'],['Bronstatus','bronnenstatus']
   ];
@@ -71,11 +77,25 @@ function intelligenceSignalCard(item,domains){
 }
 function sourceCapabilityCard(item){
   const mode=item.activation_mode==='PUBLIC_ALWAYS'?'publieke bron':item.activation_mode==='CONNECTOR_REQUIRED'?'koppeling nodig':item.activation_mode==='PROVIDER_REQUIRED'?'provider nodig':'handmatig bewijs';
-  return `<article class="eicard compact"><div class="eimeta"><span>${esc(item.scope==='internal'?'Binnen bedrijf':'Buiten bedrijf')}</span><span class="eistatus">${esc(mode)}</span></div><h4>${esc(item.label)}</h4><p>${esc(item.publisher||'')} · authority ${esc(item.authority_tier||'—')}/5</p><footer><span>${esc(arr(item.domain_keys).length)} domeinen</span>${item.canonical_url?`<a href="${esc(item.canonical_url)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>`:''}</footer></article>`;
+  const availability=String(item.availability_state||'CATALOGUED').toUpperCase();
+  const last=item.last_observed_at?` · laatste evidence ${nlDate(item.last_observed_at)}`:'';
+  return `<article class="eicard compact"><div class="eimeta"><span>${esc(item.scope==='internal'?'Binnen bedrijf':'Buiten bedrijf')}</span><span class="eistatus">${esc(availability)}</span></div><h4>${esc(item.label)}</h4><p>${esc(item.publisher||'')} · authority ${esc(item.authority_tier||'—')}/5 · ${esc(mode)}</p><footer><span>${esc(arr(item.domain_keys).length)} domeinen${esc(last)}</span>${item.canonical_url?`<a href="${esc(item.canonical_url)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>`:''}</footer></article>`;
+}
+function actionCard(item,domains){
+  const domain=domains.get(item.domain_key)?.label||item.domain_key||'Actie';
+  const scope=item.tenant_specific?'eigen bedrijf':'algemene review';
+  return `<article class="eicard"><div class="eimeta"><span>${esc(domain)} · ${esc(scope)}</span><span class="eistatus">${esc(score(item.priority_score))}/100</span></div><h4>${esc(item.title||'Actie')}</h4><p>${esc(item.rationale||'')}</p><div class="eifact"><b>Status</b><span>${esc(item.status||'CANDIDATE')}</span></div><footer><span>${item.due_at?`voor ${esc(nlDate(item.due_at))}`:'geen harde deadline'}</span><span>${item.canonical_action_ref?esc(item.canonical_action_ref):'nog niet gematerialiseerd'}</span></footer></article>`;
+}
+function relationCard(item,signalMap){
+  const left=signalMap.get(item.left_signal_key)?.title||item.left_signal_key;
+  const right=signalMap.get(item.right_signal_key)?.title||item.right_signal_key;
+  const type=item.relation_type==='COMPANY_DEPENDENCY'?'Dezelfde bedrijfsafhankelijkheid':item.relation_type==='SHARED_DOMAIN'?'Hetzelfde domein':'Causale hypothese';
+  return `<article class="eicard"><div class="eimeta"><span>${esc(type)}</span><span class="eistatus">${esc(score((Number(item.confidence)||0)*100))}%</span></div><h4>${esc(left)} ↔ ${esc(right)}</h4><p>${esc(item.rationale||'')}</p><footer><span>Verband, geen automatische causaliteitsclaim</span><time>${esc(nlDate(item.observed_at))}</time></footer></article>`;
 }
 function renderEnvironmentRadar(data){
-  const {intelligence}=enrich(data),domains=arr(intelligence.domains),catalog=arr(intelligence.sourceCatalog),signals=arr(intelligence.signals),actions=arr(intelligence.actionCandidates),snap=intelligence.snapshot||{};
+  const {intelligence}=enrich(data),domains=arr(intelligence.domains),catalog=arr(intelligence.sourceCatalog),signals=arr(intelligence.signals),actions=arr(intelligence.actionCandidates),relations=arr(intelligence.relations),snap=intelligence.snapshot||{};
   const domainMap=new Map(domains.map(d=>[d.domain_key,d]));
+  const signalMap=new Map(signals.map(s=>[s.signal_key,s]));
   const grouped=domains.reduce((acc,d)=>{(acc[d.pillar]??=[]).push(d);return acc;},{});
   const domainGroups=Object.entries(grouped).map(([pillar,items])=>`<details class="eicard"><summary><b>${esc(pillar)}</b> · ${items.length} domeinen</summary><div class="trust-detail">${items.map(d=>`<p><b>${esc(d.label)}</b><br><span>${esc(d.description)}</span></p>`).join('')}</div></details>`);
   const knownValue=snap.known_opportunity_value_eur==null?'Nog niet bewezen':euro(snap.known_opportunity_value_eur);
@@ -88,6 +108,7 @@ function renderEnvironmentRadar(data){
   const body=`${nav()}<section class="eikpis">
     <button type="button"><small>Domeinen</small><strong>${esc(snap.domain_count??domains.length)}</strong><span>extern + intern</span></button>
     <button type="button"><small>Bronmogelijkheden</small><strong>${esc(snap.catalog_source_count??catalog.length)}</strong><span>publiek + koppelingen</span></button>
+    <button type="button"><small>Live/waargenomen</small><strong>${esc((snap.source_health?.availability?.live||0)+(snap.source_health?.availability?.observed||0)+(snap.source_health?.availability?.connected||0))}</strong><span>niet alleen catalogus</span></button>
     <button type="button"><small>Sinds gisteren</small><strong>${esc(snap.signals_24h??sinceYesterday.length)}</strong><span>nieuwe signalen</span></button>
     <button type="button"><small>Aandacht</small><strong>${esc(snap.high_attention_count??signals.filter(s=>score(s.signal_score)>=70).length)}</strong><span>score ≥ 70</span></button>
     <button type="button"><small>Kansen €</small><strong>${esc(knownValue)}</strong><span>alleen bewezen bedragen</span></button>
@@ -99,12 +120,41 @@ function renderEnvironmentRadar(data){
   ${section('Kansen',opportunities.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele kanssignalen met voldoende bronbewijs.')}
   ${section('Risico’s',risks.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele risicosignalen met voldoende bronbewijs.')}
   ${section('Context nodig vóór impactclaim',contextGaps.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Geen open contextgaten bij hoog scorende signalen.')}
-  ${section('Volgende acties',actions.slice(0,10).map(a=>`<article class="eicard"><div class="eimeta"><span>${esc(domainMap.get(a.domain_key)?.label||a.domain_key)}</span><span class="eistatus">${esc(score(a.priority_score))}/100</span></div><h4>${esc(a.title)}</h4><p>${esc(a.rationale)}</p><footer><span>${esc(a.status)}</span><span>${a.due_at?`voor ${esc(nlDate(a.due_at))}`:'geen harde deadline'}</span></footer></article>`),'Nog geen action candidates. Een kandidaat ontstaat alleen bij voldoende signaalbewijs.')}
+  ${section('Volgende acties',actions.slice(0,10).map(a=>actionCard(a,domainMap)),'Nog geen action candidates. Een kandidaat ontstaat alleen bij voldoende signaalbewijs.')}
+  ${section('Verbanden tussen signalen',relations.slice(0,10).map(r=>relationCard(r,signalMap)),'Nog geen evidence-bounded verbanden tussen actuele signalen.')}
   ${section('Volledig domeinuniversum',domainGroups)}
   ${section('Bronuniversum',catalog.slice(0,24).map(sourceCapabilityCard),'Nog geen broncatalogus beschikbaar.')}
   <p class="eifootnote">${esc(snap.status||'EMPTY')} · bijgewerkt ${esc(nlDate(snap.refreshed_at||data.stats?.generatedAt))} · catalogus betekent mogelijkheid, niet automatisch een actieve koppeling.</p>`;
   return shell(VIEWS.omgevingsradar.title,VIEWS.omgevingsradar.subtitle,body);
 }
+
+function renderFocusedIntelligence(pageId,data){
+  const {intelligence}=enrich(data);
+  const domains=arr(intelligence.domains),signals=arr(intelligence.signals),actions=arr(intelligence.actionCandidates),relations=arr(intelligence.relations),snap=intelligence.snapshot||{};
+  const domainMap=new Map(domains.map(d=>[d.domain_key,d]));
+  const signalMap=new Map(signals.map(s=>[s.signal_key,s]));
+  const scoredSignals=signals.filter(s=>s.impact_status==='SCORED'||s.tenant_specific_impact);
+  const opportunities=signals.filter(s=>s.estimated_value_eur!=null||/(OPPORTUNITY|SEARCH_DEMAND|DEMAND_CHANGE|TECH_CHANGE|IP_CHANGE)/.test(String(s.signal_type||'').toUpperCase()));
+  const risks=signals.filter(s=>s.estimated_loss_eur!=null||/(RISK|CYBER|FRAUD|DISRUPTION|PHYSICAL|SUPPLY_RISK)/.test(String(s.signal_type||'').toUpperCase()));
+  const recent=signals.filter(s=>isFresh(s.observed_at,1));
+  let content='';
+  if(pageId==='bedrijfsimpact') content=section('Bewezen of gedeeltelijk onderbouwde bedrijfsimpact',scoredSignals.map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen externe of interne signalen hebben voldoende eigen bedrijfscontext voor een impactclaim.');
+  if(pageId==='kansen') content=section('Kansen',opportunities.map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele kanssignalen met voldoende bronbewijs.');
+  if(pageId==='risicos') content=section('Risico’s',risks.map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele risicosignalen met voldoende bronbewijs.');
+  if(pageId==='acties-beslissingen') content=section('Acties & beslissingen',actions.map(a=>actionCard(a,domainMap)),'Nog geen action candidates. Een kandidaat ontstaat pas uit voldoende signaal- en impactbewijs.');
+  if(pageId==='verbanden') content=section('Evidence-bounded verbanden',relations.map(r=>relationCard(r,signalMap)),'Nog geen relevante verbanden gevonden. Co-occurrence alleen wordt nooit als causaliteit gepresenteerd.');
+  if(pageId==='sinds-gisteren') content=section('Sinds gisteren',recent.map(x=>intelligenceSignalCard(x,domainMap)),'Sinds gisteren zijn geen nieuwe verwerkte signalen beschikbaar.');
+  const summary=`<section class="eikpis">
+    <button type="button"><small>Signalen</small><strong>${esc(signals.length)}</strong><span>zichtbaar in scope</span></button>
+    <button type="button"><small>Eigen impact</small><strong>${esc(scoredSignals.length)}</strong><span>tenant-context</span></button>
+    <button type="button"><small>Acties</small><strong>${esc(actions.length)}</strong><span>kandidaten + uitvoering</span></button>
+    <button type="button"><small>Verbanden</small><strong>${esc(relations.length)}</strong><span>evidence-bounded</span></button>
+    <button type="button"><small>Kans €</small><strong>${esc(snap.known_opportunity_value_eur==null?'Nog niet bewezen':euro(snap.known_opportunity_value_eur))}</strong><span>tenant-evidence only</span></button>
+    <button type="button"><small>Risico €</small><strong>${esc(snap.known_risk_value_eur==null?'Nog niet bewezen':euro(snap.known_risk_value_eur))}</strong><span>tenant-evidence only</span></button>
+  </section>`;
+  return shell(VIEWS[pageId]?.title||'Intelligence',VIEWS[pageId]?.subtitle||'',`${nav()}${summary}${content}<p class="eifootnote">Projectie: ${esc(intelligence.projectionScope||'onbekend')} · ontbrekende context blijft onbekend.</p>`);
+}
+
 function renderHub(data){
   const {sourceMap,publications,signals,sources,stats}=enrich(data);
   const uwv=publisherFilter(publications,['UWV']);
@@ -112,7 +162,7 @@ function renderHub(data){
   const cbs=publisherFilter(publications,['CBS']);
   const nextLaws=komendeMijlpalen(new Date().toISOString().slice(0,10),365).slice(0,5);
   const cards=[
-    ['Omgevingsradar',stats.sourceDomainCount||0,'domeinen','omgevingsradar'],
+    ['Omgevingsradar',stats.intelligenceDomainCount||0,'domeinen','omgevingsradar'],
     ['Wet- & regelgeving',REGELGEVING.length,'actuele regels','wet-regelgeving'],
     ['UWV arbeidsmarkt',uwv.length,'recente publicaties','arbeidsmarkt-personeel'],
     ['RVO regelingen',rvo.length,'recente publicaties','subsidies-regelingen'],
@@ -129,6 +179,7 @@ function renderHub(data){
 function renderView(pageId,data){
   if(pageId==='ondernemersdata')return renderHub(data);
   if(pageId==='omgevingsradar')return renderEnvironmentRadar(data);
+  if(['bedrijfsimpact','kansen','risicos','acties-beslissingen','verbanden','sinds-gisteren'].includes(pageId))return renderFocusedIntelligence(pageId,data);
   const view=VIEWS[pageId]||VIEWS.ondernemersdata;
   const {sourceMap,publications,signals,sources,intelligence}=enrich(data);
   let content=[];
