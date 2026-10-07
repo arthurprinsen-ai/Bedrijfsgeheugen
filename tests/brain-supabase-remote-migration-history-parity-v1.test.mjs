@@ -15,6 +15,7 @@ const recovered=new Map([
   ['20261007170121','instagram_personal_no_mira_scope_v1'],
   ['20261007171249','personal_linkedin_founder_journey_problem_sources_v1'],
   ['20261007190600','security_definer_browser_execute_closure_v1'],
+  ['20261007192514','security_trust_posture_verified_no_open_findings_v1'],
 ]);
 
 test('captured production Supabase migration history is fully replayable from repository files',()=>{
@@ -41,4 +42,14 @@ test('production security-definer browser execute closure is preserved as execut
   assert.match(sql,/p\.prosecdef/i);
   assert.match(sql,/revoke execute on function %I\.%I\(%s\) from public, anon, authenticated/i);
   assert.match(sql,/grant execute on function %I\.%I\(%s\) to service_role/i);
+});
+
+
+test('official migration-authority replay is mirrored immutably after provider timestamping',()=>{
+  const canonical=fs.readFileSync(new URL('../supabase/migrations/20261007190653_security_trust_posture_verified_no_open_findings_v1.sql',import.meta.url),'utf8');
+  const providerStamped=fs.readFileSync(new URL('../supabase/migrations/20261007192514_security_trust_posture_verified_no_open_findings_v1.sql',import.meta.url),'utf8');
+  assert.equal(providerStamped,canonical);
+  assert.match(providerStamped,/VERIFIED_NO_OPEN_FINDINGS/);
+  assert.match(providerStamped,/revoke execute on function public\.security_database_posture_v1\(\) from public, anon, authenticated/i);
+  assert.match(providerStamped,/revoke execute on function public\.refresh_security_trust_snapshot_v1\(text\) from public, anon, authenticated/i);
 });
