@@ -90,6 +90,11 @@ test('production authority auto-publishes migration readback and terminalizer wa
   assert.match(authority,/publish-migration-provider-readback\.mjs/);
   assert.match(authority,/SUPABASE_ACCESS_TOKEN/);
   assert.match(authority,/SUPABASE_MIGRATION_TARGET_PR_MISSING/);
+  assert.ok(
+    authority.indexOf('Publish exact migration provider readback evidence to merged PR') <
+      authority.indexOf('Prove byte-for-byte provider source parity'),
+    'migration readback must publish before slower Edge provider parity',
+  );
 
   assert.match(terminalizer,/migration_complete=false/);
   assert.match(terminalizer,/for attempt in \$\(seq 1 24\)/);
