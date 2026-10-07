@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const read=p=>readFile(new URL('../'+p,import.meta.url),'utf8');
 
-test('data sovereignty API is tenant-bound and Supabase Edge calls are pinned to Frankfurt',async()=>{
+test('data sovereignty API is tenant-bound and Supabase Edge is explicitly invoked in Frankfurt',async()=>{
  const api=await read('netlify/functions/data-sovereignty.mjs');
  assert.match(api,/resolveIdentityTenant/);
  assert.match(api,/scope.*bedrijfsgeheugen/);
@@ -13,44 +13,34 @@ test('data sovereignty API is tenant-bound and Supabase Edge calls are pinned to
  assert.match(client,/DATA_SOVEREIGNTY_CONNECTOR_BLOCKED/);
 });
 
-test('Netlify customer-data functions are pinned canonically in netlify.toml',async()=>{
+test('Netlify is never declared EU-pinned by unsupported per-function configuration',async()=>{
  const toml=await read('netlify.toml');
  for(const name of ['portal-state','portal-business-input','portal-project','portal-connectors','portaalvraag','connector-ai-guide','document-extractor','i18n-translate','portal-entitlements','portal-feedback','portal-ondernemersdata','portal-prediction-intelligence','portal-scans','data-sovereignty','data-sovereignty-runtime-proof','powerhouse-commercial-heartbeat-background','powerhouse-commercial-heartbeat-schedule']){
-   const pattern='\\[functions\\."'+name+'"\\]\\s*\\n\\s*region = "fra"';
-   assert.match(toml,new RegExp(pattern),name);
+   assert.doesNotMatch(toml,new RegExp('\\[functions\\."'+name+'"\\][\\s\\S]{0,100}region\\s*=\\s*"fra"'),name);
  }
 });
 
-test('site-wide portal Blob stores explicitly use Frankfurt while legacy residency remains fail-closed',async()=>{
+test('Netlify Blob stores do not claim an unsupported physical EU region option',async()=>{
  const projection=await read('netlify/functions/_portal-read-model-store.mjs');
  const feedback=await read('netlify/functions/portal-feedback.mjs');
- assert.match(projection,/region:\s*'eu-central-1'/);
- assert.match(feedback,/region:\s*'eu-central-1'/);
- const correction=await read('supabase/migrations/20261007111513_netlify_sovereignty_truth_hardening_v1.sql');
- assert.match(correction,/EU_FRANKFURT_NEW_WRITES_LEGACY_UNVERIFIED/);
- assert.match(correction,/MIGRATED_AND_PURGED/);
- assert.match(correction,/evidence_status=case/);
+ assert.doesNotMatch(projection,/region:\s*'eu-central-1'/);
+ assert.doesNotMatch(feedback,/region:\s*'eu-central-1'/);
+ const correction=await read('supabase/migrations/20261007112412_netlify_runtime_residency_truth_v2.sql');
+ for(const token of ['PLATFORM_ROUTED_UNPINNED','PLATFORM_MANAGED_UNKNOWN_REGION','POSSIBLE_OUTSIDE_EEA','OBSERVATION_ONLY'])assert.match(correction,new RegExp(token));
 });
 
-test('runtime proof uses measured Netlify server region and never turns legacy storage green by configuration alone',async()=>{
+test('runtime proof is observation evidence only and can never self-certify Netlify EU residency',async()=>{
  const proof=await read('netlify/functions/data-sovereignty-runtime-proof.mjs');
- assert.match(proof,/context\?\.server\?\.region/);
- assert.match(proof,/computeRegionVerified/);
- assert.match(proof,/blobRegionTarget:'eu-central-1'/);
- assert.match(proof,/legacyStorageState:'UNVERIFIED_MIGRATION_REQUIRED'/);
+ assert.match(proof,/runtimeRegionObservation:true/);
+ assert.match(proof,/functionsRegionGuarantee:false/);
+ assert.match(proof,/blobRegionGuarantee:false/);
+ assert.match(proof,/euOnlyGuarantee:false/);
  assert.match(proof,/verified:false/);
  const hb=await read('netlify/functions/powerhouse-commercial-heartbeat-background.mjs');
  assert.match(hb,/observeDataSovereignty/);
  assert.match(hb,/data_sovereignty_provider_observe/);
- assert.match(hb,/legacyStorageState/);
+ assert.match(hb,/OBSERVATION_UNAVAILABLE/);
  assert.doesNotMatch(hb,/SOVEREIGNTY_RUNTIME_PROOF_FAILED/);
-});
-
-test('customer-facing functions do not carry conflicting inline fra config',async()=>{
- for(const p of ['portal-state.mjs','portal-business-input.mjs','portal-project.mjs','portal-connectors.mjs','portaalvraag.mjs','connector-ai-guide.mjs','i18n-translate.mjs','data-sovereignty.mjs','portal-feedback.mjs']){
-  const src=await read('netlify/functions/'+p);
-  assert.doesNotMatch(src,/region\s*:\s*['"]fra['"]/,p);
- }
 });
 
 test('compliance page contains live data sovereignty control plane with absolute asset urls',async()=>{

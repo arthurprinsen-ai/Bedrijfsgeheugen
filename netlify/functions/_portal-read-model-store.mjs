@@ -17,7 +17,7 @@ async function conditionalPut(store,key,next){
  const current=await store.get(key,{type:'json',consistency:'strong'});
  return {stored:false,stale:!shouldReplaceProjection(current,next),record:current};
 }
-export function createPortalProjectionStore(store=getStore({name:STORE_NAME,consistency:'strong',region:'eu-central-1'})){
+export function createPortalProjectionStore(store=getStore({name:STORE_NAME,consistency:'strong'})){
  async function getLayer(tenantId,layer){
    const direct=await store.get(keyFor(tenantId,layer),{type:'json',consistency:'strong'});
    if(direct||layer!==PORTAL_LAYERS.LEGACY)return direct;

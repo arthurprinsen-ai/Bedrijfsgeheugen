@@ -38,45 +38,6 @@
   node_bundler = "esbuild"
   external_node_modules = ["ffmpeg-static"]
   included_files = ["node_modules/ffmpeg-static/ffmpeg"]
-# Data-soevereiniteit: klantdata-verwerkende Functions draaien expliciet in Frankfurt.
-# Netlify Functions-regio wordt per function in netlify.toml gezet; runtime-proof
-# leest de werkelijk actieve regio terug via context.server.region.
-[functions."portal-state"]
-  region = "fra"
-[functions."portal-business-input"]
-  region = "fra"
-[functions."portal-project"]
-  region = "fra"
-[functions."portal-connectors"]
-  region = "fra"
-[functions."portaalvraag"]
-  region = "fra"
-[functions."connector-ai-guide"]
-  region = "fra"
-[functions."document-extractor"]
-  region = "fra"
-[functions."i18n-translate"]
-  region = "fra"
-[functions."portal-entitlements"]
-  region = "fra"
-[functions."portal-feedback"]
-  region = "fra"
-[functions."portal-ondernemersdata"]
-  region = "fra"
-[functions."portal-prediction-intelligence"]
-  region = "fra"
-[functions."portal-scans"]
-  region = "fra"
-[functions."data-sovereignty"]
-  region = "fra"
-[functions."data-sovereignty-runtime-proof"]
-  region = "fra"
-[functions."powerhouse-commercial-heartbeat-background"]
-  region = "fra"
-[functions."powerhouse-commercial-heartbeat-schedule"]
-  region = "fra"
-
-
 # Legacy /nl/* locale URLs zijn niet canoniek. Nederlands leeft op de
 # on-geprefixte publieke route; Engels op /en/*. Houd oude links bruikbaar,
 # maar stuur ze permanent terug naar de Nederlandse canonical.
