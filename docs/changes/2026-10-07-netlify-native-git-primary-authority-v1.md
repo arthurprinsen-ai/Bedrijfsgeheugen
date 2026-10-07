@@ -31,3 +31,17 @@ No new scheduler, secret store, deployment lane, or customer-facing runtime is i
 A protected one-line invisible HTML comment named `netlify-native-git-primary-runtime-20261007-v1` is used to exercise the real website deployment path without changing customer-visible content or behavior.
 
 Acceptance is exact and provider-backed: the canary merge SHA must become Netlify production through native Git while Production Source Snapshot is still inside `NETLIFY_NATIVE_GIT_PRIMARY_WAIT`; the timeout/JIT fallback markers must not be reached, and Production Release Readback must succeed on the same SHA.
+
+## Runtime proof
+
+The protected canary merged as `cfbf6247cd59506d468dd75bca0307c3065b4f67` and is now provider-proven live.
+
+- Netlify deploy: `6ac692d18140b50008e74167`;
+- provider state/context: `ready / production`;
+- provider `commit_ref`: `cfbf6247cd59506d468dd75bca0307c3065b4f67`;
+- Production Source Snapshot run `37669016310`: success;
+- the executed snapshot log entered `NETLIFY_NATIVE_GIT_PRIMARY_WAIT` and observed the exact SHA live before timeout;
+- the job exited with “no transport side effect required”, so the JIT fallback was not invoked;
+- Production Release Readback run `37669016607`: success.
+
+This closes the authority ordering as `LIVE_PROVEN`: native Git is primary in real production, while OIDC/JIT remains fallback-only.

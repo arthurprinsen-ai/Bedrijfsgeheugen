@@ -40,3 +40,22 @@ Required evidence after protected merge:
 - Production Source Snapshot sees that SHA during the native Git wait and exits before JIT fallback;
 - no `NETLIFY_NATIVE_GIT_PRIMARY_TIMEOUT` or bridge acquisition is executed;
 - Production Release Readback is successful for the same SHA.
+
+## Terminal runtime proof
+
+Protected canary PR #4074 merged to `cfbf6247cd59506d468dd75bca0307c3065b4f67`.
+
+Provider readback:
+- Netlify deploy `6ac692d18140b50008e74167`;
+- state `ready`;
+- context `production`;
+- exact `commit_ref=cfbf6247cd59506d468dd75bca0307c3065b4f67`.
+
+Workflow proof:
+- Production Source Snapshot `37669016310`: success;
+- runtime log: `NETLIFY_NATIVE_GIT_PRIMARY_WAIT expected_sha=cfbf6247cd59506d468dd75bca0307c3065b4f67`;
+- runtime log then observed exact live SHA and exited with no transport side effect required;
+- no executed timeout/JIT fallback path;
+- Production Release Readback `37669016607`: success.
+
+Terminal classification: `LIVE_PROVEN`.
