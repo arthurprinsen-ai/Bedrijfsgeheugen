@@ -1,0 +1,41 @@
+{
+  "id": "netlify-production-authority-jit-source-close-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "netlify|production-authority|oidc|jit|v1",
+  "root_cause": "The canonical GitHub OIDC deploy bridge authenticated GitHub correctly but depended on a persisted short-lived Netlify MCP proxy. Once that proxy expired, exact-main production deployment failed with repeated 401 responses; after fail-fast preflight was added, the same stale authority correctly surfaced earlier as bridge unavailable.",
+  "prevention": {
+    "authority": "Acquire Netlify deployment authority just in time through the existing Composio connected account on every bridge invocation.",
+    "persistence": "Never persist or reuse an issued Netlify MCP proxy in Vault, GitHub secrets or repository source.",
+    "scope": "Keep GitHub OIDC restricted to the Bedrijfsgeheugen repository, refs/heads/main and the canonical production-source-snapshot workflow.",
+    "fail_closed": "If Vault cannot supply the Composio project key, Composio cannot issue fresh provider authority, or proxy issuance is malformed, fail before deployment with explicit bridge error semantics."
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_DEPLOY_AUTHORITY_STALE",
+    "scope": "PRODUCTION_DELIVERY_AUTHORITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Production Source Snapshot run 37659229217 reached exact-source deployment and received Netlify 401 Unauthorized three times.",
+      "The bridge-level credential preflight converted the hidden stale-proxy failure into an earlier 503 bridge failure rather than forwarding invalid authority."
+    ],
+    "canary": [
+      "Supabase Vault contains COMPOSIO_API_KEY metadata and the live bridge now resolves authority from that stable secret name.",
+      "Supabase Edge Function netlify-deploy-bridge version 15 is active with just-in-time Composio authority acquisition."
+    ]
+  },
+  "evidence": {
+    "runtime": [
+      "netlify-deploy-bridge ACTIVE version 15",
+      "COMPOSIO_API_KEY present in Supabase Vault",
+      "No persisted netlify_mcp_proxy_current or dated proxy lookup in the JIT bridge source"
+    ],
+    "repository": [
+      "supabase/functions/netlify-deploy-bridge/index.ts",
+      "supabase/functions/netlify-deploy-bridge/deno.json",
+      "tests/supabase-netlify-deploy-bridge-authority-v1.test.mjs"
+    ]
+  }
+}
