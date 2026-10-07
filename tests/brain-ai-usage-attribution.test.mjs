@@ -149,6 +149,7 @@ test('portal AI keeps verified tenant/business lineage while pinning portal acti
     system:'Gebruik klantcontext.',
     fetchImpl,
     usageStore,
+    sovereigntyClient:{assertAiAllowed:async()=>({allowed:true})},
     requestId:'CTX-PORTAL-1',
     usageContext:{
       tenantId:'tenant-portal-1',
