@@ -47,7 +47,13 @@
       "tests/brain-security-trust-center-v1.test.mjs"
     ],
     "truth_rule": "unknown_or_stale_must_not_become_green",
-    "connector_event_contract": "new_or_changed_connector_updates_sovereignty_and_security_transactionally"
+    "connector_event_contract": "new_or_changed_connector_updates_sovereignty_and_security_transactionally",
+    "shadow": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ]
   },
   "compiler": {
     "failure_class": "FALSE_GREEN_SECURITY_TRUST",

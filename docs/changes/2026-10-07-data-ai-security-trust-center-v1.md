@@ -35,3 +35,6 @@ Known database findings are deliberately visible as findings. Een groene UI volg
 Een koppeling is onderdeel van dezelfde trust-control-plane en wordt niet pas zichtbaar bij de volgende heartbeat. Iedere `INSERT`, `UPDATE` of `DELETE` op `public.connector_definitions` triggert in dezelfde Supabase-transactie een nieuwe data-sovereignty- én security-trust-snapshot voor de betreffende tenant. Als een connector van tenant wisselt, worden zowel de oude als de nieuwe tenant opnieuw berekend.
 
 De bestaande `public.powerhouse_refresh_data_sovereignty_v1()` heartbeat blijft de enige periodieke authority en fungeert als verificatie/recoverylaag. Er ontstaat dus geen tweede scheduler of parallelle truth store.
+
+## Post-merge terminal recovery
+Protected merge `b8f3195ec7d77df09b1abd522bce215508dc2155` bewees de database/migration-runtime, maar post-merge assurance vond twee contractgaten: `portal-state-eu` ontbrak in `supabase/config.toml` en security-sensitive learning had alleen historical replay, terwijl canonicalization ook shadow + canary vereist. De recovery declareert de bestaande actieve Edge Function expliciet in config en gebruikt dezelfde canonieke security regression voor historical replay, shadow en canary. Er wordt geen nieuwe scheduler, Edge Function of truth store toegevoegd.
