@@ -1,7 +1,7 @@
 {
   "project_ref": "adhjwmvyoixzjtmiroln",
   "source": "supabase_migration_history",
-  "captured_at": "2026-10-07T06:08:22.550117Z",
+  "captured_at": "2026-10-07T06:34:39.550000Z",
   "applied": [
     {
       "version": "20260817130430",
@@ -2374,6 +2374,14 @@
     {
       "version": "20261007060126",
       "name": "powerhouse_runtime_cron_pressure_relief_v1"
+    },
+    {
+      "version": "20261007062404",
+      "name": "bound_commercial_identity_graph_hotpath_v2"
+    },
+    {
+      "version": "20261007063439",
+      "name": "bound_identity_graph_hotpath_and_heartbeat_batch"
     }
   ],
   "replay_baselines_pending_repair": [
