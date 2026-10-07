@@ -9,7 +9,7 @@ export function createSupabasePortalProjectionStore({
 }={}){
   required(fetchFn,'fetch');required(baseUrl,'baseUrl');required(serviceToken,'serviceToken');
   const endpoint=`${String(baseUrl).replace(/\/$/,'')}/functions/v1/portal-state-eu`;
-  const headers={'content-type':'application/json','x-bg-service-token':serviceToken};
+  const headers={'content-type':'application/json','x-bg-service-token':serviceToken,'x-region':'eu-central-1'};
   async function gateway(body){
     const response=await fetchFn(endpoint,{method:'POST',headers,body:JSON.stringify(body)});
     const data=await response.json().catch(()=>null);
