@@ -19,7 +19,10 @@
       "tests/brain-regulatory-context-trace.test.mjs"
     ],
     "shadow": [
-      "tests/integration/portal-v2-production-full-parity.spec.js"
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
     ]
   },
   "compiler": {
