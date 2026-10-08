@@ -274,6 +274,14 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         requiredGate:'.github/workflows/required-test.yml',
         recoverySupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
         terminalClosure:'.github/workflows/obligation-terminal-closure.yml',
+        learningProjectionDescendantProof:Object.freeze({
+          authority:'Powerhouse Skill Projection on protected main',
+          historicalFailureNeverRelabeledGreen:true,
+          successfulDescendantWorkflowRequired:true,
+          originalMergeAndCurrentMainAncestryRequired:true,
+          learningBlobParityRequired:true,
+          regression:'tests/brain-source-universe-learning-projection-v1.test.mjs'
+        }),
         learning:'brain/learning/2026-09-30-async-workflow-continuation-v1.json'
       }),
       invariants:Object.freeze({
