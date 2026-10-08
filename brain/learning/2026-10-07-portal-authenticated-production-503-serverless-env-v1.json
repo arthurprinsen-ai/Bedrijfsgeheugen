@@ -30,8 +30,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-authenticated-production-proof.test.mjs",
-      "brain/learning/2026-09-21-netlify-serverless-env-api-v1.json"
+      "tests/portal-authenticated-production-proof.test.mjs"
     ],
     "production_before_fix": {
       "exact_main_deploy": "PROVEN",
