@@ -58,6 +58,20 @@ test('unmapped exact history remains explicit for mandatory provider readback',(
 test('terminal workflow owns one canonical import and retains required production gates',()=>{
   const yaml=readFileSync('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(yaml,/import \{ resolveTerminalMigrationIdentities \} from '\.\/tools\/delivery\/terminal-migration-identity\.mjs'/);
+  const stepStart=yaml.indexOf('      - name: Derive exact Supabase production migration identities across supersession lineage');
+  const stepEnd=yaml.indexOf('      - name: ',stepStart+12);
+  assert.ok(stepStart>=0 && stepEnd>stepStart,'Terminal migration step must have a bounded scope');
+  const step=yaml.slice(stepStart,stepEnd);
+  const scriptStart=step.indexOf("node --input-type=module - <<'NODE'");
+  const scriptEnd=step.indexOf('\n          NODE',scriptStart);
+  assert.ok(scriptStart>=0 && scriptEnd>scriptStart,'Migration step needs its own executable heredoc');
+  const script=step.slice(scriptStart,scriptEnd);
+  assert.match(script,/import \{ resolveTerminalMigrationIdentities \} from '\.\/tools\/delivery\/terminal-migration-identity\.mjs'/,
+    'The resolver must be in the same Node heredoc as its invocation');
+  assert.match(script,/const canonical=resolveTerminalMigrationIdentities\(unique,currentMigrationPaths\)/);
+  assert.equal((yaml.match(/import \{ resolveTerminalMigrationIdentities \}/g)||[]).length,1,
+    'Prevent importing resolver in an unrelated terminal step');
+
   assert.match(yaml,/const canonical=resolveTerminalMigrationIdentities\(unique,currentMigrationPaths\)/);
   assert.doesNotMatch(yaml,/const canonical=unique\.map\(item=>/);
   assert.match(yaml,/Derive exact Supabase production migration identities across supersession lineage/);

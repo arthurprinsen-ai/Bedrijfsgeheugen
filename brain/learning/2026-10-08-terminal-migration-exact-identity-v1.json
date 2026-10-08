@@ -14,13 +14,17 @@
       "20261007063438",
       "20261008080905"
     ],
-    "prod_versions_already_applied": true
+    "prod_versions_already_applied": true,
+    "terminal_retry_fail_run": 37757775283,
+    "terminal_retry_error": "ReferenceError: resolveTerminalMigrationIdentities is not defined",
+    "new_root_cause": "Import was accidentally injected into a different GitHub workflow Node heredoc. YAML-wide import regression passed while production terminal invocation still had no binding.",
+    "import_scope_corrected": true
   },
   "tests": [
     "tests/brain-terminal-migration-identity-v1.test.mjs"
   ],
   "intervention": "Exact version+name takes precedence while ambiguous historical aliases remain fail-closed.",
-  "prevention": "Terminal source readback must never conflate distinct legitimate versions merely because their descriptive migration names match.",
+  "prevention": "Terminal source readback must never conflate distinct legitimate versions merely because their descriptive migration names match. Test that the resolver import and invocation exist in the SAME terminal migration step Node heredoc; a global workflow-text match is insufficient.",
   "compiler": {
     "failure_class": "RUNTIME_INVARIANT",
     "scope": "DELIVERY",
