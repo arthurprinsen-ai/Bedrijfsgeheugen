@@ -33,8 +33,8 @@
     "source": [
       "platform/regulatory/cross-domain-review-portfolio.mjs",
       "netlify/functions/data-sovereignty.mjs",
-      "portal-next/data-sovereignty-panel.js"
+      "netlify/functions/data-sovereignty.mjs"
     ],
-    "outcome": "Existing portal shows action-specific evidence obligations; no automated regulatory decisions or new provider provisioning claimed"
+    "outcome": "Existing authenticated sovereignty API returns action-specific evidence obligations; no automated regulatory decisions or new provider provisioning claimed"
   }
 }
