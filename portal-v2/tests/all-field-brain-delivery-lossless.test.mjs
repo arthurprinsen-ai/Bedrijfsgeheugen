@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createPortalDomainState} from '../domain-state.js';
 import {allPageIds} from '../page-registry.js';
+import {impactForMutation} from '../portal-impact-engine.js';
 
 function harness(initial={portal:{profile:{}}},saver=async()=>({stored:true})){
  let stored=structuredClone(initial);
@@ -79,10 +80,30 @@ test('failed canonical acknowledgement preserves all field impacts for retry',as
  assert.equal(calls[1].metadata.causalImpacts.length,52);
 });
 
-test('unchanged customer fields do not produce redundant canonical Brain revisions',async()=>{
+test('unchanged customer fields do not produce redundant section-level impact revisions',async()=>{
  const {domain,calls}=harness({portal:{profile:{employees:20}}});
  await domain.init();
  domain.set('portal.profile.employees',20);
  await domain.flush();
  assert.equal(calls.length,0);
+});
+
+test('native finance and external-source changes mark cross-domain review without pretending verified outcomes',()=>{
+ const cases=[
+  ['cijfers-maatstaven',['finance','impact-economics'],['waarde-financiering','due-diligence','csrd-impact']],
+  ['omgevingsradar',['external-intelligence','finance','csrd-esrs'],['mensen','businesscase','csrd-impact']],
+  ['economie-branche-actueel',['external-intelligence'],['branche-markt','waarde-financiering']],
+  ['arbeidsmarkt-personeel',['people'],['mensen','roadmap']]
+ ];
+ for(const [page,domains,pages] of cases){
+  const before={portal:{[page]:{lastSourceRevision:'a'}}};
+  const after={portal:{[page]:{lastSourceRevision:'b'}}};
+  const impact=impactForMutation({path:`portal.${page}.lastSourceRevision`,before,after});
+  assert.equal(impact.changed,true,page);
+  assert.equal(impact.mappingStatus,'MAPPED',page);
+  for(const domain of domains)assert.ok(impact.reviewDomains.includes(domain),`${page} -> ${domain}`);
+  for(const destination of pages)assert.ok(impact.affectedPages.includes(destination),`${page} -> ${destination}`);
+  assert.equal(impact.externalExecutionAuthorized,false);
+  assert.equal(impact.evidenceStatus,'OBSERVED_NOT_VERIFIED');
+ }
 });
