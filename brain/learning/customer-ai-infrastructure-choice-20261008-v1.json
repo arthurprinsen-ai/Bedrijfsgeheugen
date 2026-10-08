@@ -1,0 +1,43 @@
+{
+  "id": "customer-ai-infrastructure-choice-20261008-v1",
+  "fingerprint": "powerhouse|customer-ai-placement|tenant-desired-state|fail-closed|v1",
+  "source": "Customer demand for on-premise models with no offsite data transfer; portal customer-control request, 2026-10-08",
+  "existing_state": "Data Sovereignty Control Plane already exposed EU policy and limited preferred provider; but not tenant cloud/on-prem/model/RAG placement requests.",
+  "change": "Extend existing sovereignty tenant policy with audited desired AI placement; validate Netlify and Supabase inputs; fail closed on noncurrent AI or private/local connector execution; show accurate customer-facing controls.",
+  "invariant": "DESIRED != PROVISIONED != VERIFIED. No fallback, no training, no cross-provider confidential inference without evidence.",
+  "learned": "Model provenance (European/Western label) does not establish region, privacy, training terms, licenses, subprocessors or air-gap safety.",
+  "owner": "ONE BRAIN / Data Sovereignty Control Plane",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4147",
+  "tests": [
+    "tests/data-sovereignty-control-plane.test.mjs",
+    "tests/brain-customer-ai-deployment-sovereignty-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-customer-ai-deployment-sovereignty-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-customer-ai-deployment-sovereignty-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-customer-ai-deployment-sovereignty-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Het bestaande soevereiniteitsportaal bood alleen grove EU- en providervoorkeuren zonder contract voor specifieke tenant-cloud/on-prem inference en gescheiden document-/RAG-regio. Een gekozen provider mag daarom niet als actieve deployment worden geïnterpreteerd.",
+  "prevention": "Eén allowlisted tenant AI-deploymentprofiel; altijd scheiding gewenst/geprovisioneerd/bewezen; verbied AI-training en stilzwijgende externe fallback; blokkeer huidige Anthropic-inferentie en onbewezen connectorroutes bij afwijkende klantkeuze; vereis Brain replay, shadow, canary en productie-readback voordat activatie mogelijk is.",
+  "evidence": {
+    "stage": "CANDIDATE_PROTECTED_DELIVERY",
+    "implementation": "platform/policy/customer-ai-deployment.mjs",
+    "runtime_guard": "netlify/functions/_data-sovereignty-client.mjs",
+    "test": "tests/brain-customer-ai-deployment-sovereignty-v1.test.mjs",
+    "provider_readback": "PENDING"
+  }
+}

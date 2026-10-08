@@ -12,6 +12,12 @@ on:
         description: Merged PR number to resume on the same canonical obligation lineage
         required: true
         type: string
+  workflow_call:
+    inputs:
+      pr_number:
+        description: Canonical merged PR to replay from a trusted protected-main caller
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -25,7 +31,7 @@ concurrency:
 
 jobs:
   close-obligation:
-    if: "${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && !contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY')) }}"
+    if: "${{ inputs.pr_number != '' || (github.event.pull_request.merged == true && !contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY')) }}"
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -317,12 +323,22 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           DELIVERY_LANE: ${{ steps.identity.outputs.delivery_lane }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           PROVIDER_READBACK_REQUIRED: ${{ steps.provider-readback.outputs.required }}
           PROVIDER_READBACKS: ${{ steps.provider-readback.outputs.readbacks }}
         run: |
           set -euo pipefail
 
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
+          # Migration-only merges are released by Supabase, not Netlify.
+          # All changed files must be exact migrations or non-runtime evidence.
+          migration_files="$(printf '%s\n' "$changed_paths" | grep -E '^supabase/migrations/[0-9]{14}_[a-z0-9_]+[.]sql$' || true)"
+          runtime_other="$(printf '%s\n' "$changed_paths" | grep -Ev '^(supabase/migrations/[0-9]{14}_[a-z0-9_]+[.]sql$|docs/|tests/|brain/learning/)' || true)"
+          if [ -n "$migration_files" ] && [ -z "$runtime_other" ]; then
+            node tools/delivery/supabase-migration-production-readback.mjs
+            exit 0
+          fi
+
           # Shared contract classifier handles website, Edge, mixed, and unknown changes.
           scope_json="$(CHANGED_PATHS="$changed_paths" node --input-type=module - <<'NODE'
           import {classifyTerminalReleaseScope} from './tools/delivery/terminal-release-scope.mjs';
