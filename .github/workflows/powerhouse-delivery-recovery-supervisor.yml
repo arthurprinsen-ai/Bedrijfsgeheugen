@@ -178,15 +178,27 @@ jobs:
             )"
             state="$(jq -r '.state' <<<"$decision")"
             echo "PR#$number $head $state"
+            did_recover=0
             active_for_pr(){
-              workflow="$1"
-              gh api "repos/$repo/actions/workflows/$workflow/runs?per_page=100" --jq "[.workflow_runs[] | select((.status==\"queued\" or .status==\"in_progress\" or .status==\"pending\" or .status==\"waiting\" or .status==\"requested\") and ((.display_title // \"\") | contains(\"PR #$number\")))] | length"
+              local workflow="$1"
+              # Native PR runs carry the candidate head SHA. Recovery dispatches
+              # carry immutable PR number + head SHA in their run-name.
+              gh api "repos/$repo/actions/workflows/$workflow/runs?per_page=100" |
+                jq --arg head "$head" --arg pr "$number" '
+                  [.workflow_runs[] |
+                    select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="waiting" or .status=="requested") |
+                    select(
+                      (.head_sha==$head and .event=="pull_request") or
+                      ((.display_title // "") | contains("PR #"+$pr+" "+$head))
+                    )
+                  ] | length'
             }
             dispatch_required(){
+              local active
               active="$(active_for_pr required-test.yml)"
               if [ "$active" -gt 0 ]; then
-                echo "::notice::PR#$number Required test already active; duplicate dispatch suppressed."
-                return 0
+                echo "::notice::PR#$number exact-head Required test already active; duplicate dispatch suppressed."
+                return 1
               fi
               gh workflow run required-test.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
             }
@@ -195,18 +207,27 @@ jobs:
             # not auto-dispatched here; doing so duplicates expensive lane work.
             case "$state" in
               ZERO_RUN_RECOVERY)
-                dispatch_required || true
+                if dispatch_required; then did_recover=1; fi
                 ;;
               PARTIAL_START_RECOVERY)
-                jq -e '.coverage.missing | index("required-test.yml")' <<<"$decision" >/dev/null && dispatch_required || true
+                if jq -e '.coverage.missing | index("required-test.yml")' <<<"$decision" >/dev/null; then
+                  if dispatch_required; then did_recover=1; fi
+                fi
                 ;;
               STALE_QUEUE_RECOVERY)
-                jq -r '.staleRunIds[]?' <<<"$decision" |
+                # Never create a second BRAIN or Required flight. A stale queued
+                # exact-head run is cancelled once; the next scheduled pass
+                # dispatches only when the provider confirms it is no longer active.
                 while read -r run_id; do
-                  [ -n "$run_id" ] && gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" || true
-                done
-                dispatch_required || true
-                dispatch_brain || true
+                  [ -n "$run_id" ] || continue
+                  if gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" >/dev/null; then
+                    did_recover=1
+                    echo "::notice::PR#$number stale exact-head queued run cancel requested:$run_id"
+                  else
+                    echo "::warning::PR#$number queued run cancellation failed:$run_id"
+                  fi
+                done < <(jq -r '.staleRunIds[]?' <<<"$decision")
+                if dispatch_required; then did_recover=1; fi
                 ;;
               FAILED_GATE_RECOVERY)
                 latest_required_id="$(jq -r '[.[] | select((.name // "") | test("required test"; "i"))] | sort_by(.updated_at // .created_at // "") | last | .id // empty' <<<"$runs")"
@@ -327,12 +348,10 @@ NODE
                 fi
                 ;;
             esac
-            case "$state" in
-              ZERO_RUN_RECOVERY|PARTIAL_START_RECOVERY|STALE_QUEUE_RECOVERY)
-                recovered_prs=$((recovered_prs + 1))
-                echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
-                ;;
-            esac
+            if [ "$did_recover" -eq 1 ]; then
+              recovered_prs=$((recovered_prs + 1))
+              echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
+            fi
           done < <(jq -c '.[]' /tmp/open-prs.json)
 
       - name: Recover merged obligations missing terminal closure
@@ -342,7 +361,7 @@ NODE
         run: |
           set -euo pipefail
           repo="$GITHUB_REPOSITORY"
-          cutoff_epoch="$(date -u -d '24 hours ago' +%s)"
+          cutoff_epoch="$(date -u -d '7 days ago' +%s)"
           closed="$(gh api "repos/$repo/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=100")"
           terminal_runs="$(gh api "repos/$repo/actions/workflows/obligation-terminal-closure.yml/runs?per_page=100")"
           active_terminal_count="$(jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="pending")] | length' <<<"$terminal_runs")"
@@ -371,6 +390,24 @@ NODE
               continue
             }
 
+            # Bounded retry: no five-minute re-dispatch loop for a deterministic
+            # production/proof failure. Leave the obligation nonterminal with
+            # inspectable GitHub evidence instead of manufacturing green.
+            prior="$(jq --arg title "$title" '[.workflow_runs[] | select(.display_title==$title)] | sort_by(.created_at) | reverse' <<<"$terminal_runs")"
+            prior_count="$(jq 'length' <<<"$prior")"
+            last_created="$(jq -r '.[0].created_at // ""' <<<"$prior")"
+            if [ "$prior_count" -ge 3 ]; then
+              echo "::warning::PR#$number terminal closure exhausted 3 attempts; deterministic failure requires targeted repair."
+              continue
+            fi
+            if [ -n "$last_created" ]; then
+              last_epoch="$(date -u -d "$last_created" +%s 2>/dev/null || echo 0)"
+              now_epoch="$(date -u +%s)"
+              if [ "$((now_epoch - last_epoch))" -lt 5400 ]; then
+                echo "::notice::PR#$number terminal closure under 90-minute retry cooldown; preserving current evidence."
+                continue
+              fi
+            fi
             echo "::notice::PR#$number is merged but nonterminal; dispatching one canonical terminal closure recovery."
             gh workflow run obligation-terminal-closure.yml --ref main -f pr_number="$number"
             echo "::notice::Serialized recovery: one terminal closure dispatched; remaining obligations wait for the next supervisor cycle."
