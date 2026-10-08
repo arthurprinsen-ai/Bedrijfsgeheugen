@@ -10,3 +10,6 @@ Quote the existing `run-name` (no additional workflow). Enforce the exact expect
 
 ## Truth
 The fix prevents **future** GitHub workflow runs losing their PR number. Historical runs keep their original names and remain independently auditable. Terminal LIVE_BEWEZEN requires all existing post-merge gates and durable control-plane evidence. Current state: code candidate; no manufactured production green.
+
+## Additional exact-path correction
+The same terminal evidence gate had a stale `require_workflow "powerhouse-codeql.yml"` reference, although the actual workflow is `.github/workflows/codeql.yml` (named `Powerhouse CodeQL`). Its lookup could not succeed. It now resolves `codeql.yml`, and the Brain regression asserts the correct workflow identity. This does not weaken CodeQL; it allows the real CodeQL success to be recognized.
