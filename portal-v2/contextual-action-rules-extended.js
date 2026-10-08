@@ -128,8 +128,9 @@ export function appendBroaderContextualActions(state={},cards=[],{card,item,toda
  for(const [index,change] of rows(get(state,'portal.changes.items')).entries()){
   const level=num(change?.impact),status=String(change?.status||'Open');
   if(level===null||level<4||['Geborgd','Afgerond','Klaar'].includes(status))continue;
-  put('change-'+slug(change.id||change.change),'Belangrijke bedrijfswijziging opvolgen',level===5?'P1':'P2','portal.changes.items',index,
-   'Wijziging heeft zelfgerapporteerde impact '+level+'/5 en is nog niet geborgd.',
+  const countSemantics=change.impactSemantics==='affected_capability_count';
+  put('change-'+slug(change.id||change.change),'Belangrijke bedrijfswijziging opvolgen',countSemantics?(level>=10?'P1':'P2'):(level===5?'P1':'P2'),'portal.changes.items',index,
+   (countSemantics?'De wizard telt '+level+' geraakte capabilities.':'Wijziging heeft zelfgerapporteerde impact '+level+'/5.')+' De wijziging is nog niet geborgd.',
    'Beoordeel capaciteit, systemen, financiële gevolgen, eigenaar en afhankelijkheden.',DELIVERY);
  }
  const now=Date.parse(String(today).slice(0,10)+'T00:00:00Z');
