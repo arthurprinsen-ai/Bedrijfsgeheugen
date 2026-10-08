@@ -10,12 +10,18 @@ const proof=(patch={})=>({...profile,tenantId,useCaseId,policyVersion,endpointId
   evidenceId:'model-readback-verified-009',providerReadbackEvidenceId:'provider-readback-verified-009',
   residencyEvidenceId:'residency-check-verified-009',dataProcessingEvidenceId:'dpa-audited-verified-009',
   egressEvidenceId:'egress-proof-verified-009',status:'VERIFIED',verifier:'PROVIDER_READBACK',proofStatus:'ATTESTED',
+  changeId:'sovereignty:tenant-a:4',customerConsentId:'approved-consent-4',
   revoked:false,verifiedAt:now-20000,issuedAt:now-10000,validUntil:now+500000,...patch});
 const sign=r=>signVerifiedRuntimeProof({receipt:r,key});
 const request={messages:[{role:'system',content:'Answer from approved context only.'},{role:'user',content:'Summarize'}],maxTokens:120};
 const config={MISTRAL_API:{apiKey:'fake-provider-key',endpointId:'mistral-approved',
   providerReadbackEvidenceId:'provider-readback-verified-009',egressEvidenceId:'egress-proof-verified-009'}};
-const args={tenantId,useCaseId,profile,policyVersion,key,request,config,now};
+const approvedScopes=['privacy','security','ai_governance','data_residency','supplier_risk','finance','sustainability','csrd_esrs_scope','audit','customer_disclosure'];
+const approval={tenantId,changeId:'sovereignty:tenant-a:4',policyVersion,status:'CLEARED',
+ customerConsentId:'approved-consent-4',validUntil:now+400000,
+ approvedScopes,evidenceIds:['model-readback-verified-009']};
+const registeredEndpoints=[{endpointId:'mistral-approved',tenantId,provider:'MISTRAL_API',networkMode:'STANDARD',region:'AUTO',enabled:true}];
+const args={tenantId,useCaseId,profile,policyVersion,key,request,config,approval,registeredEndpoints,now};
 const result={ok:true,status:200,json:async()=>({choices:[{message:{content:'Grounded answer'}}],usage:{prompt_tokens:6,completion_tokens:3}})};
 test('signed tenant- and use-case-bound Mistral route uses only exact approved host with no fallback',async()=>{
  let calls=0;
@@ -61,6 +67,7 @@ test('Azure API host and deployment are fixed by trusted server config and regio
  const azureReceipt={...proof(),...azure,endpointId:'verified-deployment'};
  let calls=0;const answer=await runAttestedTenantChat({
   ...args,profile:azure,signedProof:sign(azureReceipt),
+  registeredEndpoints:[{endpointId:'verified-deployment',tenantId,provider:'AZURE_OPENAI',networkMode:'STANDARD',region:'EU',enabled:true}],
   config:{AZURE_OPENAI:{apiKey:'azure-key',resourceName:'tenant-approved-west',
     deploymentId:'verified-deployment',endpointId:'verified-deployment',
     apiVersion:'2024-10-21',processingRegion:'EU',
@@ -87,4 +94,22 @@ test('request bounds and signing key strength are enforced',async()=>{
  assert.equal(calls,0);
  const claim=verifySignedRuntimeProof({...args,signed:sign(proof())});
  assert.equal(claim.tenantId,tenantId);
+});
+
+test('signed provider evidence alone never bypasses missing cross-domain approval or trusted endpoint registry',async()=>{
+ let egress=0;
+ const fetchFn=async()=>{egress++;return result};
+ for(const overrides of [
+   {approval:null},
+   {approval:{...approval,status:'REVIEW_REQUIRED'}},
+   {approval:{...approval,approvedScopes:approvedScopes.filter(x=>x!=='csrd_esrs_scope')}},
+   {approval:{...approval,customerConsentId:'not-the-approved-consent'}},
+   {approval:{...approval,validUntil:now-1}},
+   {registeredEndpoints:[]},
+   {registeredEndpoints:[{...registeredEndpoints[0],tenantId:'other-tenant'}]},
+   {registeredEndpoints:[{...registeredEndpoints[0],enabled:false}]}
+ ]){
+  await assert.rejects(runAttestedTenantChat({...args,...overrides,signedProof:sign(proof()),fetchFn}),{code:'AI_RUNTIME_NOT_VERIFIED'});
+ }
+ assert.equal(egress,0);
 });
