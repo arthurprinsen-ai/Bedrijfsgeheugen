@@ -180,6 +180,11 @@ export async function mountOverviewForesight(root,{state={},openPage,fetchImpl=g
   const main=root?.querySelector?.('.main');if(!main)return null;
   ensureStyles(root.ownerDocument||document);
   main.querySelector?.('[data-foresight-context]')?.remove();
+  main.__contextualActionAbort?.abort();
+  const controller=new AbortController();
+  main.__contextualActionAbort=controller;
+  mountContextualActionCandidates(main,'overzicht',openPage);
+  globalThis.addEventListener?.('bg:portal-impact',()=>mountContextualActionCandidates(main,'overzicht',openPage),{signal:controller.signal});
   const quality=await loadPredictionQuality(fetchImpl);
   const holder=(root.ownerDocument||document).createElement('div');holder.innerHTML=sectionMarkup({pageId:'overzicht',state,quality,overview:true});
   const section=holder.firstElementChild;if(!section)return null;

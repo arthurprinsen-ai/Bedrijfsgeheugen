@@ -4,6 +4,7 @@ import { functionalSchema } from './modules/functional-suite.js';
 import { fullCompanyInputSchema } from './modules/full-company-input.js';
 import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from './input-impact-coverage.js';
 import {appendBroaderContextualActions} from './contextual-action-rules-extended.js';
+import {appendComplementaryDomainActions,DOMAIN_GAP_PAGES} from './contextual-domain-gaps.js';
 
 // One read-only projection on the existing tenant-scoped Portal V2 state.
 // A proposal is NOT a measured risk, legal applicability ruling, executed action or euro saving.
@@ -12,7 +13,7 @@ const RELEVANT_PAGES = Object.freeze([
   'compliance-governance','ai-capabilities','wet-regelgeving','csrd-impact',
   'cijfers-maatstaven','waarde-financiering','businesscase','due-diligence',
   'advies','roadmap','actieve-acties','taken-werkstromen','eindconclusie',
-  'branche-markt','omgevingsradar','onderzoek','profiel','bedrijfssituatie','ai-scan','strategiemodellen','strategie-naar-maandagochtend','canvassen','wijzigingen','documenten','herstel-continuiteit','exit','audit','outcomes-evidence','os:impact-engine','os:scenario-simulator','portfolio-control'
+  'branche-markt','omgevingsradar','onderzoek','profiel','bedrijfssituatie','ai-scan','strategiemodellen','strategie-naar-maandagochtend','canvassen','wijzigingen','documenten','herstel-continuiteit','exit','audit','outcomes-evidence','os:impact-engine','os:scenario-simulator','portfolio-control',...DOMAIN_GAP_PAGES
 ]);
 export const CONTEXTUAL_ACTION_PAGES = RELEVANT_PAGES;
 
@@ -141,6 +142,7 @@ export function buildContextualActionCards(state={},options={}) {
       {regulatorySource:event.sourceUrl||null,regulatoryEvidenceStatus:applies?'SOURCE_VERIFIED_REVIEW_REQUIRED':'SOURCE_REVIEW_REQUIRED'}));
   }
   appendBroaderContextualActions(state,cards,{card,item,today:options.today||new Date().toISOString().slice(0,10)});
+  appendComplementaryDomainActions(state,cards,{card,item});
   return Object.freeze(cards.sort((a,b)=>(priorityOrder[a.priority]-priorityOrder[b.priority])||a.id.localeCompare(b.id)));
 }
 
