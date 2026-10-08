@@ -8,6 +8,7 @@ const eur=value=>known(value)?new Intl.NumberFormat('nl-NL',{style:'currency',cu
 const pct=value=>known(value)?`${Math.round(Number(value)*100)}%`:'—';
 const safeText=value=>esc(value||'—');
 const randomKey=()=>globalThis.crypto?.randomUUID?.()||`${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+const isBlocked=item=>Boolean(item?.blockedBy)||String(item?.dependencyState||'').startsWith('BLOCKED')||item?.dependencyState==='WAITING_FOR_DEPENDENCIES';
 
 export function sanitizePortalEvent(input={}){
   const output={};
@@ -17,6 +18,7 @@ export function sanitizePortalEvent(input={}){
 
 function priorityCard(item){
   const pending=item.status==='PROPOSED';
+  const blocked=isBlocked(item);
   return `<article class="company-decision-card" data-decision-id="${esc(item.id)}">
     <div class="company-decision-head"><span class="company-bucket">${esc(item.portfolioBucket||'')}</span><strong>${safeText(item.title)}</strong><span>#${esc(item.rank??'—')}</span></div>
     <p>${safeText((item.reasons||[]).join(' · ')||item.nextAction)}</p>
@@ -28,8 +30,9 @@ function priorityCard(item){
       <span><small>Gerealiseerd</small><b>${eur(item.realizedValue)}</b></span>
     </div>
     <div class="company-decision-actions">
-      ${pending?`<button type="button" data-company-command="APPROVE" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Goedkeuren</button><button type="button" data-company-command="REJECT" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Afwijzen</button>`:''}
-      <button type="button" data-company-command="START" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Starten</button>
+      ${pending&&!blocked?`<button type="button" data-company-command="APPROVE" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Goedkeuren</button><button type="button" data-company-command="REJECT" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Afwijzen</button>`:''}
+      ${!pending&&!blocked?`<button type="button" data-company-command="START" data-decision-id="${esc(item.id)}" data-expected-status="${esc(item.status)}">Starten</button>`:''}
+      ${blocked?`<span class="company-bucket">Geblokkeerd: ${esc(item.blockedBy||item.dependencyState||'afhankelijkheid')}</span>`:''}
     </div>
   </article>`;
 }
@@ -37,8 +40,9 @@ function priorityCard(item){
 export function renderCompanyCockpitHtml(runtime={}){
   const cockpit=buildCompanyCockpit(runtime);
   const priorities=cockpit.sections.find(x=>x.key==='priorities')?.items||[];
-  const topThree=priorities.slice(0,3);
-  const morePriorities=priorities.slice(3);
+  const topThree=priorities.filter(item=>!isBlocked(item)).slice(0,3);
+  const selected=new Set(topThree.map(item=>item.id));
+  const morePriorities=priorities.filter(item=>!selected.has(item.id));
   const approvals=cockpit.sections.find(x=>x.key==='approvals')?.items||[];
   const economics=cockpit.sections.find(x=>x.key==='economics')?.data||{};
   const verifiedValue=cockpit.sections.find(x=>x.key==='verified-value')?.items||[];
