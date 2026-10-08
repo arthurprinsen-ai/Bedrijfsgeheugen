@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|portal|mto-ai-governance-contextual-evidence-aware-actioncards|v1",
+  "obligationId": "portal-mto-ai-governance-contextual-actioncards-20261008-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "existing tenant portal state → Brain BusinessInput",
+  "root_causes": [
+    "MTO form tracked survey recency but did not collect survey score, participation or follow-up inputs",
+    "AI-governance form captured only a high-level maturity number and no accountability or human oversight evidence",
+    "cross-page invalidation flagged possible effects but did not provide customer-facing source-linked priority and actionable next-step proposals"
+  ],
+  "prevention": [
+    "include source path and related portal pages on every contextual action proposal",
+    "render proposals from the existing tenant-scoped domain state without duplicating a control-plane store",
+    "do not materialize legal applicability or euro impact unless tenant, source and calculation evidence support it",
+    "record proposed roadmap actions only by explicit customer click with a stable deduplication fingerprint",
+    "keep native form-inventory separate from the unproven full DOM/connector audit"
+  ],
+  "tests": [
+    "portal-v2/tests/contextual-action-cards.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/contextual-action-cards.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MISSING_CUSTOMER_CONTEXTUAL_DECISION_SURFACE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "closureRequired": [
+    "protected GitHub merge",
+    "Netlify exact-source production readback",
+    "authenticated tenant browser and Brain readback"
+  ],
+  "externalActionEvidence": "NOT_PROVEN"
+}
