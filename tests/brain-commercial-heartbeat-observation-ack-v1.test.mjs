@@ -67,7 +67,7 @@ test('reconciled daily commercial action selector excludes expired actions and m
 test('immutable historical SQL mirrors retain service-only authorization by exact blob identity',()=>{
   const checker=readFileSync('scripts/brain/check_powerhouse_supabase_security.py','utf8');
   const preceding=readFileSync('supabase/migrations/20261007094500_commercial_heartbeat_current_set_v2.sql','utf8');
-  assert.match(preceding,/revoke execute on function public\.powerhouse_reconcile_current_commercial_action_set_v2\(date\)[\s\S]*?from public, anon, authenticated/i);
+  assert.match(preceding,/revoke execute on function public\.powerhouse_reconcile_current_commercial_action_set_v2\(date\)[\s\S]*?from public\s*,\s*anon\s*,\s*authenticated/i);
   assert.match(preceding,/grant execute on function public\.powerhouse_reconcile_current_commercial_action_set_v2\(date\)[\s\S]*?to service_role/i);
   for(const [name,expected] of [
     ['20261008073832_fix_current_day_commercial_action_proof_v1.sql','24e72187af36076f88ace3cb783986344517e764'],
