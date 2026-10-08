@@ -1,0 +1,39 @@
+{
+  "id": "connector-cross-domain-activation-gate-20261008-v1",
+  "fingerprint": "powerhouse|connector-impact|activation-review-enforced|versioned|v1",
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_ACTIVATION_WITHOUT_REVIEW",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "A changed connector records a CSRD/privacy/finance impact assessment, but activation previously checked only connector test/plan data. Browser clients could also submit state=Active or untrusted runtime approval metadata in draft writes.",
+  "prevention": [
+    "Re-use the existing tenant connector review queue for pending cross-domain events, with safe human-readable domain and ESRS candidates.",
+    "Reject activation before provider execution while any applicable latest change impact is pending.",
+    "Server forces drafts to Draft state and ignores browser-supplied authorization/review objects.",
+    "Increment connector configuration version on real changes to invalidate stale test proof; distinguish operational readbacks from configuration changes."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connector-impact-gate-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connector-impact-gate-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connector-impact-gate-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-connector-impact-gate-v1.test.mjs"
+    ],
+    "source": [
+      "platform/regulatory/connector-change-impact-gate.mjs",
+      "platform/api/portal-connectors-handler.mjs"
+    ],
+    "outcome": "Fail-closed review gate and safe review-queue projection in connector API. Does not prove any reviewed connector is activated; approvals must use authoritative evidence."
+  }
+}
