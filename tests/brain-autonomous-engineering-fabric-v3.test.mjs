@@ -267,3 +267,34 @@ test('automatic tuning records a baseline and previous knobs for future readback
   assert.equal(result.tuning.tuning_trial.baseline.required_total_seconds_p95,100);
   assert.equal(result.tuning.tuning_trial.previous_tuning.max_parallel_packages,4);
 });
+
+test('Required timing p95 must exclude fast failures and count only successful gates',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const source=await readFile('scripts/brain/powerhouse-ci-intelligence.mjs','utf8');
+  assert.match(source,/run\.status === 'completed' && run\.conclusion === 'success' && run\.updated_at/);
+  assert.match(source,/trialRequiredFailures=/);
+  assert.match(source,/required_failures:trialRequiredFailures/);
+});
+
+test('no optimizer acceleration when successful Required sample is thin or failure exists',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,ci:{direct_pr_workflow_budget:8},safety:{}};
+  const m={queue_wait_seconds_p95:5,required_queue_wait_seconds_p95:5,required_total_seconds_p95:80,
+    execution_seconds_p95:75,failed_jobs:0,skipped_jobs:0,sampled_jobs:55,
+    workflow_fanout_per_sha_p95:2,direct_pull_request_workflow_count:8,
+    required_queue_sample_count:6,required_total_sample_count:2};
+  const scarce=optimizeDailyTuning({metrics:m,current});
+  assert.equal(scarce.tuning.max_parallel_packages,4);
+  assert.equal(scarce.signals.evidence_ready,false);
+  const failed=optimizeDailyTuning({metrics:{...m,required_total_sample_count:6,required_failures_7d:1},current});
+  assert.equal(failed.tuning.max_parallel_packages,4);
+  assert.equal(failed.signals.evidence_ready,false);
+});
+
+test('failed Required run cannot be mistaken for a successful tuning trial',()=>{
+  const trial={status:'PENDING',started_at:'2026-10-01T00:00:00Z',baseline:{required_total_seconds_p95:120,failure_rate:0}};
+  const evidence=assessTuningExperiment({trial,observedAt:'2026-10-04T00:00:00Z',
+    postChange:{sampled_jobs:80,required_count:7,required_failures:1,queue_sample_count:50,
+      required_total_seconds_p95:60,failed_jobs:0}});
+  assert.equal(evidence.status,'AWAITING_EVIDENCE');
+  assert.equal(evidence.reason,'REQUIRED_FAILURE_NOT_FASTER_SUCCESS');
+});
