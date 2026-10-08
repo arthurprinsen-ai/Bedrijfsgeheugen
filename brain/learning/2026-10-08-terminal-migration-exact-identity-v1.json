@@ -46,5 +46,6 @@
     "terminal closure #4118 resume on current main with exact production migration proof",
     "Brain obligation terminal readback"
   ],
-  "next_action": "Merge safely after protected checks, then dispatch one exact PR #4118 terminal closure retry and verify final provider readback."
+  "next_action": "Merge safely after protected checks, then dispatch one exact PR #4118 terminal closure retry and verify final provider readback.",
+  "fingerprint": "delivery|terminal-migration-exact-version-first|same-name-historical-ledger|v1"
 }
