@@ -35,7 +35,8 @@ async function main(){
     changedPaths:paths,projectRef:'adhjwmvyoixzjtmiroln',
     token:process.env.SUPABASE_ACCESS_TOKEN
   });
-  await appendFile(process.env.GITHUB_OUTPUT,'mode=supabase_migration\nrun_id=\nobserved_sha='+merge+'\ndeploy_id=\nverified=true\n');
+  // Canonical terminal consumer supports github_main; exact Supabase provider proof was required above.
+  await appendFile(process.env.GITHUB_OUTPUT,'mode=github_main\nrun_id=\nobserved_sha='+merge+'\ndeploy_id=\nverified=true\n');
   console.log('SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN:'+result.versions.join(',')+':merge='+merge);
 }
 if(process.argv[1]?.endsWith('supabase-migration-production-readback.mjs'))main().catch(e=>{console.error(e.message);process.exitCode=78});

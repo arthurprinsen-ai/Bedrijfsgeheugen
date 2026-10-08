@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {migrationVersions,assertExactProviderRows,verifyMigrationProduction} from '../tools/delivery/supabase-migration-production-readback.mjs';
 const workflow=readFileSync(new URL('../.github/workflows/obligation-terminal-closure.yml',import.meta.url),'utf8');
 test('migration-only terminal closure requires Supabase provider readback, never Netlify',()=>{
-  assert.ok(workflow.includes('SUPABASE_MIGRATION_PRODUCTION_TOKEN_MISSING'));
+  assert.ok(workflow.includes('migration_files=') && workflow.includes('runtime_other='));
   assert.ok(workflow.includes('SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}'));
   assert.ok(workflow.includes('supabase-migration-production-readback.mjs'));
 });
@@ -27,4 +27,22 @@ test('production management API readback succeeds only with authenticated exact 
 });
 test('provider errors are not silently converted to green',async()=>{
   await assert.rejects(()=>verifyMigrationProduction({changedPaths:['supabase/migrations/20261008104000_test.sql'],projectRef:'adhjwmvyoixzjtmiroln',token:'test-secret',request:async()=>({ok:false,status:403})}),/HTTP_403/);
+});
+
+test('canonical replay workflow has one valid manual trigger and no duplicated jobs',()=>{
+  assert.match(workflow,/^on:\n  pull_request:\n[\s\S]*?  workflow_dispatch:/m);
+  assert.equal((workflow.match(/^jobs:$/gm)||[]).length,1);
+  assert.equal((workflow.match(/^      - name: Wait for canonical production release readback$/gm)||[]).length,1);
+  assert.equal((workflow.match(/^          source_run_id=""$/gm)||[]).length,1);
+  assert.equal((workflow.match(/^          changed_paths="\$\(git diff --name-only/gm)||[]).length>=1,true);
+  assert.ok(workflow.endsWith('          retention-days: 90\n'));
+  assert.ok(workflow.includes('SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}'));
+  assert.ok(workflow.includes('migration_files='));
+  assert.ok(workflow.includes('runtime_other='));
+  assert.ok(workflow.includes('node tools/delivery/supabase-migration-production-readback.mjs'));
+});
+test('migration-only provider proof maps to established canonical terminal mode',()=>{
+  const helper=readFileSync(new URL('../tools/delivery/supabase-migration-production-readback.mjs',import.meta.url),'utf8');
+  assert.ok(helper.includes('mode=github_main'));
+  assert.ok(helper.includes('SUPABASE_MIGRATION_PROVIDER_READBACK_PROVEN'));
 });
