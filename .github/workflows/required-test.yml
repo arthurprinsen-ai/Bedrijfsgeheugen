@@ -93,6 +93,9 @@ jobs:
         run: node --test tests/release-artifact-identity.test.mjs
       - name: Verify fail-closed Supabase provider preview classification
         run: node --test tests/brain-supabase-preview-diagnosis-v1.test.mjs
+      - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
+        run: |
+          node --test portal-v2/tests/one-brain-impact-contract.test.mjs portal-v2/tests/portal-impact-engine.test.mjs portal-v2/tests/portal-causal-propagation.test.mjs portal-v2/tests/domain-state.test.mjs
       - id: artifact
         name: Compute immutable artifact identity
         run: echo "artifact_id=$(node tools/build/artifact-id.mjs)" >> "$GITHUB_OUTPUT"
