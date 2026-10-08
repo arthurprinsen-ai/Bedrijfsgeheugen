@@ -167,7 +167,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
   if(impact.changed){
    pendingImpacts.push({path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
-   if(pendingImpacts.length>50)pendingImpacts.splice(0,pendingImpacts.length-50);
+   // Keep all unacknowledged causal changes; never silently truncate large forms.
   }
   if(typeof globalThis!=='undefined'){
    globalThis.__BG_LAST_PORTAL_IMPACT__=enriched;
@@ -179,15 +179,17 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   }
   return enriched;
  }
- function set(path,value){const before=domain.get();const result=domain.set(path,value);track(path);publishImpact(path,before,domain.get());return result;}
+ function set(path,value){const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  function setDerived(path,value){if(typeof domain.project!=='function')throw new TypeError('DOMAIN_DERIVED_PROJECTION_REQUIRED');return domain.project(path,value);}
- function patch(path,value){const before=domain.get();const result=domain.patch(path,value);track(path);publishImpact(path,before,domain.get());return result;}
+ function patch(path,value){const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  async function performPortalFlush(){
+  // Snapshot the causal cut before async persistence: later edits require a later readback.
+  const impactSnapshot=pendingImpacts.slice();
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
   const stateResult=await domain.flush();
   const stored=[];
   for(const item of pending){
-   const causalImpacts=pendingImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
+   const causalImpacts=impactSnapshot.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
    const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1',causalImpacts}});
    // Demo mode deliberately has no durable BusinessInput authority. Only an explicit
    // demo skip may be treated as non-durable success; authenticated writes still
@@ -200,10 +202,12 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    stored.push(saved);
    if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
   }
+  // Remove only confirmed impacts from this snapshot; keep edits that arrived during save.
+  pendingImpacts.splice(0,impactSnapshot.length);
+  const fullySynced=domain.status()!=='dirty'&&domain.status()!=='error'&&pendingBusinessInputs.size===0&&pendingImpacts.length===0;
   if(typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
-   globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:[...pendingImpacts]}}));
+   globalThis.dispatchEvent(new CustomEvent(fullySynced?'bg:portal-brain-synced':'bg:portal-brain-pending',{detail:{stored,fullySynced,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:impactSnapshot,pendingChanges:pendingImpacts.length,pendingInputs:pendingBusinessInputs.size}}));
   }
-  pendingImpacts.length=0;
   return stateResult;
  }
  function flush(){if(activePortalFlush)return activePortalFlush;activePortalFlush=performPortalFlush().finally(()=>{activePortalFlush=null});return activePortalFlush;}
