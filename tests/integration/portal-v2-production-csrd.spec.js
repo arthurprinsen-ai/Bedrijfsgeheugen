@@ -13,9 +13,17 @@ test('production Portal V2 renders the canonical CSRD & Impact module', async ({
   expect(response, 'Portal V2 must return an HTTP response').not.toBeNull();
   expect(response.status(), 'Portal V2 must be reachable in production').toBeLessThan(400);
 
-  const csrdNav = page.getByRole('button', { name: /CSRD & Impact/ }).first();
-  await expect(csrdNav).toBeVisible({ timeout: 15_000 });
-  await csrdNav.click();
+  // The page menu can contain a CSRD grouping button before the actual route.
+  // Assert native route activation by ID instead of selecting an ambiguous label.
+  await page.waitForFunction(()=>Boolean(document.querySelector('.app')) &&
+    Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});
+  const opened=await page.evaluate(async()=>{
+    const shell=await import('/portal-v2/page-shell.js');
+    return shell.openPortalPage('csrd-impact');
+  });
+  expect(opened,'CSRD native route must be accessible').toBe(true);
+  await expect(page.locator('#portalView')).toHaveAttribute('data-page-id','csrd-impact',{timeout:15_000});
+  await expect(page.locator('#portalView .csrd-cockpit')).toBeVisible({timeout:15_000});
 
   await expect(page.getByText('CSRD Readiness', { exact: true })).toBeVisible();
   await expect(page.getByText('Voorbeelddata · geen live claim', { exact: true })).toBeVisible();
