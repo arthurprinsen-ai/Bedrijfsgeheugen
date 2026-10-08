@@ -291,11 +291,32 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           DELIVERY_LANE: ${{ steps.identity.outputs.delivery_lane }}
+          PROVIDER_READBACK_REQUIRED: ${{ steps.provider-readback.outputs.required }}
+          PROVIDER_READBACKS: ${{ steps.provider-readback.outputs.readbacks }}
         run: |
           set -euo pipefail
 
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
-          if [ "${DELIVERY_LANE}" = "automation" ] && [ -n "${changed_paths}" ] && ! grep -Eq '^(portal-v2/|public/|src/|netlify/functions/|supabase/functions/|supabase/migrations/)' <<<"${changed_paths}"; then
+          # Canonical runtime classification: do not require Netlify for Edge-only delivery.
+          scope_json="$(CHANGED_PATHS="$changed_paths" node --input-type=module - <<'NODE'
+          import {isNetlifyRuntimePath,isNonProductionPath} from './tools/site-shell/production-supersession.mjs';
+          const paths=String(process.env.CHANGED_PATHS||'').split(/\r?\n/).filter(Boolean);
+          if(!paths.length)throw new Error('TERMINAL_MERGE_CHANGE_SCOPE_EMPTY');
+          const runtime=paths.filter(path=>!isNonProductionPath(path));
+          const isEdge=path=>path==='supabase/config.toml'||path.startsWith('supabase/functions/');
+          process.stdout.write(JSON.stringify({
+            website:runtime.some(isNetlifyRuntimePath),
+            edge:runtime.some(isEdge),
+            other:runtime.some(path=>!isNetlifyRuntimePath(path)&&!isEdge(path)),
+            non_runtime:runtime.length===0
+          }));
+          NODE
+          )"
+          website_required="$(jq -r '.website' <<<"$scope_json")"
+          supabase_edge_required="$(jq -r '.edge' <<<"$scope_json")"
+          other_runtime_required="$(jq -r '.other' <<<"$scope_json")"
+          non_runtime="$(jq -r '.non_runtime' <<<"$scope_json")"
+          if [ "${DELIVERY_LANE}" = "automation" ] && [ "$non_runtime" = true ]; then
             git fetch origin main --no-tags
             observed_sha="$(git rev-parse origin/main)"
             git merge-base --is-ancestor "${MERGE_SHA}" "${observed_sha}" || {
@@ -311,6 +332,35 @@ jobs:
             exit 0
           fi
 
+          if [ "$supabase_edge_required" = true ] && [ "$website_required" = false ] && [ "$other_runtime_required" = false ]; then
+            if [ "$PROVIDER_READBACK_REQUIRED" != true ]; then
+              echo "::error::SUPABASE_ONLY_PROVIDER_READBACK_REQUIRED:$MERGE_SHA"
+              exit 78
+            fi
+            if ! jq -e 'type=="array" and length>0 and all(.[]; .state=="ACTIVE" and (.version|type=="number") and .version>0 and (.runtime_sha256|test("^[0-9a-f]{64}$")))' <<<"$PROVIDER_READBACKS" >/dev/null; then
+              echo "::error::SUPABASE_ONLY_PROVIDER_READBACK_INVALID:$MERGE_SHA"
+              exit 78
+            fi
+            git fetch origin main --no-tags
+            observed_sha="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "$MERGE_SHA" "$observed_sha" || {
+              echo "::error::SUPABASE_ONLY_MAIN_CONTAINMENT_NOT_PROVEN:$MERGE_SHA:$observed_sha"
+              exit 78
+            }
+            git diff --quiet "$MERGE_SHA" "$observed_sha" -- supabase/functions supabase/config.toml || {
+              echo "::error::SUPABASE_ONLY_RUNTIME_SUPERSEDED:$MERGE_SHA:$observed_sha"
+              exit 78
+            }
+            echo "mode=github_main" >> "$GITHUB_OUTPUT"
+            echo "run_id=" >> "$GITHUB_OUTPUT"
+            echo "observed_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
+            echo "deploy_id=" >> "$GITHUB_OUTPUT"
+            echo "verified=true" >> "$GITHUB_OUTPUT"
+            echo "SUPABASE_ONLY_PROVIDER_AND_MAIN_READBACK_PROVEN:merge=$MERGE_SHA contained_by=$observed_sha"
+            exit 0
+          fi
+          # Mixed changes retain both provider proof and Netlify release readback.
+          # Other unknown runtime paths remain fail-closed.
           source_run_id=""
           source_conclusion=""
           # Fast bounded canonical wait. A historical failed/cancelled canonical run is
