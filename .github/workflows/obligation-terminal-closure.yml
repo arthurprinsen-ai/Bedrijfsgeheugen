@@ -297,19 +297,12 @@ jobs:
           set -euo pipefail
 
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
-          # Canonical runtime classification: do not require Netlify for Edge-only delivery.
+          # Shared contract classifier handles website, Edge, mixed, and unknown changes.
           scope_json="$(CHANGED_PATHS="$changed_paths" node --input-type=module - <<'NODE'
-          import {isNetlifyRuntimePath,isNonProductionPath} from './tools/site-shell/production-supersession.mjs';
-          const paths=String(process.env.CHANGED_PATHS||'').split(/\r?\n/).filter(Boolean);
-          if(!paths.length)throw new Error('TERMINAL_MERGE_CHANGE_SCOPE_EMPTY');
-          const runtime=paths.filter(path=>!isNonProductionPath(path));
-          const isEdge=path=>path==='supabase/config.toml'||path.startsWith('supabase/functions/');
-          process.stdout.write(JSON.stringify({
-            website:runtime.some(isNetlifyRuntimePath),
-            edge:runtime.some(isEdge),
-            other:runtime.some(path=>!isNetlifyRuntimePath(path)&&!isEdge(path)),
-            non_runtime:runtime.length===0
-          }));
+          import {classifyTerminalReleaseScope} from './tools/delivery/terminal-release-scope.mjs';
+          process.stdout.write(JSON.stringify(classifyTerminalReleaseScope(
+            String(process.env.CHANGED_PATHS||'').split(/\r?\n/)
+          )));
           NODE
           )"
           website_required="$(jq -r '.website' <<<"$scope_json")"
@@ -347,10 +340,19 @@ jobs:
               echo "::error::SUPABASE_ONLY_MAIN_CONTAINMENT_NOT_PROVEN:$MERGE_SHA:$observed_sha"
               exit 78
             }
-            git diff --quiet "$MERGE_SHA" "$observed_sha" -- supabase/functions supabase/config.toml || {
-              echo "::error::SUPABASE_ONLY_RUNTIME_SUPERSEDED:$MERGE_SHA:$observed_sha"
-              exit 78
-            }
+            # Check changed runtime files, not unrelated later deployments.
+            # A later canonical config registration must not invalidate a previous
+            # function-source merge whose exact production bytes are unchanged.
+            while IFS= read -r changed_path; do
+              case "$changed_path" in
+                supabase/functions/*|supabase/config.toml)
+                  git diff --quiet "$MERGE_SHA" "$observed_sha" -- "$changed_path" || {
+                    echo "::error::SUPABASE_ONLY_RUNTIME_SUPERSEDED:$changed_path:$MERGE_SHA:$observed_sha"
+                    exit 78
+                  }
+                  ;;
+              esac
+            done <<<"$changed_paths"
             echo "mode=github_main" >> "$GITHUB_OUTPUT"
             echo "run_id=" >> "$GITHUB_OUTPUT"
             echo "observed_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
