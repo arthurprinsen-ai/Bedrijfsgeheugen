@@ -166,6 +166,9 @@ const baseReport = {
     failed_jobs: failed,
     cancelled_jobs: cancelled,
     skipped_jobs: skipped,
+    // Skip is a routing decision, not a billed runner execution.
+    known_cancelled_runner_seconds: jobRows.filter(row => row.conclusion === 'cancelled').reduce((sum, row) => sum + (row.execution_seconds ?? 0), 0),
+    known_skipped_runner_seconds: 0,
     skipped_workflow_runs_7d: skippedWorkflowRuns,
     cancelled_workflow_runs_7d: cancelledWorkflowRuns,
     duplicate_workflow_runs_7d: duplicateWorkflowRuns,
