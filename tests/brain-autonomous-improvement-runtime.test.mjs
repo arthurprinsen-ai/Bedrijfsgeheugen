@@ -26,7 +26,7 @@ test('runtime contract remains integrated with continuous improvement authority'
   assert.equal(contract.scheduler.production_function, 'public.powerhouse_autonomous_improvement_cron_v1()');
   assert.equal(contract.scheduler.cadence, 'hourly at minute 34');
   const staggerMigration=await readFile(new URL('../supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql', import.meta.url), 'utf8');
-  assert.match(staggerMigration, /'powerhouse-autonomous-improvement-cycle-v1', '34 \\* \\* \\* \\*'/);
+  assert.match(staggerMigration, /'powerhouse-autonomous-improvement-cycle-v1', '34 \* \* \* \*'/);
   assert.equal(contract.scheduler.schedule_source, 'supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql');
   assert.equal(contract.scheduler.probe_workflow, '.github/workflows/business-os-intelligence.yml');
   assert.equal(contract.scheduler.probe_read_only, true);
