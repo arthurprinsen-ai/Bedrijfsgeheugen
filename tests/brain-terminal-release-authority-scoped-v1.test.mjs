@@ -7,6 +7,34 @@ import {resolveEdgeRuntimeFunctions} from '../tools/supabase/edge-runtime-scope.
 const workflow=readFileSync('.github/workflows/obligation-terminal-closure.yml','utf8');
 const config=readFileSync('supabase/config.toml','utf8');
 
+test('non-runtime governance and CI changes do not require a fake Netlify release',()=>{
+  const backend=classifyTerminalReleaseScope([
+    'tools/brain-delivery-system.mjs',
+    'tests/brain-change-scoped-release-lanes.test.mjs',
+    'brain/learning/2026-10-08-ci-heartbeat-lane-scope-v1.json',
+    'docs/changes/2026-10-08-ci-heartbeat-lane-scope-v1.md'
+  ]);
+  assert.deepEqual(backend,{website:false,edge:false,other:false,non_runtime:true});
+  const collector=classifyTerminalReleaseScope([
+    'tools/delivery/ci-calibration-engine.mjs',
+    'scripts/brain/powerhouse-ci-intelligence.mjs',
+    'tests/brain-ci-calibration-engine-v1.test.mjs'
+  ]);
+  assert.deepEqual(collector,backend);
+  assert.match(workflow,/if \[ "\$non_runtime" = true \]; then/);
+  assert.match(workflow,/NON_RUNTIME_MAIN_READBACK_PROVEN/);
+  assert.doesNotMatch(workflow,/if \[ "\$\{DELIVERY_LANE\}" = "automation" \] && \[ "\$non_runtime" = true \]/);
+});
+
+test('unknown backend, actual website, and Supabase runtime remain fail closed',()=>{
+  assert.deepEqual(classifyTerminalReleaseScope(['config/unrecognized-live-engine.json']),
+    {website:false,edge:false,other:true,non_runtime:false});
+  const website=classifyTerminalReleaseScope(['platform/api/connector-handler.mjs']);
+  assert.equal(website.website,true);
+  const edge=classifyTerminalReleaseScope(['supabase/functions/powerhouse-runtime/index.ts']);
+  assert.equal(edge.edge,true);
+});
+
 test('Supabase-only source changes require Edge provider and not Netlify',()=>{
   assert.deepEqual(classifyTerminalReleaseScope([
     'supabase/functions/powerhouse-composio-linkedin-setup/index.ts',
