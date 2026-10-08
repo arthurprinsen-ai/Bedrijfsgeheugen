@@ -264,12 +264,50 @@ Deno.serve(async(req:Request)=>{
       if(providerError)return json({error:'SOVEREIGNTY_PROVIDER_READ_FAILED'},500);
       if(!provider)return json({error:'UNKNOWN_AI_PROVIDER'},400);
     }
-    const {data:existing,error:existingError}=await client.from('tenant_data_sovereignty_policy_v1').select('policy_version,ai_deployment_profile').eq('tenant_id',tenantId).maybeSingle();
+    const {data:existing,error:existingError}=await client.from('tenant_data_sovereignty_policy_v1').select('policy_version,mode,preferred_ai_provider,preferred_ai_region,ai_deployment_profile,last_change_impact').eq('tenant_id',tenantId).maybeSingle();
     if(existingError)return json({error:'SOVEREIGNTY_POLICY_READ_FAILED'},500);
     const profileSupplied=Object.prototype.hasOwnProperty.call(policy,'aiDeploymentProfile');
     const aiDeploymentProfile=profileSupplied?policy.aiDeploymentProfile:(existing?.ai_deployment_profile??null);
     if(aiDeploymentProfile!==null&&!validAiDeploymentProfile(aiDeploymentProfile))
       return json({error:'INVALID_AI_DEPLOYMENT_PROFILE'},400);
+
+    // A policy edit is a single versioned change across AI, location, privacy and ESG.
+    // The Netlify Identity authority provides the canonical assessment; this Edge
+    // authority checks the complete before/after tuple before committing any update.
+    const currentVersion=Number(existing?.policy_version||0);
+    if(!Number.isSafeInteger(Number(policy.expectedPolicyVersion))||Number(policy.expectedPolicyVersion)!==currentVersion)
+      return json({error:'SOVEREIGNTY_POLICY_VERSION_CONFLICT'},409);
+    const stableJson=(value:any):string=>JSON.stringify(value,(_key,v)=>
+      v&&typeof v==='object'&&!Array.isArray(v)?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b))):v);
+    const previousState={
+      mode:existing?.mode||'TRANSPARENT_GLOBAL',
+      preferredAiProvider:existing?.preferred_ai_provider||null,
+      preferredAiRegion:existing?.preferred_ai_region||null,
+      aiDeploymentProfile:existing?.ai_deployment_profile??null
+    };
+    const nextState={mode,preferredAiProvider,preferredAiRegion,aiDeploymentProfile};
+    const changed=stableJson(previousState)!==stableJson(nextState);
+    const incomingImpact=policy.changeImpact??null;
+    if(changed){
+      if(!incomingImpact||typeof incomingImpact!=='object'||Array.isArray(incomingImpact)||
+         incomingImpact.contract!=='powerhouse-cross-domain-change-v1'||
+         incomingImpact.tenantId!==tenantId||
+         incomingImpact.changeId!==`sovereignty:${tenantId}:${currentVersion+1}`||
+         !['AI_MODEL','AI_DEPLOYMENT','DATA_LOCATION'].includes(incomingImpact.kind)||
+         incomingImpact.status!=='REVIEW_REQUIRED'||incomingImpact.changed!==true||
+         incomingImpact.deploymentApproved!==false||
+         stableJson(incomingImpact.before)!==stableJson(previousState)||
+         stableJson(incomingImpact.after)!==stableJson(nextState)||
+         !Array.isArray(incomingImpact.affectedDomains)||
+         !['csrd_esrs_scope','privacy','security','finance','audit'].every(x=>incomingImpact.affectedDomains.includes(x))||
+         !Array.isArray(incomingImpact.esrsReview)||
+         incomingImpact.esrsReview.length===0||
+         incomingImpact.esrsReview.some((x:any)=>x?.materiality!=='UNDETERMINED'||x?.applicability!=='UNDETERMINED'||x?.measuredImpact!==null)||
+         !Array.isArray(incomingImpact.evidenceIds)||incomingImpact.evidenceIds.length>0)
+        return json({error:'INVALID_CROSS_DOMAIN_IMPACT'},400);
+    }else if(incomingImpact!==null){
+      return json({error:'INVALID_CROSS_DOMAIN_IMPACT'},400);
+    }
     const strict=mode==='EU_ONLY';
     const storageStrict=mode==='EU_STORAGE';
     const next={
@@ -278,6 +316,7 @@ Deno.serve(async(req:Request)=>{
       preferred_ai_provider:preferredAiProvider,
       preferred_ai_region:preferredAiRegion,
       ai_deployment_profile:aiDeploymentProfile,
+      last_change_impact:changed?incomingImpact:(existing?.last_change_impact??null),
       allow_cross_border:strict?false:true,
       block_unknown_region:strict||storageStrict,
       enforcement_mode:strict||storageStrict?'BLOCK':'OBSERVE',
@@ -285,8 +324,12 @@ Deno.serve(async(req:Request)=>{
       updated_by:String(body?.actor||'portal-user').slice(0,320),
       updated_at:new Date().toISOString()
     };
-    const {error:saveError}=await client.from('tenant_data_sovereignty_policy_v1').upsert(next,{onConflict:'tenant_id'});
+    // Compare-and-swap avoids overwriting another tenant configuration change.
+    // The SQL trigger appends the immutable change event in the same DB transaction.
+    const {data:saved,error:saveError}=await client.from('tenant_data_sovereignty_policy_v1')
+      .update(next).eq('tenant_id',tenantId).eq('policy_version',currentVersion).select('tenant_id').maybeSingle();
     if(saveError)return json({error:'SOVEREIGNTY_POLICY_WRITE_FAILED'},500);
+    if(!saved)return json({error:'SOVEREIGNTY_POLICY_VERSION_CONFLICT'},409);
     const {data:snapshot,error:refreshError}=await client.rpc('refresh_data_sovereignty_snapshot_v1',{p_tenant_id:tenantId});
     if(refreshError)return json({error:'DATA_SOVEREIGNTY_REFRESH_FAILED'},500);
     return json({snapshot});
