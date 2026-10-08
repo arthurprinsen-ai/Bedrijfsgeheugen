@@ -25,7 +25,13 @@ const registry={'tenant-a':{
  providerReadbackEvidenceId:'provider-readback-001',egressEvidenceId:'egress-allowlist-001'}}
 }};
 const req=(body,method='POST')=>({method,headers:{get:()=>null},json:async()=>body});
-const sovereignty={get:async tenant=>{assert.equal(tenant,tenantId);return {snapshot:{policy:{ai_deployment_profile:profile,policy_version:3,enforcement_mode:'BLOCK'},violations:[]}}}};
+const currentImpact={contract:'powerhouse-cross-domain-change-v1',tenantId,
+ changeId:'sovereignty:tenant-a:3',kind:'AI_MODEL',changed:true,
+ status:'REVIEW_REQUIRED',deploymentApproved:false};
+const sovereignty={get:async tenant=>{assert.equal(tenant,tenantId);return {snapshot:{policy:{
+ ai_deployment_profile:profile,policy_version:3,enforcement_mode:'BLOCK',
+ last_change_impact:currentImpact
+},violations:[]}}}};
 const user={id:'owner-1'};
 test('Identity tenant and server-side proof route data to exactly the approved Mistral model',async()=>{
  let calls=0;const result=await handleTenantAiInference({
@@ -72,17 +78,36 @@ test('provider error never silently falls back to an alternative model',async()=
  assert.equal(calls,1);
 });
 
-test('open cross-domain CSRD/privacy review blocks AI activation even with a valid provider proof',async()=>{
- let calls=0;const reviewPending={get:async()=>({snapshot:{policy:{
-  ai_deployment_profile:profile,policy_version:3,enforcement_mode:'OBSERVE',
-  last_change_impact:{status:'REVIEW_REQUIRED',deploymentApproved:false}
- },violations:[]}})};
+test('current immutable REVIEW_REQUIRED audit is not an execution deadlock after independently signed clearance',async()=>{
+ let calls=0;
  const res=await handleTenantAiInference({
-  request:req({question:'Hello'}),user,tenantId,sovereignty:reviewPending,registry,proofKey:key,now,
-  fetchFn:async()=>{calls++;throw Error('must remain blocked')}
+  request:req({question:'Approved inquiry'}),user,tenantId,sovereignty,registry,proofKey:key,now,
+  fetchFn:async(url)=>{calls++;assert.equal(url,'https://api.mistral.ai/v1/chat/completions');
+   return {ok:true,status:200,json:async()=>({choices:[{message:{content:'Verified answer'}}]})};}
  });
- assert.equal(res.status,409);
- assert.deepEqual(await res.json(),{error:'CROSS_DOMAIN_REVIEW_REQUIRED'});
+ assert.equal(res.status,200);
+ assert.equal((await res.json()).answer,'Verified answer');
+ assert.equal(calls,1);
+});
+test('different audit change identity or version blocks provider egress even if the signed proof is otherwise valid',async()=>{
+ let calls=0;
+ for(const stale of [
+  {...currentImpact,changeId:'sovereignty:tenant-a:2'},
+  {...currentImpact,tenantId:'tenant-b'},
+  {...currentImpact,deploymentApproved:true},
+  {status:'REVIEW_REQUIRED',deploymentApproved:false},
+  null
+ ]){
+  const altered={get:async()=>({snapshot:{policy:{
+   ai_deployment_profile:profile,policy_version:3,enforcement_mode:'OBSERVE',last_change_impact:stale
+  },violations:[]}})};
+  const res=await handleTenantAiInference({
+   request:req({question:'Hello'}),user,tenantId,sovereignty:altered,registry,proofKey:key,now,
+   fetchFn:async()=>{calls++;throw Error('must remain blocked')}
+  });
+  assert.equal(res.status,409);
+  assert.deepEqual(await res.json(),{error:'CROSS_DOMAIN_REVIEW_REQUIRED'});
+ }
  assert.equal(calls,0);
 });
 test('oversized text body is rejected without parsing or sending to a provider',async()=>{
