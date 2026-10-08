@@ -33,7 +33,8 @@ export function listPortalGroups() {
   return Object.entries(PORTAL_SECTIONS).map(([id, section]) => ({
     id,
     label: section.label,
-    pages: section.pages.map(pageId => ({ id:pageId, ...PORTAL_PAGE_INDEX[pageId] }))
+    // Internal owner route remains addressable by its bookmark but is not a customer menu or search result.
+    pages: section.pages.filter(pageId=>pageId!=='powerhouse-control-center').map(pageId => ({ id:pageId, ...PORTAL_PAGE_INDEX[pageId] }))
   }));
 }
 
