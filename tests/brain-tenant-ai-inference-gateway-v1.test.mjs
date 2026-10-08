@@ -82,3 +82,25 @@ test('oversized text body is rejected without parsing or sending to a provider',
  const res=await handleTenantAiInference({request:input,user,tenantId,sovereignty,registry,proofKey:key,now,fetchFn:async()=>{calls++;return null}});
  assert.equal(res.status,413);assert.equal(calls,0);
 });
+
+test('EU-only processing and EU-only storage policies cannot approve AUTO or US residency',async()=>{
+ let calls=0;
+ const fetchFn=async()=>{calls++;throw Error('unexpected external egress')};
+ const base={request:req({question:'Hello'}),user,tenantId,registry,proofKey:key,now,fetchFn};
+ const policies=[
+  {mode:'EU_ONLY',computeRegion:'AUTO',storageRegion:'EU',ragRegion:'SAME_AS_STORAGE'},
+  {mode:'EU_ONLY',computeRegion:'EU',storageRegion:'US',ragRegion:'SAME_AS_STORAGE'},
+  {mode:'EU_STORAGE',computeRegion:'AUTO',storageRegion:'US',ragRegion:'SAME_AS_STORAGE'},
+  {mode:'EU_STORAGE',computeRegion:'AUTO',storageRegion:'EU',ragRegion:'US'}
+ ];
+ for(const row of policies){
+  const restrictive={get:async()=>({snapshot:{policy:{
+   mode:row.mode,ai_deployment_profile:{...profile,...row},
+   policy_version:3,enforcement_mode:'BLOCK'
+  },violations:[]}})};
+  const res=await handleTenantAiInference({...base,sovereignty:restrictive});
+  assert.equal(res.status,409);
+  assert.equal((await res.json()).error,'SOVEREIGNTY_REGION_NOT_VERIFIED');
+ }
+ assert.equal(calls,0);
+});
