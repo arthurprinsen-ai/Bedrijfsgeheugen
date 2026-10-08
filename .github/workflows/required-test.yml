@@ -193,6 +193,11 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\nsupabase_preview_required=${supabasePreviewRequired}\ndependency_review_required=${dependencyReviewRequired}\n`);
           console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites,netlifyApplicability},null,2));
           NODE
+      - name: Evaluate changed Brain learning before protected merge
+        env:
+          POWERHOUSE_BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          POWERHOUSE_HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
+        run: node scripts/brain/learning-canonicalization-gate.mjs
       - id: integration
         name: Compile one-write integration bundle
         env:
