@@ -1,0 +1,39 @@
+{
+  "id": "source-universe-operational-truth-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|source-universe|operational-truth|freshness-impact-guard|v1",
+  "root_cause": "Source catalog registration and availability were conflated with actual source observations and tenant-specific impact evidence.",
+  "change": "Read-only operational truth SQL and regression tests explicitly separate registered sources, observed source freshness, and READY SCORED tenant impacts.",
+  "truth_rules": {
+    "catalog_is_not_ingestion": true,
+    "unobserved_sources_are_not_live_proven": true,
+    "zero_impacts_must_remain_zero": true,
+    "no_fabricated_business_outcomes": true
+  },
+  "verification": "Protected Required, CodeQL, merge and production readback required; this candidate does not assert end-to-end GREEN.",
+  "failure_class": "SOURCE_UNIVERSE_CATALOG_FRESHNESS_IMPACT_EVIDENCE_CONFLATION",
+  "compiler": {
+    "failure_class": "SOURCE_UNIVERSE_CATALOG_FRESHNESS_IMPACT_EVIDENCE_CONFLATION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "Catalog present but zero tenant impacts",
+        "expected": "Evidence state cannot claim end-to-end impact proven",
+        "status": "SPECIFIED_NOT_EXECUTED"
+      }
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ],
+    "production_readback": "Not yet proven; zero company impacts at last readback"
+  },
+  "prevention": [
+    "Keep catalog availability separate from source observation freshness",
+    "Never claim tenant impact without READY and SCORED evidence",
+    "Preserve the existing source-universe ingestion and outcome authorities"
+  ]
+}
