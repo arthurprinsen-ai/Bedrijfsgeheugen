@@ -108,9 +108,52 @@ export function buildAutonomousEngineeringPlan({ obligationId, baseSha, candidat
 }
 
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
-export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = {}, observedAt = null } = {}) {
+
+const TUNABLE_KEYS = Object.freeze(['max_parallel_packages','candidate_batch_window_seconds','fast_path_target_seconds','speculative_execution_threshold']);
+const HOUR_MS = 60 * 60 * 1000;
+
+/**
+ * Observational feedback, not an unqualified causal claim.
+ * An optimizer action can be confirmed or rolled back only after comparable
+ * post-change job and Required samples have actually been observed.
+ */
+export function assessTuningExperiment({trial = null, observedAt = null, postChange = {}} = {}) {
+  if (!trial || trial.status !== 'PENDING') return Object.freeze({status:'NO_PENDING_TRIAL'});
+  const start = Date.parse(trial.started_at ?? '');
+  const now = Date.parse(observedAt ?? '');
+  const eligible = Number.isFinite(start) && Number.isFinite(now) && now >= start + 30 * HOUR_MS
+    && Number(postChange.sampled_jobs ?? 0) >= 20
+    && Number(postChange.required_count ?? 0) >= 5
+    && Number(postChange.queue_sample_count ?? 0) >= 10;
+  const baselineTotal = Number(trial.baseline?.required_total_seconds_p95);
+  const afterTotal = Number(postChange.required_total_seconds_p95);
+  const baselineFailure = Number(trial.baseline?.failure_rate);
+  const afterFailure = Number(postChange.failed_jobs) / Math.max(1, Number(postChange.sampled_jobs));
+  if (!eligible || !Number.isFinite(baselineTotal) || baselineTotal <= 0
+    || !Number.isFinite(afterTotal) || afterTotal <= 0
+    || !Number.isFinite(baselineFailure) || baselineFailure < 0) {
+    return Object.freeze({status:'AWAITING_EVIDENCE',post_change_jobs:Number(postChange.sampled_jobs ?? 0)});
+  }
+  const totalDelta = afterTotal - baselineTotal;
+  const failureDelta = afterFailure - baselineFailure;
+  const regressed = totalDelta > Math.max(30, 0.25 * baselineTotal)
+    || (failureDelta > 0.05 && Number(postChange.failed_jobs ?? 0) >= 3);
+  return Object.freeze({
+    status: regressed ? 'REGRESSION_OBSERVED' : 'NONREGRESSION_OBSERVED',
+    attribution:'observational_only_uncontrolled_workload',
+    delta_required_p95_seconds: Number(totalDelta.toFixed(2)),
+    delta_failure_rate: Number(failureDelta.toFixed(4)),
+    post_change_jobs:Number(postChange.sampled_jobs),
+    post_change_required_runs:Number(postChange.required_count)
+  });
+}
+
+export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = {}, observedAt = null, postChange = {} } = {}) {
   const next = { ...current };
   const decisions = [];
+  const experiment = assessTuningExperiment({trial:current.tuning_trial,observedAt,postChange});
+  const trialPending = current.tuning_trial?.status === 'PENDING';
+  const optimisticTuningBlocked = trialPending || current.source === 'daily-autonomous-optimizer' && current.updated_at && Number.isFinite(Date.parse(observedAt ?? '')) && Date.parse(observedAt) - Date.parse(current.updated_at) < 30 * HOUR_MS;
   const queueP95 = Number(metrics.queue_wait_seconds_p95 ?? 0);
   const executionP95 = Number(metrics.execution_seconds_p95 ?? 0);
   const cancelled = Number(metrics.cancelled_jobs ?? 0);
@@ -134,6 +177,7 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     && observedTime >= lastChangeTime && observedTime - lastChangeTime < 30 * 60 * 60 * 1000;
   if (!evidenceReady) decisions.push('insufficient-runner-evidence-no-runtime-tuning');
   if (tuningCooldown) decisions.push('tuning-cooldown-collect-post-change-evidence');
+  if (trialPending) decisions.push('tuning-trial-awaits-comparable-post-change-evidence');
   const failureRate = failed / jobs;
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
@@ -173,7 +217,7 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     next.max_parallel_packages=clamp(before-1,2,8);
     next.candidate_batch_window_seconds=clamp(Number(next.candidate_batch_window_seconds ?? 20)+(orchestrationWaste?10:5),10,60);
     decisions.push(orchestrationWaste?'reduce-fanout-and-batch-more':'reduce-runner-pressure-and-batch-more');
-  } else if (evidenceReady && !tuningCooldown && !calibrationVeto && requiredQueueP95 < 30 && requiredTotalP95 <= 120 && queueP95 < 30 && fanoutP95 <= 5 && failureRate < 0.05) {
+  } else if (evidenceReady && !optimisticTuningBlocked && !calibrationVeto && requiredQueueP95 < 30 && requiredTotalP95 <= 120 && queueP95 < 30 && fanoutP95 <= 5 && failureRate < 0.05) {
     next.max_parallel_packages=clamp(Number(next.max_parallel_packages ?? 4)+1,2,8);
     decisions.push('increase-safe-parallelism');
   }
@@ -184,7 +228,7 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   if (evidenceReady && failureRate > 0.15) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)+0.05,0.6,0.95);
     decisions.push('raise-speculation-confidence-threshold');
-  } else if (evidenceReady && !tuningCooldown && !calibrationVeto && failureRate < 0.03 && requiredQueueP95 < 30 && queueP95 < 60 && fanoutP95 <= 5) {
+  } else if (evidenceReady && !optimisticTuningBlocked && !calibrationVeto && failureRate < 0.03 && requiredQueueP95 < 30 && queueP95 < 60 && fanoutP95 <= 5) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)-0.02,0.6,0.95);
     decisions.push('allow-more-safe-speculation');
   }
@@ -204,11 +248,48 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     sampled_jobs:sampledJobs,
     evidence_ready:evidenceReady,
     cooldown_active:tuningCooldown,
+    prior_trial_status:experiment.status,
     calibration_mode:String(calibration?.mode || 'NONE'),
     calibration_high_priority_recommendations:Object.freeze(highCalibrationWarnings.map(item => String(item.id || '')).filter(Boolean))
   });
   next.ci=ci;
   next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true, autonomous_gate_weakening_forbidden:true };
+
+  if (experiment.status === 'REGRESSION_OBSERVED' || experiment.status === 'NONREGRESSION_OBSERVED') {
+    // Close this trial before considering another tuning wave. One observation
+    // is not proof of causality, but strong deterioration is a safe rollback signal.
+    if (experiment.status === 'REGRESSION_OBSERVED') {
+      for (const key of TUNABLE_KEYS) {
+        const prior = current.tuning_trial?.previous_tuning?.[key];
+        if (Number.isFinite(prior)) next[key]=prior;
+      }
+      decisions.push('rollback-observed-ci-tuning-regression');
+    } else {
+      for (const key of TUNABLE_KEYS) next[key]=current[key];
+      decisions.push('confirm-observed-no-regression-not-causal');
+    }
+    next.tuning_trial={
+      ...current.tuning_trial,
+      status:experiment.status === 'REGRESSION_OBSERVED' ? 'ROLLED_BACK_OBSERVATIONAL' : 'CLOSED_NONREGRESSION_OBSERVED',
+      evaluated_at:observedAt,
+      evidence:experiment
+    };
+  } else if (evidenceReady && Number.isFinite(Date.parse(observedAt ?? ''))
+      && TUNABLE_KEYS.some(key => next[key] !== current[key])) {
+    next.tuning_trial={
+      status:'PENDING',
+      started_at:observedAt,
+      previous_tuning:Object.fromEntries(TUNABLE_KEYS.map(key=>[key,current[key]])),
+      baseline:{
+        required_total_seconds_p95:requiredTotalP95,
+        failure_rate:Number(failureRate.toFixed(4)),
+        sampled_jobs:sampledJobs
+      },
+      supersedes_started_at:trialPending ? current.tuning_trial.started_at : null,
+      decisions:[...decisions],
+      attribution:'not_yet_evaluated'
+    };
+  }
   return Object.freeze({ changed:JSON.stringify(next)!==JSON.stringify(current), decisions:Object.freeze(decisions), signals, tuning:Object.freeze(next) });
 }
 
@@ -252,7 +333,7 @@ async function main(){
     ]);
     const metricsDoc=JSON.parse(metricsRaw);
     const current=JSON.parse(currentRaw);
-    const result=optimizeDailyTuning({metrics:{...metricsDoc.metrics,sampled_jobs:metricsDoc.sampled_jobs},calibration:metricsDoc.calibration || {},current,observedAt:metricsDoc.observed_at});
+    const result=optimizeDailyTuning({metrics:{...metricsDoc.metrics,sampled_jobs:metricsDoc.sampled_jobs},calibration:metricsDoc.calibration || {},current,observedAt:metricsDoc.observed_at,postChange:metricsDoc.post_change || {}});
     const out={...result,observed_at:new Date().toISOString(),source_metrics:metricsDoc.metrics};
     await mkdir(path.join(repoRoot,'artifacts/engineering-optimizer'),{recursive:true});
     await writeFile(path.join(repoRoot,'artifacts/engineering-optimizer/latest.json'),JSON.stringify(out,null,2)+'\n');
