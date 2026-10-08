@@ -23,19 +23,19 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/notion/contact-webhook-v1.test.mjs"
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
     ],
     "shadow": [
-      "tests/notion/contact-webhook-v1.test.mjs"
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
     ],
     "canary": [
-      "tests/notion/contact-webhook-v1.test.mjs"
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
     ]
   },
   "evidence": {
     "source_inventory": "Notion Connecties-kern 8,888; canonical Supabase bg_connecties 23,295",
     "test_evidence": [
-      "tests/notion/contact-webhook-v1.test.mjs"
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
     ],
     "provider_readback": "PENDING subscription verification and runtime deployment",
     "external_delivery": "Not proven; no DMs sent"
