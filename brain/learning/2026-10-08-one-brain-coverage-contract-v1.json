@@ -4,27 +4,17 @@
   "status": "EVIDENCE_PARTIAL",
   "problem": "A broad One Brain GREEN claim lacks per-gate proof",
   "change": "Added explicit fail-closed coverage manifest and contract test",
-  "outcome": "CI and production proof pending",
+  "outcome": "Prior required and CodeQL tests passed on protected candidate; current-main merge and production evidence remain pending.",
   "lesson": "Never promote aggregate GREEN from partial evidence",
   "evaluation": {
     "historical_replay": [
-      {
-        "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-        "mode": "historical",
-        "result": "PENDING_CI"
-      }
+      "tests/brain-one-brain-coverage-contract-v1.test.mjs"
     ],
     "shadow": [
-      {
-        "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-        "result": "PENDING_CI"
-      }
+      "tests/brain-one-brain-coverage-contract-v1.test.mjs"
     ],
     "canary": [
-      {
-        "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-        "result": "PENDING_CI"
-      }
+      "tests/brain-one-brain-coverage-contract-v1.test.mjs"
     ]
   },
   "fingerprint": "one-brain-coverage-contract-unproven-aggregate-green-v1",
