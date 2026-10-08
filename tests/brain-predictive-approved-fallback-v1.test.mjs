@@ -46,7 +46,7 @@ test('predictive source requires exact use-case governance and records provider 
  assert.match(src,/fallbackGov\.provider!=='Composio\/Groq'/);
  assert.match(src,/predictive_.*provider|generationProvider/);
  assert.match(src,/publicForecastContext\(/);
- assert.match(src,/parseForecastPlan\(/);
+ assert.match(src,/generateValidatedForecastFallback\(/);
 });
 
 
@@ -63,4 +63,52 @@ test('outbound fallback uses the existing approved Composio/Groq tool without fo
  assert.equal(data.arguments.model,'openai/gpt-oss-120b');
  assert.equal(data.arguments.messages.length,2);
  assert.ok(!JSON.stringify(data.arguments.messages).includes('raw_private_payloads'));
+});
+
+test('a schema-invalid public Groq response has exactly one bounded strict-schema retry',async()=>{
+ const {generateValidatedForecastFallback}=await import('../supabase/functions/_shared/predictive-approved-fallback.mjs');
+ const context={today:'2026-10-08',goal:{deadline:'2027-09-14'},signals:[{signal_key:'external:a',source_type:'external_news'},{signal_key:'search:b',source_type:'search_demand'}]};
+ const requests=[];
+ const fetchImpl=async(_url,opts)=>{
+   requests.push(JSON.parse(opts.body));
+   const content=requests.length===1?'{"forecasts":[{"topic_key":"Incomplete"}]}':'{"forecasts":[]}';
+   return {ok:true,status:200,json:async()=>({successful:true,data:{choices:[{message:{content}}]}})};
+ };
+ const result=await generateValidatedForecastFallback({apiKey:'test',model:'openai/gpt-oss-120b',context,fetchImpl});
+ assert.equal(result.attempts,2);
+ assert.deepEqual(result.plan,{forecasts:[]});
+ assert.equal(requests.length,2);
+ assert.match(requests[1].arguments.messages[0].content,/STRICT_SCHEMA_RETRY/);
+ assert.equal(requests[1].arguments.messages[1].content,requests[0].arguments.messages[1].content,'retry cannot send more private source data');
+});
+
+test('the first valid response uses exactly one call, even with fallback enabled',async()=>{
+ const {generateValidatedForecastFallback}=await import('../supabase/functions/_shared/predictive-approved-fallback.mjs');
+ let calls=0;
+ const fetchImpl=async()=>{calls++;return {ok:true,status:200,json:async()=>({successful:true,data:{choices:[{message:{content:'{"forecasts":[]}'}}]}})}};
+ const result=await generateValidatedForecastFallback({apiKey:'test',model:'openai/gpt-oss-120b',context:{signals:[]},fetchImpl});
+ assert.equal(calls,1);
+ assert.equal(result.attempts,1);
+});
+
+test('two invalid responses remain a failed forecast, not a fabricated success',async()=>{
+ const {generateValidatedForecastFallback}=await import('../supabase/functions/_shared/predictive-approved-fallback.mjs');
+ let calls=0;
+ const fetchImpl=async()=>{calls++;return {ok:true,status:200,json:async()=>({successful:true,data:{choices:[{message:{content:'{"forecast":"unsupported"}'}}]}})}};
+ await assert.rejects(generateValidatedForecastFallback({apiKey:'test',model:'openai/gpt-oss-120b',context:{signals:[]},fetchImpl}),/FALLBACK_FORECAST_SCHEMA_INVALID/);
+ assert.equal(calls,2);
+});
+
+test('provider transport errors never trigger an additional provider call',async()=>{
+ const {generateValidatedForecastFallback}=await import('../supabase/functions/_shared/predictive-approved-fallback.mjs');
+ let calls=0;
+ const fetchImpl=async()=>{calls++;return {ok:false,status:429,json:async()=>({})}};
+ await assert.rejects(generateValidatedForecastFallback({apiKey:'test',model:'openai/gpt-oss-120b',context:{signals:[]},fetchImpl}),/FALLBACK_PROVIDER_UNAVAILABLE/);
+ assert.equal(calls,1);
+});
+
+test('predictive runtime stores schema retry evidence in existing health receipt',()=>{
+ const source=readFileSync('supabase/functions/powerhouse-predictive-engine/index.ts','utf8');
+ assert.match(source,/generateValidatedForecastFallback\(/);
+ assert.match(source,/fallback_attempts/);
 });
