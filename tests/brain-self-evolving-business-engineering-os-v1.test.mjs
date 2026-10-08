@@ -13,12 +13,19 @@ const core={tenantId:'tenant-a',changeId:'ai-route-22',sourceRevision:'rev-4'};
 const evidence={observedAt:now,evidenceRefs:['independent-provider-proof'],verified:true,...core};
 const observations=[
   {...evidence,domain:'business',actionId:'sales-action-1',outcomeId:'sale-1',
-    providerReceiptId:'provider-receipt-1',metric:'realized_revenue_eur',value:120},
+    providerReceiptId:'provider-receipt-1',metric:'realized_revenue_eur',value:120,
+    currency:'EUR',truthClass:'realized',linkedEngineeringOutcomeId:'release-1',
+    valueEvidence:{kind:'SETTLED_PAYMENT',recordId:'finance-pay-1',
+      providerReadbackId:'bank-settlement-readback-1',verified:true,
+      observedAt:now,evidenceRefs:['bank-settlement-readback-1'],
+      tenantId:'tenant-a',sourceRevision:'rev-4'}},
   {...evidence,domain:'engineering',actionId:'deploy-action-1',outcomeId:'release-1',
     productionReadbackId:'netlify-deploy-1',metric:'quality_score',value:.91}
 ];
 const comparison={...evidence,baselinePolicyVersion:'policy-4',
-  candidatePolicyVersion:'policy-5',experimentId:'holdout-1',hasControlGroup:true};
+  candidatePolicyVersion:'policy-5',experimentId:'holdout-1',hasControlGroup:true,
+  assignmentReadbackId:'experiment-assignment-readback-1',
+  linkedBusinessOutcomeIds:['sale-1'],linkedEngineeringOutcomeIds:['release-1']};
 function assess(overrides={}){
   const input={change,baseline,candidate,observations,comparison,now};
   const first=planCrossDomainEvolution(input);
@@ -91,6 +98,56 @@ test('invalid identity, future receipts and duplicate outcomes never fabricate v
     observations[0],{...observations[0],value:9999}, {...observations[1],observedAt:'2027-01-01T00:00:00Z'}
   ]});
   assert.equal(report.learning.verifiedOutcomeCount,1);
-  assert.equal(report.learning.realizedRevenueEur,120);
+  // Financial value must not be attributed when its linked production outcome
+  // is in the future, even if the business-side settlement itself is valid.
+  assert.equal(report.learning.realizedRevenueEur,null);
+  assert.equal(report.learning.financialValueStatus,'NOT_PROVEN');
   assert.equal(report.decision,'GATHER_VERIFIED_OUTCOMES');
+});
+
+test('legacy realized flag never converts not_executed or sent into financial value',()=>{
+  for (const unit of ['not_executed','sent','execution_completed','reply_received']) {
+    const report=assess({observations:[{...observations[0],unit},observations[1]]});
+    assert.equal(report.decision,'BUSINESS_VALUE_EVIDENCE_REQUIRED');
+    assert.equal(report.learning.realizedRevenueEur,null);
+    assert.equal(report.learning.verifiedFinancialValueCount,0);
+  }
+});
+
+test('unverified finance receipt and unlinked engineering cannot create business value',()=>{
+  for (const mutation of [
+    {valueEvidence:{...observations[0].valueEvidence,verified:false}},
+    {valueEvidence:{...observations[0].valueEvidence,providerReadbackId:''}},
+    {valueEvidence:{...observations[0].valueEvidence,sourceRevision:'other'}},
+    {linkedEngineeringOutcomeId:'unrelated-engineering-outcome'},
+    {currency:'USD'},
+    {truthClass:'expected'}
+  ]) {
+    const report=assess({observations:[{...observations[0],...mutation},observations[1]]});
+    assert.equal(report.decision,'BUSINESS_VALUE_EVIDENCE_REQUIRED');
+    assert.equal(report.learning.financialValueStatus,'NOT_PROVEN');
+  }
+});
+
+test('experiment must read back assignment and connect verified business and engineering outcomes',()=>{
+  for (const mutation of [
+    {assignmentReadbackId:null},
+    {linkedBusinessOutcomeIds:['unrelated-sale']},
+    {linkedEngineeringOutcomeIds:['unrelated-deploy']}
+  ]) {
+    const report=assess({comparison:{...comparison,...mutation}});
+    assert.equal(report.decision,'COUNTERFACTUAL_REQUIRED');
+    assert.equal(report.learning.comparisonVerified,false);
+    assert.equal(report.learning.realizedRevenueEur,120);
+  }
+});
+
+test('finance source is deduplicated even when two valid commercial outcomes reference it',()=>{
+  const report=assess({observations:[
+    observations[0],{...observations[0],outcomeId:'sale-2'},observations[1]
+  ]});
+  assert.equal(report.learning.verifiedOutcomeCount,3);
+  assert.equal(report.learning.verifiedFinancialValueCount,1);
+  assert.equal(report.learning.realizedRevenueEur,120);
+  assert.equal(report.decision,'PROPOSE_PROTECTED_DELIVERY');
 });

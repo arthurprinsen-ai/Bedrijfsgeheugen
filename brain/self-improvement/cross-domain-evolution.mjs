@@ -17,6 +17,33 @@ const isFresh = (record, now, maxAgeMs) =>
   validDate(record?.observedAt) && Date.parse(record.observedAt) <= now &&
   now - Date.parse(record.observedAt) <= maxAgeMs;
 
+// An action/transport outcome is not financial value, even if a legacy
+// observation has truth_class=realized. The immutable raw evidence is retained;
+// only this derived decision policy excludes unexecuted/vanity observations.
+const nonFinancialUnits = new Set([
+  'not_executed','execution_completed','sent','no_response',
+  'no_reply_observed','reply_received','reply_objection','queued','delivered'
+]);
+const financialProofKinds = {
+  realized_revenue_eur:new Set(['SETTLED_PAYMENT','RECONCILED_ACCOUNTING']),
+  realized_cost_saving_eur:new Set(['RECONCILED_ACCOUNTING','VERIFIED_COST_SAVING'])
+};
+function hasVerifiedFinancialValue(item, now, maxAgeMs) {
+  const proof = item?.valueEvidence;
+  return item?.domain === 'business' &&
+    item?.truthClass === 'realized' &&
+    item?.currency === 'EUR' &&
+    Number.isFinite(item?.value) && item.value >= 0 &&
+    !nonFinancialUnits.has(String(item?.unit || '').toLowerCase()) &&
+    financialProofKinds[item?.metric]?.has(proof?.kind) === true &&
+    proof?.verified === true &&
+    proof?.tenantId === item.tenantId &&
+    proof?.sourceRevision === item.sourceRevision &&
+    typeof proof?.recordId === 'string' && proof.recordId.trim().length > 0 &&
+    typeof proof?.providerReadbackId === 'string' && proof.providerReadbackId.trim().length > 0 &&
+    refs(proof).length > 0 && isFresh(proof, now, maxAgeMs);
+}
+
 /**
  * Pure, tenant-scoped policy planner. No network, database writes, provider dispatch,
  * synthetic impact claims or alternative delivery owner. The canonical runtime can
@@ -84,6 +111,18 @@ export function planCrossDomainEvolution({
   const outcomes = [...byOutcome.values()];
   const coveredDomains = unique(outcomes.map(item => item.domain));
   const missingDomains = ['business','engineering'].filter(d => !coveredDomains.includes(d));
+  const engineeringOutcomeIds = new Set(outcomes.filter(item => item.domain === 'engineering').map(item => item.outcomeId));
+  const financialValueByProof = new Map();
+  for (const item of outcomes) {
+    if (!hasVerifiedFinancialValue(item, timestamp, maxAgeMs) ||
+        !engineeringOutcomeIds.has(item.linkedEngineeringOutcomeId)) continue;
+    // One independent financial source is counted once, even if multiple action
+    // and sales events refer to the same settlement/accounting record.
+    const key = item.valueEvidence.kind + ':' + item.valueEvidence.recordId;
+    if (!financialValueByProof.has(key)) financialValueByProof.set(key, item);
+  }
+  const verifiedFinancialValues = [...financialValueByProof.values()];
+  const verifiedValueIds = new Set(verifiedFinancialValues.map(item => item.outcomeId));
 
   // Causal uplift is never inferred from clicks, action counts, transport ACKs,
   // historical correlation or merely populated baseline/candidate fields.
@@ -95,12 +134,18 @@ export function planCrossDomainEvolution({
     comparison.candidatePolicyVersion === identity.candidatePolicyVersion &&
     Boolean(comparison.experimentId) &&
     comparison.hasControlGroup === true && refs(comparison).length > 0 &&
+    Boolean(comparison.assignmentReadbackId) &&
+    Array.isArray(comparison.linkedBusinessOutcomeIds) &&
+    Array.isArray(comparison.linkedEngineeringOutcomeIds) &&
+    comparison.linkedBusinessOutcomeIds.some(id => verifiedValueIds.has(id)) &&
+    comparison.linkedEngineeringOutcomeIds.some(id => engineeringOutcomeIds.has(id)) &&
     isFresh(comparison,timestamp,maxAgeMs);
 
   const evaluation = evaluatePromotionCandidate({ baseline, candidate });
   let decision = 'GATHER_VERIFIED_OUTCOMES';
   if (missingReviews.length) decision = 'REVIEW_REQUIRED';
   else if (missingDomains.length) decision = 'GATHER_VERIFIED_OUTCOMES';
+  else if (!verifiedFinancialValues.length) decision = 'BUSINESS_VALUE_EVIDENCE_REQUIRED';
   else if (!comparisonVerified) decision = 'COUNTERFACTUAL_REQUIRED';
   else if (evaluation.decision === 'REJECT') decision = 'REJECT';
   else if (!evaluation.promotable) decision = 'EVALUATION_REQUIRED';
@@ -109,6 +154,7 @@ export function planCrossDomainEvolution({
   const nextKind = {
     REVIEW_REQUIRED:'cross_domain_review',
     GATHER_VERIFIED_OUTCOMES:'outcome_measurement',
+    BUSINESS_VALUE_EVIDENCE_REQUIRED:'financial_value_verification',
     COUNTERFACTUAL_REQUIRED:'controlled_experiment',
     REJECT:'regression_prevention',
     EVALUATION_REQUIRED:'candidate_evaluation',
@@ -125,11 +171,12 @@ export function planCrossDomainEvolution({
       evaluation
     })
     : null;
-  const realizedRevenueEur = outcomes.some(x => x.domain === 'business' &&
-      x.metric === 'realized_revenue_eur' && Number.isFinite(x.value))
-    ? outcomes.filter(x => x.domain === 'business' && x.metric === 'realized_revenue_eur' &&
-        Number.isFinite(x.value)).reduce((sum,x) => sum + x.value,0)
-    : null;
+  const sumVerified = metric => {
+    const entries = verifiedFinancialValues.filter(item => item.metric === metric);
+    return entries.length ? entries.reduce((sum, item) => sum + item.value, 0) : null;
+  };
+  const realizedRevenueEur = sumVerified('realized_revenue_eur');
+  const realizedCostSavingsEur = sumVerified('realized_cost_saving_eur');
 
   return seal({
     schemaVersion:'powerhouse-cross-domain-evolution.v1',
@@ -155,7 +202,10 @@ export function planCrossDomainEvolution({
       verifiedOutcomeCount:outcomes.length,
       coveredDomains, missingDomains,
       comparisonVerified,
+      verifiedFinancialValueCount:verifiedFinancialValues.length,
+      financialValueStatus:verifiedFinancialValues.length ? 'FINANCIAL_PROOF_LINKED' : 'NOT_PROVEN',
       realizedRevenueEur,
+      realizedCostSavingsEur,
       status:decision === 'PROPOSE_PROTECTED_DELIVERY'
         ? 'EVIDENCE_BACKED_PROMOTION_CANDIDATE' : 'NOT_YET_PROMOTABLE',
       compiledLearning
