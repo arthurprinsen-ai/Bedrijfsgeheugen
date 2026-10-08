@@ -19,7 +19,7 @@ test('technically verified connector may request activation while CSRD review re
  assert.doesNotMatch(html,/data-activate disabled/);
  assert.match(html,/CSRD\/ESRS-beoordeling blijft open/);
  assert.match(html,/privacy- en datalocatieregels controleren/);
- assert.doesNotMatch(html,/juridisch goedgekeurd\.\s*<\/p>\s*<button[^>]*disabled/);
+ assert.match(html,/technisch actief betekent niet juridisch goedgekeurd/);
 });
 test('monitor shows the correct tenant connector review and known ESRS scope candidates without leaking audit metadata',()=>{
  const reviews=[
