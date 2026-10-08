@@ -46,5 +46,20 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "evidence": {
+    "live_baseline": {
+      "observed_on": "2026-10-08",
+      "compiler_ready": 9,
+      "optimization_candidates": 0,
+      "scheduled_self_improvement_cron_active": true
+    },
+    "tests": [
+      "tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs",
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "candidate_head": "9ed0e85af80ed3f9a520330bef8342f8bd22089f",
+    "production_migration_readback": null,
+    "verified_value_outcome": null
   }
 }
