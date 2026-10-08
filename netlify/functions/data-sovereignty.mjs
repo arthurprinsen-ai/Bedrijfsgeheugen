@@ -3,6 +3,7 @@ import {resolveIdentityTenant} from '../../platform/read-models/portal-server-st
 import {isPowerhouseAdmin} from '../../platform/auth/powerhouse-admin.mjs';
 import {createDataSovereigntyClient} from './_data-sovereignty-client.mjs';
 import {validateCustomerAiDeployment} from '../../platform/policy/customer-ai-deployment.mjs';
+import {buildSovereigntyChangeImpact} from '../../platform/regulatory/sovereignty-change-impact.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const allowedModes=new Set(['TRANSPARENT_GLOBAL','EU_STORAGE','EU_ONLY','CUSTOM']);
@@ -41,8 +42,19 @@ export default async request=>{
     preferredAiRegion:preferredAiRegion||null,
     ...(aiDeploymentProfile!==undefined?{aiDeploymentProfile}:{})
   };
-  try{return json(await client.setPolicy(ownTenant,policy,user.email||user.id));}
-  catch(error){return json({error:error?.code||'DATA_SOVEREIGNTY_WRITE_FAILED'},502);}
+  try{
+    // Read the authoritative prior policy before changing it. Edge re-checks this version
+    // and persists the impact assessment atomically with the updated policy.
+    const before=await client.get(ownTenant);
+    const actor=String(user.email||user.id);
+    const {impact,expectedPolicyVersion}=buildSovereigntyChangeImpact({
+      tenantId:ownTenant,actor,previousPolicy:before?.snapshot?.policy||{},proposedPolicy:policy
+    });
+    return json(await client.setPolicy(ownTenant,{...policy,expectedPolicyVersion,changeImpact:impact},actor));
+  }catch(error){
+    const conflict=error?.code==='SOVEREIGNTY_POLICY_VERSION_CONFLICT'||error?.code==='INVALID_CROSS_DOMAIN_IMPACT';
+    return json({error:error?.code||'DATA_SOVEREIGNTY_WRITE_FAILED'},conflict?409:502);
+  }
 };
 
 export const config={path:'/api/data-sovereignty'};
