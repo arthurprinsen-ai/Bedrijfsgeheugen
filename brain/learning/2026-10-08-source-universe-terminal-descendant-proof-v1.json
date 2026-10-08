@@ -1,0 +1,41 @@
+{
+  "id": "source-universe-terminal-descendant-proof-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|source-universe|historical-learning-terminal-descendant-proof|v1",
+  "root_cause": "Historical Source Universe PR #4108 skill projection run 37742411908 correctly failed because original evaluation.historical_replay contained a scenario object, not executable regression path; after a later protected-main learning repair #4124, terminal closure still required an immutable failed historical projection and could not recognize a successful verified descendant.",
+  "compiler": {
+    "failure_class": "HISTORICAL_SKILL_PROJECTION_IMMUTABLE_FAILURE_REQUIRES_PROTECTED_DESCENDANT_PROOF",
+    "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-source-universe-learning-projection-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-source-universe-learning-projection-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-source-universe-learning-projection-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Never change the reported conclusion of a failed immutable workflow run.",
+    "Require a successful protected-main descendant skill projection with original merge ancestry and identical required learning blobs across successful projection run and current main.",
+    "Keep exact-HEAD Required/CodeQL, production readback, security gates and canonical terminal persistence fail closed.",
+    "Do not duplicate schedulers or change user-facing business outcomes to satisfy governance."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-source-universe-learning-projection-v1.test.mjs"
+    ],
+    "historical_failed_run": 37742411908,
+    "original_pr": 4108,
+    "repaired_learning_pr": 4124,
+    "original_production_readback_run": 37756500341,
+    "original_production_observation": "99013007ea1b8fe062e5c96ec3c710d760ddcfe6"
+  },
+  "production_claim": "NOT_PROVEN"
+}
