@@ -195,7 +195,8 @@ test('legitimate skipped lanes never masquerade as consumed runner time',()=>{
     workflow_fanout_per_sha_p95:3,direct_pull_request_workflow_count:8
   },current});
   assert.equal(result.signals.skipped_rate,0.9);
-  assert.equal(result.tuning.max_parallel_packages,4);
+  assert.equal(result.tuning.max_parallel_packages,5);
+  assert.equal(result.decisions.includes('increase-safe-parallelism'),true);
   assert.equal(result.decisions.includes('reduce-fanout-and-batch-more'),false);
 });
 
