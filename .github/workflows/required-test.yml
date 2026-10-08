@@ -604,6 +604,12 @@ jobs:
       checks: read
       pull-requests: read
     steps:
+      # The provider-check parser is a repository file; a fresh Actions runner
+      # has no checkout by default. Pin checkout to the exact validated PR head.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ needs.preflight.outputs.change_head_sha }}
+          persist-credentials: false
       - name: Verify provider-owned Supabase Preview on exact candidate head
         env:
           GH_TOKEN: ${{ github.token }}
