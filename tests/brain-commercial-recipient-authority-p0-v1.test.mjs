@@ -38,7 +38,7 @@ test('sender requires same recipient, same CRM person and double affirmative app
 
 test('CRM read failures fail closed, never silently imply permission',async()=>{
  const a={person_key:'person-1',evidence:{recipient_email:'a@example.org',human_approved:true}};
- await assert.rejects(verify(fakeDb([],{message:'database unavailable'}).db,a,'a@example.org'),/RECIPIENT_AUTHORITY_READ/);
+ await assert.rejects(verify(fakeDb([],{message:'database unavailable'}).db,a,'a@example.org'),(e)=>e?.code==='RECIPIENT_AUTHORITY_READ');
 });
 
 test('dry-run cannot call composer, send or mutate the message plan',()=>{
