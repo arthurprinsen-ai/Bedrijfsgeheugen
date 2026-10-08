@@ -10,6 +10,8 @@ declare
   v_now timestamptz := now();
   v_email int := 0;
   v_social int := 0;
+  v_publications int := 0;
+  v_publication_proofs jsonb := '[]'::jsonb;
   v_set int := 0;
   v_decisions int := 0;
   v_stale int := 0;
@@ -104,7 +106,32 @@ begin
       and a.evidence#>>'{daily_action_set,state}'='active'
     );
 
-  v_proven := v_email+v_social>0;
+  -- Existing canonical publication owner: only explicit LIVE_PROVEN+public URL readback.
+  -- GENERATED, APPROVED, PUBLISHED, queued and provider-accepted are not proof.
+  select count(*)::int,
+    coalesce(jsonb_agg(jsonb_build_object(
+      'content_id',p.content_id,
+      'channel',p.channel,
+      'provider_object_id',p.external_id,
+      'canonical_url',p.canonical_url,
+      'live_proven_at',p.live_proven_at
+    )), '[]'::jsonb)
+  into v_publications,v_publication_proofs
+  from public.content_publication_obligations p
+  where p.publication_date=p_run_date
+    and p.status in ('LIVE_PROVEN','MEASURED','LEARNED')
+    and p.live_proven_at is not null
+    and (
+      (p.channel='blog' and p.canonical_url like 'https://www.bedrijfsgeheugen.nl/%')
+      or (
+        p.channel in ('linkedin_personal','linkedin_company','instagram')
+        and nullif(btrim(coalesce(p.external_id,'')),'') is not null
+        and p.canonical_url like 'https://%'
+      )
+    );
+
+  v_proofs := v_proofs || v_publication_proofs;
+  v_proven := v_email+v_social+v_publications>0;
   v_safe_no_send := v_set>0 and v_decisions=v_set;
   v_result := jsonb_build_object(
     'contract','powerhouse-commercial-output-assurance-v3',
@@ -112,6 +139,7 @@ begin
     'checked_at',v_now,
     'provider_proven_email',v_email,
     'provider_proven_social',v_social,
+    'provider_proven_publications',v_publications,
     'provider_proof',v_proofs,
     'commercial_day_proven',v_proven,
     'daily_commercial_execution_sla','MET_ONLY_WITH_PROVIDER_PROOF',
@@ -142,6 +170,7 @@ begin
       'commercial_day_proven',v_proven,
       'provider_proven_email',v_email,
       'provider_proven_social',v_social,
+      'provider_proven_publications',v_publications,
       'provider_proof',v_proofs,
       'safe_no_send_decision',v_safe_no_send,
       'next_owner','existing canonical Growth & Revenue OS and channel executors',
