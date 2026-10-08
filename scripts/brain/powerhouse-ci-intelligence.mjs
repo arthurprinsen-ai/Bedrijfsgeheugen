@@ -123,7 +123,7 @@ const requiredQueueSeconds = requiredRuns.map(run => {
   return starts.length ? Math.min(...starts) : null;
 }).filter(Number.isFinite);
 const requiredTotals = requiredRuns
-  .map(run => run.status === 'completed' && run.updated_at
+  .map(run => run.status === 'completed' && run.conclusion === 'success' && run.updated_at
     ? Math.max(0, Math.round((Date.parse(run.updated_at) - Date.parse(run.created_at)) / 1000))
     : null)
   .filter(Number.isFinite);
@@ -217,7 +217,9 @@ const trialStart=tuningState.tuning_trial?.status==='PENDING'
 const trialJobs=Number.isFinite(trialStart)
   ? jobRows.filter(row=>Date.parse(row.run_created_at ?? '')>=trialStart) : [];
 const trialRequired=Number.isFinite(trialStart)
-  ? requiredRuns.filter(run=>Date.parse(run.created_at)>=trialStart && run.status==='completed') : [];
+  ? requiredRuns.filter(run=>Date.parse(run.created_at)>=trialStart && run.status==='completed' && run.conclusion==='success') : [];
+const trialRequiredFailures=Number.isFinite(trialStart)
+  ? requiredRuns.filter(run=>Date.parse(run.created_at)>=trialStart && run.status==='completed' && run.conclusion==='failure').length : 0;
 const trialRequiredTotals=trialRequired.map(run=>
   Number.isFinite(Date.parse(run.updated_at ?? ''))
     ? Math.max(0,Math.round((Date.parse(run.updated_at)-Date.parse(run.created_at))/1000))
@@ -227,6 +229,7 @@ baseReport.post_change={
   sampled_jobs:trialJobs.length,
   queue_sample_count:trialJobs.filter(row=>Number.isFinite(row.queue_seconds)).length,
   required_count:trialRequiredTotals.length,
+  required_failures:trialRequiredFailures,
   required_total_seconds_p95:trialRequiredTotals.length?p95(trialRequiredTotals):null,
   failed_jobs:trialJobs.filter(row=>row.conclusion==='failure').length,
   source:'github_observed_jobs_for_current_tuning_trial',
