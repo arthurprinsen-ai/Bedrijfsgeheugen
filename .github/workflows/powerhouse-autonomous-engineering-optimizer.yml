@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  actions: read
+  actions: write
   contents: write
   pull-requests: write
 
@@ -98,6 +98,23 @@ jobs:
           git commit -m "engineering: protected daily tuning with evidence closure"
           git push origin "$branch"
           url="$(gh pr create --base main --head "$branch" --title "Powerhouse: daily engineering tuning" --body-file artifacts/engineering-optimizer/pull-request-body.md)"
+          # PRs created by GITHUB_TOKEN may yield action_required, not real tests.
+          # GitHub permits explicit workflow_dispatch from this token. Reuse the
+          # exact existing Required and CodeQL gates on the new immutable PR head.
+          pr_number="$(gh pr view "$url" --json number --jq '.number')"
+          head_sha="$(git rev-parse HEAD)"
+          provider_head="$(gh pr view "$url" --json headRefOid --jq '.headRefOid')"
+          if [ "$head_sha" != "$provider_head" ]; then
+            echo "::error::EXACT_HEAD_MISMATCH: candidate $head_sha provider $provider_head"
+            exit 1
+          fi
+          gh workflow run required-test.yml --ref "$branch" \
+            -f pr_number="$pr_number" \
+            -f base_sha="$base_sha" \
+            -f head_sha="$head_sha" \
+            -f candidate_branch="$branch"
+          gh workflow run codeql.yml --ref "$branch"
+          echo "::notice::EXACT_HEAD_REQUIRED_AND_CODEQL_DISPATCHED:$pr_number $head_sha; tests are pending, not green."
           if ! gh pr merge "$url" --auto --squash; then
             echo "::error::PROTECTED_AUTO_MERGE_REGISTRATION_FAILED: $url"
             exit 1
