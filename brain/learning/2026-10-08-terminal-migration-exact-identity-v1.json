@@ -18,13 +18,18 @@
     "terminal_retry_fail_run": 37757775283,
     "terminal_retry_error": "ReferenceError: resolveTerminalMigrationIdentities is not defined",
     "new_root_cause": "Import was accidentally injected into a different GitHub workflow Node heredoc. YAML-wide import regression passed while production terminal invocation still had no binding.",
-    "import_scope_corrected": true
+    "import_scope_corrected": true,
+    "original_terminal_run_missing_helper": 37758314809,
+    "checkout_root_cause": "Terminal workflow checks out the historical merged PR SHA; the resolver module was introduced only by later protected main commits, so the historical checkout cannot import it.",
+    "provider_guard": "Load only the module blob at pinned GITHUB_SHA after proving MERGE_SHA ancestor of GITHUB_SHA",
+    "runtime_source_pin": "PROTECTED_MAIN_WORKFLOW_DISPATCH_SHA",
+    "historical_merge_checkout_preserved": true
   },
   "tests": [
     "tests/brain-terminal-migration-identity-v1.test.mjs"
   ],
   "intervention": "Exact version+name takes precedence while ambiguous historical aliases remain fail-closed.",
-  "prevention": "Terminal source readback must never conflate distinct legitimate versions merely because their descriptive migration names match. Test that the resolver import and invocation exist in the SAME terminal migration step Node heredoc; a global workflow-text match is insufficient.",
+  "prevention": "Terminal source readback must never conflate distinct legitimate versions merely because their descriptive migration names match. Test that the resolver import and invocation exist in the SAME terminal migration step Node heredoc; a global workflow-text match is insufficient. When a terminal workflow replays an older merge SHA, source any later helper from the immutable, protected workflow run SHA after proving the historical merge is its ancestor; never assume the helper lives in the historical checkout.",
   "compiler": {
     "failure_class": "RUNTIME_INVARIANT",
     "scope": "DELIVERY",
