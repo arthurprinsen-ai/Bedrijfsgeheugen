@@ -8,10 +8,10 @@
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "root_cause": "A changed connector records a CSRD/privacy/finance impact assessment, but activation previously checked only connector test/plan data. Browser clients could also submit state=Active or untrusted runtime approval metadata in draft writes.",
+  "root_cause": "Connector changes need one cross-domain review even if technical test/plan/sovereignty controls authorize execution. Browser clients could previously set state=Active, forge review fields, or reuse stale evidence.",
   "prevention": [
     "Re-use the existing tenant connector review queue for pending cross-domain events, with safe human-readable domain and ESRS candidates.",
-    "Reject activation before provider execution while any applicable latest change impact is pending.",
+    "Keep open ESRS/CSRD applicability and materiality reviews in the existing tenant queue after separately authorized connector activation; do not convert technical success into a compliance claim or create a permanent activation deadlock.",
     "Server forces drafts to Draft state and ignores browser-supplied authorization/review objects.",
     "Increment connector configuration version on real changes to invalidate stale test proof; distinguish operational readbacks from configuration changes."
   ],
@@ -34,6 +34,6 @@
       "platform/regulatory/connector-change-impact-gate.mjs",
       "platform/api/portal-connectors-handler.mjs"
     ],
-    "outcome": "Fail-closed review gate and safe review-queue projection in connector API. Does not prove any reviewed connector is activated; approvals must use authoritative evidence."
+    "outcome": "Server-side Draft enforcement, config version invalidation, tenant-scoped pending review queue and separate independently verified technical activation with impactReviewPending. Customer-authorized review closure still needs authoritative evidence."
   }
 }
