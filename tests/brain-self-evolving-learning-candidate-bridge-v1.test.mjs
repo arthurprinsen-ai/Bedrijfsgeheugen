@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {POWERHOUSE_SYSTEM_MAP} from '../platform/system-map/canonical-system-map.mjs';
 
-const sql = fs.readFileSync('supabase/migrations/20261008142800_self_evolving_learning_candidate_bridge_v1.sql', 'utf8');
+const sql = fs.readFileSync('supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql', 'utf8');
 const skill = fs.readFileSync('.agents/skills/powerhouse-self-improvement-layer/SKILL.md', 'utf8');
 const ledger = JSON.parse(fs.readFileSync('brain/learning/2026-10-08-self-evolving-learning-candidate-bridge-v1.json','utf8'));
 

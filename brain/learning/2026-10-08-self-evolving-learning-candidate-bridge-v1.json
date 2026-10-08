@@ -5,10 +5,10 @@
   "status": "CANDIDATE_PROTECTED_DELIVERY",
   "title": "Connect verified learning to bounded engineering optimization candidates",
   "problem": "The production daily Self-Improvement observer reported nine READY compiler sources but zero optimization candidates, so verified learning could not reliably influence next engineering decisions.",
-  "root_cause": "The daily observer read canonical projections but did not materialize bounded, non-executable follow-up candidates into the existing optimization registry.",
+  "root_cause": "The daily observer read canonical projections but did not materialize bounded, non-executable follow-up candidates into the existing optimization registry. Additional root cause found during provider verification: renaming an already applied migration from 20261008162000 to 20261008142800 left the Supabase preview migration ledger divergent.",
   "decision": "Extend the existing daily cron owner function, reuse compiler queue + existing optimization candidate registry, admit up to three idempotent review-required candidates per run.",
   "fix": "One protected SQL migration, fail-closed candidates, regression contract, System Map and skill update. No new scheduler, tenant data store or executor.",
-  "prevention_rule": "A verified compiler source may produce only one bounded candidate per fingerprint, with explicit independent evaluation, no inferred business benefit, and no auto-dispatch or promotion.",
+  "prevention_rule": "A verified compiler source may produce only one bounded candidate per fingerprint, with explicit independent evaluation, no inferred business benefit, and no auto-dispatch or promotion. Migration identity is immutable once recorded in any canonical preview/provider history; never rename applied version filenames.",
   "unknown_is_not_green": true,
   "existing_truth": {
     "compiler_ready": 9,
@@ -18,7 +18,7 @@
   "expected_truth_after_release": "Candidate count increases only after protected migration and daily owner run. CI/production readback and real outcome remain independently required.",
   "regression_contract": "tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs",
   "canonical_refs": [
-    "supabase/migrations/20261008142800_self_evolving_learning_candidate_bridge_v1.sql",
+    "supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql",
     "brain/self-improvement/self-improvement-layer.mjs",
     "platform/system-map/canonical-system-map.mjs",
     ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
@@ -75,6 +75,9 @@
       "successor_base_sha": "080a32bdc354abc528a2fe449dffcb123698459e",
       "independent_cross_domain_change": "self-evolving-business-engineering-os-v1",
       "supersession_policy": "one authoritative successor, no duplicated delivery"
-    }
+    },
+    "supabase_preview_migration_identity": "20261008162000",
+    "supabase_preview_ledger_observed": "2026-10-08",
+    "supabase_preview_provider_state_before_repair": "MIGRATION_HISTORY_DRIFT"
   }
 }
