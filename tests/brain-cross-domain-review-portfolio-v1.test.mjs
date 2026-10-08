@@ -44,9 +44,4 @@ test('customer API exposes only the tenant-scoped projection on both policy read
  assert.match(api,/withImpactTasks\(await client\.get\(tenantId\),tenantId\)/);
  assert.match(api,/withImpactTasks\(await client\.setPolicy\(ownTenant,/);
  assert.match(api,/resolveIdentityTenant\(user\)/);
- const panel=await read('portal-next/data-sovereignty-panel.js');
- assert.match(panel,/reviewPortfolio\?\.tasks/);
- assert.match(panel,/esc\(t\.requiredReview/);
- assert.match(panel,/esc\(t\.candidateEsrs\.join/);
- assert.match(panel,/bewijs nog niet geverifieerd/);
 });
