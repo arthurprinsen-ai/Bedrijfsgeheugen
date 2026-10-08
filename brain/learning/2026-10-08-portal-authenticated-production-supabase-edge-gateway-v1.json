@@ -1,0 +1,50 @@
+{
+  "id": "portal-authenticated-production-supabase-edge-gateway-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|portal|production-proof|supabase-edge-gateway|v1",
+  "root_cause": "After the serverless Netlify.env/process.env runtime mismatch was repaired, the exact production canary still returned HTTP 503 because portal-ondernemersdata itself required a privileged Supabase credential in the Netlify runtime. That credential was not present there. The architecture therefore coupled authenticated Portal reads to distribution of a database master credential into a second runtime even though the existing portal-state-eu authority already owns privileged Supabase access behind an authenticated service-token gateway.",
+  "prevention": [
+    "Netlify Portal functions must not require a Supabase service-role or secret key when the existing portal-state-eu authority can perform the privileged read.",
+    "Netlify remains responsible for Netlify Identity authentication and server-derived tenant scope; privileged database access remains inside the Supabase Edge runtime.",
+    "The existing BG_PORTAL_EU_SERVICE_TOKEN gateway is reused; no new credential, alias, permanent test user or authentication bypass is introduced.",
+    "The Netlify adapter must reject tenant-scope drift returned by the Edge authority.",
+    "The authenticated production proof remains terminal authority and must prove HTTP 200, tenant scope, payload shape and synthetic-user cleanup on the exact production deploy."
+  ],
+  "compiler": {
+    "failure_class": "PRIVILEGED_DATABASE_CREDENTIAL_REQUIRED_IN_SECOND_RUNTIME",
+    "scope": "PORTAL_PRODUCTION_AUTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "prior_production_sha": "c41045c3ead33371e4c1a7c097ca9c660e238837",
+    "prior_netlify_deploy_id": "6ac6b6816fbc2f0008862171",
+    "prior_production_readback_run": 37688134818,
+    "observed_failure": "AUTHENTICATED_PORTAL_API_HTTP_503",
+    "netlify_boundary": "netlify/functions/portal-ondernemersdata.mjs",
+    "gateway_adapter": "netlify/functions/_portal-supabase-store.mjs",
+    "privileged_authority": "supabase/functions/portal-state-eu/index.ts",
+    "regression": [
+      "tests/portal-authenticated-production-proof.test.mjs",
+      "tests/portal-supabase-store.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-authenticated-production-proof.test.mjs",
+      "tests/portal-supabase-store.test.mjs",
+      "brain/learning/2026-10-07-portal-authenticated-production-503-serverless-env-v1.json",
+      "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs"
+    ],
+    "success_criteria": [
+      "Required and Powerhouse CodeQL green on the exact recovery head",
+      "protected merge to main",
+      "portal-state-eu exact source deployed to Supabase production",
+      "exact-main Netlify production deployment",
+      "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1 status PROVEN with HTTP 200, tenant_scope_verified true, payload_shape_verified true and synthetic_user_cleanup DELETED"
+    ]
+  },
+  "production_claim": "withheld_until_protected_merge_supabase_and_netlify_exact_main_deploy_and_authenticated_proof_PROVEN"
+}

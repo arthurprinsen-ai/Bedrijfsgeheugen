@@ -7,6 +7,98 @@ const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,
 async function sha256(value:string){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
 
+const list=(value:any)=>Array.isArray(value)?value:[];
+const finite=(value:any)=>{const n=Number(value);return Number.isFinite(n)?n:null};
+const sumKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?known.reduce((a,b)=>a+b,0):null};
+const maxKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?Math.max(...known):null};
+function groupBy(rows:any[],key:string){
+  const map=new Map<any,any[]>();
+  for(const row of list(rows)){
+    const value=row?.[key];
+    if(value==null)continue;
+    if(!map.has(value))map.set(value,[]);
+    map.get(value)!.push(row);
+  }
+  return map;
+}
+function mergeEntrepreneurSignals(signals:any[],tenantImpacts:any[]){
+  const bySignal=groupBy(tenantImpacts,'signal_key');
+  return list(signals).map((signal:any)=>{
+    const impacts=bySignal.get(signal.signal_key)||[];
+    const scored=impacts.filter((item:any)=>item.status==='SCORED'&&finite(item.impact_score)!==null);
+    const best=scored.slice().sort((a:any,b:any)=>(finite(b.impact_score)||0)-(finite(a.impact_score)||0))[0]||null;
+    return {
+      ...signal,
+      probability:best?.probability??null,
+      magnitude:best?.magnitude??null,
+      exposure:best?.exposure??null,
+      urgency:best?.urgency??signal.urgency??null,
+      reversibility:best?.reversibility??null,
+      impact_score:maxKnown(impacts.map((item:any)=>item.impact_score)),
+      impact_status:scored.length?'SCORED':impacts.length?'PARTIAL':'NEEDS_COMPANY_CONTEXT',
+      estimated_value_eur:sumKnown(impacts.map((item:any)=>item.estimated_value_eur)),
+      estimated_loss_eur:sumKnown(impacts.map((item:any)=>item.estimated_loss_eur)),
+      company_impact_count:impacts.length,
+      tenant_specific_impact:impacts.length>0,
+      company_impacts:impacts.map((item:any)=>({
+        impact_key:item.impact_key,
+        target_node_key:item.target_node_key,
+        target_node_type:item.target_node_type,
+        target_label:item.target_label,
+        impact_score:item.impact_score,
+        status:item.status,
+        rationale:item.rationale,
+        impact_dimensions:item.impact_dimensions,
+        estimated_value_eur:item.estimated_value_eur,
+        estimated_loss_eur:item.estimated_loss_eur,
+        observed_at:item.observed_at
+      }))
+    };
+  });
+}
+function mergeEntrepreneurActions(canonicalActions:any[],tenantActions:any[]){
+  const tenantBySignal=new Map(list(tenantActions).map((item:any)=>[item.signal_key,item]));
+  const tenant=list(tenantActions).map((item:any)=>({...item,projection_scope:'TENANT',tenant_specific:true}));
+  const generic=list(canonicalActions)
+    .filter((item:any)=>!tenantBySignal.has(item.signal_key))
+    .map((item:any)=>({...item,projection_scope:'CANONICAL_REVIEW',tenant_specific:false}));
+  return [...tenant,...generic].sort((a:any,b:any)=>(finite(b.priority_score)||0)-(finite(a.priority_score)||0));
+}
+function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:any[],tenantImpacts:any[],actions:any[]){
+  const now=Date.now();
+  const ageDays=(value:any)=>{
+    if(!value)return Infinity;
+    const time=new Date(value).getTime();
+    return Number.isFinite(time)?Math.max(0,(now-time)/86400000):Infinity;
+  };
+  const availability=Object.fromEntries(['CATALOGUED','AVAILABLE','CONNECTED','OBSERVED','LIVE','STALE','ERROR']
+    .map(state=>[state.toLowerCase(),catalog.filter((item:any)=>item.availability_state===state).length]));
+  return {
+    ...(base||{}),
+    tenant_id:'authenticated',
+    refreshed_at:base?.refreshed_at||new Date().toISOString(),
+    catalog_source_count:catalog.length,
+    public_source_count:catalog.filter((item:any)=>item.activation_mode==='PUBLIC_ALWAYS').length,
+    connector_source_count:catalog.filter((item:any)=>item.activation_mode==='CONNECTOR_REQUIRED').length,
+    domain_count:domains.length,
+    observed_signal_count:signals.length,
+    signals_24h:signals.filter((item:any)=>ageDays(item.observed_at)<=1).length,
+    signals_7d:signals.filter((item:any)=>ageDays(item.observed_at)<=7).length,
+    high_attention_count:signals.filter((item:any)=>Math.max(finite(item.signal_score)||0,finite(item.impact_score)||0)>=70).length,
+    scored_impact_count:tenantImpacts.filter((item:any)=>item.status==='SCORED'&&finite(item.impact_score)!==null).length,
+    action_candidate_count:actions.filter((item:any)=>['CANDIDATE','READY','MATERIALIZED'].includes(item.status)).length,
+    known_opportunity_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_value_eur)),
+    known_risk_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_loss_eur)),
+    source_health:{...(base?.source_health||{}),availability},
+    status:signals.length?'CURRENT':'EMPTY'
+  };
+}
+async function readRows(label:string,query:any){
+  const {data,error}=await query;
+  if(error)throw new Error(label);
+  return Array.isArray(data)?data:[];
+}
+
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
   const token=req.headers.get('x-bg-service-token')||'';
@@ -213,6 +305,87 @@ Deno.serve(async(req:Request)=>{
     });
     if(error)return json({error:'SECURITY_TRUST_OBSERVE_FAILED'},500);
     return json({observation:data});
+  }
+
+
+  if(action==='entrepreneur_intelligence'){
+    try{
+      const [
+        sources,publications,signalsRaw,domains,sourceCatalog,signalsCanonical,
+        tenantImpacts,canonicalActions,tenantActions,baseSnapshots
+      ]=await Promise.all([
+        readRows('SOURCES',client.from('bronnen')
+          .select('id,naam,uitgever,soort,controle_frequentie,laatst_gecontroleerd,laatste_controle_gelukt,actief,trefwoorden')
+          .eq('actief',true).order('uitgever').order('naam')),
+        readRows('PUBLICATIONS',client.from('bronpublicaties')
+          .select('id,bron_id,titel,samenvatting,publicatiedatum,url,opgehaald_op,goedgekeurd,uitgever_url')
+          .order('publicatiedatum',{ascending:false,nullsFirst:false}).limit(350)),
+        readRows('EXTERNAL_SIGNALS',client.from('bg_externe_signalen')
+          .select('url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,brontrouw,bevestiging,versheid,relevantie,vertrouwen,toegestaan,opgehaald_op,deadline')
+          .eq('toegestaan',true).order('gepubliceerd_op',{ascending:false,nullsFirst:false}).limit(250)),
+        readRows('DOMAIN_REGISTRY',client.from('powerhouse_intelligence_domain_registry_v1')
+          .select('domain_key,label,pillar,scope,description,default_signal_type,default_action_type,default_horizon_days,active,metadata')
+          .eq('active',true).order('scope').order('pillar').order('label')),
+        readRows('SOURCE_CATALOG',client.from('powerhouse_intelligence_source_catalog_v1')
+          .select('source_key,label,publisher,scope,domain_keys,source_kind,authority_tier,activation_mode,canonical_url,adapter_key,update_cadence,jurisdiction,availability_state,last_observed_at,evidence_source_key,active,metadata')
+          .eq('active',true).order('scope').order('authority_tier',{ascending:false}).order('label').limit(500)),
+        readRows('SIGNAL_PROJECTION',client.from('powerhouse_intelligence_signal_projection_v1')
+          .select('tenant_id,signal_key,source_observation_id,source_key,external_event_id,external_url,domain_key,signal_type,direction,title,summary,published_at,observed_at,deadline,source_trust,confirmation,freshness,relevance,source_confidence,urgency,signal_score,time_horizon_days,status,evidence')
+          .eq('tenant_id','canonical').neq('status','DISMISSED').order('signal_score',{ascending:false}).order('observed_at',{ascending:false}).limit(300)),
+        readRows('COMPANY_IMPACT',client.from('powerhouse_intelligence_company_impact_v1')
+          .select('tenant_id,impact_key,signal_key,target_node_key,target_node_type,target_label,relevance,probability,magnitude,urgency,exposure,source_confidence,reversibility,impact_score,estimated_value_eur,estimated_loss_eur,impact_dimensions,rationale,evidence,status,observed_at,updated_at')
+          .eq('tenant_id',tenantId).neq('status','DISMISSED').order('impact_score',{ascending:false,nullsFirst:false}).order('observed_at',{ascending:false}).limit(500)),
+        readRows('CANONICAL_ACTIONS',client.from('powerhouse_intelligence_action_candidate_v1')
+          .select('tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status,evidence')
+          .eq('tenant_id','canonical').in('status',['CANDIDATE','READY','MATERIALIZED']).order('priority_score',{ascending:false}).limit(100)),
+        readRows('TENANT_ACTIONS',client.from('powerhouse_intelligence_action_candidate_v1')
+          .select('tenant_id,action_key,signal_key,impact_key,domain_key,title,rationale,action_type,priority_score,owner_hint,due_at,expected_value_eur,estimated_loss_avoided_eur,canonical_action_ref,outcome_ref,status,evidence')
+          .eq('tenant_id',tenantId).in('status',['CANDIDATE','READY','MATERIALIZED','DONE']).order('priority_score',{ascending:false}).limit(100)),
+        readRows('INTELLIGENCE_SNAPSHOT',client.from('powerhouse_intelligence_snapshot_v1')
+          .select('tenant_id,refreshed_at,catalog_source_count,public_source_count,connector_source_count,domain_count,observed_signal_count,signals_24h,signals_7d,high_attention_count,scored_impact_count,action_candidate_count,known_opportunity_value_eur,known_risk_value_eur,top_domains,source_health,status,evidence,updated_at')
+          .eq('tenant_id','canonical').limit(1))
+      ]);
+      const intelligenceSignals=mergeEntrepreneurSignals(signalsCanonical,tenantImpacts);
+      const actionCandidates=mergeEntrepreneurActions(canonicalActions,tenantActions);
+      const snapshot=buildEntrepreneurSnapshot(baseSnapshots[0]||null,domains,sourceCatalog,intelligenceSignals,tenantImpacts,actionCandidates);
+      return json({
+        sources,
+        publications,
+        signals:signalsRaw,
+        intelligence:{
+          tenantId,
+          projectionScope:'canonical external baseline + authenticated tenant impact overlay',
+          domains,
+          sourceCatalog,
+          signals:intelligenceSignals,
+          companyImpacts:tenantImpacts,
+          actionCandidates,
+          snapshot,
+          truthPolicy:'measured_or_evidence_backed_else_unknown'
+        },
+        scope:{
+          authenticatedTenant:tenantId,
+          externalSignalTenant:'canonical',
+          tenantExposureApplied:tenantImpacts.length>0,
+          tenantImpactCount:tenantImpacts.length,
+          monetaryImpactSynthesized:false,
+          catalogCapabilityIsConnectionTruth:false
+        },
+        stats:{
+          generatedAt:new Date().toISOString(),
+          sourceCount:sources.length,
+          publicationCount:publications.length,
+          signalCount:signalsRaw.length,
+          intelligenceDomainCount:domains.length,
+          intelligenceCatalogCount:sourceCatalog.length,
+          intelligenceSignalCount:intelligenceSignals.length,
+          intelligenceActionCount:actionCandidates.length,
+          connectedOrObservedSourceCount:sourceCatalog.filter((item:any)=>['CONNECTED','OBSERVED','LIVE'].includes(item.availability_state)).length
+        }
+      });
+    }catch(error){
+      return json({error:'ENTREPRENEUR_INTELLIGENCE_READ_FAILED',source:String(error instanceof Error?error.message:'UNKNOWN').slice(0,80)},500);
+    }
   }
 
   if(action==='governance'){

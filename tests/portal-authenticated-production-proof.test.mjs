@@ -152,12 +152,18 @@ test('Netlify wiring and production readback require exact commit/deploy authent
 });
 
 
-test('protected Portal ondernemersdata uses the Netlify serverless process.env runtime for secrets',async()=>{
+test('protected Portal ondernemersdata keeps privileged Supabase access behind the existing EU Edge authority',async()=>{
   const source=await readFile(new URL('../netlify/functions/portal-ondernemersdata.mjs',import.meta.url),'utf8');
-  assert.match(source,/process\.env\[name\]/);
+  const store=await readFile(new URL('../netlify/functions/_portal-supabase-store.mjs',import.meta.url),'utf8');
+  const edge=await readFile(new URL('../supabase/functions/portal-state-eu/index.ts',import.meta.url),'utf8');
+  assert.match(source,/createSupabasePortalProjectionStore/);
+  assert.match(source,/getEntrepreneurIntelligence\(tenantId\)/);
+  assert.doesNotMatch(source,/SUPABASE_(?:SERVICE_ROLE_KEY|SERVICE_KEY|SECRET_KEY)/);
+  assert.doesNotMatch(source,/\/rest\/v1\//);
   assert.doesNotMatch(source,/Netlify\.env/);
-  assert.match(source,/SUPABASE_SERVICE_ROLE_KEY/);
-  assert.match(source,/SUPABASE_SERVICE_KEY/);
-  assert.match(source,/SUPABASE_SECRET_KEY/);
-  assert.match(source,/SUPABASE_SERVICE_KEY_MISSING/);
+  assert.match(store,/BG_PORTAL_EU_SUPABASE_URL/);
+  assert.match(store,/BG_PORTAL_EU_SERVICE_TOKEN/);
+  assert.match(store,/action:'entrepreneur_intelligence'/);
+  assert.match(edge,/if\(action==='entrepreneur_intelligence'\)/);
+  assert.match(edge,/Deno\.env\.get\('SUPABASE_SERVICE_ROLE_KEY'\)/);
 });

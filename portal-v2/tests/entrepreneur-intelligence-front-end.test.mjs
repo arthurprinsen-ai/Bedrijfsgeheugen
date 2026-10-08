@@ -6,6 +6,7 @@ const registry=await readFile(new URL('../page-registry.js',import.meta.url),'ut
 const shell=await readFile(new URL('../page-shell.js',import.meta.url),'utf8');
 const workspace=await readFile(new URL('../modules/entrepreneur-intelligence.js',import.meta.url),'utf8');
 const api=await readFile(new URL('../../netlify/functions/portal-ondernemersdata.mjs',import.meta.url),'utf8');
+const edge=await readFile(new URL('../../supabase/functions/portal-state-eu/index.ts',import.meta.url),'utf8');
 
 const pages=['ondernemersdata','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek'];
 
@@ -25,10 +26,15 @@ test('workspace exposes laws and live UWV RVO CBS source projections',()=>{
   assert.match(workspace,/CBS/);
   assert.match(workspace,/\/api\/portal-ondernemersdata/);
 });
-test('backend returns only curated public-source fields through authenticated portal route',()=>{
+test('backend keeps authentication in Netlify and curated public-source reads in the Supabase Edge authority',()=>{
   assert.match(api,/getUser/);
   assert.match(api,/UNAUTHENTICATED/);
-  assert.match(api,/bronpublicaties\?select=/);
-  assert.match(api,/bg_externe_signalen\?select=/);
-  assert.doesNotMatch(api,/select=\*/);
+  assert.match(api,/getEntrepreneurIntelligence\(tenantId\)/);
+  assert.doesNotMatch(api,/\/rest\/v1\//);
+  assert.match(edge,/if\(action==='entrepreneur_intelligence'\)/);
+  assert.match(edge,/from\('bronpublicaties'\)/);
+  assert.match(edge,/from\('bg_externe_signalen'\)/);
+  assert.match(edge,/select\('id,bron_id,titel,samenvatting,publicatiedatum,url,opgehaald_op,goedgekeurd,uitgever_url'\)/);
+  assert.match(edge,/select\('url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,brontrouw,bevestiging,versheid,relevantie,vertrouwen,toegestaan,opgehaald_op,deadline'\)/);
+  assert.doesNotMatch(edge,/\.from\('(?:bronpublicaties|bg_externe_signalen)'\)[\s\S]{0,180}\.select\('\*'\)/);
 });

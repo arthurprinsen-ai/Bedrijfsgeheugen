@@ -57,3 +57,26 @@ test('writes only through the authenticated Edge gateway and preserves stale-wri
 test('fails closed when EU store credentials are missing',()=>{
   assert.throws(()=>createSupabasePortalProjectionStore({baseUrl:'https://example.supabase.co',serviceToken:''}),/EU portal store configuration/i);
 });
+
+
+test('reads entrepreneur intelligence through the existing service-token Edge gateway and rejects tenant drift',async()=>{
+  const payload={
+    sources:[],publications:[],signals:[],
+    intelligence:{tenantId:'tenant-1',domains:[],sourceCatalog:[],signals:[],companyImpacts:[],actionCandidates:[],snapshot:{}},
+    scope:{authenticatedTenant:'tenant-1'},
+    stats:{generatedAt:'2026-10-08T05:00:00.000Z'}
+  };
+  const client=fakeClient(body=>body.action==='entrepreneur_intelligence'?response(payload):response({error:'unexpected'},500));
+  const store=createSupabasePortalProjectionStore({fetchFn:client.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
+  const result=await store.getEntrepreneurIntelligence('tenant-1');
+  assert.equal(result.scope.authenticatedTenant,'tenant-1');
+  assert.equal(client.calls.length,1);
+  const call=client.calls[0];
+  assert.equal(call.url,'https://example.supabase.co/functions/v1/portal-state-eu');
+  assert.equal(call.options.headers['x-bg-service-token'],'service');
+  assert.deepEqual(JSON.parse(call.options.body),{action:'entrepreneur_intelligence',tenantId:'tenant-1'});
+
+  const drift=fakeClient(()=>response({...payload,scope:{authenticatedTenant:'tenant-2'}}));
+  const driftStore=createSupabasePortalProjectionStore({fetchFn:drift.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
+  await assert.rejects(()=>driftStore.getEntrepreneurIntelligence('tenant-1'),/tenant scope mismatch/i);
+});
