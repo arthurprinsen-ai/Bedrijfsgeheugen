@@ -4,12 +4,20 @@ import {isPowerhouseAdmin} from '../../platform/auth/powerhouse-admin.mjs';
 import {createDataSovereigntyClient} from './_data-sovereignty-client.mjs';
 import {validateCustomerAiDeployment} from '../../platform/policy/customer-ai-deployment.mjs';
 import {buildSovereigntyChangeImpact} from '../../platform/regulatory/sovereignty-change-impact.mjs';
+import {buildCrossDomainReviewPortfolio} from '../../platform/regulatory/cross-domain-review-portfolio.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const allowedModes=new Set(['TRANSPARENT_GLOBAL','EU_STORAGE','EU_ONLY','CUSTOM']);
 const allowedAiProviders=new Set(['','anthropic','openai_eu','composio_groq']);
 const client=createDataSovereigntyClient();
 const adminEmails=()=>String(Netlify.env.get('POWERHOUSE_ADMIN_EMAILS')||'').trim();
+const withImpactTasks=(response,tenantId)=>{
+  const snapshot=response?.snapshot;
+  if(!snapshot?.policy)return response;
+  const impact=snapshot.policy.last_change_impact??null;
+  const reviewPortfolio=buildCrossDomainReviewPortfolio(impact,{tenantId});
+  return {...response,snapshot:{...snapshot,reviewPortfolio}};
+};
 
 export default async request=>{
   if(!['GET','POST'].includes(request.method))return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -23,7 +31,7 @@ export default async request=>{
     const wantsCanonical=url.searchParams.get('scope')==='bedrijfsgeheugen';
     if(wantsCanonical&&!isPowerhouseAdmin(user,{allowedEmails:adminEmails()}))return json({error:'POWERHOUSE_ADMIN_REQUIRED'},403);
     const tenantId=wantsCanonical?'canonical':ownTenant;
-    try{return json(await client.get(tenantId));}catch(error){return json({error:error?.code||'DATA_SOVEREIGNTY_READ_FAILED'},502);}
+    try{return json(withImpactTasks(await client.get(tenantId),tenantId));}catch(error){return json({error:error?.code||'DATA_SOVEREIGNTY_READ_FAILED'},502);}
   }
 
   let body;try{body=await request.json();}catch{return json({error:'INVALID_JSON'},400);}
@@ -50,7 +58,7 @@ export default async request=>{
     const {impact,expectedPolicyVersion}=buildSovereigntyChangeImpact({
       tenantId:ownTenant,actor,previousPolicy:before?.snapshot?.policy||{},proposedPolicy:policy
     });
-    return json(await client.setPolicy(ownTenant,{...policy,expectedPolicyVersion,changeImpact:impact},actor));
+    return json(withImpactTasks(await client.setPolicy(ownTenant,{...policy,expectedPolicyVersion,changeImpact:impact},actor),ownTenant));
   }catch(error){
     const conflict=error?.code==='SOVEREIGNTY_POLICY_VERSION_CONFLICT'||error?.code==='INVALID_CROSS_DOMAIN_IMPACT';
     return json({error:error?.code||'DATA_SOVEREIGNTY_WRITE_FAILED'},conflict?409:502);
