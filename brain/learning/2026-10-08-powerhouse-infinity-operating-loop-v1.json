@@ -1,0 +1,40 @@
+{
+  "id": "powerhouse-infinity-operating-loop-20261008-v1",
+  "date": "2026-10-08",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|infinity|seven-components|one-production-loop|v1",
+  "root_cause": "The seven capabilities existed as separate tables, functions and jobs, while no single production receipt proved company context, counterfactual, impact, decision, action, provider readback and learning together. Canonical signals therefore remained at 143 while company-specific impacts remained at zero.",
+  "prevention": [
+    "Run the seven capabilities through the existing runtime scheduler and heartbeat authorities.",
+    "Require tenant context before a canonical external signal can become a company impact.",
+    "Persist uncertainty and never turn a counterfactual prediction into an observed outcome.",
+    "Require external provider proof before daily commercial execution is green.",
+    "Write an immutable receipt for every integrated production cycle."
+  ],
+  "compiler": {
+    "failure_class": "POWERHOUSE_INFINITY_LOOP_NOT_INTEGRATED",
+    "scope": "POWERHOUSE_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "migration": "supabase/migrations/20261008115500_powerhouse_infinity_operating_loop_v1.sql",
+    "regression": ["tests/powerhouse-infinity-operating-loop-v1.test.mjs"],
+    "workflow": ".github/workflows/whole-brain-canonical-loop-v2.yml"
+  },
+  "evaluation": {
+    "historical_replay": ["tests/powerhouse-infinity-operating-loop-v1.test.mjs"],
+    "shadow": ["production transaction rollback"],
+    "canary": ["existing portal tenant one-cycle invocation"],
+    "success_criteria": [
+      "All seven component rows operational",
+      "Integrated cycle receipt VERIFIED",
+      "Commercial day contains external provider proof",
+      "One existing scheduler owner remains active"
+    ]
+  },
+  "production_claim": "PENDING_PROTECTED_DELIVERY",
+  "outcome": "CANDIDATE_READY_FOR_PROTECTED_DELIVERY"
+}
+
