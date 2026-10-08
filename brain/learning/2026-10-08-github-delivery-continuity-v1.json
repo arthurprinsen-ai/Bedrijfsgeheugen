@@ -10,13 +10,16 @@
     "The supervisor must never invoke an undefined BRAIN dispatch path or assume a recovery happened on a skipped invocation.",
     "Nonterminal merged obligations remain auditable and bounded by a seven-day check horizon, 90-minute retry cooldown and three-attempt limit.",
     "Only canonical post-merge production readback plus durable authority evidence can mark an obligation LIVE_BEWEZEN.",
-    "The canonical Brain learning evaluation gate must run in Required preflight before protected merge and reject missing/non-Brain test paths."
+    "The canonical Brain learning evaluation gate must run in Required preflight before protected merge and reject missing/non-Brain test paths.",
+    "Quote the canonical terminal closure workflow run-name; unquoted # starts a YAML comment and loses the PR number, breaking exact-PR deduplication.",
+    "Terminal closure must check the real .github/workflows/codeql.yml workflow; fail regression on any reference to a nonexistent powerhouse-codeql.yml.",
+    "When Required test adds a new preflight artifact, rebuild stale candidates from current main instead of copying runtime proof artifacts into outdated branches."
   ],
   "compiler": {
     "failure_class": "GITHUB_DELIVERY_SUPERVISOR_CONTINUITY_GAP",
     "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
     "machine_enforceable": true,
-    "repeat_count": 2,
+    "repeat_count": 4,
     "security_sensitive": true
   },
   "evidence": {
@@ -25,9 +28,12 @@
     "terminal_authority": ".github/workflows/obligation-terminal-closure.yml",
     "regression": [
       "tests/delivery-powerhouse-supervisor.test.mjs",
-      "tests/brain-github-delivery-continuity-v1.test.mjs"
+      "tests/brain-github-delivery-continuity-v1.test.mjs",
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
     ],
-    "premerge_gate": ".github/workflows/required-test.yml"
+    "premerge_gate": ".github/workflows/required-test.yml",
+    "terminal_run_identity": ".github/workflows/obligation-terminal-closure.yml",
+    "codeql_workflow": ".github/workflows/codeql.yml"
   },
   "evaluation": {
     "historical_replay": [
@@ -46,5 +52,5 @@
     ]
   },
   "production_claim": "NOT_PROVEN",
-  "outcome": "RECOVERY_PREMERGE_CONTRACT_PENDING_PROTECTED_CI_AND_RUNTIME_VALIDATION"
+  "outcome": "CURRENT_MAIN_RECOVERY_CANDIDATE_PROTECTED_DELIVERY_PENDING"
 }
