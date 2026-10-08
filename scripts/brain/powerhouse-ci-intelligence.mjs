@@ -155,6 +155,10 @@ const baseReport = {
   sampled_runs: sample.length,
   sampled_jobs: jobRows.length,
   metrics: {
+    queue_wait_sample_count: queues.length,
+    execution_sample_count: executions.length,
+    required_queue_sample_count: requiredQueueSeconds.length,
+    required_total_sample_count: requiredTotals.length,
     queue_wait_seconds_avg: avg(queues),
     queue_wait_seconds_p95: p95(queues),
     execution_seconds_avg: avg(executions),
@@ -166,6 +170,9 @@ const baseReport = {
     failed_jobs: failed,
     cancelled_jobs: cancelled,
     skipped_jobs: skipped,
+    // Skip is a routing decision, not a billed runner execution.
+    known_cancelled_runner_seconds: jobRows.filter(row => row.conclusion === 'cancelled').reduce((sum, row) => sum + (row.execution_seconds ?? 0), 0),
+    known_skipped_runner_seconds: 0,
     skipped_workflow_runs_7d: skippedWorkflowRuns,
     cancelled_workflow_runs_7d: cancelledWorkflowRuns,
     duplicate_workflow_runs_7d: duplicateWorkflowRuns,
