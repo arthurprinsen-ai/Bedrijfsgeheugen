@@ -1,0 +1,48 @@
+{
+  "fingerprint": "powerhouse|ci|required-run-measurement-coverage|v1",
+  "obligationId": "powerhouse-ci-required-run-evidence-fidelity-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The CI collector filtered run.name === 'Required test', while live pull-request workflows set run-name='Required test PR #N <SHA>'. Thus required runs were excluded and the new evidence guard could incorrectly freeze autonomous tuning. In addition, max three pages (300 runs) were labeled as a seven-day measurement even when the API sample did not span seven days.",
+  "failureModes": [
+    "false-zero required queue and total measurement samples",
+    "self-optimizer holds due to absent required evidence despite available runs",
+    "observed recent subset labeled as full seven-day history",
+    "latest 60 workflows crowd out critical required runs"
+  ],
+  "prevention": [
+    "recognize exact Required test PR run-name and canonical name, but only pull_request event",
+    "reserve up to 12 of 60 sampled jobs' workflow runs for Required runs",
+    "publish requested versus actual pagination window evidence and completeness",
+    "preserve 300-run API fetch budget, 60 sampled run budget and all existing protected gates"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-calibration-engine-v1.test.mjs"
+    ],
+    "baseline_comparison": "GitHub PR #4174 run-name format versus exact-equality collector; simulated 75 other run records preceding 16 Required runs.",
+    "success_metric": "required_queue_sample_count > 0 for actual detected protected PRs; truthful observation_seven_day_complete=false when pagination budget exhausted; CI gates unchanged.",
+    "rollback": "Protected revert of candidate on regression; unknown window never assumed complete."
+  },
+  "evidence": {
+    "workflow": "Required test PR #4174 997cf35826aba8b60a2b17d0356240f3ecb885fe",
+    "source_paths": [
+      "tools/delivery/ci-calibration-engine.mjs",
+      "scripts/brain/powerhouse-ci-intelligence.mjs"
+    ],
+    "regression": "tests/brain-ci-calibration-engine-v1.test.mjs",
+    "live_metric_readback": "PENDING_CURRENT_CI_INTELLIGENCE_RUN"
+  },
+  "prohibited": [
+    "lower required tests",
+    "omit CodeQL",
+    "claim full history from bounded page sample",
+    "direct production deploy without exact readback"
+  ]
+}
