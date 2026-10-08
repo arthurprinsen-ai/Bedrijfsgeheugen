@@ -27,7 +27,7 @@ test('local offline-only appliance code must not falsely require hosted Netlify 
  assert.equal(scope.netlifyRuntimeRequired,false);
  assert.equal(scope.deploymentRequired,false);
 });
-test('server handler modification must trigger real Netlify release verification',()=>{
+test('server handler modification must trigger real Netlify release verification',async()=>{
  const scope=evaluate('netlify/functions/tenant-ai-inference.mjs');
  assert.equal(scope.deploymentRequired,true);
  const source=await readFile(new URL('../netlify/functions/tenant-ai-inference.mjs',import.meta.url),'utf8');
