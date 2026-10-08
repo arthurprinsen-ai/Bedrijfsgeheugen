@@ -22,5 +22,9 @@ test('Brain learning evaluates a real in-repository regression, not a missing or
   for(const mode of ['historical_replay','shadow','canary']){
     assert.deepEqual(record.evaluation[mode],['tests/brain-github-delivery-continuity-v1.test.mjs']);
   }
-  assert.equal(record.production_claim,'NOT_PROVEN');
+  assert.ok(['NOT_PROVEN','LIVE_PROVEN'].includes(record.production_claim));
+  if(record.production_claim==='LIVE_PROVEN'){
+    assert.ok(record.production_readback?.merge_sha,'live claim must include merge proof');
+    assert.ok(record.production_readback?.verified===true,'live claim must include verified provider readback');
+  }
 });
