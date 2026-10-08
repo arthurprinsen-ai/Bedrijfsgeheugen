@@ -1,7 +1,0 @@
-{
-  "contract": "historical-obligation-replay-v1",
-  "pr_number": 4134,
-  "merge_sha": "f8c7f313be234da58326a399d45b5866ff13ca59",
-  "obligation_id": "linkedin-cross-workspace-auth-proof-20261008-v1",
-  "reason": "Replay original merge through canonical OIDC-secured Brain closure using verified ACTIVE Supabase provider evidence; no Netlify deployment for Edge-only source."
-}
