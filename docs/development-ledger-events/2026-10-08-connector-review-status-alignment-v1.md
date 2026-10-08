@@ -8,3 +8,5 @@
 - No compliance/CO2/CSRD obligation is represented as approved; production delivery and authenticated customer readback remain subject to standard checks.
 
 - Main integration readback: candidate reconciled against non-overlapping main commit `9c7c21a08ad6c6125b9302431bb5489b9bcaf717`; refreshed required CI must revalidate the exact final head.
+
+- Reconciliation: compared five modified files to latest main `3467e8ac63fc6d50aad6f1ae586d7bbb40aab92c` (no overlaps); protective merge requires refreshed exact-head checks.
