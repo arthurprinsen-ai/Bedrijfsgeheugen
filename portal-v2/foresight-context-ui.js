@@ -1,7 +1,8 @@
 
 import {buildBusinessContext} from '../brain/context/business-context-engine.mjs';
+import {contextualCardsForPage,toRoadmapProposal,inventoryPortalCustomerFields,CONTEXTUAL_ACTION_PAGES} from './contextual-action-cards.js';
 
-const CONTEXT_PAGES=new Set(['bedrijfssituatie','cijfers-maatstaven','businesscase','waarde-financiering','branche-markt','roadmap','actieve-acties','due-diligence','exit','outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center']);
+const CONTEXT_PAGES=new Set(['bedrijfssituatie','cijfers-maatstaven','businesscase','waarde-financiering','branche-markt','roadmap','actieve-acties','due-diligence','exit','outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center',...CONTEXTUAL_ACTION_PAGES]);
 const QUALITY_PAGES=new Set(['outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center']);
 const SCENARIO_PAGES=new Set(['businesscase','waarde-financiering','due-diligence','exit','roadmap','actieve-acties']);
 
@@ -111,13 +112,67 @@ function sectionMarkup({pageId,state,quality,overview=false}={}){
     '</section>';
 }
 function bind(section,openPage){section?.querySelectorAll?.('[data-fsv-page]').forEach(btn=>btn.addEventListener('click',()=>openPage?.(btn.dataset.fsvPage)));}
+
+const CARD_TITLES={P1:'Hoog — direct beoordelen',P2:'Middel — plannen',P3:'Laag — bewaken'};
+function contextualActionMarkup(pageId,state){
+  const cards=contextualCardsForPage(pageId,state);
+  const inventory=pageId==='gegevens-invullen'?inventoryPortalCustomerFields():[];
+  if(!cards.length&&!inventory.length)return '';
+  const header='<div class="fsv-head"><div><span class="fsv-kicker">Van invoer naar besluit</span><h3>Wat betekent dit voor jouw bedrijf?</h3><p>Automatisch afgeleide voorstellen, geen definitieve risico-oordelen, juridische conclusies of gerealiseerde besparingen.</p></div></div>';
+  const inventoryHtml=inventory.length?'<p><strong>'+inventory.length+' unieke invoerpaden</strong> in de geregistreerde native V2-formulierschema’s. Standalone, legacy en connectorvelden vereisen apart verificatiebewijs.</p>':'';
+  const cardsHtml=cards.slice(0,12).map(card=>{
+    const pages=card.pages.filter(id=>id!==pageId).slice(0,8);
+    return '<article class="fsv-card" data-context-card="'+esc(card.id)+'"><header><div><span class="fsv-kicker">'+esc(card.priority)+' · '+esc(card.sourcePath)+'</span><h4>'+esc(card.title)+'</h4></div><b class="fsv-pill warn">'+esc(CARD_TITLES[card.priority]||'Beoordelen')+'</b></header>'+
+      '<p>'+esc(card.description)+'</p><p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
+      '<p><small>Financiële impact: niet gekwantificeerd · voorstel ter beoordeling · bron: klantinvoer / geprojecteerd signaal.</small></p>'+
+      '<div class="fsv-actions">'+pages.map(id=>'<button type="button" data-fsv-page="'+esc(id)+'">'+esc(id.replaceAll('-',' '))+' →</button>').join('')+
+      '<button type="button" data-context-add-roadmap="'+esc(card.id)+'">Als voorstel op roadmap →</button></div></article>';
+  }).join('');
+  return '<section class="fsv-context" data-contextual-impact-cards="'+esc(pageId)+'">'+header+inventoryHtml+'<div class="fsv-grid">'+cardsHtml+'</div><p data-contextual-save-status aria-live="polite"></p></section>';
+}
+function mountContextualActionCandidates(host,pageId,openPage){
+  host.querySelector?.('[data-contextual-impact-cards]')?.remove();
+  const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
+  const state=domainState?.get?.()||{};
+  const html=contextualActionMarkup(pageId,state);
+  if(!html)return null;
+  const holder=(host.ownerDocument||document).createElement('div');
+  holder.innerHTML=html;
+  const panel=holder.firstElementChild;
+  host.appendChild(panel);
+  bind(panel,openPage);
+  panel.querySelectorAll('[data-context-add-roadmap]').forEach(button=>button.addEventListener('click',async()=>{
+    const status=panel.querySelector('[data-contextual-save-status]');
+    const existing=domainState?.get?.('portal.roadmap.items')||[];
+    const card=contextualCardsForPage(pageId,domainState?.get?.()||{}).find(row=>row.id===button.dataset.contextAddRoadmap);
+    if(!domainState?.set||!domainState?.flush||!card){if(status)status.textContent='Beveiligde klantcontext ontbreekt: geen kaart aangemaakt.';return;}
+    const proposal=toRoadmapProposal(card,existing);
+    if(!proposal){if(status)status.textContent='Dit voorstel staat al op de roadmap.';return;}
+    try{
+      button.disabled=true;
+      if(status)status.textContent='Voorstel wordt opgeslagen…';
+      domainState.set('portal.roadmap.items',[...existing,proposal]);
+      await domainState.flush();
+      if(status)status.textContent=domainState.status?.()==='saved'?'Voorstel opgeslagen. Controleer de roadmap voor prioriteit en eigenaar.':'Nog niet volledig bevestigd: controleer de opslagstatus.';
+    }catch{
+      if(status)status.textContent='Opslaan niet bevestigd. Voorstel blijft in de huidige sessie staan.';
+    }finally{button.disabled=false;}
+  }));
+  return panel;
+}
+
 export async function mountContextualForesight(host,{pageId,state={},openPage,fetchImpl=globalThis.fetch}={}){
   if(!host||!CONTEXT_PAGES.has(pageId))return null;
   ensureStyles(host.ownerDocument||document);
+  host.__contextualActionAbort?.abort();
+  const controller=new AbortController();
+  host.__contextualActionAbort=controller;
   host.querySelector?.('[data-foresight-context]')?.remove();
+  mountContextualActionCandidates(host,pageId,openPage);
+  globalThis.addEventListener?.('bg:portal-impact',()=>mountContextualActionCandidates(host,pageId,openPage),{signal:controller.signal});
   const quality=QUALITY_PAGES.has(pageId)?await loadPredictionQuality(fetchImpl):null;
   const html=sectionMarkup({pageId,state,quality});
-  if(!html)return null;
+  if(!html)return host.querySelector?.('[data-contextual-impact-cards]')||null;
   const holder=(host.ownerDocument||document).createElement('div');holder.innerHTML=html;
   const section=holder.firstElementChild;host.appendChild(section);bind(section,openPage);return section;
 }
