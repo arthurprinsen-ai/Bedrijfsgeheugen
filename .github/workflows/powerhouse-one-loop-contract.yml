@@ -1,0 +1,30 @@
+name: Powerhouse One Loop Contract
+on:
+  pull_request:
+    paths:
+      - 'tools/powerhouse/one-loop-contract.mjs'
+      - 'tools/powerhouse/one-loop-contract.test.mjs'
+      - 'tools/powerhouse/inventory-existing-runtime.mjs'
+      - '.github/workflows/powerhouse-one-loop-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify canonical one-loop transitions
+        run: node --test tools/powerhouse/one-loop-contract.test.mjs
+      - name: Inventory existing runtime without mutation
+        run: node tools/powerhouse/inventory-existing-runtime.mjs > "$RUNNER_TEMP/powerhouse-existing-runtime.json"
+      - name: Publish inventory as CI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-existing-runtime
+          path: ${{ runner.temp }}/powerhouse-existing-runtime.json
+          retention-days: 7
