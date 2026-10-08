@@ -16,9 +16,15 @@ async function walk(dir,depth=0){
   if(!e.isFile()||!(/\.(?:mjs|js|ts|sql|ya?ml|json)$/.test(e.name)))continue;
   if(pattern.test(p)){out.push({path:p.replaceAll('\\','/'),matched:'path'});continue;}
   // bounded content sampling, never scan secrets or private runtime values
-  const s=await stat(p);if(s.size>200000)continue;
-  const text=await readFile(p,'utf8');
-  if(pattern.test(text.slice(0,20000)))out.push({path:p.replaceAll('\\','/'),matched:'content'});
+  let handle;
+  try {
+   handle=await open(p,'r');
+   const info=await handle.stat();
+   if(!info.isFile()||info.size>200000)continue;
+   const buffer=Buffer.alloc(Math.min(info.size,20000));
+   const {bytesRead}=await handle.read(buffer,0,buffer.length,0);
+   if(pattern.test(buffer.toString('utf8',0,bytesRead)))out.push({path:p.replaceAll('\\\\','/'),matched:'content'});
+  } catch { continue; } finally { await handle?.close(); }
  }
  return out;
 }
