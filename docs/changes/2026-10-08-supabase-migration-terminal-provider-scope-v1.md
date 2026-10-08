@@ -8,3 +8,6 @@ Use the already canonical terminal scope classifier, plus an exact versioned mig
 
 ## Boundaries
 Do not bypass protected checks, forge Netlify release SHA, change Supabase production migration history or create another control plane. The previous failed terminal run is not retrospectively marked successful; an authorized reconciliation or new verified release evidence is required. No real-world value improvement is inferred from the deployment alone.
+
+## Explicit authority separation
+Netlify website identity is not a substitute for Supabase migration history. The replay workflow must query the official production Supabase migration ledger for the exact version and retain the result in its canonical terminal evidence.
