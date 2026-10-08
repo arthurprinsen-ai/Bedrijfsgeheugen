@@ -235,6 +235,7 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           PR_NUMBER: ${{ steps.context.outputs.pr_number }}
           PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
@@ -281,6 +282,31 @@ jobs:
             echo "SUPABASE_PROVIDER_READBACK_DECLARED:${line}"
           done
 
+          # Verify the claimed version/hash against the LIVE Supabase management API.
+          # PR metadata alone is never production evidence.
+          test -n "$SUPABASE_ACCESS_TOKEN" || {
+            echo "::error::SUPABASE_PROVIDER_ACCESS_TOKEN_MISSING"
+            exit 78
+          }
+          curl -fsSL --retry 2 --connect-timeout 10 --max-time 30 \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/adhjwmvyoixzjtmiroln/functions" \
+            -o /tmp/terminal-supabase-provider-live.json
+          PROVIDER_EXPECTED="$readbacks" node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {readbacksForFunctions} from './tools/supabase/publish-edge-provider-readback.mjs';
+          const expected=JSON.parse(process.env.PROVIDER_EXPECTED||'[]');
+          const live=readbacksForFunctions(
+            JSON.parse(readFileSync('/tmp/terminal-supabase-provider-live.json','utf8')),
+            expected.map(row=>row.function)
+          );
+          for(const row of expected){
+            const active=live.find(item=>item.function===row.function);
+            if(!active||active.version!==row.version||active.runtime_sha256!==row.runtime_sha256||active.state!=='ACTIVE')
+              throw new Error('SUPABASE_PROVIDER_LIVE_MISMATCH:'+row.function);
+          }
+          console.log('SUPABASE_PROVIDER_LIVE_METADATA_MATCH:'+expected.map(row=>row.function).join(','));
+          NODE
           echo "required=true" >> "$GITHUB_OUTPUT"
           echo "readbacks=$readbacks" >> "$GITHUB_OUTPUT"
           echo "SUPABASE_PROVIDER_READBACK_COVERAGE_PROVEN:functions=${changed_functions[*]}"
@@ -291,11 +317,25 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           DELIVERY_LANE: ${{ steps.identity.outputs.delivery_lane }}
+          PROVIDER_READBACK_REQUIRED: ${{ steps.provider-readback.outputs.required }}
+          PROVIDER_READBACKS: ${{ steps.provider-readback.outputs.readbacks }}
         run: |
           set -euo pipefail
 
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
-          if [ "${DELIVERY_LANE}" = "automation" ] && [ -n "${changed_paths}" ] && ! grep -Eq '^(portal-v2/|public/|src/|netlify/functions/|supabase/functions/|supabase/migrations/)' <<<"${changed_paths}"; then
+          # Shared contract classifier handles website, Edge, mixed, and unknown changes.
+          scope_json="$(CHANGED_PATHS="$changed_paths" node --input-type=module - <<'NODE'
+          import {classifyTerminalReleaseScope} from './tools/delivery/terminal-release-scope.mjs';
+          process.stdout.write(JSON.stringify(classifyTerminalReleaseScope(
+            String(process.env.CHANGED_PATHS||'').split(/\r?\n/)
+          )));
+          NODE
+          )"
+          website_required="$(jq -r '.website' <<<"$scope_json")"
+          supabase_edge_required="$(jq -r '.edge' <<<"$scope_json")"
+          other_runtime_required="$(jq -r '.other' <<<"$scope_json")"
+          non_runtime="$(jq -r '.non_runtime' <<<"$scope_json")"
+          if [ "${DELIVERY_LANE}" = "automation" ] && [ "$non_runtime" = true ]; then
             git fetch origin main --no-tags
             observed_sha="$(git rev-parse origin/main)"
             git merge-base --is-ancestor "${MERGE_SHA}" "${observed_sha}" || {
@@ -311,6 +351,44 @@ jobs:
             exit 0
           fi
 
+          if [ "$supabase_edge_required" = true ] && [ "$website_required" = false ] && [ "$other_runtime_required" = false ]; then
+            if [ "$PROVIDER_READBACK_REQUIRED" != true ]; then
+              echo "::error::SUPABASE_ONLY_PROVIDER_READBACK_REQUIRED:$MERGE_SHA"
+              exit 78
+            fi
+            if ! jq -e 'type=="array" and length>0 and all(.[]; .state=="ACTIVE" and (.version|type=="number") and .version>0 and (.runtime_sha256|test("^[0-9a-f]{64}$")))' <<<"$PROVIDER_READBACKS" >/dev/null; then
+              echo "::error::SUPABASE_ONLY_PROVIDER_READBACK_INVALID:$MERGE_SHA"
+              exit 78
+            fi
+            git fetch origin main --no-tags
+            observed_sha="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "$MERGE_SHA" "$observed_sha" || {
+              echo "::error::SUPABASE_ONLY_MAIN_CONTAINMENT_NOT_PROVEN:$MERGE_SHA:$observed_sha"
+              exit 78
+            }
+            # Check changed runtime files, not unrelated later deployments.
+            # A later canonical config registration must not invalidate a previous
+            # function-source merge whose exact production bytes are unchanged.
+            while IFS= read -r changed_path; do
+              case "$changed_path" in
+                supabase/functions/*|supabase/config.toml)
+                  git diff --quiet "$MERGE_SHA" "$observed_sha" -- "$changed_path" || {
+                    echo "::error::SUPABASE_ONLY_RUNTIME_SUPERSEDED:$changed_path:$MERGE_SHA:$observed_sha"
+                    exit 78
+                  }
+                  ;;
+              esac
+            done <<<"$changed_paths"
+            echo "mode=github_main" >> "$GITHUB_OUTPUT"
+            echo "run_id=" >> "$GITHUB_OUTPUT"
+            echo "observed_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
+            echo "deploy_id=" >> "$GITHUB_OUTPUT"
+            echo "verified=true" >> "$GITHUB_OUTPUT"
+            echo "SUPABASE_ONLY_PROVIDER_AND_MAIN_READBACK_PROVEN:merge=$MERGE_SHA contained_by=$observed_sha"
+            exit 0
+          fi
+          # Mixed changes retain both provider proof and Netlify release readback.
+          # Other unknown runtime paths remain fail-closed.
           source_run_id=""
           source_conclusion=""
           # Fast bounded canonical wait. A historical failed/cancelled canonical run is
