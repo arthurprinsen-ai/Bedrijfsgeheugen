@@ -33,9 +33,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/portal-causal-propagation.test.mjs",
-      "portal-v2/tests/domain-state.test.mjs",
-      "portal-v2/tests/one-brain-impact-contract.test.mjs"
+      "tests/brain-portal-causal-lossless-writeback.test.mjs"
     ]
   }
 }
