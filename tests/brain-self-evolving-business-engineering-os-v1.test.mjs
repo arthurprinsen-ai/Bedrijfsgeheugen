@@ -98,7 +98,10 @@ test('invalid identity, future receipts and duplicate outcomes never fabricate v
     observations[0],{...observations[0],value:9999}, {...observations[1],observedAt:'2027-01-01T00:00:00Z'}
   ]});
   assert.equal(report.learning.verifiedOutcomeCount,1);
-  assert.equal(report.learning.realizedRevenueEur,120);
+  // Financial value must not be attributed when its linked production outcome
+  // is in the future, even if the business-side settlement itself is valid.
+  assert.equal(report.learning.realizedRevenueEur,null);
+  assert.equal(report.learning.financialValueStatus,'NOT_PROVEN');
   assert.equal(report.decision,'GATHER_VERIFIED_OUTCOMES');
 });
 
