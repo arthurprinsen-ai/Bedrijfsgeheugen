@@ -99,7 +99,7 @@ const validRequest=request=>request&&Array.isArray(request.messages)&&request.me
  &&Number.isSafeInteger(request.maxTokens)&&request.maxTokens>=1&&request.maxTokens<=2048
  &&request.messages.every(m=>m&&exact(m.role,['system','user','assistant'])&&typeof m.content==='string'&&m.content.length<=16000)
  &&request.messages.reduce((n,m)=>n+m.content.length,0)<=24000;
-export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVersion,signedProof,key,request,config,fetchFn,now=Date.now()}={}){
+export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVersion,signedProof,key,request,config,approval,registeredEndpoints,fetchFn,now=Date.now()}={}){
  if(!validRequest(request))reject('RUNTIME_REQUEST_INVALID');
  const receipt=verifySignedRuntimeProof({signed:signedProof,key,tenantId,useCaseId,profile,policyVersion,now});
  const provision=config?.[receipt.provider];
@@ -107,7 +107,18 @@ export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVe
      ||provision.egressEvidenceId!==receipt.egressEvidenceId)
   reject('RUNTIME_PROVISIONING_EVIDENCE_MISMATCH');
  const adapters=createVerifiedCloudAdapters({fetchFn,config});
- const result=await invokeVerifiedAiRuntime({tenantId,profile,receipt,request,adapters,now});
+ // Separate server-held authorities: a provider proof is not CSRD/customer approval.
+ // Neither receipt nor an endpoint URL is passed as authorization to the core router.
+ const endpointRegistry=new Map();
+ for(const e of Array.isArray(registeredEndpoints)?registeredEndpoints:[]){
+  if(!e||typeof e!=='object'||typeof e.endpointId!=='string')continue;
+  endpointRegistry.set(e.endpointId,e);
+ }
+ const result=await invokeVerifiedAiRuntime({
+  tenantId,profile,request,adapters,now,endpointRegistry,
+  loadVerifiedReceipt:async()=>receipt,
+  loadCrossDomainApproval:async()=>approval
+ });
  return Object.freeze({...result,provenance:Object.freeze({
   provider:receipt.provider,modelId:receipt.modelId,tenantId,
   useCaseId,evidenceId:receipt.evidenceId,providerReadbackEvidenceId:receipt.providerReadbackEvidenceId
