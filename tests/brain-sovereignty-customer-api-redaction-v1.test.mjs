@@ -17,6 +17,7 @@ test('customer sees only audit-safe review fields; tenant actor and before/after
  assert.equal(output.snapshot.tenantId,'tenant-a');
  assert.equal(output.snapshot.policy.mode,'EU_ONLY');
  assert.equal(output.snapshot.policy.last_change_impact.status,'REVIEW_REQUIRED');
+ assert.equal(Object.hasOwn(output.snapshot.policy,'updated_by'),false,'internal policy actor must be absent');
  assert.equal(output.snapshot.policy.last_change_impact.esrsReview[0].standard,'ESRS_E1');
  for(const leak of ['private-account','private-identity','private-obligation','old-confidential','new-confidential','internal-evidence','server']){
   assert.equal(JSON.stringify(output).includes(leak),false,leak);
