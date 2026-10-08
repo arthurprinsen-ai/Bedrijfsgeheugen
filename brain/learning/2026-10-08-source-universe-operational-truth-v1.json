@@ -30,5 +30,10 @@
       "tests/brain-source-universe-operational-truth-v1.test.mjs"
     ],
     "production_readback": "Not yet proven; zero company impacts at last readback"
-  }
+  },
+  "prevention": [
+    "Keep catalog availability separate from source observation freshness",
+    "Never claim tenant impact without READY and SCORED evidence",
+    "Preserve the existing source-universe ingestion and outcome authorities"
+  ]
 }
