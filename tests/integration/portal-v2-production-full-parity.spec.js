@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LEGACY_PARITY_ITEMS, GLOBAL_PARITY_CAPABILITIES } from '../../portal-v2/parity-manifest.js';
 import { getCapabilityContract } from '../../portal-v2/capability-contracts.js';
+import { isProtectedTrustPage } from '../../portal-v2/page-shell.js';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 const uniquePages=[...new Set(LEGACY_PARITY_ITEMS.flatMap(item=>item.v2Pages))];
@@ -68,6 +69,10 @@ async function openNative(page,pageId){
  await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
  if(pageId==='overzicht')return;
  const view=page.locator('#portalView');
+ if(isProtectedTrustPage(pageId)){
+  await expect(view,`${pageId} must fail closed without authenticated tenant access`).not.toHaveAttribute('data-page-id',pageId);
+  return;
+ }
  await expect(view,`${pageId} must open in native V2 view`).toHaveAttribute('data-page-id',pageId,{timeout:10_000});
  await expect(view).toHaveAttribute('aria-hidden','false');
  await expect(view.locator('h1,h2,h3').first(),`${pageId} needs visible native content`).toBeVisible();
@@ -88,6 +93,8 @@ test('all protected legacy workspaces render natively without legacy portal traf
   if(pageId==='overzicht'){
    await expect(page.getByText('Portal V2 bevat alle portalonderdelen standaard',{exact:true}),'overzicht must remain the canonical dashboard').toBeAttached();
    await expect(view).toHaveAttribute('aria-hidden','true');
+  }else if(isProtectedTrustPage(pageId)){
+   await expect(view,`${pageId} must fail closed in anonymous readback`).not.toHaveAttribute('data-page-id',pageId);
   }else{
    await expect(view,`${pageId} must open in native V2 view`).toHaveAttribute('data-page-id',pageId,{timeout:10_000});
    await expect(view).toHaveAttribute('aria-hidden','false');
