@@ -27,5 +27,30 @@
     "protected merge",
     "production SQL migration readback",
     "one natural scheduled five-minute run with observed/VERIFIED and provider-proof day OPEN"
-  ]
+  ],
+  "intervention": "Validate output contract and operational regression gate independently of commercial daily execution; emit observed/VERIFIED for reliable zero-output observation while keeping commercial_day_proven=false and Brain daily obligation OPEN.",
+  "closure_required": [
+    "required test + CodeQL + Supabase official preview",
+    "protected merge",
+    "production SQL migration readback",
+    "one natural scheduled five-minute run with observed/VERIFIED and provider-proof day OPEN"
+  ],
+  "next_action": "Verify protective merge, production SQL readback and next natural Netlify five-minute heartbeat durable observation.",
+  "fingerprint": "commercial-heartbeat-output-healthy-false-transport-rollback-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs"
+    ]
+  },
+  "prevention": "The transport runner must accept verified observed/VERIFIED commercial-day measurement on safe no-provider-proof days; commercial-day obligation remains OPEN, output healthy false, malformed output or broken scheduler regression must fail closed. Regression: tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs."
 }
