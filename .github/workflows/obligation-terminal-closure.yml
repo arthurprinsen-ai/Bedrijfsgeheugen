@@ -76,7 +76,6 @@ jobs:
           node --input-type=module - <<'NODE'
           import { appendFile } from 'node:fs/promises';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
-          import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
           const metadata=parseDeliveryMetadata(process.env.PR_BODY||'');
           if(!metadata.obligationId) throw new Error('OBLIGATION_ID_MISSING');
           if(!metadata.deliveryLane) throw new Error('DELIVERY_LANE_MISSING');
@@ -421,6 +420,7 @@ jobs:
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
+          import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
