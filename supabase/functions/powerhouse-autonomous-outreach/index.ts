@@ -18,7 +18,29 @@ async function gmailAccount(db:any,key:string){
  if(!id||!userId)throw{code:'GMAIL_ACCOUNT_IDENTITY_INCOMPLETE',has_id:Boolean(id),has_user_id:Boolean(userId),retryable:true};
  return{id,userId};
 }
-async function send(key:string,acct:{id:string,userId:string},to:string,subject:string,body:string){const r=await fetch(B+'/tools/execute/GMAIL_SEND_EMAIL',{method:'POST',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify({connected_account_id:acct.id,user_id:acct.userId,arguments:{recipient_email:to,subject,body,is_html:false,user_id:'me'}})}),x:any=await r.json().catch(()=>({parse_error:true}));if(!r.ok||x?.successful!==true)throw{code:'COMPOSIO_GMAIL_SEND',status:r.status,payload:safe(x)};const d=x?.data||x;return{message_id:pick(d,['id','message_id','messageId']),thread_id:pick(d,['threadId','thread_id']),provider:safe(d)}}
+async function send(key:string,acct:{id:string;userId:string},to:string,subject:string,body:string){
+ const r=await fetch(B+'/tools/execute/GMAIL_SEND_EMAIL',{method:'POST',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify({connected_account_id:acct.id,user_id:acct.userId,arguments:{recipient_email:to,subject,body,is_html:false,user_id:'me'}}),signal:AbortSignal.timeout(20000)});
+ const x:any=await r.json().catch(()=>({parse_error:true}));
+ if(!r.ok||x?.successful!==true)throw{code:'COMPOSIO_GMAIL_SEND_UNCERTAIN',status:r.status,payload:safe(x)};
+ const d=x?.data?.data||x?.data||x;
+ const message_id=s(d?.id||d?.message_id||d?.messageId||d?.message?.id),thread_id=s(d?.threadId||d?.thread_id||d?.message?.threadId);
+ if(!message_id)throw{code:'SEND_ACK_MESSAGE_ID_MISSING',payload:safe(d)};
+ return{message_id,thread_id};
+}
+async function readback(key:string,acct:{id:string;userId:string},messageId:string,recipient:string){
+ if(!messageId)throw{code:'READBACK_MESSAGE_ID_MISSING'};
+ const r=await fetch(B+'/tools/execute/GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID',{method:'POST',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify({connected_account_id:acct.id,user_id:acct.userId,arguments:{message_id:messageId,user_id:'me',format:'full'}}),signal:AbortSignal.timeout(15000)});
+ const x:any=await r.json().catch(()=>({parse_error:true}));
+ if(!r.ok||x?.successful!==true)throw{code:'GMAIL_INDEPENDENT_READBACK_UNAVAILABLE',status:r.status,payload:safe(x)};
+ const d=x?.data?.data||x?.data||x,m=d?.message||d;
+ const id=s(m?.id||m?.message_id),labels=Array.isArray(m?.labelIds)?m.labelIds:(Array.isArray(m?.label_ids)?m.label_ids:[]);
+ const headers=Array.isArray(m?.payload?.headers)?m.payload.headers:(Array.isArray(m?.headers)?m.headers:[]);
+ const toHeader=headers.find((h:any)=>s(h?.name).toLowerCase()==='to');
+ const addressed=s(toHeader?.value||m?.to).toLowerCase(),target=s(recipient).toLowerCase();
+ if(id!==messageId||!labels.includes('SENT')||!target||!addressed.includes(target))
+  throw{code:'GMAIL_READBACK_MISMATCH',id_matches:id===messageId,sent_label:labels.includes('SENT'),recipient_matches:Boolean(target&&addressed.includes(target))};
+ return{message_id:id,thread_id:s(m?.threadId||m?.thread_id),sent_label_verified:true,recipient_verified:true};
+}
 Deno.serve(async(req)=>{
  if(req.method!=='POST')return J({ok:false,error:'POST_ONLY'},405);
  const url=Deno.env.get('SUPABASE_URL')||'',role=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';if(!url||!role)return J({ok:false,error:'CONFIG'},500);
@@ -26,6 +48,27 @@ Deno.serve(async(req)=>{
  let input:any={};try{input=await req.json()}catch{}const now=new Date().toISOString();
  try{
   const key=await sec(db,'COMPOSIO_API_KEY');if(!key)throw{code:'COMPOSIO_API_KEY_MISSING'};const acct=await gmailAccount(db,key);
+  const out:any[]=[];
+  async function settle(a:any,ack:{message_id:string;thread_id:string},recipient:string){
+   const proof=await readback(key,acct,ack.message_id,recipient);
+   const ev={...(a.evidence||{}),autonomous_outbound:{contract:C,provider:'composio-gmail',provider_message_id:proof.message_id,provider_thread_id:ack.thread_id||proof.thread_id,provider_ack_verified:true,provider_readback_verified:true,readback_at:new Date().toISOString(),sent_at:now,republish_forbidden:true,user_authorized:true,needs_readback:false}};
+   const{error:oe}=await db.from('powerhouse_sales_outcomes').upsert({dedupe_key:'autonomous-email-sent:'+a.action_id,action_id:a.action_id,outcome_type:'sent',subject_key:'relationship:'+a.person_key,person_key:a.person_key,company_key:a.company_key,revenue_eur:0,evidence:{contract:C,provider:'composio-gmail',provider_message_id:proof.message_id,provider_thread_id:ack.thread_id||proof.thread_id,provider_readback_verified:true},occurred_at:now,channel:'email'},{onConflict:'dedupe_key'});
+   if(oe)throw{code:'OUTCOME_WRITEBACK',message:oe.message};
+   const{data:done,error:we}=await db.from('powerhouse_sales_actions').update({status:'done',executed_at:now,evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','waiting').select('action_id').maybeSingle();
+   if(we||!done)throw{code:'VERIFIED_ACTION_WRITEBACK',message:we?.message||'ACTION_NOT_WAITING'};
+   return{action_id:a.action_id,status:'sent',provider_message_id:proof.message_id,provider_thread_id:ack.thread_id||proof.thread_id,provider_readback_verified:true};
+  }
+  // Reconcile the original action; never resend while provider outcome is uncertain.
+  if(input?.dry_run!==true){
+   const{data:pending,error:pe}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,evidence').eq('action_type','autonomous_email').eq('channel','email').eq('status','waiting').contains('evidence',{autonomous_outbound:{needs_readback:true}}).limit(10);
+   if(pe)throw{code:'PENDING_READBACK_READ',message:pe.message};
+   for(const a of pending||[]){
+    const old=a?.evidence?.autonomous_outbound||{},id=s(old.provider_message_id),to=s(a?.evidence?.recipient_email);
+    if(!id||!to){out.push({action_id:a.action_id,status:'unverified',reason:'SEND_OUTCOME_AMBIGUOUS_NO_RESEND'});continue}
+    try{out.push(await settle(a,{message_id:id,thread_id:s(old.provider_thread_id)},to))}
+    catch(e:any){out.push({action_id:a.action_id,status:'unverified',reason:safe(e)})}
+   }
+  }
   const composerResponse=await fetch(url+'/functions/v1/powerhouse-commercial-message-composer',{
     method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},
     body:JSON.stringify({limit:10,channels:['email']}),signal:AbortSignal.timeout(120000)
@@ -35,7 +78,6 @@ Deno.serve(async(req)=>{
   await db.rpc('powerhouse_refresh_message_plans_v1',{p_limit:100});
   const{data:acts,error}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,person_name,company_name,message_draft,evidence,priority').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);if(error)throw{code:'OUTREACH_READ',message:error.message};
   if(input?.dry_run===true)return J({ok:true,dry_run:true,eligible:(acts||[]).length,account_resolved:true,account_user_resolved:Boolean(acct.userId),contract:C});
-  const out:any[]=[];
   for(const a of acts||[]){
    const composer=a?.evidence?.commercial_intelligence?.composer||{};
    const strategy=s(a?.evidence?.commercial_intelligence?.message_strategy);
@@ -50,13 +92,20 @@ Deno.serve(async(req)=>{
    const{data:blocked,error:be}=await db.from('powerhouse_email_contact_suppressions').select('suppression_id,reason').eq('email',to.toLowerCase()).eq('active',true).maybeSingle();if(be)throw{code:'SUPPRESSION_READ',message:be.message};
    if(blocked){await db.from('powerhouse_sales_actions').update({status:'skipped',evidence:{...(a.evidence||{}),suppressed:{reason:blocked.reason,checked_at:now}},updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');out.push({action_id:a.action_id,status:'skipped',reason:'CONTACT_SUPPRESSED'});continue}
    const{data:claim,error:ce}=await db.from('powerhouse_sales_actions').update({status:'waiting',updated_at:now}).eq('action_id',a.action_id).eq('status','prepared').select('action_id').maybeSingle();if(ce)throw{code:'CLAIM',message:ce.message};if(!claim){out.push({action_id:a.action_id,status:'skipped',reason:'ALREADY_CLAIMED'});continue}
+   let ack:{message_id:string;thread_id:string}|null=null;
    try{
-    const r=await send(key,acct,to,sub,body),pid=r.message_id||r.thread_id;if(!pid)throw{code:'PROVIDER_ID_MISSING',provider:r.provider};
-    const ev={...(a.evidence||{}),autonomous_outbound:{contract:C,provider:'composio-gmail',provider_message_id:r.message_id,provider_thread_id:r.thread_id,provider_ack_verified:true,sent_at:now,republish_forbidden:true,user_authorized:true}};
-    const{error:we}=await db.from('powerhouse_sales_actions').update({status:'done',executed_at:now,evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','waiting');if(we)throw{code:'WRITEBACK',message:we.message};
-    await db.from('powerhouse_sales_outcomes').upsert({dedupe_key:'autonomous-email-sent:'+a.action_id,action_id:a.action_id,outcome_type:'sent',subject_key:'relationship:'+a.person_key,person_key:a.person_key,company_key:a.company_key,revenue_eur:0,evidence:{contract:C,provider:'composio-gmail',provider_message_id:r.message_id,provider_thread_id:r.thread_id},occurred_at:now,channel:'email'},{onConflict:'dedupe_key'});
-    out.push({action_id:a.action_id,status:'sent',provider_message_id:r.message_id,provider_thread_id:r.thread_id});
-   }catch(e:any){const er=safe(e);await db.from('powerhouse_sales_actions').update({status:'error',evidence:{...(a.evidence||{}),autonomous_outbound:{contract:C,failed_at:now,error:er,user_authorized:true,retryable:true}},updated_at:now}).eq('action_id',a.action_id).eq('status','waiting');out.push({action_id:a.action_id,status:'error',reason:er})}
+    ack=await send(key,acct,to,sub,body);
+    const attempted={...(a.evidence||{}),autonomous_outbound:{contract:C,provider:'composio-gmail',provider_message_id:ack.message_id,provider_thread_id:ack.thread_id,provider_ack_verified:false,provider_readback_verified:false,needs_readback:true,republish_forbidden:true,attempted_at:now}};
+    const{error:ae}=await db.from('powerhouse_sales_actions').update({evidence:attempted,updated_at:now}).eq('action_id',a.action_id).eq('status','waiting');
+    if(ae)throw{code:'ACK_CHECKPOINT_WRITEBACK',message:ae.message};
+    out.push(await settle({...a,evidence:attempted},ack,to));
+   }catch(e:any){
+    // Ambiguous provider side effect must remain claimed, never retry automatically.
+    const er=safe(e);
+    const uncertainty={...(a.evidence||{}),autonomous_outbound:{contract:C,provider:'composio-gmail',provider_message_id:ack?.message_id||null,provider_thread_id:ack?.thread_id||null,provider_ack_verified:false,provider_readback_verified:false,needs_readback:true,republish_forbidden:true,attempted_at:now,uncertainty:er}};
+    const{error:ue}=await db.from('powerhouse_sales_actions').update({status:'waiting',evidence:uncertainty,updated_at:now}).eq('action_id',a.action_id).eq('status','waiting');
+    out.push({action_id:a.action_id,status:'unverified',reason:er,checkpoint_written:!ue});
+   }
   }
   const sent=out.filter(x=>x.status==='sent').length;await db.from('bg_gezondheid').insert({gemeten_op:now,onderdeel:'powerhouse-autonomous-outreach',soort:'commercial-execution',status:sent===0||out.some(x=>x.status==='error')?'waarschuwing':'ok',detail:'selected='+(acts||[]).length+'; sent='+sent+'; errors='+out.filter(x=>x.status==='error').length,gegevens:{contract:C,selected:(acts||[]).length,sent,results:out,user_authorized:true,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null}});
   return J({ok:true,contract:C,selected:(acts||[]).length,sent,results:out,external_outreach_executed:sent>0,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null});
