@@ -76,3 +76,8 @@ entrypoint = "./functions/netlify-deploy-bridge/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-composio-linkedin-setup/index.ts"
+
+[functions.powerhouse-autonomous-outreach]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-autonomous-outreach/index.ts"
