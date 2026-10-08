@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|portal-v2|protected-trust-browser-readback-test-contract|v1",
+  "obligationId": "portal-v2-browser-proof-protected-trust-20261008-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "GitHub canonical production browser-readback plus existing authenticated portal-state",
+  "root_causes": [
+    "public/demo browser parity exercised intentionally protected compliance-governance workspace without authenticated tenant context",
+    "CSRD browser test clicked the first text-matching menu button rather than native route ID"
+  ],
+  "prevention": [
+    "assert anonymous protected route denial before any UI fixture",
+    "only isolated Playwright render-only contract test may supply synthetic state client; never use as authenticated-tenant or backend write proof",
+    "verify CSRD by native page ID and actual cockpit DOM",
+    "maintain separate required authenticated tenant E2E gate #4215"
+  ],
+  "tests": [
+    "tests/brain-portal-protected-browser-readback-writeback.test.mjs",
+    "tests/integration/portal-v2-production-full-parity.spec.js",
+    "tests/integration/portal-v2-production-legacy-algorithm-parity.spec.js",
+    "tests/integration/portal-v2-production-csrd.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-protected-browser-readback-writeback.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "AUTH_SCOPE_PARITY_MISMATCH",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected main merge",
+    "exact-SHA Netlify production deploy",
+    "actual production DOM readback",
+    "authenticated customer state/Brain readback remains OPEN in #4215"
+  ]
+}
