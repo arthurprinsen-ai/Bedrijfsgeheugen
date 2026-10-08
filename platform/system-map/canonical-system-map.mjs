@@ -53,6 +53,16 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         learning:'brain/learning/2026-10-08-self-evolving-learning-candidate-bridge-v1.json',
         regression:'tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs'
       }),
+      invariants:Object.freeze({
+        oneExistingDailyOwner:true,
+        maxThreeNewCandidatesPerRun:true,
+        candidateSourceUnique:true,
+        reviewRequired:true,
+        noAutomaticDispatch:true,
+        noInferredBusinessValue:true,
+        protectedMigrationAndProductionReadbackRequired:true
+      })
+    }),
     Object.freeze({
       id:'source-universe-impact-engine-v1',
       fingerprint:'powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1',
