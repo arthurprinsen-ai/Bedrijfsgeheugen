@@ -129,6 +129,7 @@ export function assessTuningExperiment({trial = null, observedAt = null, postCha
   const afterTotal = Number(postChange.required_total_seconds_p95);
   const baselineFailure = Number(trial.baseline?.failure_rate);
   const afterFailure = Number(postChange.failed_jobs) / Math.max(1, Number(postChange.sampled_jobs));
+  if (Number(postChange.required_failures ?? 0) > 0) return Object.freeze({status:'AWAITING_EVIDENCE',reason:'REQUIRED_FAILURE_NOT_FASTER_SUCCESS'});
   if (!eligible || !Number.isFinite(baselineTotal) || baselineTotal <= 0
     || !Number.isFinite(afterTotal) || afterTotal <= 0
     || !Number.isFinite(baselineFailure) || baselineFailure < 0) {
@@ -166,8 +167,9 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const evidenceReady = Number.isInteger(sampledJobs) && sampledJobs >= 20
     && Number(metrics.queue_wait_sample_count ?? sampledJobs) >= 10
     && Number(metrics.execution_sample_count ?? sampledJobs) >= 10
-    && Number(metrics.required_queue_sample_count ?? 1) >= 1
-    && Number(metrics.required_total_sample_count ?? 1) >= 1
+    && Number(metrics.required_queue_sample_count ?? 5) >= 5
+    && Number(metrics.required_total_sample_count ?? 5) >= 5
+    && Number(metrics.required_failures_7d ?? 0) === 0
     && ['queue_wait_seconds_p95', 'execution_seconds_p95'].every(key =>
       typeof metrics[key] === 'number' && Number.isFinite(metrics[key]) && metrics[key] >= 0);
   const observedTime = Date.parse(observedAt ?? '');
