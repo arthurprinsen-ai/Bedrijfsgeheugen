@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 
 const safe = value => String(value ?? '').replace(/\x1b\[[0-9;]*m/g, '').replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').replace(/%/g, '%25').slice(0, 420);
 
@@ -35,10 +36,16 @@ function cli() {
   const path = process.argv[2];
   if (!path) throw new Error('Usage: node tools/ci/supabase-preview-diagnosis.mjs <check-runs.json>');
   const diagnosis = diagnosePreviewCheckRuns(JSON.parse(readFileSync(path, 'utf8')));
+  // Machine-readable stdout is consumed only by the existing Required gate.
+  // Diagnostics go to stderr and cannot accidentally become a passing state.
+  const state = !diagnosis.terminal
+    ? diagnosis.code === 'PREVIEW_PROVIDER_MISSING' ? 'missing' : `pending:${diagnosis.id}`
+    : diagnosis.code === 'PREVIEW_PROVIDER_SUCCEEDED' ? `success:${diagnosis.id}` : `${diagnosis.conclusion}:${diagnosis.id}`;
+  process.stdout.write(state);
   if (diagnosis.code === 'PREVIEW_PROVIDER_SUCCEEDED' || !diagnosis.terminal) return;
   console.error('::error title=Supabase Preview ' + diagnosis.code + '::' + safe(diagnosis.remediation + ' Provider conclusion: ' + diagnosis.conclusion + '. Evidence: ' + diagnosis.summary));
   console.error('SUPABASE_PREVIEW_ROOT_CAUSE=' + diagnosis.code + '; CHECK_ID=' + diagnosis.id);
   if (diagnosis.detailsUrl) console.error('SUPABASE_PREVIEW_PROVIDER_URL=' + diagnosis.detailsUrl);
 }
 
-if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) cli();
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) cli();
