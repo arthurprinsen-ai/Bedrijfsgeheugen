@@ -168,7 +168,7 @@ test('supervisor resumes recent merged obligations without terminal truth and de
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(yaml,/Recover merged obligations missing terminal closure/);
   assert.match(yaml,/pulls\?state=closed&base=main/);
-  assert.match(yaml,/24 hours ago/);
+  assert.match(yaml,/7 days ago/);
   assert.match(yaml,/Candidate-Type: \(implementation\|recovery\|security\|dependency\|docs\|promotion\)/);
   assert.match(yaml,/Terminal-State: LIVE_BEWEZEN/);
   assert.match(yaml,/display_title==\$title/);
@@ -192,4 +192,28 @@ test('total Actions pressure opens circuit before development queue becomes a st
   assert.equal(current.allowOptionalDispatch,false);
   const projected=assessQueuePressure({queued:4,inProgress:5,projectedNewRuns:4});
   assert.equal(projected.state,'PROJECTED_OVERLOAD');
+});
+
+test('supervisor deduplicates exact-head Required runs and never references an undefined BRAIN dispatcher',()=>{
+  const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  const required=fs.readFileSync('.github/workflows/required-test.yml','utf8');
+  assert.match(required,/run-name: "Required test PR #/);
+  assert.match(required,/inputs\.head_sha/);
+  assert.match(yaml,/\.head_sha==\$head and \.event=="pull_request"/);
+  assert.match(yaml,/contains\("PR #".*\$pr.*\$head\)/);
+  assert.match(yaml,/exact-head Required test already active/);
+  assert.doesNotMatch(yaml,/dispatch_brain/);
+  assert.match(yaml,/if dispatch_required; then did_recover=1; fi/);
+  assert.match(yaml,/if \[ "\$did_recover" -eq 1 \]/);
+});
+
+test('merged production truth is retried with bounded cooldown and no invented green state',()=>{
+  const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(yaml,/7 days ago/);
+  assert.match(yaml,/prior_count.*-ge 3/);
+  assert.match(yaml,/now_epoch - last_epoch.*-lt 5400/);
+  assert.match(yaml,/deterministic failure requires targeted repair/);
+  assert.match(yaml,/terminal closure already active/);
+  assert.doesNotMatch(yaml,/Terminal-State: LIVE_BEWEZEN.*echo.*LIVE_BEWEZEN/);
+  assert.match(yaml,/workflow run obligation-terminal-closure\.yml --ref main -f pr_number=/);
 });
