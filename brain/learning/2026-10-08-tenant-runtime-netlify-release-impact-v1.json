@@ -1,0 +1,39 @@
+{
+  "id": "tenant-runtime-netlify-release-impact-20261008-v1",
+  "fingerprint": "missing-netlify-deploy-on-transitive-tenant-ai-runtime-change-v1",
+  "compiler": {
+    "failure_class": "FALSE_PRODUCTION_COMPLETION",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Shared AI runtime modules transitively imported by netlify/functions/tenant-ai-inference.mjs were classified only under backend and excluded from required Netlify deployment; the previous production release readback incorrectly returned not_applicable.",
+  "prevention": [
+    "Classify each known Netlify-transitive AI runtime dependency as deploy-required without treating customer-local-only code as hosted",
+    "Run an executable regression against the delivery applicability helper before approving production completion",
+    "Release the server-owned tenant inference function and require a new exact-sha Netlify deploy and release readback",
+    "Preserve no-fallback, server-only proof authority and bounded registry parsing"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-netlify-release-impact-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-tenant-ai-netlify-release-impact-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-tenant-ai-netlify-release-impact-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-tenant-ai-netlify-release-impact-v1.test.mjs"
+    ],
+    "source": [
+      "tools/delivery/netlify-deployment-applicability.mjs",
+      "netlify/functions/tenant-ai-inference.mjs"
+    ],
+    "outcome": "Backend runtime dependency now triggers hosted release, final Netlify production proof pending"
+  }
+}
