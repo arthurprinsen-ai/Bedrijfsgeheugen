@@ -1,0 +1,39 @@
+{
+  "id": "autonomous-outreach-supabase-scope-20261008-v1",
+  "fingerprint": "supabase-edge-outreach-runtime-undeclared-function-v1",
+  "compiler": {
+    "failure_class": "CONFIG_DECLARATION_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Main release changed a Supabase Edge Function but the function was not registered in supabase/config.toml; protected production authority rejected undeclared powerhouse-autonomous-outreach and left no deploy/readback artifact.",
+  "prevention": [
+    "Ensure every changed Edge Function is declared in canonical supabase/config.toml",
+    "Verify production scope resolver includes the declared slug",
+    "Verify custom x-powerhouse-token scheduler authorization happens before outbound send"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-outreach-supabase-scope.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-autonomous-outreach-supabase-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-autonomous-outreach-supabase-scope.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-autonomous-outreach-supabase-scope.test.mjs"
+    ],
+    "source": [
+      "supabase/config.toml",
+      "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+      "tools/supabase/edge-runtime-scope.mjs"
+    ],
+    "outcome": "Outreach function is declared for protected production authority; successful live deploy and readback remain to be verified."
+  }
+}
