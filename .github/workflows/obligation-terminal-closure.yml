@@ -345,7 +345,9 @@ jobs:
           supabase_edge_required="$(jq -r '.edge' <<<"$scope_json")"
           other_runtime_required="$(jq -r '.other' <<<"$scope_json")"
           non_runtime="$(jq -r '.non_runtime' <<<"$scope_json")"
-          if [ "${DELIVERY_LANE}" = "automation" ] && [ "$non_runtime" = true ]; then
+          # Non-runtime scope is independent of the PR's delivery lane: backend
+          # CI/governance changes require exact GitHub main containment, not Netlify.
+          if [ "$non_runtime" = true ]; then
             git fetch origin main --no-tags
             observed_sha="$(git rev-parse origin/main)"
             git merge-base --is-ancestor "${MERGE_SHA}" "${observed_sha}" || {
@@ -357,7 +359,7 @@ jobs:
             echo "observed_sha=${MERGE_SHA}" >> "$GITHUB_OUTPUT"
             echo "deploy_id=" >> "$GITHUB_OUTPUT"
             echo "verified=true" >> "$GITHUB_OUTPUT"
-            echo "AUTOMATION_MAIN_READBACK_PROVEN:merge=${MERGE_SHA} contained_by=${observed_sha}"
+            echo "NON_RUNTIME_MAIN_READBACK_PROVEN:lane=${DELIVERY_LANE} merge=${MERGE_SHA} contained_by=${observed_sha}"
             exit 0
           fi
 
