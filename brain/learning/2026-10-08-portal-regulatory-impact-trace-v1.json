@@ -21,7 +21,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/regulatory-context-trace.test.mjs"
+      "tests/brain-regulatory-context-trace.test.mjs"
     ]
   },
   "compiler": {
