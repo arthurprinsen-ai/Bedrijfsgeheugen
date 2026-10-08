@@ -2,6 +2,16 @@ import { dependencyTargets } from './legacy-dependency-contract.js';
 import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
 import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
 import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
+import { PORTAL_PAGE_INDEX } from './page-registry.js';
+
+// A page remains a first-class causal node even if no legacy calculator consumes it.
+const REGISTERED_PAGES=Object.freeze(new Set(Object.keys(PORTAL_PAGE_INDEX)));
+const OBSERVATION_SURFACES=Object.freeze(['overzicht','advies','wijzigingen','audittrail','learning-writeback','powerhouse-control-center']);
+const REVIEW_RULES=Object.freeze([
+  {pattern:/^portal\.(?:data-ai-passport|dataAi|aiScan|aiCapabilities|ai-capabilities|ai-technologie-actueel|koppelingen|trust-center|eu-ai-act-audit|csrd-impact|instellingen)(?:\.|$)/,domains:['ai-runtime','data-residency','privacy-security','supplier','finance','csrd-esrs'],pages:['data-ai-passport','koppelingen','trust-center','compliance-governance','csrd-impact','businesscase','roadmap','data-ai','ai-capabilities','powerhouse-control-center','wet-regelgeving']},
+  {pattern:/^portal\.(?:wet-regelgeving|bronnenbibliotheek|bronnenstatus|compliance-command-center)(?:\.|$)/,domains:['regulatory','privacy-security','csrd-esrs'],pages:['compliance-governance','csrd-impact','due-diligence','roadmap','advies']},
+  {pattern:/^portal\.(?:metrics|valueFinance|waarde-financiering|businesscase|billing)(?:\.|$)/,domains:['finance','impact-economics'],pages:['businesscase','waarde-financiering','csrd-impact','roadmap']}
+]);
 
 const CALCS=Object.freeze([
   ['manual-work-annual','money'],['dimension-cost-total','money'],['dimension-potential-total','money'],
@@ -71,11 +81,28 @@ function downstreamDependencyClosure(seedPages=[]){
 }
 
 const n=v=>Number.isFinite(Number(v))?Number(v):null;
-const stable=v=>v&&typeof v==='object'?JSON.stringify(v):String(v??'');
+const canonical=v=>Array.isArray(v)?v.map(canonical):v&&typeof v==='object'
+  ?Object.fromEntries(Object.keys(v).sort().map(key=>[key,canonical(v[key])])):v;
+const stable=v=>v===undefined?'undefined':JSON.stringify(canonical(v));
 function safe(id,state){try{return calc(id,state)}catch{return null}}
 function valueChanged(a,b){
   if(typeof a==='number'||typeof b==='number'){const aa=n(a),bb=n(b);return aa!==bb}
   return stable(a)!==stable(b);
+}
+function pathValue(root,path){
+  return String(path||'').split('.').filter(Boolean).reduce((value,key)=>value&&typeof value==='object'?value[key]:undefined,root);
+}
+function mutationChanged(path,before,after){
+  const leafBefore=pathValue(before,path),leafAfter=pathValue(after,path);
+  if(leafBefore!==undefined||leafAfter!==undefined)return valueChanged(leafBefore,leafAfter);
+  // Parent-level patch/remove operations can invalidate a leaf without materializing it.
+  const segments=String(path||'').split('.').filter(Boolean);
+  const parent=segments.slice(0,2).join('.');
+  return valueChanged(pathValue(before,parent),pathValue(after,parent));
+}
+function reviewForPath(path){
+  const matches=REVIEW_RULES.filter(rule=>rule.pattern.test(String(path)));
+  return {domains:[...new Set(matches.flatMap(rule=>rule.domains))],pages:[...new Set(matches.flatMap(rule=>rule.pages))]};
 }
 function closure(source){
   const seen=new Set([source]);const queue=[source];
@@ -88,7 +115,9 @@ function closure(source){
 }
 export function sourcePageForPath(path=''){
   const parts=String(path).split('.').filter(Boolean);
-  return parts[0]==='portal' ? (SECTION_PAGE[parts[1]]||null) : null;
+  if(parts[0]!=='portal')return null;
+  const candidate=parts[1]==='pages'?parts[2]:parts[1];
+  return SECTION_PAGE[candidate]|| (REGISTERED_PAGES.has(candidate)?candidate:null);
 }
 export function calculateImpactSnapshot(state={}){
   const calculations=Object.fromEntries(CALCS.map(([id])=>[id,safe(id,state)]));
@@ -114,10 +143,13 @@ export function impactForMutation({path,before={},after={}}={}){
     valueBefore:beforeSnap.summary.waardePerJaar,valueAfter:afterSnap.summary.waardePerJaar
   });
   const rules=ruleEffects(path);
+  const review=reviewForPath(path);
+  const rawChanged=mutationChanged(path,before,after);
+  const mappingStatus=sourcePage?'MAPPED':'REVIEW_REQUIRED';
   const calculationPages=calculationConsumerPages(changes);
-  const seeds=[...(sourcePage?closure(sourcePage):[]),...calculationPages,...rules.flatMap(rule=>rule.targets)];
+  const seeds=[...(sourcePage?closure(sourcePage):[]),...calculationPages,...rules.flatMap(rule=>rule.targets),...review.pages,...OBSERVATION_SURFACES];
   const dependencyPages=downstreamDependencyClosure(seeds);
-  const affectedPages=[...new Set([...dependencyPages,'overzicht','advies','eindconclusie'])];
+  const affectedPages=[...new Set([...dependencyPages,'overzicht','advies','eindconclusie'].filter(page=>REGISTERED_PAGES.has(page)))];
   const effectDetails=affectedPages.map(page=>Object.freeze({
     page,label:PAGE_EFFECT_LABELS[page]||page,
     viaCalculation:changes.filter(change=>(CALCULATION_CONSUMERS[change.id]||[]).includes(page)).map(change=>change.id),
@@ -130,7 +162,11 @@ export function impactForMutation({path,before={},after={}}={}){
     changes:Object.freeze(changes),advice,
     effectRules:Object.freeze(rules.map(rule=>Object.freeze({...rule,targets:Object.freeze([...rule.targets])}))),
     effectDetails:Object.freeze(effectDetails),
-    changed:Boolean(changes.length||advice.added.length||advice.removed.length||advice.totalBefore!==advice.totalAfter||advice.valueBefore!==advice.valueAfter)
+    mappingStatus,
+    reviewDomains:Object.freeze(review.domains),
+    externalExecutionAuthorized:false,
+    evidenceStatus:'OBSERVED_NOT_VERIFIED',
+    changed:Boolean(rawChanged||changes.length||advice.added.length||advice.removed.length||advice.totalBefore!==advice.totalAfter||advice.valueBefore!==advice.valueAfter)
   });
 }
-export const PORTAL_IMPACT_ENGINE_VERSION='2026-09-18-v3-whole-portal-causal';
+export const PORTAL_IMPACT_ENGINE_VERSION='2026-10-08-v4-one-brain-all-pages';

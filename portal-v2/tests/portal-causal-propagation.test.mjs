@@ -39,3 +39,31 @@ test('portal shell reacts to causal mutation and confirmed Brain sync without re
   assert.match(shell,/current!==impact\.sourcePage/);
   assert.match(shell,/bg:portal-overview-refresh/);
 });
+
+test('cloud/AI/CSRD impact is persisted in same canonical input metadata, not only rendered in browser',async()=>{
+  let state={portal:{'data-ai-passport':{residency:'eu-central-1'}}};
+  const stored=[];
+  const client={load:async()=>({state}),write:async next=>({mode:'authenticated',state:state=structuredClone(next)}),authHeaders:async()=>({authorization:'Bearer test'}),isDemo:()=>false,currentUser:()=>({id:'user-1'})};
+  const domain=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async input=>{stored.push(input);return {stored:true,sourceRevision:'revision-1'}}});
+  await domain.init();
+  domain.set('portal.data-ai-passport.residency','eu-west-1');
+  await domain.flush();
+  const impact=stored[0].metadata.causalImpacts[0];
+  assert.equal(impact.mappingStatus,'MAPPED');
+  assert.ok(impact.reviewDomains.includes('csrd-esrs'));
+  assert.ok(impact.affectedPages.includes('csrd-impact'));
+  assert.equal(impact.externalExecutionAuthorized,false);
+  assert.equal(impact.evidenceStatus,'OBSERVED_NOT_VERIFIED');
+});
+
+test('missing canonical business input acknowledgement never silently clears pending impact',async()=>{
+  let state={portal:{koppelingen:{provider:'A'}}};
+  let attempts=0;
+  const client={load:async()=>({state}),write:async next=>({mode:'authenticated',state:state=structuredClone(next)}),authHeaders:async()=>({authorization:'Bearer test'}),isDemo:()=>false,currentUser:()=>({id:'user-1'})};
+  const domain=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async()=>{attempts++;return attempts===1?{stored:false}:{stored:true,sourceRevision:'revision-2'}}});
+  await domain.init();
+  domain.set('portal.koppelingen.provider','B');
+  await assert.rejects(domain.flush(),/CANONICAL_BUSINESS_INPUT_ACK_REQUIRED/);
+  await domain.flush();
+  assert.equal(attempts,2,'unacknowledged impact must be retried');
+});
