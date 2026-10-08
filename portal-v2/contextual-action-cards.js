@@ -135,7 +135,7 @@ export function buildContextualActionCards(state={},options={}) {
   const externalEvents=get(state,'portal.external.regulatoryEvents');
   const events=[
     ...(Array.isArray(directEvents)?directEvents.map(event=>({event,eventSourcePath:'portal.regulatory.events'})):[]),
-    ...(Array.isArray(externalEvents)?externalEvents.map(event=>({event,eventSourcePath:'portal.external.regulatoryEvents'})):[]
+    ...(Array.isArray(externalEvents)?externalEvents.map(event=>({event,eventSourcePath:'portal.external.regulatoryEvents'})):[])
   ];
   for(const {event,eventSourcePath} of events){
     if(!event||typeof event!=='object'||!present(event.id)&&!present(event.title))continue;
