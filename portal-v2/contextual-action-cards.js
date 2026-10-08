@@ -12,7 +12,7 @@ const RELEVANT_PAGES = Object.freeze([
   'compliance-governance','ai-capabilities','wet-regelgeving','csrd-impact',
   'cijfers-maatstaven','waarde-financiering','businesscase','due-diligence',
   'advies','roadmap','actieve-acties','taken-werkstromen','eindconclusie',
-  'branche-markt','omgevingsradar','onderzoek'
+  'branche-markt','omgevingsradar','onderzoek','profiel','bedrijfssituatie','ai-scan','strategiemodellen','strategie-naar-maandagochtend','canvassen','wijzigingen','documenten','herstel-continuiteit','exit','audit','outcomes-evidence','os:impact-engine','os:scenario-simulator','portfolio-control'
 ]);
 export const CONTEXTUAL_ACTION_PAGES = RELEVANT_PAGES;
 
@@ -121,9 +121,14 @@ export function buildContextualActionCards(state={},options={}) {
     'De grootste klant vertegenwoordigt '+largest+'% volgens de invoer. De grens van 30% is een attentiewaarde.',
     'Bereken scenario bij klantverlies en plan concentratiereductie.',FINANCE));
   const dso=numeric(get(state,'portal.metrics.dso'));
-  if(dso!==null&&dso>60)item(cards,card('cash-collection','Debiteurentermijn analyseren','P2','portal.metrics.dso',dso,
-    'Ingevoerde DSO '+dso+' dagen; toets dit tegen contractafspraken en branche. Nog geen vastgesteld kasstroomverlies.',
-    'Verbeter debiteurenproces en bereken werkkapitaalimpact met gevalideerde omzet.',FINANCE));
+  if(dso!==null&&dso>60){
+    const revenue=numeric(get(state,'portal.metrics.revenue'));
+    const illustration=revenue!==null&&revenue>0?Math.round(revenue*1000*(dso-60)/365):null;
+    const extra=illustration===null?{}:{financialImpact:Object.freeze({status:'SCENARIO_ONLY',amount:illustration,unit:'EUR_WORKING_CAPITAL',label:'Wat-als: werkkapitaal bij DSO 60 dagen',reason:'Indicatieve omzet × DSO-verkorting / 365, geen gerealiseerde kasstroom of winst.'})};
+    item(cards,card('cash-collection','Debiteurentermijn analyseren','P2','portal.metrics.dso',dso,
+      'Ingevoerde DSO '+dso+' dagen; toets dit tegen contractafspraken en branche. Nog geen vastgesteld kasstroomverlies.',
+      'Verbeter debiteurenproces en bereken werkkapitaalimpact met gevalideerde omzet.',FINANCE,extra));
+  }
   const events=get(state,'portal.regulatory.events')||get(state,'portal.external.regulatoryEvents')||[];
   if(Array.isArray(events))for(const event of events){
     if(!event||typeof event!=='object'||!present(event.id)&&!present(event.title))continue;
