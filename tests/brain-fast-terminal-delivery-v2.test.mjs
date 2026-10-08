@@ -42,7 +42,11 @@ test('terminal closure requires exact-head critical gates before LIVE_BEWEZEN', 
   assert.match(workflow,/require_workflow "required-test\.yml" "Required"/);
   assert.match(workflow,/require_brain_evidence\(\)/);
   assert.match(workflow,/actions\/workflows\/unified-brain-delivery\.yml\/runs/);
-  assert.match(workflow,/require_workflow "powerhouse-codeql\.yml" "Powerhouse-CodeQL"/);
+  assert.match(workflow,/require_workflow "codeql\.yml" "Powerhouse-CodeQL"/);
+  assert.doesNotMatch(workflow,/require_workflow "powerhouse-codeql\.yml" "Powerhouse-CodeQL"/);
+  const codeql=await readFile(".github/workflows/codeql.yml","utf8");
+  assert.match(codeql,/^name: Powerhouse CodeQL$/m);
+  assert.match(codeql,/github\/codeql-action\/analyze@v4/);
   assert.match(workflow,/TERMINAL_CRITICAL_GATE_FAILED/);
 });
 
