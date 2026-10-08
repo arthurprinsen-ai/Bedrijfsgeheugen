@@ -20,3 +20,5 @@ The first exact repair head was intentionally rejected by Required test with `IN
 ## Completion boundary
 
 This change is not considered live from source or CI alone. Completion requires protected merge, production Edge-function deployment/readback, one safe reconciled rerun, and current predictive-health evidence. The canonical obligation remains open until that chain is proven.
+
+The exact five-file PR scope is declared in the canonical delivery contract so fresh CI evaluates the current candidate rather than the earlier two-file head.
