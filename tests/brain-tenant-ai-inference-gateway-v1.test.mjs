@@ -59,7 +59,26 @@ test('provider error never silently falls back to an alternative model',async()=
   request:req({question:'Hello'}),user,tenantId,sovereignty,registry,proofKey:key,now,
   fetchFn:async()=>{calls++;return {ok:false,status:500,json:async()=>({})};}
  });
- assert.equal(response.status,409);
- assert.deepEqual(await response.json(),{error:'AI_RUNTIME_NOT_VERIFIED'});
+ assert.equal(response.status,502);
+ assert.deepEqual(await response.json(),{error:'AI_RUNTIME_PROVIDER_FAILED'});
  assert.equal(calls,1);
+});
+
+test('open cross-domain CSRD/privacy review blocks AI activation even with a valid provider proof',async()=>{
+ let calls=0;const reviewPending={get:async()=>({snapshot:{policy:{
+  ai_deployment_profile:profile,policy_version:3,enforcement_mode:'OBSERVE',
+  last_change_impact:{status:'REVIEW_REQUIRED',deploymentApproved:false}
+ },violations:[]}})};
+ const res=await handleTenantAiInference({
+  request:req({question:'Hello'}),user,tenantId,sovereignty:reviewPending,registry,proofKey:key,now,
+  fetchFn:async()=>{calls++;throw Error('must remain blocked')}
+ });
+ assert.equal(res.status,409);
+ assert.deepEqual(await res.json(),{error:'CROSS_DOMAIN_REVIEW_REQUIRED'});
+ assert.equal(calls,0);
+});
+test('oversized text body is rejected without parsing or sending to a provider',async()=>{
+ let calls=0;const input={method:'POST',headers:{get:()=>null},text:async()=>JSON.stringify({question:'x'.repeat(14000)})};
+ const res=await handleTenantAiInference({request:input,user,tenantId,sovereignty,registry,proofKey:key,now,fetchFn:async()=>{calls++;return null}});
+ assert.equal(res.status,413);assert.equal(calls,0);
 });
