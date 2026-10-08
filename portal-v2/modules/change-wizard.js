@@ -42,6 +42,7 @@ export function buildChange(draft={},currentLevel=0){
     owner:String(draft.owner||'').trim(),
     effectiveDate:draft.effectiveDate||'',
     impact:capabilityImpact(draft.dimension).capabilities.length,
+    impactSemantics:'affected_capability_count',
     status:'Open',
     proposedAt:new Date().toISOString().slice(0,10)
   };
@@ -59,10 +60,12 @@ export async function saveChangeProposal(domainState,change){
   if(!domainState?.get||!domainState?.set||!domainState?.flush)throw new TypeError('CANONICAL_CHANGE_STATE_REQUIRED');
   const existing=domainState.get('portal.changes.items')||[];
   const items=Array.isArray(existing)?existing:[];
-  domainState.set('portal.changes.items',[...items,change]);
+  const same=(entry)=>entry?.dimension===change.dimension&&entry?.toLevel===change.toLevel&&entry?.owner===change.owner&&entry?.reason===change.reason&&entry?.effectiveDate===change.effectiveDate&&!['Geborgd','Afgerond'].includes(entry?.status);
+  const alreadyPresent=items.some(same);
+  if(!alreadyPresent)domainState.set('portal.changes.items',[...items,change]);
   await domainState.flush();
-  if(domainState.status?.()!=='saved')throw new Error('CHANGE_WIZARD_BRAIN_ACK_PENDING');
-  return change;
+  if(!['saved','idle'].includes(domainState.status?.()))throw new Error('CHANGE_WIZARD_BRAIN_ACK_PENDING');
+  return Object.freeze({...change,alreadyPresent});
 }
 
 export function mountChangeWizard(root,{domainState,onSaved}={}){
