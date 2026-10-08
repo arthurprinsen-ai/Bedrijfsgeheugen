@@ -43,6 +43,7 @@ async function fetchJobRows(runs, concurrency = 8) {
         const completed = job.completed_at ? Date.parse(job.completed_at) : null;
         rows.push({
           run_id: run.id,
+          run_created_at:run.created_at,
           head_sha: run.head_sha,
           workflow: run.name,
           event: run.event,
@@ -122,7 +123,7 @@ const requiredQueueSeconds = requiredRuns.map(run => {
   return starts.length ? Math.min(...starts) : null;
 }).filter(Number.isFinite);
 const requiredTotals = requiredRuns
-  .map(run => run.status === 'completed' && run.updated_at
+  .map(run => run.status === 'completed' && run.conclusion === 'success' && run.updated_at
     ? Math.max(0, Math.round((Date.parse(run.updated_at) - Date.parse(run.created_at)) / 1000))
     : null)
   .filter(Number.isFinite);
@@ -207,6 +208,32 @@ const baseReport = {
     safety_gates_may_not_be_auto_weakened: true,
   },
   jobs: jobRows,
+};
+
+// Existing tuning config is the experiment authority; never invent a separate store.
+const tuningState=JSON.parse(await readFile('config/powerhouse-engineering-tuning.json','utf8'));
+const trialStart=tuningState.tuning_trial?.status==='PENDING'
+  ? Date.parse(tuningState.tuning_trial.started_at ?? '') : NaN;
+const trialJobs=Number.isFinite(trialStart)
+  ? jobRows.filter(row=>Date.parse(row.run_created_at ?? '')>=trialStart) : [];
+const trialRequired=Number.isFinite(trialStart)
+  ? requiredRuns.filter(run=>Date.parse(run.created_at)>=trialStart && run.status==='completed' && run.conclusion==='success') : [];
+const trialRequiredFailures=Number.isFinite(trialStart)
+  ? requiredRuns.filter(run=>Date.parse(run.created_at)>=trialStart && run.status==='completed' && run.conclusion==='failure').length : 0;
+const trialRequiredTotals=trialRequired.map(run=>
+  Number.isFinite(Date.parse(run.updated_at ?? ''))
+    ? Math.max(0,Math.round((Date.parse(run.updated_at)-Date.parse(run.created_at))/1000))
+    : null).filter(Number.isFinite);
+baseReport.post_change={
+  started_at:Number.isFinite(trialStart)?new Date(trialStart).toISOString():null,
+  sampled_jobs:trialJobs.length,
+  queue_sample_count:trialJobs.filter(row=>Number.isFinite(row.queue_seconds)).length,
+  required_count:trialRequiredTotals.length,
+  required_failures:trialRequiredFailures,
+  required_total_seconds_p95:trialRequiredTotals.length?p95(trialRequiredTotals):null,
+  failed_jobs:trialJobs.filter(row=>row.conclusion==='failure').length,
+  source:'github_observed_jobs_for_current_tuning_trial',
+  attribution:'observational_only'
 };
 
 const calibrationPolicy = JSON.parse(await readFile('config/powerhouse-ci-calibration-v1.json','utf8'));

@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|ci-optimization|measured-outcome-feedback|v1",
+  "obligationId": "powerhouse-ci-tuning-outcome-feedback-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The existing autonomous engineering tuner can propose bounded performance changes but had no measured post-change evaluation or safe reversion for a demonstrated regression; successive tuning decisions could compound unnoticed mistakes.",
+  "failureModes": [
+    "no before/after evidence chain for daily CI tuning",
+    "upward tuning without post-change Required and job samples",
+    "observable regression leaves deteriorated knobs in canonical tuning configuration"
+  ],
+  "prevention": [
+    "persist previous tuning and exact observed baseline in existing canonical config",
+    "measure actual post-change GitHub job and Required timing samples, not all historical jobs",
+    "require 30-hour minimum observation horizon, 20 post-change jobs, 5 Required runs, 10 queue samples",
+    "close with observational no-regression evidence or safely revert prior knobs through existing protected tuning PR",
+    "never claim causality, revenue effect or improved speed without verified outcome"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "baseline_comparison": "Prior optimizer only enforced a 30-hour upward cooldown, without comparing post-change job and Required p95 against the saved baseline.",
+    "success_metric": "Measured before/after CI p95 and job failure rate with eligibility counts and automatic rollback on observed regression.",
+    "limitations": "Comparing time windows is observational and may be confounded by workload, provider pressure or unrelated changes.",
+    "rollback": "protected revert if the new tracker itself causes CI failure, or the tuning experiment restores its saved previous bounded values"
+  },
+  "evidence": {
+    "source_paths": [
+      "scripts/brain/autonomous-engineering-fabric-v3.mjs",
+      "scripts/brain/powerhouse-ci-intelligence.mjs"
+    ],
+    "test_paths": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "provider_validation": "PENDING_CI",
+    "business_value": "NOT_YET_MEASURED",
+    "supabase_writeback": "NOT_CLAIMED"
+  }
+}
