@@ -33,7 +33,7 @@ export function verifyLocalRuntimeProof({signed,key,tenantId,useCaseId,policyVer
   ?Buffer.from(signed.signature,'hex'):null;
  if(!sig||!timingSafeEqual(sig,digest(signed.receipt,key)))reject('LOCAL_PROOF_SIGNATURE_INVALID');
  const p=validateCustomerAiDeployment(profile),r=signed.receipt;
- if(!['ON_PREMISE','AIR_GAPPED'].includes(p.deploymentMode)||!['OLLAMA','VLLM'].includes(p.provider)
+ if(!validId(p.modelId)||!['ON_PREMISE','AIR_GAPPED'].includes(p.deploymentMode)||!['OLLAMA','VLLM'].includes(p.provider)
   ||p.computeRegion!=='LOCAL'||p.storageRegion!=='LOCAL'
   ||!['LOCAL','SAME_AS_STORAGE'].includes(p.ragRegion))reject('LOCAL_PROFILE_REQUIRED');
  if(r.tenantId!==tenantId||r.useCaseId!==useCaseId||!validId(tenantId)||!validId(useCaseId))
