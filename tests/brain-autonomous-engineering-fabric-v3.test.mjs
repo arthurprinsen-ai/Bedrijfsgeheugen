@@ -190,7 +190,7 @@ test('unobserved runner performance cannot trigger speculative or parallel auto-
 test('legitimate skipped lanes never masquerade as consumed runner time',()=>{
   const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,ci:{direct_pr_workflow_budget:8},safety:{}};
   const result=optimizeDailyTuning({metrics:{
-    queue_wait_seconds_p95:40,required_queue_wait_seconds_p95:40,required_total_seconds_p95:100,
+    queue_wait_seconds_p95:10,required_queue_wait_seconds_p95:10,required_total_seconds_p95:100,
     execution_seconds_p95:100,failed_jobs:0,skipped_jobs:45,sampled_jobs:50,
     workflow_fanout_per_sha_p95:3,direct_pull_request_workflow_count:8
   },current});
