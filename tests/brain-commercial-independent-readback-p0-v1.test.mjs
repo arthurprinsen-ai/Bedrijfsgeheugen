@@ -26,7 +26,7 @@ test('provider side effect with unknown completion never auto-retries',()=>{
 
 test('side effect ID is checkpointed before readback and outcome before done',()=>{
  const ack=sender.indexOf("code:'ACK_CHECKPOINT_WRITEBACK'");
- const settle=sender.indexOf('out.push(await settle(');
+ const settle=sender.indexOf('out.push(await settle(',ack);
  const writeOutcome=sender.indexOf("const{error:oe}=await db.from('powerhouse_sales_outcomes')");
  const writeDone=sender.indexOf("const{data:done,error:we}=await db.from('powerhouse_sales_actions')");
  assert.ok(ack>=0&&settle>ack);
