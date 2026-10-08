@@ -13,3 +13,12 @@
 - The complete SQL migration was executed in a single **BEGIN → CREATE OR REPLACE functions → SELECT output assurance → ROLLBACK** transaction. No production DDL/data was changed and the isolated preview was not permanently changed by this dry-run.
 - The runtime returned `contract=powerhouse-commercial-output-assurance-v3`, `commercial_day_proven=false`, `commercial_day_state=OPEN_NO_PROVEN_ACTION`, `provider_proof=[]`, `provider_proven_email=0`, `provider_proven_social=0`, `provider_proven_publications=0`, `healthy=false` for the empty preview business date. This confirms the fail-closed zero-output branch compiles and executes on Postgres.
 - Caveat: the **Supabase GitHub provider check** on PR #4114 HEAD `8c21a239d5db3697e84919db5299c12836a36395` was still `skipped` because the Git branch was not associated with a provider-managed preview, despite the manually created isolated database of the same name. A successful dry-run is not a replacement for the required provider-owned preview status. Keep protected delivery OPEN until the association and exact-HEAD check are verified.
+
+## Root-cause expansion: fresh Supabase preview migration replay
+
+- Managed Supabase GitHub preview was linked to exact Git branch and push workflow `ac0772bca9a548db8134201a11ac3c2d` ran.
+- Provider migration step returned `DEAD`, first actual error: `20261007063440_bound_commercial_identity_graph_runtime_v2.sql` attempted `ALTER TABLE public.powerhouse_identity_graph_v1` but table was missing (`42P01`).
+- Production has the canonical table populated (47,826 identifiers), RLS enabled, service-role-only policy and grants. No previous repository migration recreates that table before the dependent ALTER.
+- Added an **additive, CLI-generated and dependency-ordered** baseline migration at `20261007063438_powerhouse_identity_graph_replay_baseline_v1.sql`. It reconstructs exact production schema, indexes, RLS, service-only grants and policy with idempotent no-op guards for existing production table; no data copy, migration ledger mutation, bypass or branch replacement.
+- SQL replay validated on the isolated preview inside `BEGIN ... ROLLBACK`: table_present=true, rls_enabled=true, policy_count=1. This dry-run does not replace the official Supabase Preview GitHub check.
+- New regression test verifies the baseline precedes its dependent migration and fails closed on absent RLS/service-only scope.
