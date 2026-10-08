@@ -1,0 +1,52 @@
+{
+  "version": "commercial-gmail-independent-readback-p0-v1",
+  "fingerprint": "commercial|outbound|independent-gmail-readback|no-duplicate-retry|v1",
+  "date": "2026-10-08",
+  "issue": 4198,
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "severity": "P0",
+  "root_cause": [
+    "The existing sender set provider_ack_verified true on COMPOSIO GMAIL_SEND_EMAIL success without independent Gmail readback.",
+    "An ambiguous provider send, missing message ID, or post-send write failure was converted to retryable error, potentially duplicating an external side effect."
+  ],
+  "repair": [
+    "Reuse one existing Powerhouse Gmail executor and sales action/outcome tables; no new scheduler or sender.",
+    "Fetch Gmail message independently by exact provider ID, verify SENT label and To header matches the authorized recipient.",
+    "Checkpoint the provider message ID before readback. An ambiguous side effect remains waiting and republish-forbidden; bounded later runs reconcile this same action without resending.",
+    "Upsert outcome by existing action-key before marking action done. Zero verified sends still degrade the health signal."
+  ],
+  "safety": [
+    "No synthetic sends or inferred consent",
+    "No direct-send on uncertain provider state",
+    "Do not count publication SLA as recipient outreach",
+    "No fabricated replies, meetings, revenue or model learning"
+  ],
+  "evaluations": {
+    "historical_replay": [
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_PROVIDER_ACK_FALSE_GREEN_AND_DUPLICATE_RISK",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_proof_required": [
+    "exact-head Required/CodeQL and applicable Supabase Preview",
+    "protected merge and exact production Edge runtime readback",
+    "real authorized recipient send with independent provider SENT readback",
+    "independent downstream result and learning lineage, otherwise keep P0 open"
+  ],
+  "current_truth": {
+    "fallback_live_proven": true,
+    "public_publication_sla_proven": true,
+    "recipient_delivery_proven": false,
+    "full_commercial_loop_proven": false
+  },
+  "prevention": "Provider send ACK is not delivered proof; always reconcile exact external ID without duplicate side effects. Unknown measurements never become green."
+}
