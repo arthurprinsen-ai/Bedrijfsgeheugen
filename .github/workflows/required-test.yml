@@ -1,4 +1,6 @@
 name: Required test
+# Stable logical-flight identity for native PR and recovery-dispatched runs.
+run-name: Required test PR #${{ inputs.pr_number || github.event.pull_request.number || 'merge-group' }} ${{ inputs.head_sha || github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
 
 on:
   pull_request:
