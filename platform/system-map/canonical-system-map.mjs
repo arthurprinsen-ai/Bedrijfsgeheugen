@@ -1782,3 +1782,25 @@ export const COMMERCIAL_OUTBOUND_READBACK_P0_V1 = Object.freeze({
    downstreamMeasurementsNotInferred:true
  })
 });
+
+export const COMMERCIAL_RECIPIENT_AUTHORITY_P0_V1 = Object.freeze({
+ fingerprint:'commercial|gmail|trusted-crm-recipient-approval|read-only-dry-run|v1',
+ issue:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+ owner:'ONE BRAIN / powerhouse-autonomous-outreach',
+ canonicalExecutor:'supabase/functions/powerhouse-autonomous-outreach/index.ts',
+ canonicalContactAuthority:'public.bg_connecties',
+ canonicalActionAuthority:'public.powerhouse_sales_actions',
+ regression:'tests/brain-commercial-recipient-authority-p0-v1.test.mjs',
+ safety:Object.freeze({
+  recipientMatchesActionAndCrm:true,
+  affirmativePreparedActionApproval:true,
+  affirmativeTrustedCrmApproval:true,
+  unknownApprovalFailClosed:true,
+  providerDispatchRequiresAuthorityBeforeClaim:true,
+  missingPermissionIsTypedNonTerminalHold:true,
+  dryRunNeverInvokesComposerOrProvider:true,
+  preserveSuppressionPressureCooldownQualityAndIndependentReadback:true,
+  zeroPreparedEmailDoesNotProveSent:true,
+  publicPublicationCannotProveRecipientOutreach:true
+ })
+});
