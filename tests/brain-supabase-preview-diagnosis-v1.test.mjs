@@ -1,5 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { diagnosePreviewCheckRuns } from '../tools/ci/supabase-preview-diagnosis.mjs';
 
 const check = (id, conclusion, summary, status = 'completed') => ({
@@ -38,4 +42,30 @@ test('does not confuse GitHub-authored lookalike checks with provider-owned proo
 test('migration drift and authorization failures produce actionable failure categories', () => {
   assert.equal(diagnosePreviewCheckRuns({check_runs:[check(106,'failure','remote migration versions mismatch with local migration history')]}).code, 'MIGRATION_HISTORY_DRIFT');
   assert.equal(diagnosePreviewCheckRuns({check_runs:[check(107,'failure','permission denied for schema public')]}).code, 'PREVIEW_PROVIDER_AUTHORIZATION');
+});
+
+test('Required references exactly one provider diagnosis authority and bounded skipped grace', () => {
+  const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
+  assert.match(workflow, /node tools\/ci\/supabase-preview-diagnosis\.mjs \/tmp\/supabase-preview-check-runs\.json/);
+  assert.match(workflow, /node --test tests\/brain-supabase-preview-diagnosis-v1\.test\.mjs/);
+  assert.match(workflow, /skipped_grace_count.*-le 2/);
+  assert.doesNotMatch(workflow, /supabase-preview-check-state\.mjs/);
+});
+
+test('CLI emits a machine-readable skipped state and actionable provider reason', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'powerhouse-preview-check-'));
+  try {
+    const file = join(dir, 'checks.json');
+    writeFileSync(file, JSON.stringify({check_runs:[
+      check(110, 'skipped', 'This git branch is not associated with any Supabase Branch.')
+    ]}));
+    const output = spawnSync(process.execPath,
+      ['tools/ci/supabase-preview-diagnosis.mjs', file],
+      { encoding: 'utf8' });
+    assert.equal(output.status, 0);
+    assert.equal(output.stdout, 'skipped:110');
+    assert.match(output.stderr, /PREVIEW_BRANCH_UNASSOCIATED/);
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
