@@ -88,3 +88,11 @@ Canonical pure planner: `brain/self-improvement/cross-domain-evolution.mjs#planC
 - Fail closed on missing review, counterfactual, evidence, security/regression or cost/latency guard. Produce a deterministic canonical obligation proposal, never a second executor, scheduler, database, model-policy setter or direct production mutation.
 - The responsible Brain runtime must durably materialize and execute the proposal through existing obligations/outbox, reconcile provider outcomes and project learning; a planner's PROPOSED_NOT_EXECUTED output is not live delivery evidence.
 Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
+
+## Verified financial value closure (2026-10-08)
+- Use canonical `powerhouse_realized_values`, `powerhouse_action_economics`, finance/provider source records and outcome lineage; never create a parallel economic-truth ledger.
+- A legacy `truth_class=realized` with unit `not_executed`, `sent`, `execution_completed` or `reply_received` is **not** realized revenue or financial savings.
+- Financial value requires a same-tenant, same-revision, independently read-back finance record, explicit EUR amount, financial proof type and linkage to a verified engineering outcome.
+- The same source record counts once. The verified comparison must explicitly link the same business and engineering outcomes and have an independently read-back cohort assignment.
+- `BUSINESS_VALUE_EVIDENCE_REQUIRED` is a valid fail-closed state, not green. Raw append-only evidence must remain unchanged. A proposal stays `PROPOSED_NOT_EXECUTED`.
+- Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
