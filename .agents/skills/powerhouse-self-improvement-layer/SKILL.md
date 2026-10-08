@@ -88,3 +88,13 @@ Canonical pure planner: `brain/self-improvement/cross-domain-evolution.mjs#planC
 - Fail closed on missing review, counterfactual, evidence, security/regression or cost/latency guard. Produce a deterministic canonical obligation proposal, never a second executor, scheduler, database, model-policy setter or direct production mutation.
 - The responsible Brain runtime must durably materialize and execute the proposal through existing obligations/outbox, reconcile provider outcomes and project learning; a planner's PROPOSED_NOT_EXECUTED output is not live delivery evidence.
 Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
+
+## Self-Evolving OS learning-to-candidate bridge (2026-10-08)
+
+Fingerprint: \`self-evolving-learning-candidate-bridge-20261008-v1\`.
+
+- Consume READY *verified* quality-event learning from \`public.powerhouse_learning_compiler_queue_v1\` only through the existing \`powerhouse-self-improvement-layer-v1\` daily owner.
+- Materialize a bounded maximum of three uniquely keyed, review-required, non-executable candidates into \`public.powerhouse_optimization_candidate_v1\` per run. Never create another learning store or cron.
+- Do not treat evidence that a previous defect was fixed as evidence that the proposed next improvement will work. Candidate confidence is uncalibrated, impact is unknown, outcome remains unmeasured.
+- BG169 remains the only production action authority. Approval, representative testing, protected merge, production readback and verified benefit must precede any promotion claim.
+- The migration and regression are \`supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql\` and \`tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs\`. The new behavior is NOT live until protected merge and database/runtime readback confirm it.
