@@ -60,13 +60,15 @@ const assertResponse=async(response,provider)=>{
  });
 };
 const validIdentifier=(v,max=100)=>typeof v==='string'&&v.length>=2&&v.length<=max&&/^[a-zA-Z0-9_-]+$/.test(v);
+const validModelId=v=>typeof v==='string'&&v.length>=2&&v.length<=120&&/^[a-zA-Z0-9._:/-]+$/.test(v);
 export function createVerifiedCloudAdapters({fetchFn,config}={}){
  if(typeof fetchFn!=='function'||!config||typeof config!=='object')reject('RUNTIME_TRANSPORT_UNAVAILABLE');
  const registry=Object.create(null);
  if(config.MISTRAL_API){
   const c=config.MISTRAL_API;
   registry.MISTRAL_API=async({route,request})=>{
-   if(!c.apiKey||c.endpointId!==route.endpointId||!validIdentifier(route.modelId,120))
+   if(!c.apiKey||c.endpointId!==route.endpointId||!validModelId(route.modelId)
+      ||route.region!=='AUTO')
     reject('MISTRAL_RUNTIME_NOT_PROVISIONED');
    const response=await fetchFn('https://api.mistral.ai/v1/chat/completions',{
     method:'POST',headers:{authorization:'Bearer '+c.apiKey,'content-type':'application/json'},
@@ -80,7 +82,7 @@ export function createVerifiedCloudAdapters({fetchFn,config}={}){
   registry.AZURE_OPENAI=async({route,request})=>{
    if(!c.apiKey||c.endpointId!==route.endpointId||!validIdentifier(c.resourceName,63)
       ||!validIdentifier(c.deploymentId,100)||!validIdentifier(c.apiVersion,32)
-      ||c.deploymentId!==route.endpointId)
+      ||c.deploymentId!==route.endpointId||c.processingRegion!==route.region)
     reject('AZURE_RUNTIME_NOT_PROVISIONED');
    const url='https://'+c.resourceName+'.openai.azure.com/openai/deployments/'
     +encodeURIComponent(c.deploymentId)+'/chat/completions?api-version='+encodeURIComponent(c.apiVersion);
@@ -100,6 +102,10 @@ const validRequest=request=>request&&Array.isArray(request.messages)&&request.me
 export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVersion,signedProof,key,request,config,fetchFn,now=Date.now()}={}){
  if(!validRequest(request))reject('RUNTIME_REQUEST_INVALID');
  const receipt=verifySignedRuntimeProof({signed:signedProof,key,tenantId,useCaseId,profile,policyVersion,now});
+ const provision=config?.[receipt.provider];
+ if(!provision||provision.providerReadbackEvidenceId!==receipt.providerReadbackEvidenceId
+     ||provision.egressEvidenceId!==receipt.egressEvidenceId)
+  reject('RUNTIME_PROVISIONING_EVIDENCE_MISMATCH');
  const adapters=createVerifiedCloudAdapters({fetchFn,config});
  const result=await invokeVerifiedAiRuntime({tenantId,profile,receipt,request,adapters,now});
  return Object.freeze({...result,provenance:Object.freeze({
