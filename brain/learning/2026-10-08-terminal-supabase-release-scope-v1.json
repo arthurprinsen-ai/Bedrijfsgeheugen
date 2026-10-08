@@ -26,5 +26,12 @@
     "protected merge",
     "provider readback",
     "durable Brain terminal evidence"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
