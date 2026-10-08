@@ -23,7 +23,7 @@ export function projectCustomerActivity(projection={}) {
       title:short(r.title || r.type || r.record_type || r.eventType || r.subjectId || 'Activiteit'),
       actor:short((typeof r.actor==='string' ? r.actor : r.actor?.name) || r.actorId || r.ownerId || 'AI / Bedrijfsgeheugen',70),
       source:short(r.source || r.component || r.platform || 'Bedrijfsgeheugen',70),
-      verified:r.verified===true || (verifiedStatus(status) && r.verified!==false),
+      verified:r.verified===true && r.executed===true,
       type:short(r.type || r.record_type || r.eventType || ''),
       result:short(r.result?.status || '',42)
     };
