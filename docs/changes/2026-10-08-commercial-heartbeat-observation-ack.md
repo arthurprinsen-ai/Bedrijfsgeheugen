@@ -10,3 +10,9 @@ No new cron, duplicate sales executor, credential, sender, status spoofing, dire
 
 ## Evidence and promotion
 Existing production: 2026-10-08 08:07 UTC latest commercial heartbeat, output assurance v2, and at 08:14 UTC output assurance v3 had zero proven actions and `healthy=false`; regression gate run under the authentic `powerhouse.external_heartbeat_owner=netlify-supabase-edge-v1` returned `healthy=true`. Thus the false connection was isolated. Protected CI, official Supabase preview, protected merge, production migration and next **natural** Netlify scheduled event with `observed/VERIFIED` and `commercial_day_proven=false` are required for closure. An isolated SQL-only validation is not a substitute for the natural scheduled run.
+
+## Recovered migration replay authority · 8 October
+
+Official Supabase Preview on this PR exposed `Remote migration versions not found in local migrations directory`. Production `supabase_migrations.schema_migrations` was queried **read-only**, including the original SQL statements. Four exact, non-placeholder migrations were restored on this same protected candidate under their actually applied production versions: 20261008073832, 20261008073907, 20261008080905 and 20261008080913. This is a source-control correction only, not a modification of production, not an assertion of provider preview success, and not an instruction to forge migration history. The Identity Graph and provider-proof baselines already exist in additional earlier/later repository versions: both remain idempotent under replay. The regression suite now fails if these historically applied migration source files disappear again.
+
+Closure is contingent on **native provider-owned Supabase Preview success on the exact current PR SHA**, protected Required and CodeQL, merge, production ledger and a naturally scheduled observed/VERIFIED heartbeat; neither source parity alone nor a manual SQL dry run counts as a commercial send.
