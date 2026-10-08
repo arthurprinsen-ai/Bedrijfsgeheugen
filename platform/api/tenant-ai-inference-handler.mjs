@@ -11,7 +11,13 @@ export async function handleTenantAiInference({request,user,tenantId,sovereignty
  const size=Number(request.headers?.get?.('content-length')||0);
  if(Number.isFinite(size)&&size>12000)return json({error:'REQUEST_TOO_LARGE'},413);
  let body;
- try{body=await request.json();}catch{return json({error:'INVALID_JSON'},400);}
+ try{
+  if(typeof request.text==='function'){
+   const raw=await request.text();
+   if(raw.length>12000)return json({error:'REQUEST_TOO_LARGE'},413);
+   body=JSON.parse(raw);
+  }else body=await request.json();
+ }catch{return json({error:'INVALID_JSON'},400);}
  if(!body||typeof body!=='object'||Array.isArray(body)||typeof body.question!=='string'
     ||body.question.trim().length<1||body.question.length>6000||Object.keys(body).some(k=>k!=='question'))
   return json({error:'INVALID_AI_QUESTION'},422);
@@ -24,6 +30,10 @@ export async function handleTenantAiInference({request,user,tenantId,sovereignty
     ||Number(policy.policy_version)<1)return json({error:'AI_RUNTIME_NOT_PROVISIONED'},503);
  if(policy?.enforcement_mode==='BLOCK'&&Array.isArray(state?.snapshot?.violations)&&state.snapshot.violations.length)
   return json({error:'SOVEREIGNTY_POLICY_BLOCKED'},409);
+ // A newly requested AI route cannot go live just because the provider proof exists:
+ // the customer's privacy, risk, supplier, cost and CSRD review must also be closed.
+ if(policy?.last_change_impact?.status==='REVIEW_REQUIRED'&&policy.last_change_impact.deploymentApproved!==true)
+  return json({error:'CROSS_DOMAIN_REVIEW_REQUIRED'},409);
  // No direct user-origin model/provider/endpoint/region parameters; the model comes
  // exclusively from the tenant's authoritative saved policy and signed proof.
  const question=body.question.trim();
