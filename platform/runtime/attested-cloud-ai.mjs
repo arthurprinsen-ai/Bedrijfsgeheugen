@@ -71,7 +71,7 @@ export function createVerifiedCloudAdapters({fetchFn,config}={}){
       ||route.region!=='AUTO')
     reject('MISTRAL_RUNTIME_NOT_PROVISIONED');
    const response=await fetchFn('https://api.mistral.ai/v1/chat/completions',{
-    method:'POST',headers:{authorization:'Bearer '+c.apiKey,'content-type':'application/json'},
+    method:'POST',signal:AbortSignal.timeout(12_000),headers:{authorization:'Bearer '+c.apiKey,'content-type':'application/json'},
     body:JSON.stringify({model:route.modelId,messages:request.messages,max_tokens:request.maxTokens,temperature:0})
    });
    return assertResponse(response,'MISTRAL_API');
@@ -87,7 +87,7 @@ export function createVerifiedCloudAdapters({fetchFn,config}={}){
    const url='https://'+c.resourceName+'.openai.azure.com/openai/deployments/'
     +encodeURIComponent(c.deploymentId)+'/chat/completions?api-version='+encodeURIComponent(c.apiVersion);
    const response=await fetchFn(url,{
-    method:'POST',headers:{'api-key':c.apiKey,'content-type':'application/json'},
+    method:'POST',signal:AbortSignal.timeout(12_000),headers:{'api-key':c.apiKey,'content-type':'application/json'},
     body:JSON.stringify({messages:request.messages,max_tokens:request.maxTokens,temperature:0})
    });
    return assertResponse(response,'AZURE_OPENAI');
