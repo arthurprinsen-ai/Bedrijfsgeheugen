@@ -21,14 +21,6 @@
     "Do not count publication SLA as recipient outreach",
     "No fabricated replies, meetings, revenue or model learning"
   ],
-  "evaluations": {
-    "historical_replay": [
-      "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
-    ],
-    "canary": [
-      "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
-    ]
-  },
   "compiler": {
     "failure_class": "COMMERCIAL_PROVIDER_ACK_FALSE_GREEN_AND_DUPLICATE_RISK",
     "scope": "COMMERCIAL_EXECUTION",
@@ -48,5 +40,16 @@
     "recipient_delivery_proven": false,
     "full_commercial_loop_proven": false
   },
-  "prevention": "Provider send ACK is not delivered proof; always reconcile exact external ID without duplicate side effects. Unknown measurements never become green."
+  "prevention": "Provider send ACK is not delivered proof; always reconcile exact external ID without duplicate side effects. Unknown measurements never become green.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
+    ]
+  }
 }
