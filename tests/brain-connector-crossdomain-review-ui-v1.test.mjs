@@ -6,12 +6,20 @@ const impact={contract:'powerhouse-cross-domain-change-v1',status:'REVIEW_REQUIR
  affectedDomains:['privacy','security','supplier_risk','finance','sustainability','csrd_esrs_scope'],
  esrsReview:[{standard:'ESRS_E1',reviewRequired:true}]};
 const draft={id:'connector-a',name:'Documenten',templateId:'blank',state:'Draft',runtime:{changeImpact:impact}};
-test('activation stage is blocked even if document test evidence is present when cross-domain review remains unresolved',()=>{
+const passingEvidence={configVersion:1,testExecutionId:'x',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}};
+test('an open ESRS review does not bypass missing technical evidence',()=>{
  const html=renderConnectorBuilder({draft,stage:9,testResult:{status:'TEST_PASSED',evidence:{testExecutionId:'x'}}});
- assert.match(html,/Herbeoordeling vereist/);
+ assert.match(html,/Herbeoordeling open/);
  assert.match(html,/data-activate disabled/);
  assert.match(html,/CSRD\/ESRS/);
- assert.doesNotMatch(html,/Klaar voor activatie/);
+});
+test('technically verified connector may request activation while CSRD review remains explicitly pending',()=>{
+ const html=renderConnectorBuilder({draft,stage:9,testResult:{status:'TEST_PASSED',evidence:passingEvidence}});
+ assert.match(html,/Technische activatie mogelijk/);
+ assert.doesNotMatch(html,/data-activate disabled/);
+ assert.match(html,/CSRD\/ESRS-beoordeling blijft open/);
+ assert.match(html,/privacy- en datalocatieregels controleren/);
+ assert.match(html,/technisch actief betekent niet juridisch goedgekeurd/);
 });
 test('monitor shows the correct tenant connector review and known ESRS scope candidates without leaking audit metadata',()=>{
  const reviews=[

@@ -25,11 +25,16 @@ function openCrossDomainImpact(draft){
  return impact?.contract==='powerhouse-cross-domain-change-v1'&&impact?.changed===true&&impact?.status==='REVIEW_REQUIRED';
 }
 function activateStage(draft,testResult){
- const blocked=openCrossDomainImpact(draft);
+ const reviewPending=openCrossDomainImpact(draft);
  const eligible=activationEligibility(draft,testResult?.evidence||null);
- const ready=eligible.eligible&&!blocked;
- return `<div class="connector-activation"><h4>${blocked?'Herbeoordeling vereist':ready?'Klaar voor activatie':'Testbewijs vereist'}</h4>
- <p>${blocked?'Wijzigingen in deze koppeling hebben gevolgen voor privacy, beveiliging, leveranciers, kosten en mogelijk CSRD/ESRS. Een geverifieerde beoordeling is nodig voordat de koppeling actief mag worden.':ready?'De configuratie heeft het minimale evidencecontract gehaald. De server controleert het opgeslagen testrecord opnieuw.':'Een koppeling wordt nooit Actief op basis van configuratie alleen.'}</p>
+ const ready=eligible.eligible;
+ const title=reviewPending?(ready?'Technische activatie mogelijk — beoordeling open':'Herbeoordeling open — testbewijs vereist'):(ready?'Klaar voor activatie':'Testbewijs vereist');
+ const description=reviewPending?(ready
+  ?'De server moet vóór activatie het opgeslagen testbewijs, de abonnementgrenzen en de privacy- en datalocatieregels controleren. De CSRD/ESRS-beoordeling blijft open; technisch actief betekent niet juridisch goedgekeurd.'
+  :'Deze wijziging moet nog worden beoordeeld op privacy, beveiliging, leveranciers, kosten en mogelijk CSRD/ESRS. Voor technische activatie is daarnaast geldig testbewijs verplicht.')
+  :(ready?'De configuratie heeft het minimale evidencecontract gehaald. De server controleert het opgeslagen testrecord opnieuw.':'Een koppeling wordt nooit Actief op basis van configuratie alleen.');
+ return `<div class="connector-activation"><h4>${title}</h4>
+ <p>${description}</p>
  <button type="button" data-activate ${ready?'':'disabled'}>Activeren</button></div>`;
 }
 function monitorStage(draft,executions=[],reviewQueue=[]){
@@ -43,7 +48,7 @@ function monitorStage(draft,executions=[],reviewQueue=[]){
   return `<article class="connector-execution"><strong>Herbeoordeling koppeling vereist</strong>
    <span>Onderwerpen: ${esc(domains.join(', ')||'Risico en naleving')}</span>
    ${topics.length?`<span>Mogelijk relevante duurzaamheidsstandaarden: ${esc(topics.join(', '))}</span>`:''}
-   <small>Een beoordeling is nog geen wettelijke CSRD-plicht of gemeten CO₂-impact. Activering blijft geblokkeerd totdat de vereiste controles met bewijs zijn afgerond.</small></article>`;
+   <small>Een beoordeling is nog geen wettelijke CSRD-plicht of gemeten CO₂-impact. Technische activatie kan pas na afzonderlijk server-gecontroleerd testbewijs en veilige dataroutes; de CSRD/ESRS-beoordeling blijft open en is geen goedkeuring.</small></article>`;
  }).join('');
  return `<div class="connector-monitor"><article><span>Status</span><strong>${esc(statusLabel(draft.state))}</strong></article><article><span>Executies</span><strong>${executions.length} opgeslagen</strong></article><article><span>Review queue</span><strong>${relevant.length} open review${relevant.length===1?'':'s'}</strong></article><article><span>Recovery</span><strong>${draft.runtime?.recoveryObligation?.status==='open'?'Open':'Geen open obligation'}</strong></article></div>
  ${reviewDetails}<div data-execution-list>${executionRows}</div>${draft.state==='Active'?'<button type="button" data-pause>Pauzeren en recovery openen</button>':''}`;
