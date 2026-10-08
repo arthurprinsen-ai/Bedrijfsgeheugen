@@ -11,7 +11,20 @@
     "provider_proven_email": 0,
     "provider_proven_social": 0,
     "commercial_day_proven": false,
-    "external_owner_gate_healthy": true
+    "external_owner_gate_healthy": true,
+    "provider_preview_replay_error": "Remote migration versions not found in local migrations directory",
+    "production_versions_recovered_exact": [
+      "20261008073832",
+      "20261008073907",
+      "20261008080905",
+      "20261008080913"
+    ],
+    "production_schema_history_mutated": false,
+    "source_replay_proof": "PENDING_EXACT_HEAD_SUPABASE_PROVIDER_SUCCESS",
+    "superseded_duplicate_prs": [
+      4115,
+      4119
+    ]
   },
   "tests": [
     "tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs"
@@ -52,5 +65,5 @@
       "tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs"
     ]
   },
-  "prevention": "The transport runner must accept verified observed/VERIFIED commercial-day measurement on safe no-provider-proof days; commercial-day obligation remains OPEN, output healthy false, malformed output or broken scheduler regression must fail closed. Regression: tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs."
+  "prevention": "The transport runner must accept verified observed/VERIFIED commercial-day measurement on safe no-provider-proof days; commercial-day obligation remains OPEN, output healthy false, malformed output or broken scheduler regression must fail closed. Regression: tests/brain-commercial-heartbeat-observation-ack-v1.test.mjs. The source-control history must retain the exact four production-applied migration SQL statements and their original version numbers; checkout/replay must never depend on an out-of-band production schema."
 }
