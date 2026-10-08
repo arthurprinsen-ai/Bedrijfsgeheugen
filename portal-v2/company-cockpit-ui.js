@@ -48,7 +48,7 @@ export function renderCompanyCockpitHtml(runtime={}){
   const verifiedValue=cockpit.sections.find(x=>x.key==='verified-value')?.items||[];
   const blocked=cockpit.sections.find(x=>x.key==='blocked')?.items||[];
   const audit=cockpit.sections.find(x=>x.key==='audit')?.items||[];
-  return `${renderCompanyIntelligenceContext(runtime,'company-cockpit')}<div class="company-cockpit-head"><div><h2>Wat verdient vandaag aandacht?</h2><p>De drie belangrijkste uitvoerbare prioriteiten uit één Brain & Powerhouse-lijst. Extra acties blijven beschikbaar; onbekende bedragen blijven onbekend.</p></div><span class="company-live">Brain runtime</span></div>
+  return `${renderCompanyIntelligenceContext(runtime,'company-cockpit')}<div class="company-cockpit-head"><div><h2>Wat moet eerst — en wat verdient vandaag aandacht?</h2><p>De drie belangrijkste uitvoerbare prioriteiten uit één Brain & Powerhouse-lijst. Extra acties blijven beschikbaar; onbekende bedragen blijven onbekend.</p></div><span class="company-live">Brain runtime</span></div>
     <div class="company-economics">
       <span><small>Verwachte waarde</small><b>${eur(economics.expectedValue)}</b></span>
       <span><small>Werkelijke kosten</small><b>${eur(economics.actualCost)}</b></span>
