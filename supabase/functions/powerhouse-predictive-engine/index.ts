@@ -63,7 +63,7 @@ Deno.serve(async(req:Request)=>{
     await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:`signals=${signals.length}; forecasts=${written}; rejected=${rejected}`,gegevens:{contract:'predictive-first-mover-intelligence-v1',queue_top:(queue||[]).slice(0,5).map((q:any)=>({forecast_id:q.forecast_id,topic_key:q.topic_key,action_score:q.action_score,prediction_mode:q.prediction_mode}))}});
     return json({ok:true,signals:signals.length,forecasts_written:written,rejected,queue:queue||[]});
   }catch(e:any){
-    await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'fout',detail:String(e?.message||e).slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1'}}).catch(()=>{});
+    try{ await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'fout',detail:String(e?.message||e).slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1'}}); }catch{ /* Preserve the original predictive failure when receipt persistence also fails. */ }
     return json({ok:false,error:String(e?.message||e).slice(0,500)},500);
   }
 });
