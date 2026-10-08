@@ -3,6 +3,7 @@
   "contract": "powerhouse-principle-regression-v1",
   "date": "2026-10-08",
   "status": "open_until_production_readback",
+  "failure_class": "ERROR_PATH_RECEIPT_MASKED_PRIMARY_FAILURE",
   "problem": "The canonical predictive-engine run reached production deployment 79 but its error handler threw TypeError because the Supabase query builder was treated as a Promise with .catch(). This masked the original predictive exception and prevented a same-day failure receipt.",
   "root_cause": [
     "PostgREST query builders are thenable but do not expose Promise.prototype.catch",
@@ -19,6 +20,13 @@
     "failed_required_run": 37741404836,
     "ci_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
     "repair_head_before_closure_artifacts": "9568361c41175e9dc48b535d6407e6780b44652d"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-production-lineage.test.mjs"
+    ],
+    "red_condition": "query-builder .catch chaining exists in the predictive failure-receipt path",
+    "green_condition": "receipt write is awaited in a nested try/catch and the original predictive exception remains authoritative"
   },
   "outcome": "Source fix and regression are present; closure remains open until protected merge, deployed Edge-function readback, one safe rerun and refreshed predictive-health evidence."
 }
