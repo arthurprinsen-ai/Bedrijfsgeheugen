@@ -25,3 +25,16 @@ export function classifyTerminalReleaseScope(changedPaths = []) {
     non_runtime:runtime.length===0
   });
 }
+
+/**
+ * A migration is provider-verifiable when every other changed file is
+ * already a non-production/control-plane path under the canonical contract.
+ * This deliberately fails closed for unknown runtime, website and Edge paths.
+ */
+export function isMigrationAndNonRuntimeScope(changedPaths = []) {
+  const paths = [...new Set(changedPaths.map(path => String(path || '').trim()).filter(Boolean))];
+  const migration = /^supabase\/migrations\/[0-9]{14}_[a-z0-9_]+\.sql$/;
+  if (!paths.some(path => migration.test(path))) return false;
+  const nonMigration = paths.filter(path => !migration.test(path));
+  return nonMigration.length === 0 || classifyTerminalReleaseScope(nonMigration).non_runtime;
+}
