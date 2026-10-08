@@ -35,4 +35,6 @@ test('canonical closure workflow exposes PR number in quoted GitHub run-name for
   assert.match(closure,/^run-name: "Obligation Terminal Closure PR #\$\{\{ github\.event\.pull_request\.number \|\| inputs\.pr_number \}\}"$/m);
   assert.match(supervisor,/title="Obligation Terminal Closure PR #\$number"/);
   assert.match(supervisor,/display_title==\$title/);
+  assert.match(closure,/require_workflow "codeql\\.yml" "Powerhouse-CodeQL"/);
+  assert.doesNotMatch(closure,/require_workflow "powerhouse-codeql\\.yml"/);
 });
