@@ -19,6 +19,15 @@ async function composioExecuteArgs(apiKey:string,connectedAccountId:string,toolS
   if(!response.ok||body?.successful!==true)throw new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+clean(body?.error||body?.message||body?.data?.message||JSON.stringify(body)).slice(0,240));
   return body;
 }
+function salesRobotExecutionBlock(account:any):string|null{
+  const license=clean(account?.paymentStatus||account?.subscription).toUpperCase();
+  if(!['ACTIVE','TRIAL_ACTIVE'].includes(license))return 'SALESROBOT_BILLING_INACTIVE';
+  const days=Number(account?.daysOfExecutionRemaining);
+  if(!Number.isFinite(days)||days<=0)return 'SALESROBOT_EXECUTION_DAYS_EXHAUSTED';
+  if(account?.hasCampaigns!==true)return 'SALESROBOT_CAMPAIGN_REQUIRED';
+  if(account?.hasActiveCampaigns!==true)return 'SALESROBOT_ACTIVE_CAMPAIGN_REQUIRED';
+  return null;
+}
 async function salesRobotContext(db:any){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error('SALESROBOT_COMPOSIO_API_KEY_MISSING');
@@ -35,6 +44,8 @@ async function salesRobotContext(db:any){
   const accounts=Array.isArray(data?.items)?data.items:Array.isArray(data?.data?.data)?data.data.data:[];
   const healthy=accounts.find((x:any)=>clean(x?.healthStatus).toUpperCase()==='HEALTHY'&&x?.cookieExpired!==true&&x?.connectionTempPaused!==true&&x?.connectionLimitReached!==true);
   if(!healthy)throw new Error('SALESROBOT_LINKEDIN_ACCOUNT_NOT_HEALTHY');
+  const blocked=salesRobotExecutionBlock(healthy);
+  if(blocked)throw new Error(blocked);
   return {apiKey,connectedAccountId,linkedinAccountUuid:clean(healthy.linkedinAccountUuid),healthStatus:clean(healthy.healthStatus),subscription:clean(healthy.subscription||healthy.paymentStatus)};
 }
 async function recordCapability(db:any,capability:string,status:string,evidence:any){
@@ -202,10 +213,13 @@ Deno.serve(async(req:Request)=>{
         }
       }
     }catch(srError:any){
-      await recordCapability(db,'salesrobot.linkedin_dm','UNAVAILABLE',{error:clean(srError?.message||srError).slice(0,240),checked_at:now});
-      dmResults.push({status:'fallback',reason:'SALESROBOT_CAPABILITY_UNAVAILABLE'});
+      const reason=clean(srError?.message||srError).slice(0,240);
+      const configRequired=/^SALESROBOT_(BILLING_INACTIVE|EXECUTION_DAYS_EXHAUSTED|CAMPAIGN_REQUIRED|ACTIVE_CAMPAIGN_REQUIRED)$/.test(reason);
+      dmCapability=configRequired?'CONFIG_REQUIRED':'UNAVAILABLE';
+      await recordCapability(db,'salesrobot.linkedin_dm',dmCapability,{error:reason,checked_at:now,send_proof:false});
+      dmResults.push({status:'held',reason:configRequired?reason:'SALESROBOT_CAPABILITY_UNAVAILABLE'});
     }
-    return json({ok:true,contract:CONTRACT,prepared:prep,generated,autopilot,dm_capability:dmCapability,dm_provider:'salesrobot',dm_results:dmResults,dm_fallback:'highest-ranked executable channel'});
+    return json({ok:true,contract:CONTRACT,prepared:prep,generated,autopilot,dm_capability:dmCapability,dm_provider:'salesrobot',dm_results:dmResults,dm_fallback:'REQUIRES_SEPARATE_EXECUTION_PROOF'});
   }catch(err:any){
     return json({ok:false,contract:CONTRACT,error:clean(err?.message||err).slice(0,500)},503);
   }
