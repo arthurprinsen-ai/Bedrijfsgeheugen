@@ -412,15 +412,22 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ steps.context.outputs.pr_number }}
           OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
+          # The verified PR checkout is deliberately historical. Load exactly
+          # one pure resolver from this run's immutable protected-main GITHUB_SHA.
+          git cat-file -e "${GITHUB_SHA}^{commit}" || { echo "::error::TERMINAL_RUNTIME_COMMIT_MISSING"; exit 78; }
+          git merge-base --is-ancestor "${MERGE_SHA}" "${GITHUB_SHA}" || { echo "::error::TERMINAL_RUNTIME_NOT_MERGE_DESCENDANT"; exit 78; }
+          git show "${GITHUB_SHA}:tools/delivery/terminal-migration-identity.mjs" > /tmp/powerhouse-terminal-migration-identity.mjs || { echo "::error::TERMINAL_RUNTIME_RESOLVER_MISSING"; exit 78; }
+          test -s /tmp/powerhouse-terminal-migration-identity.mjs || { echo "::error::TERMINAL_RUNTIME_RESOLVER_EMPTY"; exit 78; }
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { appendFile } from 'node:fs/promises';
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
-          import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
+          import { resolveTerminalMigrationIdentities } from '/tmp/powerhouse-terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
