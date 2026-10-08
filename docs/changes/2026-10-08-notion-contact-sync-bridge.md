@@ -25,7 +25,7 @@ Status: CANDIDATE, **not production-verified**. External SalesRobot sends remain
 4. Independently reconcile Notion–CRM matching coverage and remaining unlinked 8,888 Notion rows before considering any background backfill. **This webhook is change-driven, not an initial bulk import.**
 
 ## Acceptance before live
-- Local regression `tests/notion-contact-webhook-v1.test.mjs`; Required, CodeQL and Supabase Preview on the exact HEAD.
+- Local regression `tests/notion/contact-webhook-v1.test.mjs`; Required, CodeQL and Supabase Preview on the exact HEAD.
 - Protected merge into main and runtime deployment of exact SHA, source hash readback.
 - Independent actual Notion event readback and canonical-row readback; evidence for duplicate and unsupported events.
 - Zero automatic sales sends until SalesRobot subscription days, active campaign/prospects, recipient eligibility, message quality, approval and external provider delivery receipts are separately proven.
