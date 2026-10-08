@@ -1,0 +1,41 @@
+{
+  "version": "obligation-historical-terminal-dispatch-replay-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "workflow-dispatch-registration-rejected-historical-closure-4134",
+  "root_cause": "Merged PR #4134 had no durable Brain terminal record because historical run #37760879023 awaited a Netlify release for a Supabase-only source change. Although the canonical workflow advertises workflow_dispatch, GitHub's registered dispatch endpoint returned HTTP 422 and rejected both numeric and filename dispatch.",
+  "evidence": {
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4134",
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37760879023",
+    "supabase_provider": "powerhouse-composio-linkedin-setup",
+    "active_provider_version": 29,
+    "active_runtime_sha256": "a2adfc1aa924d7289598bb57fce55e9001af51f5cbcc178aba549af898391e31",
+    "live_function_source_parity": "exact bytes equal original merge SHA and current main",
+    "provider_attestation_recorded_in_pr": true,
+    "dispatch_failure": "GitHub API returned Workflow does not have workflow_dispatch trigger, HTTP 422"
+  },
+  "intervention": "Add workflow_call entry to existing canonical terminal closure and a one-time protected-main push wrapper, exact merge identity preflight, and reuse the existing fail-closed provider/Netlify/Brain/evidence chain without duplicating delivery logic.",
+  "prevention": "When dispatch registration is unavailable, recover a merged obligation via trusted reusable closure from protected-main after independent exact merge SHA check; keep live provider identity, immutable Brain evidence, and no direct SQL terminal state writes.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-obligation-historical-4134-replay.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-obligation-historical-4134-replay.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "exact-head protected CI and CodeQL",
+    "protected merge",
+    "main push replay started",
+    "canonical closure successful",
+    "Supabase Brain original obligation FULFILLED with immutable artifact"
+  ]
+}
