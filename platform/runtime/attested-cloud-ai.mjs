@@ -2,6 +2,7 @@ import {createHmac,timingSafeEqual} from 'node:crypto';
 import {invokeVerifiedAiRuntime,AiRuntimeDenied} from '../brain/verified-ai-runtime.mjs';
 import {validateCustomerAiDeployment} from '../policy/customer-ai-deployment.mjs';
 import {createAttestedVertexAdapter} from './attested-vertex-adapter.mjs';
+import {createAttestedBedrockAdapter} from './attested-bedrock-adapter.mjs';
 
 // Private server-side contract. Signing is reserved for an independently verified,
 // audited provisioning/readback authority; the customer configuration is never a proof.
@@ -45,7 +46,7 @@ export function verifySignedRuntimeProof({signed,key,tenantId,useCaseId,policyVe
  if(claim.deploymentMode!=='MANAGED_CLOUD'||desired.deploymentMode!=='MANAGED_CLOUD')
   reject('RUNTIME_DEPLOYMENT_UNSUPPORTED');
  // This shared Netlify gateway is not a local or air-gapped management plane.
- if(!exact(desired.provider,['MISTRAL_API','AZURE_OPENAI','GOOGLE_VERTEX']))
+ if(!exact(desired.provider,['MISTRAL_API','AZURE_OPENAI','GOOGLE_VERTEX','AWS_BEDROCK']))
   reject('RUNTIME_PROVIDER_UNSUPPORTED');
  return Object.freeze(claim);
 }
@@ -62,7 +63,7 @@ const assertResponse=async(response,provider)=>{
 };
 const validIdentifier=(v,max=100)=>typeof v==='string'&&v.length>=2&&v.length<=max&&/^[a-zA-Z0-9_-]+$/.test(v);
 const validModelId=v=>typeof v==='string'&&v.length>=2&&v.length<=120&&new RegExp('^[a-zA-Z0-9._:/-]+$').test(v);
-export function createVerifiedCloudAdapters({fetchFn,config}={}){
+export function createVerifiedCloudAdapters({fetchFn,config,now=Date.now()}={}){
  if(typeof fetchFn!=='function'||!config||typeof config!=='object')reject('RUNTIME_TRANSPORT_UNAVAILABLE');
  const registry=Object.create(null);
  if(config.MISTRAL_API){
@@ -95,6 +96,7 @@ export function createVerifiedCloudAdapters({fetchFn,config}={}){
   };
  }
  if(config.GOOGLE_VERTEX)registry.GOOGLE_VERTEX=createAttestedVertexAdapter({config:config.GOOGLE_VERTEX,fetchFn});
+ if(config.AWS_BEDROCK)registry.AWS_BEDROCK=createAttestedBedrockAdapter({config:config.AWS_BEDROCK,fetchFn,now});
  return Object.freeze(registry);
 }
 const validRequest=request=>request&&Array.isArray(request.messages)&&request.messages.length>0&&request.messages.length<=16
@@ -108,7 +110,11 @@ export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVe
  if(!provision||provision.providerReadbackEvidenceId!==receipt.providerReadbackEvidenceId
      ||provision.egressEvidenceId!==receipt.egressEvidenceId)
   reject('RUNTIME_PROVISIONING_EVIDENCE_MISMATCH');
- const adapters=createVerifiedCloudAdapters({fetchFn,config});
+ if(receipt.provider==='AWS_BEDROCK'&&(
+  provision.awsRegion!==receipt.awsRegion||provision.modelId!==receipt.modelId||
+  provision.residencyEvidenceId!==receipt.residencyEvidenceId))
+  reject('BEDROCK_REGIONAL_EVIDENCE_MISMATCH');
+ const adapters=createVerifiedCloudAdapters({fetchFn,config,now});
  // Separate server-held authorities: a provider proof is not CSRD/customer approval.
  // Neither receipt nor an endpoint URL is passed as authorization to the core router.
  const endpointRegistry=new Map();
