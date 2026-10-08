@@ -17,3 +17,6 @@
 
 ## Migration ordering correction
 Preview ledger applied old migration, but subsequent 20261008094000 provider-proof migration overwrote its Heartbeat function. Moved additive correction from 20261008081459_commercial_heartbeat_observation_ack_v1.sql to 20261008100100_commercial_heartbeat_observation_ack_v1.sql to ensure final function authority. Preview function-definition readback must prove the new gate after the complete replay.
+
+## Fresh isolated preview after ordered replay
+The previous preview held the superseded migration version `20261008081459` and correctly refused a source tree that had renamed it. That temporary preview is gone; a fresh ephemeral preview `eulkppyvhbkcqygciamd` was created and explicitly associated with the unchanged Git branch. Source now has only the final function migration at `20261008100100` after the earlier provider-proof function `20261008094000`. The new official provider check must confirm actual final function contents; do not repair any production ledger or bypass a gate.
