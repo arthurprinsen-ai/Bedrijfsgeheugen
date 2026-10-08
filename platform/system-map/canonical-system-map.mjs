@@ -36,6 +36,34 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'self-evolving-learning-candidate-bridge-v1',
+      fingerprint:'self-evolving-learning-candidate-bridge-20261008-v1',
+      label:'Verified Learning → Review-Required Optimization Candidate',
+      authority:'existing-self-improvement-cron+learning-compiler-queue+BG169-optimization-registry',
+      owner:'ONE BRAIN / Self-Improvement',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['verified quality event','production evidence ref','regression guard ref']),
+      outputs:Object.freeze(['bounded deduplicated review-required candidate','daily runtime evidence']),
+      runtime:Object.freeze({
+        cron:'powerhouse-self-improvement-layer-v1',
+        runner:'public.powerhouse_run_self_improvement_layer_v1(date)',
+        compiler:'public.powerhouse_learning_compiler_queue_v1',
+        candidates:'public.powerhouse_optimization_candidate_v1',
+        migration:'supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql',
+        learning:'brain/learning/2026-10-08-self-evolving-learning-candidate-bridge-v1.json',
+        regression:'tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs'
+      }),
+      invariants:Object.freeze({
+        oneExistingDailyOwner:true,
+        maxThreeNewCandidatesPerRun:true,
+        candidateSourceUnique:true,
+        reviewRequired:true,
+        noAutomaticDispatch:true,
+        noInferredBusinessValue:true,
+        protectedMigrationAndProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'source-universe-impact-engine-v1',
       fingerprint:'powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1',
       label:'Source Universe & Environment Radar',
