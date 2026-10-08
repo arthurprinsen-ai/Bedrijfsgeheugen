@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|commercial-daily-proof|stale-expired-self-reselection|2026-10-08",
+  "contract": "powerhouse-one-million-revenue-operating-contract-v1",
+  "compiler": {
+    "failure_class": "false_daily_commercial_output_green_from_expired_prior_day_action"
+  },
+  "root_cause": "The five-minute current-set reconciliation used mutable updated_at and selected expired actions, then updated the selected row; an expired LinkedIn comment from 2026-10-07 was repeatedly counted as a new 2026-10-08 justified non-send decision.",
+  "failed_approach": "Treat ZERO_OUTPUT_EXPLICITLY_JUSTIFIED with one current-day active row as commercial output without validating original action date and terminal status.",
+  "executed_fix": "Replace updated_at with canonical due_at for date eligibility, exclude expired candidates and supersede formerly active expired actions in powerhouse_reconcile_current_commercial_action_set_v2.",
+  "prevention_rule": "Never promote expired prior-day action through heartbeat touch/update. A daily healthy-zero state requires fresh same-day, evidence-backed non-send for genuinely eligible actions, not carryover closed rows.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case": "2026-10-08 production before change",
+        "active_count": 1,
+        "expired_prior_day": true,
+        "assurance": "ZERO_OUTPUT_EXPLICITLY_JUSTIFIED",
+        "correct": false
+      },
+      {
+        "case": "2026-10-08 production after migrations and reconciliation",
+        "active_count": 0,
+        "superseded_count": 1,
+        "assurance": "DEGRADED_NO_CURRENT_DAILY_ACTION_SET",
+        "healthy": false,
+        "correct": true
+      }
+    ]
+  },
+  "evidence": {
+    "production_readback": "2026-10-08T07:39:10Z; Supabase project adhjwmvyoixzjtmiroln; reconcile result active_count=0 superseded_count=1, commercial output assurance healthy=false, provider_proven_email=0, provider_proven_social=0",
+    "verified_status": "SQL fix applied directly and production readback passed; GitHub protected merge pending",
+    "canonical_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4115"
+  },
+  "tests": [
+    "powerhouse_reconcile_current_commercial_action_set_v2('2026-10-08') production readback",
+    "powerhouse_commercial_output_assurance_v1('2026-10-08') production readback"
+  ],
+  "outcome": "Removed false green for current-day no-op; no outgoing message or revenue claimed."
+}
