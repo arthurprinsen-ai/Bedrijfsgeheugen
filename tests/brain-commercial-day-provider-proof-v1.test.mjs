@@ -20,7 +20,17 @@ test('social proof requires provider ack and post/comment identity', () => {
   assert.match(sql, /'provider_post_id'/);
   assert.match(sql, /'provider_comment_id'/);
   assert.match(sql, /'provider_object_id'/);
-  assert.match(sql, /v_proven := v_email\+v_social>0/);
+  assert.match(sql, /v_proven := v_email\+v_social\+v_publications>0/);
+});
+
+test('only canonical LIVE_PROVEN public blogs or social posts can close the commercial day', () => {
+  assert.match(sql, /from public\.content_publication_obligations p/);
+  assert.match(sql, /p\.publication_date=p_run_date/);
+  assert.match(sql, /p\.status in \('LIVE_PROVEN','MEASURED','LEARNED'\)/);
+  assert.match(sql, /p\.live_proven_at is not null/);
+  assert.match(sql, /p\.external_id/);
+  assert.match(sql, /'provider_proven_publications',v_publications/);
+  assert.doesNotMatch(sql, /p\.status in \('GENERATED'|'APPROVED'|'PUBLISHED'\)/);
 });
 
 test('no-send is safe but does not close the daily commercial Brain obligation', () => {
