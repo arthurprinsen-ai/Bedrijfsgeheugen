@@ -55,7 +55,7 @@ test('MTO recorded without results is an explicit data gap; low response is a re
 test('customer reported high-risk AI with no oversight surfaces cross-domain P1 review rather than claiming law violation',()=>{
   const state={portal:{dataAi:{aiUse:'ja',aiRiskClass:'hoog',aiPurpose:'Personeelsselectie',aiHumanOversight:false}}};
   const cards=buildContextualActionCards(state);
-  assert.deepEqual(cards.filter(x=>x.priority==='P1').map(x=>x.id).sort(),['ai-oversight','ai-risk-review']);
+  assert.deepEqual(cards.filter(x=>x.priority==='P1').map(x=>x.id).sort(),['ai-oversight','ai-owner-classification','ai-risk-review']);
   assert.ok(cards.some(x=>x.id==='ai-data-location'));
   const mapped=contextualCardsForPage('wet-regelgeving',state);
   assert.ok(mapped.some(x=>x.id==='ai-risk-review'));
