@@ -14,8 +14,8 @@
     "provider_attestation_recorded_in_pr": true,
     "dispatch_failure": "GitHub API returned Workflow does not have workflow_dispatch trigger, HTTP 422"
   },
-  "intervention": "Add workflow_call entry to existing canonical terminal closure and a one-time protected-main push wrapper, exact merge identity preflight, and reuse the existing fail-closed provider/Netlify/Brain/evidence chain without duplicating delivery logic.",
-  "prevention": "When dispatch registration is unavailable, recover a merged obligation via trusted reusable closure from protected-main after independent exact merge SHA check; keep live provider identity, immutable Brain evidence, and no direct SQL terminal state writes.",
+  "intervention": "Add workflow_call to canonical closure and reuse existing Historical Terminal Reconciliation push workflow, activating one-time replay only when immutable config marker is newly added on protected main. Exact merge SHA and ancestry are verified; existing fail-closed production/Brain gates remain unchanged.",
+  "prevention": "Never add a new top-level scheduled/push workflow when the trigger ratchet is full. Reuse historical reconciliation with an addition-only marker and call the OIDC-authenticated canonical terminal writer. Maintain protected CI and immutable proof.",
   "compiler": {
     "failure_class": "DELIVERY",
     "scope": "CI",
