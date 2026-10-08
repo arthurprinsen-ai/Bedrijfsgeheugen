@@ -7,18 +7,25 @@
   "outcome": "CI and production proof pending",
   "lesson": "Never promote aggregate GREEN from partial evidence",
   "evaluation": {
-    "historical": {
-      "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-      "status": "PENDING_CI"
-    },
-    "shadow": {
-      "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-      "status": "PENDING_CI"
-    },
-    "canary": {
-      "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-      "status": "PENDING_CI"
-    }
+    "historical_replay": [
+      {
+        "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+        "mode": "historical",
+        "result": "PENDING_CI"
+      }
+    ],
+    "shadow": [
+      {
+        "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+        "result": "PENDING_CI"
+      }
+    ],
+    "canary": [
+      {
+        "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+        "result": "PENDING_CI"
+      }
+    ]
   },
   "fingerprint": "one-brain-coverage-contract-unproven-aggregate-green-v1",
   "failure_class": "ASSURANCE_EVIDENCE_GAP",
@@ -30,5 +37,8 @@
       "tests/brain-one-brain-coverage-contract-v1.test.mjs"
     ],
     "production_proof": "NOT_ESTABLISHED"
+  },
+  "compiler": {
+    "failure_class": "ASSURANCE_EVIDENCE_GAP"
   }
 }
