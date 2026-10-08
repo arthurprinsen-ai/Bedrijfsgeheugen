@@ -1761,3 +1761,24 @@ export const COMMERCIAL_OUTBOUND_SELF_HEAL_V1 = Object.freeze({
   }),
   referenceIncident:'2026-09-30'
 });
+
+export const COMMERCIAL_OUTBOUND_READBACK_P0_V1 = Object.freeze({
+ fingerprint:'commercial|outbound|independent-gmail-readback|no-duplicate-retry|v1',
+ issue:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+ owner:'ONE BRAIN / powerhouse-autonomous-outreach',
+ schedulerAuthority:'NETLIFY_SUPABASE_EDGE',
+ actionAuthority:'public.powerhouse_sales_actions',
+ outcomeAuthority:'public.powerhouse_sales_outcomes',
+ executor:'supabase/functions/powerhouse-autonomous-outreach/index.ts',
+ regression:'tests/brain-commercial-independent-readback-p0-v1.test.mjs',
+ invariants:Object.freeze({
+   noNewScheduler:true,noParallelSender:true,consentAndSuppressionUnchanged:true,
+   providerCreatedIsNotVerifiedDelivery:true,
+   exactGmailMessageIdReadback:true,sentLabelRequired:true,
+   recipientReadbackRequired:true,providerIdAndOutcomeLineageRequired:true,
+   uncertainSendRemainsClaimed:true,uncertainSendNeverAutoResent:true,
+   zeroEligibleSendsNeverGreen:true,
+   publicationSlaDoesNotProveFullCommercialLoop:true,
+   downstreamMeasurementsNotInferred:true
+ })
+});
