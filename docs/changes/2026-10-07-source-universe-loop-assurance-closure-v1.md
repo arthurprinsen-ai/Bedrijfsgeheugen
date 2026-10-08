@@ -15,5 +15,11 @@ De Source Universe-runtime was productie-actief en leverde actuele signalen, maa
 ## Truth contract
 Een verse stage receipt betekent dat de stage aantoonbaar is doorlopen/gecontroleerd. Het betekent niet automatisch dat een actie is uitgevoerd, een business outcome is gerealiseerd of learning heeft plaatsgevonden.
 
+## Canonicalization recovery
+De learning-record is security-sensitive. De centrale learning-canonicalization gate vereist daarom historical replay, shadow en canary. Alle drie wijzen nu naar dezelfde echte Source Universe regressietest. Daarmee kan Skill Projection deze learning alleen canonicaliseren als dezelfde guard-, no-op- en authority-invarianten in alle drie evaluatiemodi slagen.
+
+## Productiereadback
+Op 7 oktober 2026 is productie teruggelezen met 8/8 evidence-stages voor `external-intelligence-universe`. De guard staat op `PASS`; action/outcome/learning tonen truthful no-op evidence waar geen tenant-specifieke scored impact of verified outcome bestaat. Er wordt geen businessresultaat gesynthetiseerd.
+
 ## Doelbewijs
 Na protected delivery moet `external-intelligence-universe` op productie 8/8 verse stages tonen en alleen GREEN zijn zolang runtime, scheduler, stage-evidence en guardvoorwaarden actueel zijn.
