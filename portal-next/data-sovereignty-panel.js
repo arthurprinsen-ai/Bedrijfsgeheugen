@@ -74,19 +74,21 @@ class DataSovereigntyPanel extends HTMLElement{
   const ai={...AI_DEPLOYMENT_DEFAULTS,...(p.ai_deployment_profile||{})};
   const placementRequested=Boolean(p.ai_deployment_profile);
   const selectionActive=placementRequested&&ai.deploymentMode==='MANAGED_CLOUD'&&ai.provider==='ANTHROPIC'&&ai.modelFamily==='CURRENT'&&ai.computeRegion==='AUTO'&&ai.storageRegion==='AUTO'&&ai.ragRegion==='SAME_AS_STORAGE'&&ai.networkMode==='STANDARD'&&!ai.modelId;
+  const deploymentPending=placementRequested&&!selectionActive;
+  const displayedPolicySatisfied=Boolean(sum.policySatisfied)&&!deploymentPending;
   this.innerHTML=`<section class="dsp-shell" data-sovereignty-scope="${esc(this.scope)}">
    <header class="dsp-head"><div><span class="dsp-kicker">DATA SOVEREIGNTY CONTROL PLANE</span><h2>Waar gaat data heen?</h2><p>Live overzicht van invoer, verwerking, opslag, AI, doorgifte, koppelingen en bewijs. Onbekend blijft onbekend.</p></div>
    <div class="dsp-scope"><button type="button" data-scope="bedrijfsgeheugen" class="${self?'is-active':''}">Bedrijfsgeheugen</button><button type="button" data-scope="customer" class="${!self?'is-active':''}">Mijn organisatie</button></div></header>
    <div class="dsp-pulse">
     <article><small>Actief beleid</small><b>${esc(modeLabel[p.mode]||p.mode||'—')}</b></article>
-    <article><small>Status</small><b class="${sum.policySatisfied?'ok':'bad'}">${esc(statusLabel(sum))}</b><small>${esc(sum.violationCount??0)} afwijkingen</small></article>
+    <article><small>Status</small><b class="${displayedPolicySatisfied?'ok':'bad'}">${deploymentPending?'Gekozen AI-route nog niet actief':esc(statusLabel(sum))}</b><small>${esc(sum.violationCount??0)} afwijkingen in geregistreerde stromen</small></article>
     <article><small>Dataflows</small><b>${esc(sum.flowCount??0)}</b><small>${esc(sum.connectorCount??0)} koppelingen</small></article>
     <article><small>AI-routes</small><b>${esc(sum.activeAiRoutes??0)}</b><small>${esc(sum.globalOrUnknownAiRoutes??0)} globaal/onbekend</small></article>
     <article><small>Laatste herijking</small><b>${esc(s.generatedAt?new Date(s.generatedAt).toLocaleString('nl-NL'):'—')}</b></article>
    </div>
    ${!self?`<form class="dsp-policy">
     <div class="dsp-policy-title"><h3>Kies waar jouw AI draait</h3><p>Selecteer de gewenste infrastructuur, het AI-model en de opslagplaatsen. Dit is een aanvraag/beleidskeuze, geen automatische installatie.</p></div>
-    <label>Databeleid<select name="mode">${options([['TRANSPARENT_GLOBAL','Transparant wereldwijd'],['EU_STORAGE','Opslag uitsluitend in EU'],['EU_ONLY','EU-only: opslag + verwerking']],p.mode)}</select></label>
+    <label>Databeleid<select name="mode">${options([['TRANSPARENT_GLOBAL','Transparant wereldwijd'],['EU_STORAGE','Opslag uitsluitend in EU'],['EU_ONLY','EU-only: opslag + verwerking'],['CUSTOM','Aangepast beleid']],p.mode)}</select></label>
     <label>Infrastructuur<select name="deploymentMode">${options([['MANAGED_CLOUD','Beheerde cloud AI'],['PRIVATE_CLOUD','Private cloud / eigen cloudaccount'],['ON_PREMISE','Op eigen servers / on-premise'],['AIR_GAPPED','Volledig offline / air-gapped']],ai.deploymentMode)}</select></label>
     <label>Cloud / inferentieprovider<select name="provider">${options([['ANTHROPIC','Anthropic (huidige route)'],['AZURE_OPENAI','Microsoft Azure OpenAI'],['AWS_BEDROCK','Amazon Bedrock'],['GOOGLE_VERTEX','Google Vertex AI'],['MISTRAL_API','Mistral API'],['OLLAMA','Ollama (eigen infrastructuur)'],['VLLM','vLLM (eigen infrastructuur)']],ai.provider)}</select></label>
     <label>Modelfamilie<select name="modelFamily">${options([['CURRENT','Huidig model'],['MISTRAL','Mistral'],['GEMMA','Gemma'],['LLAMA','Llama'],['CUSTOM','Eigen / ander model']],ai.modelFamily)}</select></label>
@@ -135,7 +137,7 @@ class DataSovereigntyPanel extends HTMLElement{
     deploymentMode:String(fd.get('deploymentMode')),provider:String(fd.get('provider')),modelFamily:String(fd.get('modelFamily')),
     modelId:String(fd.get('modelId')||'').trim(),computeRegion:String(fd.get('computeRegion')),storageRegion:String(fd.get('storageRegion')),
     ragRegion:String(fd.get('ragRegion')),networkMode:String(fd.get('networkMode'))};
-   const r=await fetch('/api/data-sovereignty',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({mode:fd.get('mode'),preferredAiProvider:'',preferredAiRegion:'',aiDeploymentProfile})});
+   const r=await fetch('/api/data-sovereignty',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({mode:fd.get('mode'),preferredAiProvider:this.snapshot?.policy?.preferred_ai_provider||'',preferredAiRegion:this.snapshot?.policy?.preferred_ai_region||'',aiDeploymentProfile})});
    const data=await r.json();if(!r.ok)throw new Error(data.error||'write_failed');this.snapshot=data.snapshot||data;this.render();
   }catch{button.disabled=false;button.textContent='Opslaan mislukt — opnieuw';}
  }
