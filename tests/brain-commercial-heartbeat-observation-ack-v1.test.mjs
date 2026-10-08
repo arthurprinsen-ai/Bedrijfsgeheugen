@@ -49,3 +49,16 @@ test('all four already-applied production migration versions exist as replayable
     assert.doesNotMatch(content,/^\s*select\s+1\s*;\s*$/i,filename+' must not be a synthetic no-op');
   }
 });
+
+test('reconciled daily commercial action selector excludes expired actions and mutable heartbeat timestamps',()=>{
+  for(const version of [
+    '20261008073832_fix_current_day_commercial_action_proof_v1.sql',
+    '20261008073907_fix_expired_commercial_action_supersede_v1.sql'
+  ]){
+    const applied=readFileSync('supabase/migrations/'+version,'utf8');
+    assert.match(applied,/a\.due_at at time zone 'Europe\/Amsterdam'/i);
+    assert.doesNotMatch(applied,/a\.updated_at at time zone 'Europe\/Amsterdam'/i);
+    assert.match(applied,/a\.status in \('suggested','prepared','waiting','done'\)/i);
+    assert.doesNotMatch(applied,/a\.status in \('suggested','prepared','waiting','done','expired'\)/i);
+  }
+});
