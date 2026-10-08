@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import {renderProtectedWorkspaceFixture} from './portal-v2-protected-render-fixture.mjs';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 
@@ -6,6 +7,7 @@ async function openAnalysis(page,pageId){
  const response=await page.goto(`${BASE_URL}/portal-v2/?page=${encodeURIComponent(pageId)}&bg_algorithm_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
  expect(response,`${pageId} response`).not.toBeNull();
  expect(response.status(),`${pageId} status`).toBeLessThan(400);
+ if(pageId==='compliance-governance')await renderProtectedWorkspaceFixture(page,pageId);
  const workspaceSelector=`[data-functional-workspace="${pageId}"]`;
  const workspace=page.locator(workspaceSelector);
  await expect(workspace,`${pageId} workspace`).toBeVisible({timeout:15_000});
