@@ -121,6 +121,10 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const sampledJobs = Number(metrics.sampled_jobs ?? metrics.total_jobs ?? 0);
   const jobs = Math.max(1, sampledJobs);
   const evidenceReady = Number.isInteger(sampledJobs) && sampledJobs >= 20
+    && Number(metrics.queue_wait_sample_count ?? sampledJobs) >= 10
+    && Number(metrics.execution_sample_count ?? sampledJobs) >= 10
+    && Number(metrics.required_queue_sample_count ?? 1) >= 1
+    && Number(metrics.required_total_sample_count ?? 1) >= 1
     && ['queue_wait_seconds_p95', 'execution_seconds_p95'].every(key =>
       typeof metrics[key] === 'number' && Number.isFinite(metrics[key]) && metrics[key] >= 0);
   const observedTime = Date.parse(observedAt ?? '');
@@ -169,7 +173,7 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     next.max_parallel_packages=clamp(before-1,2,8);
     next.candidate_batch_window_seconds=clamp(Number(next.candidate_batch_window_seconds ?? 20)+(orchestrationWaste?10:5),10,60);
     decisions.push(orchestrationWaste?'reduce-fanout-and-batch-more':'reduce-runner-pressure-and-batch-more');
-  } else if (evidenceReady && !tuningCooldown && !calibrationVeto && requiredQueueP95 < 30 && requiredTotalP95 <= 120 && queueP95 < 30 && fanoutP95 <= 5 && failureRate < 0.05 && skippedRate < 0.25) {
+  } else if (evidenceReady && !tuningCooldown && !calibrationVeto && requiredQueueP95 < 30 && requiredTotalP95 <= 120 && queueP95 < 30 && fanoutP95 <= 5 && failureRate < 0.05) {
     next.max_parallel_packages=clamp(Number(next.max_parallel_packages ?? 4)+1,2,8);
     decisions.push('increase-safe-parallelism');
   }
