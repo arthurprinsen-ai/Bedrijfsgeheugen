@@ -51,7 +51,7 @@ export async function handleTenantAiInference({request,user,tenantId,sovereignty
     modelId:answer.provenance.modelId,evidenceId:answer.provenance.evidenceId,
     tokenUsageStatus:answer.providerUsage?'REPORTED_BY_PROVIDER':'UNAVAILABLE'});
  }catch(error){
-  if(error?.code==='AI_RUNTIME_NOT_VERIFIED')return json({error:'AI_RUNTIME_NOT_VERIFIED'},409);
+  if(error?.code==='AI_RUNTIME_NOT_VERIFIED'&&!String(error?.message||'').startsWith('RUNTIME_PROVIDER_HTTP_'))return json({error:'AI_RUNTIME_NOT_VERIFIED'},409);
   return json({error:'AI_RUNTIME_PROVIDER_FAILED'},502);
  }
 }
