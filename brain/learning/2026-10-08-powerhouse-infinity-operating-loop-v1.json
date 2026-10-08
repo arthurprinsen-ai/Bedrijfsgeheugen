@@ -30,10 +30,10 @@
       "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
     ],
     "shadow": [
-      "tests/powerhouse-infinity-operating-loop-v1.test.mjs"
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
     ],
     "canary": [
-      "tests/powerhouse-infinity-operating-loop-v1.test.mjs"
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
     ],
     "success_criteria": [
       "All seven component rows operational",
