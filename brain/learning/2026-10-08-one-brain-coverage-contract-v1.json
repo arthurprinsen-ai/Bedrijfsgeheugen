@@ -7,8 +7,28 @@
   "outcome": "CI and production proof pending",
   "lesson": "Never promote aggregate GREEN from partial evidence",
   "evaluation": {
-    "historical": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-    "shadow": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
-    "canary": "tests/brain-one-brain-coverage-contract-v1.test.mjs"
+    "historical": {
+      "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+      "status": "PENDING_CI"
+    },
+    "shadow": {
+      "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+      "status": "PENDING_CI"
+    },
+    "canary": {
+      "test": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+      "status": "PENDING_CI"
+    }
+  },
+  "fingerprint": "one-brain-coverage-contract-unproven-aggregate-green-v1",
+  "failure_class": "ASSURANCE_EVIDENCE_GAP",
+  "root_cause": "An aggregate One Brain GREEN status was requested without eight independently evidenced runtime gates; the original material change also omitted canonical semantic learning fields.",
+  "prevention": "Fail closed on any gate without explicit production proof and retain the mandatory learning record, ledger and human-readable documentation in the same PR lineage.",
+  "evidence": {
+    "repository_paths": [
+      "platform/assurance/one-brain-coverage-v1.json",
+      "tests/brain-one-brain-coverage-contract-v1.test.mjs"
+    ],
+    "production_proof": "NOT_ESTABLISHED"
   }
 }
