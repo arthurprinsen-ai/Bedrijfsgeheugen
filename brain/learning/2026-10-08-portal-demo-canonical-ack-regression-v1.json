@@ -1,0 +1,40 @@
+{
+  "id": "2026-10-08-portal-demo-canonical-ack-regression-v1",
+  "fingerprint": "portal-demo-nondurable-vs-tenant-canonical-ack-v1",
+  "compiler": {
+    "failure_class": "MISSING_CANONICAL_BUSINESS_INPUT_ACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Portal-wide causal-impact enforcement started requiring a canonical BusinessInput acknowledgement for non-durable demo edits, while legacy causal regressions pinned a retired portal impact engine version.",
+  "prevention": [
+    "Demo state changes must never invoke durable BusinessInput storage nor require an ACK.",
+    "Authenticated state writes must continue to require a verified BusinessInput ACK; missing token or ACK fails closed.",
+    "Keep causal propagation regressions aligned with the current ONE BRAIN all-pages version rather than weakening the runtime."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-demo-businessinput-ack-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-demo-businessinput-ack-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-demo-businessinput-ack-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-demo-businessinput-ack-v1.test.mjs",
+      "tests/portal-business-input.test.mjs",
+      "tests/portal-v2-causal-propagation.test.mjs"
+    ],
+    "source": [
+      "portal-v2/domain-state.js",
+      "portal-v2/portal-impact-engine.js"
+    ],
+    "outcome": "Demo-only non-durable branch restored and retired version expectation updated; production acceptance pending CI."
+  }
+}
