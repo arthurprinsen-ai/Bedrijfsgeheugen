@@ -52,6 +52,18 @@ test('Required references exactly one provider diagnosis authority and bounded s
   assert.doesNotMatch(workflow, /supabase-preview-check-state\.mjs/);
 });
 
+test('Supabase Required lane checks out the exact PR head before using its local diagnosis script', () => {
+  const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
+  const section = workflow.split('\n  supabase_preview:\n')[1]?.split('\n  backend:\n')[0];
+  assert.ok(section, 'supabase_preview job must exist');
+  const checkout = section.indexOf('uses: actions/checkout@v5');
+  const diagnosis = section.indexOf('node tools/ci/supabase-preview-diagnosis.mjs');
+  assert.ok(checkout >= 0, 'a fresh Actions runner requires checkout for repository scripts');
+  assert.ok(diagnosis > checkout, 'checkout must precede running the diagnosis script');
+  assert.match(section, /ref: \$\{\{ needs\.preflight\.outputs\.change_head_sha \}\}/);
+  assert.match(section, /persist-credentials: false/);
+});
+
 test('CLI emits a machine-readable skipped state and actionable provider reason', () => {
   const dir = mkdtempSync(join(tmpdir(), 'powerhouse-preview-check-'));
   try {
