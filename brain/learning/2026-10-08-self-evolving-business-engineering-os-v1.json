@@ -34,6 +34,19 @@
       "CSRD applicability assessed not inferred",
       "control group required",
       "no direct production mutation"
+    ],
+    "shadow": [
+      "tests/brain-self-evolving-business-engineering-os-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-self-evolving-business-engineering-os-v1.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_LEARNING_EVIDENCE_GAP",
+    "scope": "INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
