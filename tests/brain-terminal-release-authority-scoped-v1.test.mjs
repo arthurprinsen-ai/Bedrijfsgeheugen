@@ -15,6 +15,19 @@ test('Supabase-only source changes require Edge provider and not Netlify',()=>{
   ]),{website:false,edge:true,other:false,non_runtime:false});
 });
 
+test('Supabase-only delivery includes both deployment toolchain files without a Netlify dependency',()=>{
+  const scope=classifyTerminalReleaseScope([
+    'supabase/config.toml',
+    'tools/delivery/terminal-release-scope.mjs',
+    'tools/supabase/edge-runtime-scope.mjs',
+    '.github/workflows/obligation-terminal-closure.yml',
+    'brain/learning/test-record.json',
+    'docs/changes/test-note.md',
+    'tests/brain-terminal-release-authority-scoped-v1.test.mjs'
+  ]);
+  assert.deepEqual(scope,{website:false,edge:true,other:false,non_runtime:false});
+});
+
 test('website-only changes require Netlify, not Supabase',()=>{
   const scope=classifyTerminalReleaseScope(['netlify/functions/connector-readiness.mjs','docs/changes/release.md']);
   assert.equal(scope.website,true);
