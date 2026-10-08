@@ -61,3 +61,15 @@ test('regulatory data maps to bounded routes while public visibility remains uni
   assert.doesNotMatch(lane,/Verify all public pages are visibly rendered\n\s+if:/);
   assert.match(lane,/Verify every header menu panel is readable\n\s+if: needs\.classify\.outputs\.risk_lane == 'high-risk'/);
 });
+
+test('terminal control-plane replay executes the invocation revision, never old merged code',async()=>{
+  const yaml=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(yaml,/ref: \$\{\{ github\.sha \}\}/);
+  assert.doesNotMatch(yaml,/ref: \$\{\{ steps\.context\.outputs\.merge_sha \}\}/);
+  assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" origin\/main/);
+  assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" HEAD/);
+  assert.match(yaml,/TERMINAL_CONTROL_PLANE_CHECKOUT_NOT_DESCENDANT/);
+  assert.match(yaml,/Verify exact-head critical delivery gates before terminal claim/);
+  assert.match(yaml,/Derive exact Supabase production migration identities across supersession lineage/);
+  assert.match(yaml,/Persist canonical Brain terminal evidence before terminal claim/);
+});
