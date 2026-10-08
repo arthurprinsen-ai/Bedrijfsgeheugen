@@ -1,6 +1,6 @@
 // One Brain connector impact contract: administrative readbacks and approvals are not new data-flow changes.
 const TOP_LEVEL_INTERNAL=new Set(['id','tenantId','tenant_id','version','state','status','createdAt','created_at','updatedAt','updated_at','activatedAt','activatedBy','executions','evidence','runtime']);
-const RUNTIME_INTERNAL=new Set(['changeImpact','crossDomainApproval','activationEvidence','recoveryObligation','refreshPolicy','pausedAt','pausedBy','testEvidence','lastExecution','lastRun','lastTest']);
+const RUNTIME_INTERNAL=new Set(['changeImpact','crossDomainApproval','activationEvidence','recoveryObligation','refreshPolicy','pausedAt','pausedBy','testEvidence','lastExecution','lastRun','lastTest','impactReviewPending']);
 const ordered=value=>{
   if(Array.isArray(value))return value.map(ordered);
   if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).sort(([a],[b])=>a.localeCompare(b)).map(([k,v])=>[k,ordered(v)]));
