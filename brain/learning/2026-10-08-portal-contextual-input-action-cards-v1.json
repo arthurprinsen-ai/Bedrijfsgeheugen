@@ -17,11 +17,12 @@
     "keep native form-inventory separate from the unproven full DOM/connector audit"
   ],
   "tests": [
+    "tests/brain-portal-contextual-action-cards-writeback.test.mjs",
     "portal-v2/tests/contextual-action-cards.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/contextual-action-cards.test.mjs"
+      "tests/brain-portal-contextual-action-cards-writeback.test.mjs"
     ]
   },
   "compiler": {
