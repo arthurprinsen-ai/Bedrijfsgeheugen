@@ -1,0 +1,50 @@
+{
+  "id": "github-delivery-continuity-v1",
+  "date": "2026-10-08",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|github-delivery|supervisor-continuity|v1",
+  "root_cause": "The scheduled recovery controller could call an undefined BRAIN dispatcher, fail to reliably recognize exact-head in-flight Required runs, and stop revisiting merged nonterminal obligations after 24 hours; repeated closure attempts could amplify provider load rather than converge. The first protected merge also exposed a pre-existing gap: the canonical learning path-validation gate only ran after merging, permitting a non-brain test path to enter main.",
+  "prevention": [
+    "Never add a competing Github scheduler when the existing canonical recovery supervisor can be hardened.",
+    "Recovery-run identity must bind the PR number and immutable candidate SHA and avoid dispatch when that logical flight is already active.",
+    "The supervisor must never invoke an undefined BRAIN dispatch path or assume a recovery happened on a skipped invocation.",
+    "Nonterminal merged obligations remain auditable and bounded by a seven-day check horizon, 90-minute retry cooldown and three-attempt limit.",
+    "Only canonical post-merge production readback plus durable authority evidence can mark an obligation LIVE_BEWEZEN.",
+    "The canonical Brain learning evaluation gate must run in Required preflight before protected merge and reject missing/non-Brain test paths."
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY_SUPERVISOR_CONTINUITY_GAP",
+    "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "entrypoint": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "gate": ".github/workflows/required-test.yml",
+    "terminal_authority": ".github/workflows/obligation-terminal-closure.yml",
+    "regression": [
+      "tests/delivery-powerhouse-supervisor.test.mjs",
+      "tests/brain-github-delivery-continuity-v1.test.mjs"
+    ],
+    "premerge_gate": ".github/workflows/required-test.yml"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-delivery-continuity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-github-delivery-continuity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-github-delivery-continuity-v1.test.mjs"
+    ],
+    "success_criteria": [
+      "Exact-head Required + CodeQL pass without duplicate dispatch",
+      "Protected merge is verifiable",
+      "Production Readback and durable canonical obligation terminal evidence succeed before any LIVE_BEWEZEN claim"
+    ]
+  },
+  "production_claim": "NOT_PROVEN",
+  "outcome": "RECOVERY_PREMERGE_CONTRACT_PENDING_PROTECTED_CI_AND_RUNTIME_VALIDATION"
+}
