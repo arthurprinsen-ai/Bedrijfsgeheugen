@@ -10,7 +10,7 @@ async function requestBody(request,normalized){if(normalized.body!==undefined){i
 function executionVersion(row){return Number(row?.connector_versie??row?.connectorVersion??0);}
 function executionEvidence(row){return row?.evidence&&typeof row.evidence==='object'?row.evidence:{};}
 // Browser runtime claims may never self-approve a cross-domain review.
-const TRUSTED_RUNTIME_KEYS=new Set(['changeImpact','crossDomainApproval','activationEvidence','refreshPolicy','recoveryObligation','testEvidence']);
+const TRUSTED_RUNTIME_KEYS=new Set(['changeImpact','crossDomainApproval','activationEvidence','refreshPolicy','recoveryObligation','testEvidence','impactReviewPending']);
 const untrustedRuntime=runtime=>Object.fromEntries(Object.entries(runtime&&typeof runtime==='object'&&!Array.isArray(runtime)?runtime:{}).filter(([key])=>!TRUSTED_RUNTIME_KEYS.has(key)));
 const fingerprintPart=value=>String(value||'unknown').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'unknown';
 function recoveryFingerprint(connectorId,failedStage,errorClass){return `connector-${fingerprintPart(connectorId)}-${fingerprintPart(failedStage)}-${fingerprintPart(errorClass)}`;}
@@ -106,7 +106,6 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='POST'&&id&&action==='activate'){
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
     const review=pendingConnectorImpactReview(connector);
-    if(review)return json({error:'CROSS_DOMAIN_REVIEW_REQUIRED',review},409);
     if(typeof sovereignty?.assertConnectorAllowed==='function'){
       try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch(error){
         if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:error.code,details:clean(error.details||[])},409);
@@ -133,7 +132,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
       return json({error:code},422);
     }
     const activationEvidence={...persistedEvidence,activatedAt:new Date().toISOString(),activatedBy:user.id};
-    return json(clean(await store.saveDraft(tenantId,{...connector,id,state:'Active',runtime:{...(connector.runtime||{}),refreshMinutes:refreshPolicy.effectiveRefreshMinutes,refreshPolicy,activationEvidence,recoveryObligation:null}})));
+    return json(clean(await store.saveDraft(tenantId,{...connector,id,state:'Active',runtime:{...(connector.runtime||{}),refreshMinutes:refreshPolicy.effectiveRefreshMinutes,refreshPolicy,activationEvidence,recoveryObligation:null,impactReviewPending:Boolean(review)}})));
   }
   if(normalized.method==='POST'&&id&&action==='pause'){
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
