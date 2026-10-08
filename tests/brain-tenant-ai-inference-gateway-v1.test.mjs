@@ -9,9 +9,17 @@ const profile={...CURRENT_AI_DEPLOYMENT_PROFILE,provider:'MISTRAL_API',modelFami
 const receipt={...profile,tenantId,useCaseId:'portal-project-answer',policyVersion:3,endpointId:'deployment-approved',
  evidenceId:'readback-proof-001',providerReadbackEvidenceId:'provider-readback-001',residencyEvidenceId:'residency-proof-001',
  dataProcessingEvidenceId:'dpa-proof-001',egressEvidenceId:'egress-allowlist-001',
+ changeId:'sovereignty:tenant-a:3',customerConsentId:'customer-consent-3',
  status:'VERIFIED',verifier:'PROVIDER_READBACK',proofStatus:'ATTESTED',revoked:false,
  verifiedAt:now-12000,issuedAt:now-11000,validUntil:now+250000};
+const approvedScopes=['privacy','security','ai_governance','data_residency','supplier_risk','finance','sustainability','csrd_esrs_scope','audit','customer_disclosure'];
+const approval={tenantId,changeId:'sovereignty:tenant-a:3',policyVersion:3,status:'CLEARED',
+ customerConsentId:'customer-consent-3',validUntil:now+220000,
+ approvedScopes,evidenceIds:['readback-proof-001']};
 const registry={'tenant-a':{
+ crossDomainApproval:approval,
+ approvedEndpoints:[{endpointId:'deployment-approved',tenantId,provider:'MISTRAL_API',
+   region:'AUTO',networkMode:'STANDARD',enabled:true}],
  signedProof:signVerifiedRuntimeProof({receipt,key}),
  config:{MISTRAL_API:{apiKey:'private-secret',endpointId:'deployment-approved',
  providerReadbackEvidenceId:'provider-readback-001',egressEvidenceId:'egress-allowlist-001'}}
@@ -101,6 +109,22 @@ test('EU-only processing and EU-only storage policies cannot approve AUTO or US 
   const res=await handleTenantAiInference({...base,sovereignty:restrictive});
   assert.equal(res.status,409);
   assert.equal((await res.json()).error,'SOVEREIGNTY_REGION_NOT_VERIFIED');
+ }
+ assert.equal(calls,0);
+});
+
+test('gateway denies egress when CSRD approval or endpoint allowlist is missing even with a signed receipt',async()=>{
+ let calls=0;const fetchFn=async()=>{calls++;throw Error('must not egress')};
+ for(const record of [
+  {...registry[tenantId],crossDomainApproval:null},
+  {...registry[tenantId],crossDomainApproval:{...approval,status:'REVIEW_REQUIRED'}},
+  {...registry[tenantId],approvedEndpoints:[]},
+  {...registry[tenantId],approvedEndpoints:[{...registry[tenantId].approvedEndpoints[0],tenantId:'other-tenant'}]}
+ ]){
+  const response=await handleTenantAiInference({request:req({question:'Hello'}),user,tenantId,
+   sovereignty,registry:{[tenantId]:record},proofKey:key,now,fetchFn});
+  assert.equal(response.status,409);
+  assert.deepEqual(await response.json(),{error:'AI_RUNTIME_NOT_VERIFIED'});
  }
  assert.equal(calls,0);
 });
