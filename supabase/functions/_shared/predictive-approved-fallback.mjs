@@ -75,7 +75,7 @@ export function parseForecastPlan(raw,allowedKeys){
   }
   return payload;
 }
-export async function callApprovedForecastFallback({apiKey,model,context,fetchImpl=fetch}){
+export async function callApprovedForecastFallback({apiKey,model,context,fetchImpl=fetch,schemaRetry=false}){
   if(!clean(apiKey)||!clean(model))throw new Error('FALLBACK_PROVIDER_CONFIGURATION_MISSING');
   const response=await fetchImpl('https://backend.composio.dev/api/v3.1/tools/execute/COMPOSIO_SEARCH_GROQ_CHAT',{
     method:'POST',
@@ -83,7 +83,7 @@ export async function callApprovedForecastFallback({apiKey,model,context,fetchIm
     body:JSON.stringify({version:'latest',arguments:{
       model,temperature:0.2,max_tokens:4200,stream:false,
       messages:[
-        {role:'system',content:'Je bent een evidence-bound voorspeller voor MKB. Geef uitsluitend JSON met één sleutel forecasts (max 6) en exact deze velden per forecast: '+requiredKeys.join(', ')+'. scope = segment, market, technology, regulation of behavior. prediction_mode = anticipatory, category_creation of reactive. Kansscores liggen tussen 0 en 1, expected_lead_days tussen 1 en 180. evidence_keys moeten afkomstig zijn uit de meegegeven signalen. Gebruik twee onafhankelijke publieke signalen per voorspelling en drie bij category_creation. Geen verzonnen feiten, geen persoonsgegevens. Als bewijs onvoldoende is, antwoord exact {"forecasts":[]}.'},
+        {role:'system',content:'Je bent een evidence-bound voorspeller voor MKB. Geef uitsluitend JSON met één sleutel forecasts (max 6) en exact deze velden per forecast: '+requiredKeys.join(', ')+'. scope = segment, market, technology, regulation of behavior. prediction_mode = anticipatory, category_creation of reactive. Kansscores liggen tussen 0 en 1, expected_lead_days tussen 1 en 180. evidence_keys moeten afkomstig zijn uit de meegegeven signalen. Gebruik twee onafhankelijke publieke signalen per voorspelling en drie bij category_creation. Geen verzonnen feiten, geen persoonsgegevens. Als bewijs onvoldoende is, antwoord exact {"forecasts":[]}.' + (schemaRetry ? ' Dit is een herkansing wegens ongeldig JSON-schema. Antwoord uitsluitend geldige JSON met alle vereiste velden en alleen toegestane evidence_keys. Geen toelichting of markdown.' : '')},
         {role:'user',content:JSON.stringify(context)}
       ]
     }}),
@@ -95,4 +95,19 @@ export async function callApprovedForecastFallback({apiKey,model,context,fetchIm
   const content=clean(body?.data?.choices?.[0]?.message?.content);
   if(!content)throw new Error('FALLBACK_PROVIDER_EMPTY');
   return content;
+}
+
+// Bounded schema-only retry. No retry of provider/auth errors, no relaxation of
+// evidence/safety validation and never pass the rejected response back to the model.
+export async function runValidatedApprovedFallback({apiKey,model,context,fetchImpl=fetch}){
+  const allowedKeys=(Array.isArray(context?.signals)?context.signals:[]).map(s=>s.signal_key);
+  for(let attempt=0;attempt<2;attempt++){
+    const raw=await callApprovedForecastFallback({apiKey,model,context,fetchImpl,schemaRetry:attempt===1});
+    try{
+      return {plan:parseForecastPlan(raw,allowedKeys),schemaRetryCount:attempt};
+    }catch(error){
+      if(!(error instanceof Error)||error.message!=='FALLBACK_FORECAST_SCHEMA_INVALID'||attempt===1)throw error;
+    }
+  }
+  throw new Error('FALLBACK_FORECAST_SCHEMA_INVALID');
 }

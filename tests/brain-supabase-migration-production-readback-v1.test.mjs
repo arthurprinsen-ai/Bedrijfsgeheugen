@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 import {migrationVersions,assertExactProviderRows,verifyMigrationProduction} from '../tools/delivery/supabase-migration-production-readback.mjs';
 const workflow=readFileSync(new URL('../.github/workflows/obligation-terminal-closure.yml',import.meta.url),'utf8');
 test('migration-only terminal closure requires Supabase provider readback, never Netlify',()=>{
-  assert.ok(workflow.includes('migration_files=') && workflow.includes('runtime_other='));
+  assert.ok(workflow.includes('migration_files=') && workflow.includes('migration_provider_only='));
   assert.ok(workflow.includes('SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}'));
   assert.ok(workflow.includes('supabase-migration-production-readback.mjs'));
 });
@@ -38,7 +38,7 @@ test('canonical replay workflow has one valid manual trigger and no duplicated j
   assert.ok(workflow.endsWith('          retention-days: 90\n'));
   assert.ok(workflow.includes('SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}'));
   assert.ok(workflow.includes('migration_files='));
-  assert.ok(workflow.includes('runtime_other='));
+  assert.ok(workflow.includes('migration_provider_only='));
   assert.ok(workflow.includes('node tools/delivery/supabase-migration-production-readback.mjs'));
 });
 test('migration-only provider proof maps to established canonical terminal mode',()=>{

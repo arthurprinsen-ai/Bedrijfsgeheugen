@@ -76,6 +76,7 @@ class DataSovereigntyPanel extends HTMLElement{
   const selectionActive=placementRequested&&ai.deploymentMode==='MANAGED_CLOUD'&&ai.provider==='ANTHROPIC'&&ai.modelFamily==='CURRENT'&&ai.computeRegion==='AUTO'&&ai.storageRegion==='AUTO'&&ai.ragRegion==='SAME_AS_STORAGE'&&ai.networkMode==='STANDARD'&&!ai.modelId;
   const deploymentPending=placementRequested&&!selectionActive;
   const displayedPolicySatisfied=Boolean(sum.policySatisfied)&&!deploymentPending;
+  const reviewTasks=Array.isArray(s.reviewPortfolio?.tasks)?s.reviewPortfolio.tasks.filter(t=>t?.status==='NEEDS_EVIDENCE'):[];
   const impact=p.last_change_impact?.contract==='powerhouse-cross-domain-change-v1'?p.last_change_impact:null;
   const impactPending=impact?.status==='REVIEW_REQUIRED';
   const impactTypeLabel={AI_MODEL:'AI-model of AI-provider',AI_DEPLOYMENT:'AI-infrastructuur',DATA_LOCATION:'Data- of verwerkingslocatie'};
@@ -114,6 +115,11 @@ class DataSovereigntyPanel extends HTMLElement{
     <small>Een gewenste locatie is geen bewezen dataresidentie. Providerconfiguratie, contracten, hosting, encryptie, verwerkers en end-to-end tests moeten eerst worden gevalideerd. Bij ontbrekend bewijs wordt verwerking geblokkeerd.</small>
    </form>`:''}
    ${viol.length?`<section class="dsp-alert"><h3>${viol.length} afwijking(en) / blokkade(s)</h3>${viol.map(v=>`<p><b>${esc(v.name||v.key)}</b> — ${esc(v.reason)}</p>`).join('')}</section>`:''}
+   ${reviewTasks.length?`<section class="dsp-card dsp-impact-review-tasks" aria-label="Openstaande controles">
+    <h3>Welke controles volgen uit deze wijziging?</h3>
+    <p>Deze onderwerpen moeten met bewijs worden beoordeeld. Een controle op de lijst is nog geen goedkeuring en betekent niet dat CSRD wettelijk van toepassing is.</p>
+    <ul>${reviewTasks.map(t=>`<li><strong>${esc(t.label||'Controle')}</strong> — ${esc(t.requiredReview||'Bewijs nodig')} <small>Open — bewijs nog niet geverifieerd</small>${Array.isArray(t.candidateEsrs)&&t.candidateEsrs.length?` <small>Mogelijk relevante onderwerpen: ${esc(t.candidateEsrs.join(', '))}</small>`:''}</li>`).join('')}</ul>
+   </section>`:''}
    <section class="dsp-card"><h3>1. Dataflows — van invoer tot opslag</h3><div class="dsp-tablewrap"><table><thead><tr><th>Flow</th><th>Data</th><th>Verwerking</th><th>Opslag</th><th>Doorgifte</th><th>Bewaren</th><th>Bewijs</th></tr></thead><tbody>${flowRows(s.dataFlows)}</tbody></table></div></section>
    <section class="dsp-card"><h3>2. Providers & datalocaties</h3><div class="dsp-tablewrap"><table><thead><tr><th>Provider</th><th>Klantdata</th><th>Verwerking</th><th>Opslag</th><th>Doorgifte</th><th>Training</th><th>Bewijs</th><th>Retentie / toelichting</th></tr></thead><tbody>${providerRows(s.providers)}</tbody></table></div></section>
    <section class="dsp-card"><h3>3. AI-routes die data kunnen verwerken</h3><div class="dsp-tablewrap"><table><thead><tr><th>Use-case</th><th>Provider/model</th><th>Verwerking</th><th>Doorgifte</th><th>Training</th><th>Datacategorieën</th><th>Retentie</th><th>Subprocessors / bewijs</th></tr></thead><tbody>${aiRows(s.aiRoutes)}</tbody></table></div></section>
