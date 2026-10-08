@@ -35,5 +35,15 @@
     "historical_replay": [
       "tests/brain-portal-causal-lossless-writeback.test.mjs"
     ]
-  }
+  },
+  "root_causes": [
+    "hard-coded last-50 truncation destroyed older causal changes before canonical acceptance",
+    "blind clear-all after asynchronous Brain writes removed newer user mutations",
+    "generic pages-level model binding discarded per-native-page source identity",
+    "portal state was not required to be current/saved before submitting model snapshots"
+  ],
+  "tests": [
+    "tests/brain-portal-causal-lossless-writeback.test.mjs",
+    "portal-v2/tests/portal-causal-propagation.test.mjs"
+  ]
 }
