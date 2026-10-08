@@ -303,13 +303,20 @@ export function openPortalPage(pageId){
     // Never use a global/canonical admin scope on customer pages.
     if(typeof window!=='undefined'&&typeof fetch==='function'){
       const revision=++csrdSovereigntyReadbackRevision;
-      void fetch('/api/data-sovereignty',{credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}})
-        .then(response=>{if(!response.ok)throw new Error('SOVEREIGNTY_READBACK_UNAVAILABLE');return response.json()})
-        .then(readback=>{
-          if(revision!==csrdSovereigntyReadbackRevision||root.dataset.pageId!=='csrd-impact'||!native.isConnected)return;
-          renderer?.updateSnapshot?.(withSovereigntyChangeReview(snapshot,readback));
-        })
-        .catch(()=>{}); // Never replace unverified evidence with a green legal conclusion.
+      const readCustomerJson=async path=>{
+        const response=await fetch(path,{credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}});
+        if(!response.ok)throw new Error('CROSS_DOMAIN_REVIEW_READBACK_UNAVAILABLE');
+        return response.json();
+      };
+      void Promise.allSettled([
+        readCustomerJson('/api/data-sovereignty'),
+        readCustomerJson('/api/connectors/review-queue')
+      ]).then(([sovereignty,connectors])=>{
+        if(revision!==csrdSovereigntyReadbackRevision||root.dataset.pageId!=='csrd-impact'||!native.isConnected)return;
+        const readback=sovereignty.status==='fulfilled'?sovereignty.value:null;
+        const reviews=connectors.status==='fulfilled'&&Array.isArray(connectors.value)?connectors.value:[];
+        renderer?.updateSnapshot?.(withSovereigntyChangeReview(snapshot,readback,reviews));
+      }).catch(()=>{}); // Never claim that a missing provider/readback proves compliance.
     }
   }
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
