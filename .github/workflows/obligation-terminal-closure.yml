@@ -327,8 +327,16 @@ jobs:
           # Migration-only merges are released by Supabase, not Netlify.
           # All changed files must be exact migrations or non-runtime evidence.
           migration_files="$(printf '%s\n' "$changed_paths" | grep -E '^supabase/migrations/[0-9]{14}_[a-z0-9_]+[.]sql$' || true)"
-          runtime_other="$(printf '%s\n' "$changed_paths" | grep -Ev '^(supabase/migrations/[0-9]{14}_[a-z0-9_]+[.]sql$|docs/|tests/|brain/learning/)' || true)"
-          if [ -n "$migration_files" ] && [ -z "$runtime_other" ]; then
+          # Migration + verifier-only/learning evidence is a Supabase-only release.
+          # Reuse canonical production classifier; unknown website/Edge/other
+          # runtime stays excluded from this provider-only readback fast path.
+          migration_provider_only="$(CHANGED_PATHS="$changed_paths" node --input-type=module - <<'NODE'
+          import {isMigrationAndNonRuntimeScope} from './tools/delivery/terminal-release-scope.mjs';
+          const files=String(process.env.CHANGED_PATHS||'').split(/\r?\n/);
+          process.stdout.write(String(isMigrationAndNonRuntimeScope(files)));
+          NODE
+          )"
+          if [ -n "$migration_files" ] && [ "$migration_provider_only" = true ]; then
             node tools/delivery/supabase-migration-production-readback.mjs
             exit 0
           fi
