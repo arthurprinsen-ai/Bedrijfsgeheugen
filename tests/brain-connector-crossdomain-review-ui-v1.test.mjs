@@ -29,7 +29,7 @@ test('monitor shows the correct tenant connector review and known ESRS scope can
 });
 test('untrusted review labels and extra sensitive data are not reflected in customer UI',()=>{
  const source={...draft,runtime:{changeImpact:impact}};
- const html=renderConnectorBuilder({draft:source,stage:10,reviewQueue:[{reviewKind:'CROSS_DOMAIN_CHANGE',connectorId:'connector-a',status:'pending',affectedDomains:['<script>alert(1)</script>','privacy'],esrsReview:[{standard:'<img src=x onerror=alert(1)>'}]}]});
+ const html=renderConnectorBuilder({draft:source,stage:10,reviewQueue:[{reviewKind:'CROSS_DOMAIN_CHANGE',connectorId:'connector-a',status:'pending',affectedDomains:['<SCRIPT>alert(1)</SCRIPT>','privacy'],esrsReview:[{standard:'<img src=x onerror=alert(1)>'}]}]});
  assert.match(html,/Privacy/);
  assert.doesNotMatch(html,/<script>|<img|onerror|alert\(1\)/i);
 });
