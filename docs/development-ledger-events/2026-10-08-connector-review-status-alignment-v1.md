@@ -6,3 +6,5 @@
 - Security boundary: the backend still decides actual activation using persisted test, entitlements, sovereignty evidence and provider checks.
 - Regressions: `tests/brain-connector-crossdomain-review-ui-v1.test.mjs` and `tests/brain-connector-impact-gate-v1.test.mjs`.
 - No compliance/CO2/CSRD obligation is represented as approved; production delivery and authenticated customer readback remain subject to standard checks.
+
+- Main integration readback: candidate reconciled against non-overlapping main commit `9c7c21a08ad6c6125b9302431bb5489b9bcaf717`; refreshed required CI must revalidate the exact final head.
