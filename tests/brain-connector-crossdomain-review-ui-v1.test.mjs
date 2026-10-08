@@ -31,7 +31,7 @@ test('untrusted review labels and extra sensitive data are not reflected in cust
  const source={...draft,runtime:{changeImpact:impact}};
  const html=renderConnectorBuilder({draft:source,stage:10,reviewQueue:[{reviewKind:'CROSS_DOMAIN_CHANGE',connectorId:'connector-a',status:'pending',affectedDomains:['<script>alert(1)</script>','privacy'],esrsReview:[{standard:'<img src=x onerror=alert(1)>'}]}]});
  assert.match(html,/Privacy/);
- assert.doesNotMatch(html,/<script>|<img|onerror|alert\(1\)/);
+ assert.doesNotMatch(html,/<script>|<img|onerror|alert\(1\)/i);
 });
 test('legacy connector without a review remains subject to existing test-evidence guard',()=>{
  const html=renderConnectorBuilder({draft:{...draft,runtime:{}},stage:9,testResult:null});
