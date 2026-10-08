@@ -27,7 +27,7 @@ jobs:
           node-version: '22'
       - name: Verify autonomous engineering fabric
         run: |
-          node --test tests/brain-autonomous-engineering-fabric-v3.test.mjs
+          node --test tests/brain-autonomous-engineering-fabric-v3.test.mjs tests/brain-engineering-tuning-candidate.test.mjs
           node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
       - name: Measure current CI
         env:
@@ -47,35 +47,62 @@ jobs:
             exit 0
           }
 
-          existing="$(gh pr list --state open --search 'in:title "Powerhouse: daily engineering tuning"' --json number --jq '.[0].number // empty')"
-          if [ -n "$existing" ]; then
-            echo "Existing tuning PR #$existing is still authoritative; no duplicate created."
-            exit 0
+          # A stale, invalid bot-owned tuning PR must not block the organism forever.
+          # Never retire a valid candidate or any unrelated/human-owned branch.
+          existing_json="$(gh pr list --state open --search 'in:title "Powerhouse: daily engineering tuning"' --limit 100 --json number,title,body,createdAt,headRefName)"
+          while IFS= read -r row; do
+            number="$(jq -r '.number' <<<"$row")"
+            branch_name="$(jq -r '.headRefName // ""' <<<"$row")"
+            body="$(jq -r '.body // ""' <<<"$row")"
+            created_at="$(jq -r '.createdAt // ""' <<<"$row")"
+            if [[ "$branch_name" != automation/engineering-tuning-* ]]; then
+              echo "::warning::Non-optimizer PR #$number uses daily tuning title; safe automatic retirement forbidden."
+              exit 1
+            fi
+            if grep -Eq '^Base-SHA: [0-9a-f]{40}$' <<<"$body" &&
+               grep -Eq '^Change-Scope: .+' <<<"$body" &&
+               grep -Eq '^Scope-Budget: [1-9][0-9]*$' <<<"$body" &&
+               grep -Eq '^Obligation-ID: powerhouse-daily-engineering-tuning-' <<<"$body"; then
+              echo "::notice::Existing valid tuning PR #$number remains authoritative; no duplicate."
+              exit 0
+            fi
+            created_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo 0)"
+            now_epoch="$(date -u +%s)"
+            if [ "$created_epoch" -le 0 ] || [ "$((now_epoch-created_epoch))" -lt 172800 ]; then
+              echo "::warning::Recent/unknown invalid PR #$number requires evidence before retirement."
+              exit 1
+            fi
+            gh pr comment "$number" --body "Automated retirement: >48h old bot-owned daily tuning PR lacks the mandatory protected delivery contract. Retained unmerged for audit; no gates bypassed. New tuning requires exact main, learning, change documentation and append-only development ledger."
+            gh pr close "$number"
+            echo "::notice::Retired stale inadmissible optimizer PR #$number; existing branch and history retained."
+          done < <(printf '%s\n' "$existing_json" | jq -c '.[] | select(.title=="Powerhouse: daily engineering tuning")')
+
+          base_sha="$(git rev-parse HEAD)"
+          current_main="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$base_sha" != "$current_main" ]; then
+            echo "::error::MAIN_EPOCH_DRIFT: checked-out $base_sha != current main $current_main; refuse stale tuning candidate."
+            exit 1
           fi
 
+          node tools/delivery/daily-engineering-tuning-candidate.mjs --write "$GITHUB_RUN_ID" "$base_sha"
           cp "$proposed" config/powerhouse-engineering-tuning.json
+          slug="$(date -u +%F)-engineering-tuning-$GITHUB_RUN_ID"
           branch="automation/engineering-tuning-$GITHUB_RUN_ID"
           git config user.name "Powerhouse Engineering Optimizer"
           git config user.email "actions@users.noreply.github.com"
           git checkout -b "$branch"
-          git add config/powerhouse-engineering-tuning.json
-          git commit -m "Engineering: daily bounded tuning"
+          git add config/powerhouse-engineering-tuning.json \
+            "brain/learning/$slug.json" \
+            "docs/changes/$slug.md" \
+            "docs/development-ledger-events/$slug.md"
+          git commit -m "engineering: protected daily tuning with evidence closure"
           git push origin "$branch"
-          base_sha="$(git rev-parse main)"
-          body="$(
-            printf '%s\n' \
-              "Obligation-ID: powerhouse-daily-engineering-tuning-$GITHUB_RUN_ID" \
-              "Delivery-Lane: automation" \
-              "Candidate-Type: implementation" \
-              "Base-SHA: $base_sha" \
-              "Supersedes: none" \
-              "Change-Scope: config/powerhouse-engineering-tuning.json" \
-              "Scope-Budget: 1" \
-              "" \
-              "Bounded autonomous tuning only. Direct-PR and workflow budgets may only ratchet downward. Safety gates, exact-SHA identity, protected merge and production readback cannot be weakened by this optimizer."
-          )"
-          url="$(gh pr create --base main --head "$branch" --title "Powerhouse: daily engineering tuning" --body "$body")"
-          gh pr merge "$url" --auto --squash || true
+          url="$(gh pr create --base main --head "$branch" --title "Powerhouse: daily engineering tuning" --body-file artifacts/engineering-optimizer/pull-request-body.md)"
+          if ! gh pr merge "$url" --auto --squash; then
+            echo "::error::PROTECTED_AUTO_MERGE_REGISTRATION_FAILED: $url"
+            exit 1
+          fi
+          echo "::notice::TUNING_CANDIDATE_SUBMITTED:$url -- merge, provider readback and real outcome still pending."
       - uses: actions/upload-artifact@v4
         if: always()
         with:
