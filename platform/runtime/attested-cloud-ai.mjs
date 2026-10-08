@@ -1,6 +1,7 @@
 import {createHmac,timingSafeEqual} from 'node:crypto';
 import {invokeVerifiedAiRuntime,AiRuntimeDenied} from '../brain/verified-ai-runtime.mjs';
 import {validateCustomerAiDeployment} from '../policy/customer-ai-deployment.mjs';
+import {createAttestedVertexAdapter} from './attested-vertex-adapter.mjs';
 
 // Private server-side contract. Signing is reserved for an independently verified,
 // audited provisioning/readback authority; the customer configuration is never a proof.
@@ -44,7 +45,7 @@ export function verifySignedRuntimeProof({signed,key,tenantId,useCaseId,policyVe
  if(claim.deploymentMode!=='MANAGED_CLOUD'||desired.deploymentMode!=='MANAGED_CLOUD')
   reject('RUNTIME_DEPLOYMENT_UNSUPPORTED');
  // This shared Netlify gateway is not a local or air-gapped management plane.
- if(!exact(desired.provider,['MISTRAL_API','AZURE_OPENAI']))
+ if(!exact(desired.provider,['MISTRAL_API','AZURE_OPENAI','GOOGLE_VERTEX']))
   reject('RUNTIME_PROVIDER_UNSUPPORTED');
  return Object.freeze(claim);
 }
@@ -93,6 +94,7 @@ export function createVerifiedCloudAdapters({fetchFn,config}={}){
    return assertResponse(response,'AZURE_OPENAI');
   };
  }
+ if(config.GOOGLE_VERTEX)registry.GOOGLE_VERTEX=createAttestedVertexAdapter({config:config.GOOGLE_VERTEX,fetchFn});
  return Object.freeze(registry);
 }
 const validRequest=request=>request&&Array.isArray(request.messages)&&request.messages.length>0&&request.messages.length<=16

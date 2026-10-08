@@ -1,0 +1,40 @@
+{
+  "id": "attested-vertex-regional-runtime-20261008-v1",
+  "fingerprint": "powerhouse-tenant-google-vertex-regional-proof-no-fallback-v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Tenant AI profiles could select Google Vertex, but the trusted inference gateway rejected it because no region-pinned adapter existed. Selecting a model alone must never activate inference.",
+  "prevention": [
+    "Require independently signed tenant/provider/model/region/expiry proof plus customer consent and cleared cross-domain review including CSRD scope",
+    "Use only allowlisted fixed Google Vertex regional hosts constructed from trusted server configuration; global, arbitrary and cross-region endpoints fail closed",
+    "Require trusted server Google project ID, OAuth bearer access token and provider readback/egress evidence before transmission",
+    "Require explicit Gemini publisher-model identifier and reject unsupported tool or safety responses without silent model/provider fallback",
+    "Keep real credentials and authorized live provider tests separate from repository fixture tests"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-attested-vertex-regional-adapter-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-attested-vertex-regional-adapter-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-attested-vertex-regional-adapter-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-attested-vertex-regional-adapter-v1.test.mjs"
+    ],
+    "source": [
+      "platform/runtime/attested-vertex-adapter.mjs",
+      "platform/runtime/attested-cloud-ai.mjs"
+    ],
+    "outcome": "Provider adapter and deny-before-egress tests; no customer Vertex account, tokens or live region readback provisioned"
+  }
+}

@@ -37,6 +37,16 @@ export const NETLIFY_RUNTIME_PREFIXES = Object.freeze([
   'platform/read-models/',
 ]);
 
+// These modules are imported transitively by Netlify's tenant-ai-inference and
+// data-sovereignty functions. Backend lane != no hosted runtime impact.
+export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
+  'platform/runtime/attested-cloud-ai.mjs',
+  'platform/runtime/attested-vertex-adapter.mjs',
+  'platform/brain/verified-ai-runtime.mjs',
+  'platform/brain/production-ai.mjs',
+  'platform/policy/customer-ai-deployment.mjs',
+]));
+
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
 
 export function deriveNetlifyDeploymentApplicability({
@@ -77,7 +87,7 @@ export function deriveNetlifyDeploymentApplicability({
   const portalRequired=requiredSuites.portal === true;
   const browserRequired=forceBrowser || websiteRequired || portalRequired;
   const netlifyRuntimeRequired=runtimeChangedPaths.some(path =>
-    NETLIFY_RUNTIME_PREFIXES.some(prefix => path.startsWith(prefix))
+    NETLIFY_RUNTIME_EXACT.has(path) || NETLIFY_RUNTIME_PREFIXES.some(prefix => path.startsWith(prefix))
   );
   const deploymentRequired=forceDeployment || browserRequired || netlifyRuntimeRequired;
 
