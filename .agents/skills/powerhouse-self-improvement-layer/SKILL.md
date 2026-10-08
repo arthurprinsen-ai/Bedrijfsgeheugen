@@ -78,3 +78,13 @@ This skill inherits the canonical daily compound-learning contract. Every materi
 - remain discoverable through System Map and canonical skill projection.
 
 Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
+
+## Cross-domain change evolution (2026-10-08)
+Canonical pure planner: `brain/self-improvement/cross-domain-evolution.mjs#planCrossDomainEvolution`.
+- For every material AI model, connector, portal, engineering or strategy policy revision, bind tenant, change ID, exact source revision and both policy versions.
+- Reuse the Organism Graph to calculate affected domains. Explicitly review GDPR, EU AI Act, NIS2/Cbw, security, and CSRD/ESRS applicability when dependency paths require it; an unknown compliance scope never implies applicability or non-applicability.
+- Match only fresh, independently verified outcomes to the same tenant/revision, with provider receipt or production readback; delivery ACK, synthetic/test event, forecast, absent response and vanity metric are not realized value.
+- Demand verified independent evidence from business and engineering plus a genuine controlled comparison before recommending a challenger for protected delivery.
+- Fail closed on missing review, counterfactual, evidence, security/regression or cost/latency guard. Produce a deterministic canonical obligation proposal, never a second executor, scheduler, database, model-policy setter or direct production mutation.
+- The responsible Brain runtime must durably materialize and execute the proposal through existing obligations/outbox, reconcile provider outcomes and project learning; a planner's PROPOSED_NOT_EXECUTED output is not live delivery evidence.
+Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
