@@ -37,8 +37,9 @@ async function readback(key:string,acct:{id:string;userId:string},messageId:stri
  const headers=Array.isArray(m?.payload?.headers)?m.payload.headers:(Array.isArray(m?.headers)?m.headers:[]);
  const toHeader=headers.find((h:any)=>s(h?.name).toLowerCase()==='to');
  const addressed=s(toHeader?.value||m?.to).toLowerCase(),target=s(recipient).toLowerCase();
- if(id!==messageId||!labels.includes('SENT')||!target||!addressed.includes(target))
-  throw{code:'GMAIL_READBACK_MISMATCH',id_matches:id===messageId,sent_label:labels.includes('SENT'),recipient_matches:Boolean(target&&addressed.includes(target))};
+ const recipients=(addressed.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi)||[]).map((v:string)=>v.toLowerCase());
+ if(id!==messageId||!labels.includes('SENT')||!target||!recipients.includes(target))
+  throw{code:'GMAIL_READBACK_MISMATCH',id_matches:id===messageId,sent_label:labels.includes('SENT'),recipient_matches:Boolean(target&&recipients.includes(target))};
  return{message_id:id,thread_id:s(m?.threadId||m?.thread_id),sent_label_verified:true,recipient_verified:true};
 }
 Deno.serve(async(req)=>{
@@ -107,7 +108,7 @@ Deno.serve(async(req)=>{
     out.push({action_id:a.action_id,status:'unverified',reason:er,checkpoint_written:!ue});
    }
   }
-  const sent=out.filter(x=>x.status==='sent').length;await db.from('bg_gezondheid').insert({gemeten_op:now,onderdeel:'powerhouse-autonomous-outreach',soort:'commercial-execution',status:sent===0||out.some(x=>x.status==='error')?'waarschuwing':'ok',detail:'selected='+(acts||[]).length+'; sent='+sent+'; errors='+out.filter(x=>x.status==='error').length,gegevens:{contract:C,selected:(acts||[]).length,sent,results:out,user_authorized:true,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null}});
+  const sent=out.filter(x=>x.status==='sent').length;await db.from('bg_gezondheid').insert({gemeten_op:now,onderdeel:'powerhouse-autonomous-outreach',soort:'commercial-execution',status:sent===0||out.some(x=>x.status!=='sent')?'waarschuwing':'ok',detail:'selected='+(acts||[]).length+'; sent='+sent+'; errors='+out.filter(x=>x.status==='error').length,gegevens:{contract:C,selected:(acts||[]).length,sent,results:out,user_authorized:true,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null}});
   return J({ok:true,contract:C,selected:(acts||[]).length,sent,results:out,external_outreach_executed:sent>0,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null});
  }catch(e:any){return J({ok:false,contract:C,error:safe(e)},503)}
 });
