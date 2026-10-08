@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|predictive|governed-provider-credit-failover|v1",
+  "obligationId": "powerhouse-governed-predictive-credit-failover-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The canonical predictive Edge Function had no route to its already-approved Composio/Groq fallback and stopped when Anthropic rejected requests because the account had insufficient API credits. The pg_cron success signal did not measure provider acceptance or finished forecasts.",
+  "prevention": [
+    "Use only the canonical pre-approved ACTIVE fallback model for the precise predictive use case",
+    "Distinguish transient primary-provider credit/rate/service exhaustion from nonrecoverable authorization or governance errors",
+    "Limit fallback to one bounded proxy call; never mark invalid provider output as success",
+    "Store actual model/provider and fallback provenance in existing canonical predictive-run health evidence",
+    "Reject unsupported forecast evidence or an unconfirmed success receipt"
+  ],
+  "evidence": {
+    "provider_failure_at": "2026-10-08T15:00:35.960Z",
+    "provider_failure": "AI_400:Your credit balance is too low",
+    "fallback_governance_use_case": "supabase-powerhouse-predictive-first-mover-fallback-v1",
+    "fallback_governance_state": "approved ACTIVE",
+    "previous_proven_runtime": "2026-10-07T13:23:32.923Z: Composio/Groq fallback with forecast result",
+    "planned_test": "tests/brain-predictive-governed-fallback-v1.test.mjs",
+    "production_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_CREDIT_EXHAUSTED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-governed-fallback-v1.test.mjs",
+      "tests/brain-predictive-production-lineage.test.mjs"
+    ]
+  }
+}
