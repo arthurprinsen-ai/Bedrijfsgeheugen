@@ -30,5 +30,6 @@
     "historical_replay": [
       "tests/brain-optimization-closure-truth-v1.test.mjs"
     ]
-  }
+  },
+  "root_cause": "The canonical daily candidate_measured indicator trusted populated outcome JSON and allowed shipment/status counters to appear like realized improvement without approved review, exact production receipts, independent measured outcomes or linked learning."
 }
