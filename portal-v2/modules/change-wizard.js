@@ -55,6 +55,16 @@ function impactRow(impact){
   ].map(([label,count])=>`<span class="wzstat"><b>${count}</b><span>${label}</span></span>`).join('');
 }
 
+export async function saveChangeProposal(domainState,change){
+  if(!domainState?.get||!domainState?.set||!domainState?.flush)throw new TypeError('CANONICAL_CHANGE_STATE_REQUIRED');
+  const existing=domainState.get('portal.changes.items')||[];
+  const items=Array.isArray(existing)?existing:[];
+  domainState.set('portal.changes.items',[...items,change]);
+  await domainState.flush();
+  if(domainState.status?.()!=='saved')throw new Error('CHANGE_WIZARD_BRAIN_ACK_PENDING');
+  return change;
+}
+
 export function mountChangeWizard(root,{domainState,onSaved}={}){
   if(!root||!domainState?.get)return ()=>{};
   let draft={dimension:PROFILE_DIMENSIONS[0]?.id||'',toLevel:2,reason:'',owner:'',effectiveDate:''};
@@ -106,15 +116,22 @@ export function mountChangeWizard(root,{domainState,onSaved}={}){
       root.querySelector('[data-wz-submit]').disabled=now.filter(Boolean).length<4;
     };
 
-    root.querySelector('[data-wz-submit]')?.addEventListener('click',()=>{
+    root.querySelector('[data-wz-submit]')?.addEventListener('click',async()=>{
       const change=buildChange(draft,currentLevel());
-      const state=domainState.get()||{};
-      const items=arr(state?.portal?.changes?.items);
-      domainState.set({...state,portal:{...state.portal,changes:{...state.portal?.changes,items:[...items,change]}}});
-      draft={dimension:draft.dimension,toLevel:2,reason:'',owner:'',effectiveDate:''};
-      draw();
-      root.querySelector('.wzout').textContent=`Ingediend en wacht op akkoord van ${change.owner}. Niets is doorgevoerd.`;
-      onSaved?.(change);
+      const button=root.querySelector('[data-wz-submit]');
+      if(button)button.disabled=true;
+      try{
+        await saveChangeProposal(domainState,change);
+        draft={dimension:draft.dimension,toLevel:2,reason:'',owner:'',effectiveDate:''};
+        draw();
+        const out=root.querySelector('.wzout');
+        if(out)out.textContent='Voorstel opgeslagen en wacht op akkoord van '+change.owner+'. De wijziging is nog niet uitgevoerd.';
+        onSaved?.(change);
+      }catch{
+        const out=root.querySelector('.wzout');
+        if(out)out.textContent='Opslag of Brain-bevestiging ontbreekt. Het voorstel blijft in het formulier staan; probeer opnieuw.';
+        if(button)button.disabled=false;
+      }
     });
   };
 
