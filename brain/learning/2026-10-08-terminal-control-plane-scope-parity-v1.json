@@ -1,0 +1,38 @@
+{
+  "version": "terminal-control-plane-scope-parity-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "terminal-release-scope-control-plane-misclassified-runtime-v1",
+  "root_cause": "Production-path classifier treated tools/delivery and tools/supabase deployment tooling as unknown production runtime, causing a Supabase-only closure to seek Netlify readback when code and governance files changed together.",
+  "evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4142",
+    "original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37760879023",
+    "exposed_risk": "terminal control-plane tooling appears as other runtime in release classifier"
+  },
+  "intervention": "Ignore only the recognized deployment-control-plane prefixes when calculating production runtime, preserving unknown application paths as fail closed.",
+  "prevention": "Regression test replays complete modified-path set of PR #4142; require no unknown runtime or Netlify for an Edge-only release, while mixed paths retain both authorities.",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "protected CI",
+    "protected merge",
+    "exact provider readback",
+    "durable Brain terminal readback"
+  ]
+}
