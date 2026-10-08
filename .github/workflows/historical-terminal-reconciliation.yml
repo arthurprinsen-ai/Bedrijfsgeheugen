@@ -7,7 +7,6 @@ on:
       - '.github/workflows/historical-terminal-reconciliation.yml'
       - 'tools/delivery/historical-terminal-reconcile.mjs'
       - 'config/historical-terminal-reconciliation.json'
-      - 'config/one-shot-historical-terminal-4134.json'
   workflow_dispatch:
 
 permissions:
@@ -40,54 +39,3 @@ jobs:
           path: .artifacts/historical-terminal-reconciliation.json
           if-no-files-found: error
           retention-days: 90
-
-  detect-original-4134:
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    outputs:
-      due: ${{ steps.check.outputs.due }}
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-      - name: Verify one-time marker, exact original merge and protected main
-        id: check
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          [ "$GITHUB_REF" = "refs/heads/main" ] || exit 78
-          marker="config/one-shot-historical-terminal-4134.json"
-          added="$(git diff-tree --no-commit-id --name-only --diff-filter=A -r "$GITHUB_SHA")"
-          if ! grep -Fxq "$marker" <<<"$added"; then
-            echo "due=false" >> "$GITHUB_OUTPUT"
-            echo "HISTORICAL_REPLAY_4134_NOT_APPLICABLE"
-            exit 0
-          fi
-          jq -e '.pr_number == 4134 and .merge_sha == "f8c7f313be234da58326a399d45b5866ff13ca59" and .contract == "historical-obligation-replay-v1"' "$marker" >/dev/null || exit 78
-          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/4134")"
-          [ "$(jq -r '.merged' <<<"$pr")" = true ] || { echo "::error::HISTORICAL_PR_NOT_MERGED"; exit 78; }
-          [ "$(jq -r '.merge_commit_sha' <<<"$pr")" = "f8c7f313be234da58326a399d45b5866ff13ca59" ] || {
-            echo "::error::HISTORICAL_MERGE_IDENTITY_DRIFT"
-            exit 78
-          }
-          git merge-base --is-ancestor "f8c7f313be234da58326a399d45b5866ff13ca59" "$GITHUB_SHA" || {
-            echo "::error::HISTORICAL_MERGE_NOT_CONTAINED_ON_MAIN"
-            exit 78
-          }
-          echo "due=true" >> "$GITHUB_OUTPUT"
-          echo "HISTORICAL_REPLAY_4134_AUTHORIZED_BY_ADDED_MAIN_MARKER"
-
-  replay-original-4134:
-    needs: detect-original-4134
-    if: needs.detect-original-4134.outputs.due == 'true'
-    permissions:
-      actions: read
-      contents: read
-      id-token: write
-      pull-requests: write
-    uses: ./.github/workflows/obligation-terminal-closure.yml
-    with:
-      pr_number: "4134"
-    secrets: inherit
