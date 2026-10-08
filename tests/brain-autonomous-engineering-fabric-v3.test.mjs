@@ -5,6 +5,7 @@ import {
   routeEngineeringAgent,
   buildClosureManifest,
   optimizeDailyTuning,
+  assessTuningExperiment,
   validateAutonomousEngineeringFabricV3
 } from '../scripts/brain/autonomous-engineering-fabric-v3.mjs';
 
@@ -215,4 +216,54 @@ test('post-change observation cooldown blocks optimistic ratchet but not safety 
   const released=optimizeDailyTuning({metrics:good,current,observedAt:'2026-10-10T14:01:00Z'});
   assert.equal(released.signals.cooldown_active,false);
   assert.equal(released.tuning.max_parallel_packages,5);
+});
+
+test('tuning experiment remains pending without actual post-change Required evidence',()=>{
+  const trial={status:'PENDING',started_at:'2026-10-01T00:00:00Z',baseline:{required_total_seconds_p95:120,failure_rate:0.02}};
+  const result=assessTuningExperiment({trial,observedAt:'2026-10-04T00:00:00Z',postChange:{
+    sampled_jobs:100,required_count:2,queue_sample_count:100,required_total_seconds_p95:300,failed_jobs:10
+  }});
+  assert.equal(result.status,'AWAITING_EVIDENCE');
+});
+
+test('observed regression rolls back previous bounded knobs and preserves safety',()=>{
+  const current={max_parallel_packages:6,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,
+    source:'daily-autonomous-optimizer',updated_at:'2026-10-01T00:00:00Z',
+    tuning_trial:{status:'PENDING',started_at:'2026-10-01T00:00:00Z',
+      baseline:{required_total_seconds_p95:100,failure_rate:0},
+      previous_tuning:{max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75}},
+    ci:{direct_pr_workflow_budget:8},safety:{}};
+  const metrics={queue_wait_seconds_p95:40,required_queue_wait_seconds_p95:40,required_total_seconds_p95:150,
+    execution_seconds_p95:100,failed_jobs:0,skipped_jobs:0,sampled_jobs:80,workflow_fanout_per_sha_p95:3,direct_pull_request_workflow_count:8};
+  const postChange={sampled_jobs:60,queue_sample_count:55,required_count:6,required_total_seconds_p95:155,failed_jobs:0};
+  const result=optimizeDailyTuning({current,metrics,postChange,observedAt:'2026-10-04T00:00:00Z'});
+  assert.equal(result.tuning.max_parallel_packages,4);
+  assert.equal(result.tuning.tuning_trial.status,'ROLLED_BACK_OBSERVATIONAL');
+  assert.ok(result.decisions.includes('rollback-observed-ci-tuning-regression'));
+  assert.equal(result.tuning.safety.protected_merge,true);
+});
+
+test('positive observational feedback closes a trial without initiating another immediately',()=>{
+  const current={max_parallel_packages:5,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,
+    source:'daily-autonomous-optimizer',updated_at:'2026-10-01T00:00:00Z',ci:{direct_pr_workflow_budget:8},safety:{},
+    tuning_trial:{status:'PENDING',started_at:'2026-10-01T00:00:00Z',baseline:{required_total_seconds_p95:120,failure_rate:0},
+      previous_tuning:{max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75}}};
+  const good={queue_wait_seconds_p95:5,required_queue_wait_seconds_p95:5,required_total_seconds_p95:80,execution_seconds_p95:50,
+    failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:2,direct_pull_request_workflow_count:8};
+  const result=optimizeDailyTuning({current,metrics:good,postChange:{sampled_jobs:50,queue_sample_count:50,required_count:5,required_total_seconds_p95:80,failed_jobs:0},
+    observedAt:'2026-10-04T00:00:00Z'});
+  assert.equal(result.tuning.max_parallel_packages,5);
+  assert.equal(result.tuning.tuning_trial.status,'CLOSED_NONREGRESSION_OBSERVED');
+  assert.ok(result.decisions.includes('confirm-observed-no-regression-not-causal'));
+});
+
+test('automatic tuning records a baseline and previous knobs for future readback',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,
+    ci:{direct_pr_workflow_budget:8},safety:{}};
+  const result=optimizeDailyTuning({current,observedAt:'2026-10-08T12:00:00Z',
+    metrics:{queue_wait_seconds_p95:5,required_queue_wait_seconds_p95:5,required_total_seconds_p95:100,
+      execution_seconds_p95:80,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:2,direct_pull_request_workflow_count:8}});
+  assert.equal(result.tuning.tuning_trial.status,'PENDING');
+  assert.equal(result.tuning.tuning_trial.baseline.required_total_seconds_p95,100);
+  assert.equal(result.tuning.tuning_trial.previous_tuning.max_parallel_packages,4);
 });
