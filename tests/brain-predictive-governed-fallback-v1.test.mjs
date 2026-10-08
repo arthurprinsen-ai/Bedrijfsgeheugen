@@ -32,6 +32,11 @@ test('no unapproved, suspended, wrong-model or absent fallback provider is ever 
  }
 });
 
+test('a real bounded fetch TimeoutError is recoverable without allowing arbitrary aborts',()=>{
+ assert.equal(isRecoverablePredictiveProviderError(new DOMException('The operation was aborted due to timeout','TimeoutError')),true);
+ assert.equal(isRecoverablePredictiveProviderError(new DOMException('User aborted','AbortError')),false);
+});
+
 test('authorization or model-governance failure never triggers a fallback',async()=>{
  let calls=0;
  await assert.rejects(executeGovernedForecast({primary:async()=>{throw Error('AI_GOVERNANCE_UNAVAILABLE');},fallbackConfig:async()=>{calls++;return {};},fallback:async()=>{calls++;return {forecasts:[]};}}),/AI_GOVERNANCE_UNAVAILABLE/);

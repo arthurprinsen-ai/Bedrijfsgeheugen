@@ -5,6 +5,8 @@ export const PREDICTIVE_FALLBACK_MODEL='openai/gpt-oss-120b';
 
 const clean=v=>String(v??'').trim();
 export function isRecoverablePredictiveProviderError(error){
+  // AbortSignal.timeout() surfaces a DOMException TimeoutError, not AI_408.
+  if(error?.name==='TimeoutError')return true;
   const message=clean(error?.message??error);
   if(message==='AI_KEY_UNAVAILABLE')return true;
   if(/^AI_(?:402|408|429|500|502|503|504):/.test(message))return true;
