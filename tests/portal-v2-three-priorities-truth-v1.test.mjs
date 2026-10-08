@@ -40,3 +40,20 @@ test('the canonical V2 cockpit shows at most three top decisions and keeps the r
  assert.match(html,/<small>Vertrouwen<\/small><b>—<\/b>/);
  assert.match(html,/<small>Verwachte waarde<\/small><b>—<\/b>/);
 });
+
+test('blocked actions stay outside the primary top three and cannot bypass approval',()=>{
+ const decisions=[
+  {id:'blocked',title:'Blocked',portfolioBucket:'NOW',rank:1,status:'ELIGIBLE',dependencyState:'BLOCKED_BY_APPROVAL'},
+  {id:'approval',title:'Approval needed',portfolioBucket:'NOW',rank:2,status:'PROPOSED'},
+  {id:'ready-1',title:'Ready 1',portfolioBucket:'NOW',rank:3,status:'ELIGIBLE'},
+  {id:'ready-2',title:'Ready 2',portfolioBucket:'NEXT',rank:4,status:'ELIGIBLE'},
+  {id:'ready-3',title:'Ready 3',portfolioBucket:'NEXT',rank:5,status:'ELIGIBLE'}
+ ];
+ const html=renderCompanyCockpitHtml({decisions:{items:decisions}});
+ const top=html.split('<summary>Overige prioriteiten (2)</summary>')[0];
+ assert.doesNotMatch(top,/data-decision-id="blocked"/);
+ assert.match(top,/data-decision-id="approval"/);
+ assert.match(html,/Geblokkeerd: BLOCKED_BY_APPROVAL/);
+ assert.equal((html.match(/data-company-command="START"/g)||[]).length,3);
+ assert.equal((html.match(/data-company-command="APPROVE"/g)||[]).length,1);
+});
