@@ -23,7 +23,7 @@ async function walk(dir,depth=0){
    if(!info.isFile()||info.size>200000)continue;
    const buffer=Buffer.alloc(Math.min(info.size,20000));
    const {bytesRead}=await handle.read(buffer,0,buffer.length,0);
-   if(pattern.test(buffer.toString('utf8',0,bytesRead)))out.push({path:p.replaceAll('\\\\','/'),matched:'content'});
+   if(pattern.test(buffer.toString('utf8',0,bytesRead)))out.push({path:p.split(path.sep).join('/'),matched:'content'});
   } catch { continue; } finally { await handle?.close(); }
  }
  return out;
