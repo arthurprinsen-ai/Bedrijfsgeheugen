@@ -1,0 +1,37 @@
+{
+  "id": "customer-ai-csrd-review-visibility-20261008-v1",
+  "fingerprint": "customer-visible-ai-csrd-impact-no-unsupported-green-v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The tenant AI deployment preference can trigger regulatory, cost, privacy and CSRD review but previously the customer-facing sovereignty panel had no visual status for the assessment.",
+  "prevention": [
+    "Render only the tenant-scoped persisted last_change_impact status in the existing sovereignty panel",
+    "Show ESRS topics as pending applicability/materiality review, never measured emissions or legal compliance claims",
+    "Escape all source-provided text and never display actor IDs, change IDs or full audit event metadata"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-ai-csrd-review-visibility.test.mjs"
+    ],
+    "shadow": [
+      "tests/portal-ai-csrd-review-visibility.test.mjs"
+    ],
+    "canary": [
+      "tests/portal-ai-csrd-review-visibility.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/portal-ai-csrd-review-visibility.test.mjs"
+    ],
+    "source": [
+      "portal-next/data-sovereignty-panel.js"
+    ],
+    "outcome": "Customer sees pending review; no new separate dashboard and no invented CSRD compliance"
+  }
+}
