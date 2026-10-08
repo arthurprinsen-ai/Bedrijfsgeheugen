@@ -53,9 +53,12 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "TERMINAL_CONTEXT_RESOLVED:pr=$pr_number candidate=$candidate_sha merge=$merge_sha"
 
+      # The trusted terminal control plane is the immutable invocation revision
+      # from protected main. A historical MERGE_SHA is evidence, not executable
+      # control-plane code: older merged commits may lack newer gate modules.
       - uses: actions/checkout@v5
         with:
-          ref: ${{ steps.context.outputs.merge_sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v5
@@ -72,6 +75,7 @@ jobs:
           set -euo pipefail
           git fetch origin main --no-tags
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
+          git merge-base --is-ancestor "$MERGE_SHA" HEAD || { echo "::error::TERMINAL_CONTROL_PLANE_CHECKOUT_NOT_DESCENDANT:$MERGE_SHA:$(git rev-parse HEAD)"; exit 78; }
           export PR_BODY="$(printf '%s' "$PR_BODY_B64" | base64 -d)"
           node --input-type=module - <<'NODE'
           import { appendFile } from 'node:fs/promises';
