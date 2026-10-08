@@ -85,6 +85,10 @@ jobs:
         run: |
           node tools/ci/check-control-plane-budget.mjs
           node tools/ci/check-pr-trigger-ratchet.mjs
+      - name: Enforce authenticated Portal evidence freshness
+        run: |
+          node tools/ci/portal-auth-evidence-freshness.mjs
+          node --test tests/portal-auth-evidence-freshness.test.mjs
       - name: Verify immutable release artifact identity regression
         run: node --test tests/release-artifact-identity.test.mjs
       - id: artifact
