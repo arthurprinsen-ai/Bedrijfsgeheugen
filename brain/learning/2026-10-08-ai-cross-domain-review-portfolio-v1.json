@@ -32,7 +32,6 @@
     ],
     "source": [
       "platform/regulatory/cross-domain-review-portfolio.mjs",
-      "netlify/functions/data-sovereignty.mjs",
       "netlify/functions/data-sovereignty.mjs"
     ],
     "outcome": "Existing authenticated sovereignty API returns action-specific evidence obligations; no automated regulatory decisions or new provider provisioning claimed"
