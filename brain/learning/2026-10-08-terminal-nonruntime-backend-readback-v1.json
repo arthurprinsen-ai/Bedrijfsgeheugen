@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|delivery|non-runtime-backend-terminal-closure|v1",
+  "obligationId": "terminal-nonruntime-backend-readback-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "Obligation Terminal Closure #4174 failed with PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN even though Required, CodeQL, protected merge, and Brain foundation succeeded. The existing non_runtime GitHub-main readback path was guarded by DELIVERY_LANE=automation, excluding backend-only control-plane work. The scope classifier also ignored canonical productionTruth.verifierOnlyPrefixes, misclassifying scripts/brain CI collectors as runtime.",
+  "failureModes": [
+    "non-runtime backend PR requires irrelevant Netlify release",
+    "terminal closure retries website endpoints while non-runtime code is already merged",
+    "canonical verifier-only prefixes omitted from scope"
+  ],
+  "prevention": [
+    "derive verifier-only path classification from existing brain/contracts/production-readback-v1.json",
+    "apply protected GitHub-main merge-descendant readback to all delivery lanes only if complete change scope is non_runtime",
+    "retain Netlify for website paths, Supabase provider readback for Edge functions, and fail-closed unknown runtime",
+    "keep independent Brain/skill/learning and terminal proof requirements unchanged"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ],
+    "baseline_comparison": "PR #4174 protected merge 2b72bc350d412e3fec30dfa69967d8230e229223; terminal closure run 37795000123 failed with PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN although only non-runtime tooling was changed.",
+    "success_metric": "Non-runtime backend source classified as non_runtime with protected main ancestry; unknown paths and actual website/Edge changes still require their respective authorities.",
+    "rollback": "Protected revert on unexpected runtime classification or proof regression; never omit a required authority."
+  },
+  "evidence": {
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37795000123",
+    "failure": "PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN",
+    "source_of_truth": "brain/contracts/production-readback-v1.json",
+    "downstream_reconciliation": "PENDING_AFTER_PROTECTED_MERGE"
+  },
+  "prohibited": [
+    "turn off terminal readback",
+    "claim website deployed without Netlify evidence",
+    "bypass Required or CodeQL",
+    "new source of truth"
+  ]
+}
