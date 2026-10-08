@@ -23,7 +23,9 @@
     "docs/growth-revenue-os-architecture.md",
     "docs/superpowers/skills/",
     "package.json",
-    "docs/self-healing-agents.md"
+    "docs/self-healing-agents.md",
+    "docs/architecture/powerhouse-one-loop-contract.md",
+    "tools/powerhouse/"
   ],
   "nonExecutableSharedPaths": [
     "docs/brain/component-registry.json",
