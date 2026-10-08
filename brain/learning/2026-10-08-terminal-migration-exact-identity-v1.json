@@ -1,0 +1,51 @@
+{
+  "version": "terminal-migration-exact-identity-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "failure_class": "TERMINAL_MIGRATION_IDENTITY_AMBIGUITY",
+  "root_cause": "Terminal closure #37756633885 rejected legitimate duplicate-name but distinct applied migration versions; stable-name-only canonical matching ignored exact (version,name) pairs.",
+  "recovery": "Resolve exact migration filename/version first; allow same-name fallback only when exactly one alternative exists; preserve hard failure for genuine ambiguity, missing required production proof, or malformed identity.",
+  "evidence": {
+    "failed_terminal_run_id": 37756633885,
+    "failed_pr_number": 4118,
+    "protected_merge_sha": "99013007ea1b8fe062e5c96ec3c710d760ddcfe6",
+    "duplicate_name": "powerhouse_identity_graph_replay_baseline_v1",
+    "legitimate_versions": [
+      "20261007063438",
+      "20261008080905"
+    ],
+    "prod_versions_already_applied": true
+  },
+  "tests": [
+    "tests/brain-terminal-migration-identity-v1.test.mjs"
+  ],
+  "intervention": "Exact version+name takes precedence while ambiguous historical aliases remain fail-closed.",
+  "prevention": "Terminal source readback must never conflate distinct legitimate versions merely because their descriptive migration names match.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-migration-identity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-migration-identity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-migration-identity-v1.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "source regression pass",
+    "protected Required + CodeQL green",
+    "protected merge",
+    "terminal closure #4118 resume on current main with exact production migration proof",
+    "Brain obligation terminal readback"
+  ],
+  "next_action": "Merge safely after protected checks, then dispatch one exact PR #4118 terminal closure retry and verify final provider readback.",
+  "fingerprint": "delivery|terminal-migration-exact-version-first|same-name-historical-ledger|v1"
+}
