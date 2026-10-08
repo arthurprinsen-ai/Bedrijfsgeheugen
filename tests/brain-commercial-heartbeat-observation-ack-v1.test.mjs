@@ -34,3 +34,18 @@ test('no new scheduler, executor, auth grant or artificial provider proof',()=>{
   assert.match(sql,/revoke execute on function public\.powerhouse_commercial_heartbeat_v1\(timestamptz\) from public, anon, authenticated/);
   assert.doesNotMatch(sql,/set\s+commercial_day_proven\s*=\s*true/i);
 });
+
+test('all four already-applied production migration versions exist as replayable repository SQL',()=>{
+  const baselines=[
+    ['20261008073832_fix_current_day_commercial_action_proof_v1.sql','powerhouse_reconcile_current_commercial_action_set_v2'],
+    ['20261008073907_fix_expired_commercial_action_supersede_v1.sql','powerhouse_reconcile_current_commercial_action_set_v2'],
+    ['20261008080905_powerhouse_identity_graph_replay_baseline_v1.sql','powerhouse_identity_graph_v1'],
+    ['20261008080913_commercial_day_provider_proof_brain_v1.sql','powerhouse_commercial_output_assurance_v1']
+  ];
+  for(const [filename,object] of baselines){
+    const content=readFileSync('supabase/migrations/'+filename,'utf8');
+    assert.ok(content.length>200,filename+' must contain the real applied SQL, not a placeholder');
+    assert.ok(content.includes(object),filename+' must recreate its production dependency');
+    assert.doesNotMatch(content,/^\s*select\s+1\s*;\s*$/i,filename+' must not be a synthetic no-op');
+  }
+});
