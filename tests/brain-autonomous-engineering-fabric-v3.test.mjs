@@ -174,3 +174,44 @@ test('optimizer and self evolution do not allocate standalone PR workflows',asyn
   assert.match(optimizer,/printf '%s\\n'/);
   for(const metric of ['required_queue_wait_seconds_p95','required_total_seconds_p95','direct_pull_request_workflow_count','duplicate_workflow_runs_7d','duplicate_open_obligations','retired_pr_churn_7d']) assert.match(intelligence,new RegExp(metric));
 });
+
+test('unobserved runner performance cannot trigger speculative or parallel auto-tuning',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,ci:{direct_pr_workflow_budget:8},safety:{}};
+  const result=optimizeDailyTuning({metrics:{
+    queue_wait_seconds_p95:5,execution_seconds_p95:40,failed_jobs:0,skipped_jobs:0,sampled_jobs:0,
+    workflow_fanout_per_sha_p95:1,direct_pull_request_workflow_count:8
+  },current});
+  assert.equal(result.tuning.max_parallel_packages,4);
+  assert.equal(result.tuning.speculative_execution_threshold,0.75);
+  assert.equal(result.signals.evidence_ready,false);
+  assert.ok(result.decisions.includes('insufficient-runner-evidence-no-runtime-tuning'));
+});
+
+test('legitimate skipped lanes never masquerade as consumed runner time',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,ci:{direct_pr_workflow_budget:8},safety:{}};
+  const result=optimizeDailyTuning({metrics:{
+    queue_wait_seconds_p95:40,required_queue_wait_seconds_p95:40,required_total_seconds_p95:100,
+    execution_seconds_p95:100,failed_jobs:0,skipped_jobs:45,sampled_jobs:50,
+    workflow_fanout_per_sha_p95:3,direct_pull_request_workflow_count:8
+  },current});
+  assert.equal(result.signals.skipped_rate,0.9);
+  assert.equal(result.tuning.max_parallel_packages,4);
+  assert.equal(result.decisions.includes('reduce-fanout-and-batch-more'),false);
+});
+
+test('post-change observation cooldown blocks optimistic ratchet but not safety recovery',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,
+    updated_at:'2026-10-08T08:00:00Z',source:'daily-autonomous-optimizer',ci:{direct_pr_workflow_budget:8},safety:{}};
+  const good={queue_wait_seconds_p95:5,required_queue_wait_seconds_p95:5,required_total_seconds_p95:50,
+    execution_seconds_p95:50,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,
+    workflow_fanout_per_sha_p95:2,direct_pull_request_workflow_count:8};
+  const wait=optimizeDailyTuning({metrics:good,current,observedAt:'2026-10-09T08:00:00Z'});
+  assert.equal(wait.signals.cooldown_active,true);
+  assert.equal(wait.tuning.max_parallel_packages,4);
+  assert.equal(wait.tuning.speculative_execution_threshold,0.75);
+  const recovery=optimizeDailyTuning({metrics:{...good,required_total_seconds_p95:170},current,observedAt:'2026-10-09T08:00:00Z'});
+  assert.equal(recovery.tuning.max_parallel_packages,3);
+  const released=optimizeDailyTuning({metrics:good,current,observedAt:'2026-10-10T14:01:00Z'});
+  assert.equal(released.signals.cooldown_active,false);
+  assert.equal(released.tuning.max_parallel_packages,5);
+});
