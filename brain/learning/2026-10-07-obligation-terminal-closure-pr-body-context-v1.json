@@ -6,24 +6,25 @@
   "root_cause": "The terminal closure context step resolved and base64-encoded the merged PR body, but the identity step did not bind steps.context.outputs.body_b64 as PR_BODY_B64. The shell decoded an empty value and parseDeliveryMetadata returned no Obligation-ID.",
   "prevention": {
     "rule": "Every post-merge identity step must explicitly receive the canonical resolved PR body output; event context is not an implicit shell environment contract.",
-    "regression": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "regression": "tests/brain-obligation-terminal-closure-pr-body-context-v1.test.mjs",
     "fail_closed": "OBLIGATION_ID_MISSING remains valid only for an actually missing obligation, not wiring loss between workflow steps."
   },
   "evidence": {
     "escaped_run_id": 37647792955,
     "escaped_job_id": 112882986493,
     "observed_error": "OBLIGATION_ID_MISSING",
-    "feature_runtime_state": "Security Trust runtime/provider evidence was independently green; the failure was terminalizer context wiring."
+    "feature_runtime_state": "Security Trust runtime/provider evidence was independently green; the failure was terminalizer context wiring.",
+    "canonicalization_recovery": "Powerhouse Skill Projection run 37655008659 rejected the non-brain evaluation path; evaluation now uses the canonical tests/brain-* namespace."
   },
   "evaluation": {
     "historical_replay": [
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
+      "tests/brain-obligation-terminal-closure-pr-body-context-v1.test.mjs"
     ],
     "shadow": [
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
+      "tests/brain-obligation-terminal-closure-pr-body-context-v1.test.mjs"
     ],
     "canary": [
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
+      "tests/brain-obligation-terminal-closure-pr-body-context-v1.test.mjs"
     ]
   },
   "compiler": {
