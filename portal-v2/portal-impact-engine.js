@@ -10,7 +10,10 @@ const OBSERVATION_SURFACES=Object.freeze(['overzicht','advies','wijzigingen','au
 const REVIEW_RULES=Object.freeze([
   {pattern:/^portal\.(?:data-ai-passport|dataAi|aiScan|aiCapabilities|ai-capabilities|ai-technologie-actueel|koppelingen|trust-center|eu-ai-act-audit|csrd-impact|instellingen)(?:\.|$)/,domains:['ai-runtime','data-residency','privacy-security','supplier','finance','csrd-esrs'],pages:['data-ai-passport','koppelingen','trust-center','compliance-governance','csrd-impact','businesscase','roadmap','data-ai','ai-capabilities','powerhouse-control-center','wet-regelgeving']},
   {pattern:/^portal\.(?:wet-regelgeving|bronnenbibliotheek|bronnenstatus|compliance-command-center)(?:\.|$)/,domains:['regulatory','privacy-security','csrd-esrs'],pages:['compliance-governance','csrd-impact','due-diligence','roadmap','advies']},
-  {pattern:/^portal\.(?:metrics|valueFinance|waarde-financiering|businesscase|billing)(?:\.|$)/,domains:['finance','impact-economics'],pages:['businesscase','waarde-financiering','csrd-impact','roadmap']}
+  {pattern:/^portal\.(?:metrics|valueFinance|waarde-financiering|cijfers-maatstaven|businesscase|billing)(?:\.|$)/,domains:['finance','impact-economics'],pages:['businesscase','waarde-financiering','cijfers-maatstaven','due-diligence','csrd-impact','roadmap']},
+  // Native external-data pages are first-class change sources too; this is an
+  // obligation to reassess dependent views, never proof of materiality or cash value.
+  {pattern:/^portal\.(?:external|sources|regulatory|ondernemersdata|omgevingsradar|arbeidsmarkt-personeel|subsidies-regelingen|economie-branche-actueel|ai-technologie-actueel|deadlines)(?:\.|$)/,domains:['external-intelligence','finance','people','regulatory','csrd-esrs'],pages:['omgevingsradar','branche-markt','mensen','cijfers-maatstaven','businesscase','waarde-financiering','compliance-governance','csrd-impact','due-diligence','roadmap','advies','audittrail']}
 ]);
 
 const CALCS=Object.freeze([

@@ -161,7 +161,7 @@ function ensureShell(){
   if(root) return root;
   root=document.createElement('div');
   root.id='portalView';root.className='portalview';root.setAttribute('aria-hidden','true');
-  root.innerHTML=`<section class="pvpanel" role="region" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Terug naar overzicht">← <span>Overzicht</span></button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
+  root.innerHTML=`<section class="pvpanel" role="region" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Terug naar overzicht">← <span>Overzicht</span></button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div id="pvImpactMap" aria-live="polite" hidden></div><div class="pvnative" id="pvNative"></div></div></section>`;
   document.body.appendChild(root);
   root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>{
     closePortalPage();
@@ -178,6 +178,19 @@ export function closePortalPage(){
   document.documentElement.classList.remove('portalview-open');
 }
 
+function renderImpactMap(root,impact,phase='pending'){
+  const panel=root?.querySelector?.('#pvImpactMap');
+  if(!panel||!Array.isArray(impact?.affectedPages)||impact.affectedPages.length===0)return;
+  // The persisted causal graph is a review plan, not automatically measured value.
+  const targets=[...new Set(impact.affectedPages)].filter(id=>findPage(id)&&id!=='powerhouse-control-center'&&(!isProtectedTrustPage(id)||hasProtectedTrustAccess()));
+  const visible=targets.slice(0,8);
+  const label=phase==='confirmed'?'Opgeslagen in het bedrijfsbrein':'Wijziging — verwerking nog te bevestigen';
+  const source=findPage(impact.sourcePage)?.label||'dit onderdeel';
+  const reviews=(impact.reviewDomains||[]).filter(Boolean);
+  panel.hidden=false;
+  panel.innerHTML=`<details class="pv-impact-map"><summary><b>${esc(label)}</b> · ${targets.length} gekoppelde onderdelen</summary><p>Gewijzigd: ${esc(source)}. De onderstaande onderdelen vragen mogelijk herberekening of beoordeling. Niet alle gevolgen zijn al bewezen.</p><div class="pvactions">${visible.map(id=>`<button type="button" data-impact-target="${esc(id)}">${esc(findPage(id).label||id)} →</button>`).join('')}</div>${targets.length>visible.length?`<small>En nog ${targets.length-visible.length} andere onderdelen.</small>`:''}${reviews.length?`<p>Te beoordelen: ${esc(reviews.join(', '))}</p>`:''}</details>`;
+  panel.querySelectorAll('[data-impact-target]').forEach(button=>button.addEventListener('click',()=>openPortalPage(button.dataset.impactTarget)));
+}
 function impactSummary(impact){
   const changes=Array.isArray(impact?.changes)?impact.changes:[];
   const preferred=changes.find(x=>x.unit==='money')||changes.find(x=>x.unit==='fte')||changes.find(x=>x.unit==='months')||changes.find(x=>x.unit==='percent')||changes[0];
@@ -409,20 +422,26 @@ export function enhancePortalShell(){
       if(!impact.affectedPages?.includes(current))return;
       const status=root.querySelector('#pvStatus');
       if(status)status.textContent=impactSummary(impact);
+      if(impact.changed)renderImpactMap(root,impact,'pending');
       // Tijdens typen blijft het bronformulier stabiel. Andere open afgeleide
       // pagina's mogen direct opnieuw renderen, net als teken() in het oude portaal.
       if(current!==impact.sourcePage)requestAnimationFrame(()=>openPortalPage(current));
     });
     globalThis.addEventListener?.('bg:portal-brain-synced',event=>{
-      const impact=event.detail?.impact;
+      const impact=event.detail?.impacts?.at?.(-1)||event.detail?.impact;
       globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact||{}}));
       const root=document.getElementById('portalView');
       if(!root?.classList.contains('open'))return;
+      renderImpactMap(root,impact,'confirmed');
       const current=root.dataset.pageId;
       if(!impact?.affectedPages?.includes(current))return;
       // Na Opslaan is het veilig ook de bronpagina opnieuw op te bouwen:
       // canonieke state + Brain-record zijn dan bevestigd.
       requestAnimationFrame(()=>openPortalPage(current));
+    });
+    globalThis.addEventListener?.('bg:portal-brain-pending',event=>{
+      const root=document.getElementById('portalView');
+      if(root?.classList.contains('open'))renderImpactMap(root,event.detail?.impact||event.detail?.impacts?.at?.(-1),'pending');
     });
   }
 
