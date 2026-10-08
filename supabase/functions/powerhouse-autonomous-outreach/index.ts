@@ -58,7 +58,7 @@ Deno.serve(async(req)=>{
     out.push({action_id:a.action_id,status:'sent',provider_message_id:r.message_id,provider_thread_id:r.thread_id});
    }catch(e:any){const er=safe(e);await db.from('powerhouse_sales_actions').update({status:'error',evidence:{...(a.evidence||{}),autonomous_outbound:{contract:C,failed_at:now,error:er,user_authorized:true,retryable:true}},updated_at:now}).eq('action_id',a.action_id).eq('status','waiting');out.push({action_id:a.action_id,status:'error',reason:er})}
   }
-  const sent=out.filter(x=>x.status==='sent').length;await db.from('bg_gezondheid').insert({gemeten_op:now,onderdeel:'powerhouse-autonomous-outreach',soort:'commercial-execution',status:out.some(x=>x.status==='error')?'waarschuwing':'ok',detail:'selected='+(acts||[]).length+'; sent='+sent+'; errors='+out.filter(x=>x.status==='error').length,gegevens:{contract:C,selected:(acts||[]).length,sent,results:out,user_authorized:true}});
-  return J({ok:true,contract:C,selected:(acts||[]).length,sent,results:out,external_outreach_executed:sent>0});
+  const sent=out.filter(x=>x.status==='sent').length;await db.from('bg_gezondheid').insert({gemeten_op:now,onderdeel:'powerhouse-autonomous-outreach',soort:'commercial-execution',status:sent===0||out.some(x=>x.status==='error')?'waarschuwing':'ok',detail:'selected='+(acts||[]).length+'; sent='+sent+'; errors='+out.filter(x=>x.status==='error').length,gegevens:{contract:C,selected:(acts||[]).length,sent,results:out,user_authorized:true,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null}});
+  return J({ok:true,contract:C,selected:(acts||[]).length,sent,results:out,external_outreach_executed:sent>0,delivery_gap:sent===0?((acts||[]).length===0?'NO_ELIGIBLE_PREPARED_EMAIL':'NO_PROVIDER_CONFIRMED_EMAIL'):null});
  }catch(e:any){return J({ok:false,contract:C,error:safe(e)},503)}
 });
