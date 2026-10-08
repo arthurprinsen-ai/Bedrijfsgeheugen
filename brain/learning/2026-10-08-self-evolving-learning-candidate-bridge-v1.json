@@ -67,6 +67,14 @@
       "two_parent_merge_commit": "e5c98e5e7918e9fce99532b0ee3327b6601cc328",
       "unrelated_main_changes": "preserved_by_main_tree_overlay",
       "production_readback": null
+    },
+    "delivery_lineage": {
+      "obligation_id": "self-evolving-learning-candidate-bridge-20261008-v1",
+      "predecessor_pr": 4169,
+      "successor_pr": 4173,
+      "successor_base_sha": "080a32bdc354abc528a2fe449dffcb123698459e",
+      "independent_cross_domain_change": "self-evolving-business-engineering-os-v1",
+      "supersession_policy": "one authoritative successor, no duplicated delivery"
     }
   }
 }

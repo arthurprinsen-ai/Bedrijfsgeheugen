@@ -53,6 +53,41 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         learning:'brain/learning/2026-10-08-self-evolving-learning-candidate-bridge-v1.json',
         regression:'tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs'
       }),
+      invariants:Object.freeze({
+        oneExistingDailyOwner:true,
+        maxThreeNewCandidatesPerRun:true,
+        candidateSourceUnique:true,
+        reviewRequired:true,
+        noAutomaticDispatch:true,
+        noInferredBusinessValue:true,
+        protectedMigrationAndProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
+      id:'self-evolving-business-engineering-os-v1',
+      fingerprint:'powerhouse|cross-domain-evolution|canonical-evidence|protected-delivery|v1',
+      label:'Self-Evolving Business & Engineering OS — cross-domain decision policy',
+      owner:'ONE BRAIN / Self-Improvement Layer',
+      authority:'existing-brain-outcomes+organism-graph+protected-delivery',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['exact tenant and source revision','existing canonical outcome observations','independent provider/release proof','control-group evidence','GDPR/AI Act/NIS2/CSRD reviews']),
+      outputs:Object.freeze(['incremental change impact','missing domain review','deterministic canonical obligation proposal','protected delivery candidate','compiled learning proposal']),
+      runtime:Object.freeze({
+        planner:'brain/self-improvement/cross-domain-evolution.mjs',
+        graph:'platform/organism/organism-graph.mjs',
+        evaluation:'brain/self-improvement/self-improvement-layer.mjs',
+        tests:'tests/brain-self-evolving-business-engineering-os-v1.test.mjs',
+        learning:'brain/learning/2026-10-08-self-evolving-business-engineering-os-v1.json'
+      }),
+      invariants:Object.freeze({
+        oneBrain:true, noParallelScheduler:true, noParallelDatabase:true,
+        sameTenantRevision:true, csrdApplicabilityNotInferred:true,
+        externalProviderOrReleaseProofRequired:true, causalClaimNeedsControlGroup:true,
+        unknownIsNotGreen:true, missingSecurityReviewBlocks:true,
+        noDirectProductionMutation:true, existingProtectedDeliveryRequired:true,
+        proposalsAreNotExecutedOutcomes:true
+      })
+    }),
     Object.freeze({
       id:'source-universe-impact-engine-v1',
       fingerprint:'powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1',
