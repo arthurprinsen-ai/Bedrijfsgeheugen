@@ -30,6 +30,16 @@ export async function handleTenantAiInference({request,user,tenantId,sovereignty
     ||Number(policy.policy_version)<1)return json({error:'AI_RUNTIME_NOT_PROVISIONED'},503);
  if(policy?.enforcement_mode==='BLOCK'&&Array.isArray(state?.snapshot?.violations)&&state.snapshot.violations.length)
   return json({error:'SOVEREIGNTY_POLICY_BLOCKED'},409);
+ // Data sovereignty is a hard runtime boundary, independent of a provider's marketing label.
+ // 'AUTO' and public shared endpoints do not prove EU-only processing or storage.
+ const profile=policy.ai_deployment_profile;
+ const withinEU=value=>['EU','NL','DE'].includes(value);
+ if(policy.mode==='EU_ONLY'&&(!withinEU(profile.computeRegion)||!withinEU(profile.storageRegion)
+    ||!(withinEU(profile.ragRegion)||(profile.ragRegion==='SAME_AS_STORAGE'&&withinEU(profile.storageRegion)))))
+  return json({error:'SOVEREIGNTY_REGION_NOT_VERIFIED'},409);
+ if(policy.mode==='EU_STORAGE'&&(!withinEU(profile.storageRegion)
+    ||!(withinEU(profile.ragRegion)||(profile.ragRegion==='SAME_AS_STORAGE'&&withinEU(profile.storageRegion)))))
+  return json({error:'SOVEREIGNTY_REGION_NOT_VERIFIED'},409);
  // A newly requested AI route cannot go live just because the provider proof exists:
  // the customer's privacy, risk, supplier, cost and CSRD review must also be closed.
  if(policy?.last_change_impact?.status==='REVIEW_REQUIRED'&&policy.last_change_impact.deploymentApproved!==true)
