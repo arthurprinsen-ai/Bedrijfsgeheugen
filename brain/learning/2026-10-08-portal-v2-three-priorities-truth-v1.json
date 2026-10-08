@@ -20,19 +20,19 @@
   "evidence": {
     "entrypoint": "portal-v2/company-cockpit-ui.js",
     "regression": [
-      "tests/portal-v2-three-priorities-truth-v1.test.mjs"
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
     ],
     "contract": "portal-v2/operating-system/scenario-engine.js"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-v2-three-priorities-truth-v1.test.mjs"
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
     ],
     "shadow": [
-      "tests/portal-v2-three-priorities-truth-v1.test.mjs"
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
     ],
     "canary": [
-      "tests/portal-v2-three-priorities-truth-v1.test.mjs"
+      "tests/brain-portal-v2-three-priorities-truth-v1.test.mjs"
     ],
     "success_criteria": [
       "Three top decisions are visible and the other decisions stay accessible.",
