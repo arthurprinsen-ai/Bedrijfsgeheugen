@@ -1,7 +1,7 @@
 {
   "id": "portal-authenticated-production-supabase-edge-gateway-v1",
   "date": "2026-10-08",
-  "status": "ACTIVE",
+  "status": "PENDING_PRODUCTION_PROOF",
   "fingerprint": "powerhouse|portal|production-proof|supabase-edge-gateway|v1",
   "root_cause": "After the serverless Netlify.env/process.env runtime mismatch was repaired, the exact production canary still returned HTTP 503 because portal-ondernemersdata itself required a privileged Supabase credential in the Netlify runtime. That credential was not present there. The architecture therefore coupled authenticated Portal reads to distribution of a database master credential into a second runtime even though the existing portal-state-eu authority already owns privileged Supabase access behind an authenticated service-token gateway.",
   "prevention": [
@@ -49,7 +49,7 @@
       "tests/brain-portal-authenticated-production-authority-v1.test.mjs"
     ]
   },
-  "production_claim": "LIVE_PROVEN",
+  "production_claim": "CANDIDATE_PROTECTED_DELIVERY",
   "production_readback": {
     "protected_runtime_sha": "1a5f661314c6ae7a10f33995b30e129a994e8883",
     "netlify_deploy_id": "6ac72f87b10d420008cb7441",
