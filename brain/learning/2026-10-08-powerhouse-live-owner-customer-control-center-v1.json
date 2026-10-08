@@ -8,7 +8,9 @@
     "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4145",
     "admin_source": "portal-v2/modules/powerhouse-observability.js",
     "customer_source": "portal-v2/modules/customer-agent-activity.js",
-    "known_limit": "Provider-independent real-time delivery is not implied by a canonical Brain projection."
+    "known_limit": "Provider-independent real-time delivery is not implied by a canonical Brain projection.",
+    "feature_regression_test": "portal-v2/tests/powerhouse-live-control-center-v1.test.mjs",
+    "canonical_admin_gate_regression": "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
   },
   "intervention": "Extend existing protected owner cockpit with read-only live evidence refresh and add customer-facing Agenta activity from tenant-authorized Brain API, without internal telemetry on the customer surface.",
   "prevention": "Only report fresh recorded facts; count proven activities only when executed and verified; keep admin route out of customer navigation and test isolation/projection contracts.",
@@ -20,10 +22,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/powerhouse-live-control-center-v1.test.mjs"
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/powerhouse-live-control-center-v1.test.mjs"
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"
     ]
   },
   "closure_required": [
