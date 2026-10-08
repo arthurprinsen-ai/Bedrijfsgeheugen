@@ -42,6 +42,14 @@ async function readback(key:string,acct:{id:string;userId:string},messageId:stri
   throw{code:'GMAIL_READBACK_MISMATCH',id_matches:id===messageId,sent_label:labels.includes('SENT'),recipient_matches:Boolean(target&&recipients.includes(target))};
  return{message_id:id,thread_id:s(m?.threadId||m?.thread_id),sent_label_verified:true,recipient_verified:true};
 }
+// Do not treat a prepared action or an authenticated scheduler as recipient authorization.
+async function verifyRecipientAuthority(db:any,a:any,to:string):Promise<boolean>{
+ const recipient=s(to),person=s(a?.person_key);
+ if(!recipient||!person||s(a?.evidence?.recipient_email)!==recipient||a?.evidence?.human_approved!==true)return false;
+ const{data,error}=await db.from('bg_connecties').select('sleutel,linkedin_url,extra').eq('email',recipient).limit(10);
+ if(error)throw{code:'RECIPIENT_AUTHORITY_READ',message:error.message};
+ return (data||[]).some((c:any)=>(s(c?.sleutel)===person||s(c?.linkedin_url)===person)&&c?.extra?.human_approved===true);
+}
 Deno.serve(async(req)=>{
  if(req.method!=='POST')return J({ok:false,error:'POST_ONLY'},405);
  const url=Deno.env.get('SUPABASE_URL')||'',role=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';if(!url||!role)return J({ok:false,error:'CONFIG'},500);
@@ -70,6 +78,14 @@ Deno.serve(async(req)=>{
     catch(e:any){out.push({action_id:a.action_id,status:'unverified',reason:safe(e)})}
    }
   }
+  // A true dry run is read-only: no mutating composer, provider send or message-plan refresh.
+  if(input?.dry_run===true){
+   const{data:preview,error:qe}=await db.from('powerhouse_sales_actions').select('action_id,person_key,evidence').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);
+   if(qe)throw{code:'OUTREACH_PREVIEW_READ',message:qe.message};
+   let authorized=0;
+   for(const a of preview||[])if(await verifyRecipientAuthority(db,a,s(a?.evidence?.recipient_email)))authorized++;
+   return J({ok:true,dry_run:true,eligible:authorized,prepared:(preview||[]).length,recipient_authority_unverified:(preview||[]).length-authorized,external_outreach_executed:false,account_resolved:true,contract:C});
+  }
   const composerResponse=await fetch(url+'/functions/v1/powerhouse-commercial-message-composer',{
     method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},
     body:JSON.stringify({limit:10,channels:['email']}),signal:AbortSignal.timeout(120000)
@@ -78,11 +94,20 @@ Deno.serve(async(req)=>{
   if(!composerResponse.ok||composerBody?.ok!==true)throw{code:'HUMAN_COMPOSER_UNAVAILABLE',status:composerResponse.status,payload:safe(composerBody),retryable:true};
   await db.rpc('powerhouse_refresh_message_plans_v1',{p_limit:100});
   const{data:acts,error}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,person_name,company_name,message_draft,evidence,priority').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);if(error)throw{code:'OUTREACH_READ',message:error.message};
-  if(input?.dry_run===true)return J({ok:true,dry_run:true,eligible:(acts||[]).length,account_resolved:true,account_user_resolved:Boolean(acct.userId),contract:C});
+  
   for(const a of acts||[]){
    const composer=a?.evidence?.commercial_intelligence?.composer||{};
    const strategy=s(a?.evidence?.commercial_intelligence?.message_strategy);
    const to=s(a.evidence?.recipient_email),sub=s(a.evidence?.email_subject),body=s(a.message_draft);
+   // Known email or LinkedIn connection is not proof of approved recipient outreach.
+   const recipientApproved=await verifyRecipientAuthority(db,a,to);
+   if(!recipientApproved){
+    const ev={...(a.evidence||{}),execution_gate:{contract:'commercial-recipient-authority-p0-v1',blocked_at:now,reason:'RECIPIENT_AUTHORITY_UNVERIFIED',owner:'contact-permission-verification',repair:'Verify lawful recipient-specific authority and human approval in CRM before dispatch; retain contact suppression and cooldown.'}};
+    const{error:ae}=await db.from('powerhouse_sales_actions').update({evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
+    if(ae)throw{code:'RECIPIENT_AUTHORITY_BLOCK_WRITEBACK',message:ae.message};
+    out.push({action_id:a.action_id,status:'held',reason:'RECIPIENT_AUTHORITY_UNVERIFIED'});
+    continue;
+   }
    if(composer?.contract!=='powerhouse-human-commercial-message-composer-v2'||composer?.quality_passed!==true||!strategy||!body){
      const ev={...(a.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composer?.quality_passed===true,composer_contract:s(composer?.contract)||null}};
      await db.from('powerhouse_sales_actions').update({evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
