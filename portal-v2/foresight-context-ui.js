@@ -124,7 +124,7 @@ function contextualActionMarkup(pageId,state){
     const pages=card.pages.filter(id=>id!==pageId).slice(0,8);
     return '<article class="fsv-card" data-context-card="'+esc(card.id)+'"><header><div><span class="fsv-kicker">'+esc(card.priority)+' · '+esc(card.sourcePath)+'</span><h4>'+esc(card.title)+'</h4></div><b class="fsv-pill warn">'+esc(CARD_TITLES[card.priority]||'Beoordelen')+'</b></header>'+
       '<p>'+esc(card.description)+'</p><p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
-      '<p><small>Financiële impact: niet gekwantificeerd · voorstel ter beoordeling · bron: klantinvoer / geprojecteerd signaal.</small></p>'+
+      '<p><small>'+(card.financialImpact?.status==='SCENARIO_ONLY'&&Number.isFinite(card.financialImpact.amount)?'Financieel scenario (geen gerealiseerde besparing): '+new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(card.financialImpact.amount)+' · '+esc(card.financialImpact.label||'Indicatie'):'Financiële impact: niet gekwantificeerd')+' · voorstel ter beoordeling · bron: klantinvoer / geprojecteerd signaal.</small></p>'+
       '<div class="fsv-actions">'+pages.map(id=>'<button type="button" data-fsv-page="'+esc(id)+'">'+esc(id.replaceAll('-',' '))+' →</button>').join('')+
       '<button type="button" data-context-add-roadmap="'+esc(card.id)+'">Als voorstel op roadmap →</button></div></article>';
   }).join('');

@@ -2,6 +2,8 @@ import { PORTAL_PAGE_INDEX } from './page-registry.js';
 import { companyInputSchema } from './modules/company-input.js';
 import { functionalSchema } from './modules/functional-suite.js';
 import { fullCompanyInputSchema } from './modules/full-company-input.js';
+import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from './input-impact-coverage.js';
+import {appendBroaderContextualActions} from './contextual-action-rules-extended.js';
 
 // One read-only projection on the existing tenant-scoped Portal V2 state.
 // A proposal is NOT a measured risk, legal applicability ruling, executed action or euro saving.
@@ -10,7 +12,7 @@ const RELEVANT_PAGES = Object.freeze([
   'compliance-governance','ai-capabilities','wet-regelgeving','csrd-impact',
   'cijfers-maatstaven','waarde-financiering','businesscase','due-diligence',
   'advies','roadmap','actieve-acties','taken-werkstromen','eindconclusie',
-  'branche-markt','omgevingsradar','onderzoek'
+  'branche-markt','omgevingsradar','onderzoek','profiel','bedrijfssituatie','ai-scan','strategiemodellen','strategie-naar-maandagochtend','canvassen','wijzigingen','documenten','herstel-continuiteit','exit','audit','outcomes-evidence','os:impact-engine','os:scenario-simulator','portfolio-control'
 ]);
 export const CONTEXTUAL_ACTION_PAGES = RELEVANT_PAGES;
 
@@ -35,7 +37,8 @@ export function inventoryPortalCustomerFields() {
   for(const page of pages)for(const field of functionalSchema(page))register(field,page);
   for(const field of companyInputSchema('profiel'))register(field,'profiel');
   for(const field of fullCompanyInputSchema())register(field,'gegevens-invullen');
-  return [...inventory.values()].sort((a,b)=>a.path.localeCompare(b.path));
+  for(const surface of SUPPLEMENTAL_PORTAL_INPUT_SURFACES)for(const path of surface.paths)register({path,label:path,type:'custom-workspace'},surface.page);
+  return [...inventory.values()].map(row=>{const classification=classifyPortalInputPath(row.path);return Object.freeze({...classification,...row,impactAreaLabel:classification.label,writeBoundary:'PORTAL_DOMAIN_STATE_OR_WORKSPACE',readbackStatus:'TENANT_ACK_REQUIRED',declarationOnly:true});}).sort((a,b)=>a.path.localeCompare(b.path));
 }
 
 const priorityOrder = {P1:1,P2:2,P3:3};
@@ -55,7 +58,7 @@ const AI=['data-ai','ai-capabilities','compliance-governance','eu-ai-act-audit',
 const LAW=['wet-regelgeving','compliance-governance','csrd-impact','due-diligence','waarde-financiering','businesscase','advies','roadmap','taken-werkstromen'];
 const FINANCE=['cijfers-maatstaven','waarde-financiering','businesscase','due-diligence','overzicht','advies','roadmap'];
 
-export function buildContextualActionCards(state={}) {
+export function buildContextualActionCards(state={},options={}) {
   const cards=[];
   const mto=get(state,'portal.people.mto');
   const score=numeric(get(state,'portal.people.mtoScore'));
@@ -118,9 +121,14 @@ export function buildContextualActionCards(state={}) {
     'De grootste klant vertegenwoordigt '+largest+'% volgens de invoer. De grens van 30% is een attentiewaarde.',
     'Bereken scenario bij klantverlies en plan concentratiereductie.',FINANCE));
   const dso=numeric(get(state,'portal.metrics.dso'));
-  if(dso!==null&&dso>60)item(cards,card('cash-collection','Debiteurentermijn analyseren','P2','portal.metrics.dso',dso,
-    'Ingevoerde DSO '+dso+' dagen; toets dit tegen contractafspraken en branche. Nog geen vastgesteld kasstroomverlies.',
-    'Verbeter debiteurenproces en bereken werkkapitaalimpact met gevalideerde omzet.',FINANCE));
+  if(dso!==null&&dso>60){
+    const revenue=numeric(get(state,'portal.metrics.revenue'));
+    const illustration=revenue!==null&&revenue>0?Math.round(revenue*1000*(dso-60)/365):null;
+    const extra=illustration===null?{}:{financialImpact:Object.freeze({status:'SCENARIO_ONLY',amount:illustration,unit:'EUR_WORKING_CAPITAL',label:'Wat-als: werkkapitaal bij DSO 60 dagen',reason:'Indicatieve omzet × DSO-verkorting / 365, geen gerealiseerde kasstroom of winst.'})};
+    item(cards,card('cash-collection','Debiteurentermijn analyseren','P2','portal.metrics.dso',dso,
+      'Ingevoerde DSO '+dso+' dagen; toets dit tegen contractafspraken en branche. Nog geen vastgesteld kasstroomverlies.',
+      'Verbeter debiteurenproces en bereken werkkapitaalimpact met gevalideerde omzet.',FINANCE,extra));
+  }
   const events=get(state,'portal.regulatory.events')||get(state,'portal.external.regulatoryEvents')||[];
   if(Array.isArray(events))for(const event of events){
     if(!event||typeof event!=='object'||!present(event.id)&&!present(event.title))continue;
@@ -132,6 +140,7 @@ export function buildContextualActionCards(state={}) {
       applies?'Bepaal getroffen processen, systemen, controls, investeringen en deadlines.':'Verifieer officiële bron, geldende datum, sector, omvang en klanttoepasselijkheid voordat maatregelen definitief worden.',LAW,
       {regulatorySource:event.sourceUrl||null,regulatoryEvidenceStatus:applies?'SOURCE_VERIFIED_REVIEW_REQUIRED':'SOURCE_REVIEW_REQUIRED'}));
   }
+  appendBroaderContextualActions(state,cards,{card,item,today:options.today||new Date().toISOString().slice(0,10)});
   return Object.freeze(cards.sort((a,b)=>(priorityOrder[a.priority]-priorityOrder[b.priority])||a.id.localeCompare(b.id)));
 }
 

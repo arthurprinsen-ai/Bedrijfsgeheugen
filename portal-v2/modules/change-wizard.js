@@ -42,6 +42,7 @@ export function buildChange(draft={},currentLevel=0){
     owner:String(draft.owner||'').trim(),
     effectiveDate:draft.effectiveDate||'',
     impact:capabilityImpact(draft.dimension).capabilities.length,
+    impactSemantics:'affected_capability_count',
     status:'Open',
     proposedAt:new Date().toISOString().slice(0,10)
   };
@@ -53,6 +54,18 @@ function impactRow(impact){
     ['Processen',impact.proc.length],['Acties',impact.proj.length],
     ['Systemen',impact.sys.length],['Bouwstenen',impact.capabilities.length]
   ].map(([label,count])=>`<span class="wzstat"><b>${count}</b><span>${label}</span></span>`).join('');
+}
+
+export async function saveChangeProposal(domainState,change){
+  if(!domainState?.get||!domainState?.set||!domainState?.flush)throw new TypeError('CANONICAL_CHANGE_STATE_REQUIRED');
+  const existing=domainState.get('portal.changes.items')||[];
+  const items=Array.isArray(existing)?existing:[];
+  const same=(entry)=>entry?.dimension===change.dimension&&entry?.toLevel===change.toLevel&&entry?.owner===change.owner&&entry?.reason===change.reason&&entry?.effectiveDate===change.effectiveDate&&!['Geborgd','Afgerond'].includes(entry?.status);
+  const alreadyPresent=items.some(same);
+  if(!alreadyPresent)domainState.set('portal.changes.items',[...items,change]);
+  await domainState.flush();
+  if(!['saved','idle'].includes(domainState.status?.()))throw new Error('CHANGE_WIZARD_BRAIN_ACK_PENDING');
+  return Object.freeze({...change,alreadyPresent});
 }
 
 export function mountChangeWizard(root,{domainState,onSaved}={}){
@@ -106,15 +119,22 @@ export function mountChangeWizard(root,{domainState,onSaved}={}){
       root.querySelector('[data-wz-submit]').disabled=now.filter(Boolean).length<4;
     };
 
-    root.querySelector('[data-wz-submit]')?.addEventListener('click',()=>{
+    root.querySelector('[data-wz-submit]')?.addEventListener('click',async()=>{
       const change=buildChange(draft,currentLevel());
-      const state=domainState.get()||{};
-      const items=arr(state?.portal?.changes?.items);
-      domainState.set({...state,portal:{...state.portal,changes:{...state.portal?.changes,items:[...items,change]}}});
-      draft={dimension:draft.dimension,toLevel:2,reason:'',owner:'',effectiveDate:''};
-      draw();
-      root.querySelector('.wzout').textContent=`Ingediend en wacht op akkoord van ${change.owner}. Niets is doorgevoerd.`;
-      onSaved?.(change);
+      const button=root.querySelector('[data-wz-submit]');
+      if(button)button.disabled=true;
+      try{
+        await saveChangeProposal(domainState,change);
+        draft={dimension:draft.dimension,toLevel:2,reason:'',owner:'',effectiveDate:''};
+        draw();
+        const out=root.querySelector('.wzout');
+        if(out)out.textContent='Voorstel opgeslagen en wacht op akkoord van '+change.owner+'. De wijziging is nog niet uitgevoerd.';
+        onSaved?.(change);
+      }catch{
+        const out=root.querySelector('.wzout');
+        if(out)out.textContent='Opslag of Brain-bevestiging ontbreekt. Het voorstel blijft in het formulier staan; probeer opnieuw.';
+        if(button)button.disabled=false;
+      }
     });
   };
 
