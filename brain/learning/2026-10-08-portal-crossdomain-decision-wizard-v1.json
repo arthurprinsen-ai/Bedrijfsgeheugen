@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|portal|complement-missing-customer-cross-domain-actions-v1",
+  "obligationId": "portal-cross-domain-customer-decision-wizard-20261008-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "existing Portal V2 native tenant state and already merged canonical change wizard",
+  "root_causes": [
+    "Following main merge of broader input-impact changes, a residual set of customer decision gaps remained without context-specific follow-up cards",
+    "Dashboard overview did not mount already available contextual action projection",
+    "Concurrent separate changes in main overlapped a draft PR, requiring existing-state-first reconciliation instead of overwriting the newer implementation"
+  ],
+  "prevention": [
+    "reuse current main form coverage, source-to-impact mapping, extended action rules, and canonical change wizard",
+    "augment only uncovered staff, net debt, research origin, accountability, business goals and connector signals",
+    "derive cards in memory from tenant state and leave external provider/legal applicability and financial outcomes unproven",
+    "provide explicit overview and roadmap proposal navigation, no automatic execution or duplicate Brain"
+  ],
+  "tests": [
+    "tests/brain-portal-cross-domain-decision-wizard-writeback.test.mjs",
+    "portal-v2/tests/cross-domain-complementary-gaps.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-cross-domain-decision-wizard-writeback.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MISSING_COMPLEMENTARY_CUSTOMER_DECISION_CONTEXT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected merge",
+    "exact Netlify release",
+    "authenticated tenant UI/Brain readback"
+  ]
+}
