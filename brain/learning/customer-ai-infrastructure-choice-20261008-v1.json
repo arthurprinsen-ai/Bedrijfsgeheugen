@@ -10,7 +10,25 @@
   "status": "CANDIDATE_PROTECTED_DELIVERY",
   "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4147",
   "tests": [
-    "tests/customer-ai-deployment-profile-v1.test.mjs",
+    "tests/brain-customer-ai-infrastructure-choice-v1.test.mjs",
     "tests/data-sovereignty-control-plane.test.mjs"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "SECURITY",
+    "scope": "AI_ROUTING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-customer-ai-infrastructure-choice-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-customer-ai-infrastructure-choice-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-customer-ai-infrastructure-choice-v1.test.mjs"
+    ]
+  }
 }
