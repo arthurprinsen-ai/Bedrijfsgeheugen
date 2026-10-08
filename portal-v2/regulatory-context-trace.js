@@ -4,7 +4,7 @@ import { PORTAL_PAGE_INDEX } from './page-registry.js';
 // may affect a tenant. These are review dependencies, not legal determinations.
 const COMMON = Object.freeze(['wet-regelgeving','omgevingsradar','overzicht','compliance-governance','due-diligence','advies','roadmap','taken-werkstromen']);
 const AREAS = Object.freeze([
-  {id:'ai',test:/(?:EU[_ -]?AI[_ -]?ACT|ARTIFICIAL[_ -]?INTELLIGENCE|AI[_ -]?REGULATION)/i,
+  {id:'ai',test:/(?:(?:EU[_ -]?)?AI[_ -]?ACT|ARTIFICIAL[_ -]?INTELLIGENCE|AI[_ -]?REGULATION)/i,
    label:'AI-modellen, inzet en menselijk toezicht',
    pages:['data-ai','ai-capabilities','ai-scan','eu-ai-act-audit','data-ai-passport','trust-center','koppelingen','businesscase','waarde-financiering'],
    reviews:['Inventariseer AI-toepassingen, rollen en risicoclassificatie','Toets menselijk toezicht, leveranciersbewijs en eventuele implementatiekosten']},
