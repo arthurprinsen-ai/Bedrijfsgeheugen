@@ -347,7 +347,10 @@ jobs:
         run: |
           set -euo pipefail
           evidence=.artifacts/powerhouse-delivery-hygiene.json
-          test -s "$evidence"
+          if ! test -s "$evidence"; then
+            echo "::error::ADMISSION_EVIDENCE_MISSING: protected candidate cannot be admitted without its evidence file"
+            exit 1
+          fi
           if ! grep -q '"brain/learning/' "$evidence"; then
             echo NO_CHANGED_BRAIN_LEARNING
             exit 0
@@ -356,6 +359,7 @@ jobs:
           git fetch --no-tags --depth=1 origin "$base_sha"
           if ! POWERHOUSE_BASE_SHA="$base_sha" POWERHOUSE_HEAD_SHA="$(git rev-parse HEAD)" node scripts/brain/learning-canonicalization-gate.mjs; then
             node -e "const fs=require('fs');const p='.artifacts/powerhouse-delivery-hygiene.json';const x=JSON.parse(fs.readFileSync(p,'utf8'));x.state='LEARNING_CANONICALIZATION_BLOCKED';x.ok=false;x.admitted=false;fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n');"
+            echo "::error::LEARNING_CANONICALIZATION_BLOCKED: inspect the canonical learning evaluation output and admission artifact"
             exit 1
           fi
       # Enforce the existing material closure invariant inside the required check.
@@ -384,6 +388,7 @@ jobs:
             evidence.admitted=false;
             evidence.missing_closure_evidence=[...new Set([...closure.missing,...semantic.missing])];
             await writeFile(file,JSON.stringify(evidence,null,2)+'\n');
+            console.error('::error::INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: '+evidence.missing_closure_evidence.join(','));
             throw new Error('INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:'+evidence.missing_closure_evidence.join(','));
           }
           console.log(JSON.stringify({status:'CANONICAL_INTEGRATION_CLOSURE_COMPLETE',material:closure.material,authority:closure.authority}));
