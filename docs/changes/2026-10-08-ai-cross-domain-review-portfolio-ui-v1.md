@@ -4,4 +4,4 @@ The existing tenant Data Sovereignty page shows the bounded evidence task list f
 
 This is a view in the existing customer compliance page, not a second dashboard, legal approval, new provider runtime, emissions measurement or automated completion.
 
-Regression: `tests/portal-ai-cross-domain-review-portfolio-v1.test.mjs`.
+Regression: `tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs`.
