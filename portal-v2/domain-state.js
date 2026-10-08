@@ -80,6 +80,9 @@ function businessInputBinding(path){
  const keys=parts(path);
  if(keys[0]!=='portal'||!keys[1])return null;
  const section=keys[1],detail=keys[2];
+ // Native page-scoped inputs keep distinct Brain model lineage instead of being
+ // combined into one generic `portal.pages` business input.
+ if(section==='pages'&&detail)return Object.freeze({key:`page:${detail}`,inputType:'PortalPageModel',modelId:`page-${slug(detail)}`,statePath:`portal.pages.${detail}`});
  if(section==='canvases'&&detail)return Object.freeze({key:`canvas:${detail}`,inputType:'StrategyCanvas',modelId:`canvas-${slug(detail)}`,statePath:`portal.canvases.${detail}`});
  if(section==='strategy'){
   if(detail==='dna')return Object.freeze({key:'strategy:dna',inputType:'StrategyModel',modelId:'strategy-dna',statePath:'portal.strategy.dna'});
@@ -122,7 +125,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   },
   save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
  });
- const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
+ const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let impactRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
  const loadBusinessInputStore=()=>businessInputStorePromise||(businessInputStorePromise=Promise.resolve().then(()=>businessInputStoreLoader()));
  async function saveBusinessInput(input){
   const headers=typeof stateClient.authHeaders==='function'?await stateClient.authHeaders():{};
@@ -166,8 +169,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   }
   const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
   if(impact.changed){
-   pendingImpacts.push({path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
-   if(pendingImpacts.length>50)pendingImpacts.splice(0,pendingImpacts.length-50);
+   pendingImpacts.push({generation:++impactRevision,path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
   }
   if(typeof globalThis!=='undefined'){
    globalThis.__BG_LAST_PORTAL_IMPACT__=enriched;
@@ -183,27 +185,38 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  function setDerived(path,value){if(typeof domain.project!=='function')throw new TypeError('DOMAIN_DERIVED_PROJECTION_REQUIRED');return domain.project(path,value);}
  function patch(path,value){const before=domain.get();const result=domain.patch(path,value);track(path);publishImpact(path,before,domain.get());return result;}
  async function performPortalFlush(){
+  // Snapshot causal lineage before any await: edits made during the state or
+  // Brain write must remain pending and cannot be reported as synchronized.
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
+  const cutoff=impactRevision;
+  const submittedImpacts=pendingImpacts.filter(impact=>impact.generation<=cutoff);
   const stateResult=await domain.flush();
-  const stored=[];
+  // If a field changed during state persistence, its data is not yet server-
+  // confirmed. Defer Brain submission until the next flush.
+  if(stateResult.status==='dirty')return stateResult;
+  if(!['saved','idle'].includes(stateResult.status))throw new Error('PORTAL_STATE_PERSISTENCE_ACK_REQUIRED');
+  const stored=[];const acknowledged=new Set();
   for(const item of pending){
-   const causalImpacts=pendingImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
+   const causalImpacts=submittedImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
    const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1',causalImpacts}});
-   // Demo mode deliberately has no durable BusinessInput authority. Only an explicit
-   // demo skip may be treated as non-durable success; authenticated writes still
-   // require a provider-confirmed stored:true readback.
    if(saved?.skipped===true&&saved.reason==='DEMO_NON_DURABLE'&&stateClient.isDemo?.()){
     if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
     continue;
    }
    if(!saved||saved.stored!==true)throw new Error('CANONICAL_BUSINESS_INPUT_ACK_REQUIRED');
    stored.push(saved);
+   for(const impact of causalImpacts)acknowledged.add(impact.generation);
    if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
   }
-  if(typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
-   globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:[...pendingImpacts]}}));
+  // Prune only impacts acknowledged by the canonical Brain. Never drop newer
+  // edits, even when a user changes a field during the Brain write.
+  const confirmedImpacts=submittedImpacts.filter(impact=>acknowledged.has(impact.generation));
+  for(let index=pendingImpacts.length-1;index>=0;index--){
+   if(acknowledged.has(pendingImpacts[index].generation))pendingImpacts.splice(index,1);
   }
-  pendingImpacts.length=0;
+  if(stored.length&&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+   globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
+  }
   return stateResult;
  }
  function flush(){if(activePortalFlush)return activePortalFlush;activePortalFlush=performPortalFlush().finally(()=>{activePortalFlush=null});return activePortalFlush;}
