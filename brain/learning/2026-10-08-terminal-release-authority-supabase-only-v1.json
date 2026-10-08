@@ -1,0 +1,50 @@
+{
+  "version": "terminal-release-authority-supabase-only-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "root_cause": "Obligation Terminal Closure required Netlify readback for an Edge-only PR #4134. Supabase provider scope silently ignored changed but undeclared Edge functions.",
+  "evidence": {
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37760879023",
+    "failed_step": "Wait for canonical production release readback",
+    "supabase_function": "powerhouse-composio-linkedin-setup",
+    "active_function_version": 24,
+    "active_runtime_sha256": "686209886761d6a0db3d27cb8bce7fbea80425a6212a7bb9832dd7049531dbc4",
+    "source_verified_equal_to_merge": true,
+    "canonical_config_registration_missing": true
+  },
+  "intervention": "Classify runtime paths into Netlify, Edge, mixed, unknown, non-runtime. For Edge-only enforce ACTIVE provider version/hash and protected-main ancestry without requiring Netlify. Register existing production function. Fail closed for undeclared changed functions.",
+  "guardrails": [
+    "No branch protection bypass",
+    "Never treat undeclared changed Edge source as NOT_APPLICABLE",
+    "Mixed runtime changes require both provider and Netlify truth",
+    "Durable Brain evidence remains mandatory",
+    "No second deployer"
+  ],
+  "compiler": {
+    "failure_class": "CROSS_RUNTIME_RELEASE_AUTHORITY_CONFUSION",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "protected PR CI",
+    "protected main merge",
+    "ACTIVE provider version/hash and source parity",
+    "Netlify readback when website changed",
+    "durable Brain terminal evidence and artifact"
+  ],
+  "fingerprint": "terminal-closure-supabase-only-netlify-overwait-20261008-v1",
+  "prevention": "Only require proof from changed runtime authorities; never omit an undeclared direct Edge source; fail closed for missing production attestation."
+}
