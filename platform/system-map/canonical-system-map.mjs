@@ -49,7 +49,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         runner:'public.powerhouse_run_self_improvement_layer_v1(date)',
         compiler:'public.powerhouse_learning_compiler_queue_v1',
         candidates:'public.powerhouse_optimization_candidate_v1',
-        migration:'supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql',
+        migration:'supabase/migrations/20261008142800_self_evolving_learning_candidate_bridge_v1.sql',
         learning:'brain/learning/2026-10-08-self-evolving-learning-candidate-bridge-v1.json',
         regression:'tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs'
       }),

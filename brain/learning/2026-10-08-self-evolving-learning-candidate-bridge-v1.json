@@ -18,7 +18,7 @@
   "expected_truth_after_release": "Candidate count increases only after protected migration and daily owner run. CI/production readback and real outcome remain independently required.",
   "regression_contract": "tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs",
   "canonical_refs": [
-    "supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql",
+    "supabase/migrations/20261008142800_self_evolving_learning_candidate_bridge_v1.sql",
     "brain/self-improvement/self-improvement-layer.mjs",
     "platform/system-map/canonical-system-map.mjs",
     ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
