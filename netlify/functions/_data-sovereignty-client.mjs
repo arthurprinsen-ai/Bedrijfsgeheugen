@@ -38,6 +38,11 @@ export function createDataSovereigntyClient({fetchFn=globalThis.fetch,baseUrl=pr
     },
     async assertConnectorAllowed(tenantId,connectorId){
       const state=await snapshot(tenantId);
+      const placement=state?.policy?.ai_deployment_profile;
+      if(placement&&(['PRIVATE_CLOUD','ON_PREMISE','AIR_GAPPED'].includes(placement.deploymentMode)||
+        (placement.storageRegion&&placement.storageRegion!=='AUTO')||
+        placement.networkMode!=='STANDARD'))
+        throw Object.assign(new Error('DATA_SOVEREIGNTY_CONNECTOR_BLOCKED'),{code:'DATA_SOVEREIGNTY_CONNECTOR_BLOCKED',details:[{reason:'Gekozen private/lokale opslag of netwerkroute is nog niet geverifieerd. Connector blijft uit.'}]});
       if(state?.policy?.enforcement_mode!=='BLOCK')return state;
       const mode=state?.policy?.mode;
       if(!['EU_STORAGE','EU_ONLY'].includes(mode))return state;
