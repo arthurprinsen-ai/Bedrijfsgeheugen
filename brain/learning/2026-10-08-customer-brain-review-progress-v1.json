@@ -1,0 +1,38 @@
+{
+  "id": "customer-brain-review-progress-20261008-v1",
+  "fingerprint": "customer-view-real-brain-review-state-no-compliance-inference-v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Customers saw a generic pending change impact without visibility of its existing canonical Brain review obligation state.",
+  "prevention": [
+    "Only display allowlisted status derived from authenticated tenant sovereignty snapshot brainReview",
+    "Never equate Brain FULFILLED with CSRD compliance, emissions measurement or permission to use a different AI provider",
+    "Escape and suppress unknown review status and internal IDs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-customer-review-progress-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-customer-review-progress-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-customer-review-progress-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      "portal-next/data-sovereignty-panel.js"
+    ],
+    "tests": [
+      "tests/brain-customer-review-progress-v1.test.mjs",
+      "tests/portal-brain-review-progress.test.mjs"
+    ],
+    "outcome": "Display live Brain review progress in existing policy panel; no new review system created"
+  }
+}
