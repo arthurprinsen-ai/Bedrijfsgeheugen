@@ -79,6 +79,20 @@ class DataSovereigntyPanel extends HTMLElement{
   const impact=p.last_change_impact?.contract==='powerhouse-cross-domain-change-v1'?p.last_change_impact:null;
   const impactPending=impact?.status==='REVIEW_REQUIRED';
   const impactTypeLabel={AI_MODEL:'AI-model of AI-provider',AI_DEPLOYMENT:'AI-infrastructuur',DATA_LOCATION:'Data- of verwerkingslocatie'};
+  const reviewStates={
+   OPEN:'Open — bewijs en beoordeling nodig',
+   READY:'Gereed voor beoordeling',
+   RUNNING:'In behandeling',
+   BLOCKED:'Geblokkeerd — vervolgactie nodig',
+   FULFILLED:'Administratief afgerond; inhoudelijk bewijs blijft vereist',
+   BREACHED:'Niet tijdig afgerond',
+   CANCELLED:'Ingetrokken',
+   NOT_REGISTERED:'Registratie nog niet aangetoond',
+   UNVERIFIED:'Status nog niet geverifieerd'
+  };
+  const brainReview=s.brainReview&&typeof s.brainReview==='object'?s.brainReview:null;
+  const reviewStatus=brainReview&&Object.prototype.hasOwnProperty.call(reviewStates,brainReview.status)
+   ?reviewStates[brainReview.status]:'Nog geen bevestigde Brain-status';
   const esrsCandidates=impactPending&&Array.isArray(impact.esrsReview)
    ?impact.esrsReview.filter(item=>item?.reviewRequired===true&&item?.materiality==='UNDETERMINED').map(item=>String(item.standard||'')).filter(Boolean)
    :[];
@@ -95,6 +109,7 @@ class DataSovereigntyPanel extends HTMLElement{
    ${impactPending?`<section class="dsp-alert dsp-cross-domain-review" role="status" aria-label="Herbeoordeling AI-keuze en CSRD">
     <h3>Gevolgen van je AI- of datakeuze worden beoordeeld</h3>
     <p><strong>Wijziging:</strong> ${esc(impactTypeLabel[impact.kind]||'Infrastructuur of databeleid')}.</p>
+    <p><strong>Opvolging door het Brein:</strong> ${esc(reviewStatus)}.</p>
     <p>De gevolgen voor gegevensbescherming, beveiliging, leveranciers, kosten en duurzaamheid moeten opnieuw worden vastgesteld. Ook relevante CSRD/ESRS-onderwerpen worden gecontroleerd${esrsCandidates.length?' ('+esrsCandidates.map(esc).join(', ')+')':''}.</p>
     <p>Dit betekent niet dat CSRD voor jouw organisatie verplicht is of dat energieverbruik en CO₂ al zijn gemeten. De gekozen AI-route wordt niet automatisch geactiveerd.</p>
    </section>`:''}
