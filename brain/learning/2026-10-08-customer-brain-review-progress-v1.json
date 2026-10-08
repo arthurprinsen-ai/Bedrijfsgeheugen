@@ -16,13 +16,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-brain-review-progress.test.mjs"
+      "tests/brain-customer-review-progress-v1.test.mjs"
     ],
     "shadow": [
-      "tests/portal-brain-review-progress.test.mjs"
+      "tests/brain-customer-review-progress-v1.test.mjs"
     ],
     "canary": [
-      "tests/portal-brain-review-progress.test.mjs"
+      "tests/brain-customer-review-progress-v1.test.mjs"
     ]
   },
   "evidence": {
@@ -30,6 +30,7 @@
       "portal-next/data-sovereignty-panel.js"
     ],
     "tests": [
+      "tests/brain-customer-review-progress-v1.test.mjs",
       "tests/portal-brain-review-progress.test.mjs"
     ],
     "outcome": "Display live Brain review progress in existing policy panel; no new review system created"
