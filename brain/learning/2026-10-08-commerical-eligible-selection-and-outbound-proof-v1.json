@@ -1,0 +1,58 @@
+{
+  "version": "commercial-eligible-selection-and-outbound-proof-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "failure_class": "ELIGIBILITY_TOP_N_STARVATION_AND_FALSE_ZERO_SEND_GREEN",
+  "fingerprint": "commercial-top20-cooldown-before-pressure-filter-outreach-zero-sent-ok-v1",
+  "root_cause": "Existing command-center materializer caps at revenue_rank<=20 before excluding contact cooldown, while all 20 top-ranked items were cooldown on 2026-10-08. Gmail runner has valid account preflight but selected=0,sent=0 and previously emitted operational status ok.",
+  "intervention": "Apply existing pressure, cooldown, confidence, identity and lineage filters before limiting to the highest-ranked 20 eligible candidates. Existing Gmail executor emits warning plus explicit delivery_gap when zero provider-accepted messages; do not synthesize recipient delivery.",
+  "evidence": {
+    "production_date": "2026-10-08",
+    "daily_run_state": "degraded",
+    "daily_run_action_count": 15,
+    "daily_run_recommendation_count": 16,
+    "revenue_snapshot_total": 609,
+    "top20_cooldown": 20,
+    "lower_rank_medium_or_low": 24,
+    "linked_in_company_provider_object": "urn:li:share:7513894237386719236",
+    "provider_proven_publications": 2,
+    "provider_proven_email": 0,
+    "gmail_preflight": "ok",
+    "outreach_observed": "selected=0; sent=0; errors=0",
+    "contact_delivery_claim": "UNPROVEN",
+    "production_schema_mutated": false
+  },
+  "guardrails": [
+    "Retain original recipient pressure, cooldown, identity and source-lineage gates",
+    "No unsanctioned prospect DM/email, no inferred opt-in or no fake provider ack",
+    "No new scheduler, sender, duplicate side-effect or provider bill",
+    "Keep commercial day degraded until all its independent gates prove completion",
+    "Do not claim post publication is guaranteed inbox delivery"
+  ],
+  "tests": [
+    "tests/brain-commercial-pressure-rank-and-outbound-proof-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pressure-rank-and-outbound-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-pressure-rank-and-outbound-proof-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_proof_required": [
+    "exact-head Required and Powerhouse CodeQL",
+    "official Supabase provider preview on exact HEAD",
+    "protected merge",
+    "new SQL function definition applied on production and Edge deployment readback",
+    "next natural outreach execution shows selection and recipient-provider receipt status without fabrication"
+  ],
+  "prevention": "Filter eligibility before top-N; expose zero-send delivery gap as warning, while preserving fail-closed channel authorization and honest commercial state."
+}
