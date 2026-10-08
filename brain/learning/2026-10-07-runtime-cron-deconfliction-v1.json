@@ -1,0 +1,72 @@
+{
+  "id": "runtime-cron-deconfliction-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|postgres|pg-cron-startup-timeout|scheduler-herd|v1",
+  "failure_class": "DATABASE_RUNTIME_PRESSURE",
+  "root_cause": [
+    "Two canonical recovery jobs started on every minute boundary, creating permanent baseline concurrency.",
+    "The data-spine watchdog shared commercial-heartbeat minute zero, and revenue-attribution shared every 15-minute slot with the revenue-intelligence snapshot.",
+    "Provider logs recorded repeated pg_cron job startup timeout events and management/PostgREST statement timeouts while application 500s had already been removed."
+  ],
+  "prevention": [
+    "Dephase the reconciliation worker to a 59-second interval while keeping its canonical job active.",
+    "Move the data-spine watchdog away from commercial-heartbeat minutes without reducing its ten-minute cadence.",
+    "Move revenue-attribution away from the revenue-intelligence snapshot without reducing its fifteen-minute cadence.",
+    "Require exact cron.job schedule readback in the migration.",
+    "Do not disable canonical runtime owners or weaken commercial heartbeat cadence."
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "SUPABASE_DATABASE_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-runtime-cron-deconfliction-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_log_window_utc": "2026-10-07T05:20:00Z/2026-10-07T06:00:00Z",
+    "startup_timeouts": {
+      "powerhouse_reconciliation_worker_v2": 19,
+      "powerhouse_execution_resilience_watchdog_v1": 19,
+      "powerhouse_public_rls_guard_scan": 4,
+      "powerhouse_content_closed_loop_v1": 4,
+      "powerhouse_one_commercial_heartbeat_v1": 4
+    },
+    "observed_peak_cron_starts_per_minute": 11,
+    "current_schedule_readback": {
+      "powerhouse_reconciliation_worker_v2": "* * * * *",
+      "powerhouse_execution_resilience_watchdog_v1": "* * * * *",
+      "powerhouse_data_spine_watchdog_v1": "0,10,20,30,40,50 * * * *",
+      "powerhouse_revenue_intelligence_snapshot_15m": "7,22,37,52 * * * *",
+      "powerhouse_revenue_attribution_snapshot_v1": "7,22,37,52 * * * *",
+      "powerhouse_one_commercial_heartbeat_v1": "0,5,10,15,20,25,30,35,40,45,50,55 * * * *"
+    },
+    "database_transport_symptoms": [
+      "pg_cron job startup timeout",
+      "management SQL connection timeout",
+      "PostgREST statement timeout"
+    ],
+    "platform": {
+      "postgres_version": "17.6.1.155",
+      "supabase_cron_seconds_supported": true,
+      "supabase_recommended_concurrent_jobs_max": 8
+    },
+    "source_migration": "supabase/migrations/20261007055200_powerhouse_runtime_cron_deconfliction_v1.sql",
+    "regression_test": "tests/brain-powerhouse-runtime-cron-deconfliction-v1.test.mjs",
+    "supabase_preview_capacity_recovery": {
+      "stale_preview_pr": 4015,
+      "stale_preview_branch": "fix/supabase-edge-production-source-anchor-60d41da-20261006",
+      "stale_preview_retired_at": "2026-10-07T06:01:25Z",
+      "retirement_basis": "Superseded by #4025 terminal provider readbacks and #4029 canonical runtime-file provider parity.",
+      "branch_readback_after_retirement": "Only main remains in Supabase branches.",
+      "purpose": "Allow current migration preview to be evaluated without stale preview-branch occupancy."
+    }
+  }
+}
