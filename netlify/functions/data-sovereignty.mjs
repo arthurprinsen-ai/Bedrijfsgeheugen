@@ -2,6 +2,7 @@ import {getUser} from '@netlify/identity';
 import {resolveIdentityTenant} from '../../platform/read-models/portal-server-state.mjs';
 import {isPowerhouseAdmin} from '../../platform/auth/powerhouse-admin.mjs';
 import {createDataSovereigntyClient} from './_data-sovereignty-client.mjs';
+import {validateCustomerAiDeployment} from '../../platform/policy/customer-ai-deployment.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const allowedModes=new Set(['TRANSPARENT_GLOBAL','EU_STORAGE','EU_ONLY','CUSTOM']);
@@ -29,10 +30,16 @@ export default async request=>{
   const preferredAiProvider=String(body?.preferredAiProvider||'').trim();
   const preferredAiRegion=String(body?.preferredAiRegion||'').trim();
   if(!allowedModes.has(mode)||!allowedAiProviders.has(preferredAiProvider))return json({error:'INVALID_POLICY'},400);
+  let aiDeploymentProfile;
+  if(Object.prototype.hasOwnProperty.call(body,'aiDeploymentProfile')){
+    try{aiDeploymentProfile=body.aiDeploymentProfile==null?null:validateCustomerAiDeployment(body.aiDeploymentProfile);}
+    catch{return json({error:'INVALID_AI_DEPLOYMENT_PROFILE'},400);}
+  }
   const policy={
     mode,
     preferredAiProvider:preferredAiProvider||null,
-    preferredAiRegion:preferredAiRegion||null
+    preferredAiRegion:preferredAiRegion||null,
+    ...(aiDeploymentProfile!==undefined?{aiDeploymentProfile}:{})
   };
   try{return json(await client.setPolicy(ownTenant,policy,user.email||user.id));}
   catch(error){return json({error:error?.code||'DATA_SOVEREIGNTY_WRITE_FAILED'},502);}
