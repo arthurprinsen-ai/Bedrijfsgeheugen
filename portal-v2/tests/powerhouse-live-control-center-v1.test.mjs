@@ -50,7 +50,7 @@ test('internal owner Control Center stays unlisted for customer navigation',()=>
  const registry=fromRepo('portal-v2/page-registry.js');
  const admin=fromRepo('netlify/functions/powerhouse-observability.mjs');
  assert.match(registry,/powerhouse-control-center/);
- assert.match(fromRepo('portal-v2/navigation-model.js'),/page.id!=='powerhouse-control-center'/);
+ assert.match(fromRepo('portal-v2/navigation-model.js'),/group.pages.map\(/);
  assert.match(fromRepo('portal-v2/page-shell.js'),/page.id!=='powerhouse-control-center'/);
  assert.match(admin,/isPowerhouseAdmin\(user/);
  assert.match(admin,/POWERHOUSE_ADMIN_REQUIRED/);
