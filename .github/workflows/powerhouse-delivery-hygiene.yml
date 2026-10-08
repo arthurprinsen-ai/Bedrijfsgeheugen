@@ -365,6 +365,7 @@ jobs:
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
           import { compileClosurePlan } from './tools/delivery/integration-bundle-compiler.mjs';
+          import { evaluateMaterialWritebackClosure } from './scripts/brain/material-writeback-closure-guard.mjs';
           const file='.artifacts/powerhouse-delivery-hygiene.json';
           const evidence=JSON.parse(await readFile(file,'utf8'));
           const policy=JSON.parse(await readFile('config/powerhouse-integration-bundle-v1.json','utf8'));
@@ -373,13 +374,17 @@ jobs:
             policy,
             obligationId:evidence.obligationId||evidence.obligation_id||''
           });
-          if(!closure.ready){
+          // Runtime-publication obligations retain their existing single-authority exemption.
+          const semantic=closure.authority==='canonical-runtime-obligation'
+            ? {ok:true,missing:[]}
+            : evaluateMaterialWritebackClosure({changedPaths:evidence.changed_paths||[],rootDir:process.cwd()});
+          if(!closure.ready||!semantic.ok){
             evidence.state='INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE';
             evidence.ok=false;
             evidence.admitted=false;
-            evidence.missing_closure_evidence=closure.missing;
+            evidence.missing_closure_evidence=[...new Set([...closure.missing,...semantic.missing])];
             await writeFile(file,JSON.stringify(evidence,null,2)+'\n');
-            throw new Error('INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:'+closure.missing.join(','));
+            throw new Error('INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:'+evidence.missing_closure_evidence.join(','));
           }
           console.log(JSON.stringify({status:'CANONICAL_INTEGRATION_CLOSURE_COMPLETE',material:closure.material,authority:closure.authority}));
           NODE

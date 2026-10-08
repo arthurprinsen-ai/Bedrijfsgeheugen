@@ -9,6 +9,7 @@ test('protected required hygiene denies material changes lacking any closure art
  assert.match(workflow,/name: Enforce canonical integration closure at protected admission/);
  assert.match(workflow,/if: steps\.admit\.outputs\.admitted == 'true'/);
  assert.match(workflow,/compileClosurePlan/);
+ assert.match(workflow,/evaluateMaterialWritebackClosure/,'required gate must validate semantic learning, not only file names');
  assert.match(workflow,/INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE/);
  assert.match(workflow,/obligationId:evidence\.obligationId\|\|evidence\.obligation_id/,'preserve runtime-only content publication authority');
 });
