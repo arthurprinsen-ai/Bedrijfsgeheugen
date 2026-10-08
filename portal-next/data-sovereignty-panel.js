@@ -76,6 +76,12 @@ class DataSovereigntyPanel extends HTMLElement{
   const selectionActive=placementRequested&&ai.deploymentMode==='MANAGED_CLOUD'&&ai.provider==='ANTHROPIC'&&ai.modelFamily==='CURRENT'&&ai.computeRegion==='AUTO'&&ai.storageRegion==='AUTO'&&ai.ragRegion==='SAME_AS_STORAGE'&&ai.networkMode==='STANDARD'&&!ai.modelId;
   const deploymentPending=placementRequested&&!selectionActive;
   const displayedPolicySatisfied=Boolean(sum.policySatisfied)&&!deploymentPending;
+  const impact=p.last_change_impact?.contract==='powerhouse-cross-domain-change-v1'?p.last_change_impact:null;
+  const impactPending=impact?.status==='REVIEW_REQUIRED';
+  const impactTypeLabel={AI_MODEL:'AI-model of AI-provider',AI_DEPLOYMENT:'AI-infrastructuur',DATA_LOCATION:'Data- of verwerkingslocatie'};
+  const esrsCandidates=impactPending&&Array.isArray(impact.esrsReview)
+   ?impact.esrsReview.filter(item=>item?.reviewRequired===true&&item?.materiality==='UNDETERMINED').map(item=>String(item.standard||'')).filter(Boolean)
+   :[];
   this.innerHTML=`<section class="dsp-shell" data-sovereignty-scope="${esc(this.scope)}">
    <header class="dsp-head"><div><span class="dsp-kicker">DATA SOVEREIGNTY CONTROL PLANE</span><h2>Waar gaat data heen?</h2><p>Live overzicht van invoer, verwerking, opslag, AI, doorgifte, koppelingen en bewijs. Onbekend blijft onbekend.</p></div>
    <div class="dsp-scope"><button type="button" data-scope="bedrijfsgeheugen" class="${self?'is-active':''}">Bedrijfsgeheugen</button><button type="button" data-scope="customer" class="${!self?'is-active':''}">Mijn organisatie</button></div></header>
@@ -86,6 +92,12 @@ class DataSovereigntyPanel extends HTMLElement{
     <article><small>AI-routes</small><b>${esc(sum.activeAiRoutes??0)}</b><small>${esc(sum.globalOrUnknownAiRoutes??0)} globaal/onbekend</small></article>
     <article><small>Laatste herijking</small><b>${esc(s.generatedAt?new Date(s.generatedAt).toLocaleString('nl-NL'):'—')}</b></article>
    </div>
+   ${impactPending?`<section class="dsp-alert dsp-cross-domain-review" role="status" aria-label="Herbeoordeling AI-keuze en CSRD">
+    <h3>Gevolgen van je AI- of datakeuze worden beoordeeld</h3>
+    <p><strong>Wijziging:</strong> ${esc(impactTypeLabel[impact.kind]||'Infrastructuur of databeleid')}.</p>
+    <p>De gevolgen voor gegevensbescherming, beveiliging, leveranciers, kosten en duurzaamheid moeten opnieuw worden vastgesteld. Ook relevante CSRD/ESRS-onderwerpen worden gecontroleerd${esrsCandidates.length?' ('+esrsCandidates.map(esc).join(', ')+')':''}.</p>
+    <p>Dit betekent niet dat CSRD voor jouw organisatie verplicht is of dat energieverbruik en CO₂ al zijn gemeten. De gekozen AI-route wordt niet automatisch geactiveerd.</p>
+   </section>`:''}
    ${!self?`<form class="dsp-policy">
     <div class="dsp-policy-title"><h3>Kies waar jouw AI draait</h3><p>Selecteer de gewenste infrastructuur, het AI-model en de opslagplaatsen. Dit is een aanvraag/beleidskeuze, geen automatische installatie.</p></div>
     <label>Databeleid<select name="mode">${options([['TRANSPARENT_GLOBAL','Transparant wereldwijd'],['EU_STORAGE','Opslag uitsluitend in EU'],['EU_ONLY','EU-only: opslag + verwerking'],['CUSTOM','Aangepast beleid']],p.mode)}</select></label>
