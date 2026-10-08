@@ -7,3 +7,5 @@
 - Correction: constrain existing read-only planner; require canonical finance proof, linked engineering outcome and comparison lineage; dedupe by finance source; use an explicit non-promotable missing-value state. Extend regression, canonical skill, system map and human documentation.
 - Invariants: no new authority/scheduler/store, no raw record rewrite, no manufactured outcomes, missing financial proof never green, protected merge and provider readback still independently required.
 - Status: candidate submitted for protected PR. No claim of CI, merge, deploy or measured business uplift until readback proves each phase.
+
+- Protected delivery recovery: original PR #4181 was closed unmerged after concurrent main advancement produced unrelated diff-scope contamination. Clean-base PR #4186 retains seven canonical changed files and uses machine-parseable `Supersedes: none`; predecessor is recorded here in prose. Admission/test/merge remain independently required.
