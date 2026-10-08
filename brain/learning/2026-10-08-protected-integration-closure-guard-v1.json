@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse|one-brain|protected-admission-material-closure|v1",
+  "obligationId": "one-brain-integration-closure-guard-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "failureModes": [
+    "non-required Required test can fail material closure after protected auto-merge"
+  ],
+  "prevention": [
+    "run canonical material closure check inside protection-required hygiene/admission",
+    "require all evidence classes for material mutations before merge",
+    "read back exact production and Brain outcome before claiming live"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-protected-integration-closure-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ]
+  }
+}
