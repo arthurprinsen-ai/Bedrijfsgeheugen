@@ -10,13 +10,14 @@
     "The supervisor must never invoke an undefined BRAIN dispatch path or assume a recovery happened on a skipped invocation.",
     "Nonterminal merged obligations remain auditable and bounded by a seven-day check horizon, 90-minute retry cooldown and three-attempt limit.",
     "Only canonical post-merge production readback plus durable authority evidence can mark an obligation LIVE_BEWEZEN.",
-    "The canonical Brain learning evaluation gate must run in Required preflight before protected merge and reject missing/non-Brain test paths."
+    "The canonical Brain learning evaluation gate must run in Required preflight before protected merge and reject missing/non-Brain test paths.",
+    "Quote the canonical terminal closure workflow run-name; unquoted # starts a YAML comment and loses the PR number, breaking exact-PR deduplication."
   ],
   "compiler": {
     "failure_class": "GITHUB_DELIVERY_SUPERVISOR_CONTINUITY_GAP",
     "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
     "machine_enforceable": true,
-    "repeat_count": 2,
+    "repeat_count": 3,
     "security_sensitive": true
   },
   "evidence": {
@@ -25,9 +26,11 @@
     "terminal_authority": ".github/workflows/obligation-terminal-closure.yml",
     "regression": [
       "tests/delivery-powerhouse-supervisor.test.mjs",
+      "tests/brain-github-delivery-continuity-v1.test.mjs",
       "tests/brain-github-delivery-continuity-v1.test.mjs"
     ],
-    "premerge_gate": ".github/workflows/required-test.yml"
+    "premerge_gate": ".github/workflows/required-test.yml",
+    "terminal_run_identity": ".github/workflows/obligation-terminal-closure.yml"
   },
   "evaluation": {
     "historical_replay": [
@@ -46,5 +49,5 @@
     ]
   },
   "production_claim": "NOT_PROVEN",
-  "outcome": "RECOVERY_PREMERGE_CONTRACT_PENDING_PROTECTED_CI_AND_RUNTIME_VALIDATION"
+  "outcome": "STRUCTURAL_RECOVERY_MERGED_HISTORICAL_FAILURE_FIXED_NEW_TERMINAL_IDENTITY_CANDIDATE_PENDING"
 }
