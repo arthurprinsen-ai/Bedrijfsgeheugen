@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|cross-domain-evolution|canonical-evidence|protected-delivery|v1",
+  "date": "2026-10-08",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "Existing self-improvement evaluations and Organism Graph existed separately; actionable cross-domain changes were not bound to the same tenant revision, verified outcomes, regulatory reviews and control-group evidence in a single planner.",
+  "root_cause": "A cross-domain decision contract was missing at the handoff from impact graph to evidence-backed protected improvement.",
+  "fix": "Compose existing Organism Graph, improvement evaluation, verified action/outcome references and Learning Compiler in one deterministic pure planner; no parallel scheduler/database.",
+  "prevention": [
+    "Every cross-domain proposal must bind tenant/change/revision/policy versions.",
+    "Provider/release verified observed business and engineering outcomes are distinct from queued actions and delivery ACKs.",
+    "Review AI Act, GDPR, NIS2, security and CSRD applicability wherever dependencies demand it.",
+    "No causal uplift without a verified independent comparison and control group.",
+    "Unknown review/evidence/counterfactual stays non-promotable; proposals never imply execution."
+  ],
+  "evidence": {
+    "code": "brain/self-improvement/cross-domain-evolution.mjs",
+    "test": "tests/brain-self-evolving-business-engineering-os-v1.test.mjs",
+    "skill": ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "outcome": "Candidate code and regression added; only protected main merge, provider/runtime readback and independent observations can prove operational adoption.",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-self-evolving-business-engineering-os-v1.test.mjs"
+    ],
+    "invariants": [
+      "fail closed on unknown review",
+      "same-tenant exact-revision evidence",
+      "CSRD applicability assessed not inferred",
+      "control group required",
+      "no direct production mutation"
+    ]
+  }
+}
