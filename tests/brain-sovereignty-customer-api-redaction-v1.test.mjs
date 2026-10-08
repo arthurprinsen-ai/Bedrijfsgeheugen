@@ -37,6 +37,8 @@ test('unsupported or nonreview status never becomes a false compliance approval'
 test('Netlify customer GET and POST project sovereign response but admin-only readback stays internal',async()=>{
  const source=await readFile(new URL('../netlify/functions/data-sovereignty.mjs',import.meta.url),'utf8');
  assert.match(source,/customerSovereigntyReadback/);
+ assert.match(source,/buildCrossDomainReviewPortfolio/,'retain existing review task projection');
+ assert.match(source,/withImpactTasks\(await client\.get\(tenantId\),tenantId\)/,'compose authorized source before safe projection');
  assert.match(source,/wantsCanonical\?result:customerSovereigntyReadback\(result\)/);
  assert.match(source,/return json\(customerSovereigntyReadback\(result\)\)/);
 });
