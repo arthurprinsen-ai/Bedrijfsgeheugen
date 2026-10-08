@@ -12,5 +12,23 @@
     "no_fabricated_business_outcomes": true
   },
   "verification": "Protected Required, CodeQL, merge and production readback required; this candidate does not assert end-to-end GREEN.",
-  "failure_class": "SOURCE_UNIVERSE_CATALOG_FRESHNESS_IMPACT_EVIDENCE_CONFLATION"
+  "failure_class": "SOURCE_UNIVERSE_CATALOG_FRESHNESS_IMPACT_EVIDENCE_CONFLATION",
+  "compiler": {
+    "failure_class": "SOURCE_UNIVERSE_CATALOG_FRESHNESS_IMPACT_EVIDENCE_CONFLATION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "Catalog present but zero tenant impacts",
+        "expected": "Evidence state cannot claim end-to-end impact proven",
+        "status": "SPECIFIED_NOT_EXECUTED"
+      }
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ],
+    "production_readback": "Not yet proven; zero company impacts at last readback"
+  }
 }
