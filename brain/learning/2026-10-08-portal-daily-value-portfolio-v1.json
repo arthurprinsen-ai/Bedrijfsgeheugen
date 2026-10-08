@@ -1,0 +1,46 @@
+{
+  "id": "powerhouse-daily-value-portfolio-20261008-v1",
+  "date": "2026-10-08",
+  "status": "ACTIVE",
+  "fingerprint": "portal|daily-value-portfolio|three-priorities|evidence-first|v1",
+  "root_cause": "Canonical Brain prioritization existed but Company Cockpit did not present exactly the top three tenant-scoped NOW/NEXT decisions in one actionable attention block.",
+  "prevention": [
+    "Reuse existing tenant-scoped operating-loop projection and business decision authority.",
+    "Keep absent forecasts, money and evidence explicitly unknown.",
+    "Expose blocked and approval-required state before any execution.",
+    "Preserve existing decision handlers; do not create a second executor or a synthetic ranking."
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_DAILY_TOP_THREE_NOT_VISIBLE",
+    "scope": "PORTAL_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "implementation": "portal-v2/operating-system/daily-value-portfolio.js",
+    "regression": [
+      "tests/portal-v2-daily-value-portfolio.test.mjs"
+    ],
+    "integration": "portal-v2/company-cockpit-ui.js"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-v2-daily-value-portfolio.test.mjs"
+    ],
+    "shadow": [
+      "portal-preview"
+    ],
+    "canary": [
+      "authenticated tenant-scoped portal projection"
+    ],
+    "success_criteria": [
+      "Three canonical top ranked priorities when data exists",
+      "Missing values remain unknown",
+      "Provider execution stays governed by existing decision APIs",
+      "Protected merge and production tenant readback succeed"
+    ]
+  },
+  "production_claim": "PENDING_PROTECTED_DELIVERY",
+  "outcome": "CANDIDATE_READY_FOR_PROTECTED_DELIVERY"
+}
