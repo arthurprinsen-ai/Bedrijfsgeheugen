@@ -1,7 +1,7 @@
 {
   "id": "portal-authenticated-production-503-serverless-env-v1",
   "date": "2026-10-07",
-  "status": "ACTIVE",
+  "status": "PENDING_PRODUCTION_PROOF",
   "fingerprint": "powerhouse|portal|production-proof|503|serverless-env-api|v1",
   "root_cause": "The real Netlify Identity production canary reached the protected Portal endpoint but /api/portal-ondernemersdata returned HTTP 503. That serverless Function read runtime credentials through Netlify.env, the Edge Functions environment API. Bedrijfsgeheugen had already learned on 2026-09-21 that Netlify serverless Functions must read scoped runtime environment variables through process.env. The configured service credential therefore resolved empty at this boundary and the function failed closed on its SUPABASE_SERVICE_KEY_MISSING path.",
   "prevention": [
@@ -53,7 +53,7 @@
       "tests/brain-portal-authenticated-production-authority-v1.test.mjs"
     ]
   },
-  "production_claim": "LIVE_PROVEN",
+  "production_claim": "CANDIDATE_PROTECTED_DELIVERY",
   "production_readback": {
     "protected_runtime_sha": "1a5f661314c6ae7a10f33995b30e129a994e8883",
     "netlify_deploy_id": "6ac72f87b10d420008cb7441",
@@ -68,5 +68,6 @@
     "current_main_at_canonicalization": "724bca809831d4ee144686f3b19eebae21c63460",
     "current_main_delta_from_proven_runtime": "closure-only Brain learning, documentation and regression-test changes; no production runtime path changed"
   },
-  "outcome": "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_PROVEN"
+  "outcome": "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_PROVEN",
+  "evidence_freshness_note": "Historical authenticated proof remains retained for audit, but runtime paths changed after protected_runtime_sha; a new exact-runtime production proof is required before LIVE_PROVEN can be restored."
 }

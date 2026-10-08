@@ -37,8 +37,9 @@ export async function validateAutonomousImprovementRuntime() {
 
   if (contract.scheduler?.production_authority !== 'Supabase pg_cron') errors.push('production scheduler authority drift');
   if (contract.scheduler?.production_job !== 'powerhouse-autonomous-improvement-cycle-v1') errors.push('production scheduler job drift');
-  if (contract.scheduler?.production_function !== 'public.powerhouse_autonomous_improvement_cycle_v1(now())') errors.push('production scheduler function drift');
-  if (contract.scheduler?.cadence !== 'hourly at minute 42') errors.push('production scheduler cadence drift');
+  if (contract.scheduler?.production_function !== 'public.powerhouse_autonomous_improvement_cron_v1()') errors.push('production scheduler function drift');
+  if (contract.scheduler?.cadence !== 'hourly at minute 34') errors.push('production scheduler cadence drift');
+  if (contract.scheduler?.schedule_source !== 'supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql') errors.push('scheduler provenance drift');
   if (contract.scheduler?.probe_workflow !== '.github/workflows/business-os-intelligence.yml') errors.push('probe workflow integration drift');
   if (contract.scheduler?.probe_read_only !== true) errors.push('GitHub probe must remain read-only');
   if (contract.scheduler?.idempotent_run_identity !== true) errors.push('production scheduler must retain idempotent identity');

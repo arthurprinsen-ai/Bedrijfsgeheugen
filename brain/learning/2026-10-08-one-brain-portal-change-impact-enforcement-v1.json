@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|one-brain|all-portal-changes-impact-and-canonical-ack|v1",
+  "obligationId": "one-brain-portal-change-evidence-20261008-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "supabase:brain-operating-authority",
+  "failureModes": [
+    "numeric-neutral portal changes produced changed=false",
+    "new native pages were absent from legacy source section bindings",
+    "a stored=false acknowledgement drained pending causal impacts"
+  ],
+  "prevention": [
+    "every page in PORTAL_PAGE_INDEX is a mapped causal source",
+    "cross-domain re-evaluation is a review obligation, never an execution claim",
+    "unknown paths remain REVIEW_REQUIRED",
+    "canonical persistence must return stored=true before clearing pending impacts",
+    "existing Required test pipeline enforces regression coverage"
+  ],
+  "closureRequired": [
+    "protected merge",
+    "exact deployed SHA",
+    "authenticated customer Brain record readback",
+    "outcome evidence",
+    "learning acknowledgement"
+  ],
+  "externalActionEvidence": "NOT_PROVEN",
+  "compiler": {
+    "failure_class": "MAPPING_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cross-domain-change-impact.test.mjs",
+      "tests/brain-one-brain-coverage-contract-v1.test.mjs"
+    ]
+  }
+}

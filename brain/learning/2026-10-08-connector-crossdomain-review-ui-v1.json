@@ -1,0 +1,38 @@
+{
+  "id": "connector-crossdomain-review-ui-20261008-v1",
+  "fingerprint": "connector-csrd-review-customer-visibility-no-fake-green-v1",
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_REVIEW_NOT_VISIBLE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The connector API began exposing pending cross-domain ESG/privacy/security/finance reviews, but the monitor UI counted synthetic review rows against the wrong connector and the activation page could misleadingly present a TEST_PASSED draft as ready even when the canonical impact review remained pending.",
+  "prevention": [
+    "Filter review rows strictly by connectorId/connector_id rather than counting unrelated synthetic entries.",
+    "Show only allowlisted impact domains and safely formatted ESRS candidates, never actor, changeId or raw audit payload.",
+    "Disable activation call-to-action in the view while the latest persisted impact is REVIEW_REQUIRED; server retains authoritative fail-closed guard.",
+    "Never claim CSRD legal applicability, verified ESG materiality or measured emissions from pending review topics."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs"
+    ],
+    "source": [
+      "portal-next/connector-builder-view.js"
+    ],
+    "outcome": "Pending connector reviews become intelligible and tenant-connector scoped; real regulatory sign-off is still outstanding."
+  }
+}

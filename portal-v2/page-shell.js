@@ -19,6 +19,7 @@ import { mountRoadmapWorkspace } from './modules/roadmap-workspace.js';
 import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
 import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
 import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
+import { mountCustomerAgentActivity } from './modules/customer-agent-activity.js';
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 import { mountContextualForesight } from './foresight-context-ui.js';
@@ -78,7 +79,7 @@ const COPY = {
   bronnenstatus:['Bronnenstatus','Zie welke bronnen beschikbaar zijn, welke aandacht vragen en waar bewijs ontbreekt.'],
   datahubstatus:['Datahubstatus','Volg structurering, verrijking en verbinding van bedrijfsdata zonder onbewezen live-status te tonen.'],
   'brain-verwerking':['Brain-verwerking','Maak zichtbaar wat het bedrijfsbrein met context doet: begrijpen, verbinden, prioriteren en adviseren.'],
-  agentstatus:['Agentstatus','Overzicht van agents, hun taakgebied en hun aantoonbare uitvoeringsstatus.'],
+  agentstatus:['Agenta · jouw data & acties','Bekijk welke bedrijfsdata de agents gebruiken, welke acties zijn uitgevoerd en welk bewijs daarvan beschikbaar is.'],
   'powerhouse-control-center':['Powerhouse Control Center','Volg dagelijks wat AI, chats, agents, workflows en infrastructuur doen: activiteit, fouten, learnings, skills, delivery, kosten en bewijs in één filterbare cockpit.'],
   'actieve-acties':['Actieve acties','Van inzicht naar concrete uitvoering, eigenaar, voortgang en bewijs.'],
   'recovery-obligations':['Open recovery obligations','Elke containment of blokkade blijft zichtbaar totdat root cause, fix, test en heractivatie aantoonbaar gesloten zijn.'],
@@ -150,7 +151,7 @@ export function pagePresentation(pageId, state) {
 
 export function searchPortalPages(term='') {
   const q=String(term).trim().toLocaleLowerCase('nl');
-  const pages=listPortalGroups().flatMap(group=>group.pages.map(page=>({...page,groupLabel:group.label}))).filter(page=>!isProtectedTrustPage(page.id)||hasProtectedTrustAccess());
+  const pages=listPortalGroups().flatMap(group=>group.pages.map(page=>({...page,groupLabel:group.label}))).filter(page=>(page.id!=='powerhouse-control-center')&&(!isProtectedTrustPage(page.id)||hasProtectedTrustAccess()));
   if(!q) return pages.slice(0,12);
   return pages.filter(page=>`${page.label} ${page.groupLabel} ${page.id}`.toLocaleLowerCase('nl').includes(q)).slice(0,12);
 }
@@ -301,6 +302,7 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
+  else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
   else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,stateClient:portalContext.stateClient,openPage:openPortalPage});}
   else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}

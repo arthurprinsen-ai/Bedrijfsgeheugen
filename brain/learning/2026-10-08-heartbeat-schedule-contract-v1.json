@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|one-brain|improvement-scheduler-source-runtime-drift|v1",
+  "obligationId": "powerhouse-heartbeat-schedule-contract-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The canonical continuous-improvement contract and validation retained September 16 minute-42 schedule and direct cycle_v1 invocation after the October 6 staggered-cron migration changed the existing job to minute 34. Live cron.job invokes public.powerhouse_autonomous_improvement_cron_v1(). No second scheduler is needed.",
+  "failureModes": [
+    "documentation and validation accept stale scheduler cadence",
+    "contract describes underlying cycle function rather than currently scheduled wrapper",
+    "scheduler status assumed to prove delivered learning"
+  ],
+  "prevention": [
+    "bind runtime contract cadence and function to existing source-controlled October 6 staggering migration and measured live pg_cron identity",
+    "regression compare contract to migration",
+    "require run-outcome/Brain readback rather than only pg_cron success"
+  ],
+  "compiler": {
+    "failure_class": "CONFIGURATION_DRIFT",
+    "scope": "SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "baseline_comparison": "Current production schedule '34 * * * *' and wrapper function contrasted with stale September contract minute42 and cycle_v1 direct target",
+    "success_metric": "No false scheduler contract drift; existing runtime schedule unchanged",
+    "rollback": "Revert protected PR if runtime contract verification diverges; do not alter current production scheduler"
+  },
+  "evidence": {
+    "source_migration": "supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql",
+    "runtime_schedule_observed": "34 * * * *",
+    "runtime_command_observed": "select public.powerhouse_autonomous_improvement_cron_v1();",
+    "last_observation": "2026-10-08",
+    "runtime_job_id": 52,
+    "provider_run_status": "recent runs succeeded",
+    "production_readback": "READ_ONLY_OBSERVED_EXISTING_JOB; POST_PR_CLOSURE_PENDING"
+  },
+  "prohibited": [
+    "new scheduler",
+    "changing live cron",
+    "weakened release checks",
+    "claim improved commercial outcome from cron success"
+  ]
+}

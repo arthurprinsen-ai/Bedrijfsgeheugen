@@ -72,7 +72,10 @@ export function resolveEdgeRuntimeFunctions({changedPaths=[],configText='',baseC
     }
   }
 
-  return [...direct].filter(name=>declared.includes(name)).sort();
+  // Directly edited functions must never disappear from the required provider set.
+  // Undeclared functions are rejected by the production authority rather than
+  // silently being reported as NOT_APPLICABLE.
+  return [...direct].sort();
 }
 
 if(process.argv[1]===fileURLToPath(import.meta.url)){

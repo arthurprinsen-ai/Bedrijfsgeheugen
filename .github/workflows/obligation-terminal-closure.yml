@@ -1,6 +1,6 @@
 name: Obligation Terminal Closure
 
-run-name: Obligation Terminal Closure PR #${{ github.event.pull_request.number || inputs.pr_number }}
+run-name: "Obligation Terminal Closure PR #${{ github.event.pull_request.number || inputs.pr_number }}"
 
 on:
   pull_request:
@@ -53,9 +53,12 @@ jobs:
           } >> "$GITHUB_OUTPUT"
           echo "TERMINAL_CONTEXT_RESOLVED:pr=$pr_number candidate=$candidate_sha merge=$merge_sha"
 
+      # The trusted terminal control plane is the immutable invocation revision
+      # from protected main. A historical MERGE_SHA is evidence, not executable
+      # control-plane code: older merged commits may lack newer gate modules.
       - uses: actions/checkout@v5
         with:
-          ref: ${{ steps.context.outputs.merge_sha }}
+          ref: ${{ github.sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v5
@@ -72,6 +75,7 @@ jobs:
           set -euo pipefail
           git fetch origin main --no-tags
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
+          git merge-base --is-ancestor "$MERGE_SHA" HEAD || { echo "::error::TERMINAL_CONTROL_PLANE_CHECKOUT_NOT_DESCENDANT:$MERGE_SHA:$(git rev-parse HEAD)"; exit 78; }
           export PR_BODY="$(printf '%s' "$PR_BODY_B64" | base64 -d)"
           node --input-type=module - <<'NODE'
           import { appendFile } from 'node:fs/promises';
@@ -220,8 +224,8 @@ jobs:
           require_brain_evidence
 
           changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
-          if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/powerhouse-codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then
-            require_workflow "powerhouse-codeql.yml" "Powerhouse-CodeQL"
+          if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then
+            require_workflow "codeql.yml" "Powerhouse-CodeQL"
           else
             echo "TERMINAL_CRITICAL_GATE_NOT_APPLICABLE:Powerhouse-CodeQL:head=${HEAD_SHA}"
           fi
@@ -231,6 +235,7 @@ jobs:
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           PR_NUMBER: ${{ steps.context.outputs.pr_number }}
           PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
@@ -277,6 +282,31 @@ jobs:
             echo "SUPABASE_PROVIDER_READBACK_DECLARED:${line}"
           done
 
+          # Verify the claimed version/hash against the LIVE Supabase management API.
+          # PR metadata alone is never production evidence.
+          test -n "$SUPABASE_ACCESS_TOKEN" || {
+            echo "::error::SUPABASE_PROVIDER_ACCESS_TOKEN_MISSING"
+            exit 78
+          }
+          curl -fsSL --retry 2 --connect-timeout 10 --max-time 30 \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+            "https://api.supabase.com/v1/projects/adhjwmvyoixzjtmiroln/functions" \
+            -o /tmp/terminal-supabase-provider-live.json
+          PROVIDER_EXPECTED="$readbacks" node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {readbacksForFunctions} from './tools/supabase/publish-edge-provider-readback.mjs';
+          const expected=JSON.parse(process.env.PROVIDER_EXPECTED||'[]');
+          const live=readbacksForFunctions(
+            JSON.parse(readFileSync('/tmp/terminal-supabase-provider-live.json','utf8')),
+            expected.map(row=>row.function)
+          );
+          for(const row of expected){
+            const active=live.find(item=>item.function===row.function);
+            if(!active||active.version!==row.version||active.runtime_sha256!==row.runtime_sha256||active.state!=='ACTIVE')
+              throw new Error('SUPABASE_PROVIDER_LIVE_MISMATCH:'+row.function);
+          }
+          console.log('SUPABASE_PROVIDER_LIVE_METADATA_MATCH:'+expected.map(row=>row.function).join(','));
+          NODE
           echo "required=true" >> "$GITHUB_OUTPUT"
           echo "readbacks=$readbacks" >> "$GITHUB_OUTPUT"
           echo "SUPABASE_PROVIDER_READBACK_COVERAGE_PROVEN:functions=${changed_functions[*]}"
@@ -287,11 +317,35 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           DELIVERY_LANE: ${{ steps.identity.outputs.delivery_lane }}
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          PROVIDER_READBACK_REQUIRED: ${{ steps.provider-readback.outputs.required }}
+          PROVIDER_READBACKS: ${{ steps.provider-readback.outputs.readbacks }}
         run: |
           set -euo pipefail
 
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
-          if [ "${DELIVERY_LANE}" = "automation" ] && [ -n "${changed_paths}" ] && ! grep -Eq '^(portal-v2/|public/|src/|netlify/functions/|supabase/functions/|supabase/migrations/)' <<<"${changed_paths}"; then
+          # Migration-only merges are released by Supabase, not Netlify.
+          # All changed files must be exact migrations or non-runtime evidence.
+          migration_files="$(printf '%s\n' "$changed_paths" | grep -E '^supabase/migrations/[0-9]{14}_[a-z0-9_]+[.]sql$' || true)"
+          runtime_other="$(printf '%s\n' "$changed_paths" | grep -Ev '^(supabase/migrations/[0-9]{14}_[a-z0-9_]+[.]sql$|docs/|tests/|brain/learning/)' || true)"
+          if [ -n "$migration_files" ] && [ -z "$runtime_other" ]; then
+            node tools/delivery/supabase-migration-production-readback.mjs
+            exit 0
+          fi
+
+          # Shared contract classifier handles website, Edge, mixed, and unknown changes.
+          scope_json="$(CHANGED_PATHS="$changed_paths" node --input-type=module - <<'NODE'
+          import {classifyTerminalReleaseScope} from './tools/delivery/terminal-release-scope.mjs';
+          process.stdout.write(JSON.stringify(classifyTerminalReleaseScope(
+            String(process.env.CHANGED_PATHS||'').split(/\r?\n/)
+          )));
+          NODE
+          )"
+          website_required="$(jq -r '.website' <<<"$scope_json")"
+          supabase_edge_required="$(jq -r '.edge' <<<"$scope_json")"
+          other_runtime_required="$(jq -r '.other' <<<"$scope_json")"
+          non_runtime="$(jq -r '.non_runtime' <<<"$scope_json")"
+          if [ "${DELIVERY_LANE}" = "automation" ] && [ "$non_runtime" = true ]; then
             git fetch origin main --no-tags
             observed_sha="$(git rev-parse origin/main)"
             git merge-base --is-ancestor "${MERGE_SHA}" "${observed_sha}" || {
@@ -307,6 +361,44 @@ jobs:
             exit 0
           fi
 
+          if [ "$supabase_edge_required" = true ] && [ "$website_required" = false ] && [ "$other_runtime_required" = false ]; then
+            if [ "$PROVIDER_READBACK_REQUIRED" != true ]; then
+              echo "::error::SUPABASE_ONLY_PROVIDER_READBACK_REQUIRED:$MERGE_SHA"
+              exit 78
+            fi
+            if ! jq -e 'type=="array" and length>0 and all(.[]; .state=="ACTIVE" and (.version|type=="number") and .version>0 and (.runtime_sha256|test("^[0-9a-f]{64}$")))' <<<"$PROVIDER_READBACKS" >/dev/null; then
+              echo "::error::SUPABASE_ONLY_PROVIDER_READBACK_INVALID:$MERGE_SHA"
+              exit 78
+            fi
+            git fetch origin main --no-tags
+            observed_sha="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "$MERGE_SHA" "$observed_sha" || {
+              echo "::error::SUPABASE_ONLY_MAIN_CONTAINMENT_NOT_PROVEN:$MERGE_SHA:$observed_sha"
+              exit 78
+            }
+            # Check changed runtime files, not unrelated later deployments.
+            # A later canonical config registration must not invalidate a previous
+            # function-source merge whose exact production bytes are unchanged.
+            while IFS= read -r changed_path; do
+              case "$changed_path" in
+                supabase/functions/*|supabase/config.toml)
+                  git diff --quiet "$MERGE_SHA" "$observed_sha" -- "$changed_path" || {
+                    echo "::error::SUPABASE_ONLY_RUNTIME_SUPERSEDED:$changed_path:$MERGE_SHA:$observed_sha"
+                    exit 78
+                  }
+                  ;;
+              esac
+            done <<<"$changed_paths"
+            echo "mode=github_main" >> "$GITHUB_OUTPUT"
+            echo "run_id=" >> "$GITHUB_OUTPUT"
+            echo "observed_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
+            echo "deploy_id=" >> "$GITHUB_OUTPUT"
+            echo "verified=true" >> "$GITHUB_OUTPUT"
+            echo "SUPABASE_ONLY_PROVIDER_AND_MAIN_READBACK_PROVEN:merge=$MERGE_SHA contained_by=$observed_sha"
+            exit 0
+          fi
+          # Mixed changes retain both provider proof and Netlify release readback.
+          # Other unknown runtime paths remain fail-closed.
           source_run_id=""
           source_conclusion=""
           # Fast bounded canonical wait. A historical failed/cancelled canonical run is
@@ -390,20 +482,62 @@ jobs:
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
+          # A failed original projection never becomes success by retrying metadata.
           for attempt in $(seq 1 30); do
-            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
-            run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
-            status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
-            conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
+            runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=$MERGE_SHA&event=push&per_page=20")"
+            run_id="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            status="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
+            conclusion="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
             if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
-              [ "$conclusion" = "success" ] || { echo "::error::SKILL_PROJECTION_FAILED:run=$run_id conclusion=$conclusion"; exit 78; }
-              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-              echo "SKILL_PROJECTION_PROVEN:$run_id"
-              exit 0
+              if [ "$conclusion" = "success" ]; then
+                echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+                echo "SKILL_PROJECTION_PROVEN:$run_id"
+                exit 0
+              fi
+              echo "::warning::SKILL_PROJECTION_HISTORICAL_FAILURE:run=$run_id conclusion=$conclusion; require a successful protected-main descendant with identical learning"
+              break
             fi
             sleep 10
           done
-          echo "::error::SKILL_PROJECTION_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
+          learning_files="$(git diff --name-only "$MERGE_SHA^1" "$MERGE_SHA" | grep -E '^brain/learning/.+[.]json$' || true)"
+          [ -n "$learning_files" ] || { echo "::error::SKILL_PROJECTION_DESCENDANT_NO_LEARNING_SCOPE:$MERGE_SHA"; exit 78; }
+          for attempt in $(seq 1 24); do
+            git fetch origin main --no-tags
+            current_main="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "$MERGE_SHA" "$current_main" || {
+              echo "::error::SKILL_PROJECTION_DESCENDANT_MAIN_CONTAINMENT_FAILED:$MERGE_SHA:$current_main"
+              exit 78
+            }
+            descendants="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?branch=main&event=push&per_page=70")"
+            while IFS=$'\t' read -r descendant_id descendant_sha; do
+              [ -n "$descendant_id" ] && [[ "$descendant_sha" =~ ^[0-9a-f]{40}$ ]] || continue
+              git merge-base --is-ancestor "$MERGE_SHA" "$descendant_sha" || continue
+              git merge-base --is-ancestor "$descendant_sha" "$current_main" || continue
+              proven=true
+              for learning_path in $learning_files; do
+                main_blob="$(git rev-parse "origin/main:$learning_path" 2>/dev/null || true)"
+                proven_blob="$(git rev-parse "$descendant_sha:$learning_path" 2>/dev/null || true)"
+                if [ -z "$main_blob" ] || [ "$main_blob" != "$proven_blob" ]; then proven=false; break; fi
+                if ! git show "$descendant_sha:$learning_path" | node -e '
+                  const fs=require("node:fs");
+                  const record=JSON.parse(fs.readFileSync(0,"utf8"));
+                  const modes=["historical_replay","shadow","canary"];
+                  const valid=modes.every(mode=>Array.isArray(record.evaluation?.[mode]) &&
+                    record.evaluation[mode].length>0 &&
+                    record.evaluation[mode].every(p=>typeof p==="string" &&
+                      /^tests\/brain-[a-z0-9-]+[.]test[.]mjs$/.test(p) && fs.existsSync(p)));
+                  if(!valid)process.exit(78);
+                '; then proven=false; break; fi
+              done
+              if [ "$proven" = true ]; then
+                echo "run_id=$descendant_id" >> "$GITHUB_OUTPUT"
+                echo "SKILL_PROJECTION_DESCENDANT_PROVEN:original=$MERGE_SHA descendant=$descendant_sha run=$descendant_id current_main=$current_main"
+                exit 0
+              fi
+            done < <(jq -r '.workflow_runs[] | select(.status=="completed" and .conclusion=="success") | [.id,.head_sha] | @tsv' <<<"$descendants")
+            sleep 10
+          done
+          echo "::error::SKILL_PROJECTION_DESCENDANT_NOT_PROVEN:original=$MERGE_SHA"
           exit 78
 
       - name: Derive exact Supabase production migration identities across supersession lineage
@@ -420,6 +554,7 @@ jobs:
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
+          import { resolveTerminalMigrationIdentities } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
@@ -480,29 +615,16 @@ jobs:
             .filter(item=>existsSync(`supabase/migrations/${item.version}_${item.name}.sql`))
             .sort((a,b)=>a.version.localeCompare(b.version)||a.name.localeCompare(b.name));
 
-          // Historical supersession lineage can contain a migration under an older
-          // timestamp while current main carries the exact same migration name under
-          // its canonical production identity. Reconcile by stable migration name to
-          // current main, but fail closed on ambiguity or malformed identities.
+          // Reconcile exact applied (version, name) first. For historical aliases,
+          // permit only a unique same-name mapping; duplicate names fail closed
+          // unless the exact version is already present on protected main.
           execFileSync('git',['fetch','origin','main','--no-tags'],{stdio:'ignore'});
           const currentMigrationPaths=execFileSync(
             'git',
             ['ls-tree','-r','--name-only','origin/main','--','supabase/migrations'],
             {encoding:'utf8'}
           ).split(/\r?\n/).filter(Boolean);
-          const canonical=unique.map(item=>{
-            const matches=currentMigrationPaths.filter(candidate=>{
-              const base=path.basename(candidate,'.sql');
-              const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
-              return match && match[2]===item.name;
-            });
-            if(matches.length>1) throw new Error(`SUPABASE_MIGRATION_CANONICAL_IDENTITY_AMBIGUOUS:${item.name}:${matches.join(',')}`);
-            if(matches.length===0) return item;
-            const base=path.basename(matches[0],'.sql');
-            const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
-            if(!match) throw new Error(`SUPABASE_MIGRATION_CANONICAL_IDENTITY_INVALID:${matches[0]}`);
-            return {...item,version:match[1],canonical_path:matches[0],historical_version:item.version};
-          });
+          const canonical=resolveTerminalMigrationIdentities(unique,currentMigrationPaths);
           const compact=[...new Map(canonical.map(x=>[`${x.version}:${x.name}`,x])).values()]
             .map(({version,name})=>({version,name}));
           await appendFile(process.env.GITHUB_OUTPUT,`required=${compact.length>0}\n`);

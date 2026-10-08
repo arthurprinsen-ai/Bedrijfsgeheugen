@@ -36,6 +36,31 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'self-evolving-business-engineering-os-v1',
+      fingerprint:'powerhouse|cross-domain-evolution|canonical-evidence|protected-delivery|v1',
+      label:'Self-Evolving Business & Engineering OS — cross-domain decision policy',
+      owner:'ONE BRAIN / Self-Improvement Layer',
+      authority:'existing-brain-outcomes+organism-graph+protected-delivery',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['exact tenant and source revision','existing canonical outcome observations','independent provider/release proof','control-group evidence','GDPR/AI Act/NIS2/CSRD reviews']),
+      outputs:Object.freeze(['incremental change impact','missing domain review','deterministic canonical obligation proposal','protected delivery candidate','compiled learning proposal']),
+      runtime:Object.freeze({
+        planner:'brain/self-improvement/cross-domain-evolution.mjs',
+        graph:'platform/organism/organism-graph.mjs',
+        evaluation:'brain/self-improvement/self-improvement-layer.mjs',
+        tests:'tests/brain-self-evolving-business-engineering-os-v1.test.mjs',
+        learning:'brain/learning/2026-10-08-self-evolving-business-engineering-os-v1.json'
+      }),
+      invariants:Object.freeze({
+        oneBrain:true, noParallelScheduler:true, noParallelDatabase:true,
+        sameTenantRevision:true, csrdApplicabilityNotInferred:true,
+        externalProviderOrReleaseProofRequired:true, causalClaimNeedsControlGroup:true,
+        unknownIsNotGreen:true, missingSecurityReviewBlocks:true,
+        noDirectProductionMutation:true, existingProtectedDeliveryRequired:true,
+        proposalsAreNotExecutedOutcomes:true
+      })
+    }),
+    Object.freeze({
       id:'source-universe-impact-engine-v1',
       fingerprint:'powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1',
       label:'Source Universe & Environment Radar',
@@ -119,6 +144,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         sovereigntySnapshot:'public.data_sovereignty_snapshot_v1',
         securityRefresh:'public.refresh_security_trust_snapshot_v1(text)',
         sovereigntyRefresh:'public.refresh_data_sovereignty_snapshot_v1(text)',
+        aiDeploymentPolicy:'public.tenant_data_sovereignty_policy_v1.ai_deployment_profile (desired; never runtime proof)',
+        aiDeploymentValidator:'platform/policy/customer-ai-deployment.mjs',
+        aiDeploymentPortal:'portal-next/data-sovereignty-panel.js',
+        aiDeploymentGuard:'netlify/functions/_data-sovereignty-client.mjs',
         connectorTrigger:'public.connector_definitions -> connector_definitions_trust_refresh_v1',
         heartbeat:'public.powerhouse_refresh_data_sovereignty_v1()',
         tenantGateway:'supabase/functions/portal-state-eu/index.ts',
@@ -274,6 +303,14 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         requiredGate:'.github/workflows/required-test.yml',
         recoverySupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
         terminalClosure:'.github/workflows/obligation-terminal-closure.yml',
+        learningProjectionDescendantProof:Object.freeze({
+          authority:'Powerhouse Skill Projection on protected main',
+          historicalFailureNeverRelabeledGreen:true,
+          successfulDescendantWorkflowRequired:true,
+          originalMergeAndCurrentMainAncestryRequired:true,
+          learningBlobParityRequired:true,
+          regression:'tests/brain-source-universe-learning-projection-v1.test.mjs'
+        }),
         learning:'brain/learning/2026-09-30-async-workflow-continuation-v1.json'
       }),
       invariants:Object.freeze({

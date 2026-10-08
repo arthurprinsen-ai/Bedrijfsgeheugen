@@ -1,0 +1,37 @@
+{
+  "version": "supabase-migration-production-terminal-readback-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "failure_class": "PRODUCTION_READBACK_WRONG_PROVIDER",
+  "root_cause": "Obligation Terminal Closure unconditionally waits for Netlify release.json for Supabase migration-only merges; no Netlify production deploy should be required for SQL-only changes.",
+  "recovery": "Use authenticated Supabase Management API SQL readback to verify exact migration versions on the canonical production project; only for migration-only changes. Mixed Netlify/Supabase changes retain Netlify gate; Edge Function changes retain explicit runtime proof.",
+  "tests": [
+    "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+  ],
+  "prevention": "Do not substitute website release identity for Supabase schema migration evidence.",
+  "evidence": {
+    "pr": 4128,
+    "merge": "bc41974f28e665e62d833d002eb595a079c2723f",
+    "migration_version": "20261008104000",
+    "production_ledger_verified": true,
+    "terminal_run": 37762343546,
+    "failed_step": "Wait for canonical production release readback"
+  },
+  "next_action": "Protected merge of terminal closure repair; rerun existing obligation terminalizer for PR #4128.",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_WRONG_PROVIDER",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ]
+  },
+  "fingerprint": "supabase-migration-only-closure-misclassified-as-netlify-production-release-v1"
+}

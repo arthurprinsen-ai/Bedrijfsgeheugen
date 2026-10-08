@@ -28,5 +28,12 @@
     "red_condition": "query-builder .catch chaining exists in the predictive failure-receipt path",
     "green_condition": "receipt write is awaited in a nested try/catch and the original predictive exception remains authoritative"
   },
-  "outcome": "Source fix and regression are present; closure remains open until protected merge, deployed Edge-function readback, one safe rerun and refreshed predictive-health evidence."
+  "outcome": "Source fix ready for protected merge; runtime 500/401 remain separately unproven until exact Supabase Edge deployment and provider readback.",
+  "compiler": {
+    "failure_class": "TYPE_ERROR",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
