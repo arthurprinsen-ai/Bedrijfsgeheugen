@@ -1,6 +1,6 @@
 // Read-only inventory of existing Powerhouse runtime entry points.
 // This script deliberately does not create a new scheduler or mutate production.
-import {readdir,readFile,stat} from 'node:fs/promises';
+import {readdir,open} from 'node:fs/promises';
 import path from 'node:path';
 const roots=['.github/workflows','netlify/functions','tools','supabase/migrations'];
 const pattern=/powerhouse|heartbeat|orchestrat|obligation|commercial|revenue|portal|outbox|retry|lease|source.universe/i;
