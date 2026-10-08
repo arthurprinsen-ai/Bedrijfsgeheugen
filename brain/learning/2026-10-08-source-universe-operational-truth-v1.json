@@ -18,22 +18,41 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "scenario": "Catalog present but zero tenant impacts",
-        "expected": "Evidence state cannot claim end-to-end impact proven",
-        "status": "SPECIFIED_NOT_EXECUTED"
-      }
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ],
+    "scenario_contract": {
+      "scenario": "Catalog present but zero tenant impacts",
+      "expected": "Evidence state cannot claim end-to-end impact proven",
+      "status": "SPECIFIED_NOT_EXECUTED"
+    },
+    "success_criteria": [
+      "Existing source availability remains distinct from observed freshness",
+      "Zero company impacts stay zero and no tenant-ready action is fabricated",
+      "Security-sensitive historical/shadow/canary evidence derives from executable regression"
     ]
   },
   "evidence": {
     "tests": [
       "tests/brain-source-universe-operational-truth-v1.test.mjs"
     ],
-    "production_readback": "Not yet proven; zero company impacts at last readback"
+    "production_readback": "Not yet proven; zero company impacts at last readback",
+    "failed_historical_projection_run": 37742411908,
+    "failed_historical_projection_class": "LEARNING_EVALUATION_TEST_PATH_INVALID",
+    "regression": [
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ]
   },
   "prevention": [
     "Keep catalog availability separate from source observation freshness",
     "Never claim tenant impact without READY and SCORED evidence",
-    "Preserve the existing source-universe ingestion and outcome authorities"
-  ]
+    "Preserve the existing source-universe ingestion and outcome authorities",
+    "Learning evaluation entries must be existing test paths, not scenario description objects; historical learning failures need successful exact-lineage descendant projection before terminal closure."
+  ],
+  "production_claim": "NOT_PROVEN"
 }
