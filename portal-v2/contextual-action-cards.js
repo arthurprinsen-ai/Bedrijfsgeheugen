@@ -38,7 +38,7 @@ export function inventoryPortalCustomerFields() {
   for(const field of companyInputSchema('profiel'))register(field,'profiel');
   for(const field of fullCompanyInputSchema())register(field,'gegevens-invullen');
   for(const surface of SUPPLEMENTAL_PORTAL_INPUT_SURFACES)for(const path of surface.paths)register({path,label:path,type:'custom-workspace'},surface.page);
-  return [...inventory.values()].map(row=>Object.freeze({...row,...classifyPortalInputPath(row.path),writeBoundary:'PORTAL_DOMAIN_STATE_OR_WORKSPACE',readbackStatus:'TENANT_ACK_REQUIRED',declarationOnly:true})).sort((a,b)=>a.path.localeCompare(b.path));
+  return [...inventory.values()].map(row=>{const classification=classifyPortalInputPath(row.path);return Object.freeze({...classification,...row,impactAreaLabel:classification.label,writeBoundary:'PORTAL_DOMAIN_STATE_OR_WORKSPACE',readbackStatus:'TENANT_ACK_REQUIRED',declarationOnly:true});}).sort((a,b)=>a.path.localeCompare(b.path));
 }
 
 const priorityOrder = {P1:1,P2:2,P3:3};
