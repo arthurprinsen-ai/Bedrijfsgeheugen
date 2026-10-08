@@ -17,7 +17,7 @@ test('no phantom evidence or CSRD verdict; review remains pending and runtime bl
   assert.match(s,/'review_outcome','PENDING_EVIDENCE'/);
   assert.match(s,/'applicability','UNDETERMINED'/);
   assert.match(s,/'runtime_activation_authorized',false/);
-  assert.match(s,/'state'|\b'OPEN'\b/);
+  assert.match(s,/'TENANT_GOVERNANCE',\s*'OPEN'/);
   assert.doesNotMatch(s,/\b(FULFILLED|PROVEN|COMPLIANT)\b/);
 });
 test('tenant impact attestation is validated before queue insert and function is not executable by public',async()=>{
