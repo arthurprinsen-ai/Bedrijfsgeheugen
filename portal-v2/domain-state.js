@@ -185,10 +185,9 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  async function performPortalFlush(){
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
   const stateResult=await domain.flush();
-  // Demo and preview never establish durable tenant authority. Keep those
-  // interactions in memory and do not demand a server-side BusinessInput ACK.
-  // Authenticated writes still require a real canonical storage receipt.
-  if(stateClient.isDemo?.()||stateResult?.mode==='preview'){
+  // Demo-only edits are explicitly non-durable; do not require a BusinessInput ACK.
+  // Preview and authenticated writes still require the canonical state authority.
+  if(stateClient.isDemo?.()){
    pendingBusinessInputs.clear();
    pendingImpacts.length=0;
    return stateResult;
