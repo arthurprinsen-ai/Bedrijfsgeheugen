@@ -4,6 +4,31 @@ import { repairBusinessInputsFromAuthority } from './business-input-read-repair.
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
+const AI_PROFILE_OPTIONS:Record<string,string[]>={
+ deploymentMode:['MANAGED_CLOUD','PRIVATE_CLOUD','ON_PREMISE','AIR_GAPPED'],
+ provider:['ANTHROPIC','AZURE_OPENAI','AWS_BEDROCK','GOOGLE_VERTEX','MISTRAL_API','OLLAMA','VLLM'],
+ modelFamily:['CURRENT','MISTRAL','GEMMA','LLAMA','CUSTOM'],
+ computeRegion:['AUTO','EU','NL','DE','US','LOCAL'],
+ storageRegion:['AUTO','EU','NL','DE','US','LOCAL'],
+ ragRegion:['SAME_AS_STORAGE','EU','NL','DE','US','LOCAL'],
+ networkMode:['STANDARD','PRIVATE_ENDPOINT','OFFLINE']
+};
+const AI_PROFILE_KEYS=['deploymentMode','provider','modelFamily','computeRegion','storageRegion','ragRegion','networkMode','trainingUse','allowExternalFallback','modelId'];
+function validAiDeploymentProfile(p:any):boolean{
+ if(!p||typeof p!=='object'||Array.isArray(p)||Object.keys(p).length!==AI_PROFILE_KEYS.length)return false;
+ if(Object.keys(p).some(k=>!AI_PROFILE_KEYS.includes(k)))return false;
+ for(const [key,options] of Object.entries(AI_PROFILE_OPTIONS))if(!options.includes(p[key]))return false;
+ if(p.trainingUse!=='PROHIBITED'||p.allowExternalFallback!==false)return false;
+ if(typeof p.modelId!=='string'||p.modelId.length>120||!/^[a-zA-Z0-9._:/-]*$/.test(p.modelId))return false;
+ if(['ON_PREMISE','AIR_GAPPED'].includes(p.deploymentMode)){
+  if(!['OLLAMA','VLLM'].includes(p.provider)||p.computeRegion!=='LOCAL'||p.storageRegion!=='LOCAL'||!['LOCAL','SAME_AS_STORAGE'].includes(p.ragRegion))return false;
+ }
+ if(p.deploymentMode==='AIR_GAPPED'&&p.networkMode!=='OFFLINE')return false;
+ if(p.networkMode==='OFFLINE'&&p.deploymentMode!=='AIR_GAPPED')return false;
+ if(['OLLAMA','VLLM'].includes(p.provider)&&!['ON_PREMISE','AIR_GAPPED','PRIVATE_CLOUD'].includes(p.deploymentMode))return false;
+ return true;
+}
+
 async function sha256(value:string){const bytes=new TextEncoder().encode(value);const digest=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
 
@@ -239,8 +264,12 @@ Deno.serve(async(req:Request)=>{
       if(providerError)return json({error:'SOVEREIGNTY_PROVIDER_READ_FAILED'},500);
       if(!provider)return json({error:'UNKNOWN_AI_PROVIDER'},400);
     }
-    const {data:existing,error:existingError}=await client.from('tenant_data_sovereignty_policy_v1').select('policy_version').eq('tenant_id',tenantId).maybeSingle();
+    const {data:existing,error:existingError}=await client.from('tenant_data_sovereignty_policy_v1').select('policy_version,ai_deployment_profile').eq('tenant_id',tenantId).maybeSingle();
     if(existingError)return json({error:'SOVEREIGNTY_POLICY_READ_FAILED'},500);
+    const profileSupplied=Object.prototype.hasOwnProperty.call(policy,'aiDeploymentProfile');
+    const aiDeploymentProfile=profileSupplied?policy.aiDeploymentProfile:(existing?.ai_deployment_profile??null);
+    if(aiDeploymentProfile!==null&&!validAiDeploymentProfile(aiDeploymentProfile))
+      return json({error:'INVALID_AI_DEPLOYMENT_PROFILE'},400);
     const strict=mode==='EU_ONLY';
     const storageStrict=mode==='EU_STORAGE';
     const next={
@@ -248,6 +277,7 @@ Deno.serve(async(req:Request)=>{
       mode,
       preferred_ai_provider:preferredAiProvider,
       preferred_ai_region:preferredAiRegion,
+      ai_deployment_profile:aiDeploymentProfile,
       allow_cross_border:strict?false:true,
       block_unknown_region:strict||storageStrict,
       enforcement_mode:strict||storageStrict?'BLOCK':'OBSERVE',
