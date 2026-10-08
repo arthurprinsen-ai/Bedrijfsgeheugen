@@ -35,7 +35,8 @@
     "historical_replay": [
       "tests/portal-authenticated-production-proof.test.mjs",
       "tests/portal-supabase-store.test.mjs",
-      "brain/learning/2026-10-07-portal-authenticated-production-503-serverless-env-v1.json"
+      "brain/learning/2026-10-07-portal-authenticated-production-503-serverless-env-v1.json",
+      "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs"
     ],
     "success_criteria": [
       "Required and Powerhouse CodeQL green on the exact recovery head",
