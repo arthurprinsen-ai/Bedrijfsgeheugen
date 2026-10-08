@@ -22,5 +22,15 @@
       "tests/brain-protected-integration-closure-v1.test.mjs",
       "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ]
+  },
+  "root_cause": "Material integration evidence and semantic learning were only validated in the non-required Required test workflow, allowing protected auto-merge despite missing mandatory root-cause/evidence artifacts.",
+  "evidence": {
+    "historical_red": "Required test preflight for PR #4163 failed MATERIAL_WRITEBACK_CLOSURE_MISSING: semantic_learning lacked root_cause and evidence",
+    "test_evidence": [
+      "tests/brain-protected-integration-closure-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ],
+    "protected_admission": "hygiene / admission executes canonical learning and material closure checks",
+    "production_readback": "PENDING; not claimed"
   }
 }
