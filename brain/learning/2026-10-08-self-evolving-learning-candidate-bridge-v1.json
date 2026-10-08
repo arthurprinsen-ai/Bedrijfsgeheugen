@@ -39,5 +39,12 @@
       "no invented outcome or monetary value",
       "protected production required"
     ]
+  },
+  "compiler": {
+    "failure_class": "LEARNING_CANDIDATE_GAP",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
