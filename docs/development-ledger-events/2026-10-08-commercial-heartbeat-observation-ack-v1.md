@@ -14,3 +14,6 @@
 - Preview ledger readback has 568 historical records ending `20261005160410`. This is an upstream provider migration replay/admission issue, not proof of a broken new SQL function.
 - New function replacement was independently compiled and rolled back on the production-compatible schema: output contract gate exists; `anon` cannot execute; `service_role` retains execute. No unprotected production modification was performed for this follow-up.
 - One refreshed exact-HEAD provider-run attempt is required after branch association. Do not evade the official Supabase check, delete other live preview branches, or claim merged.
+
+## Migration ordering correction
+Preview ledger applied old migration, but subsequent 20261008094000 provider-proof migration overwrote its Heartbeat function. Moved additive correction from 20261008081459_commercial_heartbeat_observation_ack_v1.sql to 20261008100100_commercial_heartbeat_observation_ack_v1.sql to ensure final function authority. Preview function-definition readback must prove the new gate after the complete replay.

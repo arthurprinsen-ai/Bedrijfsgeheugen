@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const sql=readFileSync('supabase/migrations/20261008081459_commercial_heartbeat_observation_ack_v1.sql','utf8');
+const sql=readFileSync('supabase/migrations/20261008100100_commercial_heartbeat_observation_ack_v1.sql','utf8');
 const runner=readFileSync('supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts','utf8');
 
 test('valid output observation, not commercial success, owns durable transport acknowledgement',()=>{
