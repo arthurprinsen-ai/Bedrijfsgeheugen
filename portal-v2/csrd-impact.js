@@ -111,19 +111,32 @@ export function impactSnapshotFromPortalState(state={}){
 
 // Tenant-safe, read-only projection from the existing data-sovereignty control plane.
 // Missing readback does not mean a review passed. Never infer legal CSRD scope or emissions.
-export function withSovereigntyChangeReview(snapshot,readback){
-  const portfolio=readback?.snapshot?.reviewPortfolio;
+export function withSovereigntyChangeReview(snapshot,readback,connectorReviews=[]){
   const base=structuredClone(snapshot);
-  if(portfolio?.contract!=='powerhouse-review-portfolio-v1'||portfolio.status!=='REVIEW_REQUIRED')return base;
-  const csrd=Array.isArray(portfolio.tasks)
-    ?portfolio.tasks.find(x=>x?.domain==='csrd_esrs_scope'&&x.status==='NEEDS_EVIDENCE')
-    :null;
-  if(!csrd)return base;
-  const candidates=Array.isArray(csrd.candidateEsrs)?[...new Set(csrd.candidateEsrs
-    .filter(x=>typeof x==='string'&&/^ESRS_[A-Z][0-9]$/.test(x)))].sort():[];
+  const portfolio=readback?.snapshot?.reviewPortfolio;
+  const sovereignReview=portfolio?.contract==='powerhouse-review-portfolio-v1'&&
+    portfolio.status==='REVIEW_REQUIRED'&&Array.isArray(portfolio.tasks)
+      ?portfolio.tasks.find(x=>x?.domain==='csrd_esrs_scope'&&x.status==='NEEDS_EVIDENCE'):null;
+  // This endpoint is independently tenant-scoped by Netlify Identity and the connector store.
+  // Extraction reviews are not sustainability reviews and must not affect CSRD status.
+  const pendingConnectors=(Array.isArray(connectorReviews)?connectorReviews:[]).filter(x=>
+    x?.reviewKind==='CROSS_DOMAIN_CHANGE'&&x.status==='pending'&&
+    Array.isArray(x.affectedDomains)&&x.affectedDomains.includes('csrd_esrs_scope'));
+  if(!sovereignReview&&!pendingConnectors.length)return base;
+  const candidates=[
+    ...(Array.isArray(sovereignReview?.candidateEsrs)?sovereignReview.candidateEsrs:[]),
+    ...pendingConnectors.flatMap(x=>Array.isArray(x.esrsReview)?x.esrsReview
+      .filter(item=>item?.materiality==='UNDETERMINED'&&item?.applicability==='UNDETERMINED')
+      .map(item=>item.standard):[])
+  ];
+  const esrs=[...new Set(candidates.filter(x=>typeof x==='string'&&/^ESRS_[A-Z][0-9]$/.test(x)))].sort();
   base.sovereigntyChangeReview=Object.freeze({
     status:'REVIEW_REQUIRED',applicability:'UNDETERMINED',materiality:'UNDETERMINED',
-    measuredEmissions:null,candidateEsrs:Object.freeze(candidates)
+    measuredEmissions:null,candidateEsrs:Object.freeze(esrs),
+    sources:Object.freeze([
+      ...(sovereignReview?['AI_OR_DATA_LOCATION']:[]),
+      ...(pendingConnectors.length?['CONNECTOR']:[])
+    ])
   });
   return base;
 }
