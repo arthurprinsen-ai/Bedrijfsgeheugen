@@ -85,8 +85,14 @@ jobs:
         run: |
           node tools/ci/check-control-plane-budget.mjs
           node tools/ci/check-pr-trigger-ratchet.mjs
+      - name: Enforce authenticated Portal evidence freshness
+        run: |
+          node tools/ci/portal-auth-evidence-freshness.mjs
+          node --test tests/portal-auth-evidence-freshness.test.mjs
       - name: Verify immutable release artifact identity regression
         run: node --test tests/release-artifact-identity.test.mjs
+      - name: Verify fail-closed Supabase provider preview classification
+        run: node --test tests/brain-supabase-preview-diagnosis-v1.test.mjs
       - id: artifact
         name: Compute immutable artifact identity
         run: echo "artifact_id=$(node tools/build/artifact-id.mjs)" >> "$GITHUB_OUTPUT"
@@ -607,6 +613,8 @@ jobs:
         run: |
           set -euo pipefail
           stable_provider_success_id=""
+          skipped_provider_id=""
+          skipped_grace_count=0
           for attempt in $(seq 1 48); do
             curl --fail --silent --show-error \
               -H "Authorization: Bearer $GH_TOKEN" \
@@ -615,19 +623,7 @@ jobs:
               "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
               > /tmp/supabase-preview-check-runs.json
 
-            state="$(node --input-type=module - <<'NODE'
-          import { readFileSync } from 'node:fs';
-          const payload=JSON.parse(readFileSync('/tmp/supabase-preview-check-runs.json','utf8'));
-          const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
-          const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
-          if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
-          provider.sort((a,b)=>(Number(b.id||0)-Number(a.id||0)) || String(b.started_at||'').localeCompare(String(a.started_at||'')));
-          const check=provider[0];
-          const id=String(check.id||'unknown');
-          if(check.status!=='completed'){ process.stdout.write(`pending:${id}`); process.exit(0); }
-          process.stdout.write(`${String(check.conclusion||'unknown')}:${id}`);
-          NODE
-            )"
+            state="$(node tools/ci/supabase-preview-diagnosis.mjs /tmp/supabase-preview-check-runs.json)"
 
             case "$state" in
               success:*)
@@ -639,7 +635,25 @@ jobs:
                 stable_provider_success_id="$provider_id"
                 sleep 5
                 ;;
-              failure:*|cancelled:*|timed_out:*|action_required:*|stale:*|startup_failure:*|skipped:*|neutral:*)
+              skipped:*)
+                # A Supabase-owned skipped placeholder can be superseded by a later
+                # provider check on the SAME candidate SHA. Never treat it as green.
+                provider_id="${state#skipped:}"
+                if [ "$skipped_provider_id" = "$provider_id" ]; then
+                  skipped_grace_count=$((skipped_grace_count + 1))
+                else
+                  skipped_provider_id="$provider_id"
+                  skipped_grace_count=1
+                fi
+                if [ "$skipped_grace_count" -le 2 ]; then
+                  echo "SUPABASE_PREVIEW_SKIPPED_GRACE:$HEAD_SHA:$provider_id:$skipped_grace_count"
+                  sleep 5
+                  continue
+                fi
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_SUCCESS:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              failure:*|cancelled:*|timed_out:*|action_required:*|stale:*|startup_failure:*|neutral:*)
                 echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_SUCCESS:$state:$HEAD_SHA"
                 exit 1
                 ;;

@@ -64,5 +64,6 @@
     "current_main_at_canonicalization": "724bca809831d4ee144686f3b19eebae21c63460",
     "current_main_delta_from_proven_runtime": "closure-only Brain learning, documentation and regression-test changes; no production runtime path changed"
   },
-  "outcome": "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_PROVEN"
+  "outcome": "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_PROVEN",
+  "evidence_freshness_note": "Historical authenticated proof remains retained for audit, but runtime paths changed after protected_runtime_sha; a new exact-runtime production proof is required before LIVE_PROVEN can be restored."
 }
