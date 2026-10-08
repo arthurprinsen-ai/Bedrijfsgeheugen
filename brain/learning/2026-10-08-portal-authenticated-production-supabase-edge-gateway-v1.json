@@ -1,7 +1,7 @@
 {
   "id": "portal-authenticated-production-supabase-edge-gateway-v1",
   "date": "2026-10-08",
-  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "status": "ACTIVE",
   "fingerprint": "powerhouse|portal|production-proof|supabase-edge-gateway|v1",
   "root_cause": "After the serverless Netlify.env/process.env runtime mismatch was repaired, the exact production canary still returned HTTP 503 because portal-ondernemersdata itself required a privileged Supabase credential in the Netlify runtime. That credential was not present there. The architecture therefore coupled authenticated Portal reads to distribution of a database master credential into a second runtime even though the existing portal-state-eu authority already owns privileged Supabase access behind an authenticated service-token gateway.",
   "prevention": [
@@ -49,5 +49,20 @@
       "tests/brain-portal-authenticated-production-authority-v1.test.mjs"
     ]
   },
-  "production_claim": "withheld_until_protected_merge_supabase_and_netlify_exact_main_deploy_and_authenticated_proof_PROVEN"
+  "production_claim": "LIVE_PROVEN",
+  "production_readback": {
+    "protected_runtime_sha": "1a5f661314c6ae7a10f33995b30e129a994e8883",
+    "netlify_deploy_id": "6ac72f87b10d420008cb7441",
+    "production_release_readback_run": 37734550026,
+    "contract": "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1",
+    "proof_status": "PROVEN",
+    "http_status": 200,
+    "tenant_scope_verified": true,
+    "payload_shape_verified": true,
+    "synthetic_user_cleanup": "DELETED",
+    "observed_at": "2026-10-08T05:54:26.602Z",
+    "current_main_at_canonicalization": "724bca809831d4ee144686f3b19eebae21c63460",
+    "current_main_delta_from_proven_runtime": "closure-only Brain learning, documentation and regression-test changes; no production runtime path changed"
+  },
+  "outcome": "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_PROVEN"
 }
