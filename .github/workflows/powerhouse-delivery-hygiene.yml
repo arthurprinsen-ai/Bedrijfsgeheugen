@@ -358,6 +358,36 @@ jobs:
             node -e "const fs=require('fs');const p='.artifacts/powerhouse-delivery-hygiene.json';const x=JSON.parse(fs.readFileSync(p,'utf8'));x.state='LEARNING_CANONICALIZATION_BLOCKED';x.ok=false;x.admitted=false;fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n');"
             exit 1
           fi
+      # Enforce the existing material closure invariant inside the required check.
+      - name: Enforce canonical integration closure at protected admission
+        if: steps.admit.outputs.admitted == 'true'
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { compileClosurePlan } from './tools/delivery/integration-bundle-compiler.mjs';
+          import { evaluateMaterialWritebackClosure } from './scripts/brain/material-writeback-closure-guard.mjs';
+          const file='.artifacts/powerhouse-delivery-hygiene.json';
+          const evidence=JSON.parse(await readFile(file,'utf8'));
+          const policy=JSON.parse(await readFile('config/powerhouse-integration-bundle-v1.json','utf8'));
+          const closure=compileClosurePlan({
+            changedPaths:evidence.changed_paths||[],
+            policy,
+            obligationId:evidence.obligationId||evidence.obligation_id||''
+          });
+          // Runtime-publication obligations retain their existing single-authority exemption.
+          const semantic=closure.authority==='canonical-runtime-obligation'
+            ? {ok:true,missing:[]}
+            : evaluateMaterialWritebackClosure({changedPaths:evidence.changed_paths||[],rootDir:process.cwd()});
+          if(!closure.ready||!semantic.ok){
+            evidence.state='INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE';
+            evidence.ok=false;
+            evidence.admitted=false;
+            evidence.missing_closure_evidence=[...new Set([...closure.missing,...semantic.missing])];
+            await writeFile(file,JSON.stringify(evidence,null,2)+'\n');
+            throw new Error('INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:'+evidence.missing_closure_evidence.join(','));
+          }
+          console.log(JSON.stringify({status:'CANONICAL_INTEGRATION_CLOSURE_COMPLETE',material:closure.material,authority:closure.authority}));
+          NODE
       - name: Upload admission evidence
         if: always()
         uses: actions/upload-artifact@v4
