@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 import { LEGACY_PARITY_ITEMS, GLOBAL_PARITY_CAPABILITIES } from '../../portal-v2/parity-manifest.js';
 import { getCapabilityContract } from '../../portal-v2/capability-contracts.js';
+import {renderProtectedWorkspaceFixture,assertProtectedRouteDeniedAnonymously} from './portal-v2-protected-render-fixture.mjs';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 const uniquePages=[...new Set(LEGACY_PARITY_ITEMS.flatMap(item=>item.v2Pages))];
@@ -55,6 +56,7 @@ async function gotoPortalPage(page,pageId){
    expect(response,`${pageId} response`).not.toBeNull();
    expect(response.status(),`${pageId} status`).toBeLessThan(400);
    await page.waitForLoadState('domcontentloaded',{timeout:30_000}).catch(()=>{});
+   if(pageId==='compliance-governance')await renderProtectedWorkspaceFixture(page,pageId);
    return response;
   }catch(error){
    lastError=error;
@@ -65,7 +67,8 @@ async function gotoPortalPage(page,pageId){
 }
 
 async function openNative(page,pageId){
- await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
+ if(pageId==='compliance-governance')await renderProtectedWorkspaceFixture(page,pageId);
+ else await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
  if(pageId==='overzicht')return;
  const view=page.locator('#portalView');
  await expect(view,`${pageId} must open in native V2 view`).toHaveAttribute('data-page-id',pageId,{timeout:10_000});
@@ -76,6 +79,12 @@ async function openNative(page,pageId){
 async function readPaths(page,entries){
  return page.evaluate(items=>Object.fromEntries(items.map(([id,path])=>[id,globalThis.__BG_PORTAL_DOMAIN_STATE__?.get?.(path)])),entries);
 }
+
+test('unauthenticated governance pages fail closed before any isolated UI contract fixture',async({page})=>{
+ await bootDemo(page);
+ await expect(await assertProtectedRouteDeniedAnonymously(page,'compliance-governance')).toBe(true);
+ await expect(page.locator('#portalView')).not.toHaveAttribute('data-page-id','compliance-governance');
+});
 
 test('all protected legacy workspaces render natively without legacy portal traffic',async({page})=>{
  test.setTimeout(180_000);
