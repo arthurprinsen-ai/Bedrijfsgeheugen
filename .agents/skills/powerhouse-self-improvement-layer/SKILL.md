@@ -89,12 +89,10 @@ Canonical pure planner: `brain/self-improvement/cross-domain-evolution.mjs#planC
 - The responsible Brain runtime must durably materialize and execute the proposal through existing obligations/outbox, reconcile provider outcomes and project learning; a planner's PROPOSED_NOT_EXECUTED output is not live delivery evidence.
 Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
 
-## Self-Evolving OS learning-to-candidate bridge (2026-10-08)
-
-Fingerprint: \`self-evolving-learning-candidate-bridge-20261008-v1\`.
-
-- Consume READY *verified* quality-event learning from \`public.powerhouse_learning_compiler_queue_v1\` only through the existing \`powerhouse-self-improvement-layer-v1\` daily owner.
-- Materialize a bounded maximum of three uniquely keyed, review-required, non-executable candidates into \`public.powerhouse_optimization_candidate_v1\` per run. Never create another learning store or cron.
-- Do not treat evidence that a previous defect was fixed as evidence that the proposed next improvement will work. Candidate confidence is uncalibrated, impact is unknown, outcome remains unmeasured.
-- BG169 remains the only production action authority. Approval, representative testing, protected merge, production readback and verified benefit must precede any promotion claim.
-- The migration and regression are \`supabase/migrations/20261008162000_self_evolving_learning_candidate_bridge_v1.sql\` and \`tests/brain-self-evolving-learning-candidate-bridge-v1.test.mjs\`. The new behavior is NOT live until protected merge and database/runtime readback confirm it.
+## Verified financial value closure (2026-10-08)
+- Use canonical `powerhouse_realized_values`, `powerhouse_action_economics`, finance/provider source records and outcome lineage; never create a parallel economic-truth ledger.
+- A legacy `truth_class=realized` with unit `not_executed`, `sent`, `execution_completed` or `reply_received` is **not** realized revenue or financial savings.
+- Financial value requires a same-tenant, same-revision, independently read-back finance record, explicit EUR amount, financial proof type and linkage to a verified engineering outcome.
+- The same source record counts once. The verified comparison must explicitly link the same business and engineering outcomes and have an independently read-back cohort assignment.
+- `BUSINESS_VALUE_EVIDENCE_REQUIRED` is a valid fail-closed state, not green. Raw append-only evidence must remain unchanged. A proposal stays `PROPOSED_NOT_EXECUTED`.
+- Regression: `tests/brain-self-evolving-business-engineering-os-v1.test.mjs`.
