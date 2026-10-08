@@ -17,6 +17,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/integration/portal-v2-production-full-parity.spec.js"
     ]
   },
   "compiler": {
