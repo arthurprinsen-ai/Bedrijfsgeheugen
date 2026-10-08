@@ -20,13 +20,21 @@
   },
   "evidence": {
     "migration": "supabase/migrations/20261008115500_powerhouse_infinity_operating_loop_v1.sql",
-    "regression": ["tests/powerhouse-infinity-operating-loop-v1.test.mjs"],
+    "regression": [
+      "tests/powerhouse-infinity-operating-loop-v1.test.mjs"
+    ],
     "workflow": ".github/workflows/whole-brain-canonical-loop-v2.yml"
   },
   "evaluation": {
-    "historical_replay": ["tests/powerhouse-infinity-operating-loop-v1.test.mjs"],
-    "shadow": ["production transaction rollback"],
-    "canary": ["existing portal tenant one-cycle invocation"],
+    "historical_replay": [
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/powerhouse-infinity-operating-loop-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/powerhouse-infinity-operating-loop-v1.test.mjs"
+    ],
     "success_criteria": [
       "All seven component rows operational",
       "Integrated cycle receipt VERIFIED",
@@ -37,4 +45,3 @@
   "production_claim": "PENDING_PROTECTED_DELIVERY",
   "outcome": "CANDIDATE_READY_FOR_PROTECTED_DELIVERY"
 }
-
