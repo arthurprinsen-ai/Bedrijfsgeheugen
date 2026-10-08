@@ -110,6 +110,10 @@ export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVe
  if(!provision||provision.providerReadbackEvidenceId!==receipt.providerReadbackEvidenceId
      ||provision.egressEvidenceId!==receipt.egressEvidenceId)
   reject('RUNTIME_PROVISIONING_EVIDENCE_MISMATCH');
+ if(receipt.provider==='AWS_BEDROCK'&&(
+  provision.awsRegion!==receipt.awsRegion||provision.modelId!==receipt.modelId||
+  provision.residencyEvidenceId!==receipt.residencyEvidenceId))
+  reject('BEDROCK_REGIONAL_EVIDENCE_MISMATCH');
  const adapters=createVerifiedCloudAdapters({fetchFn,config,now});
  // Separate server-held authorities: a provider proof is not CSRD/customer approval.
  // Neither receipt nor an endpoint URL is passed as authorization to the core router.
