@@ -21,6 +21,9 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'scripts/brain/autonomous-engineering-fabric-v3.mjs': 'automation',
   'config/powerhouse-autonomous-engineering-fabric-v3.json': 'automation',
   'config/powerhouse-engineering-tuning.json': 'automation',
+  // The hourly improvement runtime is a Supabase/Brain backend probe, not a website artifact.
+  'config/powerhouse-autonomous-improvement-runtime.json': 'backend',
+  'scripts/brain/continuous-improvement/run-autonomous-improvement.mjs': 'backend',
   'scripts/brain/powerhouse-ci-intelligence.mjs': 'backend',
   'config/powerhouse-ci-calibration-v1.json': 'backend',
   'tools/delivery/ci-calibration-engine.mjs': 'backend',
