@@ -1,14 +1,14 @@
 {
   "fingerprint": "powerhouse-engineering-tuning-v1",
-  "updated_at": "2026-09-28T18:05:00Z",
+  "updated_at": "2026-10-08T15:07:17.634Z",
   "max_parallel_packages": 4,
   "candidate_batch_window_seconds": 20,
   "fast_path_target_seconds": 45,
   "speculative_execution_threshold": 0.75,
-  "source": "baseline",
+  "source": "daily-autonomous-optimizer",
   "ci": {
     "direct_pr_workflow_target": 2,
-    "direct_pr_workflow_budget": 100,
+    "direct_pr_workflow_budget": 2,
     "max_pr_workflows_per_head": 5,
     "required_queue_p95_slo_seconds": 30,
     "required_total_p95_slo_seconds": 120,
