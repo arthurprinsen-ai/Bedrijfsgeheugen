@@ -17,17 +17,18 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-csrd-sovereignty-review-link.test.mjs"
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs"
     ],
     "shadow": [
-      "tests/portal-csrd-sovereignty-review-link.test.mjs"
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs"
     ],
     "canary": [
-      "tests/portal-csrd-sovereignty-review-link.test.mjs"
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
+      "tests/brain-csrd-sovereignty-review-dashboard-sync.test.mjs",
       "tests/portal-csrd-sovereignty-review-link.test.mjs"
     ],
     "source": [
