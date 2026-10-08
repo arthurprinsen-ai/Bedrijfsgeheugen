@@ -70,7 +70,7 @@ test('activation button is disabled without passing evidence and enabled only fo
 
 test('monitoring stage shows only persisted executions and exposes pause for active connector',()=>{
   const draft=createConnectorDraft('blank');draft.state='Active';
-  const html=renderConnectorBuilder({draft,stage:10,testResult:{status:'TEST_PASSED',evidence:passingEvidence},executions:[{id:'e1',status:'TEST_PASSED',gestart_op:'2026-09-07T21:00:00Z'},{id:'e2',status:'REVIEW_REQUIRED',gestart_op:'2026-09-07T21:05:00Z'}],reviewQueue:[{id:'r1',status:'pending'}]});
+  const html=renderConnectorBuilder({draft,stage:10,testResult:{status:'TEST_PASSED',evidence:passingEvidence},executions:[{id:'e1',status:'TEST_PASSED',gestart_op:'2026-09-07T21:00:00Z'},{id:'e2',status:'REVIEW_REQUIRED',gestart_op:'2026-09-07T21:05:00Z'}],reviewQueue:[{id:'r1',connector_id:draft.id,status:'pending'}]});
   assert.match(html,/TEST_PASSED/);
   assert.match(html,/REVIEW_REQUIRED/);
   assert.match(html,/1 open review/);
