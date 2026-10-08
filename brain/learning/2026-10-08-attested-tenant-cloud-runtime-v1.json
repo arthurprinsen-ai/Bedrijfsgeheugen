@@ -1,0 +1,45 @@
+{
+  "id": "attested-customer-ai-provider-routing-20261008-v1",
+  "fingerprint": "powerhouse|tenant-inference|signed-runtime-proof|azure-mistral|no-fallback|v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The customer could choose Azure OpenAI or Mistral and the repo had a verification helper, but no customer-scoped provider adapter ingress with authenticity protection against forged or stale runtime receipts.",
+  "prevention": [
+    "Demand HMAC-signed, tenant/use-case/policy-version-bound receipts issued only after independent provider, data processing, egress and residency readback.",
+    "Reject all unprovisioned and mismatched routes; never derive an endpoint, model or AI provider from browser-supplied parameters.",
+    "Use fixed Azure OpenAI account FQDN or Mistral's canonical public endpoint only; never route to private/on-prem or airgapped systems through this shared cloud service.",
+    "Require exact storage and RAG placement match and preserve current Anthropic path untouched until verified opt-in configuration exists.",
+    "Preserve a single authorized request with no provider fallback and no fabricated data processing, CSRD materiality, EU guarantee or measured financial/environmental value."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-attested-cloud-ai-adapters-v1.test.mjs",
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-attested-cloud-ai-adapters-v1.test.mjs",
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-attested-cloud-ai-adapters-v1.test.mjs",
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-attested-cloud-ai-adapters-v1.test.mjs",
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "source": [
+      "platform/runtime/attested-cloud-ai.mjs",
+      "platform/api/tenant-ai-inference-handler.mjs",
+      "netlify/functions/tenant-ai-inference.mjs"
+    ],
+    "outcome": "Signed cloud provider adapter path and authenticated opt-in ingress implemented as fail-closed candidate. Live provider credentials, issuer provisioning, registered evidence and authorized end-to-end execution are NOT claimed."
+  }
+}
