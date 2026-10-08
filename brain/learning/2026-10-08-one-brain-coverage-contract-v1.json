@@ -1,0 +1,14 @@
+{
+  "id": "one-brain-closed-loop-assurance-contract-v1",
+  "date": "2026-10-08",
+  "status": "EVIDENCE_PARTIAL",
+  "problem": "A broad One Brain GREEN claim lacks per-gate proof",
+  "change": "Added explicit fail-closed coverage manifest and contract test",
+  "outcome": "CI and production proof pending",
+  "lesson": "Never promote aggregate GREEN from partial evidence",
+  "evaluation": {
+    "historical": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+    "shadow": "tests/brain-one-brain-coverage-contract-v1.test.mjs",
+    "canary": "tests/brain-one-brain-coverage-contract-v1.test.mjs"
+  }
+}
