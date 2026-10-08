@@ -1,3 +1,4 @@
+import {planCrossDomainChange} from '../regulatory/cross-domain-change-impact.mjs';
 import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
 const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?secret/i;
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
@@ -31,8 +32,8 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='GET'&&!id){if(typeof store?.list!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.list(tenantId)));}
   if(normalized.method==='GET'&&id&&action==='executions'){if(typeof store?.listExecutions!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.listExecutions(tenantId,id)));}
   if(normalized.method==='GET'&&id&&!action){if(typeof store?.get!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const record=await store.get(tenantId,id);return record?json(clean(record)):json({error:'NOT_FOUND'},404);}
-  if(normalized.method==='POST'&&!id){if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const body=clean(await requestBody(request,normalized));return json(clean(await store.saveDraft(tenantId,{...body,state:body.state||'Draft'})),201);}
-  if(normalized.method==='PUT'&&id&&action==='draft'){if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const body=clean(await requestBody(request,normalized));return json(clean(await store.saveDraft(tenantId,{...body,id,state:body.state||'Draft'})));}
+  if(normalized.method==='POST'&&!id){if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const body=clean(await requestBody(request,normalized));const impact=planCrossDomainChange({tenantId,changeId:`connector-create:${body.id||'new'}`,kind:'CONNECTOR',actor:user.id,before:null,after:body,evidenceIds:[]});return json(clean(await store.saveDraft(tenantId,{...body,state:body.state||'Draft',runtime:{...(body.runtime||{}),changeImpact:impact}})),201);}
+  if(normalized.method==='PUT'&&id&&action==='draft'){if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const body=clean(await requestBody(request,normalized));const before=await store.get(tenantId,id);if(!before)return json({error:'NOT_FOUND'},404);const impact=planCrossDomainChange({tenantId,changeId:`connector-update:${id}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,before:clean(before),after:body,evidenceIds:[]});return json(clean(await store.saveDraft(tenantId,{...body,id,state:body.state||'Draft',runtime:{...(body.runtime||{}),changeImpact:impact}})));}
   if(normalized.method==='POST'&&id&&action==='test'){
     if(typeof engine?.runTest!=='function')return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);

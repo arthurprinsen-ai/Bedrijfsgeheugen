@@ -72,6 +72,22 @@ function inferLayer(record={}) {
   if(/agent|chat|worker/.test(hay))return 'Agents / Chats';
   return txt(record.component||record.domain||'Powerhouse');
 }
+function sourceEvidenceUrl(record={}) {
+  const values=[
+    record.referenceUrl,record.html_url,record.url,
+    record.evidence?.html_url,record.evidence?.runUrl,record.evidence?.url,
+    record.provenance?.sourceUrl
+  ];
+  for(const value of values){
+    if(typeof value!=='string'||value.length>2048)continue;
+    try{
+      const url=new URL(value);
+      if(url.protocol!=='https:')continue;
+      if(['github.com','app.netlify.com','supabase.com','app.supabase.com'].includes(url.hostname))return url.href;
+    }catch{}
+  }
+  return '';
+}
 function normalizeObservabilityRecord(record={},index=0) {
   const status=txt(record.status||record.state||record.conclusion||record.outcome?.status||'UNKNOWN');
   const severity=txt(record.severity||record.level||record.errorLevel||'');
@@ -88,7 +104,8 @@ function normalizeObservabilityRecord(record={},index=0) {
     actor:txt(record.actor?.name||record.actor||record.actorId||record.worker||record.agent||'system'),
     source:txt(record.source||record.platform||record.provider||record.origin||'Powerhouse'),
     layer:inferLayer(record),
-    fingerprint:txt(record.fingerprint||record.failureFingerprint||record.errorFingerprint)
+    fingerprint:txt(record.fingerprint||record.failureFingerprint||record.errorFingerprint),
+    referenceUrl:sourceEvidenceUrl(record)
   };
 }
 function observabilityProjection({records,cockpit,health,lussen,geheugen,waarde,projection,bijgewerkt}) {
