@@ -1,0 +1,40 @@
+{
+  "id": "ai-cross-domain-review-portfolio-20261008-v1",
+  "fingerprint": "one-brain-tenant-cross-domain-review-evidence-portfolio-v1",
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_REVIEW_NOT_ACTIONABLE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Existing immutable customer AI/data sovereignty impact evidence produced pending CSRD/privacy/security/finance review metadata without a customer-visible, domain-level evidence task list.",
+  "prevention": [
+    "Derive bounded domain tasks deterministically from the existing canonical change impact without adding a competing workflow authority",
+    "Expose only authenticated tenant-bound review tasks via the existing data-sovereignty GET/write response",
+    "Never mark pending items as approved or imply CSRD applicability, measured emissions or compliance",
+    "Reject any foreign tenant impact and omit actor, changed configuration and raw evidence references"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cross-domain-review-portfolio-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cross-domain-review-portfolio-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cross-domain-review-portfolio-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-cross-domain-review-portfolio-v1.test.mjs"
+    ],
+    "source": [
+      "platform/regulatory/cross-domain-review-portfolio.mjs",
+      "netlify/functions/data-sovereignty.mjs",
+      "portal-next/data-sovereignty-panel.js"
+    ],
+    "outcome": "Existing portal shows action-specific evidence obligations; no automated regulatory decisions or new provider provisioning claimed"
+  }
+}
