@@ -286,6 +286,7 @@
         "tests/opportunity-",
         "tests/platform-promotion-",
         "tests/powerhouse-daily-self-evolution",
+        "tests/powerhouse-infinity-operating-loop-v1.test.mjs",
         "tests/powerhouse-foresight-autonomy",
         "tests/powerhouse-quality-",
         "tests/powerhouse-revenue-calibration-persistence-contract.test.mjs",
