@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse|predictive|approved-fallback-strict-schema-retry|v1",
+  "obligationId": "one-brain-predictive-schema-retry-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The approved Composio/Groq predictive fallback sometimes returned a malformed forecast JSON plan. After a proven six-forecast run, a subsequent live call on 2026-10-08 failed with FALLBACK_FORECAST_SCHEMA_INVALID. There was no bounded format-only correction path.",
+  "failureModes": [
+    "A non-schema-conforming provider response causes a failed predictive run despite the existing approved and authenticated fallback provider being available."
+  ],
+  "decision": "On schema validation failure only, repeat the same already-public context once with an explicit strict-schema instruction; never retry provider transport, auth, governance, policy or credit failures.",
+  "prevention": [
+    "Accept only the original strict parseForecastPlan schema and exact known public evidence keys.",
+    "At most two calls total (original plus one schema correction), with 45-second timeout per provider call.",
+    "Preserve privacy source filtering and canonical tenant AI approval.",
+    "Record actual fallback_attempts in the existing bg_gezondheid receipt; no invented successes or zero-effect closure."
+  ],
+  "evidence": {
+    "production_date": "2026-10-08",
+    "prior_success": "2026-10-08T15:19:06.697Z: Composio/Groq generated six forecasts with 80 signals",
+    "prior_failure": "2026-10-08T15:19:21.848Z: FALLBACK_FORECAST_SCHEMA_INVALID",
+    "source_test": "tests/brain-predictive-approved-fallback-v1.test.mjs",
+    "deployment_status": "PENDING_PROTECTED_MERGE_AND_EXACT_EDGE_READBACK",
+    "external_business_outcome": "NOT_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-approved-fallback-v1.test.mjs"
+    ]
+  }
+}

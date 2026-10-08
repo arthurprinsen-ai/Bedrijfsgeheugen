@@ -75,15 +75,18 @@ export function parseForecastPlan(raw,allowedKeys){
   }
   return payload;
 }
-export async function callApprovedForecastFallback({apiKey,model,context,fetchImpl=fetch}){
+export async function callApprovedForecastFallback({apiKey,model,context,fetchImpl=fetch,schemaRetry=false}){
   if(!clean(apiKey)||!clean(model))throw new Error('FALLBACK_PROVIDER_CONFIGURATION_MISSING');
+  const strictRetryInstruction=schemaRetry
+    ?' STRICT_SCHEMA_RETRY: The previous answer did not match the strict forecast schema. Return one JSON object with forecasts array only. Each nonempty item MUST use precisely these fields with no extras: '+requiredKeys.join(', ')+'. Every string field must be a nonempty string; all score fields are numeric 0 through 1; expected_lead_days is an integer 1 through 180; evidence_keys contains 2-8 unique keys copied exactly from the given public signals. If you cannot meet EVERY condition, return exactly {"forecasts":[]}. Never invent source keys or personal facts.'
+    :'';
   const response=await fetchImpl('https://backend.composio.dev/api/v3.1/tools/execute/COMPOSIO_SEARCH_GROQ_CHAT',{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':apiKey},
     body:JSON.stringify({version:'latest',arguments:{
       model,temperature:0.2,max_tokens:4200,stream:false,
       messages:[
-        {role:'system',content:'Je bent een evidence-bound voorspeller voor MKB. Geef uitsluitend JSON met één sleutel forecasts (max 6) en exact deze velden per forecast: '+requiredKeys.join(', ')+'. scope = segment, market, technology, regulation of behavior. prediction_mode = anticipatory, category_creation of reactive. Kansscores liggen tussen 0 en 1, expected_lead_days tussen 1 en 180. evidence_keys moeten afkomstig zijn uit de meegegeven signalen. Gebruik twee onafhankelijke publieke signalen per voorspelling en drie bij category_creation. Geen verzonnen feiten, geen persoonsgegevens. Als bewijs onvoldoende is, antwoord exact {"forecasts":[]}.'},
+        {role:'system',content:'Je bent een evidence-bound voorspeller voor MKB. Geef uitsluitend JSON met één sleutel forecasts (max 6) en exact deze velden per forecast: '+requiredKeys.join(', ')+'. scope = segment, market, technology, regulation of behavior. prediction_mode = anticipatory, category_creation of reactive. Kansscores liggen tussen 0 en 1, expected_lead_days tussen 1 en 180. evidence_keys moeten afkomstig zijn uit de meegegeven signalen. Gebruik twee onafhankelijke publieke signalen per voorspelling en drie bij category_creation. Geen verzonnen feiten, geen persoonsgegevens. Als bewijs onvoldoende is, antwoord exact {"forecasts":[]}.'+strictRetryInstruction},
         {role:'user',content:JSON.stringify(context)}
       ]
     }}),
@@ -95,4 +98,22 @@ export async function callApprovedForecastFallback({apiKey,model,context,fetchIm
   const content=clean(body?.data?.choices?.[0]?.message?.content);
   if(!content)throw new Error('FALLBACK_PROVIDER_EMPTY');
   return content;
+}
+
+
+// Retry only when the first public provider output failed our unchanged strict
+// parser. Transport, authentication and governance failures never get extra calls.
+export async function generateValidatedForecastFallback({apiKey,model,context,fetchImpl=fetch}){
+  const allowedKeys=(context?.signals||[]).map(signal=>signal.signal_key);
+  for(let attempt=1;attempt<=2;attempt++){
+    const raw=await callApprovedForecastFallback({
+      apiKey,model,context,fetchImpl,schemaRetry:attempt===2
+    });
+    try{
+      return {plan:parseForecastPlan(raw,allowedKeys),attempts:attempt};
+    }catch(error){
+      if(error?.message!=='FALLBACK_FORECAST_SCHEMA_INVALID'||attempt===2)throw error;
+    }
+  }
+  throw new Error('FALLBACK_FORECAST_SCHEMA_INVALID');
 }
