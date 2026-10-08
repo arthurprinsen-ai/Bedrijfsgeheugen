@@ -1,0 +1,50 @@
+name: One-time Historical Obligation #4134 Replay
+
+# Runs only on the protected-main merge that introduces this one-time wrapper.
+# All production and Brain proof stays in the existing canonical closure workflow.
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/obligation-4134-historical-replay.yml'
+
+permissions:
+  actions: read
+  contents: read
+  id-token: write
+  pull-requests: write
+
+concurrency:
+  group: one-shot-historical-obligation-4134
+  cancel-in-progress: false
+
+jobs:
+  verify-historical-identity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Verify exact original merged PR and protected-main containment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [ "$GITHUB_REF" = "refs/heads/main" ] || exit 78
+          merge_sha="f8c7f313be234da58326a399d45b5866ff13ca59"
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/4134")"
+          [ "$(jq -r '.merged' <<<"$pr")" = true ] || { echo "::error::HISTORICAL_PR_NOT_MERGED"; exit 78; }
+          [ "$(jq -r '.merge_commit_sha' <<<"$pr")" = "$merge_sha" ] || { echo "::error::HISTORICAL_MERGE_IDENTITY_DRIFT"; exit 78; }
+          git merge-base --is-ancestor "$merge_sha" "$GITHUB_SHA" || {
+            echo "::error::HISTORICAL_MERGE_NOT_CONTAINED_ON_MAIN"
+            exit 78
+          }
+          echo "HISTORICAL_MAIN_LINEAGE_PROVEN:pr=4134 merge=$merge_sha control_plane=$GITHUB_SHA"
+
+  replay-canonical-closure:
+    needs: verify-historical-identity
+    uses: ./.github/workflows/obligation-terminal-closure.yml
+    with:
+      pr_number: "4134"
+    secrets: inherit
