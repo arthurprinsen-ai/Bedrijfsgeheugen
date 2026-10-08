@@ -119,11 +119,27 @@ function contextualActionMarkup(pageId,state){
   const inventory=pageId==='gegevens-invullen'?inventoryPortalCustomerFields():[];
   if(!cards.length&&!inventory.length)return '';
   const header='<div class="fsv-head"><div><span class="fsv-kicker">Van invoer naar besluit</span><h3>Wat betekent dit voor jouw bedrijf?</h3><p>Automatisch afgeleide voorstellen, geen definitieve risico-oordelen, juridische conclusies of gerealiseerde besparingen.</p></div></div>';
-  const inventoryHtml=inventory.length?'<p><strong>'+inventory.length+' unieke invoerpaden</strong> in de geregistreerde native V2-formulierschema’s. Standalone, legacy en connectorvelden vereisen apart verificatiebewijs.</p>':'';
+  const inventoryHtml=inventory.length?
+    '<p><strong>'+inventory.length+' unieke invoerpaden</strong> in de geregistreerde native V2-formulierschema’s. Standalone, legacy en connectorvelden vereisen apart verificatiebewijs.</p>'+
+    '<details class="fsv-input-trace"><summary>Bekijk per veld de bronpagina, betrokken modellen en gevolgen</summary><div class="fsv-reviewlist">'+
+    inventory.map(field=>'<article><strong>'+esc(field.label)+'</strong><p><small>'+esc(field.path)+'</small></p>'+
+      '<p>Invoer: '+esc(field.pages.join(', '))+' · Modellen: '+esc(field.modelFamilies.join(', '))+'</p>'+
+      '<p>Impact: '+esc(field.affectedPages.join(', '))+' · Opslagstatus: niet afzonderlijk met klant-ACK bewezen</p></article>').join('')+
+    '</div></details>':'';
   const cardsHtml=cards.slice(0,12).map(card=>{
-    const pages=card.pages.filter(id=>id!==pageId).slice(0,8);
+    const pages=card.pages.filter(id=>id!==pageId).slice(0,card.regulatoryImpact?card.pages.length:8);
     return '<article class="fsv-card" data-context-card="'+esc(card.id)+'"><header><div><span class="fsv-kicker">'+esc(card.priority)+' · '+esc(card.sourcePath)+'</span><h4>'+esc(card.title)+'</h4></div><b class="fsv-pill warn">'+esc(CARD_TITLES[card.priority]||'Beoordelen')+'</b></header>'+
       '<p>'+esc(card.description)+'</p><p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
+      (card.regulatoryImpact?
+        '<p><strong>Wettelijk onderwerp:</strong> '+esc(card.regulatoryImpact.framework)+
+        ' · <strong>Ingangsdatum:</strong> '+esc(card.regulatoryImpact.effectiveDate||'nog te verifiëren')+
+        ' · <strong>Toepasselijkheid:</strong> menselijke beoordeling vereist</p>'+
+        '<p><strong>Risico- en uitvoeringsimpact:</strong> '+esc(card.regulatoryImpact.domainLabels.join('; ')||'Nog niet in een domein geclassificeerd')+'</p>'+
+        '<p><strong>Te beoordelen:</strong> '+esc(card.regulatoryImpact.requiredReviews.join(' · '))+'</p>'+
+        (card.regulatoryImpact.missingEvidence.length?'<p><strong>Ontbrekend bewijs:</strong> '+esc(card.regulatoryImpact.missingEvidence.join(' · '))+'</p>':'')+
+        '<p><strong>Geraakte pagina’s en waarom:</strong> '+card.regulatoryImpact.impactByPage.map(x=>'<span>'+esc(x.page)+' ('+esc(x.why)+')</span>').join(' · ')+'</p>'+
+        (card.regulatoryImpact.sourceUrl?'<p><small>Opgegeven bron: '+esc(card.regulatoryImpact.sourceUrl)+'</small></p>':'')+
+        '<p><small>€-effect, juridische plicht, sancties en gerealiseerde gevolgen: niet vastgesteld.</small></p>':'')+
       '<p><small>'+(card.financialImpact?.status==='SCENARIO_ONLY'&&Number.isFinite(card.financialImpact.amount)?'Financieel scenario (geen gerealiseerde besparing): '+new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(card.financialImpact.amount)+' · '+esc(card.financialImpact.label||'Indicatie'):'Financiële impact: niet gekwantificeerd')+' · voorstel ter beoordeling · bron: klantinvoer / geprojecteerd signaal.</small></p>'+
       '<div class="fsv-actions">'+pages.map(id=>'<button type="button" data-fsv-page="'+esc(id)+'">'+esc(id.replaceAll('-',' '))+' →</button>').join('')+
       '<button type="button" data-context-add-roadmap="'+esc(card.id)+'">Als voorstel op roadmap →</button></div></article>';

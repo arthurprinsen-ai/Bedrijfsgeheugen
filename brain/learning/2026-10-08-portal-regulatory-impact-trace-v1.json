@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|portal|regulatory-domain-aware-review-trace-v1",
+  "obligationId": "portal-regulatory-impact-trace-20261008-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Existing tenant-scoped Portal V2 state, Source Universe/Company Graph event assertions, original domainState and action proposal model",
+  "root_causes": [
+    "Regulation candidate cards used a generic cross-domain page list even where framework family and dependency scope were known",
+    "Customer form impact inventory was visible only as a total count without a per-field explanation"
+  ],
+  "prevention": [
+    "Use deterministic domain-specific review page mapping from recognized law frameworks; unknown frameworks always require broader triage",
+    "Expose source, effective date, missing evidence, affected page and review purpose without claiming legal applicability",
+    "Show the existing native field-to-model matrix without representing it as exhaustive DOM or authenticated backend readback",
+    "Retain customer-authorized roadmap proposal and existing BRAIN state, never auto-execute law-driven actions"
+  ],
+  "tests": [
+    "tests/brain-regulatory-context-trace.test.mjs",
+    "portal-v2/tests/regulatory-context-trace.test.mjs",
+    "portal-v2/tests/contextual-action-cards.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GENERIC_REGULATORY_PAGE_FOOTPRINT_WITH_INVISIBLE_FIELD_MAPPING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected PR merge",
+    "exact Netlify production release",
+    "authenticated tenant source→impact→Brain readback",
+    "full #4215 separate proof"
+  ]
+}
