@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import {createPortalDomainState} from '../domain-state.js';
 import {allPageIds} from '../page-registry.js';
 import {impactForMutation} from '../portal-impact-engine.js';
@@ -106,4 +107,15 @@ test('native finance and external-source changes mark cross-domain review withou
   assert.equal(impact.externalExecutionAuthorized,false);
   assert.equal(impact.evidenceStatus,'OBSERVED_NOT_VERIFIED');
  }
+});
+
+test('customer page shell exposes impacted pages without mislabelling pending Brain write as confirmed',async()=>{
+ const shell=await readFile(new URL('../page-shell.js',import.meta.url),'utf8');
+ assert.match(shell,/id="pvImpactMap"/);
+ assert.match(shell,/data-impact-target/);
+ assert.match(shell,/bg:portal-brain-pending/);
+ assert.match(shell,/bg:portal-brain-synced/);
+ assert.match(shell,/Wijziging — verwerking nog te bevestigen/);
+ assert.match(shell,/Opgeslagen in het bedrijfsbrein/);
+ assert.match(shell,/Niet alle gevolgen zijn al bewezen/);
 });
