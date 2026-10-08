@@ -40,9 +40,19 @@ export async function handleTenantAiInference({request,user,tenantId,sovereignty
  if(policy.mode==='EU_STORAGE'&&(!withinEU(profile.storageRegion)
     ||!(withinEU(profile.ragRegion)||(profile.ragRegion==='SAME_AS_STORAGE'&&withinEU(profile.storageRegion)))))
   return json({error:'SOVEREIGNTY_REGION_NOT_VERIFIED'},409);
- // A newly requested AI route cannot go live just because the provider proof exists:
- // the customer's privacy, risk, supplier, cost and CSRD review must also be closed.
- if(policy?.last_change_impact?.status==='REVIEW_REQUIRED'&&policy.last_change_impact.deploymentApproved!==true)
+ // The immutable change impact remains REVIEW_REQUIRED as an audit fact.
+ // A separately verified, server-owned CSRD/privacy/supplier/cost approval may
+ // clear *execution* without rewriting that event or fabricating a green review.
+ // Bind the signed runtime claim to the exact authoritative tenant policy change.
+ // All approval scopes, consent, signature, expiry and endpoint checks remain
+ // mandatory in runAttestedTenantChat before any provider egress.
+ const impact=policy.last_change_impact,claim=record.signedProof?.receipt;
+ if(!impact||impact.contract!=='powerhouse-cross-domain-change-v1'||
+    impact.tenantId!==tenantId||impact.changed!==true||
+    impact.status!=='REVIEW_REQUIRED'||impact.deploymentApproved!==false||
+    impact.changeId!==`sovereignty:${tenantId}:${policy.policy_version}`||
+    claim?.tenantId!==tenantId||claim?.policyVersion!==Number(policy.policy_version)||
+    claim?.changeId!==impact.changeId)
   return json({error:'CROSS_DOMAIN_REVIEW_REQUIRED'},409);
  // No direct user-origin model/provider/endpoint/region parameters; the model comes
  // exclusively from the tenant's authoritative saved policy and signed proof.
