@@ -1,0 +1,30 @@
+{
+  "version": "terminal-supabase-release-scope-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "terminal-netlify-wait-for-supabase-only-release",
+  "root_cause": "The obligation terminal closure unconditionally awaited Netlify production readback for a merge changing only Supabase Edge Function code. The Edge provider resolver omitted an undeclared function and marked provider readback NOT_APPLICABLE.",
+  "evidence": {
+    "failed_workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37760879023",
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4134",
+    "active_supabase_function": "powerhouse-composio-linkedin-setup",
+    "provider_version": 24,
+    "source_parity": "ACTIVE provider index.ts matched merged and main source bytes"
+  },
+  "intervention": "Classify release authority from actual runtime paths; require active Supabase provider evidence for Edge-only changes and Netlify readback only when Netlify runtime changes; fail closed for undeclared changed functions.",
+  "prevention": "Use the shared terminal release scope classifier with regression tests, immutable durable evidence and exact main ancestry; never mark terminal before the canonical Brain writeback verifies provider readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-release-authority-scoped-v1.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "exact-head required CI",
+    "protected merge",
+    "provider readback",
+    "durable Brain terminal evidence"
+  ]
+}
