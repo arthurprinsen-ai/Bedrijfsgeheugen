@@ -8,3 +8,5 @@ Gate policy: exact version+name > unique same-name alias; genuine ambiguity fail
 Expected evidence: Required, CodeQL, protected merge, canonical re-run #4118, Supabase ledger and Brain terminal.
 
 Terminal retry evidence: [run 37757775283](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37757775283) failed `ReferenceError: resolveTerminalMigrationIdentities is not defined`. Corrected import placement inside migration-scope Node heredoc; added executable-scope source regression to preclude repeat. One existing terminal workflow, no extra scheduler or provider side effect. Must pass protected CI and terminal retry of #4118 before LIVE_BEWEZEN.
+
+Historical merge check failure: terminal [run 37758314809](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37758314809) ERR_MODULE_NOT_FOUND for a resolver introduced only after original PR merge. Fix: load exact helper blob from protected pinned GITHUB_SHA, after proving original MERGE_SHA ancestor; retain historical merge checkout and all gates. CI regression expanded, no scheduler or provider changes.
