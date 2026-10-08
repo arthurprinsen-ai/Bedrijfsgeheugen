@@ -254,9 +254,15 @@ Deno.serve(async(req:Request)=>{
     const impact=data?.policy?.last_change_impact;
     if(impact?.contract!=='powerhouse-cross-domain-change-v1'||impact?.status!=='REVIEW_REQUIRED')
       return json({snapshot:data});
-    const version=Number(data?.policy?.policy_version);
-    const expectedChangeId='sovereignty:'+tenantId+':'+version;
-    if(!Number.isSafeInteger(version)||version<1||impact?.tenantId!==tenantId||impact?.changeId!==expectedChangeId)
+    const currentVersion=Number(data?.policy?.policy_version);
+    const prefix='sovereignty:'+tenantId+':';
+    const suffix=typeof impact?.changeId==='string'&&impact.changeId.startsWith(prefix)?impact.changeId.slice(prefix.length):'';
+    const version=/^[1-9][0-9]*$/.test(suffix)?Number(suffix):NaN;
+    const expectedChangeId=prefix+version;
+    // Unchanged policy writes may increment the policy version without changing
+    // the last material review. Follow that prior review, not a fabricated new one.
+    if(!Number.isSafeInteger(version)||version<1||!Number.isSafeInteger(currentVersion)||
+       version>currentVersion||impact?.tenantId!==tenantId||impact?.changeId!==expectedChangeId)
       return json({snapshot:{...data,brainReview:{status:'UNVERIFIED',evidenceRequired:true,verifiedOutcome:false}}});
     const {data:obligation,error:reviewError}=await client.from('brain_obligations')
       .select('state,updated_at')
