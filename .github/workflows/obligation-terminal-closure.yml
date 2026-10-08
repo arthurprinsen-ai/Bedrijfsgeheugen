@@ -12,12 +12,6 @@ on:
         description: Merged PR number to resume on the same canonical obligation lineage
         required: true
         type: string
-  workflow_call:
-    inputs:
-      pr_number:
-        description: Canonical merged PR to replay from a trusted protected-main caller
-        required: true
-        type: string
 
 permissions:
   actions: read
@@ -31,7 +25,7 @@ concurrency:
 
 jobs:
   close-obligation:
-    if: "${{ inputs.pr_number != '' || (github.event.pull_request.merged == true && !contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY')) }}"
+    if: "${{ github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && !contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY')) }}"
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
