@@ -5,6 +5,7 @@ import { fullCompanyInputSchema } from './modules/full-company-input.js';
 import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from './input-impact-coverage.js';
 import {appendBroaderContextualActions} from './contextual-action-rules-extended.js';
 import {appendComplementaryDomainActions,DOMAIN_GAP_PAGES} from './contextual-domain-gaps.js';
+import {regulatoryContextTrace} from './regulatory-context-trace.js';
 
 // One read-only projection on the existing tenant-scoped Portal V2 state.
 // A proposal is NOT a measured risk, legal applicability ruling, executed action or euro saving.
@@ -130,16 +131,21 @@ export function buildContextualActionCards(state={},options={}) {
       'Ingevoerde DSO '+dso+' dagen; toets dit tegen contractafspraken en branche. Nog geen vastgesteld kasstroomverlies.',
       'Verbeter debiteurenproces en bereken werkkapitaalimpact met gevalideerde omzet.',FINANCE,extra));
   }
-  const events=get(state,'portal.regulatory.events')||get(state,'portal.external.regulatoryEvents')||[];
+  const directEvents=get(state,'portal.regulatory.events');
+  const events=Array.isArray(directEvents)?directEvents:get(state,'portal.external.regulatoryEvents');
+  const eventSourcePath=Array.isArray(directEvents)?'portal.regulatory.events':'portal.external.regulatoryEvents';
   if(Array.isArray(events))for(const event of events){
     if(!event||typeof event!=='object'||!present(event.id)&&!present(event.title))continue;
     const id=String(event.id||event.title).replace(/[^a-z0-9-]/gi,'-').slice(0,64);
-    const authoritative=event.authority==='source-universe-company-impact'&&event.tenantScoped===true&&event.evidenceStatus==='VERIFIED';
-    const applies=authoritative&&event.customerRelevance==='applicable';
-    item(cards,card('regulation-'+id, String(event.title||event.name||'Regelgevingssignaal')+(applies?' — toepasselijkheid toetsen':' — relevantie onderzoeken'),applies?'P1':'P2','portal.regulatory.events',event.id||event.title,
-      'Nieuw/gewijzigd regelgevingssignaal. '+(applies?'Bron en tenantcontext zijn als geverifieerd gemarkeerd; juridische beoordeling blijft vereist.':'Bron, actualiteit of toepasselijkheid op deze klant is nog onvoldoende bewezen.'),
-      applies?'Bepaal getroffen processen, systemen, controls, investeringen en deadlines.':'Verifieer officiële bron, geldende datum, sector, omvang en klanttoepasselijkheid voordat maatregelen definitief worden.',LAW,
-      {regulatorySource:event.sourceUrl||null,regulatoryEvidenceStatus:applies?'SOURCE_VERIFIED_REVIEW_REQUIRED':'SOURCE_REVIEW_REQUIRED'}));
+    const trace=regulatoryContextTrace(event);
+    const applies=trace.customerRelevance==='SOURCE_VERIFIED_REVIEW_REQUIRED';
+    const area=trace.domainLabels.length?' Relevante domeinen: '+trace.domainLabels.join('; ')+'.':' Het relevante bedrijfsdomein moet worden vastgesteld.';
+    item(cards,card('regulation-'+id,String(event.title||event.name||'Regelgevingssignaal')+' — impact en toepasselijkheid toetsen',
+      trace.priority,eventSourcePath,event.id||event.title,
+      'Nieuw/gewijzigd regelgevingssignaal.'+area+' '+(applies?'Klant- en bronevidence is als geverifieerd gemarkeerd; het juridisch oordeel blijft open.':'Officiële bron of klanttoepasselijkheid is nog niet aangetoond.'),
+      'Toets de brontekst, sector, omvang, ingangsdatum, getroffen processen, systemen, risico’s en eventuele kosten. Leg de review, eigenaar en onderbouwing vast.',
+      trace.affectedPages,
+      {regulatorySource:trace.sourceUrl,regulatoryEvidenceStatus:applies?'SOURCE_VERIFIED_REVIEW_REQUIRED':'SOURCE_REVIEW_REQUIRED',regulatoryImpact:trace}));
   }
   appendBroaderContextualActions(state,cards,{card,item,today:options.today||new Date().toISOString().slice(0,10)});
   appendComplementaryDomainActions(state,cards,{card,item});
