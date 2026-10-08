@@ -390,20 +390,62 @@ jobs:
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
+          # A failed original projection never becomes success by retrying metadata.
           for attempt in $(seq 1 30); do
-            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
-            run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
-            status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
-            conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
+            runs="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=$MERGE_SHA&event=push&per_page=20")"
+            run_id="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            status="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
+            conclusion="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
             if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
-              [ "$conclusion" = "success" ] || { echo "::error::SKILL_PROJECTION_FAILED:run=$run_id conclusion=$conclusion"; exit 78; }
-              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-              echo "SKILL_PROJECTION_PROVEN:$run_id"
-              exit 0
+              if [ "$conclusion" = "success" ]; then
+                echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+                echo "SKILL_PROJECTION_PROVEN:$run_id"
+                exit 0
+              fi
+              echo "::warning::SKILL_PROJECTION_HISTORICAL_FAILURE:run=$run_id conclusion=$conclusion; require a successful protected-main descendant with identical learning"
+              break
             fi
             sleep 10
           done
-          echo "::error::SKILL_PROJECTION_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
+          learning_files="$(git diff --name-only "$MERGE_SHA^1" "$MERGE_SHA" | grep -E '^brain/learning/.+[.]json$' || true)"
+          [ -n "$learning_files" ] || { echo "::error::SKILL_PROJECTION_DESCENDANT_NO_LEARNING_SCOPE:$MERGE_SHA"; exit 78; }
+          for attempt in $(seq 1 24); do
+            git fetch origin main --no-tags
+            current_main="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "$MERGE_SHA" "$current_main" || {
+              echo "::error::SKILL_PROJECTION_DESCENDANT_MAIN_CONTAINMENT_FAILED:$MERGE_SHA:$current_main"
+              exit 78
+            }
+            descendants="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?branch=main&event=push&per_page=70")"
+            while IFS=$'\t' read -r descendant_id descendant_sha; do
+              [ -n "$descendant_id" ] && [[ "$descendant_sha" =~ ^[0-9a-f]{40}$ ]] || continue
+              git merge-base --is-ancestor "$MERGE_SHA" "$descendant_sha" || continue
+              git merge-base --is-ancestor "$descendant_sha" "$current_main" || continue
+              proven=true
+              for learning_path in $learning_files; do
+                main_blob="$(git rev-parse "origin/main:$learning_path" 2>/dev/null || true)"
+                proven_blob="$(git rev-parse "$descendant_sha:$learning_path" 2>/dev/null || true)"
+                if [ -z "$main_blob" ] || [ "$main_blob" != "$proven_blob" ]; then proven=false; break; fi
+                if ! git show "$descendant_sha:$learning_path" | node -e '
+                  const fs=require("node:fs");
+                  const record=JSON.parse(fs.readFileSync(0,"utf8"));
+                  const modes=["historical_replay","shadow","canary"];
+                  const valid=modes.every(mode=>Array.isArray(record.evaluation?.[mode]) &&
+                    record.evaluation[mode].length>0 &&
+                    record.evaluation[mode].every(p=>typeof p==="string" &&
+                      /^tests\/brain-[a-z0-9-]+[.]test[.]mjs$/.test(p) && fs.existsSync(p)));
+                  if(!valid)process.exit(78);
+                '; then proven=false; break; fi
+              done
+              if [ "$proven" = true ]; then
+                echo "run_id=$descendant_id" >> "$GITHUB_OUTPUT"
+                echo "SKILL_PROJECTION_DESCENDANT_PROVEN:original=$MERGE_SHA descendant=$descendant_sha run=$descendant_id current_main=$current_main"
+                exit 0
+              fi
+            done < <(jq -r '.workflow_runs[] | select(.status=="completed" and .conclusion=="success") | [.id,.head_sha] | @tsv' <<<"$descendants")
+            sleep 10
+          done
+          echo "::error::SKILL_PROJECTION_DESCENDANT_NOT_PROVEN:original=$MERGE_SHA"
           exit 78
 
       - name: Derive exact Supabase production migration identities across supersession lineage
