@@ -55,3 +55,23 @@ test('no parallel cron, publisher, credential bypass or public auth granted', ()
   assert.doesNotMatch(sql, /cron\.schedule|net\.http_post|grant\s+execute|grant\s+all|create\s+policy|disable\s+row\s+level\s+security/i);
   assert.doesNotMatch(sql, /insert into public\.powerhouse_sales_actions|insert into public\.powerhouse_sales_outcomes/i);
 });
+
+test('fresh Supabase preview can replay canonical Identity Graph before its dependent migration', () => {
+  const baseline = readFileSync(
+    'supabase/migrations/20261007063438_powerhouse_identity_graph_replay_baseline_v1.sql',
+    'utf8'
+  );
+  const dependent = readFileSync(
+    'supabase/migrations/20261007063440_bound_commercial_identity_graph_runtime_v2.sql',
+    'utf8'
+  );
+  assert.match(baseline, /create table if not exists public\.powerhouse_identity_graph_v1/);
+  assert.match(baseline, /graph_id uuid primary key default gen_random_uuid\(\)/);
+  assert.match(baseline, /unique \(entity_type,identifier_type,identifier_hash\)/);
+  assert.match(baseline, /enable row level security/);
+  assert.match(baseline, /revoke all on table public\.powerhouse_identity_graph_v1 from public, anon, authenticated/);
+  assert.match(baseline, /for all to service_role using \(true\) with check \(true\)/);
+  assert.match(dependent, /alter table public\.powerhouse_identity_graph_v1 set/);
+  assert.doesNotMatch(baseline, /insert into public\.powerhouse_identity_graph_v1|truncate|drop table|disable row level security/i);
+  assert.ok('20261007063438' < '20261007063440');
+});
