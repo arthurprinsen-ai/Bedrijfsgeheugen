@@ -151,7 +151,7 @@ export function pagePresentation(pageId, state) {
 
 export function searchPortalPages(term='') {
   const q=String(term).trim().toLocaleLowerCase('nl');
-  const pages=listPortalGroups().flatMap(group=>group.pages.map(page=>({...page,groupLabel:group.label}))).filter(page=>!isProtectedTrustPage(page.id)||hasProtectedTrustAccess());
+  const pages=listPortalGroups().flatMap(group=>group.pages.map(page=>({...page,groupLabel:group.label}))).filter(page=>(page.id!=='powerhouse-control-center')&&(!isProtectedTrustPage(page.id)||hasProtectedTrustAccess()));
   if(!q) return pages.slice(0,12);
   return pages.filter(page=>`${page.label} ${page.groupLabel} ${page.id}`.toLocaleLowerCase('nl').includes(q)).slice(0,12);
 }
