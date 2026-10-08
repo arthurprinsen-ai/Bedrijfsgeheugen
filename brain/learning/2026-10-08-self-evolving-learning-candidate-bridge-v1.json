@@ -60,6 +60,13 @@
     ],
     "candidate_head": "9ed0e85af80ed3f9a520330bef8342f8bd22089f",
     "production_migration_readback": null,
-    "verified_value_outcome": null
+    "verified_value_outcome": null,
+    "main_reconciliation": {
+      "candidate_previous_head": "defc2160fc4d636249d96ea77dc0ba03274bb05d",
+      "current_main_epoch": "f8b3cab9fc823cd0bf7acf16b46f395111148fbb",
+      "two_parent_merge_commit": "e5c98e5e7918e9fce99532b0ee3327b6601cc328",
+      "unrelated_main_changes": "preserved_by_main_tree_overlay",
+      "production_readback": null
+    }
   }
 }
