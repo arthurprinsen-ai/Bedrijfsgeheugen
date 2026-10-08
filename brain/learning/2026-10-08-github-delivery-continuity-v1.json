@@ -1,0 +1,47 @@
+{
+  "id": "github-delivery-continuity-v1",
+  "date": "2026-10-08",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|github-delivery|supervisor-continuity|v1",
+  "root_cause": "The scheduled recovery controller could call an undefined BRAIN dispatcher, fail to reliably recognize exact-head in-flight Required runs, and stop revisiting merged nonterminal obligations after 24 hours; repeated closure attempts could amplify provider load rather than converge.",
+  "prevention": [
+    "Never add a competing Github scheduler when the existing canonical recovery supervisor can be hardened.",
+    "Recovery-run identity must bind the PR number and immutable candidate SHA and avoid dispatch when that logical flight is already active.",
+    "The supervisor must never invoke an undefined BRAIN dispatch path or assume a recovery happened on a skipped invocation.",
+    "Nonterminal merged obligations remain auditable and bounded by a seven-day check horizon, 90-minute retry cooldown and three-attempt limit.",
+    "Only canonical post-merge production readback plus durable authority evidence can mark an obligation LIVE_BEWEZEN."
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY_SUPERVISOR_CONTINUITY_GAP",
+    "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "entrypoint": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "gate": ".github/workflows/required-test.yml",
+    "terminal_authority": ".github/workflows/obligation-terminal-closure.yml",
+    "regression": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "canary": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "success_criteria": [
+      "Exact-head Required + CodeQL pass without duplicate dispatch",
+      "Protected merge is verifiable",
+      "Production Readback and durable canonical obligation terminal evidence succeed before any LIVE_BEWEZEN claim"
+    ]
+  },
+  "production_claim": "NOT_PROVEN",
+  "outcome": "PROPOSED_RECOVERY_PENDING_PROTECTED_CI_AND_RUNTIME_VALIDATION"
+}
