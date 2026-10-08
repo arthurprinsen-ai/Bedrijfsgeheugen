@@ -1,5 +1,6 @@
 import {mapRuntimeProjection} from './runtime-evidence.js';
 import {buildCompanyCockpit} from './company-cockpit.js';
+import {renderDailyValuePortfolio} from './operating-system/daily-value-portfolio.js';
 import {renderCompanyIntelligenceContext} from './operating-system/company-intelligence-context.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -55,6 +56,7 @@ export function renderCompanyCockpitHtml(runtime={}){
         <p>${esc((item.evidenceIds||[]).length)} bewijsreferenties · gerealiseerde waarde telt alleen mee na verificatie.</p>
       </article>`).join(''):'<p class="company-empty">Nog geen geverifieerde gerealiseerde waarde per probleem.</p>'}
     </section>
+    ${renderDailyValuePortfolio(runtime)}
     <div class="company-priorities">${priorities.length?priorities.map(priorityCard).join(''):'<p class="company-empty">Nog geen bewezen bedrijfsprioriteiten. Vul bedrijfsdata aan of wacht op Brain-evidence.</p>'}</div>
     <details class="company-details"><summary>Goedkeuring nodig (${approvals.length})</summary>${approvals.length?approvals.map(a=>`<p><b>${safeText(a.decisionId)}</b> · ${safeText(a.approval?.state||a.status)} · ${safeText(a.actor)}</p>`).join(''):'<p>Geen open goedkeuringen.</p>'}</details>
     <details class="company-details"><summary>Geblokkeerd (${blocked.length})</summary>${blocked.length?blocked.map(b=>`<p><b>${safeText(b.title)}</b> · ${safeText(b.blockedBy||b.dependencyState)}</p>`).join(''):'<p>Geen geblokkeerde prioriteiten.</p>'}</details>
