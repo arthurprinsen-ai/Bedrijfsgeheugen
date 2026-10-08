@@ -185,6 +185,14 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  async function performPortalFlush(){
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
   const stateResult=await domain.flush();
+  // Demo and preview never establish durable tenant authority. Keep those
+  // interactions in memory and do not demand a server-side BusinessInput ACK.
+  // Authenticated writes still require a real canonical storage receipt.
+  if(stateClient.isDemo?.()||stateResult?.mode==='preview'){
+   pendingBusinessInputs.clear();
+   pendingImpacts.length=0;
+   return stateResult;
+  }
   const stored=[];
   for(const item of pending){
    const causalImpacts=pendingImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
