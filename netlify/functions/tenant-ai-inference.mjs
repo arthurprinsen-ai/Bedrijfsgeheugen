@@ -6,8 +6,13 @@ import {handleTenantAiInference} from '../../platform/api/tenant-ai-inference-ha
 // The runtime registry and signing key exist only in the server environment.
 // No provisioning, approvals or API secrets can be submitted from the browser.
 const parseRegistry=raw=>{
+ // Bound server-side registry parsing and reject ambiguous prototype keys.
+ // A malformed registry must deny inference rather than fall back to any provider.
+ if(typeof raw!=='string'||raw.length>131072)return null;
  try{
   const data=JSON.parse(raw||'null');
+  if(Object.prototype.hasOwnProperty.call(data||{},'__proto__')||
+     Object.prototype.hasOwnProperty.call(data||{},'constructor'))return null;
   return data&&typeof data==='object'&&!Array.isArray(data)?data:null;
  }catch{return null;}
 };
