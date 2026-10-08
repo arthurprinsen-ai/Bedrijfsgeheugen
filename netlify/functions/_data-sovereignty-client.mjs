@@ -1,3 +1,4 @@
+import {canUseCurrentAiRoute} from '../../platform/policy/customer-ai-deployment.mjs';
 const clean=v=>String(v??'').trim();
 const EU_TRANSFER=new Set(['NO','NONE','EEA_ONLY','EU_ONLY','NO_BY_DESIGN']);
 const euScope=value=>String(value||'').toUpperCase().startsWith('EU');
@@ -21,6 +22,10 @@ export function createDataSovereigntyClient({fetchFn=globalThis.fetch,baseUrl=pr
     setPolicy:(tenantId,policy,actor)=>gateway({action:'data_sovereignty_policy_set',tenantId:String(tenantId),policy,actor}),
     async assertAiAllowed(tenantId){
       const state=await snapshot(tenantId);
+      const requestedProvider=String(state?.policy?.preferred_ai_provider||'').trim();
+      // A saved preference never silently reroutes confidential data to the existing Anthropic gateway.
+      if((requestedProvider&&requestedProvider!=='anthropic')||!canUseCurrentAiRoute(state?.policy?.ai_deployment_profile))
+        throw Object.assign(new Error('DATA_SOVEREIGNTY_AI_BLOCKED'),{code:'DATA_SOVEREIGNTY_AI_BLOCKED',details:[{reason:'Gekozen AI-infrastructuur of regio is nog niet geprovisioneerd en geverifieerd. Externe AI-verwerking blijft geblokkeerd.'}]});
       if(state?.policy?.enforcement_mode==='BLOCK'&&state?.policy?.mode==='EU_ONLY'){
         const blockers=(state.violations||[]).filter(v=>
           v?.kind==='ai_route'||
