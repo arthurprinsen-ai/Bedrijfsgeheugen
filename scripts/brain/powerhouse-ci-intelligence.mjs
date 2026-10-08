@@ -1,5 +1,5 @@
 import { mkdir, writeFile, appendFile, readFile, readdir } from 'node:fs/promises';
-import { calibrateCi } from '../../tools/delivery/ci-calibration-engine.mjs';
+import { calibrateCi, isRequiredCiRun, selectCiRunsForMeasurement, describeCiObservationCoverage } from '../../tools/delivery/ci-calibration-engine.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
@@ -19,15 +19,23 @@ async function api(path) {
 
 async function recentRuns({ maxPages = 3, perPage = 100, since }) {
   const rows = [];
+  let pagesFetched = 0;
+  let oldestFetchedAt = null;
+  let windowComplete = false;
   for (let page = 1; page <= maxPages; page += 1) {
     const payload = await api(`/actions/runs?per_page=${perPage}&page=${page}`);
     const batch = payload.workflow_runs || [];
-    if (!batch.length) break;
+    pagesFetched += 1;
+    if (!batch.length) { windowComplete = true; break; }
     rows.push(...batch.filter(run => Date.parse(run.created_at) >= since));
-    const oldest = Date.parse(batch.at(-1)?.created_at || 0);
-    if (batch.length < perPage || oldest < since) break;
+    oldestFetchedAt = batch.at(-1)?.created_at ?? null;
+    const oldest = Date.parse(oldestFetchedAt ?? '');
+    if (batch.length < perPage || (Number.isFinite(oldest) && oldest < since)) {
+      windowComplete = true;
+      break;
+    }
   }
-  return rows;
+  return { rows, pagesFetched, oldestFetchedAt, windowComplete };
 }
 
 async function fetchJobRows(runs, concurrency = 8) {
@@ -96,8 +104,18 @@ const p95 = values => {
 
 const now = Date.now();
 const since = now - 7 * 24 * 60 * 60 * 1000;
-const runs = await recentRuns({ since });
-const sample = runs.slice(0, 60);
+const collected = await recentRuns({ since });
+const runs = collected.rows;
+const sample = selectCiRunsForMeasurement(runs, { maxRuns: 60, reservedRequired: 12 });
+const observationCoverage = describeCiObservationCoverage({
+  requestedSince: new Date(since).toISOString(),
+  observedAt: new Date(now).toISOString(),
+  oldestFetchedAt: collected.oldestFetchedAt,
+  complete: collected.windowComplete,
+  pagesFetched: collected.pagesFetched,
+  fetchedRuns: runs.length,
+  sampledRuns: sample.length,
+});
 const jobRows = await fetchJobRows(sample);
 
 const queues = numeric(jobRows, 'queue_seconds');
@@ -117,7 +135,7 @@ for (const run of runs) {
 }
 const duplicateWorkflowRuns = [...duplicateRunGroups.values()].reduce((total,count)=>total+Math.max(0,count-1),0);
 
-const requiredRuns = runs.filter(run => run.name === 'Required test' && run.event === 'pull_request');
+const requiredRuns = runs.filter(isRequiredCiRun);
 const requiredQueueSeconds = requiredRuns.map(run => {
   const starts = jobRows.filter(row => row.run_id === run.id && Number.isFinite(row.queue_seconds)).map(row => row.queue_seconds);
   return starts.length ? Math.min(...starts) : null;
@@ -155,10 +173,14 @@ const baseReport = {
   window_days: 7,
   sampled_runs: sample.length,
   sampled_jobs: jobRows.length,
+  observation_coverage: observationCoverage,
   metrics: {
     queue_wait_sample_count: queues.length,
     execution_sample_count: executions.length,
     required_queue_sample_count: requiredQueueSeconds.length,
+    observed_required_run_count: requiredRuns.length,
+    measured_required_run_count: sample.filter(isRequiredCiRun).length,
+    observation_seven_day_complete: observationCoverage.seven_day_coverage_complete,
     required_total_sample_count: requiredTotals.length,
     queue_wait_seconds_avg: avg(queues),
     queue_wait_seconds_p95: p95(queues),
@@ -197,6 +219,8 @@ const baseReport = {
     open_obligation_counts: Object.fromEntries([...obligationCounts.entries()].sort()),
   },
   optimization_policy: {
+    bounded_seven_day_fields_are_lower_bounds_if_incomplete: true,
+    required_run_name_accepts_pr_run_name: true,
     stale_same_pr_runs_cancelled: true,
     required_gate_is_canonical: true,
     direct_pr_workflow_budget_is_monotonic: true,
@@ -247,5 +271,5 @@ console.log(JSON.stringify(report.metrics, null, 2));
 if (process.env.GITHUB_STEP_SUMMARY) {
   const m = report.metrics;
   await appendFile(process.env.GITHUB_STEP_SUMMARY,
-    `## Powerhouse CI Intelligence v2\n\n- Required queue p95 / total p95: **${m.required_queue_wait_seconds_p95}s / ${m.required_total_seconds_p95}s**\n- Queue avg / p95: **${m.queue_wait_seconds_avg}s / ${m.queue_wait_seconds_p95}s**\n- Execution avg / p95: **${m.execution_seconds_avg}s / ${m.execution_seconds_p95}s**\n- Fan-out per SHA avg / p95: **${m.workflow_fanout_per_sha_avg} / ${m.workflow_fanout_per_sha_p95}**\n- Direct PR workflows / target: **${m.direct_pull_request_workflow_count} / 2**\n- Duplicate workflow runs / open obligations: **${m.duplicate_workflow_runs_7d} / ${m.duplicate_open_obligations}**\n- Retired PR churn (7d): **${m.retired_pr_churn_7d}**\n- Failed / cancelled / skipped jobs: **${m.failed_jobs} / ${m.cancelled_jobs} / ${m.skipped_jobs}**\n- Calibration recommendations: **${report.calibration.recommendations.length}** (mode: ${report.calibration.mode})\n`);
+    `## Powerhouse CI Intelligence v2\n\n- Observation coverage: **${report.observation_coverage.interpretation}** (${report.observation_coverage.actual_observed_window_hours ?? 'unknown'}h observed; ${report.observation_coverage.sampled_runs} runs sampled)\n- Required runs observed / measured: **${m.observed_required_run_count} / ${m.measured_required_run_count}**\n- Required queue p95 / total p95: **${m.required_queue_wait_seconds_p95}s / ${m.required_total_seconds_p95}s**\n- Queue avg / p95: **${m.queue_wait_seconds_avg}s / ${m.queue_wait_seconds_p95}s**\n- Execution avg / p95: **${m.execution_seconds_avg}s / ${m.execution_seconds_p95}s**\n- Fan-out per SHA avg / p95: **${m.workflow_fanout_per_sha_avg} / ${m.workflow_fanout_per_sha_p95}**\n- Direct PR workflows / target: **${m.direct_pull_request_workflow_count} / 2**\n- Duplicate workflow runs / open obligations: **${m.duplicate_workflow_runs_7d} / ${m.duplicate_open_obligations}**\n- Retired PR churn (7d): **${m.retired_pr_churn_7d}**\n- Failed / cancelled / skipped jobs: **${m.failed_jobs} / ${m.cancelled_jobs} / ${m.skipped_jobs}**\n- Calibration recommendations: **${report.calibration.recommendations.length}** (mode: ${report.calibration.mode})\n`);
 }
