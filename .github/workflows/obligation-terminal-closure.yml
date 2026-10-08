@@ -1,6 +1,6 @@
 name: Obligation Terminal Closure
 
-run-name: Obligation Terminal Closure PR #${{ github.event.pull_request.number || inputs.pr_number }}
+run-name: "Obligation Terminal Closure PR #${{ github.event.pull_request.number || inputs.pr_number }}"
 
 on:
   pull_request:
@@ -220,8 +220,8 @@ jobs:
           require_brain_evidence
 
           changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
-          if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/powerhouse-codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then
-            require_workflow "powerhouse-codeql.yml" "Powerhouse-CodeQL"
+          if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then
+            require_workflow "codeql.yml" "Powerhouse-CodeQL"
           else
             echo "TERMINAL_CRITICAL_GATE_NOT_APPLICABLE:Powerhouse-CodeQL:head=${HEAD_SHA}"
           fi
