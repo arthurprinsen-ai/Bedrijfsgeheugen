@@ -40,7 +40,8 @@ export function regulatoryContextTrace(event={}) {
   const sections=matched.length?matched:[]; // unknown regulations: generic review, never invented scope
   const verified=event.authority==='source-universe-company-impact'&&event.tenantScoped===true&&event.evidenceStatus==='VERIFIED';
   const reportedApplicable=verified&&event.customerRelevance==='applicable';
-  const affectedPages=valid([...COMMON,...sections.flatMap(x=>x.pages)]);
+  const fallbackPages=sections.length?[]:['csrd-impact','waarde-financiering','businesscase'];
+  const affectedPages=valid([...COMMON,...fallbackPages,...sections.flatMap(x=>x.pages)]);
   const reviews=uniq([...sections.flatMap(x=>x.reviews),
     'Controleer de officiële brontekst, actuele versie, datum en toepasselijkheid op de klant',
     'Bepaal risico, verantwoordelijke, benodigde bewijsstukken, prioriteit en herbeoordelingsmoment']);
