@@ -311,6 +311,28 @@ jobs:
             exit 0
           fi
 
+          # Edge-only changes are proven by the prior canonical Supabase provider
+          # readback, not by an unrelated website release. Mixed changes still
+          # require the website release below as well as provider readback.
+          if [ "${DELIVERY_LANE}" = "automation" ] && \
+             [ "${{ steps.provider-readback.outcome }}" = "success" ] && \
+             [ "${{ steps.provider-readback.outputs.required }}" = "true" ] && \
+             ! grep -Eq '^(portal-v2/|public/|src/|netlify/functions/|supabase/migrations/)' <<<"${changed_paths}"; then
+            git fetch origin main --no-tags
+            observed_sha="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "${MERGE_SHA}" "${observed_sha}" || {
+              echo "::error::EDGE_MAIN_CONTAINMENT_NOT_PROVEN:${MERGE_SHA}:${observed_sha}"
+              exit 78
+            }
+            echo "mode=edge_provider_readback" >> "$GITHUB_OUTPUT"
+            echo "run_id=" >> "$GITHUB_OUTPUT"
+            echo "observed_sha=${MERGE_SHA}" >> "$GITHUB_OUTPUT"
+            echo "deploy_id=" >> "$GITHUB_OUTPUT"
+            echo "verified=true" >> "$GITHUB_OUTPUT"
+            echo "EDGE_PROVIDER_READBACK_AND_MAIN_PROVEN:merge=${MERGE_SHA}"
+            exit 0
+          fi
+
           source_run_id=""
           source_conclusion=""
           # Fast bounded canonical wait. A historical failed/cancelled canonical run is
