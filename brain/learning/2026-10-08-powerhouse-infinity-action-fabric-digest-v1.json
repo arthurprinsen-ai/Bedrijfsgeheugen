@@ -1,0 +1,36 @@
+{
+  "id": "powerhouse-infinity-action-fabric-digest-20261008-v1",
+  "date": "2026-10-08",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|infinity|action-fabric|pgcrypto-schema|fail-closed|v1",
+  "root_cause": "The canonical action materializer used an unqualified pgcrypto digest call while its security-definer search_path excludes the extensions schema. The integrated loop also accepted READY as operational before a canonical action reference existed.",
+  "prevention": [
+    "Qualify extension functions in security-definer routines.",
+    "Keep Action Fabric degraded until a canonical action reference exists.",
+    "Exercise the repair in the protected Whole Brain workflow."
+  ],
+  "compiler": {
+    "failure_class": "ACTION_FABRIC_MATERIALIZATION_FALSE_GREEN",
+    "scope": "POWERHOUSE_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "migration": "supabase/migrations/20261008122000_powerhouse_infinity_action_fabric_digest_v1.sql",
+    "regression": ["tests/powerhouse-infinity-action-fabric-v1.test.mjs"],
+    "workflow": ".github/workflows/whole-brain-canonical-loop-v2.yml"
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"],
+    "shadow": ["tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"],
+    "canary": ["tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"],
+    "success_criteria": [
+      "Action candidate becomes MATERIALIZED",
+      "Canonical Brain obligation reference exists",
+      "All seven production components remain operational"
+    ]
+  },
+  "production_claim": "PENDING_PROTECTED_DELIVERY",
+  "outcome": "CANDIDATE_READY_FOR_PROTECTED_DELIVERY"
+}
