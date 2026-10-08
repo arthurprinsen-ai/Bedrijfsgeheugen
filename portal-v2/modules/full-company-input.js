@@ -19,7 +19,7 @@ export function fullCompanyInputGroups(){
   {id:'profile',label:'Profiel',fields:companyInputSchema('profiel')},
   {id:'financials',label:'Bedrijfscijfers',fields:legacyIds(metricFields,['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt','cRecurring','cVariabel','cFcf','cNopat'])},
   {id:'finance',label:'Balans en financiering',fields:finance()},
-  {id:'people',label:'Mensen en MTO-resultaten',fields:legacyIds(people(),['mVerzuim','mVerloop','mEnps','mMto','mMtoScore','mMtoResponse','mMtoMeasuredAt','mMtoThemes','mMtoFollowup','mVac'])},
+  {id:'people',label:'Mensen',fields:legacyIds(people(),['mVerzuim','mVerloop','mEnps','mMto','mMtoScore','mMtoResponse','mMtoMeasuredAt','mMtoThemes','mMtoFollowup','mVac'])},
   {id:'ai-governance',label:'AI-governance en verantwoording',fields:legacyIds(governance(),['governanceReadiness','aiUse','aiPurpose','aiGovernanceOwner','aiRiskClass','aiHumanOversight','aiVendor','aiDataLocation','aiAssessmentDate'])},
   {id:'customers',label:'Klanten',fields:legacyIds(metricFields,['kNps','kTevreden','kHerhaal','kKlacht'])},
   {id:'productivity',label:'Productiviteit',fields:legacyPrefix(metricFields,'p')},
