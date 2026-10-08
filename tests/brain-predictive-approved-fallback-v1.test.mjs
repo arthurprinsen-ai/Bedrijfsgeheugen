@@ -46,7 +46,7 @@ test('predictive source requires exact use-case governance and records provider 
  assert.match(src,/fallbackGov\.provider!=='Composio\/Groq'/);
  assert.match(src,/predictive_.*provider|generationProvider/);
  assert.match(src,/publicForecastContext\(/);
- assert.match(src,/parseForecastPlan\(/);
+ assert.match(src,/runValidatedApprovedFallback\(/);
 });
 
 
@@ -63,4 +63,30 @@ test('outbound fallback uses the existing approved Composio/Groq tool without fo
  assert.equal(data.arguments.model,'openai/gpt-oss-120b');
  assert.equal(data.arguments.messages.length,2);
  assert.ok(!JSON.stringify(data.arguments.messages).includes('raw_private_payloads'));
+});
+
+
+test('approved fallback retries invalid schema once, retaining strict validation and public-only input',async()=>{
+ const {runValidatedApprovedFallback}=await import('../supabase/functions/_shared/predictive-approved-fallback.mjs');
+ const context={today:'2026-10-08',goal:{deadline:'2027-09-14'},signals:[{signal_key:'external:1',source_type:'external_news',topic_key:'market'},{signal_key:'search:2',source_type:'search_demand',topic_key:'market'}]};
+ const seen=[];
+ const mock=async(url,options)=>{seen.push(JSON.parse(options.body));const value=seen.length===1?'not-json':'{"forecasts":[]}';return {ok:true,status:200,json:async()=>({successful:true,data:{choices:[{message:{content:value}}]}})};};
+ const result=await runValidatedApprovedFallback({apiKey:'test',model:'openai/gpt-oss-120b',context,fetchImpl:mock});
+ assert.deepEqual(result.plan,{forecasts:[]});
+ assert.equal(result.schemaRetryCount,1);
+ assert.equal(seen.length,2);
+ assert.ok(seen[1].arguments.messages[0].content.includes('herkansing'));
+});
+
+test('approved fallback fails closed after one retry and never retries provider errors',async()=>{
+ const {runValidatedApprovedFallback}=await import('../supabase/functions/_shared/predictive-approved-fallback.mjs');
+ const context={signals:[{signal_key:'external:1',source_type:'external_news'}]};
+ let calls=0;
+ const invalid=async()=>{calls++;return {ok:true,status:200,json:async()=>({successful:true,data:{choices:[{message:{content:'INVALID'}}]}})};};
+ await assert.rejects(runValidatedApprovedFallback({apiKey:'test',model:'openai/gpt-oss-120b',context,fetchImpl:invalid}),/FALLBACK_FORECAST_SCHEMA_INVALID/);
+ assert.equal(calls,2);
+ calls=0;
+ const rejected=async()=>{calls++;return {ok:false,status:503,json:async()=>({error:'service unavailable'})};};
+ await assert.rejects(runValidatedApprovedFallback({apiKey:'test',model:'openai/gpt-oss-120b',context,fetchImpl:rejected}),/FALLBACK_PROVIDER_UNAVAILABLE/);
+ assert.equal(calls,1);
 });
