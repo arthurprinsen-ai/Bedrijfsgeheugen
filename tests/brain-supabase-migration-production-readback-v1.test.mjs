@@ -19,7 +19,7 @@ test('provider must return exact versions; empty or partial rows fail closed',()
 test('production management API readback succeeds only with authenticated exact ledger rows',async()=>{
   let called=false;
   const result=await verifyMigrationProduction({changedPaths:['supabase/migrations/20261008104000_test.sql'],projectRef:'adhjwmvyoixzjtmiroln',token:'test-secret',request:async(url,options)=>{
-    called=true;assert.match(url,/api.supabase.com\/v1\/projects\/adhjwmvyoixzjtmiroln\/database\/query/);
+    called=true;assert.equal(new URL(url).origin,'https://api.supabase.com');assert.equal(new URL(url).pathname,'/v1/projects/adhjwmvyoixzjtmiroln/database/query');
     assert.match(options.body,/20261008104000/);
     return {ok:true,json:async()=>[{version:'20261008104000'}]};
   }});
