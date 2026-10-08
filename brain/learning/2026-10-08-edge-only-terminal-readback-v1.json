@@ -1,0 +1,45 @@
+{
+  "version": "edge-only-terminal-readback-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "root_cause": "Terminal Closure required website release readback for automation PR changing only Supabase Edge Functions, despite a previously successful exact provider readback.",
+  "evidence": {
+    "failed_workflow_run": "37760879023",
+    "failed_step": "Wait for canonical production release readback",
+    "successful_step": "Require explicit Supabase Edge Function provider readback before terminal claim",
+    "supabase_production": "powerhouse-composio-linkedin-setup version 24 ACTIVE"
+  },
+  "intervention": "For Edge-only automation changes, after successful mandatory provider proof and protected main containment, mark production proof mode=edge_provider_readback; retain website readback for website or mixed changes.",
+  "guardrails": [
+    "No terminal proof on failed provider readback",
+    "Never trust PR metadata alone for production proof",
+    "Mixed website and Edge changes require both proofs",
+    "Protected merge and exact-head checks remain mandatory"
+  ],
+  "compiler": {
+    "failure_class": "WRONG_PRODUCTION_PROOF_DOMAIN",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ]
+  },
+  "fingerprint": "edge-only-automation-terminal-waiting-for-netlify-v1",
+  "prevention": "Route production readback by changed deployment surface; provider readback for Edge-only, website readback for website, both for mixed.",
+  "closure_required": [
+    "protected exact-head CI",
+    "protected merge",
+    "provider proof from production authority",
+    "Brain terminal write with immutable evidence"
+  ]
+}
