@@ -46,7 +46,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     const body=clean(await requestBody(request,normalized));
     const impact=planCrossDomainChange({tenantId,changeId:`connector-create:${body.id||'new'}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,before:null,after:connectorConfigurationForImpact(body),evidenceIds:[]});
-    return json(clean(await store.saveDraft(tenantId,{...body,state:body.state||'Draft',runtime:{...untrustedRuntime(body.runtime),changeImpact:impact}})),201);
+    return json(clean(await store.saveDraft(tenantId,{...body,state:'Draft',version:1,runtime:{...untrustedRuntime(body.runtime),changeImpact:impact}})),201);
   }
   if(normalized.method==='PUT'&&id&&action==='draft'){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
@@ -58,7 +58,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
       before:connectorConfigurationForImpact(clean(before)),after:connectorConfigurationForImpact(body),evidenceIds:[]
     }):before?.runtime?.changeImpact??null;
     return json(clean(await store.saveDraft(tenantId,{
-      ...body,id,state:body.state||'Draft',
+      ...body,id,state:'Draft',version:(Number(before.version)||1)+(changed?1:0),
       runtime:{...untrustedRuntime(body.runtime),...(changed?{}:{crossDomainApproval:before?.runtime?.crossDomainApproval}),changeImpact:impact}
     })));
   }
