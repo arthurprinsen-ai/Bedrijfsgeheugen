@@ -34,14 +34,28 @@ test('a browser cannot activate a connector in draft create, even with forged im
  assert.ok(rows[0].affectedDomains.includes('csrd_esrs_scope'));
  assert.equal(JSON.stringify(rows).includes('password'),false);
 });
-test('activation fails before reaching the connector or sovereignty external gateways while impact review remains open',async()=>{
+test('an open ESRS assessment does not override hard data-sovereignty denial',async()=>{
  const store=createStore();
  await handlePortalConnectorsRequest({user,store,request:req('POST','/api/connectors',{name:'Finance',source:{type:'email'},target:{type:'afas'}})});
- let called=0;
- const response=await handlePortalConnectorsRequest({user,store,request:req('POST','/api/connectors/connector-1/activate',{testExecutionId:'fake',approved:true}),engine:{activationEligibility(){called++;return {eligible:true};}},sovereignty:{assertConnectorAllowed(){called++;}}});
+ let invoked=0;
+ const response=await handlePortalConnectorsRequest({user,store,request:req('POST','/api/connectors/connector-1/activate',{testExecutionId:'fake',approved:true}),engine:{activationEligibility(){invoked++;return {eligible:true};}},sovereignty:{assertConnectorAllowed(){throw Object.assign(new Error('BLOCKED'),{code:'DATA_SOVEREIGNTY_CONNECTOR_BLOCKED',details:[]});}}});
  assert.equal(response.status,409);
- const body=await response.json();assert.equal(body.error,'CROSS_DOMAIN_REVIEW_REQUIRED');
- assert.equal(called,0);
+ assert.equal((await response.json()).error,'DATA_SOVEREIGNTY_CONNECTOR_BLOCKED');
+ assert.equal(invoked,0);
+});
+test('an independently verified connector can activate while CSRD review remains visibly pending, without claiming compliance',async()=>{
+ const store=createStore();
+ await handlePortalConnectorsRequest({user,store,request:req('POST','/api/connectors',{name:'Finance',source:{type:'email'},target:{type:'afas'},runtime:{refreshMinutes:60}})});
+ store.getExecution=async()=>({id:'e1',status:'TEST_PASSED',connector_versie:1,evidence:{configVersion:1,testExecutionId:'e1',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}});
+ store.getPlanRuntimePolicy=async()=>({planCode:'scale',refreshMinutes:60});
+ const response=await handlePortalConnectorsRequest({user,store,request:req('POST','/api/connectors/connector-1/activate',{testExecutionId:'e1',approved:true}),engine:{activationEligibility:()=>({eligible:true})},sovereignty:{assertConnectorAllowed:async()=>true}});
+ assert.equal(response.status,200);
+ const active=await response.json();
+ assert.equal(active.state,'Active');
+ assert.equal(active.runtime.impactReviewPending,true);
+ assert.equal(active.runtime.changeImpact.status,'REVIEW_REQUIRED');
+ const queue=await handlePortalConnectorsRequest({user,store,request:req('GET','/api/connectors/review-queue')});
+ assert.equal((await queue.json()).some(x=>x.reviewKind==='CROSS_DOMAIN_CHANGE'),true);
 });
 test('material edits invalidate the prior connector version; a no-op edit retains the pending review',async()=>{
  const store=createStore();
