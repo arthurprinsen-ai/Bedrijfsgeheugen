@@ -6,7 +6,7 @@ const source=readFileSync('supabase/functions/powerhouse-autonomous-outreach/ind
 const map=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
 const contract=source.match(/async function verifyRecipientAuthority\(db:any,a:any,to:string\):Promise<boolean>\{[\s\S]*?\n\}/)?.[0];
 assert.ok(contract,'CRM permission guard must exist as a bounded pure DB-check function');
-const js=contract.replace('db:any,a:any,to:string):Promise<boolean>','db,a,to)');
+const js=contract.replace('db:any,a:any,to:string):Promise<boolean>','db,a,to)').replace('(c:any)=>','(c)=>');
 const verify=new Function('s',js+'\nreturn verifyRecipientAuthority;')((v)=>String(v??'').trim());
 
 function fakeDb(rows=[],error=null){
