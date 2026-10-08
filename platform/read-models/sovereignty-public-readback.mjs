@@ -16,7 +16,14 @@ export function customerSovereigntyReadback(result){
  if(!result||typeof result!=='object'||!result.snapshot||typeof result.snapshot!=='object')return result;
  const policy=result.snapshot.policy;
  if(!policy||typeof policy!=='object'||Array.isArray(policy))return result;
- const {updated_by:_internalActor,last_change_impact:impact,...visiblePolicy}=policy;
+
+ const visiblePolicy={};
+ for(const key of [
+  'tenant_id','mode','preferred_ai_provider','preferred_ai_region',
+  'ai_deployment_profile','allow_cross_border','block_unknown_region',
+  'enforcement_mode','policy_version','updated_at'
+ ])if(Object.prototype.hasOwnProperty.call(policy,key))visiblePolicy[key]=policy[key];
+ const impact=policy.last_change_impact;
  if(impact&&impact.contract==='powerhouse-cross-domain-change-v1'){
   const review=(Array.isArray(impact.esrsReview)?impact.esrsReview:[]).map(esrsCandidate).filter(Boolean);
   visiblePolicy.last_change_impact=Object.freeze({
