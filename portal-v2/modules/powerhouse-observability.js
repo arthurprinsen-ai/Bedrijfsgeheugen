@@ -6,7 +6,7 @@ const lower=value=>String(value??'').toLowerCase();
 
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
-  ['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
+  ['live','Live uitvoering'],['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
   ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs'],['integrations','Koppelingen']
 ];
 
@@ -100,6 +100,36 @@ function deliveryView(events,observability){
   const economics=observability.economics||{};
   return `<div class="poc-grid2"><section class="poc-panel"><h4>Delivery-events</h4>${delivery.length?timeline(delivery):empty('Geen delivery-events binnen deze filters.')}</section><section class="poc-panel"><h4>Waarde & kosten</h4><div class="poc-kpis compact">${kpi('Expected value',fmtMoney(economics.expectedValue,economics.currency))}${kpi('Actual cost',fmtMoney(economics.actualCost,economics.currency))}${kpi('Realized value',fmtMoney(economics.realizedValue,economics.currency))}${kpi('Realized profit',fmtMoney(economics.realizedProfit,economics.currency))}</div><p class="poc-note">Delivery is pas terminal wanneer protected delivery, productie/provider-readback, learning/writeback en skill-projectie aantoonbaar gesloten zijn.</p></section></div>`;
 }
+function liveView(events,observability,refreshError=''){
+  const now=Date.now();
+  const groups=[
+    ['GitHub / CI',/github|pull request|commit|merge|codeql|branch protection|required check/i],
+    ['Netlify / productie',/netlify|deploy|website|production release|site release/i],
+    ['Supabase / data',/supabase|edge function|migration|database|postgres/i],
+    ['Heartbeat / Brein',/heartbeat|brain|powerhouse|obligation|reconciliation/i],
+    ['Commerciële kanalen',/email|e-mail|linkedin|instagram|post|social|lead|commerc|dm\b|sales/i],
+    ['Agents / workflows',/agent|worker|workflow|automation|autonom|orchestrat/i]
+  ];
+  const latest=events.slice().sort((a,b)=>timeMs(b.occurredAt)-timeMs(a.occurredAt));
+  const proof=event=>/verified|proven|delivered|confirmed|fulfilled/i.test(String(event?.status||''))&&timeMs(event?.occurredAt)&&now-timeMs(event.occurredAt)<=7200000;
+  const blocks=groups.map(([label,re])=>{
+    const list=latest.filter(e=>re.test([e.source,e.layer,e.title,e.rawType,e.detail].join(' ')));
+    const last=list[0],fresh=last&&timeMs(last.occurredAt)&&now-timeMs(last.occurredAt)<=7200000;
+    const lastTone=!last?'neutral':!fresh?'warn':tone(last.status,last.severity);
+    const desc=!last?'Geen onafhankelijke observatie in deze projectie':!fresh?'Waarneming ouder dan twee uur':proof(last)?'Recent terminal bewijs geregistreerd':'Recente activiteit; terminal resultaat niet bewezen';
+    return `<article class="poc-panel"><div class="poc-panelhead"><h4>${esc(label)}</h4><span class="poc-badge ${lastTone}">${esc(!last?'Onbekend':!fresh?'Niet actueel':last.status||'Waargenomen')}</span></div><p class="poc-note">${esc(desc)}</p><p><b>${esc(last?.title||'Geen event')}</b></p><small>${esc(fmtTime(last?.occurredAt))} · ${esc(last?.source||'—')}</small></article>`;
+  }).join('');
+  const blockers=latest.filter(e=>isError(e)||tone(e.status,e.severity)==='warn').slice(0,15);
+  const recent=latest.filter(e=>isDelivery(e)||/email|linkedin|instagram|social|lead|commercial|heartbeat|agent/i.test([e.layer,e.source,e.title].join(' '))).slice(0,40);
+  const eventLine=e=>`<article class="poc-error"><div>${statusBadge(e)}<b>${esc(e.title||e.rawType||'Activiteit')}</b></div><p>${esc(e.detail||e.subjectId||'Geen nadere oorzaak of actie vastgelegd.')}</p><small>${esc(fmtTime(e.occurredAt))} · ${esc(e.actor||'Onbekend')} · ${esc(e.source||'Onbekend')}${e.referenceUrl?` · <a href="${esc(e.referenceUrl)}" target="_blank" rel="noopener noreferrer">Open bronbewijs ↗</a>`:''}</small></article>`;
+  const time=observability.updatedAt||latest[0]?.occurredAt;
+  const outdated=!timeMs(time)||now-timeMs(time)>7200000;
+  return `<section class="poc-panel"><div class="poc-panelhead"><h4>POWERHOUSE ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
+  <div class="poc-grid3">${blocks}</div>
+  <div class="poc-grid2"><section class="poc-panel"><h4>Blokkades en herstel</h4>${blockers.length?blockers.map(eventLine).join(''):empty('Geen blokkades geregistreerd in deze selectie; dit bewijst niet dat alle externe systemen probleemloos draaien.')}</section>
+  <section class="poc-panel"><h4>Actuele werkstroom en bewijslinks</h4>${recent.length?recent.map(eventLine).join(''):empty('Geen actuele uitvoering in de canonieke projectie. Er worden geen werkzaamheden gesuggereerd.')}</section></div>`;
+}
+
 function overview(events,observability){
   const s=summary(events,observability);
   const errors=events.filter(isError).sort((a,b)=>timeMs(b.occurredAt)-timeMs(a.occurredAt));
@@ -255,10 +285,11 @@ function accessState(root,status,onLogin){
 }
 
 export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fetch}={}){
-  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'system-map',composio:{loading:false,data:null,error:null,polling:false,resumed:false}};
+  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'live',refreshError:'',composio:{loading:false,data:null,error:null,polling:false,resumed:false}};
   const root=document.createElement('section');root.className='poc';container.innerHTML='';container.appendChild(root);
   let securedRuntime=null;
   let destroyed=false;
+  let livePollTimer=null;
   let composioPollTimer=null;
   let composioPollCount=0;
 
@@ -267,7 +298,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     const obs=securedRuntime.observability||{};
     const all=arr(obs.events);const events=filterEvents(all,state);
     const actors=unique(all.map(e=>e.actor)),layers=unique(all.map(e=>e.layer)),sources=unique(all.map(e=>e.source));
-    root.innerHTML=`<header class="poc-head"><div><span>Powerhouse Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>Admin runtime gekoppeld</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
+    root.innerHTML=`<header class="poc-head"><div><span>Powerhouse Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>${state.refreshError?'Vernieuwen mislukt':'Beveiligde readback'}</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
       <section class="poc-filters">
         <label>Periode<select data-filter="period"><option value="today">Vandaag</option><option value="week">7 dagen</option><option value="month">30 dagen</option><option value="all">Alles</option></select></label>
         <label>Actor<select data-filter="actor"><option value="all">Alle actors</option>${actors.map(v=>`<option>${esc(v)}</option>`).join('')}</select></label>
@@ -286,7 +317,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    body.innerHTML=state.tab==='live'?liveView(all,obs,state.refreshError):state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
     if(state.tab==='integrations'){
       body.querySelector('[data-composio-refresh]')?.addEventListener('click',()=>loadComposio('status'));
       body.querySelector('[data-composio-link]')?.addEventListener('click',()=>loadComposio('create_link'));
@@ -349,11 +380,20 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     }
   }
 
-  async function refresh(){
-    root.innerHTML='<div class="poc-empty">Beveiligde Powerhouse-data laden…</div>';
-    const result=await adminRuntimeEvidence(fetchImpl);
+  async function refresh({quiet=false}={}){
+    if(!quiet)root.innerHTML='<div class="poc-empty">Beveiligde Powerhouse-data laden…</div>';
+    let result;
+    try{result=await adminRuntimeEvidence(fetchImpl);}catch{result={status:'error',runtime:null};}
     if(destroyed)return;
-    if(result.status!=='ready'){securedRuntime=null;accessState(root,result.status,()=>openAdminLogin());return;}
+    if(result.status==='unauthenticated'||result.status==='forbidden'){
+      securedRuntime=null;state.refreshError=result.status;accessState(root,result.status,()=>openAdminLogin());return;
+    }
+    if(result.status!=='ready'){
+      state.refreshError='OBSERVABILITY_READBACK_FAILED';
+      if(securedRuntime)render();else accessState(root,'error',()=>openAdminLogin());
+      return;
+    }
+    state.refreshError='';
     securedRuntime=result.runtime;render();
   }
 
@@ -361,5 +401,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
   globalThis.netlifyIdentity?.on?.('login',onAuth);
   globalThis.netlifyIdentity?.on?.('logout',onAuth);
   refresh();
-  return {render:refresh,destroy:()=>{destroyed=true;stopComposioPolling();globalThis.netlifyIdentity?.off?.('login',onAuth);globalThis.netlifyIdentity?.off?.('logout',onAuth);}};
+  // Read-only bounded polling: no chat session required, no mutation or retry storm.
+  livePollTimer=setInterval(()=>{if(!root.isConnected){clearInterval(livePollTimer);livePollTimer=null;return;}if(document.visibilityState==='hidden'||!root.closest('#portalView')?.classList.contains('open'))return;refresh({quiet:true});},30000);
+  return {render:refresh,destroy:()=>{destroyed=true;if(livePollTimer!==null)clearInterval(livePollTimer);stopComposioPolling();globalThis.netlifyIdentity?.off?.('login',onAuth);globalThis.netlifyIdentity?.off?.('logout',onAuth);}};
 }
