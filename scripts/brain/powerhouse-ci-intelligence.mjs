@@ -155,6 +155,10 @@ const baseReport = {
   sampled_runs: sample.length,
   sampled_jobs: jobRows.length,
   metrics: {
+    queue_wait_sample_count: queues.length,
+    execution_sample_count: executions.length,
+    required_queue_sample_count: requiredQueueSeconds.length,
+    required_total_sample_count: requiredTotals.length,
     queue_wait_seconds_avg: avg(queues),
     queue_wait_seconds_p95: p95(queues),
     execution_seconds_avg: avg(executions),
