@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import {customerSovereigntyReadback} from '../platform/read-models/sovereignty-public-readback.mjs';
 test('customer sees only audit-safe review fields; tenant actor and before/after remain server-side',()=>{
  const input={snapshot:{tenantId:'tenant-a',generatedAt:'2026-10-08T12:00:00Z',policy:{
-  tenant_id:'tenant-a',mode:'EU_ONLY',updated_by:'private-account@example.test',
+  tenant_id:'tenant-a',mode:'EU_ONLY',updated_by:'private-account@example.test',future_secret:'hidden-secret',
   last_change_impact:{
    contract:'powerhouse-cross-domain-change-v1',status:'REVIEW_REQUIRED',kind:'AI_MODEL',
    tenantId:'tenant-a',changeId:'private-obligation',actor:'private-identity',
@@ -19,7 +19,7 @@ test('customer sees only audit-safe review fields; tenant actor and before/after
  assert.equal(output.snapshot.policy.last_change_impact.status,'REVIEW_REQUIRED');
  assert.equal(Object.hasOwn(output.snapshot.policy,'updated_by'),false,'internal policy actor must be absent');
  assert.equal(output.snapshot.policy.last_change_impact.esrsReview[0].standard,'ESRS_E1');
- for(const leak of ['private-account','private-identity','private-obligation','old-confidential','new-confidential','internal-evidence','server']){
+ for(const leak of ['hidden-secret','private-account','private-identity','private-obligation','old-confidential','new-confidential','internal-evidence','server']){
   assert.equal(JSON.stringify(output).includes(leak),false,leak);
  }
  assert.equal(input.snapshot.policy.last_change_impact.actor,'private-identity','audit record remains untouched');
