@@ -71,3 +71,8 @@ entrypoint = "./functions/portal-state-eu/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/netlify-deploy-bridge/index.ts"
+
+[functions.powerhouse-composio-linkedin-setup]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-composio-linkedin-setup/index.ts"
