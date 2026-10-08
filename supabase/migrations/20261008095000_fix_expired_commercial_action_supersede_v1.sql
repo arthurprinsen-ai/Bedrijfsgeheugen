@@ -83,3 +83,6 @@ begin
 end;
 $function$
 
+-- Internal service-only execution: no browser or PUBLIC invocation.
+REVOKE ALL ON FUNCTION public.powerhouse_reconcile_current_commercial_action_set_v2(date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_reconcile_current_commercial_action_set_v2(date) TO service_role;
