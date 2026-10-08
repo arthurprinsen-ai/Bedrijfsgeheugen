@@ -13,3 +13,5 @@
 - Provisional state: PR checks and subsequent release readback not yet known at ledger
   creation. Customer-owned cloud, on-prem and air-gapped acceptance evidence remains
   open; requested state is not a live runtime claim.
+
+- Admission baseline (verified by exact-head workflow): `ce7d9993d274a0ee755993109cd3f667a93a2127`; machine metadata in PR #4213 matches baseline.
