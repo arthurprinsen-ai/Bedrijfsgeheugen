@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|notion|contact-webhook-not-wired|v1",
+  "obligationId": "notion-salesrobot-canonical-contact-webhook-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "Canonical Supabase CRM already contained 23,295 LinkedIn contacts, but the existing Notion sync only projected dagplan and media calendar and there was no active Notion contact webhook; a Notion DM channel label was incorrectly at risk of being treated as send eligibility.",
+  "failureModes": [
+    "No Notion contact changes in canonical CRM",
+    "Untrusted webhook or duplicate events could bypass controls",
+    "False-green SalesRobot reachability without executable subscription or eligible recipients"
+  ],
+  "prevention": [
+    "Reuse bg-notion-sync and bg_connecties without another sender",
+    "HMAC-verify raw Notion events and retrieve current Notion page",
+    "Do not create prospects, infer consent or send LinkedIn DMs from Notion labels",
+    "Keep release and external provider proofs independent"
+  ],
+  "compiler": {
+    "failure_class": "INTEGRATION",
+    "scope": "NOTION_SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_inventory": "Notion Connecties-kern 8,888; canonical Supabase bg_connecties 23,295",
+    "test_evidence": [
+      "tests/brain-notion-contact-webhook-v1.test.mjs"
+    ],
+    "provider_readback": "PENDING subscription verification and runtime deployment",
+    "external_delivery": "Not proven; no DMs sent"
+  },
+  "next_action": "Protected merge, Supabase runtime deploy/readback, verified Notion subscription and safe matched CRM test; keep SalesRobot independent."
+}
