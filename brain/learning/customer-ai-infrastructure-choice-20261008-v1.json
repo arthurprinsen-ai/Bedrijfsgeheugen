@@ -1,0 +1,16 @@
+{
+  "id": "customer-ai-infrastructure-choice-20261008-v1",
+  "fingerprint": "powerhouse|customer-ai-placement|tenant-desired-state|fail-closed|v1",
+  "source": "Customer demand for on-premise models with no offsite data transfer; portal customer-control request, 2026-10-08",
+  "existing_state": "Data Sovereignty Control Plane already exposed EU policy and limited preferred provider; but not tenant cloud/on-prem/model/RAG placement requests.",
+  "change": "Extend existing sovereignty tenant policy with audited desired AI placement; validate Netlify and Supabase inputs; fail closed on noncurrent AI or private/local connector execution; show accurate customer-facing controls.",
+  "invariant": "DESIRED != PROVISIONED != VERIFIED. No fallback, no training, no cross-provider confidential inference without evidence.",
+  "learned": "Model provenance (European/Western label) does not establish region, privacy, training terms, licenses, subprocessors or air-gap safety.",
+  "owner": "ONE BRAIN / Data Sovereignty Control Plane",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4147",
+  "tests": [
+    "tests/customer-ai-deployment-profile-v1.test.mjs",
+    "tests/data-sovereignty-control-plane.test.mjs"
+  ]
+}
