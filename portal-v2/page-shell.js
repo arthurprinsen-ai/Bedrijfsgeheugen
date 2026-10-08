@@ -5,7 +5,7 @@ import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
 import { loadRuntimeEvidence } from './runtime-evidence.js';
-import { renderCsrdImpact, impactSnapshotFromPortalState } from './csrd-impact.js';
+import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
 import { getCapabilityContract } from './capability-contracts.js';
@@ -271,6 +271,8 @@ function renderAiCapabilitiesWorkspace(native,contract,view){
   });
 }
 
+let csrdSovereigntyReadbackRevision=0;
+
 export function openPortalPage(pageId){
   if(isProtectedTrustPage(pageId)&&!hasProtectedTrustAccess())return false;
   if(typeof location!=='undefined'){
@@ -296,7 +298,26 @@ export function openPortalPage(pageId){
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
     const snapshot=impactSnapshotFromPortalState(portalStateSnapshot());
-    renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
+    const renderer=renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
+    // Same tenant-scoped Identity route as the canonical sovereignty panel.
+    // Never use a global/canonical admin scope on customer pages.
+    if(typeof window!=='undefined'&&typeof fetch==='function'){
+      const revision=++csrdSovereigntyReadbackRevision;
+      const readCustomerJson=async path=>{
+        const response=await fetch(path,{credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}});
+        if(!response.ok)throw new Error('CROSS_DOMAIN_REVIEW_READBACK_UNAVAILABLE');
+        return response.json();
+      };
+      void Promise.allSettled([
+        readCustomerJson('/api/data-sovereignty'),
+        readCustomerJson('/api/connectors/review-queue')
+      ]).then(([sovereignty,connectors])=>{
+        if(revision!==csrdSovereigntyReadbackRevision||root.dataset.pageId!=='csrd-impact'||!native.isConnected)return;
+        const readback=sovereignty.status==='fulfilled'?sovereignty.value:null;
+        const reviews=connectors.status==='fulfilled'&&Array.isArray(connectors.value)?connectors.value:[];
+        renderer?.updateSnapshot?.(withSovereigntyChangeReview(snapshot,readback,reviews));
+      }).catch(()=>{}); // Never claim that a missing provider/readback proves compliance.
+    }
   }
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}

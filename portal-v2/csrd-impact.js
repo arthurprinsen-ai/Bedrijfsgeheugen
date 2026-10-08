@@ -109,6 +109,38 @@ export function impactSnapshotFromPortalState(state={}){
   return footprint&&typeof footprint==='object'?withResourceFootprint(footprint,liveBase):liveBase;
 }
 
+// Tenant-safe, read-only projection from the existing data-sovereignty control plane.
+// Missing readback does not mean a review passed. Never infer legal CSRD scope or emissions.
+export function withSovereigntyChangeReview(snapshot,readback,connectorReviews=[]){
+  const base=structuredClone(snapshot);
+  const portfolio=readback?.snapshot?.reviewPortfolio;
+  const sovereignReview=portfolio?.contract==='powerhouse-review-portfolio-v1'&&
+    portfolio.status==='REVIEW_REQUIRED'&&Array.isArray(portfolio.tasks)
+      ?portfolio.tasks.find(x=>x?.domain==='csrd_esrs_scope'&&x.status==='NEEDS_EVIDENCE'):null;
+  // This endpoint is independently tenant-scoped by Netlify Identity and the connector store.
+  // Extraction reviews are not sustainability reviews and must not affect CSRD status.
+  const pendingConnectors=(Array.isArray(connectorReviews)?connectorReviews:[]).filter(x=>
+    x?.reviewKind==='CROSS_DOMAIN_CHANGE'&&x.status==='pending'&&
+    Array.isArray(x.affectedDomains)&&x.affectedDomains.includes('csrd_esrs_scope'));
+  if(!sovereignReview&&!pendingConnectors.length)return base;
+  const candidates=[
+    ...(Array.isArray(sovereignReview?.candidateEsrs)?sovereignReview.candidateEsrs:[]),
+    ...pendingConnectors.flatMap(x=>Array.isArray(x.esrsReview)?x.esrsReview
+      .filter(item=>item?.materiality==='UNDETERMINED'&&item?.applicability==='UNDETERMINED')
+      .map(item=>item.standard):[])
+  ];
+  const esrs=[...new Set(candidates.filter(x=>typeof x==='string'&&/^ESRS_[A-Z][0-9]$/.test(x)))].sort();
+  base.sovereigntyChangeReview=Object.freeze({
+    status:'REVIEW_REQUIRED',applicability:'UNDETERMINED',materiality:'UNDETERMINED',
+    measuredEmissions:null,candidateEsrs:Object.freeze(esrs),
+    sources:Object.freeze([
+      ...(sovereignReview?['AI_OR_DATA_LOCATION']:[]),
+      ...(pendingConnectors.length?['CONNECTOR']:[])
+    ])
+  });
+  return base;
+}
+
 export function customerSafeSnapshot(snapshot=DEFAULT_IMPACT_SNAPSHOT){ const {internal,...safe}=snapshot; return structuredClone(safe); }
 function meter(value,label,sub='van 100'){const numeric=Number(value);const score=Number.isFinite(numeric)?numeric:0;return `<div class="csrd-meter" style="--score:${score}"><div class="csrd-meter-ring"><strong>${value}</strong><span>${sub}</span></div><p>${label}</p></div>`;}
 function metricCard([id,m]){return `<article class="csrd-float metric-${id}" data-domain="${id}"><span class="csrd-metric-icon ${m.tone}">${m.icon}</span><div><small>${m.label}</small><strong>${m.value}</strong><span>${m.sub}</span></div></article>`;}
@@ -124,9 +156,18 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
   const intelligenceEvidence=!customerView&&data.resourceIntelligence?`<span>${data.resourceIntelligence.resourceRows} resourcegroepen</span><span>${data.resourceIntelligence.complianceEvidence} compliance-evidence-items</span><span>${data.resourceIntelligence.recommendations} optimalisatie-adviezen</span>`:'';
   const delta=Number.isFinite(Number(data.impactDelta))?`↑ +${data.impactDelta} t.o.v. vorig jaar`:'Nog geen bewezen trend';
   const historical=data.liveUnknown?'<p>Nog geen historische meetreeks met voldoende bewijs.</p>':sparkBars([84,65,49,37,31]);
+  const pendingReview=data.sovereigntyChangeReview?.status==='REVIEW_REQUIRED';
+  const candidateEsrs=pendingReview?data.sovereigntyChangeReview.candidateEsrs||[]:[];
+  const sovereigntyNotice=pendingReview?`<section class="csrd-panel csrd-sovereignty-review" role="status" aria-label="Openstaande CSRD-herbeoordeling">
+    <h3>AI- of datakeuze: herbeoordeling nodig</h3>
+    <p>Een wijziging in AI, koppelingen of gegevenslocatie kan invloed hebben op privacy, beveiliging, leveranciers, kosten en duurzaamheid. De gevolgen worden opnieuw beoordeeld.</p>
+    <p>CSRD/ESRS-toepasselijkheid en materialiteit zijn nog niet vastgesteld${candidateEsrs.length?'; te beoordelen onderwerpen: '+candidateEsrs.join(', '):''}. Er is geen CO₂-effect bewezen op basis van alleen deze wijziging.</p>
+    <button type="button" data-csrd-open="compliance-governance">Bekijk compliance →</button>
+  </section>`:'';
   return `<div class="csrd-cockpit" data-customer-view="${customerView}">
     <header class="csrd-top"><div><span class="csrd-kicker">CSRD & Impact</span><h2>Vandaag maken we morgen tastbaar.</h2><p>Inzicht. Actie. Impact. Voor jouw bedrijf, je mensen en de wereld.</p></div><div class="csrd-controls"><label>Bedrijf<select aria-label="Bedrijf"><option>${data.demo?'Demo MKB B.V.':'Actuele organisatie'}</option></select></label><label>Periode<select aria-label="Periode"><option>${data.period}</option></select></label><button class="csrd-outline" type="button" data-csrd-customer>${customerView?'Interne weergave':'Klantweergave'} ↗</button><button class="csrd-outline" type="button" data-csrd-benchmark>Vergelijk met sector</button><button class="csrd-outline csrd-close" type="button" data-csrd-close aria-label="Sluit CSRD dashboard">×</button></div></header>
     <nav class="csrd-tabs" aria-label="Impact domeinen">${CSRD_TABS.map(([id,label],i)=>`<button type="button" class="${i===0?'active':''}" data-csrd-tab="${id}">${label}</button>`).join('')}</nav>
+    ${sovereigntyNotice}
     ${resourceAnalyticsMarkup(data)}
     <section class="csrd-mobile-summary" aria-label="Mobiele CSRD samenvatting"><article><small>Totale impactscore</small><strong>${data.impactScore}${data.impactScore==='—'?'':'/100'}</strong><span>${delta}</span></article><article><small>CSRD readiness</small><strong>${data.readiness}${data.readiness==='—'?'':'%'}</strong><span>Evidence-gebaseerde rapportagegereedheid</span></article><article><small>Prioriteit</small><strong>${data.actions.length}</strong><span>Open resource-adviezen</span></article></section>
     <section class="csrd-stage"><aside class="csrd-score-card">${meter(data.impactScore,'Onze totale impactscore')}<div class="csrd-delta"><span>${delta}</span></div><p class="csrd-course">⌁ Alleen bewezen impact wordt als score getoond</p></aside><div class="csrd-world"><div class="csrd-sky"></div><div class="csrd-sun"></div><div class="csrd-hills"></div><div class="csrd-city"></div><div class="csrd-river"></div><div class="csrd-wind w1">✣</div><div class="csrd-wind w2">✣</div><div class="csrd-solar">▦ ▦ ▦</div><div class="csrd-building"><span>BEDRIJFSGEHEUGEN</span></div><div class="csrd-worldcopy"><strong>Je impact in één oogopslag.</strong><br><small>Van klimaat en water tot social, governance en bewijs.</small></div>${Object.entries(data.metrics).map(metricCard).join('')}<div class="csrd-orbit">PEOPLE <b>+</b> PLANET <b>+</b> PROGRESS</div></div><aside class="csrd-side"><article class="csrd-panel readiness"><div class="csrd-panelhead"><h3>CSRD Readiness</h3><span>readiness-overzicht · evidence-gebaseerd</span></div><div class="csrd-readyrow">${meter(data.readiness,'','%')}<p>Geen juridisch totaalvinkje; alleen aantoonbare dekking</p></div><ul>${readiness(data)}</ul><button type="button" data-csrd-open="audit">Bekijk details →</button></article><article class="csrd-panel"><div class="csrd-panelhead"><h3>Impact in real time</h3><span>${realtimeStatus}</span></div><div class="csrd-live">${data.realtime.map(([ic,v,s])=>`<div><i>${ic}</i><span><b>${v}</b><small>${s}</small></span></div>`).join('')}</div></article></aside></section>
@@ -140,7 +181,8 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
 export function renderCsrdImpact(root,{openPage=()=>{},closePage=()=>{},snapshot=DEFAULT_IMPACT_SNAPSHOT}={}){
   let customerView=false;
   const resourceFilters={metric:'co2eKg',days:'30',provider:'all',resourceType:'all'};
-  const visibleData=()=>customerView?customerSafeSnapshot(snapshot):snapshot;
+  let currentSnapshot=snapshot;
+  const visibleData=()=>customerView?customerSafeSnapshot(currentSnapshot):currentSnapshot;
   const bindResourceFilters=()=>{
     root.querySelectorAll('[data-resource-filter]').forEach(control=>control.addEventListener('change',()=>{
       resourceFilters[control.dataset.resourceFilter]=control.value;
@@ -154,7 +196,7 @@ export function renderCsrdImpact(root,{openPage=()=>{},closePage=()=>{},snapshot
     }));
   };
   const render=()=>{
-    root.innerHTML=csrdImpactMarkup(snapshot,{customerView});
+    root.innerHTML=csrdImpactMarkup(currentSnapshot,{customerView});
     const analytics=root.querySelector('.csrd-resource-dashboard');
     if(analytics){
       const holder=document.createElement('div');
@@ -180,4 +222,5 @@ export function renderCsrdImpact(root,{openPage=()=>{},closePage=()=>{},snapshot
     }));
   };
   render();
+  return Object.freeze({updateSnapshot(nextSnapshot){currentSnapshot=nextSnapshot;render();}});
 }
