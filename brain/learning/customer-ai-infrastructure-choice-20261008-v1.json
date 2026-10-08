@@ -30,5 +30,14 @@
     "canary": [
       "tests/brain-customer-ai-deployment-sovereignty-v1.test.mjs"
     ]
+  },
+  "root_cause": "Het bestaande soevereiniteitsportaal bood alleen grove EU- en providervoorkeuren zonder contract voor specifieke tenant-cloud/on-prem inference en gescheiden document-/RAG-regio. Een gekozen provider mag daarom niet als actieve deployment worden geïnterpreteerd.",
+  "prevention": "Eén allowlisted tenant AI-deploymentprofiel; altijd scheiding gewenst/geprovisioneerd/bewezen; verbied AI-training en stilzwijgende externe fallback; blokkeer huidige Anthropic-inferentie en onbewezen connectorroutes bij afwijkende klantkeuze; vereis Brain replay, shadow, canary en productie-readback voordat activatie mogelijk is.",
+  "evidence": {
+    "stage": "CANDIDATE_PROTECTED_DELIVERY",
+    "implementation": "platform/policy/customer-ai-deployment.mjs",
+    "runtime_guard": "netlify/functions/_data-sovereignty-client.mjs",
+    "test": "tests/brain-customer-ai-deployment-sovereignty-v1.test.mjs",
+    "provider_readback": "PENDING"
   }
 }
