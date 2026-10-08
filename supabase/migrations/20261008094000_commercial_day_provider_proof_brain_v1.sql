@@ -135,7 +135,7 @@ begin
     payload_sha256,change_id,owner,state,evidence,created_at,updated_at,version
   ) values (
     'COMMERCIAL_EXECUTION','daily-commercial-provider-proof-v1','growth-revenue-os',p_run_date::text,
-    'Europe/Amsterdam',md5('daily-commercial-provider-proof-v1:'||p_run_date::text),
+    'Europe/Amsterdam',encode(sha256(convert_to('daily-commercial-provider-proof-v1:'||p_run_date::text,'UTF8')),'hex'),
     'daily-commercial-provider-proof-v1','Powerhouse Growth & Revenue OS',
     case when v_proven then 'FULFILLED' else 'OPEN' end,
     jsonb_build_object(
@@ -154,7 +154,9 @@ begin
   do update set
     state=case when public.brain_obligations.state='FULFILLED' or excluded.state='FULFILLED'
       then 'FULFILLED' else 'OPEN' end,
-    evidence=excluded.evidence,updated_at=excluded.updated_at,
+    evidence=case when public.brain_obligations.state='FULFILLED' and excluded.state<>'FULFILLED'
+      then public.brain_obligations.evidence else excluded.evidence end,
+    updated_at=excluded.updated_at,
     version=public.brain_obligations.version+1;
 
   insert into public.bg_gezondheid(gemeten_op,onderdeel,soort,status,detail,gegevens)
