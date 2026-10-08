@@ -116,3 +116,14 @@ test('hosted previews deploy both predictive functions with custom-token authent
     assert.match(config, new RegExp(`\\[functions\\.${name}\\][\\s\\S]*?verify_jwt\\s*=\\s*false`, 'i'));
   }
 });
+
+
+test('predictive engine failure receipt awaits the Supabase write without Promise-only chaining', () => {
+  const engine = fs.readFileSync(ENGINE, 'utf8');
+  assert.doesNotMatch(
+    engine,
+    /db\.from\('bg_gezondheid'\)\.insert\([^;]+\)\.catch\(/s,
+    'Supabase query builders are thenable but do not expose Promise.catch()',
+  );
+  assert.match(engine, /try\s*\{\s*await db\.from\('bg_gezondheid'\)\.insert\(/s);
+});
