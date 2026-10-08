@@ -108,7 +108,7 @@ export function buildAutonomousEngineeringPlan({ obligationId, baseSha, candidat
 }
 
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
-export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = {} } = {}) {
+export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = {}, observedAt = null } = {}) {
   const next = { ...current };
   const decisions = [];
   const queueP95 = Number(metrics.queue_wait_seconds_p95 ?? 0);
@@ -116,7 +116,24 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const cancelled = Number(metrics.cancelled_jobs ?? 0);
   const failed = Number(metrics.failed_jobs ?? 0);
   const skipped = Number(metrics.skipped_jobs ?? 0);
-  const jobs = Math.max(1, Number(metrics.sampled_jobs ?? metrics.total_jobs ?? 1));
+  // No autonomous runtime tuning on missing or statistically thin runner evidence.
+  // A correctly skipped lane has no execution time: never count it as runner waste.
+  const sampledJobs = Number(metrics.sampled_jobs ?? metrics.total_jobs ?? 0);
+  const jobs = Math.max(1, sampledJobs);
+  const evidenceReady = Number.isInteger(sampledJobs) && sampledJobs >= 20
+    && Number(metrics.queue_wait_sample_count ?? sampledJobs) >= 10
+    && Number(metrics.execution_sample_count ?? sampledJobs) >= 10
+    && Number(metrics.required_queue_sample_count ?? 1) >= 1
+    && Number(metrics.required_total_sample_count ?? 1) >= 1
+    && ['queue_wait_seconds_p95', 'execution_seconds_p95'].every(key =>
+      typeof metrics[key] === 'number' && Number.isFinite(metrics[key]) && metrics[key] >= 0);
+  const observedTime = Date.parse(observedAt ?? '');
+  const lastChangeTime = Date.parse(current.updated_at ?? '');
+  const tuningCooldown = current.source === 'daily-autonomous-optimizer'
+    && Number.isFinite(observedTime) && Number.isFinite(lastChangeTime)
+    && observedTime >= lastChangeTime && observedTime - lastChangeTime < 30 * 60 * 60 * 1000;
+  if (!evidenceReady) decisions.push('insufficient-runner-evidence-no-runtime-tuning');
+  if (tuningCooldown) decisions.push('tuning-cooldown-collect-post-change-evidence');
   const failureRate = failed / jobs;
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
@@ -132,7 +149,7 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   const calibrationVeto = highCalibrationWarnings.length > 0;
   const runnerPressure = requiredQueueP95 > 30 || queueP95 > 120 || cancelled > 8;
   const fastGateSloBreach = requiredTotalP95 > 120;
-  const orchestrationWaste = fanoutP95 > 5 || skippedRate > 0.35 || duplicateWorkflowRuns > 0 || duplicateOpenObligations > 0;
+  const orchestrationWaste = fanoutP95 > 5 || duplicateWorkflowRuns > 0 || duplicateOpenObligations > 0;
 
   const ci = { ...(current.ci ?? {}) };
   const targetDirectPr = 2;
@@ -151,23 +168,23 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
   if (directPrWorkflowCount > priorDirectBudget) decisions.push('direct-pr-workflow-budget-regression-observed');
   if (fastGateSloBreach) decisions.push('required-fast-gate-slo-breach');
 
-  if (runnerPressure || orchestrationWaste || fastGateSloBreach) {
+  if (evidenceReady && (runnerPressure || orchestrationWaste || fastGateSloBreach)) {
     const before=Number(next.max_parallel_packages ?? 4);
     next.max_parallel_packages=clamp(before-1,2,8);
     next.candidate_batch_window_seconds=clamp(Number(next.candidate_batch_window_seconds ?? 20)+(orchestrationWaste?10:5),10,60);
     decisions.push(orchestrationWaste?'reduce-fanout-and-batch-more':'reduce-runner-pressure-and-batch-more');
-  } else if (!calibrationVeto && requiredQueueP95 < 30 && requiredTotalP95 <= 120 && queueP95 < 30 && fanoutP95 <= 5 && failureRate < 0.05 && skippedRate < 0.25) {
+  } else if (evidenceReady && !tuningCooldown && !calibrationVeto && requiredQueueP95 < 30 && requiredTotalP95 <= 120 && queueP95 < 30 && fanoutP95 <= 5 && failureRate < 0.05) {
     next.max_parallel_packages=clamp(Number(next.max_parallel_packages ?? 4)+1,2,8);
     decisions.push('increase-safe-parallelism');
   }
-  if (executionP95 > 600) {
+  if (evidenceReady && executionP95 > 600) {
     next.fast_path_target_seconds=clamp(Number(next.fast_path_target_seconds ?? 45)-5,20,90);
     decisions.push('tighten-fast-path-target');
   }
-  if (failureRate > 0.15) {
+  if (evidenceReady && failureRate > 0.15) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)+0.05,0.6,0.95);
     decisions.push('raise-speculation-confidence-threshold');
-  } else if (!calibrationVeto && failureRate < 0.03 && requiredQueueP95 < 30 && queueP95 < 60 && fanoutP95 <= 5) {
+  } else if (evidenceReady && !tuningCooldown && !calibrationVeto && failureRate < 0.03 && requiredQueueP95 < 30 && queueP95 < 60 && fanoutP95 <= 5) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)-0.02,0.6,0.95);
     decisions.push('allow-more-safe-speculation');
   }
@@ -184,6 +201,9 @@ export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = 
     retired_pr_churn_7d:retiredPrChurn,
     failure_rate:Number(failureRate.toFixed(4)),
     skipped_rate:Number(skippedRate.toFixed(4)),
+    sampled_jobs:sampledJobs,
+    evidence_ready:evidenceReady,
+    cooldown_active:tuningCooldown,
     calibration_mode:String(calibration?.mode || 'NONE'),
     calibration_high_priority_recommendations:Object.freeze(highCalibrationWarnings.map(item => String(item.id || '')).filter(Boolean))
   });
@@ -232,7 +252,7 @@ async function main(){
     ]);
     const metricsDoc=JSON.parse(metricsRaw);
     const current=JSON.parse(currentRaw);
-    const result=optimizeDailyTuning({metrics:{...metricsDoc.metrics,sampled_jobs:metricsDoc.sampled_jobs},calibration:metricsDoc.calibration || {},current});
+    const result=optimizeDailyTuning({metrics:{...metricsDoc.metrics,sampled_jobs:metricsDoc.sampled_jobs},calibration:metricsDoc.calibration || {},current,observedAt:metricsDoc.observed_at});
     const out={...result,observed_at:new Date().toISOString(),source_metrics:metricsDoc.metrics};
     await mkdir(path.join(repoRoot,'artifacts/engineering-optimizer'),{recursive:true});
     await writeFile(path.join(repoRoot,'artifacts/engineering-optimizer/latest.json'),JSON.stringify(out,null,2)+'\n');
