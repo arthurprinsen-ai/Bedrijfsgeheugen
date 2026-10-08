@@ -16,18 +16,18 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
     ],
     "shadow": [
-      "tests/portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
     ],
     "canary": [
-      "tests/portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
-      "tests/portal-ai-cross-domain-review-portfolio-v1.test.mjs"
+      "tests/brain-portal-ai-cross-domain-review-portfolio-v1.test.mjs"
     ],
     "source": [
       "portal-next/data-sovereignty-panel.js"
