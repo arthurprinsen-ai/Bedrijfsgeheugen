@@ -339,6 +339,25 @@ jobs:
             process.exitCode = 1;
           }
           NODE
+      # This is one of the two branch-protection-required jobs. Keep canonical
+      # learning validation here too: Required test/preflight is not currently
+      # a required branch protection context and must not be its sole guard.
+      - name: Require canonical learning evidence at protected admission
+        if: steps.admit.outputs.admitted == 'true'
+        run: |
+          set -euo pipefail
+          evidence=.artifacts/powerhouse-delivery-hygiene.json
+          test -s "$evidence"
+          if ! grep -q '"brain/learning/' "$evidence"; then
+            echo NO_CHANGED_BRAIN_LEARNING
+            exit 0
+          fi
+          base_sha="$(node -e "const x=require('./.artifacts/powerhouse-delivery-hygiene.json');const s=x.immutable_base_sha||'';if(!/^[0-9a-f]{40}$/.test(s))process.exit(1);process.stdout.write(s)")"
+          git fetch --no-tags --depth=1 origin "$base_sha"
+          if ! POWERHOUSE_BASE_SHA="$base_sha" POWERHOUSE_HEAD_SHA="$(git rev-parse HEAD)" node scripts/brain/learning-canonicalization-gate.mjs; then
+            node -e "const fs=require('fs');const p='.artifacts/powerhouse-delivery-hygiene.json';const x=JSON.parse(fs.readFileSync(p,'utf8'));x.state='LEARNING_CANONICALIZATION_BLOCKED';x.ok=false;x.admitted=false;fs.writeFileSync(p,JSON.stringify(x,null,2)+'\n');"
+            exit 1
+          fi
       - name: Upload admission evidence
         if: always()
         uses: actions/upload-artifact@v4
