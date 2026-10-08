@@ -28,13 +28,19 @@ export function createSupabasePortalProjectionStore({
     const data=await gateway({action:'resource_business_value',tenantId:String(tenantId)});
     return data.resourceBusinessValue||null;
   }
+  async function getEntrepreneurIntelligence(tenantId){
+    const expectedTenant=String(tenantId);
+    const data=await gateway({action:'entrepreneur_intelligence',tenantId:expectedTenant});
+    if(data?.scope?.authenticatedTenant!==expectedTenant)throw new Error('EU portal intelligence tenant scope mismatch');
+    return data;
+  }
   async function putLayer(tenantId,layer,next){
     const payload={...next,origin:layer};
     const data=await gateway({action:'put',tenantId:String(tenantId),layer,payload});
     return {stored:Boolean(data.stored),stale:Boolean(data.stale),record:data.record||payload};
   }
   return Object.freeze({
-    getLayer,getGovernance,getResourceBusinessValue,
+    getLayer,getGovernance,getResourceBusinessValue,getEntrepreneurIntelligence,
     async get(tenantId){
       const [legacy,canonical,aiGovernance,resourceBusinessValue]=await Promise.all([
         getLayer(tenantId,PORTAL_LAYERS.LEGACY),
