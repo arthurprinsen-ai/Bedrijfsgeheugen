@@ -60,7 +60,7 @@ const assertResponse=async(response,provider)=>{
  });
 };
 const validIdentifier=(v,max=100)=>typeof v==='string'&&v.length>=2&&v.length<=max&&/^[a-zA-Z0-9_-]+$/.test(v);
-const validModelId=v=>typeof v==='string'&&v.length>=2&&v.length<=120&&new RegExp('^[a-zA-Z0-9._:/-]+
+const validModelId=v=>typeof v==='string'&&v.length>=2&&v.length<=120&&new RegExp('^[a-zA-Z0-9._:/-]+$').test(v);
 export function createVerifiedCloudAdapters({fetchFn,config}={}){
  if(typeof fetchFn!=='function'||!config||typeof config!=='object')reject('RUNTIME_TRANSPORT_UNAVAILABLE');
  const registry=Object.create(null);
