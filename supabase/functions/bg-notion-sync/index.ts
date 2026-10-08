@@ -2,6 +2,7 @@
 // Dagplan parity contract: deterministic public.bg_vandaag -> exactly one Notion row per action_id for Europe/Amsterdam today.
 // Canonical identity: powerhouse_sales_actions:<action_id>. Unknown channels fail closed.
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { handleNotionContactWebhook } from './notion-contact-webhook.mjs';
 
 const BRON = 'bg-notion-sync';
 const TENANT = 'bedrijfsgeheugen';
@@ -224,6 +225,14 @@ Deno.serve(async (req: Request) => {
   let token = Deno.env.get('NOTION_TOKEN') || '';
   if (!token) { const { data } = await db.rpc('bg_geheim', { p_naam: 'Notion' }); token = (data as string) || ''; }
   if (!token) { await bewijs(false, { error: 'NOTION_TOKEN_MISSING' }, 'AUTH'); return json({ error: 'NOTION_TOKEN_MISSING' }, 500); }
+  if (new URL(req.url).searchParams.get('mode') === 'notion-contacts') {
+    try { return await handleNotionContactWebhook(req, db, token, notion); }
+    catch (e) {
+      const code = String((e as Error)?.message || e).slice(0,150);
+      await bewijs(false, { component: 'notion-contact-webhook', error: code }, 'INTEGRATION');
+      return json({ ok: false, code: 'NOTION_CONTACT_WEBHOOK_FAILED' }, 502);
+    }
+  }
   const runId = crypto.randomUUID();
   try {
     const dagplan = await syncDagplan(db, token);
