@@ -13,7 +13,8 @@ const GROUP_ICONS=Object.freeze({
 });
 
 function canonicalPages(group){
-  const pages=group.pages.map(page=>({id:page.id,label:page.label,target:page.id}));
+  // The owner-only route exists for direct bookmarked access; never advertise it in the customer navigation.
+  const pages=group.pages.filter(page=>page.id!=='powerhouse-control-center').map(page=>({id:page.id,label:page.label,target:page.id}));
   if(group.id==='overzicht'){
     pages.splice(1,0,{id:'project',label:'Jouw project',target:'hub:project'});
   }
