@@ -76,3 +76,16 @@ test('native form inventory is explicitly declaration-only and includes model/pa
  assert.ok(inventory.some(field=>field.path==='portal.dataAi.aiRiskClass'&&field.affectedPages.includes('compliance-governance')));
  assert.ok(inventory.every(field=>field.declarationOnly===true&&field.readbackStatus==='TENANT_ACK_REQUIRED'));
 });
+
+test('external source events remain visible when the direct legal inbox exists but is empty',()=>{
+ const state={portal:{regulatory:{events:[]},external:{regulatoryEvents:[{id:'external-ai',title:'AI Act update',sourceUrl:'https://eur-lex.europa.eu/'}]}}};
+ const card=buildContextualActionCards(state).find(row=>row.id==='regulation-external-ai');
+ assert.ok(card);
+ assert.equal(card.sourcePath,'portal.external.regulatoryEvents');
+ assert.ok(card.pages.includes('eu-ai-act-audit'));
+ assert.equal(card.priority,'P2');
+});
+test('duplicate direct and external source event IDs create only one customer review card',()=>{
+ const state={portal:{regulatory:{events:[{id:'r1',framework:'GDPR'}]},external:{regulatoryEvents:[{id:'r1',framework:'GDPR'}]}}};
+ assert.equal(buildContextualActionCards(state).filter(row=>row.id==='regulation-r1').length,1);
+});
