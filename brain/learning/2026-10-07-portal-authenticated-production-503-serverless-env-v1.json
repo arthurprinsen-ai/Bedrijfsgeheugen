@@ -30,7 +30,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-authenticated-production-proof.test.mjs"
+      "tests/brain-portal-authenticated-production-authority-v1.test.mjs"
     ],
     "production_before_fix": {
       "exact_main_deploy": "PROVEN",
@@ -45,6 +45,12 @@
       "exact-main Netlify production deployment",
       "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1 status PROVEN for exact commit and deploy",
       "http_status 200, tenant_scope_verified true, payload_shape_verified true, synthetic_user_cleanup DELETED"
+    ],
+    "shadow": [
+      "tests/brain-portal-authenticated-production-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-authenticated-production-authority-v1.test.mjs"
     ]
   },
   "production_claim": "withheld_until_protected_merge_exact_main_deploy_and_PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1_is_PROVEN"
