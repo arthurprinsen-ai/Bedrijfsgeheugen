@@ -1,20 +1,17 @@
-# Replay original Supabase-only terminal obligation #4134
+# Historical terminal PR #4134 — final reconciliation
 
-## Evidence
+## Verified original closure
+- Original obligation: `linkedin-cross-workspace-auth-proof-20261008-v1`.
 - Original merge: `f8c7f313be234da58326a399d45b5866ff13ca59`.
-- Original failing workflow: [#37760879023](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37760879023).
-- Historical provider: `powerhouse-composio-linkedin-setup` is ACTIVE at version 29 with runtime SHA-256 `a2adfc1aa924d7289598bb57fce55e9001af51f5cbcc178aba549af898391e31`; provider source matches original merged bytes and main.
-- Original PR now contains exact `Terminal-Supabase-Provider-Readback` metadata.
-- Registered GitHub workflow reports ACTIVE but rejects `workflow_dispatch` with HTTP 422.
+- Original [direct canonical terminal workflow](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37768018373): completed successfully, and saved `Writer-Lease-State: RELEASED` plus `Terminal-State: LIVE_BEWEZEN` to original PR.
+- Immutable artifact: `obligation-terminal-evidence-4134`, digest `sha256:521c6993abad495094bb553e7a23f2a4b1455f132cbf72ff280a1c448fe1ca1`.
+- Brain evidence: `brain_obligations` recorded `FULFILLED`, provider readback verified, active Supabase source v30 SHA-256 `81d9afb45a6a27e0117718219f18d87edcbcf13c0b986f880740f7b1b2e559db` at closure.
 
-## Recovery
-Reuse the existing canonical closure workflow via a narrowly scoped `workflow_call` invocation. The existing historical reconciler runs the replay only when a one-shot marker is newly added on protected `main` in a push, asserts PR #4134 is merged at the known immutable merge SHA and contained on that main commit, then calls the existing closure with `pr_number=4134`. No new terminal writer, deployment path, skipped gates, or direct database state changes.
+## Duplicate recovery failure
+- [Historic failed first attempt](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37760879023) remains in audit history.
+- PR #4153 introduced a one-time wrapper in Historical Terminal Reconciliation. Its [duplicate run](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37768605469) passed the source, gate, provider and projection checks but failed on `OIDC_WORKFLOW_REJECTED`. The caller workflow identity, rather than the canonical direct terminal workflow identity, was present in the GitHub OIDC claims. Do not broaden the trusted OIDC allowlist.
 
-The canonical called workflow still requires historical exact-head CI/CodeQL, active Supabase provider hash and version, main ancestry, projection where applicable, durable Brain readback and immutable artifact upload.
+## Final cleanup
+Remove the one-time marker and wrapper jobs from Historical Terminal Reconciliation, restore the existing direct `pull_request` and `workflow_dispatch` closure interface, and retain full provider/Netlify scoped-readback protection introduced by PRs #4142 and #4146. The regression test ensures the duplicate path is absent.
 
-## Acceptance
-Only declare original obligation `LIVE_BEWEZEN` after actual workflow success and database readback for the exact original `Obligation-ID: linkedin-cross-workspace-auth-proof-20261008-v1`. Keep the historic failed run unchanged as an audit trail.
-
-Current state: `PENDING_PROTECTED_DELIVERY`.
-
-The control-plane trigger budget is preserved: no new top-level workflow is introduced. The replay is activated from the existing historical reconciler only for an added marker file, then calls the canonical closure.
+The original terminal state remains `FULFILLED` irrespective of this code cleanup. Completion of cleanup requires protected CI, merge and code readback; do not report successful cleanup until verified.

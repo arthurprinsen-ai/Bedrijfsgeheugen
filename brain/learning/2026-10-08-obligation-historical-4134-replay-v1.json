@@ -14,8 +14,8 @@
     "provider_attestation_recorded_in_pr": true,
     "dispatch_failure": "GitHub API returned Workflow does not have workflow_dispatch trigger, HTTP 422"
   },
-  "intervention": "Add workflow_call to canonical closure and reuse existing Historical Terminal Reconciliation push workflow, activating one-time replay only when immutable config marker is newly added on protected main. Exact merge SHA and ancestry are verified; existing fail-closed production/Brain gates remain unchanged.",
-  "prevention": "Never add a new top-level scheduled/push workflow when the trigger ratchet is full. Reuse historical reconciliation with an addition-only marker and call the OIDC-authenticated canonical terminal writer. Maintain protected CI and immutable proof.",
+  "intervention": "Historical direct closure already succeeded before the duplicate workflow_call replay. Retire the redundant one-shot caller and restore trusted direct OIDC workflow identity; keep the canonical Supabase-only release-scope fix intact.",
+  "prevention": "Use readback of actual GitHub workflow runs, Brain FULFILLED state and immutable artifact before proposing a historical replay. Keep any reusable OIDC callers consistent with issuer workflow_ref allowlist; prevent reintroduction of one-shot markers after proven terminal closure.",
   "compiler": {
     "failure_class": "DELIVERY",
     "scope": "CI",
@@ -32,10 +32,23 @@
     ]
   },
   "closure_required": [
-    "exact-head protected CI and CodeQL",
-    "protected merge",
-    "main push replay started",
-    "canonical closure successful",
-    "Supabase Brain original obligation FULFILLED with immutable artifact"
-  ]
+    "original direct GitHub close success at run 37768018373",
+    "original Brain state FULFILLED",
+    "immutable original evidence artifact",
+    "protected merge of redundant caller removal",
+    "canonical direct OIDC identity retained"
+  ],
+  "resolution": {
+    "original_obligation_state": "FULFILLED",
+    "original_obligation_id": "linkedin-cross-workspace-auth-proof-20261008-v1",
+    "original_merge_sha": "f8c7f313be234da58326a399d45b5866ff13ca59",
+    "successful_canonical_close_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37768018373",
+    "immutable_artifact": "obligation-terminal-evidence-4134",
+    "artifact_digest": "sha256:521c6993abad495094bb553e7a23f2a4b1455f132cbf72ff280a1c448fe1ca1a",
+    "duplicate_replay_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37768605469",
+    "duplicate_failure_cause": "OIDC_WORKFLOW_REJECTED: called reusable workflow inherits historical reconciliation caller workflow_ref, not the trusted canonical close workflow identity",
+    "correction": "Restore canonical direct terminal writer trigger, retire one-shot historical replay job and marker; preserve immutable successful original evidence",
+    "audit_preservation": "Historical failed runs remain unchanged; no trust-policy relaxation, database overwrite, or fabricated green status",
+    "cleanup_validation_test": "tests/brain-obligation-historical-4134-replay.test.mjs"
+  }
 }
