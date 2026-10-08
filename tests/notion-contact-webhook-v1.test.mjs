@@ -53,3 +53,33 @@ test("unconfigured subscription fails closed without writing CRM", async()=>{
   const res=await handleNotionContactWebhook(req,db,"notion-token",async()=>{throw Error("unexpected read")});
   assert.equal(res.status,503);assert.equal(written,false);
 });
+
+test("signed Notion update mutates only a matching CRM context, never sends", async()=>{
+  const secret="secret_admin_test_only_123456789012345", event={
+    id:"22222222-2222-4222-8222-222222222222",
+    type:"page.properties_updated",
+    entity:{type:"page",id:"11111111-1111-4111-8111-111111111111"}
+  };
+  const body=JSON.stringify(event);
+  const sig="sha256="+createHmac("sha256",secret).update(body).digest("hex");
+  let savedExtra, auditWritten=false;
+  const row={sleutel:"person-1",extra:{opt_out:true},bijgewerkt_op:"2026-10-08T17:00:00Z"};
+  const db={
+    rpc:async()=>({data:secret,error:null}),
+    from:(name)=>{
+      if(name==="bg_notion_sync")return {insert:async()=>{auditWritten=true;return {error:null}}};
+      assert.equal(name,"bg_connecties");
+      return {
+        select:()=>({eq:()=>({limit:async()=>({data:[row],error:null})})}),
+        update:(change)=>{savedExtra=change.extra;return {eq:()=>({eq:()=>({select:async()=>({data:[{sleutel:"person-1"}],error:null})})})}}
+      };
+    }
+  };
+  const req=new Request("https://example.org?mode=notion-contacts",{method:"POST",headers:{"x-notion-signature":sig},body});
+  const res=await handleNotionContactWebhook(req,db,"notion-token",async()=>sample());
+  assert.equal(res.status,200);
+  assert.equal((await res.json()).sent,0);
+  assert.equal(savedExtra.opt_out,true);
+  assert.equal(savedExtra.notion_contact_context.can_send,false);
+  assert.equal(auditWritten,true);
+});
