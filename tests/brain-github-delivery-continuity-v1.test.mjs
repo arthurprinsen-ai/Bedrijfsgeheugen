@@ -28,3 +28,11 @@ test('Brain learning evaluates a real in-repository regression, not a missing or
     assert.ok(record.production_readback?.verified===true,'live claim must include verified provider readback');
   }
 });
+
+test('canonical closure workflow exposes PR number in quoted GitHub run-name for deduplication',()=>{
+  const closure=fs.readFileSync('.github/workflows/obligation-terminal-closure.yml','utf8');
+  const supervisor=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(closure,/^run-name: "Obligation Terminal Closure PR #\$\{\{ github\.event\.pull_request\.number \|\| inputs\.pr_number \}\}"$/m);
+  assert.match(supervisor,/title="Obligation Terminal Closure PR #\$number"/);
+  assert.match(supervisor,/display_title==\$title/);
+});
