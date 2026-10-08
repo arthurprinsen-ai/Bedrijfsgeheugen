@@ -249,7 +249,37 @@ Deno.serve(async(req:Request)=>{
   if(action==='data_sovereignty_get'){
     const {data,error}=await client.rpc('refresh_data_sovereignty_snapshot_v1',{p_tenant_id:tenantId});
     if(error)return json({error:'DATA_SOVEREIGNTY_READ_FAILED'},500);
-    return json({snapshot:data});
+    // The already-authenticated tenant policy is the only authority for choosing
+    // the Brain obligation. Never enumerate another tenant's obligations.
+    const impact=data?.policy?.last_change_impact;
+    if(impact?.contract!=='powerhouse-cross-domain-change-v1'||impact?.status!=='REVIEW_REQUIRED')
+      return json({snapshot:data});
+    const currentVersion=Number(data?.policy?.policy_version);
+    const prefix='sovereignty:'+tenantId+':';
+    const suffix=typeof impact?.changeId==='string'&&impact.changeId.startsWith(prefix)?impact.changeId.slice(prefix.length):'';
+    const version=/^[1-9][0-9]*$/.test(suffix)?Number(suffix):NaN;
+    const expectedChangeId=prefix+version;
+    // Unchanged policy writes may increment the policy version without changing
+    // the last material review. Follow that prior review, not a fabricated new one.
+    if(!Number.isSafeInteger(version)||version<1||!Number.isSafeInteger(currentVersion)||
+       version>currentVersion||impact?.tenantId!==tenantId||impact?.changeId!==expectedChangeId)
+      return json({snapshot:{...data,brainReview:{status:'UNVERIFIED',evidenceRequired:true,verifiedOutcome:false}}});
+    const {data:obligation,error:reviewError}=await client.from('brain_obligations')
+      .select('state,updated_at')
+      .eq('obligation_type','CROSS_DOMAIN_REVIEW')
+      .eq('capability_id','powerhouse-cross-domain-impact-v1')
+      .eq('business_entity','tenant:'+tenantId+':policy-v'+version)
+      .eq('change_id',expectedChangeId)
+      .maybeSingle();
+    if(reviewError)return json({error:'BRAIN_REVIEW_READ_FAILED'},502);
+    // A technical obligation state is not a regulatory verdict, an emissions
+    // measurement, or authorization to provision a customer-selected model.
+    const state=obligation?.state||'NOT_REGISTERED';
+    return json({snapshot:{...data,brainReview:{
+      status:state,updatedAt:obligation?.updated_at||null,
+      evidenceRequired:true,verifiedOutcome:false,
+      aiRuntimeApproved:false,csrdApplicability:'UNDETERMINED'
+    }}});
   }
 
   if(action==='data_sovereignty_policy_set'){

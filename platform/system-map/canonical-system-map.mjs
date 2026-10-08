@@ -57,7 +57,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         externalProviderOrReleaseProofRequired:true, causalClaimNeedsControlGroup:true,
         unknownIsNotGreen:true, missingSecurityReviewBlocks:true,
         noDirectProductionMutation:true, existingProtectedDeliveryRequired:true,
-        proposalsAreNotExecutedOutcomes:true
+        proposalsAreNotExecutedOutcomes:true,
+        financialValueRequiresIndependentReadback:true,
+        businessValueLinkedToEngineeringOutcome:true
       })
     }),
     Object.freeze({
