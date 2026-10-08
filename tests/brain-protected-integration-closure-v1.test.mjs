@@ -10,6 +10,7 @@ test('protected required hygiene denies material changes lacking any closure art
  assert.match(workflow,/if: steps\.admit\.outputs\.admitted == 'true'/);
  assert.match(workflow,/compileClosurePlan/);
  assert.match(workflow,/INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE/);
+ assert.match(workflow,/obligationId:evidence\.obligationId\|\|evidence\.obligation_id/,'preserve runtime-only content publication authority');
 });
 
 test('integration closure requires Brain learning, human documentation and append-only ledger for material change',()=>{

@@ -371,7 +371,7 @@ jobs:
           const closure=compileClosurePlan({
             changedPaths:evidence.changed_paths||[],
             policy,
-            obligationId:evidence.obligation_id||''
+            obligationId:evidence.obligationId||evidence.obligation_id||''
           });
           if(!closure.ready){
             evidence.state='INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE';
