@@ -1,4 +1,5 @@
 import {planCrossDomainChange} from '../regulatory/cross-domain-change-impact.mjs';
+import {connectorConfigurationForImpact,isConnectorConfigurationChanged,pendingConnectorImpactReview} from '../regulatory/connector-change-impact-gate.mjs';
 import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
 const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?secret/i;
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
@@ -8,6 +9,9 @@ function normalizedRequest(request){const rawPath=request?.path||request?.url||'
 async function requestBody(request,normalized){if(normalized.body!==undefined){if(typeof normalized.body==='string'){try{return JSON.parse(normalized.body);}catch{return {};}}return normalized.body||{};}if(typeof request?.json==='function'){try{return await request.json();}catch{return {};}}return {};}
 function executionVersion(row){return Number(row?.connector_versie??row?.connectorVersion??0);}
 function executionEvidence(row){return row?.evidence&&typeof row.evidence==='object'?row.evidence:{};}
+// Browser runtime claims may never self-approve a cross-domain review.
+const TRUSTED_RUNTIME_KEYS=new Set(['changeImpact','crossDomainApproval','activationEvidence','refreshPolicy','recoveryObligation','testEvidence','impactReviewPending']);
+const untrustedRuntime=runtime=>Object.fromEntries(Object.entries(runtime&&typeof runtime==='object'&&!Array.isArray(runtime)?runtime:{}).filter(([key])=>!TRUSTED_RUNTIME_KEYS.has(key)));
 const fingerprintPart=value=>String(value||'unknown').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'unknown';
 function recoveryFingerprint(connectorId,failedStage,errorClass){return `connector-${fingerprintPart(connectorId)}-${fingerprintPart(failedStage)}-${fingerprintPart(errorClass)}`;}
 
@@ -20,7 +24,13 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   const segments=suffix.replace(/^\//,'').split('/').filter(Boolean),id=segments[0]||null,action=segments[1]||null,subaction=segments[2]||null;
 
   if(normalized.method==='GET'&&id==='readiness'&&!action){if(!engine?.readiness)return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);return json(clean(engine.readiness));}
-  if(normalized.method==='GET'&&id==='review-queue'){if(typeof store?.listReviewQueue!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.listReviewQueue(tenantId)));}
+  if(normalized.method==='GET'&&id==='review-queue'){
+    if(typeof store?.listReviewQueue!=='function'||typeof store?.list!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
+    const existing=await store.listReviewQueue(tenantId);
+    const connectors=await store.list(tenantId);
+    const pending=(Array.isArray(connectors)?connectors:[]).map(pendingConnectorImpactReview).filter(Boolean);
+    return json(clean([...(Array.isArray(existing)?existing:[]),...pending]));
+  }
   if(normalized.method==='POST'&&id==='reviews'&&action&&subaction==='decision'){
     if(typeof store?.getReview!=='function'||typeof store?.decideReview!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     const review=await store.getReview(tenantId,action);if(!review)return json({error:'NOT_FOUND'},404);
@@ -32,8 +42,26 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='GET'&&!id){if(typeof store?.list!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.list(tenantId)));}
   if(normalized.method==='GET'&&id&&action==='executions'){if(typeof store?.listExecutions!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.listExecutions(tenantId,id)));}
   if(normalized.method==='GET'&&id&&!action){if(typeof store?.get!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const record=await store.get(tenantId,id);return record?json(clean(record)):json({error:'NOT_FOUND'},404);}
-  if(normalized.method==='POST'&&!id){if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const body=clean(await requestBody(request,normalized));const impact=planCrossDomainChange({tenantId,changeId:`connector-create:${body.id||'new'}`,kind:'CONNECTOR',actor:user.id,before:null,after:body,evidenceIds:[]});return json(clean(await store.saveDraft(tenantId,{...body,state:body.state||'Draft',runtime:{...(body.runtime||{}),changeImpact:impact}})),201);}
-  if(normalized.method==='PUT'&&id&&action==='draft'){if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const body=clean(await requestBody(request,normalized));const before=await store.get(tenantId,id);if(!before)return json({error:'NOT_FOUND'},404);const impact=planCrossDomainChange({tenantId,changeId:`connector-update:${id}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,before:clean(before),after:body,evidenceIds:[]});return json(clean(await store.saveDraft(tenantId,{...body,id,state:body.state||'Draft',runtime:{...(body.runtime||{}),changeImpact:impact}})));}
+  if(normalized.method==='POST'&&!id){
+    if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
+    const body=clean(await requestBody(request,normalized));
+    const impact=planCrossDomainChange({tenantId,changeId:`connector-create:${body.id||'new'}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,before:null,after:connectorConfigurationForImpact(body),evidenceIds:[]});
+    return json(clean(await store.saveDraft(tenantId,{...body,state:'Draft',version:1,runtime:{...untrustedRuntime(body.runtime),changeImpact:impact}})),201);
+  }
+  if(normalized.method==='PUT'&&id&&action==='draft'){
+    if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
+    const body=clean(await requestBody(request,normalized));
+    const before=await store.get(tenantId,id);if(!before)return json({error:'NOT_FOUND'},404);
+    const changed=isConnectorConfigurationChanged(before,body);
+    const impact=changed?planCrossDomainChange({
+      tenantId,changeId:`connector-update:${id}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,
+      before:connectorConfigurationForImpact(clean(before)),after:connectorConfigurationForImpact(body),evidenceIds:[]
+    }):before?.runtime?.changeImpact??null;
+    return json(clean(await store.saveDraft(tenantId,{
+      ...body,id,state:'Draft',version:(Number(before.version)||1)+(changed?1:0),
+      runtime:{...untrustedRuntime(body.runtime),...(changed?{}:{crossDomainApproval:before?.runtime?.crossDomainApproval}),changeImpact:impact}
+    })));
+  }
   if(normalized.method==='POST'&&id&&action==='test'){
     if(typeof engine?.runTest!=='function')return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
@@ -77,6 +105,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   }
   if(normalized.method==='POST'&&id&&action==='activate'){
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
+    const review=pendingConnectorImpactReview(connector);
     if(typeof sovereignty?.assertConnectorAllowed==='function'){
       try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch(error){
         if(error?.code==='DATA_SOVEREIGNTY_CONNECTOR_BLOCKED')return json({error:error.code,details:clean(error.details||[])},409);
@@ -103,7 +132,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
       return json({error:code},422);
     }
     const activationEvidence={...persistedEvidence,activatedAt:new Date().toISOString(),activatedBy:user.id};
-    return json(clean(await store.saveDraft(tenantId,{...connector,id,state:'Active',runtime:{...(connector.runtime||{}),refreshMinutes:refreshPolicy.effectiveRefreshMinutes,refreshPolicy,activationEvidence,recoveryObligation:null}})));
+    return json(clean(await store.saveDraft(tenantId,{...connector,id,state:'Active',runtime:{...(connector.runtime||{}),refreshMinutes:refreshPolicy.effectiveRefreshMinutes,refreshPolicy,activationEvidence,recoveryObligation:null,impactReviewPending:Boolean(review)}})));
   }
   if(normalized.method==='POST'&&id&&action==='pause'){
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
