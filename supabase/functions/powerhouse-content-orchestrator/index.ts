@@ -315,6 +315,19 @@ function shouldPreserveExisting(row:any, channel:string, personalSource:any) {
     && !!personalSource
     && (clean(evidence.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(evidence.invalid_candidate));
   if (personalNoGapReopen) return false;
+  // A blocked personal first-person claim with no valid personal truth source must
+  // NOT be re-decided on every loop. That infinite priority-100 retry starves
+  // independently eligible company/blog priority-99 channels. The same personal
+  // obligation remains BLOCKED, never a fake SKIP or provider-side effect.
+  // A newly proven source reopens the exact same canonical claim automatically.
+  const verifiedPersonalSource = personalSource?.evidence?.personal_truth_verified === true
+    || (personalSource?.evidence?.observational_personal_theme_verified === true
+      && personalSource?.evidence?.public_theme_source_verified === true
+      && personalSource?.evidence?.first_person_claims_present === false);
+  if (channel === 'linkedin_personal'
+      && clean(row.state) === 'blocked'
+      && clean(evidence.error) === 'PERSONAL_SOURCE_UNVERIFIED'
+      && !verifiedPersonalSource) return true;
   return COVERED_STATES.has(clean(row.state))
     || evidence.republish_forbidden === true
     || evidence.possible_provider_side_effect === true
