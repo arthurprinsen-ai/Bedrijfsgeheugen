@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
-import {fallbackEligible,publicForecastContext,parseForecastPlan,callApprovedForecastFallback} from '../_shared/predictive-approved-fallback.mjs';
+import {fallbackEligible,publicForecastContext,runValidatedApprovedFallback} from '../_shared/predictive-approved-fallback.mjs';
 
 const USE_CASE='supabase-powerhouse-predictive-first-mover-v1';
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -47,6 +47,7 @@ Deno.serve(async(req:Request)=>{
     let generationProvider='Anthropic';
     let generationModel=clean(gov.model_id);
     let fallbackReason:string|null=null;
+    let fallbackSchemaRetryCount=0;
     try{
       if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
       const ai=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:gov.model_id,max_tokens:4200,system:'Je bent de voorspellende intelligence-laag van Bedrijfsgeheugen. Vind combinaties van zwakke signalen die waarschijnlijk 7-90 dagen vóór brede marktzichtbaarheid een MKB-probleem, zoekintentie of buying trigger voorspellen. Reageer niet simpelweg op populair nieuws. Hoge marktverzadiging verlaagt first-mover waarde. Gebruik uitsluitend evidence_keys uit de input. Minimaal twee onafhankelijke signalen per forecast; category_creation alleen bij minimaal drie overtuigende signalen en duidelijke semantic whitespace. Voorspellingen zijn probabilistisch, nooit feiten. Optimaliseer voor first-mover voordeel én commerciële relevantie richting €1m gerealiseerde omzet uiterlijk 2027-09-14.',messages:[{role:'user',content:JSON.stringify(payload)}],tools:[tool],tool_choice:{type:'tool',name:'forecast_plan'}}),signal:AbortSignal.timeout(45000)});
@@ -65,8 +66,9 @@ Deno.serve(async(req:Request)=>{
       if(safeContext.signals.length<2)throw new Error('FALLBACK_PUBLIC_EVIDENCE_INSUFFICIENT');
       const composioKey=clean((await db.rpc('bg_geheim',{p_naam:'COMPOSIO_API_KEY'})).data);
       if(!composioKey)throw new Error('FALLBACK_PROVIDER_CONFIGURATION_MISSING');
-      const raw=await callApprovedForecastFallback({apiKey:composioKey,model:clean(fallbackGov.model_id),context:safeContext});
-      input=parseForecastPlan(raw,safeContext.signals.map((s:any)=>s.signal_key));
+      const validated=await runValidatedApprovedFallback({apiKey:composioKey,model:clean(fallbackGov.model_id),context:safeContext});
+      input=validated.plan;
+      fallbackSchemaRetryCount=validated.schemaRetryCount;
       generationProvider='Composio/Groq';
       generationModel=clean(fallbackGov.model_id);
       fallbackReason=String(error?.message||'').startsWith('AI_400:')?'ANTHROPIC_CREDIT_EXHAUSTED':'ANTHROPIC_PROVIDER_UNAVAILABLE';
@@ -82,11 +84,11 @@ Deno.serve(async(req:Request)=>{
       const score=Number(scoreRpc.data||0);
       const expectedBy=new Date(Date.now()+Number(f.expected_lead_days)*86400000).toISOString().slice(0,10);
       const forecastKey=`pfm:${await sha(`${f.topic_key}|${f.predicted_event}|${f.prediction_mode}|${expectedBy}`)}`;
-      const row={forecast_key:forecastKey,horizon_start:today(),horizon_end:expectedBy,expected_by:expectedBy,scope:f.scope,scope_key:f.scope_key,topic_key:f.topic_key,predicted_event:f.predicted_event,predicted_problem:f.predicted_problem,predicted_question:f.predicted_question,predicted_search_intent:f.predicted_search_intent,predicted_buying_trigger:f.predicted_buying_trigger,probability:f.probability,confidence:f.confidence,expected_lead_days:f.expected_lead_days,first_mover_score:score,strategic_fit:f.strategic_fit,revenue_potential:f.revenue_potential,signal_acceleration:f.signal_acceleration,market_saturation:f.market_saturation,whitespace_score:f.whitespace_score,prediction_mode:f.prediction_mode,evidence_signal_ids:refs.map((r:any)=>r.signal_id),evidence:{rationale:f.rationale,evidence_keys:f.evidence_keys,contract:'predictive-first-mover-intelligence-v1',generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason},status:'active',last_scored_at:new Date().toISOString(),updated_at:new Date().toISOString()};
+      const row={forecast_key:forecastKey,horizon_start:today(),horizon_end:expectedBy,expected_by:expectedBy,scope:f.scope,scope_key:f.scope_key,topic_key:f.topic_key,predicted_event:f.predicted_event,predicted_problem:f.predicted_problem,predicted_question:f.predicted_question,predicted_search_intent:f.predicted_search_intent,predicted_buying_trigger:f.predicted_buying_trigger,probability:f.probability,confidence:f.confidence,expected_lead_days:f.expected_lead_days,first_mover_score:score,strategic_fit:f.strategic_fit,revenue_potential:f.revenue_potential,signal_acceleration:f.signal_acceleration,market_saturation:f.market_saturation,whitespace_score:f.whitespace_score,prediction_mode:f.prediction_mode,evidence_signal_ids:refs.map((r:any)=>r.signal_id),evidence:{rationale:f.rationale,evidence_keys:f.evidence_keys,contract:'predictive-first-mover-intelligence-v1',generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,fallback_schema_retry_count:fallbackSchemaRetryCount},status:'active',last_scored_at:new Date().toISOString(),updated_at:new Date().toISOString()};
       const {error}=await db.from('powerhouse_forecasts').upsert(row,{onConflict:'forecast_key'}); if(error) throw error; written++;
     }
     const {data:queue}=await db.from('powerhouse_first_mover_queue').select('*').order('action_score',{ascending:false}).limit(10);
-    await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:`signals=${signals.length}; forecasts=${written}; rejected=${rejected}`,gegevens:{contract:'predictive-first-mover-intelligence-v1',generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,queue_top:(queue||[]).slice(0,5).map((q:any)=>({forecast_id:q.forecast_id,topic_key:q.topic_key,action_score:q.action_score,prediction_mode:q.prediction_mode}))}});
+    await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:`signals=${signals.length}; forecasts=${written}; rejected=${rejected}`,gegevens:{contract:'predictive-first-mover-intelligence-v1',generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,fallback_schema_retry_count:fallbackSchemaRetryCount,queue_top:(queue||[]).slice(0,5).map((q:any)=>({forecast_id:q.forecast_id,topic_key:q.topic_key,action_score:q.action_score,prediction_mode:q.prediction_mode}))}});
     return json({ok:true,signals:signals.length,forecasts_written:written,rejected,generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,queue:queue||[]});
   }catch(e:any){
     try{ await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'fout',detail:String(e?.message||e).slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1'}}); }catch{ /* Preserve the original predictive failure when receipt persistence also fails. */ }
