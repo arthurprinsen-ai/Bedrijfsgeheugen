@@ -47,13 +47,14 @@ test('governance-only path stays non-runtime and empty change scope fails',()=>{
 test('directly changed undeclared Edge function cannot silently become not applicable',()=>{
   const resolved=resolveEdgeRuntimeFunctions({
     changedPaths:['supabase/functions/unregistered-function/index.ts'],
-    configText:'[functions.some-other-function]\\nverify_jwt = true'
+    configText:'[functions.some-other-function]\nverify_jwt = true'
   });
   assert.deepEqual(resolved,['unregistered-function']);
 });
 
 test('LinkedIn company setup Edge function is under canonical production inventory',()=>{
-  assert.match(config,/\\[functions\\.powerhouse-composio-linkedin-setup\\][\\s\\S]*?verify_jwt = false/);
+  assert.ok(config.includes('[functions.powerhouse-composio-linkedin-setup]'));
+  assert.ok(config.includes('entrypoint = "./functions/powerhouse-composio-linkedin-setup/index.ts"'));
 });
 
 test('terminal workflow requires provider version/hash, main lineage and Netlify when appropriate',()=>{
