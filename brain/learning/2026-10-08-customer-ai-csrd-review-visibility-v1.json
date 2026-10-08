@@ -16,17 +16,18 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-ai-csrd-review-visibility.test.mjs"
+      "tests/brain-customer-ai-csrd-review-visibility-v1.test.mjs"
     ],
     "shadow": [
-      "tests/portal-ai-csrd-review-visibility.test.mjs"
+      "tests/brain-customer-ai-csrd-review-visibility-v1.test.mjs"
     ],
     "canary": [
-      "tests/portal-ai-csrd-review-visibility.test.mjs"
+      "tests/brain-customer-ai-csrd-review-visibility-v1.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
+      "tests/brain-customer-ai-csrd-review-visibility-v1.test.mjs",
       "tests/portal-ai-csrd-review-visibility.test.mjs"
     ],
     "source": [
