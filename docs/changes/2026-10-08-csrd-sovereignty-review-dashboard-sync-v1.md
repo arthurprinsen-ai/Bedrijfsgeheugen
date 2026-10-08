@@ -7,3 +7,7 @@ A pending CSRD/ESRS review is labeled as **not yet determined**. Candidates are 
 The page honors same-origin credentials, no-store, latest-request revision and current-page checks before presenting asynchronous data. The live Identity server determines tenant scope; the frontend does not pass a tenant id or admin scope.
 
 Coverage: tests/portal-csrd-sovereignty-review-link.test.mjs. Live release requires exact SHA Netlify readback and verified authenticated tenant review; the latter is not automatically proven by GitHub CI.
+
+## Connector review integration
+
+The same dashboard also reads `/api/connectors/review-queue` through the logged-in tenant's existing connector authority. Only pending `CROSS_DOMAIN_CHANGE` assessments that include `csrd_esrs_scope` become CSRD review notices. Extraction review, completed reviews, connector identifiers and internal audit IDs are not projected as compliance outcomes. Both readbacks run independently; missing evidence never yields a claimed legal or environmental approval.
