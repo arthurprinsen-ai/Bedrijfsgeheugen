@@ -15,6 +15,16 @@ export async function handleNotionContactWebhook(req, db, notionToken, notionReq
   if (req.method !== "POST") return response({ ok: false, code: "METHOD_NOT_ALLOWED" }, 405);
   const raw = await req.text();
   if (raw.length > 65536) return response({ ok: false, code: "PAYLOAD_TOO_LARGE" }, 413);
+  // Notion's initial subscription handshake is unsigned. It never changes CRM.
+  // Only workspace administrators can read Supabase function logs to retrieve this setup token.
+  let setup;
+  try { setup = JSON.parse(raw); } catch { setup = null; }
+  if (setup && Object.keys(setup).length === 1 &&
+      typeof setup.verification_token === "string" &&
+      /^secret_[A-Za-z0-9_-]{20,160}$/.test(setup.verification_token)) {
+    console.info("NOTION_CONTACT_WEBHOOK_SETUP_TOKEN_FOR_ADMIN:", setup.verification_token);
+    return response({ ok: true, status: "PENDING_NOTION_SUBSCRIPTION_VERIFICATION" });
+  }
   const { data: storedToken, error: vaultError } = await db.rpc("bg_geheim", { p_naam: "NOTION_WEBHOOK_VERIFICATION_TOKEN" });
   if (vaultError || typeof storedToken !== "string" || !storedToken) return response({ ok: false, code: "WEBHOOK_SUBSCRIPTION_SETUP_REQUIRED" }, 503);
   if (!await authenticNotionPayload(raw, req.headers.get("x-notion-signature"), storedToken)) {
