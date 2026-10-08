@@ -10,7 +10,7 @@ test('daily top-20 selection occurs AFTER contact-pressure and identity gates',(
   const end=sql.indexOf('), enriched as (',from);
   assert.ok(from>0 && end>from);
   const clause=sql.slice(from,end);
-  assert.doesNotMatch(clause,/s\\.revenue_rank\\s*<=\\s*20/);
+  assert.doesNotMatch(clause,/s\.revenue_rank\s*<=\s*20/);
   for(const rule of [
     "s.buying_window_score>=.30",
     "s.buying_window_confidence>=.25",
@@ -19,19 +19,19 @@ test('daily top-20 selection occurs AFTER contact-pressure and identity gates',(
     "coalesce(s.identity_conflict,false)=false",
     "coalesce(s.structural_lineage_gap,false)=false"
   ])assert.ok(clause.includes(rule),rule);
-  assert.match(clause,/order by s\\.revenue_rank asc\\s+limit 20/);
+  assert.match(clause,/order by s\.revenue_rank asc\s+limit 20/);
   assert.ok(clause.indexOf('order by s.revenue_rank asc')>clause.indexOf('s.structural_lineage_gap'));
 });
 
 test('ranked source re-selection preserves existing side-effect and authorization limits',()=>{
-  assert.match(sql,/on conflict\\(dedupe_key\\)/);
-  assert.match(sql,/where powerhouse_sales_actions\\.status in \\('suggested','prepared','waiting'\\)/);
+  assert.match(sql,/on conflict\(dedupe_key\)/);
+  assert.match(sql,/where powerhouse_sales_actions\.status in \('suggested','prepared','waiting'\)/);
   assert.match(sql,/human_approved/);
-  assert.match(sql,/when e\\.recommended_channel='email' and e\\.email_ready/);
-  assert.match(sql,/when e\\.recommended_channel='linkedin_dm' and e\\.dm_ready/);
-  assert.match(sql,/revoke execute on function public\\.powerhouse_materialize_command_center_actions_v1\\(date\\) from public, anon, authenticated/i);
-  assert.match(sql,/grant execute on function public\\.powerhouse_materialize_command_center_actions_v1\\(date\\) to service_role/i);
-  assert.doesNotMatch(sql,/cron\\.schedule|net\\.http_post|insert into public\\.powerhouse_sales_outcomes/i);
+  assert.match(sql,/when e\.recommended_channel='email' and e\.email_ready/);
+  assert.match(sql,/when e\.recommended_channel='linkedin_dm' and e\.dm_ready/);
+  assert.match(sql,/revoke execute on function public\.powerhouse_materialize_command_center_actions_v1\(date\) from public, anon, authenticated/i);
+  assert.match(sql,/grant execute on function public\.powerhouse_materialize_command_center_actions_v1\(date\) to service_role/i);
+  assert.doesNotMatch(sql,/cron\.schedule|net\.http_post|insert into public\.powerhouse_sales_outcomes/i);
 });
 
 test('regression: 20 cooling leads cannot starve lower-ranked eligible prospects',()=>{
@@ -47,12 +47,12 @@ test('regression: 20 cooling leads cannot starve lower-ranked eligible prospects
 });
 
 test('Gmail zero-output cannot masquerade as a successful commercial delivery',()=>{
-  assert.match(sender,/status:sent===0\\|\\|out\\.some\\(x=>x\\.status==='error'\\)\\?'waarschuwing':'ok'/);
+  assert.match(sender,/status:sent===0\|\|out\.some\(x=>x\.status==='error'\)\?'waarschuwing':'ok'/);
   assert.match(sender,/NO_ELIGIBLE_PREPARED_EMAIL/);
   assert.match(sender,/NO_PROVIDER_CONFIRMED_EMAIL/);
   assert.match(sender,/external_outreach_executed:sent>0/);
-  assert.match(sender,/const sent=out\\.filter\\(x=>x\\.status==='sent'\\)\\.length/);
+  assert.match(sender,/const sent=out\.filter\(x=>x\.status==='sent'\)\.length/);
   assert.match(sender,/provider_ack_verified:true/);
   assert.match(sender,/CONTACT_SUPPRESSED/);
-  assert.doesNotMatch(sender,/sent:\\s*\\(acts\\|\\|\\[\\]\\)\\.length/);
+  assert.doesNotMatch(sender,/sent:\s*\(acts\|\|\[\]\)\.length/);
 });
