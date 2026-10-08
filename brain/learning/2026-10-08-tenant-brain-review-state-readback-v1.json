@@ -1,0 +1,37 @@
+{
+  "id": "tenant-brain-review-state-readback-20261008-v1",
+  "fingerprint": "tenant-sovereignty-review-brain-status-visibility-failclosed-v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The portal receives a pending cross-domain change review but cannot tell whether its corresponding canonical Brain review obligation is open or blocked.",
+  "prevention": [
+    "Only query the Brain obligation derived from the authenticated tenant's current policy and exact prior material change ID",
+    "Expose only state and updated time, never actor, raw audit evidence or cross-tenant obligations",
+    "A Brain FULFILLED state does not prove CSRD applicability, verified emissions or runtime activation"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-sovereignty-review-readback.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-tenant-sovereignty-review-readback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-tenant-sovereignty-review-readback.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      "supabase/functions/portal-state-eu/index.ts"
+    ],
+    "tests": [
+      "tests/brain-tenant-sovereignty-review-readback.test.mjs"
+    ],
+    "outcome": "Read-only tenant-projected Brain review state added to data sovereignty snapshot; authenticated customer readback remains separately required"
+  }
+}
