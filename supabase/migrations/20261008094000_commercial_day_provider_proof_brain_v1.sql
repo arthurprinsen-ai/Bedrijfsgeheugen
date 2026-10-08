@@ -298,3 +298,6 @@ begin
   );
 end;
 $function$;
+-- Maintain the production internal-only EXECUTE boundary for both canonical functions.
+revoke execute on function public.powerhouse_commercial_output_assurance_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_commercial_heartbeat_v1(timestamptz) from public, anon, authenticated;
