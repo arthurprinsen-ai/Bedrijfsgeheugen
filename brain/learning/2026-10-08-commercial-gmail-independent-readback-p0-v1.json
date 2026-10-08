@@ -51,5 +51,21 @@
     "canary": [
       "tests/brain-commercial-independent-readback-p0-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "source_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4200",
+    "as_of_2026_10_08": {
+      "commercial_day_state": "degraded",
+      "daily_run_action_count": 15,
+      "daily_run_recommendation_count": 16,
+      "eligible_prepared_email": 0,
+      "waiting_email": 0,
+      "done_email": 0,
+      "provider_proven_publications": 2,
+      "provider_proven_recipient_email": 0
+    },
+    "source_regression": "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+    "confirmed_production_release": false
   }
 }
