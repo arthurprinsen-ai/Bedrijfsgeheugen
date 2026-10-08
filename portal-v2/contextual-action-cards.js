@@ -132,9 +132,12 @@ export function buildContextualActionCards(state={},options={}) {
       'Verbeter debiteurenproces en bereken werkkapitaalimpact met gevalideerde omzet.',FINANCE,extra));
   }
   const directEvents=get(state,'portal.regulatory.events');
-  const events=Array.isArray(directEvents)?directEvents:get(state,'portal.external.regulatoryEvents');
-  const eventSourcePath=Array.isArray(directEvents)?'portal.regulatory.events':'portal.external.regulatoryEvents';
-  if(Array.isArray(events))for(const event of events){
+  const externalEvents=get(state,'portal.external.regulatoryEvents');
+  const events=[
+    ...(Array.isArray(directEvents)?directEvents.map(event=>({event,eventSourcePath:'portal.regulatory.events'})):[]),
+    ...(Array.isArray(externalEvents)?externalEvents.map(event=>({event,eventSourcePath:'portal.external.regulatoryEvents'})):[]
+  ];
+  for(const {event,eventSourcePath} of events){
     if(!event||typeof event!=='object'||!present(event.id)&&!present(event.title))continue;
     const id=String(event.id||event.title).replace(/[^a-z0-9-]/gi,'-').slice(0,64);
     const trace=regulatoryContextTrace(event);
