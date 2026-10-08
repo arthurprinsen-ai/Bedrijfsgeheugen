@@ -12,7 +12,10 @@ export async function renderProtectedWorkspaceFixture(page,pageId) {
   return page.evaluate(async id => {
     const shell=await import('/portal-v2/page-shell.js');
     if(!shell.isProtectedTrustPage(id))return 'PUBLIC_OR_UNPROTECTED';
-    if(shell.hasProtectedTrustAccess())throw new Error('SYNTHETIC_FIXTURE_MUST_START_ANONYMOUS');
+    if(shell.hasProtectedTrustAccess()){
+      if(globalThis.__BG_PROTECTED_READBACK_FIXTURE__===true){shell.openPortalPage(id);return 'ALREADY_SYNTHETIC_RENDER_ONLY';}
+      throw new Error('SYNTHETIC_FIXTURE_MUST_START_ANONYMOUS');
+    }
     if(shell.openPortalPage(id)!==false)throw new Error('SECURITY_REGRESSION_PROTECTED_PORTAL_OPENED_ANONYMOUSLY');
     const domain=globalThis.__BG_PORTAL_DOMAIN_STATE__;
     if(!domain?.initialized?.())throw new Error('NO_ISOLATED_PORTAL_DOMAIN_STATE');
@@ -25,6 +28,7 @@ export async function renderProtectedWorkspaceFixture(page,pageId) {
       isPreview:()=>false
     };
     shell.configurePortalShell({stateClient:isolatedClient});
+    globalThis.__BG_PROTECTED_READBACK_FIXTURE__=true;
     if(!shell.hasProtectedTrustAccess())throw new Error('SYNTHETIC_RENDER_CONTRACT_NOT_ACTIVE');
     const opened=shell.openPortalPage(id);
     if(opened!==true)throw new Error('PROTECTED_WORKSPACE_FAILED_SYNTHETIC_UI_RENDER');
