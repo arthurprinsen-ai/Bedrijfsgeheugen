@@ -2,6 +2,9 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 const labelScope=v=>String(v||'').replaceAll('_',' ');
 const modeLabel={TRANSPARENT_GLOBAL:'Volledig transparant · wereldwijde routes toegestaan',EU_STORAGE:'Data-opslag binnen EU',EU_ONLY:'EU-only · verwerking en opslag binnen EU',CUSTOM:'Aangepast beleid'};
 const statusLabel=s=>s?.policySatisfied?'Binnen gekozen beleid':'Afwijking / blokkade';
+const AI_DEPLOYMENT_DEFAULTS={deploymentMode:'MANAGED_CLOUD',provider:'ANTHROPIC',modelFamily:'CURRENT',computeRegion:'AUTO',storageRegion:'AUTO',ragRegion:'SAME_AS_STORAGE',networkMode:'STANDARD',trainingUse:'PROHIBITED',allowExternalFallback:false,modelId:''};
+const options=(choices,selected)=>choices.map(([value,label])=>`<option value="${esc(value)}" ${value===selected?'selected':''}>${esc(label)}</option>`).join('');
+
 const evidenceLinks=(urls=[])=>Array.isArray(urls)&&urls.length?urls.map((u,i)=>`<a href="${esc(u)}" target="_blank" rel="noopener noreferrer">bron ${i+1}</a>`).join(' · '):'<span>geen bron gekoppeld</span>';
 const list=v=>Array.isArray(v)&&v.length?v.join(', '):'—';
 
@@ -68,6 +71,9 @@ class DataSovereigntyPanel extends HTMLElement{
  }
  render(){
   const s=this.snapshot||{},p=s.policy||{},sum=s.summary||{},viol=s.violations||[],self=this.scope==='bedrijfsgeheugen';
+  const ai={...AI_DEPLOYMENT_DEFAULTS,...(p.ai_deployment_profile||{})};
+  const placementRequested=Boolean(p.ai_deployment_profile);
+  const selectionActive=placementRequested&&ai.deploymentMode==='MANAGED_CLOUD'&&ai.provider==='ANTHROPIC'&&ai.modelFamily==='CURRENT'&&ai.computeRegion==='AUTO'&&ai.storageRegion==='AUTO'&&ai.ragRegion==='SAME_AS_STORAGE'&&ai.networkMode==='STANDARD'&&!ai.modelId;
   this.innerHTML=`<section class="dsp-shell" data-sovereignty-scope="${esc(this.scope)}">
    <header class="dsp-head"><div><span class="dsp-kicker">DATA SOVEREIGNTY CONTROL PLANE</span><h2>Waar gaat data heen?</h2><p>Live overzicht van invoer, verwerking, opslag, AI, doorgifte, koppelingen en bewijs. Onbekend blijft onbekend.</p></div>
    <div class="dsp-scope"><button type="button" data-scope="bedrijfsgeheugen" class="${self?'is-active':''}">Bedrijfsgeheugen</button><button type="button" data-scope="customer" class="${!self?'is-active':''}">Mijn organisatie</button></div></header>
@@ -79,11 +85,19 @@ class DataSovereigntyPanel extends HTMLElement{
     <article><small>Laatste herijking</small><b>${esc(s.generatedAt?new Date(s.generatedAt).toLocaleString('nl-NL'):'—')}</b></article>
    </div>
    ${!self?`<form class="dsp-policy">
-    <label>Databeleid<select name="mode"><option value="TRANSPARENT_GLOBAL" ${p.mode==='TRANSPARENT_GLOBAL'?'selected':''}>Transparant wereldwijd</option><option value="EU_STORAGE" ${p.mode==='EU_STORAGE'?'selected':''}>Opslag binnen EU</option><option value="EU_ONLY" ${p.mode==='EU_ONLY'?'selected':''}>EU-only · verwerking + opslag</option></select></label>
-    <label>Gewenste AI-route<select name="preferredAiProvider"><option value="">Huidige route</option><option value="openai_eu" ${p.preferred_ai_provider==='openai_eu'?'selected':''}>OpenAI EU</option><option value="anthropic" ${p.preferred_ai_provider==='anthropic'?'selected':''}>Anthropic huidig</option></select></label>
-    <label>Gewenste AI-regio<select name="preferredAiRegion"><option value="">Volgens provider</option><option value="EU" ${p.preferred_ai_region==='EU'?'selected':''}>Europa / EEA</option><option value="GLOBAL" ${p.preferred_ai_region==='GLOBAL'?'selected':''}>Wereldwijd</option></select></label>
-    <button type="submit">Beleid opslaan</button>
-    <small>EU-only is fail-closed. Een keuze is desired state: Bedrijfsgeheugen schakelt pas naar een provider als runtime, regio en evidence daadwerkelijk groen zijn.</small>
+    <div class="dsp-policy-title"><h3>Kies waar jouw AI draait</h3><p>Selecteer de gewenste infrastructuur, het AI-model en de opslagplaatsen. Dit is een aanvraag/beleidskeuze, geen automatische installatie.</p></div>
+    <label>Databeleid<select name="mode">${options([['TRANSPARENT_GLOBAL','Transparant wereldwijd'],['EU_STORAGE','Opslag uitsluitend in EU'],['EU_ONLY','EU-only: opslag + verwerking']],p.mode)}</select></label>
+    <label>Infrastructuur<select name="deploymentMode">${options([['MANAGED_CLOUD','Beheerde cloud AI'],['PRIVATE_CLOUD','Private cloud / eigen cloudaccount'],['ON_PREMISE','Op eigen servers / on-premise'],['AIR_GAPPED','Volledig offline / air-gapped']],ai.deploymentMode)}</select></label>
+    <label>Cloud / inferentieprovider<select name="provider">${options([['ANTHROPIC','Anthropic (huidige route)'],['AZURE_OPENAI','Microsoft Azure OpenAI'],['AWS_BEDROCK','Amazon Bedrock'],['GOOGLE_VERTEX','Google Vertex AI'],['MISTRAL_API','Mistral API'],['OLLAMA','Ollama (eigen infrastructuur)'],['VLLM','vLLM (eigen infrastructuur)']],ai.provider)}</select></label>
+    <label>Modelfamilie<select name="modelFamily">${options([['CURRENT','Huidig model'],['MISTRAL','Mistral'],['GEMMA','Gemma'],['LLAMA','Llama'],['CUSTOM','Eigen / ander model']],ai.modelFamily)}</select></label>
+    <label>Specifiek model (optioneel)<input name="modelId" type="text" maxlength="120" pattern="[a-zA-Z0-9._:/-]*" placeholder="bijvoorbeeld mistral-small" value="${esc(ai.modelId)}"></label>
+    <label>Waar wordt AI uitgevoerd?<select name="computeRegion">${options([['AUTO','Volgens provider (onbeperkt)'],['EU','Europa'],['NL','Nederland'],['DE','Duitsland'],['US','Verenigde Staten'],['LOCAL','Eigen locatie']],ai.computeRegion)}</select></label>
+    <label>Waar staan documenten en data?<select name="storageRegion">${options([['AUTO','Huidige opslagroute'],['EU','Europese opslag'],['NL','Nederland'],['DE','Duitsland'],['US','Verenigde Staten'],['LOCAL','Eigen locatie']],ai.storageRegion)}</select></label>
+    <label>Waar staat RAG / vectorindex?<select name="ragRegion">${options([['SAME_AS_STORAGE','Zelfde locatie als documenten'],['EU','Europa'],['NL','Nederland'],['DE','Duitsland'],['US','Verenigde Staten'],['LOCAL','Eigen locatie']],ai.ragRegion)}</select></label>
+    <label>Netwerkisolatie<select name="networkMode">${options([['STANDARD','Standaard verbinding'],['PRIVATE_ENDPOINT','Private endpoint / afgesloten netwerk'],['OFFLINE','Zonder internet']],ai.networkMode)}</select></label>
+    <div class="dsp-policy-assurance"><strong>Privacyvoorwaarden</strong><p>Klantgegevens mogen niet voor modeltraining worden gebruikt. Geen automatische externe fallback. Geheimen en API-sleutels worden nooit in dit formulier opgeslagen.</p><p><strong>Activatie:</strong> ${!placementRequested?'Bestaande route, nog geen afzonderlijk profiel gekozen.':selectionActive?'Bestaande Anthropic-route aangevraagd; zie runtimebewijs hieronder.':'Nieuwe AI-route gevraagd — niet geactiveerd. Gegevens worden niet stilzwijgend naar de huidige AI-provider verstuurd.'}</p></div>
+    <div class="dsp-policy-actions"><button type="submit">AI-keuze en databeleid opslaan</button><output aria-live="polite" data-save-message></output></div>
+    <small>Een gewenste locatie is geen bewezen dataresidentie. Providerconfiguratie, contracten, hosting, encryptie, verwerkers en end-to-end tests moeten eerst worden gevalideerd. Bij ontbrekend bewijs wordt verwerking geblokkeerd.</small>
    </form>`:''}
    ${viol.length?`<section class="dsp-alert"><h3>${viol.length} afwijking(en) / blokkade(s)</h3>${viol.map(v=>`<p><b>${esc(v.name||v.key)}</b> — ${esc(v.reason)}</p>`).join('')}</section>`:''}
    <section class="dsp-card"><h3>1. Dataflows — van invoer tot opslag</h3><div class="dsp-tablewrap"><table><thead><tr><th>Flow</th><th>Data</th><th>Verwerking</th><th>Opslag</th><th>Doorgifte</th><th>Bewaren</th><th>Bewijs</th></tr></thead><tbody>${flowRows(s.dataFlows)}</tbody></table></div></section>
@@ -93,13 +107,35 @@ class DataSovereigntyPanel extends HTMLElement{
    <footer class="dsp-foot">Automatisch herijkt via Brain → Heartbeat → Powerhouse → provider/connector readback. Truth policy: measured_or_evidence_backed_else_unknown.</footer>
   </section>`;
   this.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{this.scope=b.dataset.scope;this.load()}));
-  const form=this.querySelector('.dsp-policy');if(form)form.addEventListener('submit',e=>this.save(e));
+  const form=this.querySelector('.dsp-policy');
+  if(form){
+   form.addEventListener('submit',e=>this.save(e));
+   form.elements.deploymentMode?.addEventListener('change',()=>{
+    const mode=form.elements.deploymentMode.value;
+    if(['ON_PREMISE','AIR_GAPPED'].includes(mode)){
+     form.elements.provider.value='OLLAMA';
+     form.elements.computeRegion.value='LOCAL';
+     form.elements.storageRegion.value='LOCAL';
+     form.elements.ragRegion.value='SAME_AS_STORAGE';
+     form.elements.networkMode.value=mode==='AIR_GAPPED'?'OFFLINE':'STANDARD';
+    }else if(mode==='MANAGED_CLOUD'&&['OLLAMA','VLLM'].includes(form.elements.provider.value)){
+     form.elements.provider.value='ANTHROPIC';form.elements.computeRegion.value='AUTO';
+     form.elements.storageRegion.value='AUTO';form.elements.networkMode.value='STANDARD';
+    }else if(mode==='PRIVATE_CLOUD'&&form.elements.networkMode.value==='OFFLINE'){
+     form.elements.networkMode.value='PRIVATE_ENDPOINT';
+    }
+   });
+  }
  }
  async save(e){
   e.preventDefault();const form=e.currentTarget,button=form.querySelector('button');button.disabled=true;
   const fd=new FormData(form);
   try{
-   const r=await fetch('/api/data-sovereignty',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({mode:fd.get('mode'),preferredAiProvider:fd.get('preferredAiProvider'),preferredAiRegion:fd.get('preferredAiRegion')})});
+   const aiDeploymentProfile={...AI_DEPLOYMENT_DEFAULTS,
+    deploymentMode:String(fd.get('deploymentMode')),provider:String(fd.get('provider')),modelFamily:String(fd.get('modelFamily')),
+    modelId:String(fd.get('modelId')||'').trim(),computeRegion:String(fd.get('computeRegion')),storageRegion:String(fd.get('storageRegion')),
+    ragRegion:String(fd.get('ragRegion')),networkMode:String(fd.get('networkMode'))};
+   const r=await fetch('/api/data-sovereignty',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({mode:fd.get('mode'),preferredAiProvider:'',preferredAiRegion:'',aiDeploymentProfile})});
    const data=await r.json();if(!r.ok)throw new Error(data.error||'write_failed');this.snapshot=data.snapshot||data;this.render();
   }catch{button.disabled=false;button.textContent='Opslaan mislukt — opnieuw';}
  }
