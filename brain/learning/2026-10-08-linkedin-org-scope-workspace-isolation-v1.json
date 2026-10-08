@@ -1,0 +1,48 @@
+{
+  "version": "linkedin-org-scope-workspace-isolation-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "root_cause": "Distinct Composio projects and OAuth grants were treated as interchangeable by an external observer. Multiple chat LinkedIn profiles returned 403 on organization ACL while the separately bound production Composio account proved a company post. The setup create_link path could reuse a saved OAuth auth_config_id without validating its organization scopes, and a personal-only probe wrote ambiguous ACTIVE status.",
+  "evidence": {
+    "chat_connection_org_probe": "3 of 3 organization ACL calls HTTP 403 while personal profile read succeeded",
+    "production_state_account": "separate production-bound Composio account",
+    "production_linkedin_company": "2026-10-08 LIVE_PROVEN provider URN 7513894237386719236",
+    "production_blog": "2026-10-08 LIVE_PROVEN",
+    "make": "25 inventoried scenarios; one active on-demand Instagram scenario"
+  },
+  "intervention": "Scope-validate reused LinkedIn OAuth auth-config IDs before presenting a new company reconnect link. Persist company-specific capability state instead of personal-only ACTIVE, expose sanitized organization probe classification and production-bound authority origin; preserve protected actual provider writes and readback.",
+  "guardrails": [
+    "Never expose OAuth token or API key",
+    "Never swap the production-bound Composio account for an unverified chat connection",
+    "Never republish a previously proven organization post",
+    "Never bypass missing organization authorization",
+    "Never introduce a second heartbeat or social publisher",
+    "Preserve existing personal, company, Instagram and blog channel isolation"
+  ],
+  "compiler": {
+    "failure_class": "CROSS_PROJECT_AUTHORITY_CONFUSION",
+    "scope": "CAPABILITY_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-org-scope-workspace-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-org-scope-workspace-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-org-scope-workspace-isolation-v1.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "protected PR CI on exact head",
+    "Supabase Edge deployment verification",
+    "production state readback on canonical Composio account",
+    "no duplicate organization publication"
+  ],
+  "fingerprint": "linkedin-cross-workspace-org-auth-scope-observer-isolation-v1",
+  "prevention": "Every company OAuth link must require declared r_organization_admin and w_organization_social scopes on its selected auth_config; company current-state ACTIVE requires live organization ACL success on the production-bound account. Personal account ACTIVE must not satisfy company publication authority and cross-project observers must not replace provider truth."
+}
