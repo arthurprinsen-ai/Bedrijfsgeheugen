@@ -24,5 +24,21 @@
     "provider action IDs for FULFILLED",
     "regression tests"
   ],
-  "next_action": "Verify protected CI and production readback before promoting to PROVEN"
+  "next_action": "Verify protected CI and production readback before promoting to PROVEN",
+  "fingerprint": "commercial-heartbeat-safe-no-send-false-commercial-actioned-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-day-provider-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-day-provider-proof-v1.test.mjs"
+    ]
+  }
 }
