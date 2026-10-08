@@ -37,6 +37,20 @@ test('backend-only work blocks only shared and backend required suites', () => {
   assert.deepEqual(suitesFor(['platform/api/brain-gateway.mjs']), { shared:true, backend:true, portal:false, website:false, automation:false });
 });
 
+test('autonomous improvement scheduler contract and probe are backend-only delivery', () => {
+  const paths=[
+    'config/powerhouse-autonomous-improvement-runtime.json',
+    'scripts/brain/continuous-improvement/run-autonomous-improvement.mjs',
+    'tests/brain-autonomous-improvement-runtime.test.mjs',
+    'brain/learning/2026-10-08-heartbeat-schedule-contract-v1.json',
+    'docs/changes/2026-10-08-heartbeat-schedule-contract-v1.md'
+  ];
+  const suites=suitesFor(paths);
+  assert.deepEqual(suites,{shared:true,backend:true,portal:false,website:false,automation:false});
+  assert.deepEqual(suitesFor(['config/outcome-obligations.json']),{shared:true,backend:true,portal:true,website:true,automation:true});
+  assert.deepEqual(suitesFor(['portal-v2/domain-state.js']),{shared:true,backend:false,portal:true,website:false,automation:false});
+});
+
 test('CI helper scripts stay backend-only and never activate product lanes', () => {
   for (const path of [
     'scripts/ci/blog_technical_seo_gate.py',
