@@ -51,7 +51,8 @@ export async function handleTenantAiInference({request,user,tenantId,sovereignty
   const answer=await runAttestedTenantChat({
     tenantId,useCaseId:'portal-project-answer',
     profile:policy.ai_deployment_profile,policyVersion:Number(policy.policy_version),
-    signedProof:record.signedProof,key:proofKey,now,config:record.config,fetchFn,
+    signedProof:record.signedProof,key:proofKey,now,config:record.config,
+    approval:record.crossDomainApproval,registeredEndpoints:record.approvedEndpoints,fetchFn,
     request:{maxTokens:768,messages:[
       {role:'system',content:'Provide a grounded answer. Do not claim access to private documents, knowledge sources or verified results that were not provided. Do not execute actions.'},
       {role:'user',content:question}
