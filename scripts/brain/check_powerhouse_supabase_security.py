@@ -13,6 +13,13 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
+    # Original applied production statements, reconstructed byte-for-byte from the
+    # Supabase migration ledger. The preceding 20261007094500 migration already
+    # revoked browser/PUBLIC EXECUTE; CREATE OR REPLACE preserves those ACLs.
+    # Current production: anon=false, authenticated=false, service_role=true.
+    # A byte changed in either file invalidates its Git blob exception.
+    "supabase/migrations/20261008073832_fix_current_day_commercial_action_proof_v1.sql": "24e72187af36076f88ace3cb783986344517e764",
+    "supabase/migrations/20261008073907_fix_expired_commercial_action_supersede_v1.sql": "080696ca32462c1c049a5b6192969f8bb54dfca4",
     "supabase/migrations/20261007111449_correct_netlify_sovereignty_truth_v1.sql": "cb6f52905e4404f0b574e994379fada6894a2ef9",
     "supabase/migrations/20261007112233_powerhouse_end_to_end_one_heart_runtime_v2.sql": "5e78c8d2f39adb4b63a4df0b2d266ae297e0f70f",
     "supabase/migrations/20261007112514_powerhouse_autonomous_email_economics_v1.sql": "125cf7ac9f46f1a4dcb02a9becc995778a51dfdc",
