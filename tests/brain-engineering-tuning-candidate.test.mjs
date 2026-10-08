@@ -56,3 +56,17 @@ test('daily scheduled workflow must preserve retirement proof, closure artifacts
   assert.doesNotMatch(workflow,/gh pr merge[^\n]*\|\| true/);
   assert.doesNotMatch(workflow,/^  pull_request:/m);
 });
+
+test('bot-owned tuning PR starts both real immutable-head gates without approval bypass',async()=>{
+  const workflow=await readFile('.github/workflows/powerhouse-autonomous-engineering-optimizer.yml','utf8');
+  assert.match(workflow,/permissions:\n  actions: write\n  contents: write\n  pull-requests: write/);
+  assert.match(workflow,/head_sha="\$\(git rev-parse HEAD\)"/);
+  assert.match(workflow,/provider_head="\$\(gh pr view "\$url" --json headRefOid/);
+  assert.match(workflow,/EXACT_HEAD_MISMATCH/);
+  assert.match(workflow,/gh workflow run required-test\.yml --ref "\$branch"/);
+  assert.match(workflow,/gh workflow run codeql\.yml --ref "\$branch"/);
+  assert.match(workflow,/-f head_sha="\$head_sha"/);
+  assert.match(workflow,/EXACT_HEAD_REQUIRED_AND_CODEQL_DISPATCHED/);
+  assert.doesNotMatch(workflow,/approve[_ -]?workflow[_ -]?run|--force-merge|branch-protection-bypass/i);
+  assert.doesNotMatch(workflow,/^  pull_request:/m);
+});
