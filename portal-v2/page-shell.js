@@ -5,7 +5,7 @@ import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
 import { loadRuntimeEvidence } from './runtime-evidence.js';
-import { renderCsrdImpact, impactSnapshotFromPortalState } from './csrd-impact.js';
+import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
 import { renderStrategyDna } from './strategy-dna.js';
 import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
 import { getCapabilityContract } from './capability-contracts.js';
@@ -271,6 +271,8 @@ function renderAiCapabilitiesWorkspace(native,contract,view){
   });
 }
 
+let csrdSovereigntyReadbackRevision=0;
+
 export function openPortalPage(pageId){
   if(isProtectedTrustPage(pageId)&&!hasProtectedTrustAccess())return false;
   if(typeof location!=='undefined'){
@@ -296,7 +298,19 @@ export function openPortalPage(pageId){
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
     const snapshot=impactSnapshotFromPortalState(portalStateSnapshot());
-    renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
+    const renderer=renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
+    // Same tenant-scoped Identity route as the canonical sovereignty panel.
+    // Never use a global/canonical admin scope on customer pages.
+    if(typeof window!=='undefined'&&typeof fetch==='function'){
+      const revision=++csrdSovereigntyReadbackRevision;
+      void fetch('/api/data-sovereignty',{credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}})
+        .then(response=>{if(!response.ok)throw new Error('SOVEREIGNTY_READBACK_UNAVAILABLE');return response.json()})
+        .then(readback=>{
+          if(revision!==csrdSovereigntyReadbackRevision||root.dataset.pageId!=='csrd-impact'||!native.isConnected)return;
+          renderer?.updateSnapshot?.(withSovereigntyChangeReview(snapshot,readback));
+        })
+        .catch(()=>{}); // Never replace unverified evidence with a green legal conclusion.
+    }
   }
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
