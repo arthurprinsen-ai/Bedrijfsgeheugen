@@ -10,21 +10,7 @@
   "prevention_rule": "Never promote expired prior-day action through heartbeat touch/update. A daily healthy-zero state requires fresh same-day, evidence-backed non-send for genuinely eligible actions, not carryover closed rows.",
   "evaluation": {
     "historical_replay": [
-      {
-        "case": "2026-10-08 production before change",
-        "active_count": 1,
-        "expired_prior_day": true,
-        "assurance": "ZERO_OUTPUT_EXPLICITLY_JUSTIFIED",
-        "correct": false
-      },
-      {
-        "case": "2026-10-08 production after migrations and reconciliation",
-        "active_count": 0,
-        "superseded_count": 1,
-        "assurance": "DEGRADED_NO_CURRENT_DAILY_ACTION_SET",
-        "healthy": false,
-        "correct": true
-      }
+      "tests/brain-commercial-current-day-proof-regression-v1.test.mjs"
     ]
   },
   "evidence": {
