@@ -1,0 +1,50 @@
+{
+  "id": "terminal-migration-exact-identity-v1",
+  "date": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|terminal-migration|exact-version-before-name|v1",
+  "root_cause": "Post-merge terminal closure for protected merged PR #4118 failed with SUPABASE_MIGRATION_CANONICAL_IDENTITY_AMBIGUOUS when exact production-ledger migrations 20261007063438 and 20261008080905 legitimately shared the name powerhouse_identity_graph_replay_baseline_v1. Earlier supersession reconciliation chose by migration name before considering the exact version.",
+  "intervention": "Use the exact 14-digit version and name from protected-main source first, and use name-only fallback solely if the precise file is absent and the alternative name is unique. Retain explicit fail-closed errors on multiple unmatched paths. Do not change production ledger, skip terminal provider proof, or add a parallel scheduler.",
+  "evidence": {
+    "pr": 4118,
+    "merge_sha": "99013007ea1b8fe062e5c96ec3c710d760ddcfe6",
+    "failed_closure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37756633885",
+    "failure": "SUPABASE_MIGRATION_CANONICAL_IDENTITY_AMBIGUOUS:powerhouse_identity_graph_replay_baseline_v1",
+    "exact_versions": [
+      "20261007063438",
+      "20261008080905"
+    ],
+    "provider_proof_duplicate_versions": [
+      "20261008080913",
+      "20261008094000"
+    ],
+    "production_migration_ledger_mutated": false,
+    "terminal_result": "PENDING_EXACT_HEAD_REQUIRED_CODEQL_PROTECTED_MERGE_AND_NEW_CLOSURE"
+  },
+  "compiler": {
+    "failure_class": "GITHUB_TERMINAL_MIGRATION_IDENTITY_AMBIGUITY",
+    "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "success_criteria": [
+      "Protected Required and CodeQL success",
+      "Only exact-version true migration identities or a unique audited name fallback",
+      "Post-merge terminal workflow checks authoritative production ledger and never fabricates results"
+    ]
+  },
+  "prevention": "Migration authority is the exact version+name. Keep multiple applied versions with equal names eligible and test both real Identity Graph and commercial provider-proof pairs. Ambiguity on fallback remains fatal.",
+  "production_claim": "NOT_PROVEN",
+  "outcome": "SOURCE_RECOVERY_PENDING_PROTECTED_DELIVERY"
+}
