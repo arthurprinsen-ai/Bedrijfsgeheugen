@@ -2,6 +2,8 @@ import { PORTAL_PAGE_INDEX } from './page-registry.js';
 import { companyInputSchema } from './modules/company-input.js';
 import { functionalSchema } from './modules/functional-suite.js';
 import { fullCompanyInputSchema } from './modules/full-company-input.js';
+import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from './input-impact-coverage.js';
+import {appendBroaderContextualActions} from './contextual-action-rules-extended.js';
 
 // One read-only projection on the existing tenant-scoped Portal V2 state.
 // A proposal is NOT a measured risk, legal applicability ruling, executed action or euro saving.
@@ -35,7 +37,8 @@ export function inventoryPortalCustomerFields() {
   for(const page of pages)for(const field of functionalSchema(page))register(field,page);
   for(const field of companyInputSchema('profiel'))register(field,'profiel');
   for(const field of fullCompanyInputSchema())register(field,'gegevens-invullen');
-  return [...inventory.values()].sort((a,b)=>a.path.localeCompare(b.path));
+  for(const surface of SUPPLEMENTAL_PORTAL_INPUT_SURFACES)for(const path of surface.paths)register({path,label:path,type:'custom-workspace'},surface.page);
+  return [...inventory.values()].map(row=>Object.freeze({...row,...classifyPortalInputPath(row.path),writeBoundary:'PORTAL_DOMAIN_STATE_OR_WORKSPACE',readbackStatus:'TENANT_ACK_REQUIRED',declarationOnly:true})).sort((a,b)=>a.path.localeCompare(b.path));
 }
 
 const priorityOrder = {P1:1,P2:2,P3:3};
@@ -55,7 +58,7 @@ const AI=['data-ai','ai-capabilities','compliance-governance','eu-ai-act-audit',
 const LAW=['wet-regelgeving','compliance-governance','csrd-impact','due-diligence','waarde-financiering','businesscase','advies','roadmap','taken-werkstromen'];
 const FINANCE=['cijfers-maatstaven','waarde-financiering','businesscase','due-diligence','overzicht','advies','roadmap'];
 
-export function buildContextualActionCards(state={}) {
+export function buildContextualActionCards(state={},options={}) {
   const cards=[];
   const mto=get(state,'portal.people.mto');
   const score=numeric(get(state,'portal.people.mtoScore'));
@@ -132,6 +135,7 @@ export function buildContextualActionCards(state={}) {
       applies?'Bepaal getroffen processen, systemen, controls, investeringen en deadlines.':'Verifieer officiële bron, geldende datum, sector, omvang en klanttoepasselijkheid voordat maatregelen definitief worden.',LAW,
       {regulatorySource:event.sourceUrl||null,regulatoryEvidenceStatus:applies?'SOURCE_VERIFIED_REVIEW_REQUIRED':'SOURCE_REVIEW_REQUIRED'}));
   }
+  appendBroaderContextualActions(state,cards,{card,item,today:options.today||new Date().toISOString().slice(0,10)});
   return Object.freeze(cards.sort((a,b)=>(priorityOrder[a.priority]-priorityOrder[b.priority])||a.id.localeCompare(b.id)));
 }
 
