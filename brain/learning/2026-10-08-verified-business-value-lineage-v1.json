@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|self-evolving|verified-financial-value|engineering-outcome|v1",
+  "date": "2026-10-08",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "Technical optimization could be presented as financial impact on the strength of a verified delivery receipt and an arbitrary numeric revenue field; production raw outcome observations carry truth_class=realized even for not_executed.",
+  "root_cause": "The cross-domain planner lacked independent financial source/readback, unit classification, engineering-value lineage and cross-domain experiment linkage gates.",
+  "fix": "Require independent finance evidence, semantic exclusion of non-value outcome units, same-revision engineering linkage, source-record deduplication and explicit controlled-comparison outcome references. Do not rewrite immutable raw observations.",
+  "prevention": [
+    "Never sum conversion or delivery counts as revenue or monetary savings.",
+    "Financial benefit needs same-tenant revision-bound independent finance readback and EUR value proof.",
+    "Attribution to engineering must link to an actual verified engineering outcome.",
+    "Control comparisons must reference the same financially verified business and engineering outcome IDs and assignment readback.",
+    "Missing economics or cohort proof must remain NOT_PROVEN; protected delivery remains sole production authority."
+  ],
+  "evidence": {
+    "code": "brain/self-improvement/cross-domain-evolution.mjs",
+    "tests": "tests/brain-self-evolving-business-engineering-os-v1.test.mjs",
+    "skill": ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "outcome": "Candidate guardrail only; real financial value not yet independently verified and production adoption not yet demonstrated.",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-self-evolving-business-engineering-os-v1.test.mjs"
+    ],
+    "invariants": [
+      "no revenue from not_executed or sent",
+      "finance source deduped",
+      "same tenant and revision",
+      "linked engineering and business outcomes",
+      "verified cohort assignment",
+      "no direct production mutation"
+    ],
+    "shadow": [
+      "tests/brain-self-evolving-business-engineering-os-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-self-evolving-business-engineering-os-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "ENGINEERING_BUSINESS_VALUE_ATTRIBUTION_GAP",
+    "scope": "INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
