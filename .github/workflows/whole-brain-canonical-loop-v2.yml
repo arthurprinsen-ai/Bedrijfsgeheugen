@@ -11,7 +11,6 @@ on:
 
 permissions:
   contents: read
-
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -25,6 +24,8 @@ jobs:
         run: node --test tests/whole-brain-canonical-loop-v2.test.mjs
       - name: Powerhouse shared lifecycle and idempotency contract
         run: node --test tools/powerhouse/one-loop-contract.test.mjs
+      - name: Powerhouse Infinity production operating loop
+        run: node --test tests/powerhouse-infinity-operating-loop-v1.test.mjs
       - name: One-loop scheduler and terminal-lineage regression
         run: node --test tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs
       - name: Canonical Business Graph
@@ -53,3 +54,4 @@ jobs:
         run: node --test tests/brain-platform-adapters.test.mjs
       - name: Daily compound learning regression
         run: node --test tests/brain-powerhouse-daily-compound-learning-v1.test.mjs
+
