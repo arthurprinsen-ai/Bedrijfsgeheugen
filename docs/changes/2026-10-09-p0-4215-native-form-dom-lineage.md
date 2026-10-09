@@ -15,3 +15,6 @@ This is **DOM output contract**, not a completed authenticated browser sweep of 
 
 ## Security admission correction
 GitHub Advanced Security reported PR #4242 CodeQL high finding 203 on the **test-only** regex `/<script>/`: uppercase variants were not matched. The test no longer pretends the regexp is an HTML sanitizer; it positively asserts `Unsafe &lt;script&gt;` output from the existing escaped renderer. No production HTML filtering was relaxed. This must pass a newly generated exact-head CodeQL check before protected merge.
+
+## Distinguishing provenance from verified customer readback
+Native fields now also carry `data-field-lineage="DECLARATION_ONLY"` when the schema has a path and `data-field-lineage="UNMAPPED"` when absent. Neither indicates that a real tenant persisted the value, that Brain processed it, or that impacted cards/roadmap were read back. Runtime/browser QA can inspect this attribute without misclassifying source declarations as verified client evidence.
