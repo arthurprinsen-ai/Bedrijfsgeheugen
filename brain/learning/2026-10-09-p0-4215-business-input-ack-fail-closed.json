@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|portal|http-200-canonical-businessinput-incomplete-ack-v1",
+  "obligationId": "p0-4215-canonical-businessinput-ack-failclosed-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "portal-v2/business-input-store.js plus existing platform/api/portal-business-input-handler.mjs",
+  "root_causes": [
+    "Browser business input saver treated HTTP 200 as authoritative persistence while server can return stored:false and stale:true.",
+    "Portal projection could be written after an incomplete upstream canonical BusinessInput or Brain receipt."
+  ],
+  "prevention": [
+    "Require affirmative canonical, Powerhouse and organism impact ACK with non-stale projection before continuing.",
+    "Keep existing fail-closed API and ONE BRAIN authority; never add parallel local browser stores.",
+    "Retain P0 #4215 pending true authorized two-tenant production customer proof."
+  ],
+  "tests": [
+    "portal-v2/tests/portal-business-input-persistence.test.mjs",
+    "tests/portal-business-input.test.mjs",
+    "tests/portal-business-input-powerhouse-feed.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CANONICAL_PORTAL_INPUT_FALSE_SUCCESS",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "exact-head Required and CodeQL",
+    "exact-main Netlify deployed SHA plus readback",
+    "two genuinely authorized tenant sessions: write→Brain receipt→impact/roadmap and persisted reload",
+    "200 fields, 1000 observations, >750KB durable split/ACK, isolation, retry/revocation",
+    "customer-specific lawful CSRD/ESRS applicability evidence"
+  ]
+}
