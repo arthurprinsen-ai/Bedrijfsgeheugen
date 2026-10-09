@@ -88,3 +88,16 @@ Visible identity alone is not sufficient for Mira. For a Mira Reel, also require
 7. **Terminal evidence**: exact asset proof + Instagram published media id/permalink + canonical writeback are required.
 
 Fingerprint: `mira-human-problem-fresh-openart-reel-v1`.
+
+
+## Eén Mira, één werkelijk mastergezicht — verplicht vanaf 9 oktober 2026 (v2)
+
+- De enige officiële referentie is de reeds bestaande fictieve OpenArt-master `Yjqu4D7v76HABNPmQPj1` met exacte originele URL zoals vastgelegd in `config/instagram-canonical-mira-identity-v1.json`.
+- **Productie**, niet alleen de prompt: OpenArt image2image met deze master als `visualReferences`-input voor een nieuwe, scènepassende still → OpenArt image2video met die nieuwe still als `startFrame`. Ongerefereerde `text2video` maakt mogelijk een andere vrouw en is verboden. Een originele nieuwe Reel blijft vereist; oude video nooit dupliceren.
+- **Controle van echte pixels**: de actieve `powerhouse-instagram-media-verifier` vergelijkt de masterfoto visueel naast het exacte geproduceerde beeld, niet alleen labels, uiterlijkomschrijving of aangeleverde OpenArt-ID. `canonical_identity_match=true`, `canonical_master_reference_id=Yjqu4D7v76HABNPmQPj1` en minimaal 0.94 identiteitsscore zijn verplicht.
+- **Video**: start, midden en einde moeten elk met dezelfde master vergeleken en goedgekeurd zijn, plus de bestaande temporele continuïteitscontrole. Een afwijkend gezicht of onzekerheid in één frame is FAIL, ook bij de juiste bestandsnaam.
+- **Publicatie**: bestaande media-router, content-orchestrator, centrale social publisher en bestaande Supabase-trigger moeten deze identiteit sluiten vóór providercalls; geen derdepartijbypass, parallelle executor of vervanging van master.
+- **Vaste kenmerken**: dezelfde herkenbare gezichtsvorm, ogen, neus, mond, huidskleur, kapsel/kleur en leeftijdsindruk. Andere kleding, emoties, houding, locatie en belichting mogen, zolang Mira onmiddellijk als dezelfde persoon herkenbaar blijft.
+- **Resultaatbewijs**: alleen een geslaagde visuele referentievergelijking plus exacte finale media-SHA en provider readback is publiceerbaar. Een ingestelde referentie-ID of 'Mira' in de prompt is nooit voldoende.
+
+Fingerprint: `mira-openart-master-face-visual-consistency-v2`. Negatieve regressie: `tests/brain-mira-canonical-face-v2.test.mjs`.
