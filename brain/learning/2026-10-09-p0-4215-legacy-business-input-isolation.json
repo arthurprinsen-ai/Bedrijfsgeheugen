@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|portal|legacy-cross-tenant-business-input-migration",
+  "obligationId": "p0-4215-legacy-business-input-tenant-20261009-v1",
+  "date": "2026-10-09",
+  "status": "PENDING_PROTECTED_RELEASE",
+  "compiler": {
+    "failure_class": "PORTAL_LEGACY_CROSS_TENANT_BUSINESS_INPUT_WRITE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_causes": [
+    "Legacy BusinessInput reader scanned all cached customer keys and migrated them under current authorization.",
+    "Portal initialization migrated if any cached tenant existed rather than requiring an exact authenticated current-user key."
+  ],
+  "prevention": [
+    "Reuse canonical readLegacyPortalStateForUser exact key.",
+    "Never create a BusinessInput without an explicit matching current user and valid authorization.",
+    "Regression replay for two cached customers, missing matching user and missing bearer."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-legacy-business-input-tenant-isolation-v1.test.mjs",
+    "tests/portal-business-input.test.mjs",
+    "portal-v2/tests/domain-state.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-legacy-business-input-tenant-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-legacy-business-input-tenant-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-legacy-business-input-tenant-isolation-v1.test.mjs"
+    ]
+  },
+  "closureRequired": [
+    "Required, CodeQL, merge, exact source deployment and production browser readback",
+    "Authenticated two tenant durable client records with Brain consumer readback",
+    "Official tenant-specific CSRD/ESRS source review"
+  ]
+}

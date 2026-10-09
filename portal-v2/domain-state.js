@@ -102,10 +102,10 @@ function asAnswers(value){
  return {value:clone(value)};
 }
 
-function hasLegacyBusinessInputStorage(storage){
- if(!storage||typeof storage.length!=='number')return false;
- for(let index=0;index<storage.length;index+=1){const key=storage.key(index);if(key?.startsWith('bg_portaal_')&&!['bg_portaal_open','bg_portaal_lead'].includes(key))return true;}
- return false;
+function hasLegacyBusinessInputStorage(storage,user){
+ // Check only the caller's exact legacy key; never use another cached
+ // customer's data to trigger migration or Brain submission.
+ return Boolean(readLegacyPortalStateForUser(storage,user));
 }
 
 export function createPortalDomainState(stateClient,{businessInputSaver=null,businessInputStoreLoader=defaultBusinessInputStoreLoader,legacyStorage=globalThis.localStorage}={}){
@@ -145,10 +145,10 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    result=await domain.flush();
    browserLegacyLiftPending=false;
   }
-  if(stateClient.isDemo?.()||!hasLegacyBusinessInputStorage(legacyStorage))return result;
+  if(stateClient.isDemo?.()||!hasLegacyBusinessInputStorage(legacyStorage,stateClient.currentUser?.()))return result;
   const reader=(await loadBusinessInputStore())?.readLegacyPortalBusinessInputs;
   if(typeof reader!=='function')throw new TypeError('PORTAL_LEGACY_BUSINESS_INPUT_READER_REQUIRED');
-  for(const input of reader(legacyStorage))await saveBusinessInput(input);
+  for(const input of reader(legacyStorage,stateClient.currentUser?.()))await saveBusinessInput(input);
   return result;
  }
  function init(){if(activeInit)return activeInit;activeInit=performInit().finally(()=>{activeInit=null});return activeInit;}
