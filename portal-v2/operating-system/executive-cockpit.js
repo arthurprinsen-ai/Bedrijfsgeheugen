@@ -10,7 +10,7 @@ const pct=value=>value==null?'—':`${Math.round(value)}%`;
 // tenant-scoped outcome envelopes. A projection is not proof of realization.
 const provenOutcome=item=>{
  const terminal=String(item?.verification_status||item?.status||'').toUpperCase();
- return ['VERIFIED','OUTCOME_VERIFIED','PROVIDER_VERIFIED'].includes(terminal)
+ return ['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(terminal)
   && item?.evidence_health?.status==='healthy'
   && Array.isArray(item?.source_refs)&&item.source_refs.length>0;
 };
