@@ -1,0 +1,12 @@
+# Canonical scan Edge configuration parity
+- Date: 2026-10-09
+- Obligation-ID: scan-edge-prod-config-parity-20261009-v1
+- Delivery-Lane: backend
+- Candidate-Type: recovery
+- Parent-P0: #4198
+- Base-SHA: eccf6bac75d53cc11c9d792356e756843932d994
+- Fingerprint: powerhouse|scan-edge|production-attestation-declaration|v1
+- Observation: production Edge already active v12; postmerge authoritative workflow failed undeclared scan function.
+- Repair: register existing function in supabase/config.toml only. Do not create a parallel producer or change service auth.
+- Evidence: regression tests and production attestation to be verified separately.
+- Writer-Lease-State: CANDIDATE_WRITING
