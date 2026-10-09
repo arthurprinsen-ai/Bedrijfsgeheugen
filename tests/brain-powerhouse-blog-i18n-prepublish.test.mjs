@@ -88,5 +88,5 @@ test('publisher extracts cache only after all canonical SEO transformations', ()
   assert.match(publisher,/--prepare-i18n-cache="powerhouse-blog-\$DATE\.json"/);
   assert.match(publisher,/STATIC_I18N_REQUIRE_CACHE=1/);
   assert.match(publisher,/steps\.i18n\.outcome == 'success'/);
-  assert.match(gate,/node --test tests\/delivery-powerhouse-blog-i18n-prepublish\.test\.mjs/);
+  assert.match(gate,/node --test tests\/brain-powerhouse-blog-i18n-prepublish\.test\.mjs/);
 });
