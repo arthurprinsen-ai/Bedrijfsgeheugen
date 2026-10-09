@@ -80,6 +80,13 @@
       "publication_channel": "blog",
       "company_linkedin_state": "blocked_provider_scope",
       "company_linkedin_blocker": "r_organization_admin scope missing; do not reroute to personal LinkedIn"
+    },
+    "2026-10-09": {
+      "date": "2026-10-09",
+      "content_id": "blog:onprijsd-probleem-bedrijfsvoering",
+      "slug": "onprijsd-probleem-bedrijfsvoering",
+      "state": "selected",
+      "selected_at": "2026-10-09T10:06:10.948Z"
     }
   }
 }
