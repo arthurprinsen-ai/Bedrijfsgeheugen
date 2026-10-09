@@ -259,7 +259,11 @@ jobs:
             verified_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$release")"
             verified_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$release")"
             expected_id="$(printf '%s' "$preview_url" | sed -nE 's#^https://([a-f0-9]{24})--bedrijfsgeheugen\.netlify\.app$#\1#p')"
-            if [ "$verified_sha" = "$pr_head_sha" ] && [ -n "$expected_id" ] && [ "$verified_id" = "$expected_id" ]; then
+            if [ -n "$release" ]; then
+              if [ "$verified_sha" != "$pr_head_sha" ] || [ -z "$expected_id" ] || [ "$verified_id" != "$expected_id" ]; then
+                echo "::error::Immutable PR preview SHA/deploy identity mismatch; no visual baseline can be accepted."
+                exit 1
+              fi
               PRODUCTION_URL="$preview_url" VISUAL_CAPTURE_PATH=artifacts/visual-baseline-pr/portal-v2-canvassen.png \
                 npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
               test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
