@@ -100,6 +100,9 @@ jobs:
         run: |
           node tools/ci/p0-4215-portal-input-coverage-matrix.mjs
           node --test tests/brain-p0-4215-input-surface-coverage-v1.test.mjs
+      - name: Guard P0 4215 tenant isolation and 200-field 1000-observation stress
+        run: |
+          node --test tests/brain-p0-4215-input-stress-isolation-v1.test.mjs
       - name: Preserve P0 4215 input coverage evidence
         if: always()
         uses: actions/upload-artifact@v4
