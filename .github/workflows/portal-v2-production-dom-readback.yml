@@ -6,6 +6,11 @@ on:
     paths:
       - 'portal-v2/**'
   workflow_dispatch:
+    inputs:
+      approved_pr_number:
+        description: 'Merged Portal V2 PR whose exact approved head must be visually compared with current production'
+        type: string
+        required: true
 
 concurrency:
   group: portal-v2-production-dom-readback-${{ github.event.pull_request.number || github.ref }}
@@ -48,6 +53,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          APPROVED_PR_NUMBER: ${{ inputs.approved_pr_number }}
         run: |
           set -euo pipefail
           visual_required=true
@@ -55,6 +61,27 @@ jobs:
           if [ "$EVENT_NAME" = "push" ]; then
             pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls")"
             resolved_pr="$(jq -r '[.[] | select(.merged_at != null)] | first | .number // empty' <<<"$pr_json")"
+          fi
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            if [[ ! "$APPROVED_PR_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+              echo "::error::An exact merged approved_pr_number is required for manual production visual readback."
+              exit 1
+            fi
+            resolved_pr="$APPROVED_PR_NUMBER"
+            meta="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/pulls/${resolved_pr}")"
+            merged_at="$(jq -r '.merged_at // empty' <<<"$meta")"
+            merge_sha="$(jq -r '.merge_commit_sha // empty' <<<"$meta")"
+            if [ -z "$merged_at" ] || [[ ! "$merge_sha" =~ ^[a-f0-9]{40}$ ]]; then
+              echo "::error::Manual visual baseline must derive from an already protected-merged PR."
+              exit 1
+            fi
+            comparison="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/compare/${merge_sha}...${GITHUB_SHA}")"
+            relation="$(jq -r '.status // empty' <<<"$comparison")"
+            if [ "$relation" != "identical" ] && [ "$relation" != "ahead" ]; then
+              echo "::error::Source PR merge is not in the current production ancestry."
+              exit 1
+            fi
+            echo "APPROVED_VISUAL_PR=${resolved_pr}" >> "$GITHUB_ENV"
           fi
           if [ -n "$resolved_pr" ]; then
             files="$(gh api --paginate -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/pulls/${resolved_pr}/files?per_page=100" --jq '.[].filename')"
@@ -125,20 +152,26 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Resolve approved visual baseline
-        if: github.event_name == 'push' && env.VISUAL_BASELINE_REQUIRED == 'true'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls")"
-          pr_number="$(jq -r '[.[] | select(.merged_at != null)] | first | .number // empty' <<<"$pr_json")"
-          pr_head_sha="$(jq -r '[.[] | select(.merged_at != null)] | first | .head.sha // empty' <<<"$pr_json")"
+          if [ -n "${APPROVED_VISUAL_PR:-}" ]; then
+            pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/pulls/${APPROVED_VISUAL_PR}")"
+            pr_number="$(jq -r '.number // empty' <<<"$pr_json")"
+            pr_head_sha="$(jq -r '.head.sha // empty' <<<"$pr_json")"
+          else
+            pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls")"
+            pr_number="$(jq -r '[.[] | select(.merged_at != null)] | first | .number // empty' <<<"$pr_json")"
+            pr_head_sha="$(jq -r '[.[] | select(.merged_at != null)] | first | .head.sha // empty' <<<"$pr_json")"
+          fi
           if [ -z "$pr_number" ] || [ -z "$pr_head_sha" ]; then
             echo "::error::No merged PR provenance found for production SHA ${GITHUB_SHA}; visual release gate fails closed."
             exit 1
           fi
           run_id=""
-          for attempt in $(seq 1 60); do
+          for attempt in $(seq 1 8); do
             runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/portal-v2-live-preview.yml/runs?event=workflow_run&per_page=100")"
             expected_title="portal-preview-pr-${pr_number}-${pr_head_sha}"
             run_id="$(jq -r --arg title "$expected_title" '[.workflow_runs[] | select(.conclusion == "success" and .display_title == $title)] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
@@ -148,16 +181,62 @@ jobs:
             echo "Waiting for successful exact-head PR readback ${pr_head_sha} (attempt ${attempt}/60)"
             sleep 4
           done
-          if [ -z "$run_id" ]; then
-            echo "::error::No successful Portal V2 PR readback exists for approved head ${pr_head_sha} after bounded wait."
-            exit 1
-          fi
           mkdir -p artifacts/visual-baseline-pr
-          gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
-          test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
-          echo "Approved visual baseline resolved from PR #${pr_number}, head ${pr_head_sha}, run ${run_id}."
+          if [ -n "$run_id" ]; then
+            gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
+            test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
+            echo "Approved visual baseline resolved from PR #${pr_number}, head ${pr_head_sha}, run ${run_id}."
+          else
+            # Some workflow_run payloads omit pull_requests[] and cancel their
+            # auxiliary PR baseline run. This is NOT grounds to waive visuals:
+            # reconstruct the baseline exclusively from that exact, already
+            # protected-merged PR head, pinned to Netlify's immutable deploy.
+            echo "::notice::Exact-head PR screenshot artifact unavailable; require identical-source immutable preview screenshot."
+            statuses="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${pr_head_sha}/status")"
+            target="$(jq -r '[.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview" and .state == "success")] | first | .target_url // empty' <<<"$statuses")"
+            if [ -z "$target" ]; then
+              echo "::error::Trusted Netlify preview status missing for protected PR head ${pr_head_sha}; visual readback remains blocked."
+              exit 1
+            fi
+            if [ "$target" = "https://deploy-preview-${pr_number}--bedrijfsgeheugen.netlify.app" ]; then
+              # Netlify sometimes returns the exact PR's preview alias rather
+              # than a provider deploy dashboard URL. Verify exact SHA there,
+              # then pin the returned deploy ID to the immutable host.
+              alias_release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${target}/release.json?head=${pr_head_sha}")" || {
+                echo "::error::Exact numbered Netlify PR alias could not serve release identity."
+                exit 1
+              }
+              alias_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$alias_release")"
+              alias_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$alias_release")"
+              if [ "$alias_sha" != "$pr_head_sha" ] || [[ ! "$alias_id" =~ ^[a-f0-9]{24}$ ]]; then
+                echo "::error::Unpinned Netlify PR alias does not match the exact protected head."
+                exit 1
+              fi
+              preview_url="https://${alias_id}--bedrijfsgeheugen.netlify.app"
+            else
+              preview_url="$(node tools/ci/netlify-immutable-preview-target.mjs "$target")" || {
+                echo "::error::Netlify preview target is not an allowed immutable deployment."
+                exit 1
+              }
+            fi
+            release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${preview_url}/release.json?sha=${pr_head_sha}")" || {
+              echo "::error::Immutable PR preview is unavailable; no baseline substitution is permitted."
+              exit 1
+            }
+            verified_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$release")"
+            verified_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$release")"
+            expected_id="$(printf '%s' "$preview_url" | sed -nE 's#^https://([a-f0-9]{24})--bedrijfsgeheugen\.netlify\.app$#\1#p')"
+            if [ "$verified_sha" != "$pr_head_sha" ] || [ -z "$expected_id" ] || [ "$verified_id" != "$expected_id" ]; then
+              echo "::error::Immutable preview SHA/deploy identity mismatch; no visual baseline can be accepted."
+              exit 1
+            fi
+            PRODUCTION_URL="$preview_url" VISUAL_CAPTURE_PATH=artifacts/visual-baseline-pr/portal-v2-canvassen.png \
+              npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+            test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
+            echo "Verified immutable PR baseline: merged PR #${pr_number}, head ${pr_head_sha}, deploy ${expected_id}; production will be independently compared."
+          fi
       - name: Visual regression against approved PR baseline
-        if: github.event_name == 'push' && env.VISUAL_BASELINE_REQUIRED == 'true'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
           VISUAL_BASELINE: artifacts/visual-baseline-pr/portal-v2-canvassen.png

@@ -103,9 +103,15 @@ jobs:
       - name: Guard P0 4215 tenant isolation and 200-field 1000-observation stress
         run: |
           node --test tests/brain-p0-4215-input-stress-isolation-v1.test.mjs
+      - name: Guard fail-closed approved visual baseline recovery for production DOM
+        run: |
+          node --test tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs
       - name: Verify fail-closed immutable Netlify preview provider target
         run: |
           node --test tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs
+      - name: Verify trusted production visual PR backfill and immutable alias pinning
+        run: |
+          node --test tests/brain-p0-4215-production-visual-backfill-v1.test.mjs
       - name: Preserve P0 4215 input coverage evidence
         if: always()
         uses: actions/upload-artifact@v4
