@@ -56,3 +56,20 @@ test('selfscan shows full free value before async persistence and never submits 
   assert.match(fn,/source_kind:'bedrijfslek_scan'/);
   assert.doesNotMatch(fn,/\b(email|phone|contact_name|company_name|telefoon|naam)\s*:/i);
 });
+
+test('Portal V2 only exposes scans after authenticated tenancy and explicit claim',async()=>{
+  const bridge=await readFile(new URL('../portal-v2/scan-claim-bridge.js',import.meta.url),'utf8');
+  const app=await readFile(new URL('../portal-v2/app.js',import.meta.url),'utf8');
+  const api=await readFile(new URL('../netlify/functions/portal-scans.mjs',import.meta.url),'utf8');
+  assert.match(app,/createScanClaimBridge\(\)/);
+  assert.match(app,/scanClaimBridge\.setAuthenticated\(authenticated\)/);
+  assert.match(bridge,/if\(!authenticated\)return/);
+  assert.match(bridge,/tenant_identity_status==='verified'/);
+  assert.match(bridge,/GET|fetcher\('\/api\/portal-scans'/);
+  assert.match(bridge,/body:JSON\.stringify\(\{submission_key:submissionKey\}\)/);
+  assert.match(bridge,/data\?\.claimed!==true/);
+  assert.doesNotMatch(bridge,/\btenant_id\s*:/);
+  assert.match(api,/resolveIdentityTenant\(user\)/);
+  assert.match(api,/if\(!user\?\.id\)return json\(\{error:'UNAUTHORIZED'\},401\)/);
+  assert.match(api,/action:'claim',tenant_id:tenantId/);
+});
