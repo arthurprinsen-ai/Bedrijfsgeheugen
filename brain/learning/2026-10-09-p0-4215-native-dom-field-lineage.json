@@ -5,12 +5,14 @@
   "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
   "authority": "existing Portal V2 fieldMarkup/schema/Brain canonical write pipeline",
   "root_causes": [
-    "Native form controls rendered data-field-id/type but omitted the original canonical data path, so real browser DOM inventories could not trace field → state path → Brain impact without source-only heuristics."
+    "Native form controls rendered data-field-id/type but omitted the original canonical data path, so real browser DOM inventories could not trace field → state path → Brain impact without source-only heuristics.",
+    "GitHub Advanced Security flagged a test-only case-sensitive /<script>/ exclusion as a bad HTML filtering regexp (CodeQL code-scanning alert 203)."
   ],
   "prevention": [
     "Emit escaped, non-secret data-field-path from each immutable native field schema on all generated controls.",
     "Enforce path fidelity for all declared native controls on every protected Required preflight with negative XSS and repeatable fixtures.",
-    "Do not treat standalone/legacy/connector/dynamic rows or a missing path as verified; they remain live browser and tenant acceptance gaps."
+    "Do not treat standalone/legacy/connector/dynamic rows or a missing path as verified; they remain live browser and tenant acceptance gaps.",
+    "Test actual positive escaped output &lt;script&gt;, not an ineffective case-sensitive raw tag detection regex."
   ],
   "tests": [
     "tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs"
