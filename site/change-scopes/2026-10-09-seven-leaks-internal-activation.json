@@ -1,0 +1,25 @@
+{
+  "routes": [
+    "/",
+    "/zelfscan",
+    "/7-bedrijfslekken"
+  ],
+  "change_class": "growth-conversion-value-before-lead",
+  "preserve": [
+    "existing primary selfscan CTA",
+    "existing portal demonstration CTA",
+    "NL/EN semantic parity",
+    "responsive navigation and mobile layout",
+    "consent and privacy",
+    "realized-value truth guards",
+    "no duplicate commercial executor"
+  ],
+  "hypothesis": "Adding one ungated PDF entry link on the existing high-intent routes increases first-party worksheet visits and qualified selfscan follow-through while preserving paid-intent conversion.",
+  "target_metric": "homepage or zelfscan click -> worksheet visit -> scan complete -> qualified call -> paid order -> realized_revenue",
+  "rollback_condition": "primary CTA regression, locale cache failure, mobile failure, visitor confusion, lower qualified paid conversion or missing exact production deploy proof",
+  "evidence_refs": [
+    "P0 #4198",
+    "PR #4284",
+    "powerhouse|revenue|seven-leaks-internal-activation|v1"
+  ]
+}
