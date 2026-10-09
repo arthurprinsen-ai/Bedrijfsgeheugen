@@ -11,3 +11,5 @@
 - Security follow-up: GitHub Advanced Security review thread PR #4242 flagged test-only /<script>/ regex as case-sensitive and unsafe to treat as HTML filtering; replaced with positive escaped HTML output assertion, preserving renderer escaping and protected CodeQL admission.
 
 - Explicit DOM evidence status: known canonical paths get DECLARATION_ONLY; missing paths get UNMAPPED. Neither claims live tenant or Brain acceptance. The change also causes the immutable PR Netlify preview to include an actual portal-v2 runtime asset change, rather than relying on a canceled no-content deploy.
+
+- GitHub recovery PR #4245 uses the canonical PR delivery metadata contract. The outdated PR #4242 is closed without merge; supersession is documented in prose, not a malformed machine `Supersedes` header. Run exact-head protected checks again after this ledger commit.
