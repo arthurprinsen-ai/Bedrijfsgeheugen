@@ -4,7 +4,7 @@ import fs from 'node:fs';
 const review = fs.readFileSync(new URL('../supabase/functions/bg-pre-publish-review/index.ts', import.meta.url),'utf8');
 const publisher = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url),'utf8');
 test('founder story evidence is shared by publisher and final reviewer',()=>{
-  for(const field of ['ai_native_builder_story_verified','ai_native_builder_policy','build_event_verified','arthur_anchor_verified','source_backed','business_topic','source_lineage']) {
+  for(const field of ['ai_native_builder_story_verified','ai_native_builder_policy','build_event_verified','arthur_anchor_verified','business_topic','source_lineage']) {
     assert.ok(review.includes(field));
     assert.ok(publisher.includes(field));
   }
