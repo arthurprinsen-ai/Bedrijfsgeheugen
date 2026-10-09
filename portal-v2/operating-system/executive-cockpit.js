@@ -5,6 +5,33 @@ import {renderCompanyIntelligenceContext} from './company-intelligence-context.j
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const pct=value=>value==null?'—':`${Math.round(value)}%`;
+
+// The final two steps of the existing daily cockpit consume only canonical,
+// tenant-scoped outcome envelopes. A projection is not proof of realization.
+const provenOutcome=item=>{
+ const terminal=String(item?.verification_status||item?.status||'').toUpperCase();
+ return ['VERIFIED','OUTCOME_VERIFIED','PROVIDER_VERIFIED'].includes(terminal)
+  && item?.evidence_health?.status==='healthy'
+  && Array.isArray(item?.source_refs)&&item.source_refs.length>0;
+};
+function dailyFeedbackCards(model={}){
+ const outcomes=Array.isArray(model.outcomes)?model.outcomes:[];
+ const outcome=outcomes.find(provenOutcome);
+ const learned=outcomes.find(item=>provenOutcome(item)
+  && item.learning_verified===true
+  && Array.isArray(item.learning_evidence_refs)&&item.learning_evidence_refs.length>0
+  && Boolean(item.next_decision_id||item.next_decision));
+ return `<article data-steering-stage="measure"><small>4 · Meten</small>
+  <strong>${outcome?esc(outcome.title||outcome.label||outcome.id):'Uitkomst nog niet bewezen'}</strong>
+  <span>${outcome?esc(outcome.summary||outcome.description||'Uitkomst geverifieerd via de bestaande bewijsregistratie.'):'Geen geverifieerde realisatie met actuele bronverwijzing. Een uitgevoerde actie telt niet automatisch als resultaat.'}</span>
+  <button type="button" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs</button>
+ </article>
+ <article data-steering-stage="learn"><small>5 · Leren</small>
+  <strong>${learned?esc(learned.learning_summary||learned.learning_title||'Geverifieerde leerstap'):'Leereffect nog niet bewezen'}</strong>
+  <span>${learned?esc('Volgende beslissing: '+String(learned.next_decision||learned.next_decision_id)):'Pas na aantoonbare outcome, vastgelegde leer-evidence en een gekoppelde volgende beslissing is de lus gesloten.'}</span>
+  <button type="button" data-os-page="monitoring-learning" aria-pressed="false">Bekijk wat we leren</button>
+ </article>`;
+}
 const list=(title,items)=>`<section class="os-card"><h3>${esc(title)}</h3>${items.length?`<ol>${items.map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.explanation||item.summary||item.next_action||'')}</small><span class="os-evidence">${esc(item.evidence_health?.status||'unavailable')} · ${Math.round((item.evidence_health?.confidence||0)*100)}%</span></li>`).join('')}</ol>`:'<p class="os-empty">Nog geen bewezen gegevens.</p>'}</section>`;
 const LABELS=Object.freeze({'impact-engine':'€ Impact','scenario-simulator':'Scenario’s','next-best-actions':'Besluiten & acties','monitoring-learning':'Monitoring & leren','evidence-health':'Data & bewijs','capability-graph':'Capability graph'});
 const attentionCard=item=>`<article class="os-attention-card"><div class="os-attention-top"><span>${esc(item.attention_reason||'Aandacht')}</span><span>${esc(item.owner||item.accountable_owner||'')}</span></div><h3>${esc(item.title||item.label||item.id||'Aandachtspunt')}</h3><p>${esc(item.explanation||item.summary||item.reason||item.next_action||'')}</p>${item.deadline||item.due_at?`<small>Uiterlijk: ${esc(item.deadline||item.due_at)}</small>`:''}</article>`;
@@ -41,18 +68,20 @@ export function executiveCockpitMarkup(model){
     <article><small>1 · Weten</small><strong>Belangrijkste afwijkingen</strong><span>Nog geen bewezen aandachtspunten beschikbaar.</span></article>
     <article><small>2 · Beslissen</small><strong>Besluiten die vandaag nodig zijn</strong><span>Nog geen bewezen besluitvraag beschikbaar.</span></article>
     <article><small>3 · Doen</small><strong>Eerstvolgende actie</strong><span>Nog geen bewezen actie beschikbaar.</span></article>
+    ${dailyFeedbackCards(model)}
   </div>
  </section>`;
  const tabs=OPERATING_SYSTEM_PAGES.map(page=>`<button type="button" data-os-page="${page}" aria-pressed="false">${esc(LABELS[page]||page)}</button>`).join('');
  const attention=model.attention||[];
  const problems=model.problems||[];
  return `<section class="os-executive" data-os-status="live">
-  <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role)}</small><h2>Waar moet de directie vandaag op sturen?</h2><p class="os-subtitle">Alleen de belangrijkste afwijkingen, besluiten en kansen — afgeleid uit de canonieke bedrijfsdata.</p></div><span>${model.evidence_health.healthy}/${model.evidence_health.total} bronnen gezond</span></div>
+  <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role)}</small><h2>Waar moet de directie vandaag op sturen?</h2><p class="os-subtitle">Dagelijkse ondernemingssturing: weten → beslissen → doen → meten → leren. Alle inzichten en acties komen uit hetzelfde Bedrijfsgeheugen.</p></div><span>${model.evidence_health.healthy}/${model.evidence_health.total} bronnen gezond</span></div>
   ${renderCompanyIntelligenceContext(model,'executive-cockpit')}
   <div class="os-mobile-decision-flow" aria-label="Executive dagstart">
     <article><small>1 · Weten</small><strong>${attention[0]?.title?esc(attention[0].title):'Geen urgente afwijking'}</strong><span>${attention[0]?esc(attention[0].explanation||attention[0].summary||attention[0].reason||''):'Geen bewezen aandachtspunt dat nu actie vraagt.'}</span></article>
     <article><small>2 · Beslissen</small><strong>${model.decision_queue[0]?.title?esc(model.decision_queue[0].title):'Geen besluit nodig'}</strong><span>${model.decision_queue[0]?esc(model.decision_queue[0].next_action||model.decision_queue[0].explanation||model.decision_queue[0].summary||''):'Geen bewezen besluitvraag voor vandaag.'}</span></article>
     <article><small>3 · Doen</small><strong>${model.next_best_actions[0]?.title?esc(model.next_best_actions[0].title):'Geen actie met bewijs'}</strong><span>${model.next_best_actions[0]?esc(model.next_best_actions[0].next_action||model.next_best_actions[0].explanation||model.next_best_actions[0].summary||''):'Zodra bewijs beschikbaar is verschijnt hier de eerstvolgende actie.'}</span></article>
+    ${dailyFeedbackCards(model)}
   </div>
   <section class="os-attention" aria-label="Wat vraagt vandaag aandacht?">
   <div class="os-section-heading"><h3>Wat vraagt vandaag aandacht?</h3><p>Maximaal vijf geprioriteerde problemen uit dezelfde PH-Pxxx waarheid die ook Problem Radar, content en capabilities gebruiken.</p></div>
