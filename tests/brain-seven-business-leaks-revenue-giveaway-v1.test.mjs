@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const pdf=readFileSync(new URL('../downloads/7-verborgen-bedrijfslekken.pdf',import.meta.url),'latin1');
-const landing=readFileSync(new URL('../7-bedrijfslekken.html',import.meta.url),'utf8');
+const pdf=readFileSync(new URL('../assets/downloads/7-verborgen-bedrijfslekken.pdf',import.meta.url),'latin1');
+const landing=readFileSync(new URL('../pages/7-bedrijfslekken.html',import.meta.url),'utf8');
 const scan=readFileSync(new URL('../zelfscan.html',import.meta.url),'utf8');
 const redirects=readFileSync(new URL('../_redirects',import.meta.url),'utf8');
 const skill=readFileSync(new URL('../skills/powerhouse-product-led-growth.md',import.meta.url),'utf8');
