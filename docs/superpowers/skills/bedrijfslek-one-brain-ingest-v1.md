@@ -8,3 +8,5 @@ Fingerprint: `powerhouse|bedrijfslek|canonical-one-brain-ingest|v1`
 5. POWERHOUSE mag voorspelling → actie → resultaat → leerbesluit alleen als bewezen sluiten; Heartbeat moet mislukte persistence en doorwerking als aparte degraded-obligations blijven herkennen.
 6. Geen verborgen marketingconsent, valse benchmarks, kunstmatige urgentie of nieuwe uitvoerders. Marketingcontent en e-mail blijven onder canonieke kanaal-/consent- en kwaliteitspoorten.
 7. Eerste tests: canonical NL URL allowlist, scan en event idempotence, geen PII, resultaat vóór POST, bestaand privileged-boundary verbod, echte provider-/database-readback en code/source SHA pariteit.
+
+8. Portal V2 presenteert alleen tenant-bevestigde scanhistorie via de al bestaande beveiligde API. Anonieme zelfscanresultaten worden uitsluitend na succesvolle storage-receipt en expliciete claimaanvraag geassocieerd.
