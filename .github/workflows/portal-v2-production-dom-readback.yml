@@ -11,6 +11,10 @@ on:
         description: 'Merged Portal V2 PR whose exact approved head must be visually compared with current production'
         type: string
         required: true
+      expected_production_sha:
+        description: 'Optional earlier deployed ancestor SHA only when all intervening changes are strictly nonruntime CI, tests, docs or learning'
+        type: string
+        required: false
 
 concurrency:
   group: portal-v2-production-dom-readback-${{ github.event.pull_request.number || github.ref }}
@@ -39,14 +43,39 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EXPECTED_PRODUCTION_SHA: ${{ inputs.expected_production_sha }}
+          GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "PORTAL_ALIAS_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${PR_HEAD_SHA}" >> "$GITHUB_ENV"
             echo "PORTAL_BASE_SHA=${PR_BASE_SHA}" >> "$GITHUB_ENV"
           else
             echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
-            echo "PORTAL_EXPECTED_SHA=${GITHUB_SHA}" >> "$GITHUB_ENV"
+            approved="${GITHUB_SHA}"
+            if [ "$EVENT_NAME" = "workflow_dispatch" ] && [ -n "$EXPECTED_PRODUCTION_SHA" ]; then
+              if [[ ! "$EXPECTED_PRODUCTION_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+                echo "::error::Production runtime baseline SHA must be a full immutable 40-digit commit."
+                exit 1
+              fi
+              comparison="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/compare/${EXPECTED_PRODUCTION_SHA}...${GITHUB_SHA}")"
+              relation="$(jq -r '.status // empty' <<<"$comparison")"
+              file_count="$(jq -r '.files | length' <<<"$comparison")"
+              if { [ "$relation" != "ahead" ] && [ "$relation" != "identical" ]; } || [ "$file_count" -ge 300 ]; then
+                echo "::error::Production runtime SHA must be an ancestor with exhaustively reviewed diff."
+                exit 1
+              fi
+              disallowed="$(jq -r '[.files[]?.filename | select((startswith(".github/workflows/") or startswith("brain/learning/") or startswith("docs/") or startswith("tests/")) | not)] | join(",")' <<<"$comparison")"
+              if [ -n "$disallowed" ]; then
+                echo "::error::Production differs from main in runtime paths: ${disallowed}; cannot accept earlier deployment."
+                exit 1
+              fi
+              approved="$EXPECTED_PRODUCTION_SHA"
+              echo "RUNTIME_EQUIVALENT_SCOPE_PROVED=${approved}..${GITHUB_SHA}" >> "$GITHUB_ENV"
+              echo "Explicit nonruntime-only release scope verified: production ${approved}, main ${GITHUB_SHA}"
+            fi
+            echo "PORTAL_EXPECTED_SHA=${approved}" >> "$GITHUB_ENV"
           fi
       - name: Classify visual baseline impact fail-closed
         env:
