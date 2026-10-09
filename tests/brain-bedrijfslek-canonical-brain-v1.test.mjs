@@ -82,6 +82,8 @@ test('existing ONE BRAIN decision-cycle trigger admits only the three canonical 
   assert.match(sql,/on conflict \(tenant_id,cycle_id\)/i);
   assert.match(sql,/if exists \([\s\S]*?idempotency_key='runtime-signal:' /);
   assert.match(sql,/new\.event_type = 'scan_submitted'/);
+  assert.match(sql,/revoke all on function public\.powerhouse_open_cycle_from_runtime_signal_v1\(uuid\) from public, anon, authenticated/i);
+  assert.match(sql,/grant execute on function public\.powerhouse_open_cycle_from_runtime_signal_v1\(uuid\) to service_role/i);
   assert.doesNotMatch(sql,/create\s+(?:table|schedule|publication|function)\s+\w*heartbeat/i);
 });
 
