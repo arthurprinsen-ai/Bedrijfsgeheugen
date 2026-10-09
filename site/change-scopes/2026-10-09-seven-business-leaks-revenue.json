@@ -2,7 +2,7 @@
   "routes": [
     "/7-bedrijfslekken",
     "/zelfscan",
-    "/downloads/7-verborgen-bedrijfslekken.pdf"
+    "/assets/downloads/7-verborgen-bedrijfslekken.pdf"
   ],
   "change_class": "growth-conversion-value-before-lead",
   "preserve": [
