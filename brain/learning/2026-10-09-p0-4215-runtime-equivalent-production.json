@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-runtime-equivalent-production-readback-20261009-v1",
+  "fingerprint": "powerhouse|portal|netlify-ci-only-skipped-deploy-vs-immutable-production-dom-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Existing Netlify ignore policy and Portal V2 protected production DOM evidence workflow",
+  "root_causes": [
+    "Netlify skips deployment for delivery-governance/test/docs-only main merges by design; strict newest main SHA comparison in manual DOM verification blocked even when live Portal runtime bytes were unchanged."
+  ],
+  "prevention": [
+    "Permit optional explicitly declared immutable earlier production SHA only if GitHub compares its merge history to the current workflow's checked-out main and ALL changed files are limited to workflows, tests, docs and Brain learning.",
+    "Fail if any runtime path, Netlify configuration/function, backend/frontend, unknown path, divergent ancestry or potentially truncated comparison is detected.",
+    "Continue to require exact provider live release commit, immutable deploy and unchanged end-to-end visual screenshot comparison for protected merged PR #4240."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-runtime-equivalent-production-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-runtime-equivalent-production-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-runtime-equivalent-production-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-runtime-equivalent-production-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_DOM_READBACK_GOVERNANCE_ONLY_NETLIFY_SKIP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "externalActionEvidence": "REQUIRES_TERMINAL_PRODUCTION_DOM_READBACK",
+  "closureRequired": [
+    "Protected exact-head Required+CodeQL and protected merge",
+    "GitHub verified nonruntime-only diff and live immutable Netlify production SHA",
+    "Terminal Visual production DOM workflow against approved PR #4240 head",
+    "Separate authenticated customer tenant A/B + >750KB durable outbox + legal CSRD applicability"
+  ]
+}
