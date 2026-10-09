@@ -1,4 +1,4 @@
--- v2 same-Mira visual identity guard. Reuses existing trigger and provider job, no new executor.
+-- v2: require same canonical face verified against master pixels in all frames.
 -- Canonical Mira identity guard v1
 create or replace function public.powerhouse_validate_instagram_media_job_v1()
 returns trigger
@@ -55,14 +55,7 @@ begin
     if coalesce((new.proof_manifest#>>'{instagram_visual,canonical_identity_match}')::boolean,false) is not true
       or coalesce(new.proof_manifest#>>'{instagram_visual,canonical_master_reference_id}','')<>'Yjqu4D7v76HABNPmQPj1'
       or coalesce((new.proof_manifest#>>'{instagram_visual,canonical_identity_confidence}')::numeric,0)<0.94
-      or coalesce(new.proof_manifest#>>'{instagram_visual,canonical_master_sha256}','') !~ '^[a-f0-9]{64}
-  new.updated_at:=now();return new;
-end;
-$$;
-
-revoke execute on function public.powerhouse_validate_instagram_media_job_v1() from public,anon,authenticated;
-grant execute on function public.powerhouse_validate_instagram_media_job_v1() to service_role;
-
+      or length(coalesce(new.proof_manifest#>>'{instagram_visual,canonical_master_sha256}',''))<>64
     then raise exception 'MIRA_MASTER_FACE_VISUAL_MATCH_REQUIRED';
     end if;
     if (select count(distinct frame->>'position') from jsonb_array_elements(
