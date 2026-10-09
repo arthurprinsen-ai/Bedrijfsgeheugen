@@ -38,5 +38,16 @@
     "historical_replay": [
       "tests/brain-bedrijfslek-canonical-brain-v1.test.mjs"
     ]
+  },
+  "prevention": {
+    "rule": "Before calling a free scan Brain-connected, assert direct-value-first and a deduplicated no-PII readback to existing canonical scan and event stores; only authenticated tenant may claim a scan",
+    "regression_contract": "tests/brain-bedrijfslek-canonical-brain-v1.test.mjs"
+  },
+  "evidence": {
+    "source_premerge": "GitHub pull request #4286",
+    "regression_test": "tests/brain-bedrijfslek-canonical-brain-v1.test.mjs",
+    "live_edge_readback": "PENDING_PROTECTED_MERGE",
+    "authenticated_tenant": "NOT_YET_VERIFIED",
+    "commercial_outcome": "NOT_YET_PROVEN"
   }
 }
