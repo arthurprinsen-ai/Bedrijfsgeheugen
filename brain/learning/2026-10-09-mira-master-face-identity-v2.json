@@ -1,0 +1,45 @@
+{
+  "fingerprint": "mira-openart-master-face-visual-consistency-v2",
+  "date": "2026-10-09",
+  "scope": "INSTAGRAM",
+  "failure_class": "MIRA_REFERENCE_ID_WITHOUT_PIXEL_IDENTITY_PROOF",
+  "root_cause": "Production verifier previously decided only whether a woman resembling Mira was central in the final scene; it never loaded the official master and visually compared identities. Unanchored text2video could make a different face. Label-only master reference at job boundary was not sufficient visual proof.",
+  "prevention": [
+    "OpenArt image2image from the exact official master then image2video using the generated still",
+    "Supabase verifier fetches canonical source and uses side-by-side reference-vs-candidate vision, confidence >=0.94",
+    "Media router requires three separately visually matched same-master video frames and content-context matching",
+    "Canonical orchestrator, publisher, and existing DB trigger reject missing or mixed-face proof without new scheduler, account or publisher",
+    "Only existing master Yjqu4D7v76HABNPmQPj1 is valid; user reference uploads remain forbidden"
+  ],
+  "evidence": {
+    "canonical_reference_id": "Yjqu4D7v76HABNPmQPj1",
+    "master_source": "config/instagram-canonical-mira-identity-v1.json",
+    "test": "tests/brain-mira-canonical-face-v2.test.mjs",
+    "gates": [
+      "supabase/functions/powerhouse-instagram-media-verifier/index.ts",
+      "supabase/functions/powerhouse-instagram-media-router/index.ts",
+      "supabase/functions/powerhouse-content-orchestrator/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts",
+      "supabase/migrations/20261009151000_mira_master_face_identity_gate_v2.sql"
+    ],
+    "provider_publication_proven_today": false
+  },
+  "compiler": {
+    "failure_class": "MIRA_REFERENCE_ID_WITHOUT_PIXEL_IDENTITY_PROOF",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-canonical-face-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-canonical-face-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-canonical-face-v2.test.mjs"
+    ]
+  }
+}
