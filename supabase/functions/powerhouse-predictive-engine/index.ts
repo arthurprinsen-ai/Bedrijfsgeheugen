@@ -2,6 +2,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 
 const USE_CASE='supabase-powerhouse-predictive-first-mover-v1';
+// Real governed multi-signal Anthropic tool-use can exceed the old 45s network budget.
+// Keep a finite request deadline below the canonical 120s scheduler HTTP budget.
+const ANTHROPIC_FORECAST_TIMEOUT_MS=90000;
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const clean=(v:any)=>String(v??'').trim();
 const sha=async(v:string)=>{const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');};
@@ -77,7 +80,7 @@ Deno.serve(async(req:Request)=>{
     const fallbackSchemaRetryCount=0;
     let input:any;
     if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
-    const ai=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:gov.model_id,max_tokens:4200,system:'Je bent de voorspellende intelligence-laag van Bedrijfsgeheugen. Vind combinaties van zwakke signalen die waarschijnlijk 7-90 dagen vóór brede marktzichtbaarheid een MKB-probleem, zoekintentie of buying trigger voorspellen. Reageer niet simpelweg op populair nieuws. Hoge marktverzadiging verlaagt first-mover waarde. Gebruik uitsluitend evidence_keys uit de input. Minimaal twee onafhankelijke signalen per forecast; category_creation alleen bij minimaal drie overtuigende signalen en duidelijke semantic whitespace. Voorspellingen zijn probabilistisch, nooit feiten. Optimaliseer voor first-mover voordeel én commerciële relevantie richting €1m gerealiseerde omzet uiterlijk 2027-09-14.',messages:[{role:'user',content:JSON.stringify(payload)}],tools:[tool],tool_choice:{type:'tool',name:'forecast_plan'}}),signal:AbortSignal.timeout(45000)});
+    const ai=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:gov.model_id,max_tokens:4200,system:'Je bent de voorspellende intelligence-laag van Bedrijfsgeheugen. Vind combinaties van zwakke signalen die waarschijnlijk 7-90 dagen vóór brede marktzichtbaarheid een MKB-probleem, zoekintentie of buying trigger voorspellen. Reageer niet simpelweg op populair nieuws. Hoge marktverzadiging verlaagt first-mover waarde. Gebruik uitsluitend evidence_keys uit de input. Minimaal twee onafhankelijke signalen per forecast; category_creation alleen bij minimaal drie overtuigende signalen en duidelijke semantic whitespace. Voorspellingen zijn probabilistisch, nooit feiten. Optimaliseer voor first-mover voordeel én commerciële relevantie richting €1m gerealiseerde omzet uiterlijk 2027-09-14.',messages:[{role:'user',content:JSON.stringify(payload)}],tools:[tool],tool_choice:{type:'tool',name:'forecast_plan'}}),signal:AbortSignal.timeout(ANTHROPIC_FORECAST_TIMEOUT_MS)});
     const ab:any=await ai.json().catch(()=>({})); if(!ai.ok) throw new Error(`AI_${ai.status}:${clean(ab?.error?.message).slice(0,200)}`);
     input=(ab.content||[]).find((x:any)=>x.type==='tool_use'&&x.name==='forecast_plan')?.input;
     if(!input||!Array.isArray(input.forecasts))throw new Error('AI_TOOL_OUTPUT_MISSING');
