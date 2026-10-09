@@ -36,6 +36,15 @@ test('an action, predicted benefit or outcome without verified receipt cannot be
  assert.doesNotMatch(measurement,/Doorlooptijd aantoonbaar gedaald/);
 });
 
+test('external provider ACK is not a realized business outcome',()=>{
+ const model=base();
+ model.outcomes=[outcome({status:'PROVIDER_VERIFIED',learning_verified:false})];
+ const html=executiveCockpitMarkup(model);
+ const measurement=html.split('data-steering-stage="measure"')[1].split('</article>')[0];
+ assert.match(measurement,/Uitkomst nog niet bewezen/);
+ assert.match(html,/Leereffect nog niet bewezen/);
+});
+
 test('only independently evidenced verified outcomes and explicitly linked learning close final stages',()=>{
  const model=base();
  model.outcomes=[outcome()];
