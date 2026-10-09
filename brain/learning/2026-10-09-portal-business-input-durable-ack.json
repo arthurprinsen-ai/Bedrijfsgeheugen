@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|portal|business-input-http-200-false-durable-ack-v1",
+  "obligationId": "p0-4215-business-input-durable-ack-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Netlify Portal BusinessInput handler + Supabase ONE BRAIN authority and projection + exact-sha provider readbacks",
+  "root_causes": [
+    "Browser savePortalBusinessInput accepted any HTTP 2xx payload as persisted even if the handler returned stored:false, stale:true or omitted canonical Brain lineage.",
+    "Server business input handler returned HTTP 200 despite putCanonical returning stored:false or stale:true; downstream Portal V2 could proceed with the secondary state projection and display success."
+  ],
+  "prevention": [
+    "Require stored:true, non-stale, Brain authority and Powerhouse feed and organism impact acknowledgements, plus nonempty immutable lineage identifiers before treating authenticated input as saved.",
+    "Return HTTP 409 for stale canonical projection and 503 for missing persistence confirmation; preserve fail-closed retryable error and upstream Brain facts.",
+    "Use existing writer and tenant boundary. Do not mark P0 customer acceptance or model recomputation as proven by endpoint responses alone."
+  ],
+  "tests": [
+    "portal-v2/tests/portal-business-input-persistence.test.mjs",
+    "tests/portal-business-input-powerhouse-feed.test.mjs",
+    "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_CANONICAL_PERSISTENCE_FALSE_POSITIVE",
+    "scope": "PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "exact-head Required and CodeQL",
+    "protected merge and exact-main Netlify deployment readback",
+    "two separately authorized real customer sessions and per-tenant Brain/impact/roadmap readback",
+    "rendered field inventory, >750KB outbox retries, 200-input/1000-observation tenant isolation load",
+    "customer-specific official CSRD/ESRS applicability review"
+  ]
+}

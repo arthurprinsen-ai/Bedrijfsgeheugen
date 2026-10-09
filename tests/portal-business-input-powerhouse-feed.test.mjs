@@ -67,3 +67,26 @@ test('portal projection stays fail-closed when Powerhouse CurrentState feed cann
   assert.equal(writes.length,3);
   assert.equal(writes.some(write=>write.record.type==='OrganismImpact'),false);
 });
+
+
+test('canonical projection refusals never return successful HTTP after upstream Brain writes',async()=>{
+  for(const {projection,status,error} of [
+    {projection:{stored:false,stale:true},status:409,error:'CANONICAL_PROJECTION_STALE'},
+    {projection:{stored:false,stale:false},status:503,error:'CANONICAL_PROJECTION_NOT_STORED'}
+  ]){
+    const writes=[];
+    const handler=createPortalBusinessInputHandler({
+      getUser:async()=>({id:'user-1',app_metadata:{tenantId:'tenant-1'}}),
+      store:{async getLayer(){return null;},async putCanonical(){return projection;}},
+      authority:{async append(input){writes.push(input);return{authority:'supabase:brain_records',record:input.record};}},
+      now:()=> '2026-10-09T08:00:00.000Z'
+    });
+    const response=await handler(requestFor({inputType:'StrategyCanvas',modelId:'strategy-dna',answers:{ambition:'Grow'},sourcePortal:'portal-v2'}));
+    const payload=await response.json();
+    assert.equal(response.status,status);
+    assert.equal(payload.error,error);
+    assert.equal(payload.authorityStored,true);
+    assert.equal(payload.powerhouseFeedStored,true);
+    assert.equal(writes.length,4);
+  }
+});
