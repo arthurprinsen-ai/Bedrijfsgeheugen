@@ -7,6 +7,8 @@ import {SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from '../portal-v2/input-impact-cove
 import {fullCompanyInputSchema} from '../portal-v2/modules/full-company-input.js';
 import {sourcePageForPath,impactForMutation} from '../portal-v2/portal-impact-engine.js';
 import {buildStrategicModels} from '../portal-v2/strategic-models-core.js';
+import {AI_CAPABILITY_CATALOG} from '../portal-v2/ai-capability-catalog.js';
+import {CONNECTOR_BUILDER_FIELD_CONTRACTS} from '../portal-next/connector-builder-view.js';
 
 test('every registered native field declaration produces one auditable renderer binding and consequence mapping',()=>{
   const matrix=buildPortalInputCoverageMatrix();
@@ -46,7 +48,7 @@ test('unverified standalone, dynamic, connector and policy forms remain explicit
   const matrix=buildPortalInputCoverageMatrix();
   assert.equal(matrix.summary.supplementalSurfaces,SUPPLEMENTAL_PORTAL_INPUT_SURFACES.length);
   const dynamic=matrix.rows.filter(row=>row.surface==='DYNAMIC_OR_EXTERNAL');
-  const missing=SUPPLEMENTAL_PORTAL_INPUT_SURFACES.filter(surface=>!surface.paths.length);
+  const missing=SUPPLEMENTAL_PORTAL_INPUT_SURFACES.filter(surface=>!surface.paths.length&&!surface.readOnlyProjection);
   assert.equal(dynamic.length,missing.length);
   for(const row of dynamic){
     assert.equal(row.status,'UNENUMERATED_FIELDS_REVIEW_REQUIRED');
@@ -124,4 +126,64 @@ test('existing canonical non-native inputs have real causal routes and cross-dom
     assert.ok(impact.affectedPages.includes(affected),path+' must reach '+affected);
     assert.equal(impact.externalExecutionAuthorized,false);
   }
+});
+
+
+test('all 86 existing AI capability scores and their scan provenance flags are mapped at leaf granularity',()=>{
+  const ids=AI_CAPABILITY_CATALOG.lagen.flatMap(layer=>layer.caps.map(cap=>cap.id));
+  const surface=SUPPLEMENTAL_PORTAL_INPUT_SURFACES.find(item=>item.page==='ai-capabilities');
+  assert.equal(ids.length,86);
+  assert.equal(surface.paths.length,ids.length*2);
+  const matrix=buildPortalInputCoverageMatrix();
+  for(const id of ids){
+    for(const key of ['aiCapabilities','aiCapabilitySources']){
+      const path='portal.'+key+'.'+id;
+      const row=matrix.rows.find(item=>item.page==='ai-capabilities'&&item.path===path);
+      assert.ok(row,'Missing AI capability leaf or scan provenance '+path);
+      assert.equal(row.causalSourcePage,'ai-capabilities');
+      assert.equal(row.mappingStatus,'MAPPED');
+      assert.equal(row.authenticatedWriteVerified,false);
+    }
+  }
+});
+
+test('connector editor selectors and independent provider authority cannot be disguised as canonical tenant writes',()=>{
+  const matrix=buildPortalInputCoverageMatrix();
+  assert.equal(CONNECTOR_BUILDER_FIELD_CONTRACTS.length,10);
+  assert.equal(matrix.summary.separateAuthorityEditorFieldsDeclared,10);
+  assert.equal(matrix.summary.readOnlyInputAdapters,1);
+  for(const field of CONNECTOR_BUILDER_FIELD_CONTRACTS){
+    const row=matrix.rows.find(item=>item.page==='koppelingen'&&item.fieldId===field.selector);
+    assert.ok(row,'Missing connector control '+field.selector);
+    assert.equal(row.rendererControlVerified,true);
+    assert.equal(row.path,null,'Do not invent portal.* business input paths for connector draft configuration');
+    assert.equal(row.authenticatedWriteVerified,false);
+    assert.equal(row.brainConsumerAck,'NOT_OBSERVED');
+  }
+  assert.equal(matrix.rows.filter(row=>row.surface==='DYNAMIC_OR_EXTERNAL').length,1);
+  assert.ok(matrix.rows.some(row=>row.page==='compliance-command-center'&&row.status==='NO_EDITOR_IN_ADAPTER'));
+});
+
+test('connector source JSON and target mapping edits persist in the existing draft without silently losing invalid edits',async()=>{
+  const previous=globalThis.HTMLElement;
+  globalThis.HTMLElement=class {};
+  try{
+    const {ConnectorBuilderApp}=await import('../portal-next/connector-builder-element.js');
+    let draft={source:{config:{original:true}},mappings:[{targetField:'old'}]};
+    let rendered=0;
+    const app={store:{getState:()=>({draft}),updateDraft:mutator=>{draft=mutator(draft);return draft;}},error:null,render:()=>{rendered++;}};
+    const change=(selector,value,dataset={})=>ConnectorBuilderApp.prototype.onChange.call(app,{target:{value,dataset,matches:s=>s==='['+selector+']',closest:()=>null}});
+    change('data-source-config','{"folder":"incoming"}');
+    assert.deepEqual(draft.source.config,{folder:'incoming'});
+    change('data-map-target','portal.metrics.revenue',{mapTarget:'0'});
+    assert.equal(draft.mappings[0].targetField,'portal.metrics.revenue');
+    change('data-source-config','not-json');
+    assert.deepEqual(draft.source.config,{folder:'incoming'});
+    assert.match(app.error.message,/JSON/);
+    assert.ok(rendered>0);
+    change('data-source-config','[]');
+    assert.deepEqual(draft.source.config,{folder:'incoming'});
+    change('data-map-target','should not write',{mapTarget:'99'});
+    assert.equal(draft.mappings[0].targetField,'portal.metrics.revenue');
+  }finally{if(previous===undefined)delete globalThis.HTMLElement;else globalThis.HTMLElement=previous;}
 });
