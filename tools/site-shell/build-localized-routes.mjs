@@ -14,6 +14,11 @@ const SKIP_TAGS = new Set(['script','style','code','pre','noscript','svg','texta
 const ATTRS = new Set(['placeholder','title','aria-label','alt']);
 const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json');
 const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
+const PREPARE_CACHE_ARG = process.argv.find(arg=>arg.startsWith('--prepare-cache='));
+const PREPARE_CACHE_PATCH_NAME = PREPARE_CACHE_ARG ? PREPARE_CACHE_ARG.slice('--prepare-cache='.length) : '';
+if (PREPARE_CACHE_ARG && !/^[a-z0-9][a-z0-9-]{0,79}\.json$/i.test(PREPARE_CACHE_PATCH_NAME)) {
+  throw new Error('STATIC_I18N_CACHE_PATCH_NAME_INVALID');
+}
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
 const SEO_LOCALE_REVENUE_MAP_FILE = path.join(ROOT,'site','seo-locale-revenue-map.json');
 const STATIC_I18N_BUILD_CACHE_DIR = String(process.env.STATIC_I18N_BUILD_CACHE_DIR || '').trim()
@@ -559,6 +564,21 @@ function loadCache() {
 }
 
 function saveCache(cache) {
+  if (PREPARE_CACHE_PATCH_NAME) {
+    // Keep generated translations with the originating publication, not in a
+    // rewritten global cache. Reuse the loader's canonical patch precedence.
+    const existing = loadCache();
+    const additions = Object.fromEntries(Object.entries(cache).filter(([source,value]) =>
+      typeof value === 'string' && value.trim() &&
+      (typeof existing[source] !== 'string' || !existing[source].trim())
+    ));
+    if (!Object.keys(additions).length) return;
+    const file = path.join(TRANSLATION_CACHE_PATCH_DIR,PREPARE_CACHE_PATCH_NAME);
+    const previousPatch = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file,'utf8')) : {};
+    ensureDir(file);
+    fs.writeFileSync(file,JSON.stringify({...previousPatch,...additions},null,2)+'\n');
+    return;
+  }
   ensureDir(TRANSLATION_CACHE_FILE);
   fs.writeFileSync(TRANSLATION_CACHE_FILE,JSON.stringify(cache,null,2)+'\n');
 }
@@ -853,6 +873,24 @@ for (const file of files) {
   const doc = parse(html,{sourceCodeLocationInfo:false});
   const refs = collectTranslatables(doc);
   refs.forEach(ref=>allStrings.add(ref.source));
+}
+
+if (PREPARE_CACHE_PATCH_NAME) {
+  const before = loadCache();
+  const missingBefore = [...allStrings].filter(source => typeof before[source] !== 'string' || !before[source].trim());
+  if (missingBefore.length && String(process.env.STATIC_I18N_NETWORK || '').trim() !== '1') {
+    throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s)');
+  }
+  if (missingBefore.length) await translateAll([...allStrings]);
+  const persisted = loadCache();
+  const missingAfter = [...allStrings].filter(source => typeof persisted[source] !== 'string' || !persisted[source].trim());
+  if (missingAfter.length) {
+    throw new Error('STATIC_I18N_PREPARE_INCOMPLETE: ' + missingAfter.length + ' untranslated source(s)');
+  }
+  console.log('STATIC_I18N_PREPARE_COMPLETE',JSON.stringify({
+    patch:PREPARE_CACHE_PATCH_NAME, newlyTranslated:missingBefore.length, missing:0
+  }));
+  process.exit(0);
 }
 
 const cacheValidationOnly = process.argv.includes('--validate-cache');
