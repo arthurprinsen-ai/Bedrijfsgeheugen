@@ -16,8 +16,8 @@
     ]
   },
   "root_cause": "The existing powerhouse-scan-ingest Supabase Edge function had never been listed in supabase/config.toml although already active in production, causing its protection-aware automated deployment/attestation workflow to reject an otherwise protected merged release.",
-  "change": "Declare only the canonical existing scan Edge function with exact path and current custom service-token security; add a deterministic source/config regression test.",
-  "prevention": "Require public proxy + hashed x-bg-service-token source evidence whenever verify_jwt=false; reject any implicit undeclared Edge function in production-authority workflows.",
+  "change": "Declare only the canonical existing scan Edge function with exact path and current custom service-token security; add a deterministic source/config regression test. Reuse existing production scan proof workflow to POST a no-PII Bedrijfslek fixture twice and require provider-backed idempotent scan/event IDs; trigger when Supabase config changes.",
+  "prevention": "Require public proxy + hashed x-bg-service-token source evidence whenever verify_jwt=false; reject any implicit undeclared Edge function in production-authority workflows. Include Bedrijfslek source-specific production smoke so a passing legacy Frisse Blik test never masks a source-kind routing regression.",
   "evidence": {
     "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37977917429",
     "failed_reason": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:powerhouse-scan-ingest",
@@ -25,7 +25,8 @@
     "edge_live_version_before_fix": 12,
     "edge_source_parity": "PROVEN",
     "scan_production_smoke": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37977917243",
-    "CI_next": "protected Required, CodeQL, postmerge production-edge authority, re-run proof"
+    "CI_next": "protected Required, CodeQL, postmerge production-edge authority, re-run proof",
+    "bedrijfslek_postmerge_smoke": "PENDING_PROTECTED_MERGE"
   },
   "commercial_boundary": "Do not infer paid orders, customer consent, revenue or FULL_GREEN from a successful scan HTTP receipt."
 }
