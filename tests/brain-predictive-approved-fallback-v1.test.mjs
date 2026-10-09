@@ -41,7 +41,7 @@ test('fallback only accepts evidence-bound schema-conformant forecast plans',asy
 
 test('predictive production source routes only through approved Anthropic',()=>{
  assert.ok(src.includes("gov.provider!=='Anthropic'"));
- assert.ok(src.includes('https://api.anthropic.com/v1/messages'));
+ assert.match(src, /fetch\('https:\/\/api\.anthropic\.com\/v1\/messages'/);
  assert.ok(src.includes("generationProvider='Anthropic'"));
  assert.ok(src.includes('generation_provider:generationProvider'));
  for(const banned of ['Composio/Groq','runValidatedApprovedFallback','fallbackGov','COMPOSIO_SEARCH_GROQ_CHAT','predictive-approved-fallback']){
