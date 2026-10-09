@@ -46,5 +46,23 @@
     "canary": [
       "tests/brain-email-lane-fault-isolation-v1.test.mjs"
     ]
+  },
+  "prevention": [
+    "Isolate daily connection enrichment from subsequent commercial failures within the existing hourly scheduler",
+    "Never duplicate the email dispatcher after main commercial cycle success",
+    "Keep recipient approval, opt-out/suppression, cooldown, contact pressure, quality and verified Gmail SENT readback gates unchanged",
+    "Regression historical replay and production cron readback remain mandatory"
+  ],
+  "evidence": {
+    "today_enrichment_20261009": {
+      "enrichment_20261009_total": 23295,
+      "enriched": 23295,
+      "email_prepared": 0,
+      "actual_gmail_provider_sends_in_this_repair": 0
+    },
+    "producer_test": "tests/brain-email-lane-fault-isolation-v1.test.mjs",
+    "production_scheduler_job": 116,
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4263",
+    "provider_sent_email_count_proven_in_this_repair": 0
   }
 }
