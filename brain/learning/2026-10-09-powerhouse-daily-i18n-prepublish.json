@@ -13,7 +13,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-powerhouse-blog-i18n-prepublish.test.mjs"
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
     ]
   }
 }
