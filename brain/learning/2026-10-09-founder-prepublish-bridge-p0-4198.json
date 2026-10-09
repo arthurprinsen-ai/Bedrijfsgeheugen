@@ -1,0 +1,61 @@
+{
+  "id": "p0-4198-personal-founder-prepublish-vision-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|personal-linkedin|founder-prepublish|verified-builder-bridge|v1",
+  "root_cause": "Powerhouse content orchestrator and social publisher already accepted independently verified builder stories, while the final prepublish gate still treated every personal post as life-only and blocked business words, creating a terminal source-to-provider contract gap.",
+  "existing_authorities": {
+    "evidence": "Powerhouse Brain source-backed content recommendations",
+    "generation": "powerhouse-content-orchestrator",
+    "publishing": "powerhouse-social-publisher",
+    "independent_review": "bg-pre-publish-review",
+    "runtime_truth": "Supabase and provider receipts",
+    "human_projection": "Notion canonical system map"
+  },
+  "change": "Permit existing ai-native-builder-v1 proof as an explicit additional personal mode at final review; keep personal-life-only and observational modes unchanged.",
+  "safety": {
+    "first_person_required": true,
+    "source_backed_event_required": true,
+    "arthur_anchor_required": true,
+    "identity_contract_required": true,
+    "final_text_hash_required": true,
+    "sensitive_details_fail_closed": true,
+    "sales_voice_blocked": true,
+    "company_page_interchangeable_blocked": true,
+    "provider_delivery_not_claimed": true
+  },
+  "production_truth": {
+    "before_change": {
+      "architectural_layers_wired": 32,
+      "architectural_layers_total": 32,
+      "loop_green": 7,
+      "loop_amber": 2,
+      "loop_red": 6,
+      "daily_run": "degraded"
+    },
+    "after_change": "NOT_DEPLOYED_NOT_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "PERSONAL_FOUNDER_POLICY_RUNTIME_GATE_DRIFT",
+    "scope": "PERSONAL_LINKEDIN_SOURCE_TO_PUBLISHER",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
+    ],
+    "production_claim": "not_live_until_protected_merge_edge_exact_code_readback_and_provider_delivery_evidence"
+  },
+  "evidence": {
+    "pull_request": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4264",
+    "notion_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "test": "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
+  }
+}
