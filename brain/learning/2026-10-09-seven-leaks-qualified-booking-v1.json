@@ -1,0 +1,60 @@
+{
+  "fingerprint": "powerhouse|revenue|seven-leaks-qualified-booking-route|v1",
+  "date": "2026-10-09",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "The free PDF and follow-up selfscan are publicly live, but the workbook landing routes visitors through a second diagnostic page to discover the actual 30-minute appointment calendar. This adds unnecessary steps for high-intent buyers who already want to talk.",
+  "root_cause": "The landing offered a /frisse-blik explainer rather than the existing active Calendly booking URL for the 30-minute advice event. First-party CTA clicks alone cannot prove booked meetings.",
+  "fix": "Preserve the ungated PDF and existing selfscan CTA; replace only the landing's optional secondary Frisse Blik explainer CTA with the actual verified active free Calendly appointment type. Mark it booking-page *intent*, never booked-call conversion.",
+  "prevention": [
+    "Free PDF and selfscan remain ungated and primary.",
+    "Existing verified Calendly scheduling URL reused, no new event, scheduling automation or lead form.",
+    "Never count an outbound click as a booked call or received revenue.",
+    "Preserve privacy controls and existing first-party click tracker.",
+    "No invented scarcity, testimonials, paid results or provider permissions."
+  ],
+  "evidence": {
+    "parent_issue": 4198,
+    "existing_event_type": "https://api.calendly.com/event_types/468ddcac-6602-4e1f-a21c-395dd50ef422",
+    "existing_booking_url": "https://calendly.com/arthur-prinsen/adviesgesprek-slimmer-geregeld",
+    "event_proven_active_on": "2026-10-09",
+    "provider_proof": "Active personal 30-minute no-charge event; 142 open time slots available between 2026-10-12 and 2026-10-22 in provider query (dynamic, not guaranteed).",
+    "test": "tests/brain-seven-leaks-qualified-booking-v1.test.mjs"
+  },
+  "outcome": "Candidate lower-friction voluntary booking intent; no new human lead, appointment, completed session or paid order is implied. Only provider booking receipt can prove appointment.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seven-leaks-qualified-booking-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seven-leaks-qualified-booking-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seven-leaks-qualified-booking-v1.test.mjs"
+    ],
+    "invariants": [
+      "ungated PDF available without email",
+      "free selfscan CTA preserved",
+      "verified existing free booking event reused",
+      "booking link click is not confirmed meeting",
+      "no duplicate campaign scheduler or CRM",
+      "main production readback required before success"
+    ],
+    "regressions": [
+      "tests/brain-seven-leaks-qualified-booking-v1.test.mjs"
+    ],
+    "productionCriteria": [
+      "protected PR checks and NL/EN cache pass",
+      "exact merged source published on Netlify",
+      "real landing HTML contains real optional Calendly CTA and primary selfscan CTA",
+      "Calendly provider confirms real booking before counted as qualified call",
+      "paid order source and real revenue before ONE BRAIN learns a revenue result"
+    ]
+  },
+  "compiler": {
+    "failure_class": "HIGH_INTENT_WORKBOOK_TO_APPOINTMENT_UNNECESSARY_HOP",
+    "scope": "WEBSITE_COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
