@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse|predictive|anthropic-tool-use-network-45s-deadline|finite-90s-v1",
+  "obligationId": "p0-4198-predictive-anthropic-inference-deadline-20261009",
+  "parentP0": 4198,
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "production_engine": "v182 ACTIVE",
+    "byte_parity_to_main": true,
+    "prior_sqlstate_57014_not_repeated": true,
+    "authorized_request_id": 1707,
+    "authorized_http_status": 500,
+    "actual_error": "Signal timed out.",
+    "old_anthropic_abort_ms": 45000,
+    "provider_account_smoke_http_status": 200,
+    "provider_model": "claude-sonnet-5",
+    "real_fully_successful_run": false
+  },
+  "root_cause": "After v182 eliminated the previous bulk-write statement timeout in the observed run, full Anthropic tool-use exceeded the hardcoded 45-second AbortSignal deadline; real HTTP 500 and database predictive health row confirm Signal timed out.",
+  "changes": [
+    "Extend exactly the governed Anthropic forecast fetch finite deadline from 45 seconds to 90 seconds, below the 120-second existing scheduler proof request budget",
+    "Retain input signals, approved model and tool schema, evidence-key limits, unchanged write suppression and five-row batches",
+    "No additional provider, executor, cron, or duplicate external sending"
+  ],
+  "guardrails": [
+    "Do not bypass provider or database evidence validation",
+    "No fabricated successful forecasts",
+    "No false commercial or Brain closure",
+    "No removal of finite timeout, scheduler authentication or retry safety"
+  ],
+  "prevention": [
+    "Budget Anthropic multi-signal forecast tool call for real observed inference latency",
+    "Retain finite deadline under existing delivery transport budget",
+    "Only mark healthy on genuine model and persisted forecast/provider outcome proof"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-anthropic-deadline-v1.test.mjs",
+      "tests/brain-predictive-postgrest-batching-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PREDICTIVE_PROVIDER_TIMEOUT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "required": [
+    "Protected Required + CodeQL + preview",
+    "Main to production Edge source parity",
+    "One real authorized full Anthropic tool-use completion",
+    "Persisted forecast and Brain readback",
+    "Independent all-channel outbound and attributed outcome proof"
+  ]
+}
