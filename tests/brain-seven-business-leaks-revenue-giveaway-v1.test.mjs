@@ -23,7 +23,7 @@ test('historical replay: truly ungated gratis PDF remains usable and downloadabl
 test('shadow: route continues the existing first-party selfscan and not a parallel portal',()=>{
   assert.match(redirects,/^\/7-bedrijfslekken\s+\/pages\/7-bedrijfslekken\.html\s+200$/m);
   assert.match(scan,/Laat zien waar mijn bedrijf lekt/);
-  assert.match(scan,/\/7-bedrijfslekken\?utm_source=zelfscan/);
+  assert.match(scan,/Geen formulier, geen e-mailmuur/);
   assert.match(landing,/\/zelfscan\?utm_source=werkboek/);
   assert.match(landing,/\/frisse-blik/);
   assert.doesNotMatch(landing,/nouveaux|fake.*scarcity|nog maar 3 plekken/i);
