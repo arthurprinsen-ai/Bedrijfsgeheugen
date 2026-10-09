@@ -9,3 +9,5 @@
 - P0 closure requires real two-tenant authorized customer readback, full browser+provider inventory, transactional >750KB outbox and customer-specific CSRD/ESRS scope.
 
 - Security follow-up: GitHub Advanced Security review thread PR #4242 flagged test-only /<script>/ regex as case-sensitive and unsafe to treat as HTML filtering; replaced with positive escaped HTML output assertion, preserving renderer escaping and protected CodeQL admission.
+
+- Explicit DOM evidence status: known canonical paths get DECLARATION_ONLY; missing paths get UNMAPPED. Neither claims live tenant or Brain acceptance. The change also causes the immutable PR Netlify preview to include an actual portal-v2 runtime asset change, rather than relying on a canceled no-content deploy.
