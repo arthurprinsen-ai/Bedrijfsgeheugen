@@ -6,17 +6,17 @@ const sql=readFileSync('supabase/migrations/20261009150000_contact_pressure_only
 const outbound=(action)=>action.status==='done' && Boolean(action.executed_at) && ['email','e_mail','linkedin_dm'].includes(String(action.channel??'').toLowerCase().replace(/[^a-z0-9]+/g,'_'));
 
 test('preserve existing RLS caller semantics, all view columns, and scheduler isolation',()=>{
- assert.match(sql,/CREATE OR REPLACE VIEW public\\.powerhouse_contact_pressure_v1/);
- assert.match(sql,/WITH \\(security_invoker = true\\)/);
+ assert.match(sql,/CREATE OR REPLACE VIEW public\.powerhouse_contact_pressure_v1/);
+ assert.match(sql,/WITH \(security_invoker = true\)/);
  for(const col of ['outbound_7d','outbound_30d','outbound_90d','pending_response','next_follow_up_at','cooldown_until','pressure_state'])assert.match(sql,new RegExp(col));
- assert.doesNotMatch(sql,/DROP VIEW|CREATE TABLE|cron\\.schedule|cron\\.alter_job/);
+ assert.doesNotMatch(sql,/DROP VIEW|CREATE TABLE|cron\.schedule|cron\.alter_job/);
 });
 
 test('SQL includes explicit successful-delivery and recipient-channel guards',()=>{
- assert.match(sql,/powerhouse_sales_actions\\.status = 'done'/);
- assert.match(sql,/powerhouse_sales_actions\\.executed_at IS NOT NULL/);
- assert.match(sql,/regexp_replace\\(powerhouse_sales_actions\\.channel/);
- assert.match(sql,/IN \\('email', 'e_mail', 'linkedin_dm'\\)/);
+ assert.match(sql,/powerhouse_sales_actions\.status = 'done'/);
+ assert.match(sql,/powerhouse_sales_actions\.executed_at IS NOT NULL/);
+ assert.match(sql,/regexp_replace\(powerhouse_sales_actions\.channel/);
+ assert.match(sql,/IN \('email', 'e_mail', 'linkedin_dm'\)/);
 });
 
 test('internal research and skipped contact actions never increase outbound pressure',()=>{
