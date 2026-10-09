@@ -11,5 +11,21 @@
     "Assurance reports provider_proven_salesrobot_dm=5, provider_proven_publications=1",
     "Daily run remains degraded if other channels fail",
     "Source merged and live function definition matches"
+  ],
+  "fingerprint": "powerhouse|salesrobot-daily-provider-proof-gap-20261009-v1",
+  "compiler": {
+    "failure_class": "SALESROBOT_DAILY_PROVIDER_PROOF_OMITTED",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-provider-proof-daily-assurance-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-salesrobot-provider-proof-daily-assurance-v1.test.mjs"
   ]
 }
