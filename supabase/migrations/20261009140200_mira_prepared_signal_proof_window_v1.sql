@@ -7,7 +7,7 @@ DECLARE
   v_original text;
   v_changed text;
   v_before text := 'where updated_at >= date_trunc(''day'',p_now at time zone ''Europe/Amsterdam'') at time zone ''Europe/Amsterdam'';';
-  v_after text := 'where observed_at >= p_now-interval ''24 hours''\n    and eligible = true\n    and evidence_score >= 0.40\n    and total_score >= 0.75;';
+  v_after text := E'where observed_at >= p_now-interval ''24 hours''\n    and eligible = true\n    and evidence_score >= 0.40\n    and total_score >= 0.75;';
 BEGIN
   SELECT pg_get_functiondef('public.powerhouse_refresh_regression_stage_evidence_v1(timestamptz)'::regprocedure)
     INTO v_original;
