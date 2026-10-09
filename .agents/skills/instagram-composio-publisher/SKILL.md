@@ -438,3 +438,14 @@ Hard rules:
 - Once a daily winner exists it remains immutable; provider/media recovery must reuse it.
 - Social outcomes and learning write back to the exact source/recommendation/winner lineage.
 - Provider search fallback is bounded Tavily -> DataForSEO; no Make.
+
+
+## Mira ondernemingsprobleem → portal caption, harde publicatiepoort (2026-10-09)
+
+Fingerprint: `mira-entrepreneur-problem-to-portal-caption-v1`. Deze recente expliciete opdracht heeft voorrang op de oudere private-consumer-complaint only-regel. Mira blijft een openlijk fictief, herkenbaar mens in een gewone scène; haar caption gaat nu over één **bestaand canoniek PH-Pxxx ondernemersprobleem**, niet een willekeurige consumentenklacht.
+
+Elke Mira-publicatie bestaat uit exact één passende, origineel geverifieerde Mira-visual/Reel én één volledige Nederlandstalige caption: herkenbare concrete scène → aantoonbare oorzaak of probleemhypothese → **potentieel** zakelijk gevolg → relevante Bedrijfsgeheugen-portaalpagina met capaciteit en voorgestelde actie/eigenaar → te volgen resultaat/meetpunt + begrijpelijke pointe. De caption vermeldt dat Mira fictief is; geen verzonnen klantervaring, geldbedrag of bewezen live-portaalfunctie. De bestaande `config/powerhouse-problem-library.json` is de enige canonieke probleemtaxonomie; ondersteunende externe signalen zijn context, nooit ongetoetst feit.
+
+De bestaande content-orchestrator produceert de source-bound caption, de bestaande Instagram-media-router retourneert de PH-P-scène aan OpenArt en weigert media zonder die lineage, en de bestaande social-publisher voert de machinecheck uit vóór elke provider-side-effect. De bron/portal/scene moeten overeenkomen. Geen extra executor, scheduler, Buffer/Make fallback of tweede taxonomie. De bevroren dagwinnaar wordt niet herschreven; ongeschikte bestaande assets worden niet 'goed' verklaard.
+
+Canonical runtime: `supabase/functions/_shared/mira-entrepreneur-caption.mjs` en test `tests/brain-mira-entrepreneur-caption-v1.test.mjs`. Succes vraagt nog steeds exacte provider-ID, permalink, readback en outcome-evidence.
