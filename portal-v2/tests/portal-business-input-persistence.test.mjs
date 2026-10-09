@@ -4,6 +4,7 @@ import { createPortalStateClient, buildPortalBusinessInput } from '../portal-sta
 
 const identity=()=>({currentUser:()=>({id:'user-1',jwt:async()=> 'jwt-token'})});
 const response=(body={},status=200)=>({ok:status>=200&&status<300,status,json:async()=>body});
+const businessAck={stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true};
 
 test('buildPortalBusinessInput keeps portal knowledge and excludes derived read-model state',()=>{
   const input=buildPortalBusinessInput({
@@ -20,7 +21,7 @@ test('authenticated write stores canonical business input before portal projecti
   const calls=[];
   const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,options={})=>{
     calls.push({url,options});
-    if(url==='/api/portal-business-input')return response({stored:true,authorityStored:true});
+    if(url==='/api/portal-business-input')return response(businessAck);
     if(url==='/api/portal-state'&&options.method==='POST')return response({stored:true});
     if(url==='/api/portal-state'&&options.method==='GET')return response({portal:{profile:{employees:24}}});
     throw new Error(`unexpected ${url}`);
@@ -42,3 +43,25 @@ test('canonical failure is fail-closed and prevents portal projection write',asy
   await assert.rejects(()=>client.write({portal:{profile:{employees:24}}}),/CANONICAL_AUTHORITY_WRITE_FAILED/);
   assert.deepEqual(calls.map(call=>call.url),['/api/portal-business-input']);
 });
+
+
+for(const [reason,body] of [
+  ['uncommitted projection',{...businessAck,stored:false}],
+  ['stale canonical write',{...businessAck,stale:true}],
+  ['missing authority ACK',{...businessAck,authorityStored:false}],
+  ['missing Powerhouse feed ACK',{...businessAck,powerhouseFeedStored:false}],
+  ['missing organism impact ACK',{...businessAck,organismImpactStored:false}],
+  ['partial HTTP 200 body',{stored:true,authorityStored:true}],
+  ['empty HTTP 200 body',{}]
+]){
+  test('HTTP 200 '+reason+' fails closed before portal projection',async()=>{
+    const calls=[];
+    const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,options={})=>{
+      calls.push({url,options});
+      if(url==='/api/portal-business-input')return response(body);
+      throw new Error('portal projection must not be called');
+    }});
+    await assert.rejects(()=>client.write({portal:{profile:{employees:24}}}),/PORTAL_BUSINESS_INPUT_ACK_INCOMPLETE/);
+    assert.deepEqual(calls.map(call=>call.url),['/api/portal-business-input']);
+  });
+}
