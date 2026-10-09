@@ -13,7 +13,8 @@ function element(doc,tag,cls,text){
   if(text)x.textContent=text;
   return x;
 }
-export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessionStorage}={}){
+export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessionStorage,authHeaders}={}){
+  if(typeof authHeaders!=='function')throw new TypeError('PORTAL_SCAN_AUTH_HEADERS_REQUIRED');
   const mount=doc.querySelector('.main .executive-glance')||doc.querySelector('.main');
   if(!mount)return {setAuthenticated(){}};
   const section=element(doc,'section','portal-canonical-scans');
@@ -33,6 +34,14 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessio
   mount.before(section);
   let authenticated=false,revision=0;
   const json=async response=>response.json().catch(()=>null);
+  async function bearerHeaders(){
+    // Resolve the current Netlify Identity JWT on each request. Never store it
+    // alongside an anonymous scan key or read it from the public URL.
+    const current=await authHeaders();
+    const bearer=String(current?.authorization||current?.Authorization||'').trim();
+    if(!/^Bearer\\s+\\S+$/i.test(bearer))throw new Error('PORTAL_SCAN_AUTH_REQUIRED');
+    return {accept:'application/json',authorization:bearer};
+  }
   function clearHistory(){history.replaceChildren()}
   function showHistory(scans){
     clearHistory();
@@ -62,7 +71,9 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessio
     claim.hidden=!key;
     status.textContent='Geverifieerde scanhistorie ophalen…';
     try{
-      const response=await fetcher('/api/portal-scans',{credentials:'same-origin',cache:'no-store'});
+      const headers=await bearerHeaders();
+      if(current!==revision||!authenticated)return;
+      const response=await fetcher('/api/portal-scans',{credentials:'same-origin',cache:'no-store',headers});
       const data=await json(response);
       if(current!==revision||!authenticated)return;
       if(response.status===401||response.status===403){section.hidden=true;clearHistory();return}
@@ -77,10 +88,13 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessio
     const submissionKey=pendingKey(storage);
     if(!submissionKey)return;
     claim.disabled=true;status.textContent='De nulmeting gecontroleerd koppelen aan dit bedrijf…';
+    const current=revision;
     try{
-      const response=await fetcher('/api/portal-scans',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({submission_key:submissionKey})});
+      const headers=await bearerHeaders();
+      if(current!==revision||!authenticated)return;
+      const response=await fetcher('/api/portal-scans',{method:'POST',credentials:'same-origin',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({submission_key:submissionKey})});
       const data=await json(response);
-      if(!authenticated)return;
+      if(current!==revision||!authenticated)return;
       if(!response.ok||data?.ok!==true||data?.claimed!==true){status.textContent='Koppelen is niet gelukt; de scan blijft ongewijzigd. Probeer het opnieuw.';return}
       try{storage.removeItem(KEY)}catch{}
       await refresh();
