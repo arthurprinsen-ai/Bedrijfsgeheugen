@@ -12,8 +12,18 @@ test('founder story evidence is shared by publisher and final reviewer',()=>{
 test('builder lane keeps personal, hash, privacy and non-sales checks',()=>{
   assert.match(review,/if \(builderMode\)/);
   assert.match(review,/if \(!builderMode\)/);
-  assert.match(review,/FOUNDER_FIRST_PERSON_REQUIRED/);
-  assert.match(review,/FOUNDER_SALES_VOICE_BLOCKED/);
+  assert.match(review,/AI_NATIVE_FIRST_PERSON_REQUIRED/);
+  assert.match(review,/AI_NATIVE_SALES_PITCH_BLOCKED/);
   assert.match(review,/FINAL_TEXT_HASH_MISMATCH/);
   assert.match(review,/SENSITIVE_PRIVATE_DETAIL_BLOCK/);
+});
+test('runtime source parity: guard first-person builder, provenance, technical jargon and no sales',()=>{
+  assert.match(review,/AI_NATIVE_BUILDER_POLICY_REQUIRED/);
+  assert.match(review,/BUILD_EVENT_UNVERIFIED/);
+  assert.match(review,/ARTHUR_ANCHOR_UNVERIFIED/);
+  assert.match(review,/AI_NATIVE_TECHNICAL_JARGON_BLOCKED/);
+  assert.match(review,/AI_NATIVE_BUSINESS_CONTEXT_REQUIRED/);
+  assert.match(review,/FINAL_TEXT_BUSINESS_SIGNAL_BLOCK/);
+  assert.match(review,/PREDICTION_LINEAGE_REQUIRED/);
+  assert.match(review,/SOURCE_LINEAGE_REQUIRED/);
 });
