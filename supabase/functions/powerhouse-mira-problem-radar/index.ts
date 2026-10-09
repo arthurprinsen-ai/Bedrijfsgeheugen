@@ -75,7 +75,7 @@ Deno.serve(async(req:Request)=>{
    const problemTopic=topic(all),portalProblemId=portalIds[problemTopic];
    if(!problemTopic||!portalProblemId)continue; // do not synthesize unrelated consumer complaints into company facts
    const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
-   const personal=/(ik|mijn|thuis|kind|school|parkeren|pakket|wachtwoord|app|abonnement|klantenservice|chatbot)/.test(all)?1:0.6;
+   const personal=/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|excel|proces|klant)/.test(all)?1:0.6;
    const share=/(herken|iedereen|steeds|elke keer|weer|waarom)/.test(all)?0.95:0.65;
    const evidence=clamp(Number(x.score)||0.5);
    const recency=0.8;
