@@ -13,3 +13,5 @@
 - Observed CI admission #37906561513: historical replay FAILED with six `AMBIGUOUS_FIELD_ID` findings, all in `gegevens-invullen`. This is an actual discovered client field-binding defect, not a flaky CI test.
 - Corrective change: only colliding form control IDs are uniquely qualified on the combined page, preserving `portal.*` paths and legacy identifiers; regression covers all six collisions.
 - Do not infer verified customer persistence, real tenant readback or model recalculation from corrected UI bindings alone.
+
+- Evidence preservation: Required CI now uploads the generated source matrix under the precise run/attempt as a 30-day Actions artifact rather than leaving its JSON only on the ephemeral runner.
