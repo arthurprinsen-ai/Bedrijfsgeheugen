@@ -224,7 +224,7 @@ jobs:
             echo "Verified immutable PR baseline: merged PR #${pr_number}, head ${pr_head_sha}, deploy ${expected_id}; production will be independently compared."
           fi
       - name: Visual regression against approved PR baseline
-        if: github.event_name == 'push' && env.VISUAL_BASELINE_REQUIRED == 'true'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
           VISUAL_BASELINE: artifacts/visual-baseline-pr/portal-v2-canvassen.png
@@ -234,7 +234,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: portal-v2-production-dom-readback-${{ github.sha }}
+          name: portal-v2-production-dom-readback-${{ env.PORTAL_EXPECTED_SHA }}
           path: |
             playwright-report/
             test-results/
