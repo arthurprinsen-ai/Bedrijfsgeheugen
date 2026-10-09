@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|portal|schema-rendered-input-coverage-vs-live-tenant-proof-v1",
+  "obligationId": "p0-4215-schema-render-coverage-admission-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "existing Portal V2 registry, source schemas, field renderer and ONE BRAIN",
+  "root_causes": [
+    "Previously inventoried schemas are not a complete rendered DOM inventory of all customer input fields and dynamic integration forms.",
+    "Unenumerated supplemental workspaces, uninspected pages and repeatable columns could otherwise be misclassified as 100% covered or live readback."
+  ],
+  "prevention": [
+    "Automatically generate a page+field matrix on every protected Required preflight, reusing existing schema/renderer/impact authorities.",
+    "Fail closed on duplicate ambiguous controls, missing canonical paths, incomplete impact mapping or renderer binding mismatches.",
+    "Keep real authenticated browser/Brain/projection readback and customer-specific legal relevance explicitly NOT_OBSERVED until provider evidence exists."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_FIELD_RENDERER_COVERAGE_UNPROVEN",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "exact-head Required and CodeQL",
+    "protected main + exact-main Netlify deploy and production readback",
+    "authenticated complete DOM route/field inventory + legacy/dynamic/provider surface",
+    "real authorized two-tenant canonical write→Brain consumer ACK→cards/roadmap readback",
+    ">750KB batch durability, 200-field/1000-observation isolation, retry/revoke/conflict",
+    "per-customer legal CSRD/ESRS applicability with official source and human review"
+  ]
+}
