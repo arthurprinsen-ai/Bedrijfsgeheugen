@@ -8,8 +8,8 @@ const router=readFileSync('supabase/functions/powerhouse-instagram-media-router/
 const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
 const orchestrator=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
 const sh='a'.repeat(64);
-const frame=(position)=>({position,canonical_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_reference_url:MIRA_MASTER_REFERENCE_URL,master_reference_sha256:sh,face_identity_match:true,face_identity_confidence:.96,identity_comparison_method:'two_image_vision'});
-const proof={canonical_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_reference_url:MIRA_MASTER_REFERENCE_URL,master_reference_sha256:sh,face_identity_match:true,face_identity_confidence:.96,identity_comparison_method:'two_image_vision',frame_evidence:['start','middle','end'].map(frame)};
+const frame=(position)=>({position,canonical_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_reference_url:MIRA_MASTER_REFERENCE_URL,master_reference_sha256:sh,face_identity_match:true,face_identity_confidence:.98,identity_comparison_method:'two_image_vision'});
+const proof={canonical_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_reference_url:MIRA_MASTER_REFERENCE_URL,master_reference_sha256:sh,face_identity_match:true,face_identity_confidence:.98,identity_comparison_method:'two_image_vision',frame_evidence:['start','middle','end'].map(frame)};
 test('master asset is existing verified OpenArt-only fictional Mira reference, never a user upload',()=>{
  assert.equal(config.canonical_reference.reference_id,MIRA_MASTER_REFERENCE_ID);
  assert.equal(config.canonical_reference.url,MIRA_MASTER_REFERENCE_URL);
@@ -25,7 +25,7 @@ test('generation source requires canonical master URL, ID, image-to-video and fr
 test('each of three exact final Reel frames must match master with high confidence and same SHA',()=>{
  assert.equal(miraFaceProofValid(proof,'reel'),true);
  assert.equal(miraFaceProofValid({...proof,face_identity_match:false},'reel'),false);
- assert.equal(miraFaceProofValid({...proof,face_identity_confidence:.89},'reel'),false);
+ assert.equal(miraFaceProofValid({...proof,face_identity_confidence:.93},'reel'),false);
  assert.equal(miraFaceProofValid({...proof,master_reference_sha256:'not-a-hash'},'reel'),false);
  for(const position of ['start','middle','end']){
   assert.equal(miraFaceProofValid({...proof,frame_evidence:proof.frame_evidence.filter(f=>f.position!==position)},'reel'),false);
