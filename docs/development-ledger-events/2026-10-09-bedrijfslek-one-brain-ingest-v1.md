@@ -12,3 +12,5 @@
 - Live evidence: PENDING, not falsely green.
 - Next safe action: protected CI, review, merge, deploy Netlify+Supabase Edge from identical source, perform no-PII readback and verify tenant claim.
 - Writer-Lease-State: CANDIDATE_WRITING
+
+- Portal V2: append authenticated scan history and click-to-claim bridge via existing tenant-secured endpoint, no shadow store or auto identity claim.
