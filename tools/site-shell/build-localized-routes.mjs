@@ -574,7 +574,17 @@ function saveCache(cache) {
     ));
     if (!Object.keys(additions).length) return;
     const file = path.join(TRANSLATION_CACHE_PATCH_DIR,PREPARE_CACHE_PATCH_NAME);
-    const previousPatch = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file,'utf8')) : {};
+    // Read once rather than checking existence first: avoids a TOCTOU race.
+    // Only ENOENT means a new patch; parse or permission errors stay fatal.
+    let previousPatch = {};
+    try {
+      previousPatch = JSON.parse(fs.readFileSync(file,'utf8'));
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    if (!previousPatch || typeof previousPatch !== 'object' || Array.isArray(previousPatch)) {
+      throw new Error('STATIC_I18N_CACHE_PATCH_INVALID: ' + PREPARE_CACHE_PATCH_NAME);
+    }
     ensureDir(file);
     fs.writeFileSync(file,JSON.stringify({...previousPatch,...additions},null,2)+'\n');
     return;
