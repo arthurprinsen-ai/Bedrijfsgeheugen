@@ -63,7 +63,7 @@ test('Portal V2 only exposes scans after authenticated tenancy and explicit clai
   const bridge=await readFile(new URL('../portal-v2/scan-claim-bridge.js',import.meta.url),'utf8');
   const app=await readFile(new URL('../portal-v2/app.js',import.meta.url),'utf8');
   const api=await readFile(new URL('../netlify/functions/portal-scans.mjs',import.meta.url),'utf8');
-  assert.match(app,/createScanClaimBridge\(\)/);
+  assert.match(app,/createScanClaimBridge\(\{authHeaders:\(\)=>portalStateClient\.authHeaders\(\)\}\)/);
   assert.match(app,/scanClaimBridge\.setAuthenticated\(authenticated\)/);
   assert.match(bridge,/if\(!authenticated\)return/);
   assert.match(bridge,/tenant_identity_status==='verified'/);
