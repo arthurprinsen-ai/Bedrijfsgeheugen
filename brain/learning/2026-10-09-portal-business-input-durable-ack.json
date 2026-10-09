@@ -15,17 +15,18 @@
   ],
   "tests": [
     "portal-v2/tests/portal-business-input-persistence.test.mjs",
-    "tests/portal-business-input-powerhouse-feed.test.mjs"
+    "tests/portal-business-input-powerhouse-feed.test.mjs",
+    "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-business-input-powerhouse-feed.test.mjs"
+      "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-p0-4215-business-input-durable-ack-v1.test.mjs"
     ]
   },
   "compiler": {
