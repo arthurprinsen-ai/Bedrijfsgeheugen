@@ -119,6 +119,7 @@ jobs:
           echo "PR=$pr slug=$SLUG auto-merge enabled"
 
       - name: Persist English cache before protected CI
+        id: i18n
         # Runs for new and existing candidates. Never relaxes the required cache gate.
         if: always() && steps.day.outputs.run == 'true'
         env:
@@ -162,7 +163,7 @@ jobs:
           fi
 
       - name: Self-heal required checks for the canonical daily candidate
-        if: always() && steps.day.outputs.run == 'true'
+        if: always() && steps.day.outputs.run == 'true' && steps.i18n.outcome == 'success'
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
