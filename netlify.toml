@@ -475,3 +475,6 @@
 
 # production redeploy heartbeat: portal-public-visibility-403-bounded-20261009-v1
 # Exact-main release and preview source parity for strict, bounded anonymous browser readbacks; no auth/runtime change.
+
+# production redeploy heartbeat: canonical-browser-visibility-navigation-readback-20261009-v1
+# Native exact-SHA Netlify preview/live release verification; no runtime or security changes.
