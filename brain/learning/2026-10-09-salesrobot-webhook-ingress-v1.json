@@ -1,0 +1,30 @@
+{
+  "obligation_id": "commercial-salesrobot-webhook-ingress-20261009-v1",
+  "version": "1",
+  "source": "SalesRobot webhook UI callback URL missing",
+  "cause": "No authenticated inbound SalesRobot endpoint existed in canonical Supabase CRM runtime",
+  "change": "Vault-authenticated inbound-only Supabase Edge Function maps reply events to existing runtime event ledger with deduplication and exact existing-contact matching",
+  "safeguards": [
+    "scope to existing Bedrijfsgeheugen campaign",
+    "no new CRM or sender",
+    "no provider-delivery claims",
+    "no broad client access to Vault",
+    "drop raw unknown payload fields",
+    "no contact creation without verified match"
+  ],
+  "production_evidence": {
+    "supabase_function": "powerhouse-salesrobot-ingest",
+    "active_version": 1,
+    "http_unauthorized": 401,
+    "http_authorized_health": 200,
+    "http_authorized_canary": 200,
+    "canary_persisted": false
+  },
+  "still_unproven": [
+    "SalesRobot webhook registration in vendor UI",
+    "actual external reply provider payload",
+    "canonical event persistence from vendor delivery",
+    "end-to-end Notion synchronization and CRM outcome attribution"
+  ],
+  "parent_p0": 4198
+}
