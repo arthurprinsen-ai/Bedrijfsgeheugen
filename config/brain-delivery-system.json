@@ -557,7 +557,8 @@
         "tools/regulatory-",
         "tests/brain-terminal-obligation-",
         "skills/",
-        "docs/powerhouse/"
+        "docs/powerhouse/",
+        "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
