@@ -56,5 +56,21 @@
     "historical_replay": [
       "tests/brain-predictive-approved-fallback-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "anthropic_real_provider": {
+      "http_status": 200,
+      "model": "claude-sonnet-5",
+      "request_id": 1686,
+      "provider_receipt_present": true
+    },
+    "predictive_engine": {
+      "request_id": 1684,
+      "http_status": 500,
+      "error": "canceling statement due to statement timeout",
+      "success": false
+    },
+    "groq_fallback": "SUSPENDED",
+    "regression": "test suite tests/brain-predictive-approved-fallback-v1.test.mjs executed successfully in canonical learning admission 2026-10-09"
   }
 }
