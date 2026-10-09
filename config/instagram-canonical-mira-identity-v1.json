@@ -23,7 +23,7 @@
   "face_continuity": {
     "policy": "mira-master-two-image-face-continuity-v1",
     "comparison": "two_image_vision",
-    "min_confidence": 0.9,
+    "min_confidence": 0.94,
     "required_video_frames": [
       "start",
       "middle",
