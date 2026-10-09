@@ -12,6 +12,14 @@ export async function savePortalBusinessInput(input,{fetchFn=globalThis.fetch,en
   const response=await fetchFn(endpoint,{method:'POST',credentials:'same-origin',headers,body:JSON.stringify(input)});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(payload?.message||payload?.error||`Portal input save failed (${response.status})`);
+  // HTTP 200 alone is not durability: the server can explicitly report a
+  // stale/uncommitted canonical projection after upstream Brain writes.
+  // Never advance the separate portal projection on an incomplete ACK.
+  const committed=payload?.stored===true && payload?.stale!==true
+    && payload?.authorityStored===true
+    && payload?.powerhouseFeedStored===true
+    && payload?.organismImpactStored===true;
+  if(!committed)throw new Error(payload?.error||'PORTAL_BUSINESS_INPUT_ACK_INCOMPLETE');
   return payload;
 }
 
