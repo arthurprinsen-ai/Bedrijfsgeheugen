@@ -84,3 +84,11 @@ test('existing ONE BRAIN decision-cycle trigger admits only the three canonical 
   assert.match(sql,/new\.event_type = 'scan_submitted'/);
   assert.doesNotMatch(sql,/create\s+(?:table|schedule|publication|function)\s+\w*heartbeat/i);
 });
+
+test('privileged runtime-cycle function denies browser roles and keeps service-role execution',async()=>{
+  const sql=await readFile(new URL('../supabase/migrations/20261009185500_bedrijfslek_runtime_signal_cycle_v1.sql',import.meta.url),'utf8');
+  assert.match(sql,/revoke all on function public\.powerhouse_open_cycle_from_runtime_signal_v1\(uuid\) from public, anon, authenticated/i);
+  assert.match(sql,/grant execute on function public\.powerhouse_open_cycle_from_runtime_signal_v1\(uuid\) to service_role/i);
+  assert.match(sql,/e\.source not in \('website\.frisse_blik','website\.workshop_scan','website\.bedrijfslek'\)/);
+  assert.match(sql,/on conflict \(tenant_id,cycle_id\)/i);
+});
