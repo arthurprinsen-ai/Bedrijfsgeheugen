@@ -16,3 +16,6 @@ De anonieme zelfscan zit live in de bestaande scanner, runtime-events en Powerho
 De eerste echte geauthenticeerde klantclaim moet live worden uitgevoerd en aan `portal_state_layers`, portaal-KPI's en HEARTBEAT-aanbeveling worden gekoppeld. Alleen dan is de contextdoorwerking bewezen. Een voorstel is geen besluit, en er wordt geen gerealiseerde waarde of verkoop gefingeerd. P0 #4198 blijft voor de totale commerciële keten open.
 
 Fingerprint: `powerhouse|bedrijfslek|verified-portal-context-projection|v1`.
+
+## Portal V2 zichtbare gebruikerservaring
+De bestaande executive overview presenteert bij een geverifieerde klantclaim een aparte kaart met de indicatieve score en de drie nog niet uitgevoerde voorstellen. De kaart leest uitsluitend de bestaande canonical-brain projectie `state.portal.assessments.bedrijfslekScan` en gekoppelde `recommendedActions` met dezelfde bronreferentie. Bij ontbreken van geverifieerde identiteit of scan verdwijnt de kaart. Alle tekst is als DOM textContent toegevoegd, niet als onveilige HTML. De rest van het portaal blijft op bestaande KPI-waarheden gebaseerd.
