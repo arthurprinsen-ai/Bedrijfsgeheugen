@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -47,6 +48,7 @@ Deno.serve(async req=>{
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];
   if(clean(manifest.canonical_problem_id)!==miraBusinessProblem.id||clean(manifest.scene)!==miraBusinessProblem.scene)return json({ok:false,error:'MIRA_MEDIA_MUST_MATCH_CANONICAL_BUSINESS_PROBLEM_AND_SCENE',expected_problem_id:miraBusinessProblem.id},422);
+  if(!validMiraGenerationReference(manifest))return json({ok:false,error:'MIRA_FRESH_IMAGE2VIDEO_CANONICAL_MASTER_REQUIRED',master_reference_id:MIRA_MASTER_REFERENCE_ID,master_reference_url:MIRA_MASTER_REFERENCE_URL},422);
   if(!allowed.includes(provider))return json({ok:false,error:'MEDIA_PROVIDER_NOT_ALLOWED',provider,postType},422);
   if(policy?.required_provider&&provider!==policy.required_provider)return json({ok:false,error:'MEDIA_PROVIDER_REQUIRED',required:policy.required_provider},422);
   let proof:any={};
@@ -55,7 +57,7 @@ Deno.serve(async req=>{
    if(provider!=='openart')return json({ok:false,error:'OPENART_REQUIRED_FOR_MIRA_VISUAL'},422);
    const u=clean(manifest.asset_url||manifest.assetUrl);if(!u)return json({ok:false,error:'ASSET_URL_REQUIRED'},422);
    const v=await invoke(base,token,'powerhouse-instagram-media-verifier',{publicationDate:runDate,mediaUrl:u,provider,mediaType:'image',writeObligation:false});
-   if(!v.body?.pass)return json({ok:false,error:'VISION_PROOF_FAILED',detail:v.body},422);
+   if(!v.body?.pass||!miraFaceProofValid(v.body?.visual||{},'image'))return json({ok:false,error:'MIRA_CANONICAL_FACE_COMPARISON_REQUIRED',detail:v.body},422);
    proof={exact_final_media_proven:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:'image',media_provider:provider,media_url:u,final_media_sha256:v.body.sha256,instagram_visual:v.body.visual};
   } else if(postType==='reel'){
    if(provider!=='openart')return json({ok:false,error:'OPENART_REQUIRED_FOR_VIDEO'},422);
@@ -76,14 +78,16 @@ Deno.serve(async req=>{
      if(frameUrl)payload.mediaUrl=frameUrl;
      else {payload.imageBase64=frameBase64;payload.mediaMime=clean(f.mediaType||'image/jpeg');}
      const fv=await invoke(base,token,'powerhouse-instagram-media-verifier',payload);
-     if(!fv.body?.pass)return json({ok:false,error:'VIDEO_FRAME_VISION_PROOF_FAILED',position:f.position,detail:fv.body},422);
+     if(!fv.body?.pass||!miraFaceProofValid(fv.body?.visual||{},'image'))return json({ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,detail:fv.body},422);
      fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
    }
    const temporalCheck=await invoke(base,token,'powerhouse-instagram-temporal-verifier',{publicationDate:runDate,videoSha256:final.sha256,frames});
    if(!temporalCheck.body?.pass)return json({ok:false,error:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',detail:temporalCheck.body},422);
    const temporal=temporalCheck.body.temporal_proof||{};
    const temporalRefs=Array.isArray(temporal.evidence_refs)?temporal.evidence_refs.map(clean).filter(Boolean):[];
-   const visual={verified:true,semantic_verified:true,mira_present:true,identity_class:'mira_daily_life',evidence_method:'vision',placeholder_detected:false,visual_complete:true,daily_life_scene:true,mira_central_subject:fps.every(x=>x.mira_central_subject===true),text_dominant:fps.some(x=>x.text_dominant===true),brand_template_dominant:fps.some(x=>x.brand_template_dominant===true),confidence:Math.min(...fps.map(x=>Number(x.confidence)||0)),format_verified:true,width:1080,height:1920,asset_url:u,evidence_refs:[...fps.flatMap(x=>x.evidence_refs||[]),...temporalRefs],frame_evidence:fps,temporal_proof:{...temporal,contract:'mira-continuous-human-video-v1',verified:true}};
+   if(!['start','middle','end'].every(position=>fps.some(frame=>frame.position===position&&miraFaceProofValid(frame,'image'))))return json({ok:false,error:'MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES'},422);
+   const sourceFace=fps.find(frame=>frame.position==='start');
+   const visual={canonical_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_reference_url:MIRA_MASTER_REFERENCE_URL,master_reference_sha256:sourceFace.master_reference_sha256,face_identity_match:fps.every(frame=>frame.face_identity_match===true),face_identity_confidence:Math.min(...fps.map(frame=>Number(frame.face_identity_confidence)||0)),identity_comparison_method:'two_image_vision',verified:true,semantic_verified:true,mira_present:true,identity_class:'mira_daily_life',evidence_method:'vision',placeholder_detected:false,visual_complete:true,daily_life_scene:true,mira_central_subject:fps.every(x=>x.mira_central_subject===true),text_dominant:fps.some(x=>x.text_dominant===true),brand_template_dominant:fps.some(x=>x.brand_template_dominant===true),confidence:Math.min(...fps.map(x=>Number(x.confidence)||0)),format_verified:true,width:1080,height:1920,asset_url:u,evidence_refs:[...fps.flatMap(x=>x.evidence_refs||[]),...temporalRefs],frame_evidence:fps,temporal_proof:{...temporal,contract:'mira-continuous-human-video-v1',verified:true}};
    proof={exact_final_media_proven:true,mira_gate_passed:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:postType,media_provider:'openart',media_url:u,final_media_sha256:final.sha256,instagram_visual:visual,temporal_proof:{...temporal,contract:'mira-continuous-human-video-v1',verified:true}};
   } else if(postType==='carousel'){
    const slides=Array.isArray(manifest.slides)?manifest.slides:[];if(slides.length<2)return json({ok:false,error:'CAROUSEL_MIN_TWO_SLIDES_REQUIRED'},422);
@@ -112,6 +116,9 @@ Deno.serve(async req=>{
   };
   const pw=await db.from('powerhouse_media_proof_evidence_v1').upsert(proofRow,{onConflict:'fingerprint'});
   if(pw.error)throw new Error('AGGREGATE_PROOF_WRITE_FAILED');
+  if(!miraFaceProofValid(proof.instagram_visual||{},postType))return json({ok:false,error:'MIRA_SAME_FACE_EXACT_MEDIA_GATE_FAILED'},422);
+  proof.mira_generation_source={openart_reference_id:MIRA_MASTER_REFERENCE_ID,openart_reference_url:MIRA_MASTER_REFERENCE_URL,generation_mode:clean(manifest.generation_mode),openart_history_id:clean(manifest.openart_history_id)};
+  proof.mira_face_consistency_contract=MIRA_FACE_CONSISTENCY_POLICY;
   proof.proof_fingerprint=proofFingerprint;
   proof.mira_business_problem_id=miraBusinessProblem.id;
   proof.mira_entrepreneur_scene=miraBusinessProblem.scene;
@@ -132,5 +139,5 @@ Deno.serve(async req=>{
  const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:state,required_provider:policy?.required_provider||null,selected_provider:job?.selected_provider||existingProvider||null,asset_manifest:job?.asset_manifest||{},proof_manifest:job?.proof_manifest||{},republish_forbidden:false,provider_connection_state:providerState,attempts:(job?.attempts||0)+1,last_error:assetMaterialized?null:(readyProviders.length?null:'MEDIA_PROVIDER_UNAVAILABLE'),next_action:assetMaterialized?'Exact asset already materialized; submit it with required frame/image evidence for canonical vision proof.':readyProviders.length?'Producer must submit exact asset manifest to this router.':'Connect required OpenArt/Placid producer; fallback publication is forbidden.',updated_at:new Date().toISOString()};
  await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});
  if(state!=='PROOF_VERIFIED')await db.from('content_publication_obligations').update({status:'BLOCKED',last_error:row.last_error||'MEDIA_ASSET_REQUIRED',evidence:{...(ob?.evidence||{}),provider_routing_policy:policy,media_job_status:state},next_action:row.next_action,updated_at:new Date().toISOString()}).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram');
- return json({ok:true,ready:state==='PROOF_VERIFIED',runDate,postType,status:state,allowedProviders:allowed,requiredProvider:policy?.required_provider||null,readyProviders,canonical_problem_id:miraBusinessProblem.id,mira_business_scene:miraBusinessProblem.scene,source_catalog:'config/powerhouse-problem-library.json',caption_contract:MIRA_ENTREPRENEUR_CAPTION_CONTRACT});
+ return json({ok:true,ready:state==='PROOF_VERIFIED',runDate,postType,status:state,allowedProviders:allowed,requiredProvider:policy?.required_provider||null,readyProviders,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL,required_generation_mode:'image2video',canonical_problem_id:miraBusinessProblem.id,mira_business_scene:miraBusinessProblem.scene,source_catalog:'config/powerhouse-problem-library.json',caption_contract:MIRA_ENTREPRENEUR_CAPTION_CONTRACT});
 });
