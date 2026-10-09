@@ -1,6 +1,6 @@
 
 import { createClient } from "npm:@supabase/supabase-js@2";
-const HASH="26b860b372c053683d594d96a8c7e787a7407a80ed36cae1b0e747ed3d49e156";
+// Admission token authorizes inbound storage only; it is not an independently verified SalesRobot provider signature.\nconst HASH="26b860b372c053683d594d96a8c7e787a7407a80ed36cae1b0e747ed3d49e156";
 const CAMPAIGN="ae2812ad-c3eb-4c90-a0d4-6d4e5a94b93e";
 const json=(v:unknown,s=200)=>new Response(JSON.stringify(v),{status:s,headers:{"content-type":"application/json","cache-control":"no-store","x-content-type-options":"nosniff"}});
 const clean=(x:any,n=500)=>(typeof x==="string"||typeof x==="number")?String(x).trim().slice(0,n):"";
