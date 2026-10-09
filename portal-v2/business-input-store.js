@@ -12,6 +12,15 @@ export async function savePortalBusinessInput(input,{fetchFn=globalThis.fetch,en
   const response=await fetchFn(endpoint,{method:'POST',credentials:'same-origin',headers,body:JSON.stringify(input)});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(payload?.message||payload?.error||`Portal input save failed (${response.status})`);
+  // HTTP success alone is not proof of a persisted canonical/Brain input.
+  const acknowledged=payload?.stored===true
+    && payload?.stale!==true
+    && payload?.authorityStored===true
+    && payload?.powerhouseFeedStored===true
+    && payload?.organismImpactStored===true
+    && [payload?.sourceRevision,payload?.brainRecordId,payload?.currentStateRecordId,payload?.organismImpactRecordId]
+      .every(value=>typeof value==='string'&&value.length>0);
+  if(!acknowledged)throw new Error(payload?.error||'PORTAL_BUSINESS_INPUT_ACK_INCOMPLETE');
   return payload;
 }
 
