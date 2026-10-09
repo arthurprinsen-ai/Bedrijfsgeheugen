@@ -4,12 +4,15 @@ export const MIRA_MASTER_REFERENCE_ID='Yjqu4D7v76HABNPmQPj1';
 export const MIRA_MASTER_REFERENCE_URL='https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg';
 export const MIRA_FACE_CONSISTENCY_POLICY='mira-master-two-image-face-continuity-v1';
 export const MIRA_IDENTITY_MIN_CONFIDENCE=0.94;
+// OpenArt element2video uses the immutable master as an identity reference for a NEW scene.
+// Keep legacy image2video for literal first-frame animation; reject free-text-only video.
+export const MIRA_ALLOWED_REFERENCE_VIDEO_MODES=Object.freeze(['image2video','element2video']);
 export const MIRA_FORBIDDEN_REFERENCE_IDS=Object.freeze(['Jt5SWKRgyK3heTqEXH4w','w4HhwCmX5GxL8jTGljxe','umWzAKt6YBeoVpHlKTtK']);
 export function validMiraGenerationReference(manifest={}){
  const id=String(manifest.openart_reference_id||'').trim();
  const url=String(manifest.openart_reference_url||'').trim();
  return id===MIRA_MASTER_REFERENCE_ID&&url===MIRA_MASTER_REFERENCE_URL&&!MIRA_FORBIDDEN_REFERENCE_IDS.includes(id)
-  &&String(manifest.generation_mode||'').trim()==='image2video'
+  &&MIRA_ALLOWED_REFERENCE_VIDEO_MODES.includes(String(manifest.generation_mode||'').trim())
   &&!!String(manifest.openart_history_id||'').trim();
 }
 export function miraFaceProofValid(visual={},mediaType='reel'){

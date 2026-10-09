@@ -1,5 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
-import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
+import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_ALLOWED_REFERENCE_VIDEO_MODES,validMiraGenerationReference,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,MIRA_ENTREPRENEUR_CAPTION_CONTRACT} from '../_shared/mira-entrepreneur-caption.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -48,7 +48,7 @@ Deno.serve(async req=>{
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];
   if(clean(manifest.canonical_problem_id)!==miraBusinessProblem.id||clean(manifest.scene)!==miraBusinessProblem.scene)return json({ok:false,error:'MIRA_MEDIA_MUST_MATCH_CANONICAL_BUSINESS_PROBLEM_AND_SCENE',expected_problem_id:miraBusinessProblem.id},422);
-  if(!validMiraGenerationReference(manifest))return json({ok:false,error:'MIRA_FRESH_IMAGE2VIDEO_CANONICAL_MASTER_REQUIRED',master_reference_id:MIRA_MASTER_REFERENCE_ID,master_reference_url:MIRA_MASTER_REFERENCE_URL},422);
+  if(!validMiraGenerationReference(manifest))return json({ok:false,error:'MIRA_CANONICAL_REFERENCE_VIDEO_REQUIRED',allowed_generation_modes:MIRA_ALLOWED_REFERENCE_VIDEO_MODES,master_reference_id:MIRA_MASTER_REFERENCE_ID,master_reference_url:MIRA_MASTER_REFERENCE_URL},422);
   if(!allowed.includes(provider))return json({ok:false,error:'MEDIA_PROVIDER_NOT_ALLOWED',provider,postType},422);
   if(policy?.required_provider&&provider!==policy.required_provider)return json({ok:false,error:'MEDIA_PROVIDER_REQUIRED',required:policy.required_provider},422);
   let proof:any={};
@@ -139,5 +139,5 @@ Deno.serve(async req=>{
  const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:state,required_provider:policy?.required_provider||null,selected_provider:job?.selected_provider||existingProvider||null,asset_manifest:job?.asset_manifest||{},proof_manifest:job?.proof_manifest||{},republish_forbidden:false,provider_connection_state:providerState,attempts:(job?.attempts||0)+1,last_error:assetMaterialized?null:(readyProviders.length?null:'MEDIA_PROVIDER_UNAVAILABLE'),next_action:assetMaterialized?'Exact asset already materialized; submit it with required frame/image evidence for canonical vision proof.':readyProviders.length?'Producer must submit exact asset manifest to this router.':'Connect required OpenArt/Placid producer; fallback publication is forbidden.',updated_at:new Date().toISOString()};
  await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});
  if(state!=='PROOF_VERIFIED')await db.from('content_publication_obligations').update({status:'BLOCKED',last_error:row.last_error||'MEDIA_ASSET_REQUIRED',evidence:{...(ob?.evidence||{}),provider_routing_policy:policy,media_job_status:state},next_action:row.next_action,updated_at:new Date().toISOString()}).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram');
- return json({ok:true,ready:state==='PROOF_VERIFIED',runDate,postType,status:state,allowedProviders:allowed,requiredProvider:policy?.required_provider||null,readyProviders,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL,required_generation_mode:'image2video',canonical_problem_id:miraBusinessProblem.id,mira_business_scene:miraBusinessProblem.scene,source_catalog:'config/powerhouse-problem-library.json',caption_contract:MIRA_ENTREPRENEUR_CAPTION_CONTRACT});
+ return json({ok:true,ready:state==='PROOF_VERIFIED',runDate,postType,status:state,allowedProviders:allowed,requiredProvider:policy?.required_provider||null,readyProviders,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL,allowed_generation_modes:MIRA_ALLOWED_REFERENCE_VIDEO_MODES,canonical_problem_id:miraBusinessProblem.id,mira_business_scene:miraBusinessProblem.scene,source_catalog:'config/powerhouse-problem-library.json',caption_contract:MIRA_ENTREPRENEUR_CAPTION_CONTRACT});
 });
