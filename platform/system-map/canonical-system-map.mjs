@@ -1804,3 +1804,23 @@ export const COMMERCIAL_RECIPIENT_AUTHORITY_P0_V1 = Object.freeze({
   publicPublicationCannotProveRecipientOutreach:true
  })
 });
+
+export const COMMERCIAL_EMAIL_CHANNEL_FAULT_ISOLATION_P0_V1 = Object.freeze({
+  fingerprint:'powerhouse|commercial|independent-email-lane-within-single-scheduler|v1',
+  parentIssue:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+  schedulerAuthority:'existing pg_cron job 116 / powerhouse-commercial-learning-v1',
+  enrichment:'powerhouse_commercial_intelligence_context_stage_v1 (when graph freshness is behind)',
+  normalCommercialCycle:'powerhouse_trigger_based_mkb_acquisition_cycle_v1',
+  emailFallback:Object.freeze({
+    condition:'normal commercial cycle raised an exception (and was rolled back)',
+    prepare:'powerhouse_prepare_autonomous_outreach_v1',
+    optimize:'powerhouse_optimize_prepared_outreach_v1',
+    dispatch:'powerhouse_dispatch_autonomous_outreach_v1',
+    actualProvider:'powerhouse-autonomous-outreach',
+    noAdditionalScheduler:true,noParallelSender:true,noDuplicateDispatchOnMainCycleSuccess:true,
+    recipientPermissionAndQualityUnchanged:true,providerSentReadbackRequired:true
+  }),
+  regression:'tests/brain-email-lane-fault-isolation-v1.test.mjs',
+  migration:'supabase/migrations/20261009135700_commercial_email_lane_fault_isolation_4198.sql',
+  latestObservedState:'2026-10-09: 23295 enriched; zero prepared eligible e-mail recipients; no provider-confirmed sends claimed'
+});
