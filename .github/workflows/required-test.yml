@@ -96,6 +96,10 @@ jobs:
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
         run: |
           node --test portal-v2/tests/one-brain-impact-contract.test.mjs portal-v2/tests/portal-impact-engine.test.mjs portal-v2/tests/portal-causal-propagation.test.mjs portal-v2/tests/domain-state.test.mjs
+      - name: Generate auditable P0 4215 Portal input coverage matrix
+        run: |
+          node tools/ci/p0-4215-portal-input-coverage-matrix.mjs
+          node --test tests/brain-p0-4215-input-surface-coverage-v1.test.mjs
       - id: artifact
         name: Compute immutable artifact identity
         run: echo "artifact_id=$(node tools/build/artifact-id.mjs)" >> "$GITHUB_OUTPUT"
