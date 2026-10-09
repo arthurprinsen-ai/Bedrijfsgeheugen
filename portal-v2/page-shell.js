@@ -297,7 +297,10 @@ export function openPortalPage(pageId){
   const native=root.querySelector('#pvNative');
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
-    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot(),{demo:!hasProtectedTrustAccess()});
+    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot(),{
+      // A signed-in customer with empty/failed readback must never inherit demo scores.
+      demo:portalContext.stateClient?.isDemo?.()===true||!portalContext.stateClient?.currentUser?.()
+    });
     const renderer=renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
     // Same tenant-scoped Identity route as the canonical sovereignty panel.
     // Never use a global/canonical admin scope on customer pages.
