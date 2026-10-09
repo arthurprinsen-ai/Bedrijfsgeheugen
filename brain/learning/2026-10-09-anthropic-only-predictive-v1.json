@@ -10,7 +10,11 @@
     "request_id": 1684,
     "test_status": 500,
     "test_error": "canceling statement due to statement timeout",
-    "inference_proven": false
+    "inference_proven": false,
+    "anthropic_smoke_http_status": 200,
+    "anthropic_smoke_model": "claude-sonnet-5",
+    "anthropic_smoke_request_id": 1686,
+    "provider_smoke_proven": true
   },
   "changes": [
     "No Groq fallback dispatch in predictive Edge code",
@@ -28,5 +32,29 @@
     "Production source parity",
     "Successful Anthropic API result",
     "Forecast and full commercial-to-Brain evidence"
-  ]
+  ],
+  "root_cause": "Predictive fallback depends on Groq despite the canonical Anthropic provider being approved and funded; Groq organization billing restrictions prevent successful fallback.",
+  "failureModes": [
+    "GROQ_ORGANIZATION_BILLING_RESTRICTED",
+    "AI_FALLBACK_PROVIDER_UNAVAILABLE",
+    "PREDICTIVE_ENGINE_DATABASE_STATEMENT_TIMEOUT"
+  ],
+  "prevention": [
+    "Remove Groq network dispatch from this governed predictive Edge use case",
+    "Keep governance model id as authoritative and approved Anthropic provider only",
+    "Preserve strict forecast evidence requirements and fail closed on primary Anthropic failures",
+    "Verify real Anthropic provider receipt separately from actual engine, database and commercial learning receipts"
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_BILLING",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-approved-fallback-v1.test.mjs"
+    ]
+  }
 }
