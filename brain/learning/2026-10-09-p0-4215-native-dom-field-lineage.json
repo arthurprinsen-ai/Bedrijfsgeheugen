@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-native-dom-field-lineage-20261009-v1",
+  "fingerprint": "powerhouse|portal|native-form-dom-field-canonical-path-provenance-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "existing Portal V2 fieldMarkup/schema/Brain canonical write pipeline",
+  "root_causes": [
+    "Native form controls rendered data-field-id/type but omitted the original canonical data path, so real browser DOM inventories could not trace field → state path → Brain impact without source-only heuristics."
+  ],
+  "prevention": [
+    "Emit escaped, non-secret data-field-path from each immutable native field schema on all generated controls.",
+    "Enforce path fidelity for all declared native controls on every protected Required preflight with negative XSS and repeatable fixtures.",
+    "Do not treat standalone/legacy/connector/dynamic rows or a missing path as verified; they remain live browser and tenant acceptance gaps."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_NATIVE_DOM_CANONICAL_PATH_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "exact-head Required + CodeQL and immutable approved browser preview",
+    "protected merge+exact-main Netlify production+Portal DOM",
+    "all native/dynamic/provider real authenticated DOM controls",
+    "two genuine customer tenant production write→Brain ACK→contextual cards and roadmap durable readback",
+    "transactional >750KB split/outbox with retries and per-batch ACK",
+    "official company-specific CSRD/ESRS legal applicability review"
+  ]
+}
