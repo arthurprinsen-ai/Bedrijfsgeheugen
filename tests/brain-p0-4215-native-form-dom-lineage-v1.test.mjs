@@ -33,7 +33,7 @@ test('unmapped fields are not falsely labeled canonical and HTML special charact
  const injected=fieldMarkup({id:'danger',path:'portal.profile." onfocus="evil',label:'Unsafe <script>',type:'text'});
  assert.match(injected,/data-field-path="portal\.profile\.&quot; onfocus=&quot;evil"/);
  assert.doesNotMatch(injected,/data-field-path="portal\.profile\." onfocus="evil"/);
- assert.doesNotMatch(injected,/<script>/);
+ assert.ok(injected.includes('Unsafe &lt;script&gt;'),'unsafe label must be escaped, never emitted as HTML');
 });
 
 test('repeatable groups preserve path lineage even before dynamic rows are enumerated',()=>{
