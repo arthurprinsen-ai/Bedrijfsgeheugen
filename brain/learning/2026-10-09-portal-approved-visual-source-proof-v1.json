@@ -1,0 +1,57 @@
+{
+  "fingerprint": "powerhouse|one-brain|portal-approved-visual-source-proof|v1",
+  "date": "2026-10-09",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "Production DOM/mobile readback passed for approved PR #4282 but the mandatory visual baseline could not be collected after Netlify canceled the original PR-head preview as no content change.",
+  "root_cause": "The visual gate assumed exact-head Netlify deploy preview persisted for every protected-merged portal change. The build deduplication pathway cancels an unchanged preview, making a legitimate approved PR source inaccessible over a deploy URL.",
+  "fix": "Keep provider-pinned PR preview as preferred screenshot source; when it is unavailable, fetch GitHub refs/pull/4282/head at its exact verified merged PR SHA and render the unchanged Portal V2 browser fixture in an isolated worktree before comparing with immutable production pixels. Never waive comparison.",
+  "prevention": [
+    "A canceled Netlify preview never permits a generic screenshot baseline or skipped pixel test.",
+    "Source fallback must be fetched from provider-native merged PR ref and match exact immutable PR head.",
+    "Any missing browser asset or mismatch against immutable production fails the same required visual workflow.",
+    "No changes to runtime, scheduler, outbound providers, brain memory ownership, or economic outcome semantics."
+  ],
+  "evidence": {
+    "original_pr": 4282,
+    "production_deploy": "6ac919ee56e40b0008dd9891",
+    "production_sha": "4fd9fb7a9ba7286395ee2b5b0f3f778dd618e8c5",
+    "netlify_canceled_preview": "6ac91935c8300500081dc129",
+    "failed_visual_workflow": 37961289694,
+    "source_workflow": ".github/workflows/portal-v2-production-dom-readback.yml",
+    "browser_regression": "tests/integration/portal-v2-production-visual-regression.spec.js",
+    "original_result": "visual evidence unavailable; must remain fail-closed until reproducible independently verified pixels"
+  },
+  "outcome": "Repair candidate: approved exact-source browser screenshot remains a required comparison; not evidence that visual acceptance passed or that commercial conversions occurred.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/integration/portal-v2-production-visual-regression.spec.js"
+    ],
+    "shadow": [
+      "tests/integration/portal-v2-production-visual-regression.spec.js"
+    ],
+    "canary": [
+      "tests/integration/portal-v2-production-visual-regression.spec.js"
+    ],
+    "invariants": [
+      "approved PR head exact SHA, never unrelated baseline",
+      "independently pinned immutable production target",
+      "strict pixel diff threshold unchanged",
+      "no visual green without actual Playwright screenshot readback"
+    ],
+    "regressions": [
+      "tests/integration/portal-v2-production-visual-regression.spec.js"
+    ],
+    "productionCriteria": [
+      "protected merge of fix",
+      "manual workflow_dispatch approved_pr_number=4282 and production_sha=4fd9fb7a9ba7286395ee2b5b0f3f778dd618e8c5",
+      "visual screenshot compare passes and artifact readback"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_VISUAL_BASELINE_UNAVAILABLE_NETLIFY_PREVIEW_CANCELED",
+    "scope": "PORTAL_VISUAL_CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
