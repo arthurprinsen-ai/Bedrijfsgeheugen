@@ -15,7 +15,7 @@ const governance=()=>scalar(functionalSchema('data-ai'));
 
 export function fullCompanyInputGroups(){
  const metricFields=metrics();
- return [
+ const groups=[
   {id:'profile',label:'Profiel',fields:companyInputSchema('profiel')},
   {id:'financials',label:'Bedrijfscijfers',fields:legacyIds(metricFields,['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt','cRecurring','cVariabel','cFcf','cNopat'])},
   {id:'finance',label:'Balans en financiering',fields:finance()},
@@ -26,7 +26,26 @@ export function fullCompanyInputGroups(){
   {id:'measurements',label:'Metingen',fields:legacyPrefix(metricFields,'mt')},
   {id:'sustainability',label:'Duurzaamheid',fields:legacyPrefix(compliance(),'esgVelden:')},
   {id:'policy',label:'Beleid',fields:legacyPrefix(compliance(),'beleidLijst:')}
- ].map(group=>Object.freeze({...group,fields:Object.freeze([...group.fields])}));
+ ];
+ // One consolidated page reuses definitions from multiple specialist pages.
+ // Several specialist schemas legitimately share DOM ids (e.g. freeCashFlow,
+ // governance), but they resolve to DIFFERENT canonical portal paths.
+ // Qualify only colliding ids in this aggregate view; keep path/legacyFieldId
+ // unchanged so existing business data and individual pages are unaffected.
+ const pathsPerId=new Map();
+ for(const group of groups)for(const field of group.fields){
+   const key=String(field.id||field.path||'');
+   if(!pathsPerId.has(key))pathsPerId.set(key,new Set());
+   pathsPerId.get(key).add(field.path);
+ }
+ return groups.map(group=>Object.freeze({
+   ...group,
+   fields:Object.freeze(group.fields.map(field=>{
+     const id=String(field.id||field.path||'');
+     const uniqueId=pathsPerId.get(id)?.size>1?`${group.id}--${id}`:id;
+     return Object.freeze({...field,id:uniqueId});
+   }))
+ }));
 }
 
 export function fullCompanyInputSchema(){

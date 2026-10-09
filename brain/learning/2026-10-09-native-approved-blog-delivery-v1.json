@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|blog|candidate-not-publicly-proven-20261009-v1",
+  "obligationId": "daily-blog:2026-10-09:approved-publication",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Existing Native daily blog publisher; writer shadow and protected GitHub release, with immutable public readback required",
+  "root_causes": [
+    "Canonical Powerhouse generated content but did not obtain a valid public blog release and provider readback on the business date",
+    "Previously approved blog material selected under cold-start fallback because /api/content-learning returned 502; recovery candidate must not be mistaken for live publication"
+  ],
+  "prevention": [
+    "Maintain one date-keyed approved article in data/content-publication-ledger.json and an exact canonical content-id/URL in HTML",
+    "Require protected PR merge, Netlify production deployment and exact public readback before claiming successful blog delivery",
+    "Use existing publisher, downstream shadow and protected CI rather than introducing a second blog scheduler or unreviewed direct main write",
+    "On unavailable learning data, document cold-start fallback and measure publication and downstream conversion only when proven"
+  ],
+  "tests": [
+    "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DAILY_BLOG_DELIVERY_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "knownExternalProof": "NONE_FOR_2026_10_09",
+  "productionSuccess": "NOT_CLAIMED",
+  "candidateGitHubPR": 4252,
+  "workflowRun": 37915476428,
+  "shadowRun": 37915518516,
+  "selectedContentId": "blog:onprijsd-probleem-bedrijfsvoering",
+  "closureRequired": [
+    "Protected merge with all required CI and checks successful",
+    "Exact deployed article hash in Netlify production and live public readback",
+    "Canonical obligation updated by the existing reconciliation logic with evidence, measured outcomes and learning"
+  ]
+}
