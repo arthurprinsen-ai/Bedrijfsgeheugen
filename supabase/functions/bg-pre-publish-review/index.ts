@@ -4,6 +4,7 @@ const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
 const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
 const PERSONAL_LIFE_ONLY_POLICY = 'personal-linkedin-personal-life-only-v1';
+const PERSONAL_AI_NATIVE_POLICY = 'personal-linkedin-ai-native-builder-v1';
 const COMPANY_CHANNEL = '6a70381699afb44349f0fb36';
 const INSTAGRAM_CHANNEL = '6a70384d99afb44349f0fba9';
 const MAX_RULE_AGE_MS = 96 * 60 * 60 * 1000;
@@ -55,8 +56,24 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.identity_contract === PERSONAL_CONTRACT, 'IDENTITY_CONTRACT_MISMATCH', 'Persoonlijk identity-contract ontbreekt.');
   require(body.identity_gate_version === PARENT_CONTRACT, 'IDENTITY_GATE_VERSION_MISMATCH', 'Parent identity-gate ontbreekt.');
   const observationalMode = body.observational_personal_theme_verified === true;
+  // Reuse the already evidenced builder lane from the orchestrator and publisher.
+  // Never infer founder authenticity from prose or a mere business-topic keyword.
+  const builderMode = !observationalMode
+    && body.ai_native_builder_story_verified === true
+    && body.ai_native_builder_policy === PERSONAL_AI_NATIVE_POLICY
+    && body.build_event_verified === true
+    && body.arthur_anchor_verified === true
+    && body.source_backed === true
+    && body.business_topic === true
+    && body.corporate_voice === false
+    && body.company_page_interchangeable === false
+    && body.forced_business_moral === false;
   require(Array.isArray(body.source_lineage) ? body.source_lineage.length > 0 : !!body.source_lineage, 'SOURCE_LINEAGE_REQUIRED', 'Bron/evidence-lineage ontbreekt.');
-  if (observationalMode) {
+  if (builderMode) {
+    require(firstPersonSignal(text), 'FOUNDER_FIRST_PERSON_REQUIRED', 'Een oprichtersverhaal moet in Arthurs ik-vorm geschreven zijn.');
+    require(/\b(Bedrijfsgeheugen|ondernemer(?:s)?|bedrijf(?:ven)?|strategie|AI)\b/i.test(text), 'FOUNDER_CONTEXT_REQUIRED', 'Het verifieerbare oprichtersverhaal moet een herkenbaar ondernemersprobleem of visie bevatten.');
+    require(!/\b(wij helpen|onze klanten|neem contact op|plan een demo|vraag een offerte aan)\b/i.test(text), 'FOUNDER_SALES_VOICE_BLOCKED', 'Een persoonlijke oprichtersreis is geen bedrijfspagina-advertentie.');
+  } else if (observationalMode) {
     require(body.public_theme_source_verified === true, 'PUBLIC_THEME_SOURCE_UNVERIFIED', 'De publieke bron voor de dagelijkse observatie is niet geverifieerd.');
     require(body.first_person_claims_present === false, 'OBSERVATIONAL_MODE_FIRST_PERSON_FORBIDDEN', 'Observerende fallback mag geen ik/mijn/mij/me-claims bevatten.');
     require(!firstPersonSignal(text), 'OBSERVATIONAL_MODE_FINAL_TEXT_FIRST_PERSON_FORBIDDEN', 'Observerende fallback bevat toch eerste-persoonstaal.');
@@ -67,10 +84,12 @@ function personalViolations(text: string, body: any, finalHash: string) {
     require(body.first_person_claims_verified === true, 'FIRST_PERSON_CLAIMS_UNVERIFIED', 'Eerste-persoonsclaims zijn niet geverifieerd.');
     require(concretePersonalLifeSignal(text), 'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED', 'De uiteindelijke tekst moet zelf een concrete persoonlijke gebeurtenis of dagelijkse ervaring bevatten; metadata alleen is onvoldoende.');
   }
-  require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
-  require(body.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY, 'PERSONAL_LIFE_ONLY_POLICY_REQUIRED', 'De personal-life-only policy ontbreekt of is verouderd.');
-  require(body.personal_life_only_verified === true, 'PERSONAL_LIFE_ONLY_UNVERIFIED', 'De uiteindelijke tekst is niet expliciet als uitsluitend persoonlijk leven geverifieerd.');
-  require(body.business_topic === false, 'BUSINESS_TOPIC_DEFAULT_BLOCK', 'Zakelijk onderwerp is geblokkeerd op Arthur persoonlijk.');
+  if (!builderMode) {
+    require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
+    require(body.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY, 'PERSONAL_LIFE_ONLY_POLICY_REQUIRED', 'De personal-life-only policy ontbreekt of is verouderd.');
+    require(body.personal_life_only_verified === true, 'PERSONAL_LIFE_ONLY_UNVERIFIED', 'De uiteindelijke tekst is niet expliciet als uitsluitend persoonlijk leven geverifieerd.');
+    require(body.business_topic === false, 'BUSINESS_TOPIC_DEFAULT_BLOCK', 'Zakelijk onderwerp is geblokkeerd op Arthur persoonlijk.');
+  }
   require(body.corporate_voice === false, 'CORPORATE_VOICE_BLOCKED', 'Corporate/consultantstem is geblokkeerd.');
   require(body.company_page_interchangeable === false, 'COMPANY_PAGE_INTERCHANGEABLE_BLOCKED', 'Tekst mag niet uitwisselbaar zijn met de bedrijfspagina.');
   require(body.forced_business_moral === false, 'FORCED_BUSINESS_MORAL_BLOCKED', 'Geforceerde businessmoraal is geblokkeerd.');
@@ -78,7 +97,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.publication_intent === 'publish', 'PUBLICATION_INTENT_REQUIRED', 'publication_intent=publish ontbreekt.');
   require(clean(body.final_text_hash) === finalHash, 'FINAL_TEXT_HASH_MISMATCH', 'Final-text hash is niet exact gebonden aan de beoordeelde tekst.');
   if (body.sensitive_private_detail === true && body.sensitive_private_approval !== true) out.push({ code: 'SENSITIVE_PRIVATE_DETAIL_BLOCK', message: 'Privé/sensitief detail vereist exacte goedkeuring.' });
-  const businessBlocked = observationalMode
+  const businessBlocked = builderMode ? false : observationalMode
     ? /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text)
     : businessSignal(text);
   if (businessBlocked) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
@@ -200,8 +219,10 @@ Deno.serve(async (req) => {
     final_text_hash: finalHash,
     violations: blockers,
     personal_truth_verified: channel === 'linkedin_personal' ? body.personal_truth_verified === true : null,
-    personal_life_only_policy: channel === 'linkedin_personal' ? PERSONAL_LIFE_ONLY_POLICY : null,
-    personal_life_only_verified: channel === 'linkedin_personal' ? body.personal_life_only_verified === true : null,
+    personal_life_only_policy: channel === 'linkedin_personal' && body.ai_native_builder_story_verified !== true ? PERSONAL_LIFE_ONLY_POLICY : null,
+    personal_life_only_verified: channel === 'linkedin_personal' && body.ai_native_builder_story_verified !== true ? body.personal_life_only_verified === true : null,
+    ai_native_builder_policy: channel === 'linkedin_personal' && body.ai_native_builder_story_verified === true ? PERSONAL_AI_NATIVE_POLICY : null,
+    ai_native_builder_story_verified: channel === 'linkedin_personal' ? body.ai_native_builder_story_verified === true && pass : null,
     rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel === 'linkedin_company' },
   }, pass ? 200 : 422);
 });
