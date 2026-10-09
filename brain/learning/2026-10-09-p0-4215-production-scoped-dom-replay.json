@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-production-scoped-dom-replay-20261009-v1",
+  "fingerprint": "powerhouse|portal|workflow-only-main-ahead-of-published-portal-SHA|scope-aware-exact-browser-proof-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "protected Github main commit ancestry, immutable Netlify production and existing Portal V2 DOM+visual readback",
+  "root_causes": [
+    "Latest main can be ahead of the currently published website by CI-only commits; a newly repaired browser workflow fails SHA parity even though the independently published Portal V2 runtime matches a proven ancestor."
+  ],
+  "prevention": [
+    "Only explicit workflow_dispatch on main may select a prior exact production SHA, and only when 40-char commit is an ancestor of current main with all intervening files limited to CI, tests, docs, learning and tools/ci.",
+    "Require provider current site release and pinned immutable site release to match selected SHA; resolve merged PR provenance and approved baseline from that production merge, not verification-only head.",
+    "Run original strict browser+mobile+visual checks; preserve negative source access checks and forbid fake current-main provider evidence."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-production-scoped-dom-readback-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-production-scoped-dom-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-production-scoped-dom-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-production-scoped-dom-readback-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_PRODUCTION_SOURCE_ONLY_SHA_DRIFT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_YET_VERIFIED",
+  "closureRequired": [
+    "exact-head Required and CodeQL for bounded fix",
+    "protected merge of workflow",
+    "workflow_dispatch production_sha bound to current immutable Netlify deployment and source-only diff",
+    "terminal successful DOM+visual browser evidence; no forced green",
+    "separate genuine customer tenant write→Brain→cards/roadmap readback, outbox >750KB and official customer-specific CSRD/ESRS review"
+  ]
+}
