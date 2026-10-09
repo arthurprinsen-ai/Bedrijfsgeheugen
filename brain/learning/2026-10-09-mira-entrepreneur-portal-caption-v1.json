@@ -1,0 +1,51 @@
+{
+  "fingerprint": "powerhouse|mira|entrepreneur-pain-to-portal-action-caption|v1",
+  "date": "2026-10-09",
+  "compiler": {
+    "failure_class": "MIRA_CONSUMER_SOURCE_BIASED_AND_PORTAL_CAPTION_MISSING",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The existing source radar exclusively queried consumer personal-life complaints. The materializer marked office problems and business bridge forbidden, while the orchestrator explicitly requested daily-life Instagram captions without office problems or business moral. Frozen consumer-signal winners therefore could not express the stored PH-P SME problem or a concrete portal action.",
+  "prevention": [
+    "Filter fresh source evidence to verified entrepreneur problem taxonomy PH-Pnnn and map the source signal to exactly one supported problem ID.",
+    "Do not replace or mutate an existing Instagram daily winner; future daily winner remains source-backed and immutable.",
+    "Make the content-orchestrator produce a complete Dutch caption from that same winner and its canonical PH-P scene, consequence, portal capability, next action and measurement point.",
+    "Pass the structured problem to the original media router and pre-publish reviewer; continue the exact final Mira identity, frame, dedupe and provider readback guards.",
+    "Keep channel-separated content and make no fake customer facts, measured ROI or claimed public post without provider evidence."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-portal-caption-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "inspected_existing_state": {
+      "canonical_problem_catalog": "config/powerhouse-problem-library.json",
+      "problem_count": 40,
+      "mira_signal_table": "powerhouse_mira_problem_signals_v1",
+      "mira_lineage_table": "powerhouse_mira_problem_lineage_v1",
+      "consumer_topic_examples": [
+        "wachtwoord-en-inloggen",
+        "bezorging-en-pakketten"
+      ],
+      "winner_20261009": "c7c22ec4-caa9-497e-bbae-e69329fe97eb",
+      "state_20261009": "WINNER_FROZEN"
+    },
+    "policy": "mira-entrepreneur-portal-story-v1",
+    "source_files": [
+      "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+      "supabase/functions/powerhouse-content-orchestrator/index.ts",
+      "supabase/functions/powerhouse-instagram-media-router/index.ts",
+      "supabase/functions/bg-pre-publish-review/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts",
+      "supabase/functions/_shared/instagram-entrepreneur-story-v1.mjs",
+      "supabase/migrations/20261009150500_mira_entrepreneur_portal_caption_v1.sql"
+    ],
+    "canonical_notion": "https://app.notion.com/p/3c0da36aac8a817db185cbd76487f17d",
+    "regression_test": "tests/brain-mira-entrepreneur-portal-caption-v1.test.mjs",
+    "verified_today": "Notion content updated; branch implementation offered; provider publication and exact production deployment still require separate real proof."
+  }
+}
