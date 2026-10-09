@@ -49,7 +49,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         evidence:'portal-v2/operating-system/executive-projection.js',
         decisions:'portal-v2/company-cockpit-ui.js',
         regression:'portal-v2/tests/daily-entrepreneur-steering.test.mjs',
-        productContract:'docs/architecture/daily-entrepreneur-steering-v1.md'
+        productContract:'docs/changes/2026-10-09-daily-entrepreneur-steering-v1.md'
       }),
       invariants:Object.freeze({
         noNewModule:true,noNewScheduler:true,oneBrain:true,
