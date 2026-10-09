@@ -51,5 +51,16 @@
     "One real authorized full Anthropic tool-use completion",
     "Persisted forecast and Brain readback",
     "Independent all-channel outbound and attributed outcome proof"
-  ]
+  ],
+  "evidence": {
+    "existing_v182_source_parity": true,
+    "provider_real_smoke_http_status": 200,
+    "full_engine_request_id": 1707,
+    "full_engine_http_status": 500,
+    "db_health_row_status": "fout",
+    "db_health_row_at": "2026-10-09T15:25:00.280Z",
+    "db_health_row_detail": "Signal timed out.",
+    "test_path": "tests/brain-predictive-anthropic-deadline-v1.test.mjs",
+    "verified_v183_prediction_proof": false
+  }
 }
