@@ -72,6 +72,7 @@ test('source wiring preserves tenant-switch isolation and verified ownership',()
  const scan=readFileSync('zelfscan.html','utf8');
  assert.match(app,/authHeaders:\(\)=>portalStateClient\.authHeaders\(\)/);
  assert.match(app,/setAuthenticated\(authenticated,snap\.user\?\.id\)/);
+ assert.match(app,/snap\.mode==='empty'/);
  assert.match(source,/identityKey===nextIdentity/);
  assert.match(source,/scan\?\.tenant_identity_status!=='verified'/);
  assert.match(edge,/scan\.tenant_identity_status==='verified'/);
