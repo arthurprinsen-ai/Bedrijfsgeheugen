@@ -1,16 +1,38 @@
 {
-  "version": "instagram-canonical-mira-identity-v1",
+  "version": "instagram-canonical-mira-identity-v2",
   "canonical_reference": {
     "provider": "openart",
     "media_type": "image",
     "reference_id": "Yjqu4D7v76HABNPmQPj1",
     "label": "Fictional Mira master",
-    "source": "OpenArt generated fictional AI character; no user photo reference"
+    "source": "OpenArt generated fictional AI character; no user photo reference",
+    "url": "https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg",
+    "dimensions": {
+      "width": 1728,
+      "height": 2304
+    },
+    "verified_openart_reference_metadata": true,
+    "generation_mode": "image2video"
   },
   "forbidden_user_reference_ids": [
     "Jt5SWKRgyK3heTqEXH4w",
     "w4HhwCmX5GxL8jTGljxe",
     "umWzAKt6YBeoVpHlKTtK"
   ],
-  "rule": "Instagram Mira media must prove canonical_reference.reference_id before VERIFYING or publication. User-upload identity assets are never valid Mira references."
+  "rule": "All Mira image and video generations must use the original canonical OpenArt fictional master reference; final visual proof must compare actual pixels against this master at high confidence, and reel start/middle/end must each match. Mismatches cannot publish; never substitute user uploads or text prompts as identity proof.",
+  "face_continuity": {
+    "policy": "mira-master-two-image-face-continuity-v1",
+    "comparison": "two_image_vision",
+    "min_confidence": 0.9,
+    "required_video_frames": [
+      "start",
+      "middle",
+      "end"
+    ],
+    "matched_reference_required": true,
+    "fail_closed_on_uncertainty": true,
+    "clothing_expressions_and_scenes_may_vary": true,
+    "face_and_age_must_not_drift": true,
+    "provider_verified_final_media_required": true
+  }
 }
