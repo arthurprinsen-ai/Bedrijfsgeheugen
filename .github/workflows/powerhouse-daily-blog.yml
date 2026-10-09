@@ -104,7 +104,7 @@ jobs:
           # generate all missing English translations, and validate fail-closed.
           # Only the scoped JSON patch is added to the publication commit;
           # generated build output must never be committed accidentally.
-          npm ci --prefer-offline --no-audit --no-fund --silent
+          npm install --prefer-offline --no-audit --no-fund --silent
           STATIC_I18N_NETWORK=1 node tools/ci/netlify-build-entry.mjs \
             --prepare-i18n-cache="powerhouse-blog-$DATE.json"
           STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 \
@@ -157,7 +157,7 @@ jobs:
           # Always derive this read/write from the current canonical candidate.
           git fetch origin "$branch"
           git checkout -B "$branch" "origin/$branch"
-          npm ci --prefer-offline --no-audit --no-fund --silent
+          npm install --prefer-offline --no-audit --no-fund --silent
 
           # Replay exact production SEO/site transforms before extracting Dutch copy.
           # An absent provider credential is an explicit, retryable blocker,
