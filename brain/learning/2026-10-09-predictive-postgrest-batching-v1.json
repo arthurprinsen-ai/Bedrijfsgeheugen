@@ -18,9 +18,10 @@
   },
   "root_cause": "A single unbounded PostgREST signal upsert synchronously invokes two nested forecast and calibration triggers until the authenticator's eight-second statement timeout aborts the statement.",
   "changes": [
-    "Split original canonical signal upsert into sequential batches of at most five",
-    "Reuse the original signal_key conflict target and existing trigger-generated forecast/calibration obligations",
-    "Preserve model governance, original scheduler and outcome attribution"
+    "Skip unmodified signalRows using keyed database source/evidence comparisons",
+    "Write only changed rows sequentially in groups of five",
+    "Preserve the original signal_key conflict target, forecast/calibration obligations, Anthropic governance and scheduler",
+    "Version the two already-suspended Groq-only content and calibration fallback registry entries without changing approved Anthropic primary"
   ],
   "guardrails": [
     "No SQL role timeout relaxation",
@@ -33,9 +34,10 @@
     "POSTGREST_BULK_UPSERT_TRIGGER_FANOUT"
   ],
   "prevention": [
-    "Keep writes within database statement budget",
-    "Do not suppress evidence or obligation triggers",
-    "Regression test code contract and reconstruct 0/1/4/5/6/50/80 item batches"
+    "Avoid trigger cascade for unchanged source signals",
+    "Keep genuinely changed writes below eight-second statement budget",
+    "Do not disable triggers, relax database timeouts or bypass the scheduler",
+    "Replay-safe and specific AI governance suspension only for two Groq fallback use cases"
   ],
   "required": [
     "Protected CI and CodeQL",
@@ -53,13 +55,15 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-predictive-postgrest-batching-v1.test.mjs"
+      "tests/brain-predictive-postgrest-batching-v1.test.mjs",
+      "tests/brain-predictive-approved-fallback-v1.test.mjs"
     ]
   },
   "evidence": {
     "postgres_log_at": "2026-10-09T14:28:11Z",
     "provider_check": "Anthropic real provider HTTP 200 request 1686",
     "runtime_predictive_green": false,
-    "changed_function": "supabase/functions/powerhouse-predictive-engine/index.ts"
+    "changed_function": "supabase/functions/powerhouse-predictive-engine/index.ts",
+    "groq_content_calibration_fallbacks": "Two exact existing Groq fallback use cases are SUSPENDED through independently pre-applied guarded production DML; SQL is versioned in the same proposal"
   }
 }
