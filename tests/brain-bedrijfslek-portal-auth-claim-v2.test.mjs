@@ -78,6 +78,8 @@ test('source wiring preserves tenant-switch isolation and verified ownership',()
  assert.match(edge,/scan\.tenant_identity_status==='verified'/);
  assert.match(edge,/scan\.company_key!==companyKey/);
  assert.match(edge,/else patch\.klant_slug=tenantId/);
+ assert.match(edge,/\.eq\('tenant_identity_status',scan\.tenant_identity_status\)/);
+ assert.match(edge,/claimError\?\.code==='PGRST116'/);
  assert.match(scan,/bg_last_scan_receipt_v2/);
  assert.doesNotMatch(source,/x-bg-service-token/);
 });
