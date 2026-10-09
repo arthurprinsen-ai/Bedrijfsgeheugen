@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { repairBusinessInputsFromAuthority } from './business-input-read-repair.js';
+import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
@@ -603,14 +604,14 @@ Deno.serve(async(req:Request)=>{
     if(error)return json({error:'STORE_READ_FAILED'},500);
     let payload=Array.isArray(data)&&data[0]?data[0].payload:null;
     if(layer==='canonical-brain'){
-      const {data:authorityRecords,error:authorityError}=await client.from('brain_records')
-        .select('record_id,record_type,record_kind,subject_id,owner_id,observed_at,updated_at,source_revision,provenance,payload')
-        .eq('tenant_id',tenantId)
-        .eq('record_type','BusinessInput')
-        .order('updated_at',{ascending:true})
-        .limit(1000);
-      if(authorityError)return json({error:'BUSINESS_INPUT_AUTHORITY_READ_FAILED'},500);
-      if(Array.isArray(authorityRecords)&&authorityRecords.length>0)payload=repairBusinessInputsFromAuthority(payload||{},authorityRecords);
+      let authorityRecords;
+      try{authorityRecords=await readPortalBusinessInputAuthorityPages(client,tenantId);}
+      catch(error){
+        const code=error?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
+          ?'BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED':'BUSINESS_INPUT_AUTHORITY_READ_FAILED';
+        return json({error:code},503);
+      }
+      if(authorityRecords.length>0)payload=repairBusinessInputsFromAuthority(payload||{},authorityRecords);
     }
     return json({payload});
   }
