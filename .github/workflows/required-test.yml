@@ -112,6 +112,9 @@ jobs:
       - name: Verify trusted production visual PR backfill and immutable alias pinning
         run: |
           node --test tests/brain-p0-4215-production-visual-backfill-v1.test.mjs
+      - name: Guard production SHA equivalence against runtime diff
+        run: |
+          node --test tests/brain-p0-4215-runtime-equivalent-production-v1.test.mjs
       - name: Preserve P0 4215 input coverage evidence
         if: always()
         uses: actions/upload-artifact@v4
