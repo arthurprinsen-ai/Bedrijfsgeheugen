@@ -6,23 +6,34 @@ const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}ca
 const clamp=(n:number)=>Math.max(0,Math.min(1,n));
 const topic=(text:string)=>{
  const t=text.toLowerCase();
- if(/wachtwoord|inlog|2fa|code/.test(t)) return 'wachtwoord-en-inloggen';
- if(/school|ouderportaal|magister|parro|social schools/.test(t)) return 'schoolapps-en-oudercommunicatie';
- if(/parkeren|parkeerapp|zone/.test(t)) return 'parkeren-en-apps';
- if(/pakket|bezorg|postnl|dhl/.test(t)) return 'bezorging-en-pakketten';
- if(/abonnement|opzeg|subscription/.test(t)) return 'abonnementen-en-opzeggen';
- if(/chatbot|klantenservice|helpdesk/.test(t)) return 'chatbots-en-klantenservice';
- if(/melding|notificatie|whatsapp|groep/.test(t)) return 'meldingen-en-groepsapps';
- if(/update|app|account|scherm/.test(t)) return 'appstapeling-en-digitale-frictie';
- return 'dagelijkse-digitale-frictie';
+ if(/offerte|salesopvolging|follow.up|acquisitie.*opvolging/.test(t))return'offertes-zonder-opvolging';
+ if(/eigenaar.*besluit|directeur.*goedkeur|directie.*bottleneck|escalatie.*directie/.test(t))return'directie-bottleneck';
+ if(/kennisoverdracht|kennisborg|sleutelmedewerker|sop|werkinstruct|afspraak.*hoofd/.test(t))return'kennisoverdracht';
+ if(/excel|spreadsheet|verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
+ if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
+ if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
+ if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
+ if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
+ if(/debiteur|dso|openstaande factur/.test(t))return'debiteuren';
+ if(/late factur|facturatie.*vertraging|werk.*niet gefactureerd/.test(t))return'late-facturering';
+ if(/klantconcentratie|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
+ if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
+ return '';
+};
+const portalIds:Record<string,string>={
+ 'offertes-zonder-opvolging':'PH-P002','directie-bottleneck':'PH-P001','kennisoverdracht':'PH-P005',
+ 'excel-chaos':'PH-P006','dubbele-invoer':'PH-P007','projectmarge':'PH-P004',
+ 'groei-zonder-winst':'PH-P003','capaciteitsplanning':'PH-P008','debiteuren':'PH-P010',
+ 'late-facturering':'PH-P011','klantafhankelijkheid':'PH-P012','klantverlies':'PH-P013'
 };
 const queries=[
- 'Nederland klacht irritant app account wachtwoord inloggen 2FA gewone gebruiker',
- 'Nederland forum ergernis schoolapp ouderportaal berichten meldingen',
- 'Nederland klacht parkeerapp zone account betalen parkeren',
- 'Nederland forum klacht pakket bezorger niet thuis bezorging app',
- 'Nederland klacht abonnement opzeggen app klantenservice chatbot',
- 'Nederland blog digitale frustratie te veel apps schermen bevestigingen'
+ 'Nederland ondernemers offertes blijven liggen opvolgen CRM eigenaar verkoop',
+ 'Nederland mkb problemen kennisoverdracht sleutelmedewerker werkinstructies',
+ 'Nederland ondernemers excel chaos spreadsheets onduidelijke cijfers finance',
+ 'Nederland mkb dubbele invoer crm erp handmatig overzetten processen',
+ 'Nederland ondernemers capaciteitsplanning personeelstekort backlog planning',
+ 'Nederland mkb late facturering debiteuren cashflow projectmarge',
+ 'Nederland ondernemers afhankelijkheid directeur goedkeuring klantconcentratie'
 ];
 Deno.serve(async(req:Request)=>{
  if(req.method!=='POST') return json({error:'POST_ONLY'},405);
@@ -61,6 +72,8 @@ Deno.serve(async(req:Request)=>{
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
    if(!d||title.length<12) continue;
    const all=(title+' '+excerpt).toLowerCase();
+   const problemTopic=topic(all),portalProblemId=portalIds[problemTopic];
+   if(!problemTopic||!portalProblemId)continue; // do not synthesize unrelated consumer complaints into company facts
    const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
    const personal=/(ik|mijn|thuis|kind|school|parkeren|pakket|wachtwoord|app|abonnement|klantenservice|chatbot)/.test(all)?1:0.6;
    const share=/(herken|iedereen|steeds|elke keer|weer|waarom)/.test(all)?0.95:0.65;
@@ -70,7 +83,7 @@ Deno.serve(async(req:Request)=>{
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,contract:'mira-public-complaint-source-loop-v1'}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,contract:'mira-entrepreneur-portal-story-v1',audience:'ondernemers',portal_problem_id:portalProblemId,evidence_kind:'public_signal_not_customer_fact',fictional_mira_scenario:true}};
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
    stored++; if(row.eligible) eligible++;
   }
