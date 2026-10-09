@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|predictive|trigger-churn-statement-timeout|2026-10-09-v1",
+  "obligationId": "p0-4198-predictive-timeout-and-groq-retirement-20261009",
+  "parentP0": 4198,
+  "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "production_edge": "powerhouse-predictive-engine v181 ACTIVE",
+    "last_full_engine_run": "2026-10-09T14:28:11.394Z",
+    "last_full_engine_status": "ERROR",
+    "last_full_engine_sqlstate": "57014",
+    "last_full_engine_detail": "canceling statement due to statement timeout",
+    "post_v181_successful_full_engine_run": false,
+    "commercial_day_state": "degraded",
+    "verified_salesrobot_dm_sent": 5,
+    "provider_proven_blog_publications": 1,
+    "observed_replies": 0,
+    "observed_orders": 0,
+    "realized_revenue_eur_verified": 0,
+    "groq_content_fallback": "SUSPENDED live readback",
+    "groq_calibration_fallback": "SUSPENDED live readback",
+    "anthropic_primary": "ACTIVE"
+  },
+  "hypothesis": "Repeated unconditional signal upserts produce downstream row-level forecast and obligation trigger cascades; avoiding no-op writes and bounding updates reduces the time-out pressure. Precise offending statement still unproven.",
+  "change": [
+    "Read existing signal rows by canonical signal_key",
+    "Skip unchanged source/evidence rows, batch changed upserts by 8",
+    "Retain Anthropic-only governed tool use, scheduler authorization and evidence guards",
+    "Suspend only two residual Groq content/calibration fallback registrations"
+  ],
+  "no_false_green": [
+    "Provider Anthropic API successful smoke is not a complete persisted forecast run",
+    "Sent DMs are not replies, meetings or realized sales",
+    "Commercial daily output SLA is distinct from full-cycle healthy state",
+    "Never duplicate writer or scheduled job"
+  ],
+  "verification_required": [
+    "Required CI/CodeQL and protected merge",
+    "Exact main-source-to-production Edge deploy/readback",
+    "Authorized real full inference, no timeouts, immutable Anthropic forecast and health evidence",
+    "Real provider outcome readback and one Brain learning lineage"
+  ]
+}
