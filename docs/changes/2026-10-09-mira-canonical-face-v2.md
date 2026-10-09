@@ -13,3 +13,6 @@ De bestaande content-orchestrator, media-router, publisher en `powerhouse_valida
 
 ## Waarheid
 Een correcte master en succesvolle bronmerge bewijzen nog geen echt Instagram-resultaat. Pas na echte OpenArt-generatie, exacte media- en identiteitsverificatie én onafhankelijke Instagram-post-ID/permalink/readback is een publicatie bevestigd. Dagwinnaar en duplicate-guard blijven behouden.
+
+## Herstel previewcapaciteit
+Tijdens PR #4270 faalde de Supabase Preview-check uitsluitend op de providerlimiet voor gelijktijdige branches. De oude preview voor PR #4265 had status MIGRATIONS_FAILED, was non-persistent en bevatte geen productiedata (`with_data=false`). Alleen die mislukte Supabase-preview is op 9 oktober opgeruimd; de GitHub-PR en hoofdprojecten zijn niet gewijzigd. Herstart daarna de controle op een nieuwe exacte kandidaat-SHA. De syntaxis van de SQL-trigger is daarnaast transactioneel op productie gevalideerd met `BEGIN` / `ROLLBACK`; dat was nadrukkelijk géén productie-installatie van de trigger.
