@@ -286,6 +286,15 @@ function instagramVisibleIdentityProven(proof:any) {
     && visual?.verified === true
     && visual?.semantic_verified === true
     && visual?.mira_present === true
+    && visual?.canonical_identity_match === true
+    && clean(visual?.canonical_master_reference_id) === 'Yjqu4D7v76HABNPmQPj1'
+    && !!clean(visual?.canonical_master_sha256)
+    && Number(visual?.canonical_identity_confidence) >= 0.94
+    && Array.isArray(visual?.frame_evidence)
+    && ['start','middle','end'].every(position=>visual.frame_evidence.some((frame:any)=>
+      clean(frame?.position)===position &&frame?.canonical_identity_match===true
+      &&clean(frame?.canonical_master_reference_id)==='Yjqu4D7v76HABNPmQPj1'
+      &&Number(frame?.canonical_identity_confidence)>=0.94))
     && clean(visual?.identity_class) === 'mira_daily_life'
     && clean(visual?.evidence_method).toLowerCase() === 'vision'
     && refs.some((ref:string) => /^vision:/i.test(ref))
