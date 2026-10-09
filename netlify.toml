@@ -466,3 +466,6 @@
 # production redeploy heartbeat: portal-dom-auth-readback-native-parity-20261009-v1
 # Recovery: publish the current protected main after test-only PR #4223 was correctly ignored by Netlify.
 # Native Git remains the deployment authority; no authorization bypass or runtime behavior change.
+
+# production redeploy heartbeat: csrd-binding-regression-recovery-20261009-v1
+# Publish exact main after the mandatory CSRD test contract is restored; no runtime/auth changes.
