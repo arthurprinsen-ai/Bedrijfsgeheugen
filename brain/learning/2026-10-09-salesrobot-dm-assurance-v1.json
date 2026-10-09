@@ -27,5 +27,21 @@
   },
   "tests": [
     "tests/brain-salesrobot-provider-proof-daily-assurance-v1.test.mjs"
-  ]
+  ],
+  "prevention": [
+    "Require exact SalesRobot provider inbox receipt linked by existing runtime event FK to the done action; verify immutable message ID, campaign and person before a daily proof is counted.",
+    "Continue using the sole existing commercial scheduler, same canonical Brain/CRM, suppression/consent gates and channel executors; never create a second campaign or sender.",
+    "Do not claim replies, appointments, offers, orders, or turnover from observed sends, and do not close the parent P0 from channel proof alone."
+  ],
+  "evidence": {
+    "provider": "SalesRobot",
+    "run_date": "2026-10-09",
+    "campaign_uuid": "ae2812ad-c3eb-4c90-a0d4-6d4e5a94b93e",
+    "existing_runtime_events_with_proven_inbox": 5,
+    "existing_action_to_event_fk_matches": 5,
+    "pre_patch_daily_assurance_social_count": 0,
+    "existing_blog_proven": 1,
+    "regression_test": "tests/brain-salesrobot-provider-proof-daily-assurance-v1.test.mjs",
+    "live_postmerge_count": "NOT_YET_VERIFIED"
+  }
 }
