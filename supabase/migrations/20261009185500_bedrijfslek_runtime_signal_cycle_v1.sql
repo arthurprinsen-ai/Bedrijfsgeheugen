@@ -77,6 +77,11 @@ end
 $function$
 ;
 
+-- Preserve the original production privilege boundary for the SECURITY DEFINER
+-- function; browser roles cannot directly open or forge Brain decision cycles.
+revoke all on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) from public, anon, authenticated;
+grant execute on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) to service_role;
+
 drop trigger if exists powerhouse_runtime_signal_cycle_materializer_v1 on public.powerhouse_runtime_events;
 create trigger powerhouse_runtime_signal_cycle_materializer_v1
 after insert on public.powerhouse_runtime_events
