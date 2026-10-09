@@ -1824,3 +1824,18 @@ export const COMMERCIAL_EMAIL_CHANNEL_FAULT_ISOLATION_P0_V1 = Object.freeze({
   migration:'supabase/migrations/20261009135700_commercial_email_lane_fault_isolation_4198.sql',
   latestObservedState:'2026-10-09: 23295 enriched; zero prepared eligible e-mail recipients; no provider-confirmed sends claimed'
 });
+
+
+export const MIRA_ENTREPRENEUR_PORTAL_CAPTION_CONTRACT_V1 = Object.freeze({
+  fingerprint:'mira-entrepreneur-problem-to-portal-caption-v1',
+  source:'config/powerhouse-problem-library.json',
+  sourceType:'canonical-PH-Pxxx-problem-catalog',
+  mirror:'supabase/functions/_shared/mira-entrepreneur-caption.mjs',
+  generator:'supabase/functions/powerhouse-content-orchestrator/index.ts',
+  mediaRouter:'supabase/functions/powerhouse-instagram-media-router/index.ts',
+  singleWriter:'supabase/functions/powerhouse-social-publisher/index.ts',
+  caption:['concrete-scene','source-backed-problem','potential-consequence','portal-capability-and-action','metric-and-pointe','fiction-disclosure'],
+  safeguards:['one-immutable-day-winner','matching-asset-scene','real-mira-visual','exact-final-media-proof','pre-provider-validation','readback-before-live','no-fabricated-tenant-result'],
+  test:'tests/brain-mira-entrepreneur-caption-v1.test.mjs',
+  parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
+});
