@@ -900,8 +900,19 @@ function instagramIdentityProven(evidence: any) {
   const dims=width===1080&&height===1920;
   const provider=clean(proof?.media_provider||proof?.media_source).toLowerCase();
   const providerOk=provider==='openart';
+  // The master reference ID is not a substitute for independently comparing actual frames with its pixels.
+  const sameMaster=visual?.canonical_identity_match===true
+    &&clean(visual?.canonical_master_reference_id)==='Yjqu4D7v76HABNPmQPj1'
+    &&!!clean(visual?.canonical_master_sha256)
+    &&Number(visual?.canonical_identity_confidence)>=0.94
+    &&Array.isArray(visual?.frame_evidence)
+    &&['start','middle','end'].every(position=>visual.frame_evidence.some((frame:any)=>
+      clean(frame?.position)===position &&frame?.canonical_identity_match===true
+      &&clean(frame?.canonical_master_reference_id)==='Yjqu4D7v76HABNPmQPj1'
+      &&clean(frame?.canonical_master_sha256)===clean(visual?.canonical_master_sha256)
+      &&Number(frame?.canonical_identity_confidence)>=0.94));
   return proof?.exact_final_media_proven===true&&!!clean(proof?.final_media_sha256)
-    &&clean(proof?.mira_gate_result)==='PASS'&&visible&&dims&&providerOk;
+    &&clean(proof?.mira_gate_result)==='PASS'&&visible&&dims&&providerOk&&sameMaster;
 }
 
 async function reconcileExistingProviderTruth(db: any, token: string | null, runDate: string) {
