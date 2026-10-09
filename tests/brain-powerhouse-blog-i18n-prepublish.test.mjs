@@ -13,6 +13,12 @@ test('publisher extracts cache only after all canonical SEO transformations', ()
   assert.match(entry,/cacheOnlyPatch && name==='localized-routes'/);
   assert.match(entry,/NETLIFY_I18N_CACHE_PREPARED/);
   assert.match(publisher,/--prepare-i18n-cache="powerhouse-blog-\$DATE\.json"/);
+  const createCandidate=publisher.indexOf('      - name: Create exactly one protected candidate');
+  const prepare=publisher.indexOf('          STATIC_I18N_NETWORK=1 node tools/ci/netlify-build-entry.mjs',createCandidate);
+  const createPr=publisher.indexOf('            gh pr create --base main',createCandidate);
+  assert.ok(createCandidate>=0 && prepare>createCandidate && createPr>prepare,
+    'all English strings are prepared before opening the PR');
+  assert.ok(publisher.includes('git commit --amend --no-edit'));
   assert.match(publisher,/STATIC_I18N_REQUIRE_CACHE=1/);
   assert.match(publisher,/steps\.i18n\.outcome == 'success'/);
   assert.match(gate,/node --test tests\/brain-powerhouse-blog-i18n-prepublish\.test\.mjs/);
