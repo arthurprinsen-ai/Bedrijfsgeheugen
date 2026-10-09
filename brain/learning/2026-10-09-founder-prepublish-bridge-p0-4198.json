@@ -1,0 +1,73 @@
+{
+  "id": "p0-4198-personal-founder-prepublish-vision-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|personal-linkedin|founder-prepublish|verified-builder-bridge|v1",
+  "root_cause": "Repository-to-production drift: GitHub main carried the old life-only personal prepublish reviewer while the active Supabase Edge v26 already had the richer verified founder builder gate. A naive main-based patch would downgrade production. Independently, the 2026-10-09 personal LinkedIn provider-created share URN could not be read back with connected Composio accounts (403/401).",
+  "existing_authorities": {
+    "evidence": "Powerhouse Brain source-backed content recommendations",
+    "generation": "powerhouse-content-orchestrator",
+    "publishing": "powerhouse-social-publisher",
+    "independent_review": "bg-pre-publish-review",
+    "runtime_truth": "Supabase and provider receipts",
+    "human_projection": "Notion canonical system map"
+  },
+  "change": "Backport the existing deployed Supabase Edge v26 source to the canonical GitHub repository exactly; preserve the already deployed founder/technical-jargon/security gates and provide regression/learning/docs/ledger in the same release lineage. Provider readback 403 remains a separate unproven obligation.",
+  "safety": {
+    "first_person_required": true,
+    "source_backed_event_required": true,
+    "arthur_anchor_required": true,
+    "identity_contract_required": true,
+    "final_text_hash_required": true,
+    "sensitive_details_fail_closed": true,
+    "sales_voice_blocked": true,
+    "company_page_interchangeable_blocked": true,
+    "provider_delivery_not_claimed": true
+  },
+  "production_truth": {
+    "before_change": {
+      "architectural_layers_wired": 32,
+      "architectural_layers_total": 32,
+      "loop_green": 7,
+      "loop_amber": 2,
+      "loop_red": 6,
+      "daily_run": "degraded",
+      "github_main_pre_publish": "LIFE_ONLY_SOURCE_STALE",
+      "supabase_edge_pre_publish": "V26_BUILDER_GATE_ACTIVE",
+      "linkedin_personal_post_proof": "URN_RECORDED_BUT_PROVIDER_READBACK_FORBIDDEN"
+    },
+    "after_change": "GITHUB_SOURCE_CANDIDATE_EQUALS_ACTIVE_EDGE_V26; PROTECTED_MERGE_PENDING; LINKEDIN_READBACK_UNPROVEN"
+  },
+  "compiler": {
+    "failure_class": "GITHUB_SUPABASE_EDGE_PREPUBLISH_SOURCE_DRIFT",
+    "scope": "PERSONAL_LINKEDIN_SOURCE_TO_PUBLISHER",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
+    ],
+    "production_claim": "source_parity_candidate_not_live_until_protected_merge; provider_readback_still_unproven"
+  },
+  "evidence": {
+    "pull_request": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4264",
+    "notion_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "test": "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs",
+    "supabase_active": "bg-pre-publish-review:v26",
+    "personal_linkedin_pending_urn": "urn:li:share:7514285740868911105"
+  },
+  "prevention": [
+    "Compare canonical GitHub source against actual deployed Supabase Edge source before proposing publisher/prepublish changes; fail closed on drift.",
+    "Backport proven production code rather than overwriting it with an older repository implementation.",
+    "Run regression checks for founder provenance, non-sales, technical jargon, personal/observational modes, immutable text hash and privacy.",
+    "Record the LinkedIn post URN independently of GET_POST_CONTENT; a 403/401 is not permission to republish or claim provider readback.",
+    "Keep 8-stage Heartbeat, Brain and Powerhouse loop assurance truthful until external provider and outcome evidence exists."
+  ]
+}
