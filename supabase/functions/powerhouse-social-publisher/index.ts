@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import {selectMiraProblem,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
 
 // Protected-main promotion bootstrap: social provider-truth contract v1.
 
@@ -1195,6 +1196,20 @@ Deno.serve(async (req) => {
     } else if (row.channel === 'instagram_company') {
       const proof = row.delivery_evidence?.instagram_media_proof || art.generation_evidence?.instagram_media_proof || {};
       reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, hook_type: clean(art.generation_evidence?.hook_type) || 'Probleem', mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), final_asset_url: clean(proof.media_url), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
+    }
+    if(row.channel==='instagram_company') {
+      const verdict=validateMiraCaptionForDelivery(runDate,art.body,art.generation_evidence||{});
+      const selected=selectMiraProblem(runDate);
+      const media=reviewPayload||{};
+      const mediaMatches=clean((art.generation_evidence?.instagram_media_proof||{}).mira_business_problem_id)===selected.id
+        && clean((art.generation_evidence?.instagram_media_proof||{}).mira_entrepreneur_scene)===selected.scene;
+      if(!verdict.ok||!mediaMatches){
+        const error=!verdict.ok?verdict.reason:'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
+        const ev={...(row.delivery_evidence||{}),mira_entrepreneur_caption_contract:'mira-entrepreneur-problem-to-portal-caption-v1',canonical_problem_id:selected.id,provider_truth_verified:false,error,republish_forbidden:false};
+        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:ev,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'BLOCKED',null,ev,'Repair source-bound caption and matching exact-final Mira media before any provider call.',error);
+        results.push({channel:row.channel,status:'blocked',reason:error});continue;
+      }
     }
     const gate = await review(url, reviewPayload);
     if (gate.http !== 200 || gate.can_publish !== true || gate.identity_gate_decision !== 'PASS' || gate.final_text_hash !== textHash) {

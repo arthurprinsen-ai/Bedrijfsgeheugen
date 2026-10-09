@@ -1,0 +1,56 @@
+{
+  "fingerprint": "powerhouse|commercial|contact-pressure-actual-outbound-only|20261009-v1",
+  "obligation": "github:4198",
+  "date": "2026-10-09",
+  "status": "PROTECTED_CANDIDATE_AWAITING_NATIVE_PREVIEW_AND_PRODUCTION_READBACK",
+  "root_causes": [
+    "Contact-pressure view counted every executed sales action with a person_key as outbound, including internal research_enrichment actions that never reached a recipient",
+    "Unverified inflated counts caused premature cooldown, wrong next_follow_up_at and poor commercial selection"
+  ],
+  "prevention": [
+    "Preserve one existing security_invoker view; restrict outbound CTE to status=done with executed_at and recipient channels email, E-mail or LinkedIn DM",
+    "Do not treat internal research, public engagement posts, skipped/draft actions or created leads as direct contact",
+    "Continue to demand provider receipt before marking actions done, keep existing CRM/person keys, dedupe and owner unchanged"
+  ],
+  "evidence": {
+    "source_view": "public.powerhouse_contact_pressure_v1",
+    "before_example": {
+      "person_key": "350b6db3",
+      "outbound_7d": 3,
+      "observed_gmail_sends_in_current_thread": 2,
+      "internal_research_action_present": true
+    },
+    "provider_examples": [
+      "gmail:sent:1a1206f9b127c9f8",
+      "salesrobot:campaign:ae2812ad-c3eb-4c90-a0d4-6d4e5a94b93e:linkedin_dm:k29mHio_VXehYJiRIxDYWA"
+    ],
+    "migration": "supabase/migrations/20261009150000_contact_pressure_only_proven_outbound_4198.sql"
+  },
+  "tests": [
+    "tests/brain-contact-pressure-provider-outbound-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-contact-pressure-provider-outbound-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-contact-pressure-provider-outbound-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-contact-pressure-provider-outbound-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CONTACT_PRESSURE_INTERNAL_ACTION_COUNTED_AS_OUTBOUND",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "unproven": [
+    "New exact-head Supabase Preview migration and protected Required/CodeQL success",
+    "Post-merge production SQL view and source readback",
+    "Actual selected customer follow-up after correction"
+  ],
+  "parent_p0": 4198
+}
