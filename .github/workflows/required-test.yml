@@ -246,7 +246,9 @@ jobs:
         env:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
-        run: node tools/site-shell/build-localized-routes.mjs --validate-cache
+        run: |
+          node --test tests/powerhouse-blog-i18n-prepublish.test.mjs
+          node tools/site-shell/build-localized-routes.mjs --validate-cache
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
