@@ -20,6 +20,7 @@ test('every native customer input renders its unchanged canonical portal path al
    const markup=fieldMarkup(field);
    assert.ok(markup.includes('data-field-id="'+escapeAttribute(field.id)+'"'),page+':'+field.id);
    assert.ok(markup.includes('data-field-path="'+escapeAttribute(field.path)+'"'),page+':'+field.id);
+   assert.match(markup,/data-field-lineage="DECLARATION_ONLY"/);
    assert.equal((markup.match(/data-field-path=/g)||[]).length,1,'exact one provenance attribute per native field: '+field.id);
    checked++;
  }
@@ -29,6 +30,7 @@ test('every native customer input renders its unchanged canonical portal path al
 test('unmapped fields are not falsely labeled canonical and HTML special characters are never executable',()=>{
  const missing=fieldMarkup({id:'no-path',label:'Pending customer ownership',type:'text'});
  assert.match(missing,/data-field-path=""/);
+ assert.match(missing,/data-field-lineage="UNMAPPED"/);
  assert.doesNotMatch(missing,/data-field-path="portal\./);
  const injected=fieldMarkup({id:'danger',path:'portal.profile." onfocus="evil',label:'Unsafe <script>',type:'text'});
  assert.match(injected,/data-field-path="portal\.profile\.&quot; onfocus=&quot;evil"/);
