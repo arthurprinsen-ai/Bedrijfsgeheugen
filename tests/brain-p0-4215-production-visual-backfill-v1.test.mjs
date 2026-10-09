@@ -12,7 +12,7 @@ test('manual Portal DOM backfill requires an explicit protected-merged source PR
  assert.match(workflow,/\[\[ ! "\$APPROVED_PR_NUMBER" =~ \^\[1-9\]\[0-9\]\*\$ \]\]/);
  assert.match(workflow,/merged_at.*empty/);
  assert.match(workflow,/merge_commit_sha.*empty/);
- assert.match(workflow,/compare\/\$\{merge_sha\}\.\.\.\$\{GITHUB_SHA\}/);
+ assert.match(workflow,/compare\/\$\{merge_sha\}\.\.\.\$\{PORTAL_EXPECTED_SHA\}/);
  assert.match(workflow,/\$relation" != "identical"/);
  assert.match(workflow,/\$relation" != "ahead"/);
  assert.match(workflow,/APPROVED_VISUAL_PR=/);
@@ -34,7 +34,7 @@ test('visual replay must validate numbered PR alias, exact SHA and immutable dep
 test('replay never relaxes actual immutable production comparison or published SHA proof',()=>{
  const mandatory="(github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'";
  assert.equal(workflow.split(mandatory).length-1,2,'visual baseline AND visual comparison steps must run on dispatch');
- assert.match(workflow,/PORTAL_EXPECTED_SHA=\$\{GITHUB_SHA\}/);
+ assert.match(workflow,/PORTAL_EXPECTED_SHA=\$\{PRODUCTION_SHA_OVERRIDE:-\$GITHUB_SHA\}/);
  assert.match(workflow,/\$immutable_sha" = "\$PORTAL_EXPECTED_SHA"/);
  assert.match(workflow,/VISUAL_BASELINE: artifacts\/visual-baseline-pr\/portal-v2-canvassen\.png/);
  assert.match(workflow,/run: npx playwright test tests\/integration\/portal-v2-production-visual-regression\.spec\.js --workers=1/);

@@ -11,6 +11,10 @@ on:
         description: 'Merged Portal V2 PR whose exact approved head must be visually compared with current production'
         type: string
         required: true
+      production_sha:
+        description: 'Previously published main SHA; only allowed if later commits are CI/evidence-only'
+        type: string
+        required: false
 
 concurrency:
   group: portal-v2-production-dom-readback-${{ github.event.pull_request.number || github.ref }}
@@ -27,6 +31,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -39,6 +45,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PRODUCTION_SHA_OVERRIDE: ${{ inputs.production_sha || '' }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "PORTAL_ALIAS_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
@@ -46,8 +53,37 @@ jobs:
             echo "PORTAL_BASE_SHA=${PR_BASE_SHA}" >> "$GITHUB_ENV"
           else
             echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
-            echo "PORTAL_EXPECTED_SHA=${GITHUB_SHA}" >> "$GITHUB_ENV"
+            echo "PORTAL_EXPECTED_SHA=${PRODUCTION_SHA_OVERRIDE:-$GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
+      - name: Verify published SHA override is strictly scoped to CI and evidence
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$PORTAL_EXPECTED_SHA" = "$GITHUB_SHA" ]; then
+            echo "EXACT_MAIN_PRODUCTION_TARGET:$GITHUB_SHA"
+            exit 0
+          fi
+          if [ "$EVENT_NAME" != "workflow_dispatch" ] || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Production SHA override requires main workflow_dispatch with valid commit SHA."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA"; then
+            echo "::error::Selected published revision is not an ancestor of current main."
+            exit 1
+          fi
+          changed="$(git diff --name-only "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA")"
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            case "$file" in
+              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*) ;;
+              *)
+                echo "::error::Runtime source changed after selected production SHA: $file"
+                exit 1
+                ;;
+            esac
+          done <<< "$changed"
+          echo "SCOPE_ONLY_PRODUCTION_TARGET:deployed=$PORTAL_EXPECTED_SHA:workflow_main=$GITHUB_SHA"
       - name: Classify visual baseline impact fail-closed
         env:
           GH_TOKEN: ${{ github.token }}
@@ -75,10 +111,10 @@ jobs:
               echo "::error::Manual visual baseline must derive from an already protected-merged PR."
               exit 1
             fi
-            comparison="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/compare/${merge_sha}...${GITHUB_SHA}")"
+            comparison="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/compare/${merge_sha}...${PORTAL_EXPECTED_SHA}")"
             relation="$(jq -r '.status // empty' <<<"$comparison")"
             if [ "$relation" != "identical" ] && [ "$relation" != "ahead" ]; then
-              echo "::error::Source PR merge is not in the current production ancestry."
+              echo "::error::Source PR merge is not in the verified published production ancestry."
               exit 1
             fi
             echo "APPROVED_VISUAL_PR=${resolved_pr}" >> "$GITHUB_ENV"
@@ -246,7 +282,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: portal-v2-production-dom-readback-${{ github.sha }}
+          name: portal-v2-production-dom-readback-${{ env.PORTAL_EXPECTED_SHA }}
           path: |
             playwright-report/
             test-results/

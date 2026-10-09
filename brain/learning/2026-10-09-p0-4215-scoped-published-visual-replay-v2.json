@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-published-visual-replay-v2-20261009",
+  "fingerprint": "powerhouse|portal|published-runtime-ancestor-vs-ci-only-main|approved-pr-visual-replay-v2",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "protected GitHub main commit ancestry, existing Netlify release and Portal V2 browser visual verifier",
+  "root_causes": [
+    "Visual replay requires exact source/deploy parity but workflow-only main commits can be newer than the latest legitimate unchanged published runtime, making manual exact-main replays impossible.",
+    "An explicitly chosen historical approved PR must be verified against the exact published runtime's ancestor chain, not just the latest workflow head."
+  ],
+  "prevention": [
+    "Require explicit approved_pr_number and optional production_sha only for manual main dispatch; source PR merge must be ancestor of selected provider-published SHA.",
+    "Require full Git diff of publication ancestor→workflow main and permit exclusively CI/evidence paths; fail if runtime changed.",
+    "Independently check public+immutable Netlify exact SHA, approved immutable PR screenshot source and original production pixel threshold."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-scoped-production-visual-replay-v2.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_SCOPED_PUBLISHED_RUNTIME_REPLAY_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "externalActionEvidence": "NOT_YET_VERIFIED",
+  "closureRequired": [
+    "protected Required/CodeQL",
+    "protected merge of scope-aware existing workflow",
+    "terminal actual immutable production DOM mobile and visual Playwright readback with published_sha",
+    "independently authenticated two-customer tenant Brain→impact→roadmap persistent readback",
+    ">750KB transactional outbox split and true provider consumer ACK",
+    "complete dynamic/provider fields and reviewed applicable EU/NL CSRD/ESRS law"
+  ]
+}
