@@ -34,7 +34,10 @@ test('visual replay must validate numbered PR alias, exact SHA and immutable dep
 test('replay never relaxes actual immutable production comparison or published SHA proof',()=>{
  const mandatory="(github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'";
  assert.equal(workflow.split(mandatory).length-1,2,'visual baseline AND visual comparison steps must run on dispatch');
- assert.match(workflow,/PORTAL_EXPECTED_SHA=\$\{GITHUB_SHA\}/);
+ assert.match(workflow,/PORTAL_EXPECTED_SHA=\$\{approved\}/);
+ assert.match(workflow,/approved="\$\{GITHUB_SHA\}"/);
+ assert.match(workflow,/\$relation" != "ahead"/);
+ assert.match(workflow,/cannot accept earlier deployment/);
  assert.match(workflow,/\$immutable_sha" = "\$PORTAL_EXPECTED_SHA"/);
  assert.match(workflow,/VISUAL_BASELINE: artifacts\/visual-baseline-pr\/portal-v2-canvassen\.png/);
  assert.match(workflow,/run: npx playwright test tests\/integration\/portal-v2-production-visual-regression\.spec\.js --workers=1/);
