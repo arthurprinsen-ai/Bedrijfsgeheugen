@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|predictive|groq-billing-unavailable|anthropic-only-primary|v1",
+  "obligationId": "p0-4198-anthropic-only-predictive-20261009",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "groq_fallback_status": "SUSPENDED IN SUPABASE GOVERNANCE 2026-10-09",
+    "anthropic_primary_use_case": "supabase-powerhouse-predictive-first-mover-v1",
+    "anthropic_model": "claude-sonnet-5",
+    "anthropic_secret_present": true,
+    "request_id": 1684,
+    "test_status": 500,
+    "test_error": "canceling statement due to statement timeout",
+    "inference_proven": false
+  },
+  "changes": [
+    "No Groq fallback dispatch in predictive Edge code",
+    "Preserve approved Anthropic governance and forecast evidence validation",
+    "Preserve executor, idempotent upsert and learning receipts"
+  ],
+  "guardrails": [
+    "No alternative unapproved provider",
+    "No invented forecasts or outcomes",
+    "No deactivation of schedulers",
+    "No false-green P0"
+  ],
+  "required": [
+    "Protected merge",
+    "Production source parity",
+    "Successful Anthropic API result",
+    "Forecast and full commercial-to-Brain evidence"
+  ]
+}
