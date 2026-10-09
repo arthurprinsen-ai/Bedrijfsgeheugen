@@ -97,4 +97,8 @@ begin
     'signal_id',s.signal_id,'recommendation_id',rid,'score',s.total_score,'source_url',s.source_url);
 end $function$
 
+-- Keep SECURITY DEFINER internal to canonical scheduler / service calls.
+REVOKE ALL ON FUNCTION public.powerhouse_materialize_mira_problem_recommendation_v1(date) FROM PUBLIC;
+REVOKE ALL ON FUNCTION public.powerhouse_materialize_mira_problem_recommendation_v1(date) FROM anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_materialize_mira_problem_recommendation_v1(date) TO service_role;
 COMMIT;
