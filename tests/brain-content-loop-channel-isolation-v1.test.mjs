@@ -20,3 +20,13 @@ test('legacy Buffer sync is non-blocking and cannot own LinkedIn authority',()=>
   assert.match(loop,/linkedin_authority: 'composio'/);
   assert.match(loop,/LEGACY_BUFFER_SYNC_UNAVAILABLE/);
 });
+
+test('single canonical tick drains several decided channels without parallel senders or unsafe bypass',()=>{
+  assert.match(loop, /MAX_CHANNEL_GENERATIONS\\s*=\\s*4/);
+  assert.match(loop, /for \\(; generatedRounds < MAX_CHANNEL_GENERATIONS; generatedRounds\\+\\+\\)/);
+  assert.match(loop, /GENERATION_NO_PROGRESS/);
+  assert.match(loop, /PENDING_GENERATION_READBACK_FAILED/);
+  assert.match(loop, /generation_round/);
+  assert.match(loop, /mode: 'publish_only'/);
+  assert.doesNotMatch(loop, /cron\\.schedule\\(/);
+});
