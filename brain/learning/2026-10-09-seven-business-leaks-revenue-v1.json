@@ -6,7 +6,7 @@
   "status": "CANDIDATE_PROTECTED_DELIVERY",
   "problem": "An existing free selfscan and a brochure offer value, but the open-loop commercial day is still degraded with no proven paid orders. Outreach needs an explicit first-value offer that does not trade a simulated ROI claim or gated download for fake conversion.",
   "root_cause": "Visitors can discover the free scan, but the reciprocal, transferable seven-leak worksheet and a distinct evidence-based offer ladder are not made explicit across the existing public scan and product-led growth rule.",
-  "fix": "Add one ungated four-page ASCII-valid PDF lead magnet and first-party landing route; link it from the existing selfscan and define one canonical Cialdini, lead qualification, sales tracking and learning rule in the existing Powerhouse product-led skill.",
+  "fix": "Add one ungated four-page ASCII-valid PDF lead magnet and first-party landing route; link it to the existing selfscan without altering the canonical selfscan or its static i18n cache and define one canonical Cialdini, lead qualification, sales tracking and learning rule in the existing Powerhouse product-led skill.",
   "prevention": [
     "Give genuine customer value before an ask; don't demand contact details for an ungated PDF.",
     "Distinguish modeled cost from realized revenue; require actual order/payment evidence to count conversion.",
@@ -19,7 +19,6 @@
     "candidate_files": [
       "pages/7-bedrijfslekken.html",
       "assets/downloads/7-verborgen-bedrijfslekken.pdf",
-      "zelfscan.html",
       "_redirects",
       "skills/powerhouse-product-led-growth.md"
     ],
