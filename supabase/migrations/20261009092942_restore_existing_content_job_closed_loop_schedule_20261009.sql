@@ -8,8 +8,12 @@ BEGIN
   WHERE jobname = 'powerhouse-content-orchestrator-daily-v1'
     AND active IS TRUE;
 
+  -- Preview branches inherit migrations but not the production pg_cron job table rows.
+  -- Never provision an additional scheduler in an isolated preview. Keep production
+  -- repair idempotent when the one existing canonical job is present.
   IF v_job IS NULL THEN
-    RAISE EXCEPTION 'EXISTING_CANONICAL_CONTENT_JOB_NOT_FOUND';
+    RAISE NOTICE 'CANONICAL_CONTENT_JOB_ABSENT_IN_ISOLATED_PREVIEW_NO_OP';
+    RETURN;
   END IF;
   IF to_regprocedure('public.powerhouse_content_closed_loop_tick_v1(timestamp with time zone)') IS NULL THEN
     RAISE EXCEPTION 'EXISTING_CONTENT_LOOP_TICK_MISSING';
