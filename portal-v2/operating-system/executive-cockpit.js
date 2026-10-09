@@ -21,15 +21,17 @@ function dailyFeedbackCards(model={}){
   && item.learning_verified===true
   && Array.isArray(item.learning_evidence_refs)&&item.learning_evidence_refs.length>0
   && Boolean(item.next_decision_id||item.next_decision));
+ const measureLink=model.available===false?'':'<button type="button" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs</button>';
+ const learningLink=model.available===false?'':'<button type="button" data-os-page="monitoring-learning" aria-pressed="false">Bekijk wat we leren</button>';
  return `<article data-steering-stage="measure"><small>4 · Meten</small>
   <strong>${outcome?esc(outcome.title||outcome.label||outcome.id):'Uitkomst nog niet bewezen'}</strong>
   <span>${outcome?esc(outcome.summary||outcome.description||'Uitkomst geverifieerd via de bestaande bewijsregistratie.'):'Geen geverifieerde realisatie met actuele bronverwijzing. Een uitgevoerde actie telt niet automatisch als resultaat.'}</span>
-  <button type="button" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs</button>
+  ${measureLink}
  </article>
  <article data-steering-stage="learn"><small>5 · Leren</small>
   <strong>${learned?esc(learned.learning_summary||learned.learning_title||'Geverifieerde leerstap'):'Leereffect nog niet bewezen'}</strong>
   <span>${learned?esc('Volgende beslissing: '+String(learned.next_decision||learned.next_decision_id)):'Pas na aantoonbare outcome, vastgelegde leer-evidence en een gekoppelde volgende beslissing is de lus gesloten.'}</span>
-  <button type="button" data-os-page="monitoring-learning" aria-pressed="false">Bekijk wat we leren</button>
+  ${learningLink}
  </article>`;
 }
 const list=(title,items)=>`<section class="os-card"><h3>${esc(title)}</h3>${items.length?`<ol>${items.map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.explanation||item.summary||item.next_action||'')}</small><span class="os-evidence">${esc(item.evidence_health?.status||'unavailable')} · ${Math.round((item.evidence_health?.confidence||0)*100)}%</span></li>`).join('')}</ol>`:'<p class="os-empty">Nog geen bewezen gegevens.</p>'}</section>`;
