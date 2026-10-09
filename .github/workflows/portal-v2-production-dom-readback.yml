@@ -258,7 +258,7 @@ jobs:
             release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${preview_url}/release.json?sha=${pr_head_sha}" || true)"
             verified_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$release")"
             verified_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$release")"
-            expected_id="$(printf '%s' "$preview_url" | sed -nE 's#^https://([a-f0-9]{24})--bedrijfsgeheugen\\.netlify\\.app$#\\1#p')"
+            expected_id="$(printf '%s' "$preview_url" | sed -nE 's#^https://([a-f0-9]{24})--bedrijfsgeheugen\.netlify\.app$#\1#p')"
             if [ "$verified_sha" = "$pr_head_sha" ] && [ -n "$expected_id" ] && [ "$verified_id" = "$expected_id" ]; then
               PRODUCTION_URL="$preview_url" VISUAL_CAPTURE_PATH=artifacts/visual-baseline-pr/portal-v2-canvassen.png \
                 npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
