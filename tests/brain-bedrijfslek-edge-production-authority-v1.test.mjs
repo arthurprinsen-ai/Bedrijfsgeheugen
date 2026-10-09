@@ -23,3 +23,13 @@ test('JWT exception depends on actual private hashed service token and blocked p
   assert.match(proxy,/body\?\.action==='claim'/);
   assert.match(proxy,/scan-public-proxy-v2/);
 });
+
+test('postmerge production scan workflow proves Bedrijfslek itself, without a new sender',async()=>{
+  const workflow=await readFile(new URL('../.github/workflows/powerhouse-scan-production-proof.yml',import.meta.url),'utf8');
+  assert.match(workflow,/supabase\/config\.toml/);
+  assert.match(workflow,/name: Prove real Bedrijfslek/);
+  assert.match(workflow,/canonical:"https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan"/);
+  assert.match(workflow,/source_kind:"bedrijfslek_scan"/);
+  assert.match(workflow,/deduped == true/);
+  assert.match(workflow,/bedrijfslek_event_id=/);
+});
