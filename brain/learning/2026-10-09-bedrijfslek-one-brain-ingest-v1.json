@@ -19,5 +19,12 @@
   },
   "commercial_policy": "scan completion is not a qualified order; actual revenue needs verified external economic evidence",
   "acceptance": "GitHub CI + exact Netlify deployment + Edge source parity + actual anonymous event readback + authenticated-tenant claim + Heartbeat next-decision evidence required before terminal live claims",
-  "status": "CANDIDATE_PENDING_PRODUCTION_EVIDENCE"
+  "status": "CANDIDATE_PENDING_PRODUCTION_EVIDENCE",
+  "portal_projection": {
+    "surface": "portal-v2/scan-claim-bridge.js",
+    "authority": "GET/POST /api/portal-scans",
+    "visibility": "authenticated non-demo",
+    "tenant_identity": "server resolved only",
+    "status": "CANDIDATE_PENDING_AUTHENTICATED_TENANT_READBACK"
+  }
 }
