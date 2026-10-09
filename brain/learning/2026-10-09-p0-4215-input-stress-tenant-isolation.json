@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-input-stress-tenant-isolation-20261009-v1",
+  "fingerprint": "powerhouse|portal|two-simulated-tenants-200-fields-1000-observations-idempotent-ack-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Existing Portal BusinessInput/ONE BRAIN canonical append and projection contracts",
+  "root_causes": [
+    "Critical P0 acceptance lacked a CI-enforced stress regression across 200 customer fields and 1000 observations; lower-scale tests could miss consumer lineage and tenant-isolation regressions."
+  ],
+  "prevention": [
+    "Compile deterministic 1000-input, 200-field, two-synthetic-tenant stress against real canonical handler; assert four Brain records per observation and scope by authenticated tenant rather than submitted tenant metadata.",
+    "Require idempotent replay after simulated partial provider append failure and fail-closed oversized payload and revoked identity.",
+    "Keep 750KB transactional split/outbox, actual two-customer login, live persistence and CSRD applicability explicitly unproven."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-input-stress-isolation-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-input-stress-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-input-stress-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-input-stress-isolation-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_TENANT_ISOLATION_STRESS_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "SIMULATED_ONLY",
+  "closureRequired": [
+    "exact-head Required + CodeQL, protected merge and exact-main Netlify production readback",
+    "two genuine authenticated customer sessions with tenant A/B persistent write→Brain consumer ACK→cards/roadmap and cross-tenant denial",
+    "atomic transactional >750KB split batch/retry/ACK under provider failure",
+    "all actual rendered legacy/dynamic/connector customer field mappings",
+    "official customer-specific EU/NL CSRD/ESRS legal applicability, reviewed and evidenced"
+  ]
+}
