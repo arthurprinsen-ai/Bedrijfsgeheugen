@@ -1824,3 +1824,23 @@ export const COMMERCIAL_EMAIL_CHANNEL_FAULT_ISOLATION_P0_V1 = Object.freeze({
   migration:'supabase/migrations/20261009135700_commercial_email_lane_fault_isolation_4198.sql',
   latestObservedState:'2026-10-09: 23295 enriched; zero prepared eligible e-mail recipients; no provider-confirmed sends claimed'
 });
+
+export const MIRA_ENTREPRENEUR_PORTAL_CAPTION_V1 = Object.freeze({
+  fingerprint:'powerhouse|mira|entrepreneur-pain-to-portal-action-caption|v1',
+  canonicalProblemSource:'config/powerhouse-problem-library.json',
+  detectedSignals:'powerhouse_mira_problem_signals_v1',
+  lineage:'powerhouse_mira_problem_lineage_v1',
+  immutableDailyWinner:'powerhouse_instagram_daily_winners_v1',
+  producer:'powerhouse-mira-problem-radar',
+  captionComposer:'powerhouse-content-orchestrator',
+  sceneBriefRouter:'powerhouse-instagram-media-router',
+  reviewer:'bg-pre-publish-review',
+  singleWriter:'powerhouse-social-publisher',
+  exactMediaAndIdentityProofRequired:true,
+  bothMiraVisualAndCaptionRequired:true,
+  beforePost:['existing PH-P problem source','entrepreneur context verified','source signal ID','one immutable daily winner','scene aligned to selected problem','caption situation/cause/effect/portal action/pointe','exact-final-media proof','dedupe and single-writer claim'],
+  afterPost:['external post ID','provider readback','engagement','visit','scan','lead','meeting','order','realized revenue only when observed'],
+  regression:'tests/brain-mira-entrepreneur-portal-caption-v1.test.mjs',
+  deployment:'supabase/migrations/20261009150500_mira_entrepreneur_portal_caption_v1.sql',
+  noParallelExecutor:true
+});
