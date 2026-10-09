@@ -524,3 +524,10 @@ exception when others then
 end
 $function$
 ;
+
+-- Preserve the EXISTING production access control: only postgres and service_role
+-- can execute these internal SECURITY DEFINER functions. Never expose to browsers.
+REVOKE ALL ON FUNCTION public.powerhouse_full_cycle_production_proof(date) FROM PUBLIC, anon, authenticated;
+REVOKE ALL ON FUNCTION public.powerhouse_autonomous_growth_revenue_cycle(date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_full_cycle_production_proof(date) TO service_role;
+GRANT EXECUTE ON FUNCTION public.powerhouse_autonomous_growth_revenue_cycle(date) TO service_role;
