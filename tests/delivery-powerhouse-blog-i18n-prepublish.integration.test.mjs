@@ -5,6 +5,16 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
+
+let parse5Installed=true;
+try { createRequire(import.meta.url).resolve('parse5'); }
+catch { parse5Installed=false; }
+const requiredRuntime=process.env.POWERHOUSE_I18N_REQUIRE_RUNTIME === '1';
+if(requiredRuntime && !parse5Installed) {
+  throw new Error('POWERHOUSE_I18N_RUNTIME_DEPENDENCY_MISSING: parse5 is required in protected preflight');
+}
+
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const BUILDER = path.join(REPO,'tools/site-shell/build-localized-routes.mjs');
@@ -28,7 +38,7 @@ function run(dir,args,env={}) {
     env:{...process.env,STATIC_I18N_NETWORK:'0',STATIC_I18N_REQUIRE_CACHE:'0',...env}});
 }
 
-test('daily publisher prepares a durable minimal English patch, validates, and is idempotent', () => {
+test('daily publisher prepares a durable minimal English patch, validates, and is idempotent', {skip:!parse5Installed}, () => {
   const dir=fixture();
   try {
     const preload=path.join(dir,'mock-provider.cjs');
@@ -65,7 +75,7 @@ globalThis.fetch = async (_url, options) => {
   }
 });
 
-test('missing translations fail closed without an authorized translation provider', () => {
+test('missing translations fail closed without an authorized translation provider', {skip:!parse5Installed}, () => {
   const dir=fixture();
   try {
     const result=run(dir,[BUILDER,'--prepare-cache=powerhouse-blog-fixture.json']);
