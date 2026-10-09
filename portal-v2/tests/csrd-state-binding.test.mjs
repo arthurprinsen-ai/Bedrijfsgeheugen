@@ -33,6 +33,7 @@ test('CSRD portal-state binding fails closed when canonical resource footprint i
 
 test('page shell passes the canonical CSRD snapshot into the renderer', async () => {
   const source = await readFile(new URL('../page-shell.js', import.meta.url), 'utf8');
-  assert.match(source, /impactSnapshotFromPortalState\(portalStateSnapshot\(\)\)/);
+  assert.match(source, /impactSnapshotFromPortalState\(\s*portalStateSnapshot\(\),\s*\{/);
+  assert.match(source, /demo:portalContext\.stateClient\?\.isDemo\?\.\(\)===true\|\|!portalContext\.stateClient\?\.currentUser\?\.\(\)/);
   assert.match(source, /renderCsrdImpact\([^;]+snapshot[^;]+\)/s);
 });

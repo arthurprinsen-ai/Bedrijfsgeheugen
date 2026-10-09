@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|portal|public-browser-403-burst-readback-recovery-v1",
+  "obligationId": "portal-public-browser-403-bounded-recovery-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "GitHub immutable preview and canonical shell exact-main production browser readback",
+  "root_causes": [
+    "PR #4228 exact-head immutable preview suite returned one HTTP 403 for legacy demoAI route while other same-route mobile browser test passed; response may be transient and must never be treated as success",
+    "Canonical public route visibility sweep reported four HTTP 403 responses under 4 route workers and 2 simultaneous viewports, despite existing bounded retries; rate-pressure is a hypothesis, not a verified provider WAF diagnosis"
+  ],
+  "prevention": [
+    "Bound and retry only explicitly transient HTTP statuses for the demo route, while still failing the test if no successful response occurs",
+    "Reduce canonical production public browser sweep to two route workers and one viewport at a time without excluding any routes or viewports",
+    "Retain exact GitHub main, immutable Netlify deploy, failing assertions and evidence; never allow real 403 denial to count as verified customer access"
+  ],
+  "tests": [
+    "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
+    "tests/integration/portal-v2-production-full-parity.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "INTERMITTENT_HTTP_403_PUBLIC_BROWSER_SWEEP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected exact-head Required+CodeQL and immutable Netlify preview browser suite",
+    "protected merge and exact-main Netlify production",
+    "terminal green production DOM and public standalone visibility readbacks",
+    "real authenticated tenant A/B and official CSRD legal source applicability remain open on P0 #4215"
+  ]
+}

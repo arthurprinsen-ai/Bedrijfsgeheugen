@@ -42,10 +42,20 @@ async function hideNetlifyChrome(page){
 
 async function bootDemo(page,width=1440,height=1000){
  await page.setViewportSize({width,height});
- const response=await page.goto(`${BASE_URL}/klantportaal?klant=demoAI&bg_full_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
- expect(response,'demoAI response').not.toBeNull();
- expect(response.status(),'demoAI status').toBeLessThan(400);
- await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});
+ const retryableStatuses=new Set([403,408,425,429,500,502,503,504]);
+ let lastError;
+ for(let attempt=1;attempt<=3;attempt++){
+  const response=await page.goto(`${BASE_URL}/klantportaal?klant=demoAI&bg_full_parity=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45_000});
+  const status=response?.status()??null;
+  if(status!==null&&status<400){
+   await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});
+   return;
+  }
+  lastError=new Error(`demoAI preview readback HTTP ${status??'no response'} (attempt ${attempt}/3): ${BASE_URL}`);
+  if(!retryableStatuses.has(status))throw lastError;
+  if(attempt<3)await page.waitForTimeout(attempt*1500);
+ }
+ throw lastError;
 }
 
 async function gotoPortalPage(page,pageId){

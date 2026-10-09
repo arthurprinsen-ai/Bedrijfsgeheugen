@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|portal|csrd-native-route-and-live-unknown-v1",
+  "obligationId": "portal-csrd-route-live-unknown-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Portal V2 native CSRD snapshot and production browser readback",
+  "root_causes": [
+    "CSRD DOM check used the first text-matching button rather than verifying the canonical route ID",
+    "Absent tenant resource readback could lead to displaying static demo KPIs for an authenticated customer"
+  ],
+  "prevention": [
+    "Require exact CSRD route/data-page-id/cockpit browser readback",
+    "Do not display demo sustainability metrics to signed-in tenants with empty or failed evidence",
+    "Keep actual authenticated two-tenant and official CSRD legal-source proofs as separate acceptance gates"
+  ],
+  "tests": [
+    "portal-v2/tests/csrd-impact.test.mjs",
+    "tests/integration/portal-v2-production-csrd.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "AMBIGUOUS_CSRD_DOM_ROUTE_AND_UNEVIDENCED_TENANT_KPI",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected CI + CodeQL",
+    "exact-main Netlify release",
+    "CSRD production DOM readback",
+    "official regulation to tenant applicability evidence",
+    "authorized two-tenant customer write to Brain impact/roadmap readback"
+  ]
+}
