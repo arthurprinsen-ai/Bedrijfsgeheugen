@@ -83,10 +83,26 @@
     },
     "2026-10-09": {
       "date": "2026-10-09",
-      "content_id": "blog:onprijsd-probleem-bedrijfsvoering",
-      "slug": "onprijsd-probleem-bedrijfsvoering",
-      "state": "selected",
-      "selected_at": "2026-10-09T10:06:10.948Z"
+      "content_id": "blog:sopv-2026-plasticverwerkers-productietest-subsidie",
+      "slug": "sopv-2026-plasticverwerkers-productietest-subsidie",
+      "state": "live",
+      "selected_at": "2026-10-09T10:47:32.949Z",
+      "merged_at": "2026-10-09T10:54:52.652Z",
+      "live_at": "2026-10-09T10:54:52.652Z",
+      "live_url": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+      "live_proof": {
+        "ok": true,
+        "status": 200,
+        "url": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+        "content_id": "blog:sopv-2026-plasticverwerkers-productietest-subsidie",
+        "slug": "sopv-2026-plasticverwerkers-productietest-subsidie",
+        "canonical": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+        "provider": "netlify",
+        "provider_deploy_id": "6ac8c38172d5dd0008a6169a",
+        "provider_commit_ref": "47441ea9ed428202a7f1ccca5dc8cd5038d544bb",
+        "independent_http_probe_id": 1570,
+        "source_watchdog_run_id": 37920475011
+      }
     }
   }
 }

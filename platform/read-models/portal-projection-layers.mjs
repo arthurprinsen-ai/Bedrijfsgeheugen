@@ -1,3 +1,4 @@
+import {mergePreservedBusinessInputAnswers} from '../../supabase/functions/_shared/portal-business-input-answer-merge.js';
 export const PORTAL_LAYERS=Object.freeze({LEGACY:'legacy-migration',CANONICAL:'canonical-brain'});
 const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
 const arr=v=>Array.isArray(v)?v:[];
@@ -26,8 +27,12 @@ export function projectCanonicalObject(layerState={},canonicalObject){
  if(!canonicalObject?.id||!canonicalObject?.tenantId||!canonicalObject?.type)throw new TypeError('canonical object id, tenantId and type are required');
  const d=obj(canonicalObject.data),next={...obj(layerState)};const id=canonicalObject.id;const updatedAt=canonicalObject.updatedAt||canonicalObject.createdAt||new Date().toISOString();
  switch(canonicalObject.type){
-  case 'BusinessInput':
-   next.businessInputs=upsert(next.businessInputs,{id,inputType:d.inputType||'Unknown',modelId:d.modelId||id,instanceId:d.instanceId||'primary',schemaVersion:Number(d.schemaVersion)||1,answers:obj(d.answers),metadata:obj(d.metadata),sourcePortal:d.sourcePortal||'',submittedBy:d.submittedBy||canonicalObject.ownerId||'',submittedAt:d.submittedAt||updatedAt,truthClass:canonicalObject.truthClass,provenance:canonicalObject.provenance,updatedAt});break;
+  case 'BusinessInput': {
+   const previous=arr(next.businessInputs).find(item=>item?.id===id);
+   const preserveMissing=d.metadata?.preserveMissing===true;
+   const answers=preserveMissing&&previous?mergePreservedBusinessInputAnswers(obj(previous.answers),obj(d.answers)):obj(d.answers);
+   next.businessInputs=upsert(next.businessInputs,{id,inputType:d.inputType||'Unknown',modelId:d.modelId||id,instanceId:d.instanceId||'primary',schemaVersion:Number(d.schemaVersion)||1,answers,metadata:obj(d.metadata),sourcePortal:d.sourcePortal||'',submittedBy:d.submittedBy||canonicalObject.ownerId||'',submittedAt:d.submittedAt||updatedAt,truthClass:canonicalObject.truthClass,provenance:canonicalObject.provenance,updatedAt});break;
+  }
   case 'ExternalSignal':case 'Signal':case 'Risk':
    next.signals=upsert(next.signals,{id,category:d.category||canonicalObject.type,title:d.title||d.text||id,source:canonicalObject.provenance?.sourceRef||canonicalObject.provenance?.sourceType||'Brain',status:d.status||canonicalObject.lifecycle||'Active',confidence:Number(d.confidence)||null,impact:d.impact||priorityFromRisk(canonicalObject.risk),affected:arr(d.affected),summary:d.summary||d.text||'',updatedAt});break;
   case 'Recommendation':
