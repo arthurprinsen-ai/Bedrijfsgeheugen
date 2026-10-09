@@ -449,3 +449,11 @@ Elke Mira-publicatie bestaat uit exact één passende, origineel geverifieerde M
 De bestaande content-orchestrator produceert de source-bound caption, de bestaande Instagram-media-router retourneert de PH-P-scène aan OpenArt en weigert media zonder die lineage, en de bestaande social-publisher voert de machinecheck uit vóór elke provider-side-effect. De bron/portal/scene moeten overeenkomen. Geen extra executor, scheduler, Buffer/Make fallback of tweede taxonomie. De bevroren dagwinnaar wordt niet herschreven; ongeschikte bestaande assets worden niet 'goed' verklaard.
 
 Canonical runtime: `supabase/functions/_shared/mira-entrepreneur-caption.mjs` en test `tests/brain-mira-entrepreneur-caption-v1.test.mjs`. Succes vraagt nog steeds exacte provider-ID, permalink, readback en outcome-evidence.
+
+## Immutable fictional Mira face — same person in every episode (2026-10-09)
+
+Fingerprint: `mira-master-two-image-face-continuity-v1`. The sole canonical fictional OpenArt master is `Yjqu4D7v76HABNPmQPj1`, at `config/instagram-canonical-mira-identity-v1.json`. Original pixels (not text prompts) are authoritative. The same source image is required as the actual OpenArt `image2video` reference for new Reels. Do not select a different stock woman, regenerated master, user photo or unrelated uploaded reference.
+
+After generating, compare exact final media (or each start/middle/end frame in an MP4) alongside the original Mira master using the existing approved vision verifier. Approve only if `face_identity_match=true`, confidence >=0.9, and all three Reel frames match the same canonical SHA; face/age/hairline/identity must not drift. Clothes, gestures, setting and expression may vary. If the comparison is uncertain, hold rather than post. All original exact-media, PH-P entrepreneur problem, full caption, scene-match, dedupe, provider-ack and independent permalink-readback checks remain mandatory.
+
+Canonical code: `supabase/functions/_shared/mira-canonical-face.mjs`. Regressions: `tests/brain-mira-canonical-face-consistency-v1.test.mjs`. No new scheduler, publisher, CRM, or alternate Instagram identity.
