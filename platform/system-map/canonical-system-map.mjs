@@ -36,6 +36,29 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'daily-entrepreneur-steering-v1',
+      fingerprint:'powerhouse|one-brain|daily-entrepreneur-steering|v1',
+      label:'Daily entrepreneur steering — know, decide, do, measure, learn',
+      owner:'ONE BRAIN / Portal V2 / Outcome Memory',
+      authority:'existing-tenant-brain-projection+company-decision-api+verified-outcomes',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['canonical authenticated tenant executive projection','source references and freshness','existing next-best-actions','verified outcomes and learning evidence']),
+      outputs:Object.freeze(['daily five-stage human experience','existing decision actions','evidence-backed measurement and learning status']),
+      runtime:Object.freeze({
+        view:'portal-v2/operating-system/executive-cockpit.js',
+        evidence:'portal-v2/operating-system/executive-projection.js',
+        decisions:'portal-v2/company-cockpit-ui.js',
+        regression:'portal-v2/tests/daily-entrepreneur-steering.test.mjs',
+        productContract:'docs/architecture/daily-entrepreneur-steering-v1.md'
+      }),
+      invariants:Object.freeze({
+        noNewModule:true,noNewScheduler:true,oneBrain:true,
+        tenantScopedEvidence:true,executedNotRealized:true,
+        outcomeReceiptRequired:true,learningEvidenceAndNextDecisionRequired:true,
+        noFalseGreen:true,noInertButtonsWithoutAuth:true
+      })
+    }),
+    Object.freeze({
       id:'self-evolving-business-engineering-os-v1',
       fingerprint:'powerhouse|cross-domain-evolution|canonical-evidence|protected-delivery|v1',
       label:'Self-Evolving Business & Engineering OS — cross-domain decision policy',
