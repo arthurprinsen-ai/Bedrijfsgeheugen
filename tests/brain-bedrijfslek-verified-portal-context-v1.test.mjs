@@ -11,7 +11,8 @@ function getProjection(){
   .replace('const BEDRIJFSLEK_DOMAINS:Record<string,{label:string,action:string}>','const BEDRIJFSLEK_DOMAINS')
   .replace('function mergeProjectionItems(previous:unknown,items:any[])','function mergeProjectionItems(previous,items)')
   .replace('function claimedBedrijfslekProjection(scan:any,tenantId:string,current:any)','function claimedBedrijfslekProjection(scan,tenantId,current)')
-  .replace('const nextData:any=','const nextData=');
+  .replace('const nextData:any=','const nextData=')
+  .replace('(row:any)=>','(row)=>');
  const safeObj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
  const num=(v,min,max)=>{const x=Number(v);return Number.isFinite(x)&&x>=min&&x<=max?x:null};
  return new Function('safeObj','num',js+'\nreturn claimedBedrijfslekProjection;')(safeObj,num);
