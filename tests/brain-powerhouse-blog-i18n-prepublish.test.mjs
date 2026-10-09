@@ -31,9 +31,9 @@ test('scoped patch cache is durable and complete before merge, not a global rewr
   assert.match(source,/Object\.fromEntries\(Object\.entries\(cache\)/);
   assert.match(source,/TRANSLATION_CACHE_PATCH_DIR,PREPARE_CACHE_PATCH_NAME/);
   assert.match(source,/STATIC_I18N_PREPARE_INCOMPLETE/);
-  assert.doesNotMatch(source,/fs\\.existsSync\\(file\\)/,
+  assert.doesNotMatch(source,/fs\.existsSync\(file\)/,
     'read the patch atomically without a separate existence check');
-  assert.match(source,/error\\?\\.code !== 'ENOENT'/,
+  assert.match(source,/error\?\.code !== 'ENOENT'/,
     'only a missing patch is recoverable; malformed and inaccessible files stay fatal');
   assert.match(source,/process\.exit\(0\)/);
 });
