@@ -10,3 +10,4 @@ Fingerprint: `powerhouse|bedrijfslek|canonical-one-brain-ingest|v1`
 7. Eerste tests: canonical NL URL allowlist, scan en event idempotence, geen PII, resultaat vóór POST, bestaand privileged-boundary verbod, echte provider-/database-readback en code/source SHA pariteit.
 
 8. Portal V2 presenteert alleen tenant-bevestigde scanhistorie via de al bestaande beveiligde API. Anonieme zelfscanresultaten worden uitsluitend na succesvolle storage-receipt en expliciete claimaanvraag geassocieerd.
+9. De Supabase Edge production-authority mag de canonieke scanfunctie alleen herstellen/deployen wanneer `supabase/config.toml` exact `[functions.powerhouse-scan-ingest]` inclusief juiste entrypoint bevat. `verify_jwt=false` vereist het bestaande private gehashte `x-bg-service-token` en een publieke proxy die `history`/`claim` altijd verbiedt. Faal expliciet bij config/source-drift; niet handmatig als structureel groen afsluiten.
