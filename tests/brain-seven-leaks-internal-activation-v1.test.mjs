@@ -6,22 +6,24 @@ const home=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 const scan=readFileSync(new URL('../zelfscan.html',import.meta.url),'utf8');
 const page=readFileSync(new URL('../pages/7-bedrijfslekken.html',import.meta.url),'utf8');
 const i18n=JSON.parse(readFileSync(new URL('../config/bg-static-i18n-en.d/2026-10-09-seven-leaks-internal-activation.json',import.meta.url),'utf8'));
-const workbook='/7-bedrijfslekken?utm_source=';
+const workbook='href="/7-bedrijfslekken"';
 const text='Download gratis het werkboek: 7 verborgen bedrijfslekken →';
 
 test('replay: existing homepage and ungated selfscan each offer one real worksheet entry link',()=>{
-  assert.match(home,/href="\/7-bedrijfslekken\?utm_source=homepage&utm_medium=website&utm_campaign=7-bedrijfslekken-202610"/);
-  assert.match(scan,/href="\/7-bedrijfslekken\?utm_source=zelfscan&utm_medium=website&utm_campaign=7-bedrijfslekken-202610"/);
+  assert.match(home,/href="\/7-bedrijfslekken"/);
+  assert.match(scan,/href="\/7-bedrijfslekken"/);
   assert.equal(home.split(workbook).length-1,1);
   assert.equal(scan.split(workbook).length-1,1);
   assert.ok(home.includes(text)&&scan.includes(text));
 });
 
-test('shadow: scan primary free result and product navigation remain unchanged',()=>{
+test('shadow: canonical clean link retains SEO and existing scan/product navigation',()=>{
   assert.match(scan,/<button class="knopvol" onclick="ga\(1\)">Laat zien waar mijn bedrijf lekt/);
   assert.match(home,/data-money-primary href="https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan"/);
   assert.match(home,/data-money-secondary href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
   assert.match(page,/href="\/assets\/downloads\/7-verborgen-bedrijfslekken\.pdf"/);
+  assert.doesNotMatch(home,/href="\/7-bedrijfslekken\?/);
+  assert.doesNotMatch(scan,/href="\/7-bedrijfslekken\?/);
   assert.doesNotMatch(page,/<form\b/);
 });
 
