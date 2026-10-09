@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
 
 // Protected-main promotion bootstrap: social provider-truth contract v1.
@@ -890,6 +891,7 @@ function instagramIdentityProven(evidence: any) {
   const mediaType = clean(proof?.media_type || evidence?.media_type).toLowerCase();
   if (mediaType !== 'reel') return false;
   const visual = proof?.instagram_visual || {};
+  if(!miraFaceProofValid(visual,mediaType))return false;
   const width=Number(visual?.width),height=Number(visual?.height);
   const refs=Array.isArray(visual?.evidence_refs)?visual.evidence_refs.map(clean):[];
   const visible=visual?.verified===true&&visual?.semantic_verified===true&&visual?.mira_present===true
@@ -1199,12 +1201,13 @@ Deno.serve(async (req) => {
     }
     if(row.channel==='instagram_company') {
       const verdict=validateMiraCaptionForDelivery(runDate,art.body,art.generation_evidence||{});
+      const masterFaceOk=miraFaceProofValid((art.generation_evidence?.instagram_media_proof||{}).instagram_visual||{},'reel');
       const selected=selectMiraProblem(runDate);
       const media=reviewPayload||{};
       const mediaMatches=clean((art.generation_evidence?.instagram_media_proof||{}).mira_business_problem_id)===selected.id
         && clean((art.generation_evidence?.instagram_media_proof||{}).mira_entrepreneur_scene)===selected.scene;
-      if(!verdict.ok||!mediaMatches){
-        const error=!verdict.ok?verdict.reason:'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
+      if(!verdict.ok||!mediaMatches||!masterFaceOk){
+        const error=!verdict.ok?verdict.reason:!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
         const ev={...(row.delivery_evidence||{}),mira_entrepreneur_caption_contract:'mira-entrepreneur-problem-to-portal-caption-v1',canonical_problem_id:selected.id,provider_truth_verified:false,error,republish_forbidden:false};
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:ev,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'BLOCKED',null,ev,'Repair source-bound caption and matching exact-final Mira media before any provider call.',error);

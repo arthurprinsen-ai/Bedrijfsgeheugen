@@ -1,4 +1,5 @@
 import postgres from 'npm:postgres@3.4.7';
+import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
 
 const CHANNELS = ['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'];
@@ -274,6 +275,7 @@ function hardBoundary(channel:string, reason?:string) {
 }
 function instagramVisibleIdentityProven(proof:any) {
   const visual = proof?.instagram_visual || {};
+  if(!miraFaceProofValid(visual,clean(proof?.media_type).toLowerCase()))return false;
   const refs = Array.isArray(visual?.evidence_refs) ? visual.evidence_refs.map(clean) : [];
   const mediaType = clean(proof?.media_type).toLowerCase();
   const dimensionsOk = ['reel','video'].includes(mediaType)
@@ -468,7 +470,7 @@ Deno.serve(async (req) => {
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
-    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):null,
+    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
       tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='Anthropic';

@@ -1,4 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_IDENTITY_MIN_CONFIDENCE} from '../_shared/mira-canonical-face.mjs';
 
 const USE_CASE='supabase-powerhouse-instagram-media-verifier-v1';
 const CONTRACT='mira-visible-identity-vision-v1';
@@ -53,7 +54,7 @@ async function sha256(bytes:Uint8Array){
   const digest=await crypto.subtle.digest('SHA-256',bytes);
   return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');
 }
-async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaType:string){
+async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaType:string,masterBytes:Uint8Array){
   const tool={
     name:'visual_verdict',
     description:'Return strict visible-Mira evidence for the exact supplied image.',
@@ -61,6 +62,9 @@ async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaTy
       type:'object',additionalProperties:false,
       properties:{
         semantic_verified:{type:'boolean'},
+        face_identity_match:{type:'boolean'},
+        face_identity_confidence:{type:'number',minimum:0,maximum:1},
+        facial_drift_reason:{type:'string'},
         mira_present:{type:'boolean'},
         identity_class:{type:'string',enum:['mira_daily_life','text_only_card','generic_person','other','uncertain']},
         evidence_method:{type:'string',enum:['vision']},
@@ -73,7 +77,7 @@ async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaTy
         confidence:{type:'number',minimum:0,maximum:1},
         reason:{type:'string'}
       },
-      required:['semantic_verified','mira_present','identity_class','evidence_method','placeholder_detected','visual_complete','daily_life_scene','mira_central_subject','text_dominant','brand_template_dominant','confidence','reason']
+      required:['face_identity_match','face_identity_confidence','facial_drift_reason','semantic_verified','mira_present','identity_class','evidence_method','placeholder_detected','visual_complete','daily_life_scene','mira_central_subject','text_dominant','brand_template_dominant','confidence','reason']
     }
   };
   const response=await fetch('https://api.anthropic.com/v1/messages',{
@@ -81,10 +85,12 @@ async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaTy
     headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},
     body:JSON.stringify({
       model,max_tokens:700,
-      system:'Inspect only the supplied image. Mira is the Bedrijfsgeheugen fictional daily-life persona and must be the clearly visible central human subject in a normal everyday-life scene. A text-only card, quote card, spreadsheet/file-name joke card, generic company creative, template-first layout, logo, caption, metadata or tiny/background person never proves Mira. Text may only be secondary to the Mira scene. Be conservative: uncertain means mira_present=false.',
+      system:'Two-image comparison for the SAME FICTIONAL character. Image 1 is the official canonical OpenArt Mira master; image 2 is the final candidate or a sampled Reel frame. Verify that the facial geometry, apparent age, eyes, nose, jaw, hairstyle and recognizable identity remain consistent, allowing changes of pose, expression, lighting and clothing. Do not infer identity from the prompt, text, names, filenames or backgrounds. If the face is hidden, replaced, altered, generic, or hard to compare, set face_identity_match=false and confidence low. Also reject text cards and brand creative. Be conservative: a different woman never counts as Mira.',
       messages:[{role:'user',content:[
+        {type:'text',text:'IMAGE 1: official canonical fictional Mira master. IMAGE 2: exact candidate asset or video frame. Compare face identity, do not merely detect a human woman. Only approve when the same exact Mira appears clearly in image 2.'},
+        {type:'image',source:{type:'base64',media_type:'image/jpeg',data:toBase64(masterBytes)}},
         {type:'image',source:{type:'base64',media_type:mediaType,data:toBase64(bytes)}},
-        {type:'text',text:'Verify whether the exact final image is a genuine Mira visual: Mira is the central visible subject in an everyday-life scene, not a text/quote/template-led company card. Reject text-dominant, brand-template-dominant, spreadsheet/file-name cards, generic company creative, tiny/background Mira, placeholders and ambiguous identity.'}
+        {type:'text',text:'Give separate boolean facial identity match and confidence, with explicit drift reason if uncertain. Require visible centered Mira and ordinary life scene; reject a different look-alike, text, template, placeholder or unclear face.'}
       ]}],
       tools:[tool],tool_choice:{type:'tool',name:'visual_verdict'}
     })
@@ -145,7 +151,16 @@ Deno.serve(async(req)=>{
     const size=dimensions(bytes,ct);
     if(!size)throw new Error('MEDIA_DIMENSIONS_UNREADABLE');
     const hash=await sha256(bytes);
-    const verdict=await visionVerdict(apiKey,gov.data.model_id,bytes,ct);
+    safeRemoteUrl(MIRA_MASTER_REFERENCE_URL);
+    const masterResponse=await fetch(MIRA_MASTER_REFERENCE_URL,{redirect:'follow'});
+    if(!masterResponse.ok)throw new Error('MIRA_CANONICAL_MASTER_UNAVAILABLE');
+    const masterMime=clean(masterResponse.headers.get('content-type')).split(';')[0].toLowerCase();
+    if(masterMime!=='image/jpeg'||Number(masterResponse.headers.get('content-length')||0)>MAX_BYTES)throw new Error('MIRA_CANONICAL_MASTER_INVALID');
+    const masterBytes=new Uint8Array(await masterResponse.arrayBuffer());
+    const masterDimensions=dimensions(masterBytes,masterMime);
+    if(!masterBytes.length||masterBytes.length>MAX_BYTES||!masterDimensions)throw new Error('MIRA_CANONICAL_MASTER_UNREADABLE');
+    const masterSha=await sha256(masterBytes);
+    const verdict=await visionVerdict(apiKey,gov.data.model_id,bytes,ct,masterBytes);
     const expectedHeight=verificationRole==='video_frame'?1920:1350;
     const dimsOk=size.width===1080&&size.height===expectedHeight;
     const pass=dimsOk
@@ -159,8 +174,11 @@ Deno.serve(async(req)=>{
       && verdict.mira_central_subject===true
       && verdict.text_dominant===false
       && verdict.brand_template_dominant===false
-      && Number(verdict.confidence)>=0.9;
-    const evidenceRef=`vision:anthropic:${gov.data.model_id}:${hash.slice(0,16)}`;
+      && Number(verdict.confidence)>=0.9
+      && verdict.face_identity_match===true
+      && Number.isFinite(Number(verdict.face_identity_confidence))
+      && Number(verdict.face_identity_confidence)>=MIRA_IDENTITY_MIN_CONFIDENCE;
+    const evidenceRef=`vision:anthropic:${gov.data.model_id}:face-compare:${masterSha.slice(0,16)}:${hash.slice(0,16)}`;
     const visual={
       verified:pass,semantic_verified:verdict.semantic_verified===true,mira_present:verdict.mira_present===true,
       identity_class:clean(verdict.identity_class),evidence_method:'vision',
@@ -168,6 +186,14 @@ Deno.serve(async(req)=>{
       daily_life_scene:verdict.daily_life_scene===true,mira_central_subject:verdict.mira_central_subject===true,
       text_dominant:verdict.text_dominant===true,brand_template_dominant:verdict.brand_template_dominant===true,
       confidence:Number(verdict.confidence)||0,
+      face_identity_match:verdict.face_identity_match===true,
+      face_identity_confidence:Number(verdict.face_identity_confidence)||0,
+      facial_drift_reason:clean(verdict.facial_drift_reason).slice(0,500),
+      canonical_reference_id:MIRA_MASTER_REFERENCE_ID,
+      canonical_reference_url:MIRA_MASTER_REFERENCE_URL,
+      master_reference_sha256:masterSha,
+      identity_comparison_method:'two_image_vision',
+      face_consistency_contract:MIRA_FACE_CONSISTENCY_POLICY,
       reason:clean(verdict.reason).slice(0,500),asset_url:mediaUrl||null,width:size.width,height:size.height,
       format_verified:dimsOk,evidence_refs:[evidenceRef]
     };
