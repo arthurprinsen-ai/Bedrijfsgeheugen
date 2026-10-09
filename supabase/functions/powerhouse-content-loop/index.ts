@@ -282,20 +282,47 @@ Deno.serve(async (req) => {
     stepResults.push(await invoke(url, expected, 'powerhouse-composio-linkedin-setup', { action: 'status', runDate }));
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
-    // Bounded generation: only invoke the heavyweight orchestrator when a publish claim
-    // still needs an artifact. Existing content_ready claims go straight to delivery.
-    const { data: pendingGeneration, error: pendingGenerationError } = await db
-      .from('powerhouse_channel_decisions')
-      .select('channel')
-      .eq('run_date', runDate)
-      .eq('decision', 'publish')
-      .eq('state', 'decided')
-      .limit(1);
-    if (pendingGenerationError) throw new Error('PENDING_GENERATION_READ_FAILED');
-    if (Array.isArray(pendingGeneration) && pendingGeneration.length > 0) {
-      stepResults.push(await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate }));
-    } else {
-      stepResults.push({ name:'powerhouse-content-orchestrator', ok:true, skipped:true, reason:'NO_PENDING_ARTIFACT' });
+    // Drain all currently decided channel artifacts before dispatch. The orchestrator
+    // creates at most one per invocation; a single invocation stranded today's
+    // lower-priority LinkedIn personal post even when the canonical cron succeeded.
+    // Keep this bounded within the existing single supervisor/lease. Do not bypass
+    // prepublish, unique-publication, identity or media proof gates.
+    const MAX_CHANNEL_GENERATIONS = 4;
+    let generatedRounds = 0;
+    for (; generatedRounds < MAX_CHANNEL_GENERATIONS; generatedRounds++) {
+      const { data: pendingGeneration, error: pendingGenerationError } = await db
+        .from('powerhouse_channel_decisions')
+        .select('channel')
+        .eq('run_date', runDate)
+        .eq('decision', 'publish')
+        .eq('state', 'decided')
+        .order('channel', { ascending: true })
+        .limit(4);
+      if (pendingGenerationError) throw new Error('PENDING_GENERATION_READ_FAILED');
+      if (!pendingGeneration?.length) {
+        if (generatedRounds === 0) stepResults.push({ name:'powerhouse-content-orchestrator', ok:true, skipped:true, reason:'NO_PENDING_ARTIFACT' });
+        break;
+      }
+      const before = pendingGeneration.map((item:any) => clean(item.channel)).sort().join('|');
+      const generated = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
+      stepResults.push({ ...generated, generation_round: generatedRounds + 1 });
+      // A failed provider call cannot consume the entire tick. Delivery of already
+      // prepared artifacts continues, and the same canonical scheduler retries later.
+      if (!generated.ok) break;
+      const { data: afterRows, error: afterError } = await db
+        .from('powerhouse_channel_decisions')
+        .select('channel')
+        .eq('run_date', runDate)
+        .eq('decision', 'publish')
+        .eq('state', 'decided')
+        .order('channel', { ascending: true })
+        .limit(4);
+      if (afterError) throw new Error('PENDING_GENERATION_READBACK_FAILED');
+      const after = (afterRows || []).map((item:any) => clean(item.channel)).sort().join('|');
+      if (after === before) {
+        stepResults.push({ name:'content-generation-no-progress', ok:false, degraded:true, error:'GENERATION_NO_PROGRESS' });
+        break;
+      }
     }
 
     // Independent delivery lanes execute in parallel, once per tick.
