@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|content|single-tick-generation-starvation-v1",
+  "obligationId": "content-publication:2026-10-09:canonical-closed-loop",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Existing leased Powerhouse content-loop, existing pg_cron job #140 and canonical provider evidence",
+  "root_causes": [
+    "Daily cron #140 only called the single-item content orchestrator; existing canonical full-content supervisor had no scheduled caller",
+    "One orchestrator call produces at most one decided channel artifact, leaving other channels without content for provider dispatch"
+  ],
+  "prevention": [
+    "Reuse existing job #140 to call canonical closed-loop tick rather than creating a second scheduler",
+    "Bound the content-generation drain to four rounds under one supervisor lease; detect no progress and continue dispatch of already approved artifacts",
+    "Preserve per-channel provenance, duplicate, Instagram final media, LinkedIn identity, commercial recipient eligibility and immutable provider proof"
+  ],
+  "tests": [
+    "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SINGLE_TICK_CHANNEL_STARVATION",
+    "scope": "CONTENT_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected PR merge and exact Supabase Edge deployment",
+    "provider public post ID and live readback for every required channel",
+    "Instagram final exact-asset proof",
+    "resolution of current Composio/Groq overdue-billing AI generation blocker without bypass",
+    "eligible real commercial email execution and provider delivery evidence"
+  ]
+}
