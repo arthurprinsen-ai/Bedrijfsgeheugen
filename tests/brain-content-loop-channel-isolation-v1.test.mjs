@@ -47,3 +47,14 @@ test('verified founder builder lane reaches independent pre-publication review, 
   assert.match(publisher,/gate\.identity_gate_decision !== 'PASS'/);
   assert.match(publisher,/gate\.final_text_hash !== textHash/);
 });
+
+test('existing scheduler migration is safe on isolated Supabase preview and never creates a parallel job',()=>{
+  const migration=fs.readFileSync('supabase/migrations/20261009092942_restore_existing_content_job_closed_loop_schedule_20261009.sql','utf8');
+  assert.match(migration,/FROM cron\.job/);
+  assert.match(migration,/jobname = 'powerhouse-content-orchestrator-daily-v1'/);
+  assert.match(migration,/IF v_job IS NULL THEN[\s\S]*?CANONICAL_CONTENT_JOB_ABSENT_IN_ISOLATED_PREVIEW_NO_OP[\s\S]*?RETURN;/);
+  assert.match(migration,/cron\.alter_job\(/);
+  assert.match(migration,/powerhouse_content_closed_loop_tick_v1/);
+  assert.doesNotMatch(migration,/cron\.schedule\(/);
+  assert.doesNotMatch(migration,/cron\.schedule_in_database\(/);
+});
