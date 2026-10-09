@@ -86,3 +86,11 @@ entrypoint = "./functions/powerhouse-autonomous-outreach/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-salesrobot-ingest/index.ts"
+
+# Public Netlify proxy is the only intended browser entrypoint. The Edge function
+# itself requires and hashes the private x-bg-service-token on every POST.
+# Keep verify_jwt=false only while this explicit service-token guard exists.
+[functions.powerhouse-scan-ingest]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-scan-ingest/index.ts"
