@@ -36,7 +36,15 @@ Deno.serve(async(req:Request)=>{
       const sat=k.concurrentie==null?0.5:clamp(Number(k.concurrentie)/100);
       signalRows.push({signal_key:key,observed_at:k.opgehaald_op||new Date().toISOString(),source_type:'search_demand',source_ref:`keyword:${k.zoekwoord}`,entity_scope:'market',entity_key:k.zaadwoord||k.zoekwoord,topic_key:k.zaadwoord||k.zoekwoord,signal_type:'search_precursor',direction:'rising',strength:clamp(Math.min(1,Number(k.kansscore||0)/20)),novelty:clamp(1-sat),lead_time_days:45,evidence:{keyword:k.zoekwoord,search_volume:k.zoekvolume,competition:k.concurrentie,opportunity_score:k.kansscore,position:k.positie,ranking_url:k.rankende_url}});
     }
-    if(signalRows.length){ const {error}=await db.from('powerhouse_predictive_signals').upsert(signalRows,{onConflict:'signal_key'}); if(error) throw error; }
+    // PostgREST has an 8s statement timeout. Each signal also fires forecast and
+    // calibration-obligation triggers, so one large upsert can time out atomically.
+    // Small sequential, conflict-keyed batches preserve those existing side effects.
+    const SIGNAL_WRITE_BATCH_SIZE=5;
+    for(let offset=0;offset<signalRows.length;offset+=SIGNAL_WRITE_BATCH_SIZE){
+      const batch=signalRows.slice(offset,offset+SIGNAL_WRITE_BATCH_SIZE);
+      const {error}=await db.from('powerhouse_predictive_signals').upsert(batch,{onConflict:'signal_key'});
+      if(error)throw error;
+    }
     const {data:signals}=await db.from('powerhouse_predictive_signals').select('signal_id,signal_key,observed_at,source_type,source_ref,entity_scope,entity_key,topic_key,signal_type,direction,strength,novelty,lead_time_days,evidence').gte('observed_at',new Date(Date.now()-21*86400000).toISOString()).order('strength',{ascending:false}).limit(80);
     if(!signals?.length){await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:'NO_EVIDENCE_NO_FORECAST',gegevens:{contract:'predictive-first-mover-intelligence-v1'}});return json({ok:true,signals:0,forecasts:0,reason:'NO_EVIDENCE'});}
 
