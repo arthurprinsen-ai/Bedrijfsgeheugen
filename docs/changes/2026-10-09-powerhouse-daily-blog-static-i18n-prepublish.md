@@ -13,6 +13,6 @@
 ## Evidence / limits
 - Existing incident patch commit: `3965d6173b8ee706de9160c1aab22dd12569d42f`.
 - Failing original CI: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37896426059
-- Regression: `tests/delivery-powerhouse-blog-i18n-prepublish.test.mjs` (provider mock; full cache validation; idempotence; blocked-without-provider; post-SEO extraction contract).
+- Regression: `tests/brain-powerhouse-blog-i18n-prepublish.test.mjs` (provider mock; full cache validation; idempotence; blocked-without-provider; post-SEO extraction contract).
 - A successful branch commit or green PR is not a public production readback. Exact-main Netlify deploy and public localized route must be checked independently.
 - The workflow requires a configured `ANTHROPIC_API_KEY` only when new uncached text appears.
