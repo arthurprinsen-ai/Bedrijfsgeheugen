@@ -438,3 +438,18 @@ Hard rules:
 - Once a daily winner exists it remains immutable; provider/media recovery must reuse it.
 - Social outcomes and learning write back to the exact source/recommendation/winner lineage.
 - Provider search fallback is bounded Tavily -> DataForSEO; no Make.
+
+
+## Current commercial/editorial authority — entrepreneur pain -> portal -> caption (2026-10-09)
+
+Fingerprint: `mira-entrepreneur-portal-story-v1`. **This later instruction supersedes older "private-life-only", "office problems prohibited", "business bridge forbidden" and captions without portal-action rules above.** Visual identity, central one-writer publication claim, fixed Mira reference, daily immutable winner, OpenArt exact-media visual proof, anti-duplicate checks and external provider readback remain fully mandatory.
+
+Canonical source: `config/powerhouse-problem-library.json` (`PH-Pxxx`); relevant external/owned signal: `powerhouse_mira_problem_signals_v1` with `metadata.audience='ondernemers'` and verified `portal_problem_id`. The canonical selector does NOT change a previously frozen day's winner. New episode source evidence must say external indication vs internal observation; it must not pose as a real customer's personal event.
+
+A completed Instagram publication **must** contain both a visually coherent Mira scene (illustrating the same PH-P problem, with still/reel as the locked winner specifies) **and** a readable Dutch caption. The caption must clearly say: (1) everyday entrepreneur scenario, (2) cause, (3) consequence, (4) exact portal function/impact card and next action with owner/priority where meaningful, (5) one understandable pointe, optionally a question/Frisse Blik link. Portal capabilities are only claimed where verified; do not pretend the fictional scenario is a real client result or imply measured ROI from a hypothesis. Expose Mira as fictional AI.
+
+The existing `powerhouse-content-orchestrator` consumes the locked recommendation and deterministically writes the caption with `buildMiraEntrepreneurCaption` from `supabase/functions/_shared/instagram-entrepreneur-story-v1.mjs`; the existing `bg-pre-publish-review` checks the linked PH-P problem, source id, caption sections, portal capability, action and metric. No missing piece may be silently skipped. The existing `powerhouse-social-publisher` remains the **sole** outbound writer through approved Meta/Composio; no new cron, direct bypass, Make or Buffer fallback.
+
+The producer must supply an image/video prompt aligned to the *same* daily winner `portal_problem_id` and fictional Mira scenario. A supermarket/birthday/parcel gag unrelated to the chosen entrepreneur issue fails editorial review. A visual without an attached caption fails even if technically verified. Reusable source learning: problem ID -> content/winner -> provider post ID -> visit/scan/lead/order (when measured). No conversion claim without real readback.
+
+Recovery: keep the current immutable winner and media-identity history intact; for future daily winners use the entrepreneur-filtered radar. Changes are tested by `tests/brain-mira-entrepreneur-portal-caption-v1.test.mjs`. Source-backed migration: `supabase/migrations/20261009150500_mira_entrepreneur_portal_caption_v1.sql`.
