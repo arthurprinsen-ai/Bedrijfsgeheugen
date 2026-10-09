@@ -96,3 +96,14 @@ test('privileged runtime-cycle function denies browser roles and keeps service-r
   assert.match(sql,/e\.source not in \('website\.frisse_blik','website\.workshop_scan','website\.bedrijfslek'\)/);
   assert.match(sql,/on conflict \(tenant_id,cycle_id\)/i);
 });
+
+test('verified scan receipt offers a direct same-origin portal claim path',async()=>{
+  const scan=await readFile(new URL('../zelfscan.html',import.meta.url),'utf8');
+  const claim=await readFile(new URL('../portal-v2/scan-claim-bridge.js',import.meta.url),'utf8');
+  assert.match(scan,/if\(!r\.ok\|\|data\.ok!==true\|\|!data\.scan_id\|\|!data\.event_id\)/);
+  assert.match(scan,/sessionStorage\.setItem\('bg_last_scan_ref',key\)/);
+  assert.match(scan,/link\.href='https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/'/);
+  assert.match(scan,/status\.appendChild\(link\)/);
+  assert.match(claim,/const KEY='bg_last_scan_ref'/);
+  assert.match(claim,/const submissionKey=pendingKey\(storage\)/);
+});
