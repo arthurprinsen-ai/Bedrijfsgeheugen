@@ -53,5 +53,22 @@
     "shadow": [
       "tests/brain-predictive-signal-timeout-recovery-p0-4198.test.mjs"
     ]
+  },
+  "root_cause": "An observed Postgres 57014 statement timeout occurs during v181 predictive inference; the exact timed-out SQL statement is not isolated. Unconditional upserts of already-existing predictive signals cause unnecessary AFTER-trigger forecast and calibration-obligation writes, a documented load amplifier.",
+  "prevention": [
+    "Compare persisted signal source values and stable evidence before writing",
+    "Use bounded upsert batches for materially changed signals only",
+    "Retain approved Anthropic primary, scheduler token and provider evidence gates",
+    "Require actual post-deployment inference and independent source-to-forecast readback before claiming a fixed timeout"
+  ],
+  "evidence": {
+    "production_edge_version": 181,
+    "observed_database_error": "57014 at 2026-10-09T14:28:11Z",
+    "actual_post_patch_production_inference_success": false,
+    "governance_readback": "Both specified Groq fallback records independently read back SUSPENDED; Anthropic primary remains ACTIVE",
+    "regression": "tests/brain-predictive-signal-timeout-recovery-p0-4198.test.mjs; gated by protected CI",
+    "observed_salesrobot_dm_count": 5,
+    "actual_reply_count": 0,
+    "actual_orders_and_realized_revenue_proven": 0
   }
 }
