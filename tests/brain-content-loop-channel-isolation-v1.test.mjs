@@ -15,10 +15,10 @@ test('Instagram winner/media readiness degrades Instagram without blocking other
 
 
 test('legacy Buffer sync is non-blocking and cannot own LinkedIn authority',()=>{
-  assert.match(loop,/Legacy Buffer sync is telemetry\/compatibility only/);
+  assert.match(loop,/Buffer is legacy telemetry only and is deliberately absent from the critical path/);
   assert.match(loop,/non_blocking: true/);
   assert.match(loop,/linkedin_authority: 'composio'/);
-  assert.match(loop,/LEGACY_BUFFER_SYNC_UNAVAILABLE/);
+  assert.match(loop,/LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH/);
 });
 
 test('single canonical tick drains several decided channels without parallel senders or unsafe bypass',()=>{
