@@ -148,14 +148,43 @@ jobs:
             echo "Waiting for successful exact-head PR readback ${pr_head_sha} (attempt ${attempt}/60)"
             sleep 4
           done
-          if [ -z "$run_id" ]; then
-            echo "::error::No successful Portal V2 PR readback exists for approved head ${pr_head_sha} after bounded wait."
-            exit 1
-          fi
           mkdir -p artifacts/visual-baseline-pr
-          gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
-          test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
-          echo "Approved visual baseline resolved from PR #${pr_number}, head ${pr_head_sha}, run ${run_id}."
+          if [ -n "$run_id" ]; then
+            gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
+            test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
+            echo "Approved visual baseline resolved from PR #${pr_number}, head ${pr_head_sha}, run ${run_id}."
+          else
+            # Some workflow_run payloads omit pull_requests[] and cancel their
+            # auxiliary PR baseline run. This is NOT grounds to waive visuals:
+            # reconstruct the baseline exclusively from that exact, already
+            # protected-merged PR head, pinned to Netlify's immutable deploy.
+            echo "::notice::Exact-head PR screenshot artifact unavailable; require identical-source immutable preview screenshot."
+            statuses="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${pr_head_sha}/status")"
+            target="$(jq -r '[.statuses[] | select(.context == "netlify/bedrijfsgeheugen/deploy-preview" and .state == "success")] | first | .target_url // empty' <<<"$statuses")"
+            if [ -z "$target" ]; then
+              echo "::error::Trusted Netlify preview status missing for protected PR head ${pr_head_sha}; visual readback remains blocked."
+              exit 1
+            fi
+            preview_url="$(node tools/ci/netlify-immutable-preview-target.mjs "$target")" || {
+              echo "::error::Netlify preview target is not an allowed immutable deployment."
+              exit 1
+            }
+            release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${preview_url}/release.json?sha=${pr_head_sha}")" || {
+              echo "::error::Immutable PR preview is unavailable; no baseline substitution is permitted."
+              exit 1
+            }
+            verified_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$release")"
+            verified_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$release")"
+            expected_id="$(printf '%s' "$preview_url" | sed -nE 's#^https://([a-f0-9]{24})--bedrijfsgeheugen\.netlify\.app$#\1#p')"
+            if [ "$verified_sha" != "$pr_head_sha" ] || [ -z "$expected_id" ] || [ "$verified_id" != "$expected_id" ]; then
+              echo "::error::Immutable preview SHA/deploy identity mismatch; no visual baseline can be accepted."
+              exit 1
+            fi
+            PRODUCTION_URL="$preview_url" VISUAL_CAPTURE_PATH=artifacts/visual-baseline-pr/portal-v2-canvassen.png \
+              npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+            test -s artifacts/visual-baseline-pr/portal-v2-canvassen.png
+            echo "Verified immutable PR baseline: merged PR #${pr_number}, head ${pr_head_sha}, deploy ${expected_id}; production will be independently compared."
+          fi
       - name: Visual regression against approved PR baseline
         if: github.event_name == 'push' && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
