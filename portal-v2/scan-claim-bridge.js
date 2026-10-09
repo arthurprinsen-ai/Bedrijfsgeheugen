@@ -2,10 +2,25 @@
 // The visitor's anonymous Bedrijfslek assessment remains aggregate-only until
 // they choose to claim it inside their authenticated tenant session.
 const KEY='bg_last_scan_ref';
-function pendingKey(storage){
-  try{const value=String(storage?.getItem(KEY)||'');
-    return /^bedrijfslek-[A-Za-z0-9-]{12,170}$/.test(value)?value:null;
+const RECEIPT_KEY='bg_last_scan_receipt_v2';
+const RECEIPT_TTL_MS=7*24*60*60*1000;
+const KEY_PATTERN=/^bedrijfslek-[A-Za-z0-9-]{12,170}$/;
+export function pendingBedrijfslekReceipt(storage,session,now=Date.now()){
+  try {
+    const receipt=JSON.parse(storage?.getItem(RECEIPT_KEY)||'null');
+    if(receipt && KEY_PATTERN.test(String(receipt.submission_key||'')) &&
+       Number.isFinite(receipt.received_at) && receipt.received_at<=now &&
+       now-receipt.received_at<=RECEIPT_TTL_MS) return receipt.submission_key;
+  }catch{}
+  try{
+    const value=String(session?.getItem(KEY)||'');
+    return KEY_PATTERN.test(value)?value:null;
   }catch{return null}
+}
+export function authorizedScanHeaders(headers){
+  const token=String(headers?.authorization||'');
+  if(!/^Bearer [A-Za-z0-9._-]+$/.test(token))throw new Error('AUTH_TOKEN_UNAVAILABLE');
+  return {accept:'application/json',authorization:token};
 }
 function element(doc,tag,cls,text){
   const x=doc.createElement(tag);
@@ -13,7 +28,7 @@ function element(doc,tag,cls,text){
   if(text)x.textContent=text;
   return x;
 }
-export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessionStorage}={}){
+export function createScanClaimBridge({doc=document,fetcher=fetch,storage=globalThis.localStorage,session=globalThis.sessionStorage,authHeaders=async()=>null}={}){
   const mount=doc.querySelector('.main .executive-glance')||doc.querySelector('.main');
   if(!mount)return {setAuthenticated(){}};
   const section=element(doc,'section','portal-canonical-scans');
@@ -31,7 +46,9 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessio
   const history=element(doc,'div','portal-canonical-scan-history');
   section.append(header,intro,claim,status,history);
   mount.before(section);
-  let authenticated=false,revision=0;
+  let authenticated=false,revision=0,identityKey=null;
+  const pendingKey=()=>pendingBedrijfslekReceipt(storage,session);
+  const requestHeaders=async()=>authorizedScanHeaders(await authHeaders());
   const json=async response=>response.json().catch(()=>null);
   function clearHistory(){history.replaceChildren()}
   function showHistory(scans){
@@ -62,14 +79,16 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessio
     claim.hidden=!key;
     status.textContent='Geverifieerde scanhistorie ophalen…';
     try{
-      const response=await fetcher('/api/portal-scans',{credentials:'same-origin',cache:'no-store'});
+      const headers=await requestHeaders();
+      if(current!==revision||!authenticated)return;
+      const response=await fetcher('/api/portal-scans',{headers,credentials:'same-origin',cache:'no-store'});
       const data=await json(response);
       if(current!==revision||!authenticated)return;
       if(response.status===401||response.status===403){section.hidden=true;clearHistory();return}
       if(!response.ok||data?.ok!==true){status.textContent='De scanhistorie is momenteel niet beschikbaar. Er zijn geen gegevens gewijzigd.';clearHistory();return}
       showHistory(data.scans);
-    }catch{
-      if(current===revision&&authenticated){status.textContent='De scanhistorie is tijdelijk niet beschikbaar.';clearHistory()}
+    }catch(error){
+      if(current===revision&&authenticated){status.textContent=error?.message==='AUTH_TOKEN_UNAVAILABLE'?'Je sessie is verlopen. Log opnieuw in om je nulmetingen te bekijken.':'De scanhistorie is tijdelijk niet beschikbaar.';clearHistory()}
     }
   }
   claim.addEventListener('click',async()=>{
@@ -77,23 +96,28 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=sessio
     const submissionKey=pendingKey(storage);
     if(!submissionKey)return;
     claim.disabled=true;status.textContent='De nulmeting gecontroleerd koppelen aan dit bedrijf…';
+    const current=revision;
     try{
-      const response=await fetcher('/api/portal-scans',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({submission_key:submissionKey})});
+      const headers=await requestHeaders();
+      if(current!==revision||!authenticated)return;
+      const response=await fetcher('/api/portal-scans',{method:'POST',credentials:'same-origin',headers:{...headers,'content-type':'application/json'},body:JSON.stringify({submission_key:submissionKey})});
       const data=await json(response);
-      if(!authenticated)return;
-      if(!response.ok||data?.ok!==true||data?.claimed!==true){status.textContent='Koppelen is niet gelukt; de scan blijft ongewijzigd. Probeer het opnieuw.';return}
-      try{storage.removeItem(KEY)}catch{}
+      if(current!==revision||!authenticated)return;
+      if(!response.ok||data?.ok!==true||data?.claimed!==true||data?.scan?.tenant_identity_status!=='verified'){status.textContent='Koppelen is niet gelukt; de scan blijft ongewijzigd. Probeer het opnieuw.';return}
+      try{storage?.removeItem(RECEIPT_KEY);session?.removeItem(KEY)}catch{}
       await refresh();
-    }catch{if(authenticated)status.textContent='Koppelen is niet gelukt. De scan is niet als gekoppeld gemarkeerd.'}
+    }catch(error){if(current===revision&&authenticated)status.textContent=error?.message==='AUTH_TOKEN_UNAVAILABLE'?'Je sessie is verlopen. Log opnieuw in om te koppelen.':'Koppelen is niet gelukt. De scan is niet als gekoppeld gemarkeerd.'}
     finally{claim.disabled=false}
   });
   return {
-    setAuthenticated(value){
+    setAuthenticated(value,tenantIdentity=null){
       const next=value===true;
-      if(next===authenticated)return;
-      authenticated=next;revision++;
+      const nextIdentity=next?String(tenantIdentity||''):'';
+      if(next===authenticated&&nextIdentity===identityKey)return;
+      authenticated=next;identityKey=nextIdentity;revision++;
+      clearHistory();
       section.hidden=!next;
-      if(!next){clearHistory();status.textContent='';claim.hidden=true;return}
+      if(!next){status.textContent='';claim.hidden=true;return}
       refresh();
     }
   };
