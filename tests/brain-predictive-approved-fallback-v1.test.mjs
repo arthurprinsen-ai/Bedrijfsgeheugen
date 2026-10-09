@@ -39,14 +39,14 @@ test('fallback only accepts evidence-bound schema-conformant forecast plans',asy
  assert.throws(()=>parseForecastPlan(JSON.stringify({forecasts:[{...sample,probability:4}]}),['external:a','search:b']),/FALLBACK_FORECAST_SCHEMA_INVALID/);
 });
 
-test('predictive source requires exact use-case governance and records provider evidence',()=>{
- assert.match(src,/supabase-powerhouse-predictive-first-mover-fallback-v1/);
- assert.match(src,/fallbackGov\.approved!==true/);
- assert.match(src,/fallbackGov\.lifecycle_status!=='ACTIVE'/);
- assert.match(src,/fallbackGov\.provider!=='Composio\/Groq'/);
- assert.match(src,/predictive_.*provider|generationProvider/);
- assert.match(src,/publicForecastContext\(/);
- assert.match(src,/runValidatedApprovedFallback\(/);
+test('predictive production source routes only through approved Anthropic',()=>{
+ assert.ok(src.includes("gov.provider!=='Anthropic'"));
+ assert.match(src, /fetch\('https:\/\/api\.anthropic\.com\/v1\/messages'/);
+ assert.ok(src.includes("generationProvider='Anthropic'"));
+ assert.ok(src.includes('generation_provider:generationProvider'));
+ for(const banned of ['Composio/Groq','runValidatedApprovedFallback','fallbackGov','COMPOSIO_SEARCH_GROQ_CHAT','predictive-approved-fallback']){
+   assert.ok(!src.includes(banned),banned);
+ }
 });
 
 

@@ -1,6 +1,5 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
-import {fallbackEligible,publicForecastContext,runValidatedApprovedFallback} from '../_shared/predictive-approved-fallback.mjs';
 
 const USE_CASE='supabase-powerhouse-predictive-first-mover-v1';
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -43,36 +42,16 @@ Deno.serve(async(req:Request)=>{
 
     const tool={name:'forecast_plan',description:'Evidence-bound predictive market forecasts',input_schema:{type:'object',additionalProperties:false,properties:{forecasts:{type:'array',maxItems:6,items:{type:'object',additionalProperties:false,properties:{topic_key:{type:'string'},scope:{type:'string',enum:['segment','market','technology','regulation','behavior']},scope_key:{type:'string'},predicted_event:{type:'string'},predicted_problem:{type:'string'},predicted_question:{type:'string'},predicted_search_intent:{type:'string'},predicted_buying_trigger:{type:'string'},probability:{type:'number',minimum:0,maximum:1},confidence:{type:'number',minimum:0,maximum:1},expected_lead_days:{type:'integer',minimum:1,maximum:180},signal_acceleration:{type:'number',minimum:0,maximum:1},market_saturation:{type:'number',minimum:0,maximum:1},whitespace_score:{type:'number',minimum:0,maximum:1},strategic_fit:{type:'number',minimum:0,maximum:1},revenue_potential:{type:'number',minimum:0,maximum:1},prediction_mode:{type:'string',enum:['anticipatory','category_creation','reactive']},evidence_keys:{type:'array',minItems:2,maxItems:8,items:{type:'string'}},rationale:{type:'string'}},required:['topic_key','scope','scope_key','predicted_event','predicted_problem','predicted_question','predicted_search_intent','predicted_buying_trigger','probability','confidence','expected_lead_days','signal_acceleration','market_saturation','whitespace_score','strategic_fit','revenue_potential','prediction_mode','evidence_keys','rationale']}}},required:['forecasts']}};
     const payload={today:today(),goal:{realized_revenue_eur:1000000,deadline:'2027-09-14'},signals:(signals||[]).map((s:any)=>({signal_key:s.signal_key,source_type:s.source_type,topic_key:s.topic_key,direction:s.direction,strength:s.strength,novelty:s.novelty,lead_time_days:s.lead_time_days,evidence:s.evidence})),existing_forecasts:existing||[],revenue_learnings:learnings||[]};
+    const generationProvider='Anthropic';
+    const generationModel=clean(gov.model_id);
+    const fallbackReason:null=null;
+    const fallbackSchemaRetryCount=0;
     let input:any;
-    let generationProvider='Anthropic';
-    let generationModel=clean(gov.model_id);
-    let fallbackReason:string|null=null;
-    let fallbackSchemaRetryCount=0;
-    try{
-      if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
-      const ai=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:gov.model_id,max_tokens:4200,system:'Je bent de voorspellende intelligence-laag van Bedrijfsgeheugen. Vind combinaties van zwakke signalen die waarschijnlijk 7-90 dagen vóór brede marktzichtbaarheid een MKB-probleem, zoekintentie of buying trigger voorspellen. Reageer niet simpelweg op populair nieuws. Hoge marktverzadiging verlaagt first-mover waarde. Gebruik uitsluitend evidence_keys uit de input. Minimaal twee onafhankelijke signalen per forecast; category_creation alleen bij minimaal drie overtuigende signalen en duidelijke semantic whitespace. Voorspellingen zijn probabilistisch, nooit feiten. Optimaliseer voor first-mover voordeel én commerciële relevantie richting €1m gerealiseerde omzet uiterlijk 2027-09-14.',messages:[{role:'user',content:JSON.stringify(payload)}],tools:[tool],tool_choice:{type:'tool',name:'forecast_plan'}}),signal:AbortSignal.timeout(45000)});
-      const ab:any=await ai.json().catch(()=>({})); if(!ai.ok) throw new Error(`AI_${ai.status}:${clean(ab?.error?.message).slice(0,200)}`);
-      input=(ab.content||[]).find((x:any)=>x.type==='tool_use'&&x.name==='forecast_plan')?.input;
-      if(!input||!Array.isArray(input.forecasts))throw new Error('AI_TOOL_OUTPUT_MISSING');
-    }catch(error:any){
-      if(!fallbackEligible(error))throw error;
-      const {data:fallbackGov,error:fallbackGovError}=await db.from('brain_ai_governance_registry')
-        .select('model_id,provider,approved,lifecycle_status')
-        .eq('tenant_id','canonical').eq('use_case_id','supabase-powerhouse-predictive-first-mover-fallback-v1').maybeSingle();
-      if(fallbackGovError||!fallbackGov||fallbackGov.approved!==true||
-         fallbackGov.lifecycle_status!=='ACTIVE'||fallbackGov.provider!=='Composio/Groq'||
-         !clean(fallbackGov.model_id))throw error;
-      const safeContext=publicForecastContext(payload);
-      if(safeContext.signals.length<2)throw new Error('FALLBACK_PUBLIC_EVIDENCE_INSUFFICIENT');
-      const composioKey=clean((await db.rpc('bg_geheim',{p_naam:'COMPOSIO_API_KEY'})).data);
-      if(!composioKey)throw new Error('FALLBACK_PROVIDER_CONFIGURATION_MISSING');
-      const validated=await runValidatedApprovedFallback({apiKey:composioKey,model:clean(fallbackGov.model_id),context:safeContext});
-      input=validated.plan;
-      fallbackSchemaRetryCount=validated.schemaRetryCount;
-      generationProvider='Composio/Groq';
-      generationModel=clean(fallbackGov.model_id);
-      fallbackReason=String(error?.message||'').startsWith('AI_400:')?'ANTHROPIC_CREDIT_EXHAUSTED':'ANTHROPIC_PROVIDER_UNAVAILABLE';
-    }
+    if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
+    const ai=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({model:gov.model_id,max_tokens:4200,system:'Je bent de voorspellende intelligence-laag van Bedrijfsgeheugen. Vind combinaties van zwakke signalen die waarschijnlijk 7-90 dagen vóór brede marktzichtbaarheid een MKB-probleem, zoekintentie of buying trigger voorspellen. Reageer niet simpelweg op populair nieuws. Hoge marktverzadiging verlaagt first-mover waarde. Gebruik uitsluitend evidence_keys uit de input. Minimaal twee onafhankelijke signalen per forecast; category_creation alleen bij minimaal drie overtuigende signalen en duidelijke semantic whitespace. Voorspellingen zijn probabilistisch, nooit feiten. Optimaliseer voor first-mover voordeel én commerciële relevantie richting €1m gerealiseerde omzet uiterlijk 2027-09-14.',messages:[{role:'user',content:JSON.stringify(payload)}],tools:[tool],tool_choice:{type:'tool',name:'forecast_plan'}}),signal:AbortSignal.timeout(45000)});
+    const ab:any=await ai.json().catch(()=>({})); if(!ai.ok) throw new Error(`AI_${ai.status}:${clean(ab?.error?.message).slice(0,200)}`);
+    input=(ab.content||[]).find((x:any)=>x.type==='tool_use'&&x.name==='forecast_plan')?.input;
+    if(!input||!Array.isArray(input.forecasts))throw new Error('AI_TOOL_OUTPUT_MISSING');
     const byKey=new Map((signals||[]).map((s:any)=>[s.signal_key,s]));
     let written=0,rejected=0;
     for(const f of input?.forecasts||[]){
