@@ -1,0 +1,69 @@
+{
+  "fingerprint": "powerhouse|revenue|seven-business-leaks-free-giveaway|v1",
+  "date": "2026-10-09",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "An existing free selfscan and a brochure offer value, but the open-loop commercial day is still degraded with no proven paid orders. Outreach needs an explicit first-value offer that does not trade a simulated ROI claim or gated download for fake conversion.",
+  "root_cause": "Visitors can discover the free scan, but the reciprocal, transferable seven-leak worksheet and a distinct evidence-based offer ladder are not made explicit across the existing public scan and product-led growth rule.",
+  "fix": "Add one ungated four-page ASCII-valid PDF lead magnet and first-party landing route; link it from the existing selfscan and define one canonical Cialdini, lead qualification, sales tracking and learning rule in the existing Powerhouse product-led skill.",
+  "prevention": [
+    "Give genuine customer value before an ask; don't demand contact details for an ungated PDF.",
+    "Distinguish modeled cost from realized revenue; require actual order/payment evidence to count conversion.",
+    "Use existing one Brain, Heartbeat, commercial scoring, CRM, SalesRobot UUID and attribution rather than another sender or scheduler.",
+    "Use truthful Cialdini: no invented social proof, authority, deadlines, inventory or risk scores.",
+    "The user need not share personal/business data to receive the PDF; optional future outreach requires proper legal basis.",
+    "No duplicate sales messages or repeat publications for an already fulfilled channel/day/recipient."
+  ],
+  "evidence": {
+    "candidate_files": [
+      "7-bedrijfslekken.html",
+      "downloads/7-verborgen-bedrijfslekken.pdf",
+      "zelfscan.html",
+      "_redirects",
+      "skills/powerhouse-product-led-growth.md"
+    ],
+    "existing_live_entry": "https://www.bedrijfsgeheugen.nl/zelfscan",
+    "existing_paid_path": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+    "tests": [
+      "tests/brain-seven-business-leaks-revenue-giveaway-v1.test.mjs"
+    ],
+    "parent_issue": 4198
+  },
+  "outcome": "A no-gate PDF and offer ladder are added as a candidate. No direct revenue, booked calls, live distribution or verified learning has been established by creating these files.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seven-business-leaks-revenue-giveaway-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seven-business-leaks-revenue-giveaway-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seven-business-leaks-revenue-giveaway-v1.test.mjs"
+    ],
+    "invariants": [
+      "free download without email",
+      "realized-revenue is not PDF download or provider ACK",
+      "no duplicate sends or standalone executor",
+      "source attribution and lawful-purpose required",
+      "build/deploy/production readback before public launch claim"
+    ],
+    "regressions": [
+      "tests/brain-seven-business-leaks-revenue-giveaway-v1.test.mjs"
+    ],
+    "productionCriteria": [
+      "protected merge on main",
+      "new PDF returns application/pdf and opens 4 pages",
+      "new landing /7-bedrijfslekken and existing /zelfscan return 200",
+      "real GA/CRM funnel event readback, no pseudo events",
+      "real paid order linked back to Brain",
+      "customer outcome and changed next action when evidence exists"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCT_LED_OFFER_VALUE_TO_VERIFIED_REVENUE_GAP",
+    "scope": "WEBSITE_COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
