@@ -274,6 +274,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
         <button class="btn" type="button" onclick="deelScore()">Deel mijn score</button>
       </div>
       <p class="privacy" style="margin-top:.9rem">De score is indicatief en gebaseerd op jouw antwoorden. Financiële of benchmarkwaarden zijn geen vastgestelde bedrijfsfeiten.</p>
+      <p class="privacy" id="bgBrainStatus" role="status">Je resultaat verschijnt direct; de anonieme nulmeting wordt veilig opgeslagen zonder naam of e-mailadres.</p>
     </div>
   </section>
 
@@ -397,9 +398,23 @@ var QUICKWIN={
 
 var stap=0, antwoorden=[];
 var LAATSTE_SCORE=null, LAATSTE_RISICO=null;
+var BG_SCAN_KEY=null;
+function bgMaakScanKey(){return 'bedrijfslek-'+(globalThis.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2))}
+function bgScanNaarBrein(score,per){
+  // Eén anonieme nulmeting naar de bestaande Powerhouse scan-store. Geen naam, mail of telefoon.
+  var dimensions={};Object.keys(per).forEach(function(k){dimensions[k]=Math.round(per[k].p/(per[k].n*3)*500)/100});
+  var key=BG_SCAN_KEY||(BG_SCAN_KEY=bgMaakScanKey());
+  var payload={submission_key:key,canonical:'https://www.bedrijfsgeheugen.nl/zelfscan',scan:{score:score,niveau:Math.max(1,Math.ceil(score/20)),dimAvg:dimensions,source_kind:'bedrijfslek_scan',stempel:'bedrijfslek-selfscan-v1',datum:new Date().toISOString().slice(0,10)}};
+  var status=document.getElementById('bgBrainStatus');
+  fetch('/api/powerhouse-scan-ingest',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)})
+    .then(function(r){return r.json().then(function(data){if(!r.ok||data.ok!==true||!data.scan_id||!data.event_id)throw Error('SCAN_NOT_STORED');return data})})
+    .then(function(data){try{sessionStorage.setItem('bg_last_scan_ref',key)}catch(e){}if(status){status.textContent='Je nulmeting is veilig opgeslagen, zonder contactgegevens. ';var link=document.createElement('a');link.href='https://www.bedrijfsgeheugen.nl/portal-v2/';link.textContent='Koppel deze scan aan mijn portaal →';link.style.cssText='display:inline-block;margin-left:.3rem;color:#2742D6;font-weight:700';status.appendChild(link);}})
+    .catch(function(){if(status)status.textContent='Je uitslag blijft beschikbaar. Opslaan van deze nulmeting lukte nog niet.'});
+}
+
 var TEAMUITDAGING=(function(){try{var p=new URLSearchParams(location.search);var s=parseInt(p.get('challenge_score')||'',10);var c=p.get('challenge_risk')||'';return Number.isFinite(s)?{score:Math.max(0,Math.min(100,s)),risk:c}:null}catch(e){return null}})();
 function toon(id){document.querySelectorAll('.stapje').forEach(function(s){s.classList.remove('actief')});document.getElementById(id).classList.add('actief');window.scrollTo({top:0,behavior:'smooth'})}
-function ga(n){if(n===1)bgEvent('zelfscan-gestart');stap=n;renderVraag()}
+function ga(n){if(n===1){BG_SCAN_KEY=bgMaakScanKey();antwoorden=[];bgEvent('zelfscan-gestart')}stap=n;renderVraag()}
 function renderVraag(){
  if(stap>VRAGEN.length){bgEvent('zelfscan-afgerond');toonScore();return}
  var v=VRAGEN[stap-1];
@@ -466,6 +481,7 @@ function toonScore(){
  var oc=document.getElementById('orderCta'); if(oc){oc.href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=control&bron=bedrijfslek&score='+score+'&risico='+encodeURIComponent(laag.cat);}
  bgEvent('bedrijfslek-resultaat');
  toon('s-score');
+ bgScanNaarBrein(score,per);
 }
 function renderMini(acties){
  var box=document.getElementById('miniActies'); if(!box)return;

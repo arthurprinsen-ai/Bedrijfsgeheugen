@@ -59,8 +59,9 @@ function normalize(body:any){
   const canonical=clean(body?.canonical||`${ORIGIN}/frisse-blik`,1000);
   const isFrisse=canonical===`${ORIGIN}/frisse-blik`||canonical.startsWith(`${ORIGIN}/frisse-blik?`);
   const isWorkshop=canonical===`${ORIGIN}/scan`||canonical.startsWith(`${ORIGIN}/scan?`);
-  if(!(isFrisse||isWorkshop))throw new Error('INVALID_CANONICAL');
-  const kind=isWorkshop?'workshop_scan':'frisse_blik';
+  const isBedrijfslek=canonical===`${ORIGIN}/zelfscan`||canonical.startsWith(`${ORIGIN}/zelfscan?`);
+  if(!(isFrisse||isWorkshop||isBedrijfslek))throw new Error('INVALID_CANONICAL');
+  const kind=isBedrijfslek?'bedrijfslek_scan':isWorkshop?'workshop_scan':'frisse_blik';
   return {submissionKey,score,niveau,dimensions,answers:safeAnswers(input.antwoorden),branche:clean(input.branche,120)||null,omvang:clean(input.omvang,120)||null,doel:clean(input.doel,500)||null,datum:clean(input.datum,40)||new Date().toISOString().slice(0,10),canonical,kind,raw:input};
 }
 
@@ -130,7 +131,7 @@ Deno.serve(async(req:Request)=>{
   let stored=created;
   if(!stored){const {data,error}=await client.from('scan_inzendingen').select('id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt').eq('submission_key',scan.submissionKey).maybeSingle();if(error||!data)return json({error:'SCAN_READBACK_FAILED'},500);stored=data;}
   const dedupe=`scan:${scan.submissionKey}`;
-  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,scan_kind:scan.kind,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
+  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:scan.kind==='bedrijfslek_scan'?'website.bedrijfslek':scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,scan_kind:scan.kind,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
   const {data:eventCreated,error:eventError}=await client.from('powerhouse_runtime_events').upsert(eventRow,{onConflict:'dedupe_key',ignoreDuplicates:true}).select('event_id,dedupe_key').maybeSingle();
   if(eventError)return json({error:'POWERHOUSE_EVENT_FAILED',scan_id:stored.id,detail:eventError.message.slice(0,300)},500);
   let event=eventCreated;
@@ -157,6 +158,6 @@ Deno.serve(async(req:Request)=>{
     }
   }
 
-  await client.from('growth_events').upsert({event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,intent:scan.kind==='workshop_scan'?'workshop_scan':'frisse_blik',intent_owner:'bedrijfsgeheugen',source:'website',medium:'organic',occurred_at:new Date().toISOString(),page_role:'conversion',funnel_stage:'lead',value:0,payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,scan_kind:scan.kind,privacy_scope:'no_pii'}},{onConflict:'event_id',ignoreDuplicates:true});
+  await client.from('growth_events').upsert({event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,intent:scan.kind==='bedrijfslek_scan'?'bedrijfslek':scan.kind==='workshop_scan'?'workshop_scan':'frisse_blik',intent_owner:'bedrijfsgeheugen',source:'website',medium:'organic',occurred_at:new Date().toISOString(),page_role:'diagnosis',funnel_stage:scan.kind==='bedrijfslek_scan'?'assessment':'lead',value:0,payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,scan_kind:scan.kind,privacy_scope:'no_pii'}},{onConflict:'event_id',ignoreDuplicates:true});
   return json({ok:true,stored:true,deduped:!created,contract:'powerhouse-canonical-scan-loop-v1',scan_id:stored.id,event_id:event.event_id,tenant_identity_status:'unverified',portal_preprovisioned:portalPreprovisioned},created?201:200);
 });
