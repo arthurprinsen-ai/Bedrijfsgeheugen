@@ -9,3 +9,7 @@
 - Test: `node --test tests/brain-p0-4215-input-surface-coverage-v1.test.mjs`.
 - No new Brain, scheduler, database, fake customer/transaction or report-as-live shortcut.
 - Release: protected exact-head Required/CodeQL, protected merge, exact-main Netlify production readback; parent P0 #4215 requires separate authenticated proof.
+
+- Observed CI admission #37906561513: historical replay FAILED with six `AMBIGUOUS_FIELD_ID` findings, all in `gegevens-invullen`. This is an actual discovered client field-binding defect, not a flaky CI test.
+- Corrective change: only colliding form control IDs are uniquely qualified on the combined page, preserving `portal.*` paths and legacy identifiers; regression covers all six collisions.
+- Do not infer verified customer persistence, real tenant readback or model recalculation from corrected UI bindings alone.
