@@ -111,3 +111,8 @@ WITH outbound AS (
             ELSE NULL::timestamp with time zone
         END AS next_follow_up_at
    FROM scored s;
+
+-- Maintain the actual existing production grants: caller-safe non-public view.
+-- Current production roles: postgres and service_role; anon/authenticated have no grants.
+REVOKE ALL ON public.powerhouse_contact_pressure_v1 FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.powerhouse_contact_pressure_v1 TO service_role;
