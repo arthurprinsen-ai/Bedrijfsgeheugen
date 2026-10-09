@@ -96,7 +96,12 @@
         "url": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
         "content_id": "blog:sopv-2026-plasticverwerkers-productietest-subsidie",
         "slug": "sopv-2026-plasticverwerkers-productietest-subsidie",
-        "canonical": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/"
+        "canonical": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+        "provider": "netlify",
+        "provider_deploy_id": "6ac8c38172d5dd0008a6169a",
+        "provider_commit_ref": "47441ea9ed428202a7f1ccca5dc8cd5038d544bb",
+        "independent_http_probe_id": 1570,
+        "source_watchdog_run_id": 37920475011
       }
     }
   }
