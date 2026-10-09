@@ -100,6 +100,14 @@ jobs:
         run: |
           node tools/ci/p0-4215-portal-input-coverage-matrix.mjs
           node --test tests/brain-p0-4215-input-surface-coverage-v1.test.mjs
+      - name: Preserve P0 4215 input coverage evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p0-4215-input-coverage-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/p0-4215-portal-input-coverage-matrix.json
+          if-no-files-found: warn
+          retention-days: 30
       - id: artifact
         name: Compute immutable artifact identity
         run: echo "artifact_id=$(node tools/build/artifact-id.mjs)" >> "$GITHUB_OUTPUT"
