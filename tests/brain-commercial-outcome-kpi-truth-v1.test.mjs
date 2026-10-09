@@ -16,6 +16,9 @@ test('autonomous growth KPI mirrors same commercial truth boundary',()=>{
 });
 test('retains original security and avoids a new scheduler or writer',()=>{
  assert.match(sql,/SECURITY DEFINER/);
+ assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_full_cycle_production_proof\(date\) FROM PUBLIC, anon, authenticated/);
+ assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_autonomous_growth_revenue_cycle\(date\) FROM PUBLIC, anon, authenticated/);
+ assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_full_cycle_production_proof\(date\) TO service_role/);
  assert.doesNotMatch(sql,/CREATE TRIGGER|cron\.schedule|DROP TABLE/i);
  assert.match(sql,/powerhouse_full_cycle_production_proof/);
  assert.match(sql,/powerhouse_autonomous_growth_revenue_cycle/);
