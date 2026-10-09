@@ -14,18 +14,17 @@
     "Treat non-runtime-only source changes as deployment-not-applicable in release policy; require independent test evidence for browser parity"
   ],
   "tests": [
-    "tools/ci/netlify-ignore-build.mjs",
-    ".github/workflows/production-source-snapshot.yml"
+    "tests/brain-delivery-system.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "PR #4223 -> main bb50ba3faf91a9496fd707a26c6db60c151c9fd1; production adc19513396fd2bb619a7835bcd93d51960147c0"
+      "tests/brain-delivery-system.test.mjs"
     ],
     "shadow": [
-      "PR #4224 protected required checks"
+      "tests/brain-delivery-system.test.mjs"
     ],
     "canary": [
-      "Native Netlify current deploy and public release.json immutable readback"
+      "tests/brain-delivery-system.test.mjs"
     ]
   },
   "compiler": {
