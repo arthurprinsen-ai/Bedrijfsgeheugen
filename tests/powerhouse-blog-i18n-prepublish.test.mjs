@@ -77,3 +77,16 @@ test('missing translations fail closed without an authorized translation provide
     fs.rmSync(dir,{recursive:true,force:true});
   }
 });
+
+test('publisher extracts cache only after all canonical SEO transformations', () => {
+  const entry=fs.readFileSync(path.join(REPO,'tools/ci/netlify-build-entry.mjs'),'utf8');
+  const publisher=fs.readFileSync(path.join(REPO,'.github/workflows/powerhouse-daily-blog.yml'),'utf8');
+  const gate=fs.readFileSync(path.join(REPO,'.github/workflows/required-test.yml'),'utf8');
+  assert.ok(entry.indexOf("'seo-apply'") < entry.indexOf("'localized-routes'"));
+  assert.match(entry,/cacheOnlyPatch && name==='localized-routes'/);
+  assert.match(entry,/NETLIFY_I18N_CACHE_PREPARED/);
+  assert.match(publisher,/--prepare-i18n-cache="powerhouse-blog-\$DATE\.json"/);
+  assert.match(publisher,/STATIC_I18N_REQUIRE_CACHE=1/);
+  assert.match(publisher,/steps\.i18n\.outcome == 'success'/);
+  assert.match(gate,/node --test tests\/powerhouse-blog-i18n-prepublish\.test\.mjs/);
+});
