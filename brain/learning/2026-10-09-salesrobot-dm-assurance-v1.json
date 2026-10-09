@@ -1,0 +1,15 @@
+{
+  "contract": "one-commercial-provider-proof-v1",
+  "date": "2026-10-09",
+  "parent_issue": 4198,
+  "observation": "Five provider inbox verified SalesRobot DMs are attached to actions and Brain events, but the existing daily commercial output assurance previously excluded their evidence shape.",
+  "root_cause": "Social counter required top-level provider_ack_verified and provider_post/comment/object_id, while SalesRobot stored canonical inbox_message_id in linked runtime event and provider_message_id on action.",
+  "change": "Add a strict receipt-linked SalesRobot DM branch to the existing output assurance; retain immutable provider IDs, dedupe, original scheduler and other gates.",
+  "truth_boundary": "No replies, meetings, quotes, orders, or revenue inferred. No new sender or entitlement inferred from proof.",
+  "verification_required": [
+    "SQL readback of 5 unique provider inbox receipts",
+    "Assurance reports provider_proven_salesrobot_dm=5, provider_proven_publications=1",
+    "Daily run remains degraded if other channels fail",
+    "Source merged and live function definition matches"
+  ]
+}
