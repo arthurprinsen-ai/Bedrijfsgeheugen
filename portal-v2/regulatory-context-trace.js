@@ -1,4 +1,5 @@
 import { PORTAL_PAGE_INDEX } from './page-registry.js';
+import { screenCsrdEsrsScope } from './csrd-legal-source-gate.js';
 
 // Read-only, source-aware explanation of where a reported regulatory change
 // may affect a tenant. These are review dependencies, not legal determinations.
@@ -50,6 +51,16 @@ export function regulatoryContextTrace(event={}) {
   if(!asDate(event.effectiveDate||event.deadline))missing.push('Ingangsdatum of toepasselijke deadline is nog niet bevestigd');
   if(!reportedApplicable)missing.push('Klanttoepasselijkheid is nog niet onafhankelijk vastgesteld');
   if(!sections.length)missing.push('Onderwerp heeft nog geen specifieke domeinmapping: inhoudelijke triage vereist');
+  const legalBasis=sections.some(section=>section.id==='sustainability')?screenCsrdEsrsScope({
+    financialYearStart:event.financialYearStart,
+    averageEmployees:event.averageEmployees,
+    netTurnoverEur:event.netTurnoverEur,
+    entityScope:event.entityScope,
+    memberState:event.memberState,
+    nationalImplementationEvidence:event.nationalImplementationEvidence,
+    legalReviewEvidence:event.legalReviewEvidence,
+    esrsMaterialityEvidence:event.esrsMaterialityEvidence
+  }):null;
   const impactByPage=affectedPages.map(page=>({
     page,
     via:sections.filter(x=>x.pages.includes(page)).map(x=>x.id),
@@ -63,6 +74,7 @@ export function regulatoryContextTrace(event={}) {
     priority:reportedApplicable?'P1':'P2',
     customerRelevance:reportedApplicable?'SOURCE_VERIFIED_REVIEW_REQUIRED':'APPLICABILITY_REVIEW_REQUIRED',
     legalStatus:'REVIEW_REQUIRED',
+    ...(legalBasis?{legalBasis}:{}),
     financialStatus:'NOT_QUANTIFIED',
     domainLabels:Object.freeze(sections.map(x=>x.label)),
     affectedPages:Object.freeze(affectedPages),
