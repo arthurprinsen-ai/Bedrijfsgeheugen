@@ -462,3 +462,7 @@
   force = true
 
 # production redeploy heartbeat: website-cross-browser-clean-current-main-20261004-v1
+
+# production redeploy heartbeat: portal-dom-auth-readback-native-parity-20261009-v1
+# Recovery: publish the current protected main after test-only PR #4223 was correctly ignored by Netlify.
+# Native Git remains the deployment authority; no authorization bypass or runtime behavior change.
