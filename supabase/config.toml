@@ -81,3 +81,8 @@ entrypoint = "./functions/powerhouse-composio-linkedin-setup/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-autonomous-outreach/index.ts"
+
+[functions.powerhouse-salesrobot-ingest]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-salesrobot-ingest/index.ts"
