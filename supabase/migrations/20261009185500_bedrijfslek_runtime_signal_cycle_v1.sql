@@ -89,3 +89,8 @@ execute function public.powerhouse_runtime_signal_cycle_trigger_v1();
 
 comment on trigger powerhouse_runtime_signal_cycle_materializer_v1 on public.powerhouse_runtime_events
 is 'Existing ONE BRAIN scan signal cycle; Frisse Blik, Workshop and Bedrijfslek with aggregate-only initial identity, no duplicate executor.';
+
+-- Preserve canonical internal-only EXECUTE authority for SECURITY DEFINER.
+-- Prevent browser roles from using this function to open cycles for arbitrary IDs.
+revoke all on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) from public, anon, authenticated;
+grant execute on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) to service_role;
