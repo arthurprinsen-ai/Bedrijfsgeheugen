@@ -6,3 +6,5 @@
 - Fail closed on read/write errors, preserve old portal state and allow idempotent retry.
 - Never elevate unauthenticated visitors to tenant identity, reveal contact PII, or create duplicate schedulers, CRM campaigns, or Brains.
 - Accept only with regression, protected CI, exact Supabase/Netlify readback and real authenticated customer results.
+
+- In Portal V2 render the attached selfreported score and proposed (not executed) actions only when verified tenant projection exists; use DOM-safe textContent. Never replace audited company KPIs.
