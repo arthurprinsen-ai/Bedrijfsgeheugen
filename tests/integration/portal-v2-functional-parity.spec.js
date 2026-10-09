@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
+const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
 
 test.describe.configure({timeout:120000});
 
@@ -52,7 +52,7 @@ test('functional workspaces remain touch-safe and overflow-free at supported pho
  await hideNetlifyChrome(page);await boot(page,preview,320,720);
  for(const [width,height] of [[320,720],[390,844],[430,932]]){
   await page.setViewportSize({width,height});
-  for(const pageId of ['ai-scan','cijfers-maatstaven','compliance-governance','canvassen','due-diligence','roadmap']){
+  for(const pageId of ['ai-scan','cijfers-maatstaven','canvassen','due-diligence','roadmap']){
    await openFunctional(page,pageId);
    const workspace=page.locator(`[data-functional-workspace="${pageId}"]`);
    const firstControl=workspace.locator('input,select,textarea,button').first();
@@ -61,6 +61,14 @@ test('functional workspaces remain touch-safe and overflow-free at supported pho
    expect(overflow,`${pageId}@${width} overflow`).toBeLessThanOrEqual(1);
   }
  }
+});
+
+test('anonymous preview denies access to protected compliance-governance without weakening security',async({page})=>{
+ const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
+ await hideNetlifyChrome(page);await boot(page,preview);
+ await page.evaluate(async()=>{const shell=await import('/portal-v2/page-shell.js');shell.openPortalPage('compliance-governance');});
+ await expect(page.locator('#portalView')).not.toHaveAttribute('data-page-id','compliance-governance');
+ await expect(page.locator('[data-functional-workspace="compliance-governance"]')).toHaveCount(0);
 });
 
 test('repeatable legacy collections add and edit native V2 rows without navigation fallback',async({page})=>{
