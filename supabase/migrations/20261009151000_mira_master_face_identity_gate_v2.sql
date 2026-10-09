@@ -68,7 +68,7 @@ grant execute on function public.powerhouse_validate_instagram_media_job_v1() to
     if (select count(distinct frame->>'position') from jsonb_array_elements(
           case when jsonb_typeof(new.proof_manifest#>'{instagram_visual,frame_evidence}')='array'
           then new.proof_manifest#>'{instagram_visual,frame_evidence}' else '[]'::jsonb end
-        ) as frame
+        ) as e(frame)
         where frame->>'position' in ('start','middle','end')
           and coalesce((frame->>'canonical_identity_match')::boolean,false)=true
           and coalesce(frame->>'canonical_master_reference_id','')='Yjqu4D7v76HABNPmQPj1'
