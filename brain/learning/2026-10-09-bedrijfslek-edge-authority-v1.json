@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|bedrijfslek|edge-release-authority|v1",
+  "date": "2026-10-09",
+  "obligation_id": "bedrijfslek-edge-production-authority-v1",
+  "status": "CANDIDATE_PENDING_PROTECTED_RELEASE",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-edge-production-authority-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The existing powerhouse-scan-ingest Supabase Edge function had never been listed in supabase/config.toml although already active in production, causing its protection-aware automated deployment/attestation workflow to reject an otherwise protected merged release.",
+  "change": "Declare only the canonical existing scan Edge function with exact path and current custom service-token security; add a deterministic source/config regression test.",
+  "prevention": "Require public proxy + hashed x-bg-service-token source evidence whenever verify_jwt=false; reject any implicit undeclared Edge function in production-authority workflows.",
+  "evidence": {
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37977917429",
+    "failed_reason": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:powerhouse-scan-ingest",
+    "source_revision": "eccf6bac75d53cc11c9d792356e756843932d994",
+    "edge_live_version_before_fix": 12,
+    "edge_source_parity": "PROVEN",
+    "scan_production_smoke": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37977917243",
+    "CI_next": "protected Required, CodeQL, postmerge production-edge authority, re-run proof"
+  },
+  "commercial_boundary": "Do not infer paid orders, customer consent, revenue or FULL_GREEN from a successful scan HTTP receipt."
+}
