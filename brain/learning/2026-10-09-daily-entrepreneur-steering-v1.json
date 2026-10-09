@@ -18,7 +18,7 @@
     "code": "portal-v2/operating-system/executive-cockpit.js",
     "style": "portal-v2/operating-system/styles.js",
     "test": "portal-v2/tests/daily-entrepreneur-steering.test.mjs",
-    "productContract": "docs/architecture/daily-entrepreneur-steering-v1.md",
+    "productContract": "docs/changes/2026-10-09-daily-entrepreneur-steering-v1.md",
     "systemMap": "platform/system-map/canonical-system-map.mjs",
     "skill": "skills/powerhouse-product-led-growth.md"
   },
