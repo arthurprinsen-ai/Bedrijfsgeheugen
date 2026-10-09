@@ -1846,7 +1846,7 @@ export const MIRA_FIXED_CHARACTER_VISUAL_IDENTITY_V1=Object.freeze({
   masterReferenceId:'Yjqu4D7v76HABNPmQPj1',
   code:'supabase/functions/_shared/mira-canonical-face.mjs',
   sourceStages:['powerhouse-instagram-media-verifier','powerhouse-instagram-media-router','powerhouse-content-orchestrator','powerhouse-social-publisher'],
-  proof:['openart-canonical-master-image-to-video','compare-master-pixels-with-final-image','video-start-middle-end-face-match','min-confidence-0.90','exact-media-sha','pre-provider-second-verification'],
+  proof:['openart-canonical-master-image-to-video','compare-master-pixels-with-final-image','video-start-middle-end-face-match','min-confidence-0.94','exact-media-sha','pre-provider-second-verification'],
   never:['user-upload-mira-identity','text-only-mira-identity-proof','new-scheduler','duplicate-provider-post'],
   acceptanceTest:'tests/brain-mira-canonical-face-consistency-v1.test.mjs',
   parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
