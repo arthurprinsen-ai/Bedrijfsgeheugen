@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse|predictive|anthropic-tool-output-missing|bounded-context-v1",
+  "obligationId": "p0-4198-anthropic-tool-output-20261009",
+  "parentP0": 4198,
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "production_engine": "v183 ACTIVE",
+    "authorized_request_id": 1714,
+    "http_status": 500,
+    "error": "AI_TOOL_OUTPUT_MISSING",
+    "persisted_anthropic_forecasts": 0,
+    "provider_model": "claude-sonnet-5",
+    "root_cause_conclusively_isolated": false
+  },
+  "root_cause": "Authorized Anthropic full engine call returned no forecast_plan tool_use content. Model stop reason not recorded in previous version; high evidence payload/context may contribute but is not yet proven causal.",
+  "changes": [
+    "Limit transmitted ranked signal context to 50 with bounded factual fields; do not mutate full underlying persisted signal ledger",
+    "Request 1 to 3 forecasts in the same mandatory tool; increase output token budget while keeping finite 90s timeout",
+    "Include safe model stop reason/block types/token count on structured-output failure; never accept free text as forecast"
+  ],
+  "prevention": [
+    "Keep inference context bounded and validation stricter than generation",
+    "Fail closed unless actual typed tool_use and independent source evidence",
+    "Production success only after persisted Anthropic provider-attributed forecasts and health readback"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-anthropic-tool-output-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-anthropic-tool-output-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CONNECTOR_FAILURE",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "actual_request_id": 1714,
+    "http_status": 500,
+    "error": "AI_TOOL_OUTPUT_MISSING",
+    "full_success": false,
+    "real_commercial_conversions": 0,
+    "test_path": "tests/brain-predictive-anthropic-tool-output-v1.test.mjs"
+  },
+  "required": [
+    "Protected Required and CodeQL and Supabase preview",
+    "Exact merged main production Edge source parity",
+    "One actual authorized Anthropic forecast run and persisted evidence",
+    "Separate actual commercial outcomes, not operational leads"
+  ]
+}
