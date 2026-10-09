@@ -5,6 +5,8 @@ import {inventoryPortalCustomerFields} from '../portal-v2/contextual-action-card
 import {allPageIds} from '../portal-v2/page-registry.js';
 import {SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from '../portal-v2/input-impact-coverage.js';
 import {fullCompanyInputSchema} from '../portal-v2/modules/full-company-input.js';
+import {sourcePageForPath,impactForMutation} from '../portal-v2/portal-impact-engine.js';
+import {buildStrategicModels} from '../portal-v2/strategic-models-core.js';
 
 test('every registered native field declaration produces one auditable renderer binding and consequence mapping',()=>{
   const matrix=buildPortalInputCoverageMatrix();
@@ -18,6 +20,7 @@ test('every registered native field declaration produces one auditable renderer 
   for(const row of native){
     assert.ok(row.rendererControlVerified,row.page+':'+row.fieldId);
     assert.equal(row.mappingStatus,'MAPPED',row.path);
+    assert.equal(row.causalSourcePage,sourcePageForPath(row.path),'causal route '+row.path);
     assert.ok(row.modelFamilies.length>0);
     assert.ok(row.affectedPages.length>0);
     assert.match(row.path,/^portal\./);
@@ -83,4 +86,42 @@ test('aggregated form controls with the same legacy id bind different immutable 
   }
   const ids=fullCompanyInputSchema().map(field=>field.id);
   assert.equal(new Set(ids).size,ids.length,'no duplicate field ids within aggregated form');
+});
+
+
+test('all twenty rendered strategic model note fields are declared and routed through ONE BRAIN impact engine',()=>{
+  const modelPaths=buildStrategicModels({}).map(model=>model.notePath);
+  const declared=SUPPLEMENTAL_PORTAL_INPUT_SURFACES.find(surface=>surface.page==='strategiemodellen');
+  assert.equal(modelPaths.length,20);
+  assert.deepEqual(declared.paths,modelPaths);
+  const matrix=buildPortalInputCoverageMatrix();
+  for(const path of modelPaths){
+    const row=matrix.rows.find(row=>row.page==='strategiemodellen'&&row.path===path);
+    assert.ok(row,'missing model note '+path);
+    assert.equal(row.mappingStatus,'MAPPED');
+    assert.equal(row.causalSourcePage,'strategiemodellen');
+    assert.equal(row.status,'DECLARED_CUSTOM_WRITE_UNVERIFIED');
+  }
+});
+
+test('existing canonical non-native inputs have real causal routes and cross-domain review targets',()=>{
+  for(const [path,source,affected] of [
+    ['portal.business_context.stage','bedrijfssituatie','strategie-naar-maandagochtend'],
+    ['portal.aiCapabilitySources.catalog','ai-capabilities','businesscase'],
+    ['portal.strategicModels.bcg.note','strategiemodellen','roadmap'],
+    ['portal.dataAi.aiDataLocation','data-ai','csrd-impact'],
+    ['portal.metrics.largestCustomer','cijfers-maatstaven','exit']
+  ]){
+    assert.equal(sourcePageForPath(path),source,path);
+    const section=path.split('.')[1];
+    const before={portal:{[section]:{}}};
+    const after={portal:{[section]:{}}};
+    const parts=path.split('.').slice(2);
+    let node=after.portal[section];for(let i=0;i<parts.length-1;i++)node=node[parts[i]]={};node[parts.at(-1)]='changed';
+    const impact=impactForMutation({path,before,after});
+    assert.equal(impact.mappingStatus,'MAPPED',path);
+    assert.equal(impact.changed,true,path);
+    assert.ok(impact.affectedPages.includes(affected),path+' must reach '+affected);
+    assert.equal(impact.externalExecutionAuthorized,false);
+  }
 });

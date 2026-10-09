@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|portal|causal-source-routing-and-contextual-impact-v1",
+  "obligationId": "p0-4215-canonical-causal-routing-20261009-v1",
+  "date": "2026-10-09",
+  "status": "PR_CANDIDATE_NOT_LIVE_VERIFIED",
+  "compiler": {
+    "failure_class": "PORTAL_CAUSAL_SOURCE_MAPPING_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_causes": [
+    "The existing input-impact classifier labelled canonical fields MAPPED independently of sourcePageForPath in the ONE BRAIN causal impact engine.",
+    "portal.strategicModels.* and portal.business_context.* lacked source-page routing, and some AI-capability/source/AI Act fields lacked explicit routing.",
+    "Twenty rendered strategic model notes existed in the strategic model registry but were not enumerated in the supplemental customer-field matrix."
+  ],
+  "prevention": [
+    "Use the existing STRATEGIC_MODEL_IDS authority to enumerate strategic notes; do not create a parallel Brain or field registry.",
+    "Fail protected admission on unrouteable declared canonical fields in both native and supplemental surfaces.",
+    "Apply evidence-sensitive cross-domain reassessment targets for staffing, finance, customer concentration, AI provider/residency and legal relevance; no invented financial outcomes."
+  ],
+  "tests": [
+    "tools/ci/p0-4215-portal-input-coverage-matrix.mjs",
+    "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs",
+    "portal-v2/tests/one-brain-impact-contract.test.mjs",
+    "portal-v2/tests/portal-causal-propagation.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Existing GitHub source definitions and existing Netlify production commit 869b950108ae9a122f51191632bd9b61b20776bb.",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4240",
+    "first_failure": "Required test run 37909502968 failed governance closure due missing three artifacts; addressed in same candidate."
+  },
+  "closureRequired": [
+    "Protected code-level tests and merge",
+    "Live exact-main Netlify readback after merge",
+    "Authenticated DOM and legacy/connector field enumeration",
+    "Two genuinely authorized isolated customer tenant sessions with write→BRAIN consumer ACK→cards/roadmap persistence",
+    ">750KB batch durability and 200-field/1000-observation stress",
+    "Customer-specific verified legal applicability and official CSRD/ESRS sources"
+  ]
+}
