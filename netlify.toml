@@ -469,3 +469,6 @@
 
 # production redeploy heartbeat: csrd-binding-regression-recovery-20261009-v1
 # Publish exact main after the mandatory CSRD test contract is restored; no runtime/auth changes.
+
+# production redeploy heartbeat: portal-anonymous-preview-auth-parity-20261009-v1
+# Force exact-head Netlify preview/browser parity for PR #4228; no runtime behavior or authorization changes.
