@@ -1,0 +1,23 @@
+{
+  "fingerprint": "powerhouse|bedrijfslek|canonical-one-brain-ingest|v1",
+  "date": "2026-10-09",
+  "obligation_id": "bedrijfslek-canonical-one-brain-ingest-v1",
+  "source": "website/zelfscan",
+  "problem": "Selfscan full results and Mini were browser-only and not represented as canonical Powerhouse scan events",
+  "root_cause": "Selfscan was never included in canonical scan ingest URL allowlist and did not POST a privacy-safe payload",
+  "change": "Extend existing Edge source-kind normalization, runtime event, aggregate growth event; send idempotent result after free page renders; preserve aggregate-only tenant boundary",
+  "canonical_store": [
+    "scan_inzendingen",
+    "powerhouse_runtime_events",
+    "growth_events"
+  ],
+  "data_policy": {
+    "pii_in_aggregate": false,
+    "identity_status": "unverified",
+    "scope": "aggregate_only",
+    "privileged_claim": "authenticated portal only"
+  },
+  "commercial_policy": "scan completion is not a qualified order; actual revenue needs verified external economic evidence",
+  "acceptance": "GitHub CI + exact Netlify deployment + Edge source parity + actual anonymous event readback + authenticated-tenant claim + Heartbeat next-decision evidence required before terminal live claims",
+  "status": "CANDIDATE_PENDING_PRODUCTION_EVIDENCE"
+}
