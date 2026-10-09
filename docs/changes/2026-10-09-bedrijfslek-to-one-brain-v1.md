@@ -7,7 +7,7 @@ De gratis twaalfvragenzelfscan op /zelfscan toont direct score, domeinprofiel, d
 - /zelfscan verstuurt NA het direct tonen van de volledige uitslag precies één idempotente score/dimensie-payload naar de bestaande /api/powerhouse-scan-ingest.
 - Het bestaande Netlify-proxyprotocol, het bestaande Supabase Edge endpoint, `scan_inzendingen`, `powerhouse_runtime_events` en `growth_events` blijven de enige schakelpunten.
 - `source_kind=bedrijfslek_scan`, `kind=bedrijfslek_scan`, `source=website.bedrijfslek` en `intent=bedrijfslek` maken attributie en analayse mogelijk zonder parallelle registratie.
-- Geen naam, mailadres, telefoon, raw antwoorden of aan bezoekers toegeschreven bedrijfsidentiteit in de payload. `tenant_identity_status=unverified` en `learning_scope=aggregate_only` blijven gelden.
+- Geen naam, mailadres, telefoon, ruwe antwoorden of aan bezoekers toegeschreven bedrijfsidentiteit in de payload. `tenant_identity_status=unverified` en `learning_scope=aggregate_only` blijven gelden.
 - De ingelogde tenant kan een passende scan via het bestaande privileged `/api/portal-scans` claimen; de publieke scan heeft **nooit** toegang tot `history` of `claim`.
 - De bezoeker krijgt alleen een bewijs van opslag nadat de backend zowel `scan_id` als `event_id` heeft teruggeleverd. Bij storing blijft het volledige gratis resultaat bruikbaar; geen valse succesmelding.
 - Geen nieuwe scheduler, AI-provider, campagne, Brain, database, consent-omzeiling of fictieve conversie.
@@ -25,3 +25,10 @@ Economische resultaten zijn niet afgeleid uit alleen scans of ingest: een gekwal
 6. Authenticated klant-claim en daaropvolgende ONE BRAIN → POWERHOUSE → Heartbeat impact als afzonderlijke E2E-proef; P0 #4198 blijft open zolang feitelijke commerciële conversie niet bewezen is.
 
 Fingerprint: `powerhouse|bedrijfslek|canonical-one-brain-ingest|v1`.
+
+## Portal V2 doorwerking (deze kandidaat)
+- Het bestaande portaal krijgt een kleine, alleen bij geauthenticeerde klant zichtbare sectie **Mijn nulmetingen**.
+- Er wordt uitsluitend gelezen uit `GET /api/portal-scans`, dat de tenant server-side uit de ingelogde Netlify Identity-sessie afleidt. De sectie toont uitsluitend `tenant_identity_status=verified`-rijen en geen verzonnen scores.
+- Heeft dezelfde browser na de gratis scan een succesvolle opslagreferentie, dan kan de ingelogde klant via een expliciete klik `POST /api/portal-scans` de scan claimen. Pas na de serverbevestiging verdwijnt de pending-referentie.
+- Geen tenant-ID uit URL of localStorage naar privileged API, geen browser-side wijziging van bedrijfsbesluiten of canonical Brain-state en geen stille identity-assumptie.
+- De bestaande scan-history en `scan_identity_verified` runtime event kunnen door de canonical Powerhouse/Heartbeat loop worden geconsumeerd. Structureel gebruik door besluitvorming moet nog live worden aangetoond.
