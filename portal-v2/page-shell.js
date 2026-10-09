@@ -297,7 +297,7 @@ export function openPortalPage(pageId){
   const native=root.querySelector('#pvNative');
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
-    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot());
+    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot(),{demo:!hasProtectedTrustAccess()});
     const renderer=renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
     // Same tenant-scoped Identity route as the canonical sovereignty panel.
     // Never use a global/canonical admin scope on customer pages.
