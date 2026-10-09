@@ -1,4 +1,5 @@
 import postgres from 'npm:postgres@3.4.7';
+import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
 
 const CHANNELS = ['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'];
 const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
@@ -463,10 +464,11 @@ Deno.serve(async (req) => {
         : `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`)
       : pending.channel==='linkedin_company'
       ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
-      : pending.channel==='instagram_company' ? 'Schrijf Mira daily-life caption passend bij de reeds bewezen finale media. Geen interne kantoorproblemen of geforceerde businessmoraal.'
+      : pending.channel==='instagram_company' ? 'Mira verbeeldt één canoniek PH-P ondernemersprobleem. Verplichte caption: herkenbare scène, oorzaak, potentieel gevolg, concrete portaalcapaciteit/actie/eigenaar, meetpunt en menselijke pointe. Gebruik uitsluitend mira_entrepreneur_context, verzin geen klantresultaat, en claim geen onbewezen portalfeature. Laat in de bijschrifttekst zien wat het portaal doet; het beeld blijft één echte Mira-scène, geen corporate tekstkaart.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
     stage = 'artifact-ai';
-    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,
+    const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
+    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):null,
       tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='Anthropic';
@@ -487,6 +489,13 @@ Deno.serve(async (req) => {
       artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:2600);
     }
     let bodyText = clean(artifact.body);
+    if (pending.channel==='instagram_company') {
+      // The caption is deterministic from the canonical PH-P problem, not a random consumer-complaint winner.
+      bodyText=miraCaption(miraBusinessProblem);
+      const check=validateMiraCaptionForDelivery(runDate,bodyText,miraProductionEvidence(miraBusinessProblem));
+      if(!check.ok)throw new Error(check.reason);
+      if(clean(instagramProof?.mira_business_problem_id)!==miraBusinessProblem.id)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
+    }
     if (pending.channel==='linkedin_personal' && !personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
@@ -515,7 +524,7 @@ Deno.serve(async (req) => {
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company',identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},status:'content_ready',updated_at:new Date().toISOString()});
+      final_copy_approved:pending.channel==='linkedin_company',identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
