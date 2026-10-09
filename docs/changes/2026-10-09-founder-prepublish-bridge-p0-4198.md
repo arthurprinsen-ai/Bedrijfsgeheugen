@@ -1,9 +1,16 @@
-# Founder LinkedIn prepublish bridge — P0 #4198
+# Existing Edge v26 founder gate — GitHub source parity, P0 #4198
 
-The existing Powerhouse content orchestrator and social publisher recognize verified founder-journey events, but the final prepublish gate still required personal-life-only topics. The correction reuses the existing builder policy and the same Brain evidence without creating a new Heartbeat, Brain, queue or scheduler.
+## Verified root cause
+GitHub main still contained an old personal-life-only `bg-pre-publish-review` implementation. Readback of the **actual active Supabase Edge v26** showed the independently verified AI-native founder lane **already working in deployed source**. The original candidate could therefore have removed production guards. This change backports **exact active v26 source** into the existing GitHub canonical file, with no added executor or new Brain, scheduler or database.
 
-Only an event with verified build, Arthur anchor, source lineage and personal identity can use the founder lane. The exact post hash, privacy rules, company identity separation, no-sales requirement and live provider verification stay mandatory. A text mentioning Bedrijfsgeheugen is not evidence by itself.
+## Independently open operational gap
+On 9 October 2026, `powerhouse_channel_decisions` recorded personal LinkedIn provider URN `urn:li:share:7514285740868911105` but Composio `LINKEDIN_GET_POST_CONTENT` returned Forbidden (403), and an alternative connected personal account returned Unauthorized (401). A post URN is not successful independent content readback. Do not republish or mark an outcome as delivered without independent provider evidence.
 
-Observed on 2026-10-09: 32/32 runtime layers wired but Loop Assurance 7 GREEN, 2 AMBER, 6 RED and commercial daily run degraded. Neither this candidate nor a green build proves a sent LinkedIn post or the full closed loop.
+## Source-to-runtime contract
+Source parity means GitHub implementation must not regress active Supabase Edge behavior: verified builder event, Arthur provenance, source lineage, no technical jargon, no sales pitch, exact final text hash, privacy and separated personal/company identities. Production retains v26 while protected PR admission/tests/CodeQL/merge are pending. The existing Heartbeat, Powerhouse and Brain operate a single 8-stage loop. This is not a declaration of full commercial closure.
 
-Release: protected CI, positive and negative regressions, protected merge, Supabase Edge exact-code readback and evidence-based provider outcome. Related PR #4264.
+## Evidence
+- GitHub recovery: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4264
+- Master issue: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+- Regression: `tests/brain-founder-prepublish-bridge-p0-4198.test.mjs`
+- Current-state Notion: https://app.notion.com/p/3dcda36aac8a8152be3dedbb32b06239
