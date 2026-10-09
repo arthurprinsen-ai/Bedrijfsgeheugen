@@ -129,6 +129,18 @@ function otherIdentityViolations(channel: string, text: string, body: any) {
   if (channel === 'linkedin_company' && /\bik (heb|had|was|ben|ging|kwam|zat|voelde|dacht)\b/i.test(text) && !/\bArthur\b/i.test(text)) out.push({ code: 'COMPANY_CHANNEL_PERSONAL_DIARY_VOICE', message: 'Bedrijfspagina mag niet ongemarkeerd als Arthurs dagboekstem publiceren.' });
   if (channel === 'instagram_company') {
     if (body.mira_gate_passed !== true) out.push({ code: 'MIRA_GATE_NOT_PROVEN', message: 'Mira hard gate ontbreekt.' });
+    // Mandatory semantic caption gate for mapped SME-problem episodes.
+    // Historical provider-side-effects and old legacy post readbacks remain untouched.
+    if(body.mira_portal_story?.contract==='mira-entrepreneur-portal-story-v1') {
+      const story=body.mira_portal_story;
+      if(!/^PH-P\\d{3}$/.test(clean(story.problem_id))||!clean(story.source_id))
+        out.push({code:'MIRA_STORED_PROBLEM_SOURCE_REQUIRED',message:'Brongebonden PH-P-probleem en immutable signaal-id ontbreken.'});
+      if(!clean(story.portal_capability)||!clean(story.action)||!clean(story.metric)||story.illustrative!==true)
+        out.push({code:'MIRA_PORTAL_ACTION_EVIDENCE_REQUIRED',message:'Portaalcapaciteit, actie, meetlat en fictie-label zijn vereist.'});
+      const required=['Het probleem ontstaat omdat','Daardoor','In het Bedrijfsgeheugen-portaal','volgende stap','controleren','Mira is een fictief AI-personage'];
+      if(text.length<300||required.some(part=>!text.includes(part)))
+        out.push({code:'MIRA_ENTREPRENEUR_CAPTION_INCOMPLETE',message:'Vereiste situatie, oorzaak, gevolg, portaalfunctie, actie, meting en disclaimer ontbreken.'});
+    }
     out.push(...instagramProofViolations(body));
     const mediaType = clean(body.media_type).toLowerCase();
     const source = clean(body.media_source).toLowerCase();
