@@ -43,6 +43,8 @@ test('actual Edge ingest writes to existing scan, runtime and growth stores with
   assert.match(s,/scan_inzendingen/);
   assert.match(s,/powerhouse_runtime_events/);
   assert.match(s,/growth_events/);
+  assert.match(s,/funnel_stage:scan\.kind==='bedrijfslek_scan'\?'assessment':'lead'/);
+  assert.match(s,/page_role:'diagnosis'/);
   assert.match(s,/onConflict:'submission_key',ignoreDuplicates:true/);
   assert.match(s,/x-bg-service-token/);
 });
