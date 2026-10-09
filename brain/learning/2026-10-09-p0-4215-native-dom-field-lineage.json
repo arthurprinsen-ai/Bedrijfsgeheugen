@@ -12,7 +12,8 @@
     "Emit escaped, non-secret data-field-path from each immutable native field schema on all generated controls.",
     "Enforce path fidelity for all declared native controls on every protected Required preflight with negative XSS and repeatable fixtures.",
     "Do not treat standalone/legacy/connector/dynamic rows or a missing path as verified; they remain live browser and tenant acceptance gaps.",
-    "Test actual positive escaped output &lt;script&gt;, not an ineffective case-sensitive raw tag detection regex."
+    "Test actual positive escaped output &lt;script&gt;, not an ineffective case-sensitive raw tag detection regex.",
+    "Emit an explicit data-field-lineage=DECLARATION_ONLY or UNMAPPED flag so browser inventories do not mistake DOM declaration for actual authenticated tenant and Brain ACK."
   ],
   "tests": [
     "tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs"
