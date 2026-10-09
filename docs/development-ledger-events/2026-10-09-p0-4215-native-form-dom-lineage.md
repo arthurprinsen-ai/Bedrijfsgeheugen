@@ -7,3 +7,5 @@
 - CI gate: dedicated `tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs` run on protected Required and historical/shadow/canary learning.
 - Delivery: code/test/Required checks, approved immutable PR Netlify preview/browser visual baseline, protected merge, production DOM, exact-main readback required.
 - P0 closure requires real two-tenant authorized customer readback, full browser+provider inventory, transactional >750KB outbox and customer-specific CSRD/ESRS scope.
+
+- Security follow-up: GitHub Advanced Security review thread PR #4242 flagged test-only /<script>/ regex as case-sensitive and unsafe to treat as HTML filtering; replaced with positive escaped HTML output assertion, preserving renderer escaping and protected CodeQL admission.
