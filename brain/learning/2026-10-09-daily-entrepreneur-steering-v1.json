@@ -25,6 +25,21 @@
   "productionTruth": "As observed 2026-10-09, powerhouse_daily_runs state degraded for the current day; P0 #4198 remains open. Feature is only a candidate until protected promotion, production readback and authenticated tenant end-to-end evidence.",
   "outcome": "A product experience candidate and regression added; no claim of deployed commercial closed loop or verified customer ROI.",
   "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/daily-entrepreneur-steering.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/daily-entrepreneur-steering.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/daily-entrepreneur-steering.test.mjs"
+    ],
+    "invariants": [
+      "no fabricated realized value",
+      "provider delivery is not economic outcome",
+      "learning requires separate verified evidence and next decision",
+      "same tenant projection, one Brain, no parallel scheduler"
+    ],
     "regressions": [
       "portal-v2/tests/daily-entrepreneur-steering.test.mjs"
     ],
