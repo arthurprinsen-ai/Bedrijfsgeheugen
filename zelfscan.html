@@ -408,7 +408,7 @@ function bgScanNaarBrein(score,per){
   var status=document.getElementById('bgBrainStatus');
   fetch('/api/powerhouse-scan-ingest',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)})
     .then(function(r){return r.json().then(function(data){if(!r.ok||data.ok!==true||!data.scan_id||!data.event_id)throw Error('SCAN_NOT_STORED');return data})})
-    .then(function(data){try{sessionStorage.setItem('bg_last_scan_ref',key)}catch(e){}if(status)status.textContent='Je nulmeting is gekoppeld aan het Bedrijfsgeheugen Brein (zonder contactgegevens).';})
+    .then(function(data){try{sessionStorage.setItem('bg_last_scan_ref',key)}catch(e){}if(status){status.textContent='Je nulmeting is veilig opgeslagen, zonder contactgegevens. ';var link=document.createElement('a');link.href='https://www.bedrijfsgeheugen.nl/portal-v2/';link.textContent='Koppel deze scan aan mijn portaal →';link.style.cssText='display:inline-block;margin-left:.3rem;color:#2742D6;font-weight:700';status.appendChild(link);}})
     .catch(function(){if(status)status.textContent='Je uitslag blijft beschikbaar. Opslaan van deze nulmeting lukte nog niet.'});
 }
 
