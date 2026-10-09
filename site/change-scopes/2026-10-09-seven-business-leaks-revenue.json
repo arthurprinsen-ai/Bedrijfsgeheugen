@@ -1,0 +1,25 @@
+{
+  "routes": [
+    "/7-bedrijfslekken",
+    "/zelfscan",
+    "/downloads/7-verborgen-bedrijfslekken.pdf"
+  ],
+  "change_class": "growth-conversion-value-before-lead",
+  "preserve": [
+    "existing selfscan flow",
+    "SEO",
+    "canonical navigation",
+    "privacy and consent",
+    "no duplicate provider outreach",
+    "portal and Brain authority",
+    "correct economic-claim labeling"
+  ],
+  "hypothesis": "A useful ungated PDF mini-audit and concrete single-offer ask increase qualified scan completions and downstream paid orders relative to an abstract product explanation.",
+  "target_metric": "attributed_scan_complete -> qualified_call -> paid_order -> realized_revenue",
+  "rollback_condition": "PDF corruption, incorrect revenue claims, mobile/SEO/privacy regression, mismatched production deploy, lower qualified order conversion",
+  "evidence_refs": [
+    "P0 #4198",
+    "existing /zelfscan 2026-10-09",
+    "powerhouse|revenue|seven-business-leaks-free-giveaway|v1"
+  ]
+}
