@@ -28,7 +28,7 @@ test('shadow: scan primary free result and product navigation remain unchanged',
 test('canary: source-level English parity patch is complete and truthful',()=>{
   assert.equal(i18n[text],'Download the free workbook: 7 hidden business leaks →');
   assert.equal(Object.keys(i18n).length,1);
-  assert.match(page,/Geen account, e-mailadres of verkooppraatje/);
+  assert.match(page,/Zonder account, e-mailadres of verkooppraatje/);
 });
 
 test('outcome guard: non-purchase worksheet links cannot establish realized revenue',()=>{
