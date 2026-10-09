@@ -41,6 +41,8 @@ test('canary: authority, reciprocity and truthful value evidence precede checkou
 
 test('attribution contract: no invented conversion for file downloads or clicks',()=>{
   assert.match(landing,/utm_campaign=7-bedrijfslekken-202610/g);
+  assert.match(landing,/<script src="\/assets\/meting\.js" defer><\/script>/);
+  assert.match(readFileSync(new URL('../assets/meting.js',import.meta.url),'utf8'),/gebeurtenis:'klik'/);
   assert.match(skill,/observed, pending, unknown/);
   assert.match(skill,/anti-duplication keys/);
   assert.match(skill,/a published PDF\/post, LinkedIn send or scan/);
