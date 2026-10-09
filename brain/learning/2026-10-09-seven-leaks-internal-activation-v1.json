@@ -5,13 +5,14 @@
   "status": "CANDIDATE_PROTECTED_DELIVERY",
   "problem": "The protected-merged free 7-leaks worksheet is live and its first pageview was observed, but discoverability from the existing organic homepage and selfscan is missing. Provider company social posting requires org permissions, so the website cannot rely solely on new external posts for visits.",
   "root_cause": "The launch deliberately kept the existing selfscan and homepage unchanged after the required static EN cache rejected a new unapproved Dutch string. This prevented a first-party offer entry from two proven high-intent website routes.",
-  "fix": "Preserve both existing primary CTAs. Add one low-friction first-party PDF-workbook link to the existing homepage and existing ungated selfscan, using separate UTM sources and the same approved NL label. Include the exact source-to-English minimal localized cache patch, instead of bypassing the fail-closed i18n gate.",
+  "fix": "Preserve both existing primary CTAs and add exactly one low-friction first-party PDF-workbook link to the existing homepage and selfscan using the CLEAN indexable canonical /7-bedrijfslekken. Existing privacy-aware bg_interacties click records include the source page path, providing correct first-party source attribution without SEO-incompatible internal tracking parameters. Supply exact NL/EN minimal cache patch.",
   "prevention": [
     "Never add untranslated public text to localized protected pages.",
     "Never replace the existing primary free selfscan or product CTA.",
     "Do not introduce contact capture, a second PDF, second sales pipeline or a publisher.",
     "Do not infer conversions or revenue from a pageview or link.",
-    "Use the already deployed fixed-value source and one canonical UTM campaign."
+    "Use the already deployed fixed-value source and one canonical UTM campaign.",
+    "Do not add tracking query strings on canonical internal SEO links; attribute origin from observed first-party click source path."
   ],
   "evidence": {
     "parent_issue": 4198,
@@ -40,7 +41,7 @@
       "existing scan primary CTA unchanged",
       "first-party links route to original PDF page",
       "NL/EN approved translation available",
-      "source attribution channel in UTM",
+      "page-scoped first-party click attribution without query-string tracking for internal canonical links",
       "no new content executor or new lead database",
       "no simulated paid outcome"
     ],
