@@ -30,3 +30,20 @@ test('single canonical tick drains several decided channels without parallel sen
   assert.match(loop, /mode: 'publish_only'/);
   assert.doesNotMatch(loop, /cron\.schedule\(/);
 });
+
+test('verified founder builder lane reaches independent pre-publication review, while unverified copy stays blocked',()=>{
+  const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+  assert.match(publisher,/const builderMode = evidence\.ai_native_builder_story_verified === true/);
+  assert.match(publisher,/evidence\.ai_native_builder_policy === 'personal-linkedin-ai-native-builder-v1'/);
+  assert.match(publisher,/evidence\.build_event_verified === true/);
+  assert.match(publisher,/evidence\.arthur_anchor_verified === true/);
+  assert.match(publisher,/evidence\.source_backed === true/);
+  assert.match(publisher,/evidence\.identity_contract === CONTRACT/);
+  assert.match(publisher,/evidence\.identity_gate_version === GATE/);
+  assert.match(publisher,/evidence\.source_lineage/);
+  assert.match(publisher,/!personalTruthMode && !observationalMode && !builderMode/);
+  assert.match(publisher,/ai_native_builder_story_verified: builderMode/);
+  assert.match(publisher,/const gate = await review\(url, reviewPayload\)/);
+  assert.match(publisher,/gate\.identity_gate_decision !== 'PASS'/);
+  assert.match(publisher,/gate\.final_text_hash !== textHash/);
+});
