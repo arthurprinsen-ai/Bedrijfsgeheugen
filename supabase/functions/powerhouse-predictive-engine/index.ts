@@ -36,7 +36,36 @@ Deno.serve(async(req:Request)=>{
       const sat=k.concurrentie==null?0.5:clamp(Number(k.concurrentie)/100);
       signalRows.push({signal_key:key,observed_at:k.opgehaald_op||new Date().toISOString(),source_type:'search_demand',source_ref:`keyword:${k.zoekwoord}`,entity_scope:'market',entity_key:k.zaadwoord||k.zoekwoord,topic_key:k.zaadwoord||k.zoekwoord,signal_type:'search_precursor',direction:'rising',strength:clamp(Math.min(1,Number(k.kansscore||0)/20)),novelty:clamp(1-sat),lead_time_days:45,evidence:{keyword:k.zoekwoord,search_volume:k.zoekvolume,competition:k.concurrentie,opportunity_score:k.kansscore,position:k.positie,ranking_url:k.rankende_url}});
     }
-    if(signalRows.length){ const {error}=await db.from('powerhouse_predictive_signals').upsert(signalRows,{onConflict:'signal_key'}); if(error) throw error; }
+    // Avoid the row-level forecast and calibration trigger cascade on unchanged signals.
+    // Each actual change is committed in a bounded batch; duplicate daily calls remain idempotent.
+    let ingested=0;
+    if(signalRows.length){
+      const keys=signalRows.map(s=>s.signal_key);
+      const {data:known,error:lookupError}=await db.from('powerhouse_predictive_signals')
+        .select('signal_key,observed_at,source_type,source_ref,entity_scope,entity_key,topic_key,signal_type,direction,strength,novelty,lead_time_days,evidence')
+        .in('signal_key',keys);
+      if(lookupError)throw lookupError;
+      const oldByKey=new Map((known||[]).map((s:any)=>[s.signal_key,s]));
+      const stable=(v:any):string=>Array.isArray(v)?'['+v.map(stable).join(',')+']':
+        v&&typeof v==='object'?'{'+Object.keys(v).sort().map(k=>JSON.stringify(k)+':'+stable(v[k])).join(',')+'}':
+        JSON.stringify(v??null);
+      const toWrite=signalRows.filter(s=>{
+        const old:any=oldByKey.get(s.signal_key);
+        if(!old)return true;
+        const fields=['source_type','source_ref','entity_scope','entity_key','topic_key','signal_type','direction'];
+        return fields.some(k=>old[k]!==s[k]) ||
+          new Date(old.observed_at).getTime()!==new Date(s.observed_at).getTime() ||
+          ['strength','novelty','lead_time_days'].some(k=>Number(old[k])!==Number(s[k])) ||
+          stable(old.evidence)!==stable(s.evidence);
+      });
+      for(let i=0;i<toWrite.length;i+=5){
+        const batch=toWrite.slice(i,i+5);
+        const {error}=await db.from('powerhouse_predictive_signals')
+          .upsert(batch,{onConflict:'signal_key'});
+        if(error)throw error;
+        ingested+=batch.length;
+      }
+    }
     const {data:signals}=await db.from('powerhouse_predictive_signals').select('signal_id,signal_key,observed_at,source_type,source_ref,entity_scope,entity_key,topic_key,signal_type,direction,strength,novelty,lead_time_days,evidence').gte('observed_at',new Date(Date.now()-21*86400000).toISOString()).order('strength',{ascending:false}).limit(80);
     if(!signals?.length){await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:'NO_EVIDENCE_NO_FORECAST',gegevens:{contract:'predictive-first-mover-intelligence-v1'}});return json({ok:true,signals:0,forecasts:0,reason:'NO_EVIDENCE'});}
 
@@ -67,8 +96,8 @@ Deno.serve(async(req:Request)=>{
       const {error}=await db.from('powerhouse_forecasts').upsert(row,{onConflict:'forecast_key'}); if(error) throw error; written++;
     }
     const {data:queue}=await db.from('powerhouse_first_mover_queue').select('*').order('action_score',{ascending:false}).limit(10);
-    await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:`signals=${signals.length}; forecasts=${written}; rejected=${rejected}`,gegevens:{contract:'predictive-first-mover-intelligence-v1',generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,fallback_schema_retry_count:fallbackSchemaRetryCount,queue_top:(queue||[]).slice(0,5).map((q:any)=>({forecast_id:q.forecast_id,topic_key:q.topic_key,action_score:q.action_score,prediction_mode:q.prediction_mode}))}});
-    return json({ok:true,signals:signals.length,forecasts_written:written,rejected,generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,queue:queue||[]});
+    await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'ok',detail:`signals=${signals.length}; forecasts=${written}; rejected=${rejected}`,gegevens:{contract:'predictive-first-mover-intelligence-v1',generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,fallback_schema_retry_count:fallbackSchemaRetryCount,signals_ingested:ingested,queue_top:(queue||[]).slice(0,5).map((q:any)=>({forecast_id:q.forecast_id,topic_key:q.topic_key,action_score:q.action_score,prediction_mode:q.prediction_mode}))}});
+    return json({ok:true,signals:signals.length,forecasts_written:written,rejected,signals_ingested:ingested,generation_provider:generationProvider,generation_model:generationModel,fallback_reason:fallbackReason,queue:queue||[]});
   }catch(e:any){
     try{ await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-predictive-engine',soort:'predictive-run',status:'fout',detail:String(e?.message||e).slice(0,400),gegevens:{contract:'predictive-first-mover-intelligence-v1'}}); }catch{ /* Preserve the original predictive failure when receipt persistence also fails. */ }
     return json({ok:false,error:String(e?.message||e).slice(0,500)},500);
