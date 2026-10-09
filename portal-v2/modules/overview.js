@@ -95,6 +95,53 @@ function renderLegacyOverviewInsights(root,state){
 }
 
 
+function renderBedrijfslekIntelligence(root,state){
+ const main=root?.querySelector?.('.main');if(!main)return false;
+ const scan=state?.portal?.assessments?.bedrijfslekScan;
+ let section=main.querySelector('[data-bedrijfslek-intelligence]');
+ const score=Number(scan?.score);
+ if(scan?.verifiedIdentity!==true||!Number.isFinite(score)||score<0||score>100){
+  section?.remove?.();return false;
+ }
+ const doc=root.ownerDocument||document;
+ if(!section){
+  section=doc.createElement('section');
+  section.dataset.bedrijfslekIntelligence='true';
+  section.className='legacy-overview-insights';
+  section.setAttribute('aria-label','Mijn Bedrijfslek nulmeting en voorgestelde acties');
+  const anchor=main.querySelector('[data-legacy-overview-insights]')||main.querySelector('.dashboard');
+  main.insertBefore(section,anchor||null);
+ }
+ section.replaceChildren();
+ const article=doc.createElement('article');article.className='legacy-insight-card';
+ const title=doc.createElement('h3');title.textContent='Jouw Bedrijfslek-nulmeting';
+ const label=doc.createElement('p');
+ label.textContent=`Score ${Math.round(score)}/100 · Zelfgerapporteerd · Gekoppeld aan dit bedrijf`;
+ const caution=doc.createElement('p');
+ caution.textContent='Dit is een indicatieve nulmeting uit jouw antwoorden, geen geauditeerde KPI of bewezen financiële besparing.';
+ const heading=doc.createElement('strong');heading.textContent='Drie voorgestelde vervolgstappen';
+ article.append(title,label,caution,heading);
+ const source=String(scan.source||'');
+ const recs=Array.isArray(state?.recommendedActions)?state.recommendedActions.filter(item=>
+  item?.status==='voorgesteld'&&item?.executed===false&&item?.verified===false&&
+  (item?.source===source)&&String(item?.id||'').startsWith('bedrijfslek:')).slice(0,3):[];
+ const list=doc.createElement('ul');
+ if(!recs.length){
+  const li=doc.createElement('li');li.textContent='Bekijk de onderdelen met de laagste scores en bespreek de eerstvolgende verbetering.';list.appendChild(li);
+ }else for(const item of recs){
+  const li=doc.createElement('li');
+  li.textContent=`${String(item.priority||'Voorstel')} · ${String(item.title||'Verbeteractie')} — nog niet uitgevoerd`;
+  list.appendChild(li);
+ }
+ article.appendChild(list);
+ const action=doc.createElement('button');action.type='button';action.dataset.pvPage='actieve-acties';
+ action.textContent='Bekijk acties en impact →';
+ article.appendChild(action);
+ section.appendChild(article);
+ bindPageButtons(section);
+ return true;
+}
+
 function renderBusinessJourneyOverview(root,state){
  const main=root?.querySelector?.('.main');if(!main)return false;
  const context=buildBusinessContext(state);
@@ -139,6 +186,7 @@ export function applyOverviewDashboard(root=document,state={}){
  ensureControlPlaneCockpit(root);
  renderLegacyOverviewComplete(root,state,openPortalPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
  renderLegacyOverviewInsights(root,state);
+ renderBedrijfslekIntelligence(root,state);
  renderBusinessJourneyOverview(root,state);
  mountOverviewForesight(root,{state,openPage:openPortalPage}).catch(()=>null);
  renderManagementAccountingIntelligence(root,state);
