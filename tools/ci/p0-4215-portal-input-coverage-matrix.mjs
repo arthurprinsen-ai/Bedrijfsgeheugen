@@ -6,6 +6,7 @@ import {functionalSchema} from '../../portal-v2/modules/functional-suite.js';
 import {companyInputSchema} from '../../portal-v2/modules/company-input.js';
 import {fullCompanyInputSchema} from '../../portal-v2/modules/full-company-input.js';
 import {fieldMarkup} from '../../portal-v2/form-primitives.js';
+import {sourcePageForPath} from '../../portal-v2/portal-impact-engine.js';
 import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from '../../portal-v2/input-impact-coverage.js';
 
 // This is a generated declaration/render contract, NOT an authenticated browser,
@@ -45,6 +46,8 @@ export function buildPortalInputCoverageMatrix(){
       }
       nativeSeen.set(key,canonicalPath);
       const classification=classifyPortalInputPath(canonicalPath);
+      const causalSourcePage=sourcePageForPath(canonicalPath);
+      if(!causalSourcePage)errors.push({code:'CANONICAL_CAUSAL_SOURCE_UNMAPPED',page,fieldId,path:canonicalPath});
       const markup=fieldMarkup(field);
       const ids=[...markup.matchAll(/data-field-id="([^"]*)"/g)].map(match=>match[1]);
       const rendered=ids.length===1 && ids[0]===fieldId;
@@ -61,7 +64,7 @@ export function buildPortalInputCoverageMatrix(){
         sourceRevision:'SERVER_REVISION_LIVE_READBACK_REQUIRED',
         brainConsumerAck:'NOT_OBSERVED',
         modelFamilies:classification.modelFamilies||[],
-        affectedPages:classification.affectedPages||[],
+        causalSourcePage,affectedPages:classification.affectedPages||[],
         mappingStatus:classification.mappingStatus,
         rendererControlVerified:rendered,
         browserDomVerified:false,
@@ -91,6 +94,8 @@ export function buildPortalInputCoverageMatrix(){
     }
     for(const value of paths){
       const classification=classifyPortalInputPath(value);
+      const causalSourcePage=sourcePageForPath(value);
+      if(!causalSourcePage)errors.push({code:'SUPPLEMENTAL_CAUSAL_SOURCE_UNMAPPED',page:surface.page,path:value});
       if(classification.mappingStatus!=='MAPPED')errors.push({code:'SUPPLEMENTAL_MAPPING_MISSING',page:surface.page,path:value});
       supplementary.push({
         surface:'CUSTOM_WORKSPACE_DECLARATION',page:surface.page,
@@ -99,7 +104,7 @@ export function buildPortalInputCoverageMatrix(){
         writeEndpoint:null,readbackEndpoint:null,
         sourceRevision:'NOT_OBSERVED',brainConsumerAck:'NOT_OBSERVED',
         tenantContext:'MUST_VERIFY',access:'MUST_CLASSIFY',
-        affectedPages:classification.affectedPages,modelFamilies:classification.modelFamilies,
+        affectedPages:classification.affectedPages,modelFamilies:classification.modelFamilies,causalSourcePage,
         mappingStatus:classification.mappingStatus,
         browserDomVerified:false,authenticatedWriteVerified:false,
         status:'DECLARED_CUSTOM_WRITE_UNVERIFIED'
