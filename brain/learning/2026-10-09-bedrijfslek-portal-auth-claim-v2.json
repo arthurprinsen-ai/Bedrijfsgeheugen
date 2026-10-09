@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|bedrijfslek|authenticated-portal-claim|v2",
+  "obligation_id": "bedrijfslek-portal-authorized-claim-v2",
+  "date": "2026-10-09",
+  "root_cause": "Scan history/claim frontend did not forward the Netlify Identity Bearer token, anonymous browser receipt was session-tab local, and verified scan ownership could be silently reassigned for non-UUID tenants.",
+  "prevention": {
+    "rule": "All authenticated Portal V2 scan traffic reuses portalStateClient.authHeaders and is forbidden without Bearer; only verified server receipt clears a 7-day anonymous scan token. Edge claim never reassigns verified company ownership.",
+    "regression_contract": "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": "tests/brain-bedrijfslek-portal-auth-claim-v2.test.mjs",
+    "code_review": "GitHub PR protected admission",
+    "production_readback": "PENDING_PROTECTED_MERGE"
+  },
+  "architecture": {
+    "existing_scan_ingest": "/api/powerhouse-scan-ingest",
+    "authenticated_proxy": "/api/portal-scans",
+    "identity": "Netlify Identity JWT via Portal State Client",
+    "source_of_truth": "Supabase scan_inzendingen + powerhouse_runtime_events",
+    "new_cron": false,
+    "new_crm": false
+  },
+  "outcome": "CANDIDATE_NOT_LIVE_PROVEN"
+}
