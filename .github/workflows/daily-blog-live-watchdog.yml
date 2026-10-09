@@ -146,35 +146,53 @@ jobs:
       - name: Commit proof candidate only
         id: commit
         if: steps.record.outputs.state != 'live' && steps.proof.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DATE: ${{ steps.record.outputs.date }}
+          SLUG: ${{ steps.record.outputs.slug }}
         run: |
           set -euo pipefail
+          # The native watchdog owns this daily proof. Reuse a pending proof
+          # candidate instead of opening duplicates after another reconciliation.
+          existing=$(gh pr list --state open --limit 100 --json number,body --jq '.[] | select((.body // "") | contains("Obligation-ID: daily-blog:'"$DATE"':immutable-live-proof")) | .number' | head -n 1)
+          if [ -n "$existing" ]; then
+            echo "EXISTING_DAILY_PROOF_CANDIDATE:$DATE:$existing"
+            echo "candidate_branch=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           export BASE_SHA="$(git rev-parse origin/main)"
           git config user.name "Bedrijfsgeheugen Daily Proof"
           git config user.email "actions@users.noreply.github.com"
-          git add data/content-publication-ledger.json
-          git commit -m "proof: daily blog is live ${{ steps.record.outputs.date }}"
-          export CHANGED_FILES='data/content-publication-ledger.json'
+          stem="${DATE}-${SLUG}-daily-live-proof-v1"
+          files=("data/content-publication-ledger.json" "brain/learning/${stem}.json" "docs/development-ledger-events/${stem}.md" "docs/changes/${stem}.md")
+          git add -- "${files[@]}"
+          git commit -m "proof: daily blog is live $DATE with canonical Brain/event closure"
           branch=$(node --input-type=module - <<'NODE'
           import {createWriterCandidate,validateWriterCandidate} from './scripts/ci/repo-writer-candidate.mjs';
-          const files=['data/content-publication-ledger.json'];
+          const stem=[process.env.DATE,process.env.SLUG,'daily-live-proof-v1'].join('-');
+          const files=['data/content-publication-ledger.json','brain/learning/'+stem+'.json','docs/development-ledger-events/'+stem+'.md','docs/changes/'+stem+'.md'];
           const candidate=createWriterCandidate({writer:'native-daily-blog-proof',baseSha:process.env.BASE_SHA,runId:process.env.GITHUB_RUN_ID,changedFiles:files,allowedFiles:files,rollbackSha:process.env.BASE_SHA});
           validateWriterCandidate(candidate); console.log(candidate.branch);
           NODE
           )
           echo "candidate_branch=$branch" >> "$GITHUB_OUTPUT"
           git push origin "HEAD:$branch"
-
       - name: Open proof PR and dispatch BRAIN shadow
-        if: steps.record.outputs.state != 'live' && steps.proof.outputs.ok == 'true'
+        if: steps.record.outputs.state != 'live' && steps.proof.outputs.ok == 'true' && steps.commit.outputs.candidate_branch != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{ steps.commit.outputs.candidate_branch }}
           DATE: ${{ steps.record.outputs.date }}
+          SLUG: ${{ steps.record.outputs.slug }}
         run: |
           set -euo pipefail
-          url=$(gh pr create --base main --head "$BRANCH" --title "Daily blog live proof $DATE" --body "Exact production readback is green. Candidate-only ledger proof; no direct main push.")
+          base_sha="$(git rev-parse origin/main)"
+          stem="${DATE}-${SLUG}-daily-live-proof-v1"
+          scope="data/content-publication-ledger.json,brain/learning/${stem}.json,docs/development-ledger-events/${stem}.md,docs/changes/${stem}.md"
+          body="$(printf 'Obligation-ID: daily-blog:%s:immutable-live-proof\nDelivery-Lane: website\nCandidate-Type: recovery\nBase-SHA: %s\nChange-Scope: %s\nScope-Budget: 4\n\nNative canonical public readback is confirmed; publish only the protected daily ledger+Brain+event+human closure, no direct main push.\n' "$DATE" "$base_sha" "$scope")"
+          url=$(gh pr create --base main --head "$BRANCH" --title "Daily blog live proof $DATE" --body "$body")
           number=${url##*/}
-          base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.base.sha')
           head_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.head.sha')
           gh workflow run repo-writer-candidate-shadow.yml --repo "$GITHUB_REPOSITORY" --ref main -f pr_number="$number" -f base_sha="$base_sha" -f head_sha="$head_sha" -f candidate_branch="$BRANCH"
+          gh pr merge "$number" --auto --squash
           echo "LIVE_PROOF_CANDIDATE:$number:$DATE"
