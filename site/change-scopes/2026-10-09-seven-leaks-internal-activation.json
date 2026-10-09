@@ -13,10 +13,10 @@
     "consent and privacy",
     "realized-value truth guards",
     "no duplicate commercial executor",
-    "SEO clean canonical internal route (no UTM query string)"
+    "SEO-safe public PDF download asset in first-party internal links"
   ],
   "hypothesis": "Adding one ungated PDF entry link on the existing high-intent routes increases first-party worksheet visits and qualified selfscan follow-through while preserving paid-intent conversion.",
-  "target_metric": "first-party homepage or zelfscan page-scoped click -> worksheet visit -> scan complete -> qualified call -> paid order -> realized_revenue",
+  "target_metric": "first-party homepage or zelfscan page-scoped PDF download click -> scan complete -> qualified call -> paid order -> realized_revenue",
   "rollback_condition": "primary CTA regression, locale cache failure, mobile failure, visitor confusion, lower qualified paid conversion or missing exact production deploy proof",
   "evidence_refs": [
     "P0 #4198",
