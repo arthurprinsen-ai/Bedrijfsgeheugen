@@ -14,19 +14,20 @@
     "Retain P0 #4215 pending true authorized two-tenant production customer proof."
   ],
   "tests": [
+    "tests/brain-p0-4215-canonical-businessinput-ack-v1.test.mjs",
     "portal-v2/tests/portal-business-input-persistence.test.mjs",
     "tests/portal-business-input.test.mjs",
     "tests/portal-business-input-powerhouse-feed.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-p0-4215-canonical-businessinput-ack-v1.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-p0-4215-canonical-businessinput-ack-v1.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-p0-4215-canonical-businessinput-ack-v1.test.mjs"
     ]
   },
   "compiler": {
