@@ -1,0 +1,46 @@
+{
+  "fingerprint": "mira-master-two-image-face-continuity-v1",
+  "date": "2026-10-09",
+  "root_cause": "Production Mira visible-identity check only classified a generic woman as mira_daily_life without actually comparing her face against the original master. Thus a different face could be passed with only prompt/metadata.",
+  "source": {
+    "config": "config/instagram-canonical-mira-identity-v1.json",
+    "reference_id": "Yjqu4D7v76HABNPmQPj1",
+    "verified_original_url": "https://cdn.openart.ai/openart-ai/production/2026-08/create-image/WZvuT1BzGx566fWaFo8F/021787044866478b825dd5258dc4c388f66926d17e5fb9c209d09_0_1787044876584_0c135418.jpeg",
+    "actual_master_dimensions": "1728x2304",
+    "evidence": "OpenArt upload_metadata_get response and historical creation listing reference reuse"
+  },
+  "prevention": [
+    "One canonical OpenArt startFrame/ref for all videos; no fabricated reference IDs or user uploads",
+    "Compare exact image/frame with master as two images in actual Anthropic vision payload",
+    "Fail closed below identity match confidence 0.9 or any of three frame mismatches",
+    "Require same master URL/ID and real OpenArt history in asset submission",
+    "Verify match again before Instagram transport, preserve existing provider readback and idempotency"
+  ],
+  "evidence": {
+    "production_before_change": "verifier did not read canonical OpenArt master pixels and had no face_identity_match flag",
+    "regression_test": "tests/brain-mira-canonical-face-consistency-v1.test.mjs",
+    "observed_verified_new_publications": 0
+  },
+  "compiler": {
+    "failure_class": "MIRA_FACE_DRIFT_WITHOUT_REFERENCE_COMPARISON",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-canonical-face-consistency-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "provider_actual_instagram_sent": "NOT_PROVEN",
+    "video_identity_determinism": "MODEL_GENERATION_IS_PROBABILISTIC_CHECK_EVERY_OUTPUT"
+  }
+}
