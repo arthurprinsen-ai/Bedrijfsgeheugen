@@ -87,3 +87,19 @@ test('real claim remains behind verified ownership and requires provider write c
  assert.match(source,/bedrijfslek_portal_projected:bedrijfslekProjected/);
  assert.doesNotMatch(source,/create\s+(?:table|schedule|publication)\s+\w*heartbeat/i);
 });
+
+test('real Portal V2 overview shows only verified selfreported scores and unexecuted suggestions',()=>{
+ const overview=readFileSync('portal-v2/modules/overview.js','utf8');
+ assert.match(overview,/function renderBedrijfslekIntelligence\(root,state\)/);
+ assert.match(overview,/renderBedrijfslekIntelligence\(root,state\)/);
+ assert.match(overview,/state\?\.portal\?\.assessments\?\.bedrijfslekScan/);
+ assert.match(overview,/scan\?\.verifiedIdentity!==true/);
+ assert.match(overview,/item\?\.status==='voorgesteld'/);
+ assert.match(overview,/item\?\.executed===false/);
+ assert.match(overview,/item\?\.verified===false/);
+ assert.match(overview,/item\?\.source===source/);
+ assert.match(overview,/nog niet uitgevoerd/);
+ assert.match(overview,/Zelfgerapporteerd/);
+ assert.match(overview,/bindPageButtons\(section\)/);
+ assert.doesNotMatch(overview,/section\.innerHTML=.*bedrijfslekScan/);
+});
