@@ -9,6 +9,8 @@ test('preserve existing RLS caller semantics, all view columns, and scheduler is
  assert.match(sql,/CREATE OR REPLACE VIEW public\.powerhouse_contact_pressure_v1/);
  assert.match(sql,/WITH \(security_invoker = true\)/);
  for(const col of ['outbound_7d','outbound_30d','outbound_90d','pending_response','next_follow_up_at','cooldown_until','pressure_state'])assert.match(sql,new RegExp(col));
+ assert.match(sql,/REVOKE ALL ON public\.powerhouse_contact_pressure_v1 FROM PUBLIC, anon, authenticated/);
+ assert.match(sql,/GRANT SELECT ON public\.powerhouse_contact_pressure_v1 TO service_role/);
  assert.doesNotMatch(sql,/DROP VIEW|CREATE TABLE|cron\.schedule|cron\.alter_job/);
 });
 
