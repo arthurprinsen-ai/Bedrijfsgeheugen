@@ -36,4 +36,4 @@ The public product narrative follows one hierarchy:
 - Avoid new modules, duplicate runtimes, isolated learning stores, schedulers or vanity KPI cards to meet this promise.
 - Product activation success must be tested with an authenticated tenant, actual decision → action → readback → outcome → learning, with mobile and desktop readback. PR/CI success is not customer activation proof.
 
-Source: `docs/architecture/daily-entrepreneur-steering-v1.md`. Regression: `portal-v2/tests/daily-entrepreneur-steering.test.mjs`. P0 #4198 remains open until independently verified commercial outcomes flow into ONE BRAIN.
+Source: `docs/changes/2026-10-09-daily-entrepreneur-steering-v1.md`. Regression: `portal-v2/tests/daily-entrepreneur-steering.test.mjs`. P0 #4198 remains open until independently verified commercial outcomes flow into ONE BRAIN.
