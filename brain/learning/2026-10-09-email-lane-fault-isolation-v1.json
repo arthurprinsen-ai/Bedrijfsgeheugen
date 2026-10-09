@@ -28,5 +28,23 @@
     "next cron.job_run_details status and stage receipt",
     "real eligible recipient plus immutable Gmail SENT readback",
     "outcome reply/meeting/scan/order/revenue attribution"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_EMAIL_STAGE_COUPLING",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-email-lane-fault-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-email-lane-fault-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-email-lane-fault-isolation-v1.test.mjs"
+    ]
+  }
 }
