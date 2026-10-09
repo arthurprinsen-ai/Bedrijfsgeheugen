@@ -232,7 +232,7 @@ configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
 portalStateClient.subscribe(snap=>{
  applyCustomerBranding({state:snap.state||{},user:snap.user});
- const authenticated=snap.mode==='authenticated'&&!portalStateClient.isDemo();
+ const authenticated=(snap.mode==='authenticated'||snap.mode==='empty')&&!!snap.user&&!portalStateClient.isDemo();
  document.documentElement.classList.toggle('portal-customer-authenticated',authenticated);
  scanClaimBridge.setAuthenticated(authenticated,snap.user?.id);
  mountCanonicalDesktopNavigation();
