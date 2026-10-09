@@ -1,0 +1,65 @@
+{
+  "fingerprint": "powerhouse|predictive|postgres-57014-trigger-fanout|bounded-signal-batches|v1",
+  "obligationId": "p0-4198-predictive-postgrest-timeout-batching-20261009",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "statement_timeout_seconds": 8,
+    "postgrest_role": "authenticator",
+    "http_request_id": 1684,
+    "http_status": 500,
+    "sqlstate": "57014",
+    "failed_step": "bulk upsert powerhouse_predictive_signals",
+    "trigger_chain": [
+      "powerhouse_sync_predictive_signal_forecast",
+      "powerhouse_sync_forecast_calibration_obligation"
+    ],
+    "persist_target": "revenue_learning_obligations",
+    "anthropic_smoke_http_status": 200
+  },
+  "root_cause": "A single unbounded PostgREST signal upsert synchronously invokes two nested forecast and calibration triggers until the authenticator's eight-second statement timeout aborts the statement.",
+  "changes": [
+    "Split original canonical signal upsert into sequential batches of at most five",
+    "Reuse the original signal_key conflict target and existing trigger-generated forecast/calibration obligations",
+    "Preserve model governance, original scheduler and outcome attribution"
+  ],
+  "guardrails": [
+    "No SQL role timeout relaxation",
+    "No disabled database trigger",
+    "No secondary executor",
+    "No fabricated prediction or green production proof"
+  ],
+  "failureModes": [
+    "PREDICTIVE_ENGINE_DATABASE_STATEMENT_TIMEOUT",
+    "POSTGREST_BULK_UPSERT_TRIGGER_FANOUT"
+  ],
+  "prevention": [
+    "Keep writes within database statement budget",
+    "Do not suppress evidence or obligation triggers",
+    "Regression test code contract and reconstruct 0/1/4/5/6/50/80 item batches"
+  ],
+  "required": [
+    "Protected CI and CodeQL",
+    "Production Edge source parity",
+    "Real authorized Anthropic run",
+    "Persisted forecast and Brain obligation readback",
+    "True external omnichannel outcomes before P0 closure"
+  ],
+  "compiler": {
+    "failure_class": "PREDICTIVE_DATABASE_TIMEOUT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-postgrest-batching-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "postgres_log_at": "2026-10-09T14:28:11Z",
+    "provider_check": "Anthropic real provider HTTP 200 request 1686",
+    "runtime_predictive_green": false,
+    "changed_function": "supabase/functions/powerhouse-predictive-engine/index.ts"
+  }
+}
