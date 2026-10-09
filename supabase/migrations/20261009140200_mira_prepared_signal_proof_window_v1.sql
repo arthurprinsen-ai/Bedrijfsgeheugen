@@ -12,10 +12,20 @@ BEGIN
   SELECT pg_get_functiondef('public.powerhouse_refresh_regression_stage_evidence_v1(timestamptz)'::regprocedure)
     INTO v_original;
   IF v_original IS NULL THEN RAISE EXCEPTION 'MIRA_EXISTING_ASSURANCE_REQUIRED'; END IF;
-  IF (length(v_original)-length(replace(v_original,v_before,'')))/length(v_before) <> 1
-  THEN RAISE EXCEPTION 'MIRA_SOURCE_WINDOW_REBASE_REQUIRED'; END IF;
-  v_changed := replace(v_original,v_before,v_after);
-  EXECUTE v_changed;
+  IF (length(v_original)-length(replace(v_original,v_before,'')))/length(v_before) = 1 THEN
+    v_changed := replace(v_original,v_before,v_after);
+    EXECUTE v_changed;
+  ELSIF position('where observed_at >= p_now-interval ''24 hours''' in v_original) > 0
+    AND position('and eligible = true' in v_original) > 0
+    AND position('and evidence_score >= 0.40' in v_original) > 0
+    AND position('and total_score >= 0.75' in v_original) > 0
+  THEN
+    -- The existing canonical runtime already contains this exact correction.
+    -- Treat migration replay as a verified no-op, not a conflicting second fix.
+    NULL;
+  ELSE
+    RAISE EXCEPTION 'MIRA_SOURCE_WINDOW_REBASE_REQUIRED';
+  END IF;
   IF NOT EXISTS (
     SELECT 1 FROM pg_proc p
     WHERE p.oid='public.powerhouse_refresh_regression_stage_evidence_v1(timestamptz)'::regprocedure
