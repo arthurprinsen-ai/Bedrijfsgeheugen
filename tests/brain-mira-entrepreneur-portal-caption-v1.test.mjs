@@ -45,3 +45,25 @@ test('frozen winners remain immutable; source-backed candidates require portal I
  assert.match(sql,/forced_business_bridge_forbidden',false/);
  assert.doesNotMatch(sql,/office_problem_attribution_forbidden',true/);
 });
+
+test('all scripted entrepreneurs problems are grounded in the existing 40-problem library',()=>{
+ const catalog=JSON.parse(readFileSync('config/powerhouse-problem-library.json','utf8'));
+ const byId=new Map(catalog.problems.map(x=>[x.problem_id,x]));
+ for(const [id,problem] of Object.entries(MIRA_PORTAL_PROBLEMS)){
+  const existing=byId.get(id);
+  assert.ok(existing,'missing canonical catalog problem '+id);
+  assert.equal(problem.name,existing.name,'drift in canonical catalog title '+id);
+  assert.ok(existing.actions?.length>0,id+' missing existing actions');
+ }
+});
+test('publisher passes exact caption evidence and reviewer protects structured captions',()=>{
+ const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ const reviewer=readFileSync('supabase/functions/bg-pre-publish-review/index.ts','utf8');
+ const router=readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
+ assert.match(publisher,/mira_portal_story: art.generation_evidence\?\.mira_portal_story/);
+ assert.match(reviewer,/MIRA_ENTREPRENEUR_CAPTION_INCOMPLETE/);
+ assert.match(reviewer,/MIRA_STORED_PROBLEM_SOURCE_REQUIRED/);
+ assert.match(router,/editorialProblem/);
+ assert.match(router,/frozenWinner/);
+ assert.match(router,/MIRA_CREATIVE_PROBLEM_MISMATCH/);
+});
