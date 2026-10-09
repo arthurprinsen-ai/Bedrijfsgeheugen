@@ -5,12 +5,48 @@
     "media_type": "image",
     "reference_id": "Yjqu4D7v76HABNPmQPj1",
     "label": "Fictional Mira master",
-    "source": "OpenArt generated fictional AI character; no user photo reference"
+    "source": "OpenArt generated fictional AI character; no user photo reference",
+    "url": "https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg",
+    "history_id": "oM62pDwi2me8dkm4qrGj",
+    "match_verification": "direct visual comparison of master and exact final image or each video frame, not only name or generator metadata"
   },
   "forbidden_user_reference_ids": [
     "Jt5SWKRgyK3heTqEXH4w",
     "w4HhwCmX5GxL8jTGljxe",
     "umWzAKt6YBeoVpHlKTtK"
   ],
-  "rule": "Instagram Mira media must prove canonical_reference.reference_id before VERIFYING or publication. User-upload identity assets are never valid Mira references."
+  "rule": "Every newly generated Mira frame must visibly match the one canonical reference image at the URL above. The scene, clothing and expression may differ; she must remain recognizably the same person. Text prompts/claimed reference IDs are insufficient. Fail closed before provider write if comparison or input provenance is unproven.",
+  "generation": {
+    "image": "OpenArt image2image using exactly canonical reference",
+    "reel": "OpenArt image2image start frame from canonical reference then image2video using that generated startFrame",
+    "forbidden": [
+      "text2video without master visual input",
+      "unreferenced text2image",
+      "new Mira master",
+      "identity prompt without actual reference image",
+      "unverified face replacement"
+    ]
+  },
+  "identity_consistency": {
+    "required": "same face and recognisable stable person across all episodes",
+    "compare_features": [
+      "face shape",
+      "eyes",
+      "nose",
+      "mouth",
+      "skin",
+      "hair style and colour",
+      "age range"
+    ],
+    "allowed_changes": [
+      "expression",
+      "pose",
+      "location",
+      "lighting",
+      "clothing changes when plausible"
+    ],
+    "cross_frame_identity_required": true,
+    "minimum_visual_confidence": 0.94,
+    "never_accept_only_metadata": true
+  }
 }
