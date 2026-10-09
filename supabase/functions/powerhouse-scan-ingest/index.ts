@@ -97,12 +97,17 @@ Deno.serve(async(req:Request)=>{
       if(result.error||!result.data)return json({error:'ORGANISATION_NOT_FOUND'},404);
       org=result.data;
     }
-    const {data:scan,error:scanError}=await client.from('scan_inzendingen').select('id,submission_key,tenant_identity_status,organisatie_id,powerhouse_event_id').eq('submission_key',submissionKey).maybeSingle();
+    const {data:scan,error:scanError}=await client.from('scan_inzendingen').select('id,submission_key,tenant_identity_status,organisatie_id,company_key,klant_slug,powerhouse_event_id').eq('submission_key',submissionKey).maybeSingle();
     if(scanError||!scan)return json({error:'SCAN_NOT_FOUND'},404);
-    if(scan.organisatie_id&&org&&scan.organisatie_id!==org.id)return json({error:'SCAN_ALREADY_CLAIMED'},409);
+    if(scan.organisatie_id&&(!org||scan.organisatie_id!==org.id))return json({error:'SCAN_ALREADY_CLAIMED'},409);
     const companyKey=org?`org:${org.slug||org.id}`:`tenant:${tenantId}`;
+    // A receipt is never sufficient to transfer an already-verified scan across tenants.
+    if(scan.tenant_identity_status==='verified'&&
+       (!scan.company_key||scan.company_key!==companyKey))return json({error:'SCAN_ALREADY_CLAIMED'},409);
+    if(scan.klant_slug&&!org&&scan.klant_slug!==tenantId)return json({error:'SCAN_ALREADY_CLAIMED'},409);
     const patch:any={company_key:companyKey,tenant_identity_status:'verified',bijgewerkt_op:new Date().toISOString()};
     if(org){patch.organisatie_id=org.id;patch.klant_slug=org.slug||null;}
+    else patch.klant_slug=tenantId;
     const {data:claimed,error:claimError}=await client.from('scan_inzendingen').update(patch).eq('id',scan.id).select('id,submission_key,organisatie_id,company_key,tenant_identity_status').single();
     if(claimError)return json({error:'SCAN_CLAIM_FAILED',detail:claimError.message.slice(0,200)},500);
 
