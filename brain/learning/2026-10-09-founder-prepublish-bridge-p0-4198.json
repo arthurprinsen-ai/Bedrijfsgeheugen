@@ -57,5 +57,11 @@
     "pull_request": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4264",
     "notion_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
     "test": "tests/brain-founder-prepublish-bridge-p0-4198.test.mjs"
-  }
+  },
+  "prevention": [
+    "Regress the final prepublish gate against the same verified builder evidence used by the orchestrator and publisher.",
+    "Keep founder business context prohibited for unverified personal-life or observational posts.",
+    "Require identical content identity, source lineage and exact final-text digest at every stage; do not count a draft or provider attempt as delivered.",
+    "Keep the 8-stage Heartbeat, Brain and Powerhouse closed-loop assurance explicit and fail-closed until independent live evidence exists."
+  ]
 }
