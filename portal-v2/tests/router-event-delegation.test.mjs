@@ -37,7 +37,7 @@ test('newly rebuilt sidebar buttons still dispatch through the canonical portal 
    });
    assert.deepEqual(pages,['csrd-impact']);
    assert.equal(currentPortalRoute().target,'csrd-impact');
-   assert.match(pushed[0].url,/\\?page=csrd-impact$/);
+   assert.ok(pushed[0].url.endsWith('?page=csrd-impact'));
  } finally {
    for(const key of keys){
      if(saved[key])Object.defineProperty(globalThis,key,saved[key]);
