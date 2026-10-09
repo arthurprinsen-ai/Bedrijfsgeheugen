@@ -6,12 +6,14 @@
   "authority": "existing Portal V2 registry, source schemas, field renderer and ONE BRAIN",
   "root_causes": [
     "Previously inventoried schemas are not a complete rendered DOM inventory of all customer input fields and dynamic integration forms.",
-    "Unenumerated supplemental workspaces, uninspected pages and repeatable columns could otherwise be misclassified as 100% covered or live readback."
+    "Unenumerated supplemental workspaces, uninspected pages and repeatable columns could otherwise be misclassified as 100% covered or live readback.",
+    "Protected CI #37906561513 found six ambiguous data-field-id collisions on the consolidated gegevens-invullen form; distinct canonical fields could be bound to the first matching DOM node."
   ],
   "prevention": [
     "Automatically generate a page+field matrix on every protected Required preflight, reusing existing schema/renderer/impact authorities.",
     "Fail closed on duplicate ambiguous controls, missing canonical paths, incomplete impact mapping or renderer binding mismatches.",
-    "Keep real authenticated browser/Brain/projection readback and customer-specific legal relevance explicitly NOT_OBSERVED until provider evidence exists."
+    "Keep real authenticated browser/Brain/projection readback and customer-specific legal relevance explicitly NOT_OBSERVED until provider evidence exists.",
+    "Qualify conflicting IDs by aggregate form group without changing canonical paths or legacy field identities, and regress every conflicting pair."
   ],
   "tests": [
     "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
