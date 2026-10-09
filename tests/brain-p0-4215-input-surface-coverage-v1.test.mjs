@@ -4,6 +4,7 @@ import {buildPortalInputCoverageMatrix,MATRIX_CONTRACT} from '../tools/ci/p0-421
 import {inventoryPortalCustomerFields} from '../portal-v2/contextual-action-cards.js';
 import {allPageIds} from '../portal-v2/page-registry.js';
 import {SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from '../portal-v2/input-impact-coverage.js';
+import {fullCompanyInputSchema} from '../portal-v2/modules/full-company-input.js';
 
 test('every registered native field declaration produces one auditable renderer binding and consequence mapping',()=>{
   const matrix=buildPortalInputCoverageMatrix();
@@ -61,4 +62,25 @@ test('repeatable columns cannot pass as verified runtime row bindings',()=>{
   for(const row of repeatables){
     for(const col of row.repeatableColumns)assert.equal(col.runtimeRowBinding,'REVIEW_REQUIRED');
   }
+});
+
+test('aggregated form controls with the same legacy id bind different immutable canonical paths',()=>{
+  const byPath=new Map(fullCompanyInputSchema().map(field=>[field.path,field]));
+  const pairs=[
+    ['portal.metrics.freeCashFlow','portal.valueFinance.freeCashFlow'],
+    ['portal.metrics.nopat','portal.valueFinance.nopat'],
+    ['portal.profile.maturity.governance','portal.dataAi.governance'],
+    ['portal.valueFinance.inventoryDays','portal.metrics.inventoryDays'],
+    ['portal.valueFinance.creditorDays','portal.metrics.creditorDays'],
+    ['portal.valueFinance.investedCapital','portal.metrics.investedCapital']
+  ];
+  for(const [left,right] of pairs){
+    const a=byPath.get(left),b=byPath.get(right);
+    assert.ok(a&&b,'both distinct domain paths must stay on the form: '+left+' '+right);
+    assert.notEqual(a.id,b.id,'DOM field ids must not collide: '+left+' '+right);
+    assert.equal(a.path,left);
+    assert.equal(b.path,right);
+  }
+  const ids=fullCompanyInputSchema().map(field=>field.id);
+  assert.equal(new Set(ids).size,ids.length,'no duplicate field ids within aggregated form');
 });
