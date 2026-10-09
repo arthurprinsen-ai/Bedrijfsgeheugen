@@ -10,3 +10,4 @@ Fingerprint: `powerhouse|bedrijfslek|canonical-one-brain-ingest|v1`
 7. Eerste tests: canonical NL URL allowlist, scan en event idempotence, geen PII, resultaat vóór POST, bestaand privileged-boundary verbod, echte provider-/database-readback en code/source SHA pariteit.
 
 8. Portal V2 presenteert alleen tenant-bevestigde scanhistorie via de al bestaande beveiligde API. Anonieme zelfscanresultaten worden uitsluitend na succesvolle storage-receipt en expliciete claimaanvraag geassocieerd.
+9. De productie-acceptatie voor een nieuwe anonieme scanbron is niet compleet met alleen Frisse Blik-providerbewijs: de bestaande Powerhouse Scan Production Proof test expliciet ook `bedrijfslek_scan` via de publieke `/zelfscan`-ingest, een tweede idempotente POST en dezelfde `scan_id`/`event_id`. Zonder echte groene run blijft bron-specifieke live-readback OPEN.
