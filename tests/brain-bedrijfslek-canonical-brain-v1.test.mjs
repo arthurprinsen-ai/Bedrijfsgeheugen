@@ -73,3 +73,14 @@ test('Portal V2 only exposes scans after authenticated tenancy and explicit clai
   assert.match(api,/if\(!user\?\.id\)return json\(\{error:'UNAUTHORIZED'\},401\)/);
   assert.match(api,/action:'claim',tenant_id:tenantId/);
 });
+
+test('existing ONE BRAIN decision-cycle trigger admits only the three canonical scan signals',async()=>{
+  const sql=await readFile(new URL('../supabase/migrations/20261009185500_bedrijfslek_runtime_signal_cycle_v1.sql',import.meta.url),'utf8');
+  for(const source of ['website.frisse_blik','website.workshop_scan','website.bedrijfslek'])assert.ok(sql.includes(source));
+  assert.match(sql,/powerhouse_open_cycle_from_runtime_signal_v1\(p_event_id uuid\)/);
+  assert.match(sql,/powerhouse_runtime_signal_cycle_trigger_v1\(\)/);
+  assert.match(sql,/on conflict \(tenant_id,cycle_id\)/i);
+  assert.match(sql,/if exists \([\s\S]*?idempotency_key='runtime-signal:' /);
+  assert.match(sql,/new\.event_type = 'scan_submitted'/);
+  assert.doesNotMatch(sql,/create\s+(?:table|schedule|publication|function)\s+\w*heartbeat/i);
+});
