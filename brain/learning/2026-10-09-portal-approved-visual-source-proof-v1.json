@@ -20,18 +20,19 @@
     "failed_visual_workflow": 37961289694,
     "source_workflow": ".github/workflows/portal-v2-production-dom-readback.yml",
     "browser_regression": "tests/integration/portal-v2-production-visual-regression.spec.js",
-    "original_result": "visual evidence unavailable; must remain fail-closed until reproducible independently verified pixels"
+    "original_result": "visual evidence unavailable; must remain fail-closed until reproducible independently verified pixels",
+    "canonical_learning_eval": "tests/brain-portal-approved-visual-source-v1.test.mjs"
   },
   "outcome": "Repair candidate: approved exact-source browser screenshot remains a required comparison; not evidence that visual acceptance passed or that commercial conversions occurred.",
   "evaluation": {
     "historical_replay": [
-      "tests/integration/portal-v2-production-visual-regression.spec.js"
+      "tests/brain-portal-approved-visual-source-v1.test.mjs"
     ],
     "shadow": [
-      "tests/integration/portal-v2-production-visual-regression.spec.js"
+      "tests/brain-portal-approved-visual-source-v1.test.mjs"
     ],
     "canary": [
-      "tests/integration/portal-v2-production-visual-regression.spec.js"
+      "tests/brain-portal-approved-visual-source-v1.test.mjs"
     ],
     "invariants": [
       "approved PR head exact SHA, never unrelated baseline",
@@ -40,7 +41,7 @@
       "no visual green without actual Playwright screenshot readback"
     ],
     "regressions": [
-      "tests/integration/portal-v2-production-visual-regression.spec.js"
+      "tests/brain-portal-approved-visual-source-v1.test.mjs"
     ],
     "productionCriteria": [
       "protected merge of fix",
