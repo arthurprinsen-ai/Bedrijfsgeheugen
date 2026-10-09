@@ -106,6 +106,9 @@ jobs:
       - name: Verify fail-closed immutable Netlify preview provider target
         run: |
           node --test tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs
+      - name: Verify canonical native form DOM field lineage
+        run: |
+          node --test tests/brain-p0-4215-native-form-dom-lineage-v1.test.mjs
       - name: Preserve P0 4215 input coverage evidence
         if: always()
         uses: actions/upload-artifact@v4
