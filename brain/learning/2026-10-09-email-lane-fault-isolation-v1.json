@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|commercial|independent-email-lane-within-single-scheduler|v1",
+  "obligation": "github:4198",
+  "date": "2026-10-09",
+  "classification": "production-in-place-change-awaiting-exact-next-cron-run-proof",
+  "existing_scheduler_job": 116,
+  "root_cause": "Email execution was sequentially coupled to other commercial intelligence stages; when an earlier stage failed, scheduled eligible outreach never reached its existing dispatcher. The all-connection daily enrichment was not called in the hourly commercial job.",
+  "change": "In-place cron.alter_job, no new owner or duplicate sender; once-per-local-date full graph enrichment; main commercial cycle; guarded email-only fallback if the main cycle raises an exception.",
+  "existing_sender": "powerhouse-autonomous-outreach",
+  "existing_materializer": "powerhouse-command-center-action-materializer-v1",
+  "honesty_boundary": "Dispatch request ID is not a provider-delivered email. Only immutable Gmail provider ID plus independent SENT readback proves actual send.",
+  "protections": [
+    "Never bypass recipient permission, suppression, contact-pressure, cooldown, valid recipient, human_approved, quality, canonical idempotency, or provider readback.",
+    "Never dispatch email fallback if main cycle completed (main cycle already owns e-mail dispatch).",
+    "Never create second cron, campaign or CRM."
+  ],
+  "production_initial_evidence": {
+    "enrichment_20261009_total": 23295,
+    "enriched": 23295,
+    "email_prepared": 0,
+    "actual_gmail_provider_sends_in_this_repair": 0
+  },
+  "required_tests": [
+    "tests/brain-email-lane-fault-isolation-v1.test.mjs"
+  ],
+  "closure": [
+    "protected merge and exact main readback",
+    "next cron.job_run_details status and stage receipt",
+    "real eligible recipient plus immutable Gmail SENT readback",
+    "outcome reply/meeting/scan/order/revenue attribution"
+  ]
+}
