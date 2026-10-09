@@ -1,30 +1,70 @@
 {
-  "obligation_id": "commercial-salesrobot-webhook-ingress-20261009-v1",
-  "version": "1",
-  "source": "SalesRobot webhook UI callback URL missing",
-  "cause": "No authenticated inbound SalesRobot endpoint existed in canonical Supabase CRM runtime",
-  "change": "Vault-authenticated inbound-only Supabase Edge Function maps reply events to existing runtime event ledger with deduplication and exact existing-contact matching",
-  "safeguards": [
-    "scope to existing Bedrijfsgeheugen campaign",
-    "no new CRM or sender",
-    "no provider-delivery claims",
-    "no broad client access to Vault",
-    "drop raw unknown payload fields",
-    "no contact creation without verified match"
+  "fingerprint": "powerhouse|salesrobot|canonical-inbound-event-authentication-20261009-v1",
+  "obligationId": "commercial-salesrobot-webhook-ingress-20261009-v1",
+  "date": "2026-10-09",
+  "status": "PRODUCTION_INGRESS_CANARY_VALIDATED_PROVIDER_EVENT_NOT_YET_PROVEN",
+  "root_causes": [
+    "Canonical SalesRobot campaign had no version-controlled verified ingress implementation for real replies, making downstream CRM attribution unprovable",
+    "A second inbound handler was created as separate PR #4237, risking two webhook receivers for one existing campaign; #4237 was closed as a duplicate"
   ],
-  "production_evidence": {
+  "prevention": [
+    "Keep only the canonical Vault-authenticated SalesRobot ingress candidate #4238 and reuse existing bg_connecties and powerhouse_runtime_events as CRM and event authority",
+    "Require campaign and event filtering, 65536 byte limit, constant-time token verification, one dedupe key and no auto-send or revenue attribution from unverified callbacks",
+    "Deny arbitrary providers and reject unverified synthetic event claims, require independent provider callback and database readback for terminal success",
+    "Use protected delivery with Brain learning, append-only development activity and human change documentation in same PR"
+  ],
+  "tests": [
+    "tests/brain-salesrobot-webhook-ingress-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-webhook-ingress-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-salesrobot-webhook-ingress-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-salesrobot-webhook-ingress-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SALESROBOT_WEBHOOK_SOURCE_CLOSURE_AND_DUPLICATE_INGRESS",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
     "supabase_function": "powerhouse-salesrobot-ingest",
     "active_version": 1,
-    "http_unauthorized": 401,
-    "http_authorized_health": 200,
-    "http_authorized_canary": 200,
-    "canary_persisted": false
+    "unauthorized_http": 401,
+    "authorized_health_http": 200,
+    "nonpersistent_canary_http": 200,
+    "canary_persisted": false,
+    "provider_signature_verified": false,
+    "canary_probe_ids": [
+      1488,
+      1489,
+      1490
+    ],
+    "duplicate_pr_closed": 4237,
+    "external_contact_reply_id": null,
+    "provider_callback_delivery_unproven": true,
+    "canonical_crm_readback_unproven": true,
+    "permission_note": "Token authenticates configured ingress; no verified provider signature or recipient-sent proof follows"
   },
   "still_unproven": [
-    "SalesRobot webhook registration in vendor UI",
-    "actual external reply provider payload",
-    "canonical event persistence from vendor delivery",
-    "end-to-end Notion synchronization and CRM outcome attribution"
+    "Real SalesRobot contact reply callback at vendor UI",
+    "Provider payload and callback receipt",
+    "Canonical event persistence from real vendor response",
+    "Notion outcome linkage and business measurement"
   ],
-  "parent_p0": 4198
+  "parent_p0": 4198,
+  "source_provenance": {
+    "source_files": [
+      "supabase/functions/powerhouse-salesrobot-ingest/index.ts",
+      "tests/brain-salesrobot-webhook-ingress-v1.test.mjs"
+    ],
+    "duplicate_candidate_closed": 4237
+  }
 }
