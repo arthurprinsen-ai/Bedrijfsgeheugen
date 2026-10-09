@@ -52,5 +52,7 @@ test('selfscan shows full free value before async persistence and never submits 
   assert.match(s,/fetch\('\/api\/powerhouse-scan-ingest'/);
   assert.match(s,/BG_SCAN_KEY=bgMaakScanKey\(\)/);
   assert.match(s,/id="bgBrainStatus"/);
-  assert.doesNotMatch(s,/function bgScanNaarBrein\([\s\S]*?\n}\s*\nvar TEAMUITDAGING[\s\S]*?\n/gi, /dummy/);
+  const fn=s.split('function bgScanNaarBrein(score,per){')[1]?.split('\\n}')[0]||'';
+  assert.match(fn,/source_kind:'bedrijfslek_scan'/);
+  assert.doesNotMatch(fn,/\b(email|phone|contact_name|company_name|telefoon|naam)\s*:/i);
 });
