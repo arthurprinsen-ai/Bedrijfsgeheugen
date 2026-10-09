@@ -9,3 +9,5 @@
 - Prevent overwrite of existing company facts and legacy businessInputs shape
 - Test modes: historical replay, security shadow and canary; PR merge/live authenticated proof pending
 - Status: CANDIDATE_NOT_LIVE_PROVEN; no invented sales, new executor, tenant or provider
+
+- Visible UI: portal-v2/modules/overview.js shows verified self-reported scan and source-matched unexecuted proposed actions; no default KPI overwrite.
