@@ -85,8 +85,19 @@
       "date": "2026-10-09",
       "content_id": "blog:sopv-2026-plasticverwerkers-productietest-subsidie",
       "slug": "sopv-2026-plasticverwerkers-productietest-subsidie",
-      "state": "selected",
-      "selected_at": "2026-10-09T10:47:32.949Z"
+      "state": "live",
+      "selected_at": "2026-10-09T10:47:32.949Z",
+      "merged_at": "2026-10-09T10:54:52.652Z",
+      "live_at": "2026-10-09T10:54:52.652Z",
+      "live_url": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+      "live_proof": {
+        "ok": true,
+        "status": 200,
+        "url": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+        "content_id": "blog:sopv-2026-plasticverwerkers-productietest-subsidie",
+        "slug": "sopv-2026-plasticverwerkers-productietest-subsidie",
+        "canonical": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/"
+      }
     }
   }
 }
