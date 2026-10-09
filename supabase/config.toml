@@ -86,3 +86,10 @@ entrypoint = "./functions/powerhouse-autonomous-outreach/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-salesrobot-ingest/index.ts"
+
+# Canonical public-proxy-only scan endpoint; existing SHA-256 service-token gate
+# enforces authentication within the Edge function. No direct anonymous claims.
+[functions.powerhouse-scan-ingest]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-scan-ingest/index.ts"
