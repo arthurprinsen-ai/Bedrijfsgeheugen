@@ -1839,3 +1839,15 @@ export const MIRA_ENTREPRENEUR_PORTAL_CAPTION_CONTRACT_V1 = Object.freeze({
   test:'tests/brain-mira-entrepreneur-caption-v1.test.mjs',
   parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
 });
+
+export const MIRA_FIXED_CHARACTER_VISUAL_IDENTITY_V1=Object.freeze({
+  fingerprint:'mira-master-two-image-face-continuity-v1',
+  master:'config/instagram-canonical-mira-identity-v1.json',
+  masterReferenceId:'Yjqu4D7v76HABNPmQPj1',
+  code:'supabase/functions/_shared/mira-canonical-face.mjs',
+  sourceStages:['powerhouse-instagram-media-verifier','powerhouse-instagram-media-router','powerhouse-content-orchestrator','powerhouse-social-publisher'],
+  proof:['openart-canonical-master-image-to-video','compare-master-pixels-with-final-image','video-start-middle-end-face-match','min-confidence-0.90','exact-media-sha','pre-provider-second-verification'],
+  never:['user-upload-mira-identity','text-only-mira-identity-proof','new-scheduler','duplicate-provider-post'],
+  acceptanceTest:'tests/brain-mira-canonical-face-consistency-v1.test.mjs',
+  parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
+});
