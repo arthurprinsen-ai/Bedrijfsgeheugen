@@ -1839,3 +1839,21 @@ export const MIRA_ENTREPRENEUR_PORTAL_CAPTION_CONTRACT_V1 = Object.freeze({
   test:'tests/brain-mira-entrepreneur-caption-v1.test.mjs',
   parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
 });
+
+export const MIRA_SINGLE_CANONICAL_FACE_GATE_V2 = Object.freeze({
+  fingerprint:'mira-openart-master-face-visual-consistency-v2',
+  referenceId:'Yjqu4D7v76HABNPmQPj1',
+  referenceConfig:'config/instagram-canonical-mira-identity-v1.json',
+  productionVerifier:'supabase/functions/powerhouse-instagram-media-verifier/index.ts',
+  mediaRouter:'supabase/functions/powerhouse-instagram-media-router/index.ts',
+  orchestrator:'supabase/functions/powerhouse-content-orchestrator/index.ts',
+  publicationAuthority:'supabase/functions/powerhouse-social-publisher/index.ts',
+  dbGuard:'supabase/migrations/20261009151000_mira_master_face_identity_gate_v2.sql',
+  actualPixelComparisonRequired:true,
+  minimumMasterFaceMatchConfidence:0.94,
+  independentFrames:['start','middle','end'],
+  productionLineage:'OpenArt image2image from immutable fictional master -> image2video with the derived start frame -> exact video frame vision compare -> canonical publication writer',
+  unsupportedModes:['unanchored text2video','text2image without reference','metadata-only identity'],
+  noNewSchedulerOrPublisher:true,
+  acceptance:'Provider id/readback is separate from verified same-face proof'
+});
