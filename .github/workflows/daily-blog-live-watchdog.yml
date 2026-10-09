@@ -106,6 +106,40 @@ jobs:
           if (!current) throw new Error(`missing ledger record ${date}`);
           ledger.days[date]={...current,state:'live',merged_at:current.merged_at||new Date().toISOString(),live_at:new Date().toISOString(),live_url:proof.url,live_proof:proof};
           fs.writeFileSync(path,JSON.stringify(ledger,null,2)+'\n');
+
+          // Canonical integration closure: material proof and its Brain learning,
+          // append-only activity event and human documentation are one writer unit.
+          // Do not open a one-file PR that admission will correctly reject.
+          const stem=[date,proof.slug,'daily-live-proof-v1'].join('-');
+          const brainPath='brain/learning/'+stem+'.json';
+          const eventPath='docs/development-ledger-events/'+stem+'.md';
+          const changePath='docs/changes/'+stem+'.md';
+          const write=(file,body)=>{fs.mkdirSync(file.slice(0,file.lastIndexOf('/')),{recursive:true});fs.writeFileSync(file,body);};
+          const learning={
+            fingerprint:'powerhouse|daily-blog|exact-public-readback-closure|v1',
+            obligationId:'daily-blog:'+date+':immutable-live-proof',
+            date, content_id:proof.content_id, slug:proof.slug,
+            status:'PUBLIC_READBACK_VERIFIED_PROTECTED_MERGE_PENDING',
+            root_causes:['A source-controlled blog artifact is not proof of publication: external canonical/content-id/heading must be checked, and older routes can redirect to a different article'],
+            prevention:['Use existing canonical daily watchdog for HTTP 200, exact canonical, content-id and article heading; never mark a redirected page live',
+              'Commit the matching Brain learning, append-only development event and human change note with the exact daily ledger proof in the same protected PR'],
+            evidence:{production_readback:proof,workflow_run_id:process.env.GITHUB_RUN_ID,source:'native-daily-blog-live-watchdog'},
+            tests:['tools/content-growth/live-readback.mjs','tests/brain-daily-blog-20261009-canonical-candidate.test.mjs'],
+            evaluation:{historical_replay:['tests/brain-daily-blog-20261009-canonical-candidate.test.mjs','tools/content-growth/live-readback.mjs']},
+            compiler:{failure_class:'DAILY_BLOG_LIVE_PROOF_WITHOUT_CANONICAL_CLOSURE',scope:'WEBSITE',machine_enforceable:true,repeat_count:1,security_sensitive:false},
+          };
+          write(brainPath,JSON.stringify(learning,null,2)+'\n');
+          const lines=[
+            '# Daily blog exact live proof — '+date,'',
+            '- Source: existing Native daily blog live watchdog, run '+process.env.GITHUB_RUN_ID,
+            '- Content ID: '+proof.content_id,
+            '- Exact public URL: '+proof.url,
+            '- Status: HTTP '+proof.status+'; exact canonical, article marker and heading checked',
+            '- Branch protection and merge required before GitHub ledger live status is final',
+            '- No new publisher, scheduler, fabricated interactions or delivery metrics','',
+          ];
+          write(eventPath,lines.join('\n'));
+          write(changePath,lines.join('\n')+'## Prevention\nKeep the live proof, Brain learning and append-only event in the same protected candidate. Retain SEO canonical redirects and reject mismatched readback.\n');
           NODE
           git diff --exit-code -- data/content-publication-ledger.json && { echo "::error::LIVE_LEDGER_PROOF_NOT_MATERIALIZED"; exit 1; } || true
 
