@@ -224,7 +224,7 @@ fetchPortalPlan().then(subscription=>{
 }).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
 
 const portalStateClient=createPortalStateClient();
-const scanClaimBridge=createScanClaimBridge();
+const scanClaimBridge=createScanClaimBridge({authHeaders:()=>portalStateClient.authHeaders()});
 const portalDomainState=createPortalDomainState(portalStateClient);
 const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
@@ -234,7 +234,7 @@ portalStateClient.subscribe(snap=>{
  applyCustomerBranding({state:snap.state||{},user:snap.user});
  const authenticated=snap.mode==='authenticated'&&!portalStateClient.isDemo();
  document.documentElement.classList.toggle('portal-customer-authenticated',authenticated);
- scanClaimBridge.setAuthenticated(authenticated);
+ scanClaimBridge.setAuthenticated(authenticated,snap.user?.id);
  mountCanonicalDesktopNavigation();
  if(el('allPages')?.classList.contains('open'))renderHubGroups(el('allPages').dataset.hub||'portal');
  const requested=new URL(location.href).searchParams.get('page');
