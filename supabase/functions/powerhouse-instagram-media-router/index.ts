@@ -1,3 +1,4 @@
+import {buildMiraEntrepreneurCaption} from '../_shared/instagram-entrepreneur-story-v1.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -25,6 +26,26 @@ Deno.serve(async req=>{
   db.from('bg_integrations').select('integration,status').in('integration',['openart','openart_mcp','placid']),
   db.from('powerhouse_instagram_media_jobs_v1').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
  ]);
+ // Resolve creative brief from the one frozen daily winner, never from a second media worker pick.
+ const {data:frozenWinner}=await db.from('powerhouse_instagram_daily_winners_v1')
+   .select('recommendation_id').eq('run_date',runDate).maybeSingle();
+ const {data:frozenRecommendation}=frozenWinner?.recommendation_id
+   ? await db.from('powerhouse_content_recommendations').select('recommendation_id,topic_key,evidence')
+      .eq('recommendation_id',frozenWinner.recommendation_id).maybeSingle()
+   : {data:null};
+ let editorialProblem:any=null;
+ if(frozenRecommendation?.evidence?.portal_story_contract==='mira-entrepreneur-portal-story-v1'){
+   try{
+     const story=buildMiraEntrepreneurCaption(frozenRecommendation);
+     editorialProblem={problem_id:story.problem_id,scene:story.problem.scene,
+       cause:story.problem.cause,effect:story.problem.effect,
+       portal_capability:story.problem.portal,action:story.problem.action,
+       caption_contract:story.contract,source_id:story.source_id,
+       instruction:'Illustrate this exact entrepreneur workday problem with visible Mira. No generic home/supermarket scene. Caption is mandatory.'};
+   }catch(_error){
+     return json({ok:false,error:'MIRA_ENTREPRENEUR_STORY_SOURCE_REQUIRED',runDate},422);
+   }
+ }
  const postType=inferType(input.postType,job?.post_type,ob?.evidence?.post_type,ob?.evidence?.media_type,art?.generation_evidence?.daily_winner_format,art?.generation_evidence?.post_type,art?.generation_evidence?.media_type,art?.generation_evidence?.format,rec?.evidence?.format,rec?.recommendation_type);
  if(!['image','reel'].includes(postType))return json({ok:false,error:'INSTAGRAM_MIRA_VISUAL_OR_REEL_ONLY',postType},422);
  const {data:policy}=await db.rpc('powerhouse_instagram_provider_policy_v1',{p_post_type:postType});
@@ -42,6 +63,7 @@ Deno.serve(async req=>{
   return json({ok:true,ready:false,runDate,postType,status:row.status,republish_forbidden:true,external_id:ob.external_id});
  }
 
+ if(action==='submit_asset'&&editorialProblem&&clean(input.assetManifest?.portal_problem_id)&&clean(input.assetManifest?.portal_problem_id)!==editorialProblem.problem_id) return json({ok:false,error:'MIRA_CREATIVE_PROBLEM_MISMATCH'},422);
  if(action==='submit_asset'){
   const provider=clean(input.provider).toLowerCase(),manifest=input.assetManifest||{},allowed=Array.isArray(policy?.allowed_providers)?policy.allowed_providers:[];
   if(!allowed.includes(provider))return json({ok:false,error:'MEDIA_PROVIDER_NOT_ALLOWED',provider,postType},422);
@@ -126,5 +148,5 @@ Deno.serve(async req=>{
  const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:state,required_provider:policy?.required_provider||null,selected_provider:job?.selected_provider||existingProvider||null,asset_manifest:job?.asset_manifest||{},proof_manifest:job?.proof_manifest||{},republish_forbidden:false,provider_connection_state:providerState,attempts:(job?.attempts||0)+1,last_error:assetMaterialized?null:(readyProviders.length?null:'MEDIA_PROVIDER_UNAVAILABLE'),next_action:assetMaterialized?'Exact asset already materialized; submit it with required frame/image evidence for canonical vision proof.':readyProviders.length?'Producer must submit exact asset manifest to this router.':'Connect required OpenArt/Placid producer; fallback publication is forbidden.',updated_at:new Date().toISOString()};
  await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});
  if(state!=='PROOF_VERIFIED')await db.from('content_publication_obligations').update({status:'BLOCKED',last_error:row.last_error||'MEDIA_ASSET_REQUIRED',evidence:{...(ob?.evidence||{}),provider_routing_policy:policy,media_job_status:state},next_action:row.next_action,updated_at:new Date().toISOString()}).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram');
- return json({ok:true,ready:state==='PROOF_VERIFIED',runDate,postType,status:state,allowedProviders:allowed,requiredProvider:policy?.required_provider||null,readyProviders});
+ return json({ok:true,ready:state==='PROOF_VERIFIED',runDate,postType,status:state,allowedProviders:allowed,requiredProvider:policy?.required_provider||null,readyProviders,editorialProblem});
 });
