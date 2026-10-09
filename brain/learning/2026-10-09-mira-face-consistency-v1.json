@@ -12,7 +12,7 @@
   "prevention": [
     "One canonical OpenArt startFrame/ref for all videos; no fabricated reference IDs or user uploads",
     "Compare exact image/frame with master as two images in actual Anthropic vision payload",
-    "Fail closed below identity match confidence 0.9 or any of three frame mismatches",
+    "Fail closed below identity match confidence 0.94 or any of three frame mismatches",
     "Require same master URL/ID and real OpenArt history in asset submission",
     "Verify match again before Instagram transport, preserve existing provider readback and idempotency"
   ],
