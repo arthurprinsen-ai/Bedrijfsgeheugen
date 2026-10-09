@@ -472,3 +472,6 @@
 
 # production redeploy heartbeat: portal-anonymous-preview-auth-parity-20261009-v1
 # Force exact-head Netlify preview/browser parity for PR #4228; no runtime behavior or authorization changes.
+
+# production redeploy heartbeat: portal-public-visibility-403-bounded-20261009-v1
+# Exact-main release and preview source parity for strict, bounded anonymous browser readbacks; no auth/runtime change.
