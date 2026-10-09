@@ -15,3 +15,6 @@ De afzonderlijke Supabase Edge Production Authority-run 37977917429 faalde uitsl
 Een geslaagde scan = anonieme diagnostische gebeurtenis, geen betaalde conversie. De volledige Heartbeat → commerciële follow-up → uitkomst → Brain-kalibratie onder #4198 blijft pas bewezen na echte klantspecifieke uitkomsten.
 
 Fingerprint: `powerhouse|bedrijfslek|edge-release-authority|v1`
+
+## Aanvullende end-to-end regressie
+Dezelfde bestaande `.github/workflows/powerhouse-scan-production-proof.yml` krijgt één extra Bedrijfslek-fixture op de echte publieke `/api/powerhouse-scan-ingest`. Controleer de eerste provideropslag met `scan_id`+`event_id`, de tweede exact-idempotente verzending en `tenant_identity_status=unverified`. Het is herkenbaar als `__PRODUCTION_SMOKE__` en bevat geen contactgegevens. Dit is afzonderlijk bewijs voor het nieuwe `/zelfscan`-pad; pas **na** een geslaagde productie-run mag dit pad als live getoetst gelden. Het bestaande Frisse Blik-smoke en de privileged denial blijven ongewijzigd.
