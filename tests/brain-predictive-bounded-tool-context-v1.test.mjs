@@ -12,7 +12,6 @@ test('model context is bounded and retains two independent public source types',
  assert.match(src,/source_type==='search_demand'\)\.slice\(0,16\)/);
  assert.match(src,/const modelSignals=\[/);
  assert.match(src,/\]\.slice\(0,40\)/);
- assert.match(src,/evidence:s\.evidence\.summary\.slice\(0,650\)/.source ? src : /modelSignals/); // preserve source assertion below
  assert.match(src,/summary:s\.evidence\.summary\.slice\(0,650\)/);
  assert.match(src,/existing_forecasts:\(existing\|\|\[\]\)\.slice\(0,12\)/);
 });
