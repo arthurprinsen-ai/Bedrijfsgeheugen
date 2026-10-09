@@ -525,14 +525,14 @@ export const MIRA_CASES=Object.freeze([
   }
 ].map(p=>Object.freeze(p)));
 export function selectMiraProblem(runDate){
- if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(String(runDate||'')))throw new Error('MIRA_RUN_DATE_REQUIRED');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(runDate||'')))throw new Error('MIRA_RUN_DATE_REQUIRED');
  const d=new Date(runDate+'T00:00:00.000Z');if(!Number.isFinite(d.getTime())||d.toISOString().slice(0,10)!==runDate)throw new Error('MIRA_RUN_DATE_INVALID');
  const epoch=Math.floor(d.getTime()/86400000);
  // Fixed deterministic rotation, no AI inventing which canonical problem exists.
  return MIRA_CASES[((epoch%MIRA_CASES.length)+MIRA_CASES.length)%MIRA_CASES.length];
 }
 export function miraCaption(problem){
- if(!problem?.id||!/^PH-P\\d{3}$/.test(problem.id))throw new Error('MIRA_CANONICAL_PROBLEM_REQUIRED');
+ if(!problem?.id||!/^PH-P\d{3}$/.test(problem.id))throw new Error('MIRA_CANONICAL_PROBLEM_REQUIRED');
  const effects={revenue:'een gemiste verkoopkans',risk:'onnodig risico',cost:'extra kosten',capacity:'oplopende werkdruk',strategic:'besluiten zonder opvolging',people:'werkdruk en afhankelijkheid',operational:'vertraging',financial:'onverwachte financiële druk'};
  const effect=effects[problem.impact]||'vertraging en onzekerheid';
  return [
@@ -543,12 +543,12 @@ export function miraCaption(problem){
  'Wat je daarna volgt: '+problem.metric+'. Een signaal is pas bruikbaar als duidelijk is wat de volgende stap is.',
  'Herkenbaar in jouw bedrijf? Kijk eerst welke informatie nu nergens samenkomt. https://www.bedrijfsgeheugen.nl/frisse-blik',
  'Mira is een fictief AI-personage. Voorbeeld gebaseerd op ondernemersprobleem '+problem.id+'; geen klantervaring of bewezen omzet.'
- ].join('\\n\\n');
+ ].join('\n\n');
 }
 export function miraProductionEvidence(problem){return {contentPersona:'mira',contentClass:'mira_daily_life',caption_contract:MIRA_ENTREPRENEUR_CAPTION_CONTRACT,canonical_problem_id:problem.id,problem_name:problem.name,problem_description:problem.description,problem_signal:problem.signal,portal_page:problem.page,portal_capability:problem.capability,portal_action:problem.action,portal_metric:problem.metric,portal_impact_label:'POTENTIAL',source_catalog:MIRA_CANONICAL_LIBRARY_PATH,fictional_scene:true,source_evidence_status:'CANONICAL_PROBLEM_HYPOTHESIS',scene:problem.scene};}
 export function validateMiraCaptionForDelivery(runDate,body,evidence={}){
  let problem;try{problem=selectMiraProblem(runDate)}catch(e){return {ok:false,reason:String(e.message||e)};}
- const expected=miraCaption(problem);const normalized=v=>String(v||'').replace(/\\s+/g,' ').trim();
+ const expected=miraCaption(problem);const normalized=v=>String(v||'').replace(/\s+/g,' ').trim();
  const actual=normalized(body);
  if(actual!==normalized(expected))return {ok:false,reason:'MIRA_CAPTION_FIVE_PARTS_OR_EXACT_SOURCE_MISSING',problem_id:problem.id};
  if(evidence.caption_contract!==MIRA_ENTREPRENEUR_CAPTION_CONTRACT||evidence.canonical_problem_id!==problem.id||evidence.source_catalog!==MIRA_CANONICAL_LIBRARY_PATH||evidence.portal_capability!==problem.capability||evidence.portal_page!==problem.page||evidence.portal_action!==problem.action||evidence.portal_metric!==problem.metric||evidence.portal_impact_label!=='POTENTIAL')return {ok:false,reason:'MIRA_PORTAL_LINEAGE_OR_IMPACT_NOT_VERIFIED',problem_id:problem.id};
