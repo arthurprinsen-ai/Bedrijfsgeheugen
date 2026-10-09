@@ -32,7 +32,8 @@ test('an action, predicted benefit or outcome without verified receipt cannot be
  assert.match(html,/data-steering-stage="learn"/);
  assert.match(html,/Uitkomst nog niet bewezen/);
  assert.match(html,/Leereffect nog niet bewezen/);
- assert.doesNotMatch(html,/Doorlooptijd aantoonbaar gedaald<\\/strong>/);
+ const measurement=html.split('data-steering-stage="measure"')[1].split('</article>')[0];
+ assert.doesNotMatch(measurement,/Doorlooptijd aantoonbaar gedaald/);
 });
 
 test('only independently evidenced verified outcomes and explicitly linked learning close final stages',()=>{
