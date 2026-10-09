@@ -1,3 +1,4 @@
+import {buildMiraEntrepreneurCaption,MIRA_PORTAL_STORY_CONTRACT} from '../_shared/instagram-entrepreneur-story-v1.mjs';
 import postgres from 'npm:postgres@3.4.7';
 
 const CHANNELS = ['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'];
@@ -463,7 +464,7 @@ Deno.serve(async (req) => {
         : `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`)
       : pending.channel==='linkedin_company'
       ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
-      : pending.channel==='instagram_company' ? 'Schrijf Mira daily-life caption passend bij de reeds bewezen finale media. Geen interne kantoorproblemen of geforceerde businessmoraal.'
+      : pending.channel==='instagram_company' ? 'Mira is een transparant fictief AI-personage. Iedere Instagram-caption moet een brongebonden ondernemersprobleem uit PH-Pxxx laten zien, met herkenbare situatie, oorzaak, gevolg, relevante portaalfunctie, concrete actie en pointe. De beelden blijven menselijk; geen tekstkaart of verzonnen klantcase.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
     stage = 'artifact-ai';
     const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,
@@ -472,25 +473,49 @@ Deno.serve(async (req) => {
     let generationProvider='Anthropic';
     let generationModel=gov.model_id;
     let fallbackReason:string|null=null;
-    try {
-      if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
-      artifact=await callAI(apiKey,gov.model_id,system,artifactInput,artifactTool,pending.channel==='blog'?4800:2600);
-    } catch(error) {
-      if(!composioFallbackEligible(error))throw error;
-      const {data:fallbackGov,error:fallbackGovError}=await db.from('brain_ai_governance_registry')
-        .select('model_id,provider,approved,lifecycle_status')
-        .eq('tenant_id','canonical').eq('use_case_id','supabase-bg-composio-content-fallback-v1').maybeSingle();
-      if(fallbackGovError||!fallbackGov||fallbackGov.approved!==true||fallbackGov.lifecycle_status!=='ACTIVE'||fallbackGov.provider!=='Composio/Groq')throw error;
-      generationProvider='Composio/Groq';
-      generationModel=clean(fallbackGov.model_id);
-      fallbackReason=clean((error as Error)?.message).slice(0,240);
-      artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:2600);
-    }
+    let mira_portal_story:any=null;
+    if(pending.channel==='instagram_company'){
+      // The immutable daily winner recommendation is the ONLY permitted problem input.
+      // Deterministic caption avoids empty, generic or unrelated AI text and false customer stories.
+      mira_portal_story=buildMiraEntrepreneurCaption(recommendation);
+      artifact={
+        title:'Mira: '+mira_portal_story.problem.name,
+        body:mira_portal_story.caption,
+        cta:'Frisse Blik — bedrijfsgeheugen.nl',
+        hook_type:'Concreet ondernemersprobleem',
+        focus_keyword:mira_portal_story.problem.name,
+        meta_description:'Een illustratieve Mira-scène over '+mira_portal_story.problem.name,
+      };
+      generationProvider='canonical-problem-library';
+      generationModel=MIRA_PORTAL_STORY_CONTRACT;
+    } else {
+      try {
+        if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
+        artifact=await callAI(apiKey,gov.model_id,system,artifactInput,artifactTool,pending.channel==='blog'?4800:2600);
+      } catch(error) {
+        if(!composioFallbackEligible(error))throw error;
+        const {data:fallbackGov,error:fallbackGovError}=await db.from('brain_ai_governance_registry')
+          .select('model_id,provider,approved,lifecycle_status')
+          .eq('tenant_id','canonical').eq('use_case_id','supabase-bg-composio-content-fallback-v1').maybeSingle();
+        if(fallbackGovError||!fallbackGov||fallbackGov.approved!==true||fallbackGov.lifecycle_status!=='ACTIVE'||fallbackGov.provider!=='Composio/Groq')throw error;
+        generationProvider='Composio/Groq';
+        generationModel=clean(fallbackGov.model_id);
+        fallbackReason=clean((error as Error)?.message).slice(0,240);
+        artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:2600);
+      }
+      }
     let bodyText = clean(artifact.body);
     if (pending.channel==='linkedin_personal' && !personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
       if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
+    }
+    if (pending.channel==='instagram_company') {
+      if(!mira_portal_story || !bodyText.includes('In het Bedrijfsgeheugen-portaal') ||
+         !bodyText.includes('Mira is een fictief AI-personage') ||
+         !bodyText.includes(mira_portal_story.problem.pointe)) {
+        throw new Error('MIRA_ENTREPRENEUR_CAPTION_INCOMPLETE');
+      }
     }
     const finalTextHash = await digest(bodyText);
     const personalEvidence = pending.channel==='linkedin_personal' ? {...(personalSource.evidence||{}),content_id:clean(personalSource.evidence?.content_id)||`${runDate}:linkedin_personal`,calendar_date:runDate,
@@ -515,7 +540,7 @@ Deno.serve(async (req) => {
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company',identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},status:'content_ready',updated_at:new Date().toISOString()});
+      final_copy_approved:pending.channel==='linkedin_company',identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,mira_portal_story:mira_portal_story?{contract:mira_portal_story.contract,problem_id:mira_portal_story.problem_id,source_id:mira_portal_story.source_id,illustrative:true,portal_capability:mira_portal_story.problem.portal,action:mira_portal_story.problem.action,metric:mira_portal_story.problem.metric}:null},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
