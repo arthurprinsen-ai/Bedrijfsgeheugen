@@ -6,6 +6,11 @@ on:
     paths:
       - 'portal-v2/**'
   workflow_dispatch:
+    inputs:
+      production_sha:
+        description: 'Previously published main SHA; only allowed when intervening changes do not affect deployed portal/runtime files'
+        required: false
+        type: string
 
 concurrency:
   group: portal-v2-production-dom-readback-${{ github.event.pull_request.number || github.ref }}
@@ -22,6 +27,8 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -34,6 +41,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PRODUCTION_SHA_OVERRIDE: ${{ inputs.production_sha || '' }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "PORTAL_ALIAS_URL=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_ENV"
@@ -41,8 +49,38 @@ jobs:
             echo "PORTAL_BASE_SHA=${PR_BASE_SHA}" >> "$GITHUB_ENV"
           else
             echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
-            echo "PORTAL_EXPECTED_SHA=${GITHUB_SHA}" >> "$GITHUB_ENV"
+            echo "PORTAL_EXPECTED_SHA=${PRODUCTION_SHA_OVERRIDE:-$GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
+      - name: Verify scoped published-commit target before readback
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$PORTAL_EXPECTED_SHA" = "$GITHUB_SHA" ]; then
+            echo "Exact current main source target: $GITHUB_SHA"
+            exit 0
+          fi
+          if [ "$EVENT_NAME" != "workflow_dispatch" ] || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Published-commit override requires an explicit main workflow_dispatch with valid SHA."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA"; then
+            echo "::error::Selected published SHA is not an ancestor of checked-out main."
+            exit 1
+          fi
+          changed="$(git diff --name-only "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA")"
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            case "$file" in
+              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*)
+                ;;
+              *)
+                echo "::error::Runtime source changed after selected published SHA: $file. Require a new exact-main deploy."
+                exit 1
+                ;;
+            esac
+          done <<< "$changed"
+          echo "PRODUCTION_SCOPED_DEPLOY_PROOF target=$PORTAL_EXPECTED_SHA main=$GITHUB_SHA"
       - name: Classify visual baseline impact fail-closed
         env:
           GH_TOKEN: ${{ github.token }}
@@ -52,8 +90,8 @@ jobs:
           set -euo pipefail
           visual_required=true
           resolved_pr="$PR_NUMBER"
-          if [ "$EVENT_NAME" = "push" ]; then
-            pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls")"
+          if [ "$EVENT_NAME" = "push" ] || [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${PORTAL_EXPECTED_SHA}/pulls")"
             resolved_pr="$(jq -r '[.[] | select(.merged_at != null)] | first | .number // empty' <<<"$pr_json")"
           fi
           if [ -n "$resolved_pr" ]; then
@@ -125,16 +163,16 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: Resolve approved visual baseline
-        if: github.event_name == 'push' && env.VISUAL_BASELINE_REQUIRED == 'true'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls")"
+          pr_json="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/commits/${PORTAL_EXPECTED_SHA}/pulls")"
           pr_number="$(jq -r '[.[] | select(.merged_at != null)] | first | .number // empty' <<<"$pr_json")"
           pr_head_sha="$(jq -r '[.[] | select(.merged_at != null)] | first | .head.sha // empty' <<<"$pr_json")"
           if [ -z "$pr_number" ] || [ -z "$pr_head_sha" ]; then
-            echo "::error::No merged PR provenance found for production SHA ${GITHUB_SHA}; visual release gate fails closed."
+            echo "::error::No merged PR provenance found for production SHA ${PORTAL_EXPECTED_SHA}; visual release gate fails closed."
             exit 1
           fi
           run_id=""
