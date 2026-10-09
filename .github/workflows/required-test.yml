@@ -106,6 +106,9 @@ jobs:
       - name: Guard fail-closed approved visual baseline recovery for production DOM
         run: |
           node --test tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs
+      - name: Guard scoped immutable published production DOM replay
+        run: |
+          node --test tests/brain-p0-4215-production-scoped-dom-readback-v1.test.mjs
       - name: Verify fail-closed immutable Netlify preview provider target
         run: |
           node --test tests/brain-p0-4215-netlify-preview-immutable-target-v1.test.mjs
