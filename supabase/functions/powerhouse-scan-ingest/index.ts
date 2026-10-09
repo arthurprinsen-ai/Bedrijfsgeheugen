@@ -108,7 +108,11 @@ Deno.serve(async(req:Request)=>{
     const patch:any={company_key:companyKey,tenant_identity_status:'verified',bijgewerkt_op:new Date().toISOString()};
     if(org){patch.organisatie_id=org.id;patch.klant_slug=org.slug||null;}
     else patch.klant_slug=tenantId;
-    const {data:claimed,error:claimError}=await client.from('scan_inzendingen').update(patch).eq('id',scan.id).select('id,submission_key,organisatie_id,company_key,tenant_identity_status').single();
+    const {data:claimed,error:claimError}=await client.from('scan_inzendingen').update(patch)
+      .eq('id',scan.id).eq('tenant_identity_status',scan.tenant_identity_status)
+      .select('id,submission_key,organisatie_id,company_key,tenant_identity_status').single();
+    // Two customers racing a previously unverified receipt must never transfer ownership.
+    if(claimError?.code==='PGRST116')return json({error:'SCAN_ALREADY_CLAIMED'},409);
     if(claimError)return json({error:'SCAN_CLAIM_FAILED',detail:claimError.message.slice(0,200)},500);
 
     const preTenant=`scan:${submissionKey}`;
