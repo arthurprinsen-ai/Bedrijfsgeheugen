@@ -23,3 +23,6 @@ This change must never be used alone to close issue #4215.
 
 ## Live admission discovery and repair
 First exact-head Required admission run identified six conflicting rendered control IDs on the combined `gegevens-invullen` page: `freeCashFlow`, `nopat`, `governance`, `inventoryDays`, `creditorDays` and `investedCapital`. They mapped to different `portal.metrics`, `portal.valueFinance`, `portal.dataAi` or maturity state paths, so the browser's `bindFields` could select the wrong element by `data-field-id`. Repair in `portal-v2/modules/full-company-input.js` qualifies colliding control IDs by the form group *only in the aggregate view*, retaining each canonical path, legacy ID, individual specialist page definition and value. The same generated matrix now enforces no cross-path field-ID collisions and the test locks in all six pairs.
+
+## Retained evidence
+Required test preflight uploads the generated JSON matrix as a run-scoped GitHub Actions artifact `p0-4215-input-coverage-<run>-<attempt>` (30-day retention). An artifact is source/declaration evidence, never a live authenticated tenant readback.
