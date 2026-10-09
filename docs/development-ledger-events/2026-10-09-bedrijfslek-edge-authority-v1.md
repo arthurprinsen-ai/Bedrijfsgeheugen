@@ -10,3 +10,5 @@
 - Regression: tests/brain-bedrijfslek-edge-production-authority-v1.test.mjs.
 - Next safe action: admission → protected merge → existing provider authority readback → one exact revision proof; P0 #4198 stays OPEN for actual commercial outcomes.
 - Writer-Lease-State: CANDIDATE_WRITING
+
+- Additional existing-workflow guard: production Bedrijfslek fixture POST twice; require immutable scan/event IDs, no PII, no auto-verified tenant; config changes trigger the same scan proof.
