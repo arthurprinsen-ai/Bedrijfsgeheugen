@@ -291,14 +291,17 @@ Deno.serve(async (req) => {
     // revenue runtime has not materialized it. Without this step the supervisor
     // sees zero pending decisions and silently skips every publishing lane.
     // Use the EXISTING orchestrator under the EXISTING content-loop lease.
+    const requiredDecisionChannels = ['linkedin_personal', 'linkedin_company', 'instagram_company', 'blog'];
     const { data: initialDecisions, error: initialDecisionsError } = await db
       .from('powerhouse_channel_decisions')
       .select('channel')
       .eq('run_date', runDate)
-      .limit(1);
+      .in('channel', requiredDecisionChannels)
+      .limit(4);
     if (initialDecisionsError) throw new Error('INITIAL_DECISION_READ_FAILED');
+    const existingDecisionChannels = new Set((initialDecisions || []).map((decision: any) => clean(decision.channel)));
     let bootstrapStillInFlight = false;
-    if (!initialDecisions?.length) {
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel))) {
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
