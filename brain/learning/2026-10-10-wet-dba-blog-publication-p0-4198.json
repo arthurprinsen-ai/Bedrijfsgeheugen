@@ -1,0 +1,53 @@
+{
+  "id": "content-publication-2026-10-10-blog",
+  "date": "2026-10-10",
+  "parent_p0": "#4198",
+  "candidate_type": "source-backed-blog-publisher",
+  "failure_class": "DAILY_BLOG_UNPUBLISHED_STALE_CPNL_THEN_PROVENANCE_MISSING",
+  "fingerprint": "daily-blog:2026-10-10:wet-dba",
+  "status": "PENDING_PROTECTED_MERGE",
+  "content_title": "Wet DBA: wat verandert er voor jou?",
+  "source": {
+    "name": "KVK",
+    "title": "Wet DBA: voorkom schijnzelfstandigheid",
+    "url": "https://www.kvk.nl/wetten-en-regels/wet-dba-voorkom-schijnzelfstandigheid/",
+    "recommendation_id": "638f4514-55e5-40fa-8573-ed71c688f360"
+  },
+  "existing_authority": {
+    "publisher": ".github/workflows/powerhouse-daily-blog.yml",
+    "blog_queue": "powerhouse-blog-queue",
+    "brain": "powerhouse_content_artifacts",
+    "pr": 4300
+  },
+  "outcome_proof": {
+    "artifact_generated": true,
+    "seo_source_present": true,
+    "provider_live_verified": false,
+    "revenue_eur": null,
+    "live_proven_at": null
+  },
+  "compiler": {
+    "failure_class": "DAILY_BLOG_PROTECTED_WRITEBACK",
+    "scope": "CANONICAL_WEBSITE_BLOG",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "prevention": [
+    "Derive every unpublished article slug and identity from the actual current same-day content artifact, not a stale GENERATED obligation.",
+    "Include an explicit public evidence block linking the exact original external source without manufacturing a citation.",
+    "Reuse the already-existing day-scoped protected PR; protect against duplicating or republishing any provider-confirmed page.",
+    "Require required website and SEO test gates, full production Netlify deploy and independently observed public HTML before marking LIVE_PROVEN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      ".github/workflows/powerhouse-daily-blog.yml"
+    ],
+    "shadow": [
+      "tools/seo-order-engine/validate.mjs"
+    ],
+    "canary": [
+      "blog/wet-dba-en-zelfstandigen-wat-betekent-dit-voor-jou-als-zzp-er-of-opdra/index.html"
+    ],
+    "production_claim": "NOT_YET_PROVEN"
+  }
+}
