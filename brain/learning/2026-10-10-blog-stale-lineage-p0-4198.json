@@ -1,0 +1,45 @@
+{
+  "id": "p0-4198-reuse-blog-day-obligation-after-regeneration-20261010",
+  "date": "2026-10-10",
+  "status": "CANDIDATE_REQUIRED_CHECKS_PENDING",
+  "fingerprint": "powerhouse|daily-blog|regenerated-artifact-stale-obligation-slug|v1",
+  "root_cause": "10 Oct content artifact regenerated to Wet DBA yet previously GENERATED obligation retained CPNL slug via COALESCE(existing,p_new) in record_content_publication_state; read-only blog export privileged old slug and same-date GitHub publisher skipped open PR #4300. A stale CPNL page remained eligible for protected merge despite source correction.",
+  "prevention": [
+    "Derive current unpublished export link from current source-backed artifact rather than stale generated obligation metadata.",
+    "Preserve immutable publication ID/slug and fail-closed when a provider side effect, dispatch, publish, republish prohibition or live proof exists.",
+    "Repair only status GENERATED and null external_id, published_at and live_proven_at with an exact atomic conditional update.",
+    "Reuse exact same branch and PR for existing day, re-render from main and rerun full protected tests and translations."
+  ],
+  "compiler": {
+    "failure_class": "BLOG_GENERATED_LINEAGE_STALE_AFTER_SOURCE_REGENERATION",
+    "scope": "CANONICAL_GITHUB_SUPABASE_DAILY_BLOG",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4300",
+    "runtime_date": "2026-10-10",
+    "stale_slug": "subsidie-circular-plastics-nl-cpnl-wat-kunnen-bedrijven-aanvragen",
+    "current_artifact": "Wet DBA en zelfstandigen: wat betekent dit voor jou als zzp'er of opdrachtgever?",
+    "regressions": [
+      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+    ],
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+    ],
+    "production_claim": "Do not claim LIVE_PROVEN without same-PR GitHub merge, Netlify production deployment and exact public canonical readback."
+  },
+  "production_truth": {
+    "before": "Artifact Wet DBA, GENERATED obligation CPNL, PR #4300 stale with CPNL",
+    "after": "Unproven candidate until protected tests and production Edge deploy/readback"
+  }
+}
