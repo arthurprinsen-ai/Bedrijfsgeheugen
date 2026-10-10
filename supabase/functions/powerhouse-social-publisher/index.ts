@@ -1,3 +1,4 @@
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -1200,6 +1201,24 @@ Deno.serve(async (req) => {
       results.push({channel:row.channel,status:'blocked_overlength',reason:'LINKEDIN_COMMENTARY_LIMIT_EXCEEDED'});
       continue;
     }
+    if(row.channel==='linkedin_personal') {
+      const editorialEvidence=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
+      const violations=personalEditorialViolations(art.body,editorialEvidence);
+      if(art.generation_evidence?.final_copy_approved!==true ||
+         art.generation_evidence?.editorial_policy_version!==PERSONAL_EDITORIAL_POLICY ||
+         violations.length>0) {
+        const codes=violations.map(x=>x.code);
+        if(art.generation_evidence?.final_copy_approved!==true)codes.unshift('PERSONAL_EDITORIAL_APPROVAL_MISSING');
+        if(art.generation_evidence?.editorial_policy_version!==PERSONAL_EDITORIAL_POLICY)codes.unshift('PERSONAL_EDITORIAL_POLICY_OUTDATED');
+        const evidence={...row.delivery_evidence,error:'PERSONAL_EDITORIAL_CONTRACT_FAILED',violations:codes,
+          provider_create_success:false,possible_provider_side_effect:false,republish_forbidden:false};
+        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,
+          'Repair personal founder editorial contract and re-review in the same canonical lineage. No provider action taken.','PERSONAL_EDITORIAL_CONTRACT_FAILED');
+        results.push({channel:row.channel,status:'blocked_editorial',violations:codes});continue;
+      }
+    }
     const textHash = await digest(clean(art.body));
     const due = new Date(row.scheduled_for);
     const future = Number.isFinite(due.getTime()) && due.getTime() > Date.now() + 120000;
@@ -1234,7 +1253,7 @@ Deno.serve(async (req) => {
         await recordObligation(db, runDate, row.channel, 'BLOCKED', null, blocked, 'Provide a verified personal truth source or a verified non-first-person daily-life observation source.', 'PERSONAL_SOURCE_UNVERIFIED');
         results.push({ channel: row.channel, status: 'blocked', reason: 'PERSONAL_SOURCE_UNVERIFIED' }); continue;
       }
-      reviewPayload = { ...evidence, personal_truth_verified: personalTruthMode, observational_personal_theme_verified: observationalMode, ai_native_builder_story_verified: builderMode, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash) };
+      reviewPayload = { ...evidence, personal_truth_verified: personalTruthMode, observational_personal_theme_verified: observationalMode, ai_native_builder_story_verified: builderMode, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash), final_copy_approved:art.generation_evidence?.final_copy_approved===true,editorial_policy_version:clean(art.generation_evidence?.editorial_policy_version) };
     } else if (row.channel === 'instagram_company') {
       const proof = row.delivery_evidence?.instagram_media_proof || art.generation_evidence?.instagram_media_proof || {};
       reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, hook_type: clean(art.generation_evidence?.hook_type) || 'Probleem', mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), final_asset_url: clean(proof.media_url), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
