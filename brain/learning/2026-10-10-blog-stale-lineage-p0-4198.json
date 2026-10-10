@@ -22,19 +22,19 @@
     "stale_slug": "subsidie-circular-plastics-nl-cpnl-wat-kunnen-bedrijven-aanvragen",
     "current_artifact": "Wet DBA en zelfstandigen: wat betekent dit voor jou als zzp'er of opdrachtgever?",
     "regressions": [
-      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+      "tests/brain-blog-stale-lineage-p0-4198.test.mjs"
     ],
     "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+      "tests/brain-blog-stale-lineage-p0-4198.test.mjs"
     ],
     "shadow": [
-      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+      "tests/brain-blog-stale-lineage-p0-4198.test.mjs"
     ],
     "canary": [
-      "tests/powerhouse-blog-stale-lineage-p0-4198.test.mjs"
+      "tests/brain-blog-stale-lineage-p0-4198.test.mjs"
     ],
     "production_claim": "Do not claim LIVE_PROVEN without same-PR GitHub merge, Netlify production deployment and exact public canonical readback."
   },
