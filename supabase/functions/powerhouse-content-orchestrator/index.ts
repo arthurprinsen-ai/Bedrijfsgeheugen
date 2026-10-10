@@ -2,6 +2,23 @@ import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
 
+function compactLinkedInCommentary(value:string,maxLength=2800):string{
+  const original=clean(value);
+  if(Array.from(original).length<=maxLength)return original;
+  // Preserve complete paragraphs and sentences rather than sending an API-invalid 3000+ character post.
+  const paragraphs=original.split(/\n\s*\n/).map((p)=>p.trim()).filter(Boolean);
+  const retained:string[]=[];
+  for(const paragraph of paragraphs){
+    const proposed=[...retained,paragraph].join('\n\n');
+    if(Array.from(proposed).length>maxLength)break;
+    retained.push(paragraph);
+  }
+  if(retained.join('\n\n').length>=250)return retained.join('\n\n');
+  const prefix=Array.from(original).slice(0,maxLength).join('');
+  const end=Math.max(prefix.lastIndexOf('. '),prefix.lastIndexOf('! '),prefix.lastIndexOf('? '));
+  return end>=250?prefix.slice(0,end+1):prefix.slice(0,prefix.lastIndexOf(' '));
+}
+
 const CHANNELS = ['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'];
 const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PERSONAL_GATE = 'channel-identity-hard-gate-v3';
@@ -505,6 +522,7 @@ Deno.serve(async (req) => {
       artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:1800);
     }
     let bodyText = clean(artifact.body);
+    if (pending.channel === 'linkedin_personal' || pending.channel === 'linkedin_company') bodyText = compactLinkedInCommentary(bodyText);
     if (pending.channel==='instagram_company') {
       // The caption is deterministic from the canonical PH-P problem, not a random consumer-complaint winner.
       bodyText=miraCaption(miraBusinessProblem);
