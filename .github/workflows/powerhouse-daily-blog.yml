@@ -59,12 +59,13 @@ jobs:
           branch="automation/powerhouse-blog-$DATE"
           pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
           if [ -n "$pr" ]; then
-            echo "available=false" >> "$GITHUB_OUTPUT"
+            # A prior GENERATED candidate can be stale after source correction.
+            # Re-render from protected main and update the SAME open PR branch.
+            # GitHub required checks automatically re-evaluate the new HEAD.
             echo "existing_pr=$pr" >> "$GITHUB_OUTPUT"
-            echo "SAME_OBLIGATION_WRITER_ACTIVE:$DATE:$pr"
-          else
-            echo "available=true" >> "$GITHUB_OUTPUT"
+            echo "SAME_OBLIGATION_CANDIDATE_REFRESH:$DATE:$pr"
           fi
+          echo "available=true" >> "$GITHUB_OUTPUT"
 
       - name: Render canonical Powerhouse artifact
         if: steps.day.outputs.run == 'true' && steps.writer.outputs.available == 'true'
@@ -96,6 +97,7 @@ jobs:
           branch="automation/powerhouse-blog-$DATE"
           git config user.name "Powerhouse Daily Publisher"
           git config user.email "actions@users.noreply.github.com"
+          git fetch origin "$branch" || true
           git checkout -B "$branch"
           git add "blog/$SLUG/index.html" blog/index.html blog/rss.xml sitemap.xml
           git commit -m "blog: publish Powerhouse daily artifact $DATE"
