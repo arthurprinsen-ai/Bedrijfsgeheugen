@@ -310,8 +310,22 @@ function plannedDecision(channel:string, recs:any[], personalSource:any, instagr
     rationale:`Evidence-bound decision via recommendation ${rec.recommendation_id}.`,scheduled_hour_local:channel==='blog'?12:channel==='instagram_company'?18:13,
     content_brief:clean(rec.reason),capability_state:'READY',capability_reason:null,decision_source:'deterministic-recommendation-policy',fallback_recommendation_id:rec.recommendation_id };
 }
+function recoverableUniquenessDenial(row:any){
+  if(!row || clean(row.state)!=='blocked' || clean(row.delivery_ref)) return false;
+  const evidence=row.delivery_evidence||{};
+  const authority=evidence.publication_authority||{};
+  return clean(evidence.error).startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:')
+    && evidence.global_uniqueness_gate==='blocked'
+    && authority.issued===true && authority.consumed===false
+    && evidence.provider_create_success!==true
+    && evidence.provider_publication_ack_verified!==true
+    && evidence.provider_truth_verified!==true
+    && evidence.possible_provider_side_effect!==true;
+}
+
 function shouldPreserveExisting(row:any, channel:string, personalSource:any) {
   if (!row) return false;
+  if(recoverableUniquenessDenial(row)) return false;
   const evidence=row.delivery_evidence||{};
   const personalNoGapReopen = channel === 'linkedin_personal'
     && clean(row.state) === 'skipped'
@@ -394,7 +408,7 @@ Deno.serve(async (req) => {
       const decision:any = plannedDecision(channel,recs,personalSource,instagramProof);
       const personalNoGapReopen = channel === 'linkedin_personal' && clean(previous?.state) === 'skipped' && !!personalSource
         && (clean(previous?.delivery_evidence?.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(previous?.delivery_evidence?.invalid_candidate));
-      const stale = personalNoGapReopen || previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
+      const stale = personalNoGapReopen || recoverableUniquenessDenial(previous) || previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
       const hour = String(decision.scheduled_hour_local).padStart(2,'0');
       const evidence = { ...(stale?{}:(previous?.delivery_evidence||{})), content_brief:decision.content_brief,decision_engine:VERSION,decision_source:decision.decision_source,
         capability_state:decision.capability_state,capability_reason:decision.capability_reason,executor_capabilities,
