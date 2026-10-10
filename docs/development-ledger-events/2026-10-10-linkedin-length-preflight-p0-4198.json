@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-10-10",
+  "event": "p0-4198_linkedin_commentary_limit_preflight",
+  "candidate": "PR #4308",
+  "scope": [
+    "powerhouse-content-orchestrator",
+    "powerhouse-social-publisher"
+  ],
+  "writer": "existing canonical publisher only",
+  "truth": "test candidate; external LinkedIn publication not yet proven",
+  "invariant": "No remote side effect or authorization claim on oversized LinkedIn commentary",
+  "evidence": "Provider overlength rejection and consumed Oct 10 capability without external post ID"
+}
