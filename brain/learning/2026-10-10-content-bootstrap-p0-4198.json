@@ -40,20 +40,20 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+      "tests/brain-powerhouse-content-bootstrap-p0-4198.test.mjs"
     ],
     "shadow": [
-      "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+      "tests/brain-powerhouse-content-bootstrap-p0-4198.test.mjs"
     ],
     "canary": [
-      "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+      "tests/brain-powerhouse-content-bootstrap-p0-4198.test.mjs"
     ],
     "production_claim": "unproven until protected merge, exact Edge version readback, live provider confirmation"
   },
   "evidence": {
     "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4299",
     "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
-    "test": "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+    "test": "tests/brain-powerhouse-content-bootstrap-p0-4198.test.mjs"
   },
   "prevention": [
     "Fresh-day no-decision state must trigger existing decision materializer before generation logic.",
