@@ -1336,7 +1336,14 @@ Deno.serve(async (req) => {
       await db.from('powerhouse_channel_decisions').update({delivery_evidence:uniquenessEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
     }catch(error){
       const message=error instanceof Error?error.message:String(error);
-      const evidence={...gatePassedEvidence,error:message,global_uniqueness_gate:'blocked',global_uniqueness_fingerprint:'powerhouse-global-post-story-uniqueness-v2',provider_truth_verified:false,republish_forbidden:false,uniqueness_denied_pre_provider:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+      const previousRejected=Array.isArray(gatePassedEvidence.rejected_recommendation_ids)
+        ? gatePassedEvidence.rejected_recommendation_ids.map(clean).filter(Boolean):[];
+      const refusedSource=clean(gatePassedEvidence.fallback_recommendation_id || art.generation_evidence?.recommendation_id);
+      const rejectedRecommendationIds=[...new Set([...previousRejected,refusedSource].filter(Boolean))];
+      const evidence={...gatePassedEvidence,error:message,global_uniqueness_gate:'blocked',global_uniqueness_fingerprint:'powerhouse-global-post-story-uniqueness-v2',provider_truth_verified:false,republish_forbidden:false,uniqueness_denied_pre_provider:true,
+        rejected_recommendation_ids:rejectedRecommendationIds,provider_create_success:false,
+        provider_publication_ack_verified:false,possible_provider_side_effect:false,
+        publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
       await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
       await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Generate genuinely new content from a different angle/source. Never publish exact or near-duplicate historical content.',message);
       results.push({channel:row.channel,status:'blocked_duplicate',reason:message});

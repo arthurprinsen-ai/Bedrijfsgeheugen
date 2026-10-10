@@ -257,8 +257,10 @@ function recommendationEligible(row:any, channel:string) {
   if (channel === 'instagram_company') return target === 'instagram' || target === 'instagram_company' || target === 'cross-channel';
   return true;
 }
-function pickRecommendation(recs:any[], channel:string) {
-  const eligible=[...(recs || [])].filter((r)=>recommendationEligible(r,channel));
+function pickRecommendation(recs:any[], channel:string, excludedRecommendationIds:string[]=[]) {
+  const excluded=new Set(excludedRecommendationIds.map(clean).filter(Boolean));
+  const eligible=[...(recs || [])].filter((r)=>recommendationEligible(r,channel)
+    && !excluded.has(clean(r?.recommendation_id)));
   if (channel==='linkedin_company' || channel==='blog') {
     const backed=eligible.filter((r)=>r?.evidence?.source_backed===true);
     if (backed.length) return backed.sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
@@ -310,7 +312,7 @@ function instagramVisibleIdentityProven(proof:any) {
     && refs.some((ref:string) => /^vision:/i.test(ref))
     && dimensionsOk;
 }
-function plannedDecision(channel:string, recs:any[], personalSource:any, instagramProof:any) {
+function plannedDecision(channel:string, recs:any[], personalSource:any, instagramProof:any, excludedRecommendationIds:string[]=[]) {
   if (!executor_capabilities[channel]?.executable) return hardBoundary(channel);
   if (channel === 'linkedin_personal') {
     if (!personalSource) return hardBoundary(channel,'PERSONAL_TRUTH_SOURCE_UNVERIFIED');
@@ -321,8 +323,10 @@ function plannedDecision(channel:string, recs:any[], personalSource:any, instagr
   if (channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) {
     return hardBoundary(channel,'EXACT_FINAL_MEDIA_PROOF_REQUIRED');
   }
-  const rec = pickRecommendation(recs,channel);
-  if (!rec) return hardBoundary(channel,'NO_EVIDENCE_BOUND_RECOMMENDATION');
+  const rec = pickRecommendation(recs,channel,excludedRecommendationIds);
+  if (!rec) return hardBoundary(channel,excludedRecommendationIds.length
+    ? 'NO_UNIQUE_EVIDENCE_BOUND_RECOMMENDATION'
+    : 'NO_EVIDENCE_BOUND_RECOMMENDATION');
   return { channel,decision:'publish',state:'decided',priority:Math.min(100,num(rec.priority)),confidence:Math.max(.55,Math.min(.9,num(rec.priority)/100)),topic_key:clean(rec.topic_key),
     rationale:`Evidence-bound decision via recommendation ${rec.recommendation_id}.`,scheduled_hour_local:channel==='blog'?12:channel==='instagram_company'?18:13,
     content_brief:clean(rec.reason),capability_state:'READY',capability_reason:null,decision_source:'deterministic-recommendation-policy',fallback_recommendation_id:rec.recommendation_id };
@@ -340,8 +344,12 @@ function recoverableUniquenessDenial(row:any){
     && evidence.possible_provider_side_effect!==true;
 }
 
-function shouldPreserveExisting(row:any, channel:string, personalSource:any) {
+function shouldPreserveExisting(row:any, channel:string, personalSource:any, consumedCapabilityChannels:Set<string>) {
   if (!row) return false;
+  // A consumed daily authority is not proof of a post, but it IS evidence of a
+  // possibly attempted provider mutation. Never re-decide or resend until
+  // provider-side reconciliation resolves that exact earlier attempt.
+  if(consumedCapabilityChannels.has(channel) && !clean(row.delivery_ref)) return true;
   if(recoverableUniquenessDenial(row)) return false;
   const evidence=row.delivery_evidence||{};
   const personalNoGapReopen = channel === 'linkedin_personal'
@@ -384,7 +392,7 @@ Deno.serve(async (req) => {
     const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
     if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
     stage = 'load-context';
-    const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult] = await Promise.all([
+    const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult,capabilitiesResult] = await Promise.all([
       db.from('powerhouse_daily_runs').select('run_date').eq('run_date',runDate).maybeSingle(),
       db.from('powerhouse_content_recommendations').select('recommendation_id,topic_key,target_channel,recommendation_type,priority,reason,evidence,status').eq('run_date',runDate).order('priority',{ascending:false}).limit(50),
       db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status').eq('status','actief').order('vertrouwen',{ascending:false}).order('bijgewerkt_op',{ascending:false}).limit(30),
@@ -392,11 +400,17 @@ Deno.serve(async (req) => {
       db.from('powerhouse_channel_decisions').select('channel,decision,state,priority,delivery_ref,delivery_evidence').eq('run_date',runDate),
       db.from('content_publication_obligations').select('channel,evidence').eq('tenant_id','canonical').eq('publication_date',runDate),
       db.from('powerhouse_media_proof_evidence_v1').select('exact_media_retrievable,exact_media_sha256,identity_gate_result,media_url,proof_lineage,fingerprint').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle(),
+      db.from('powerhouse_social_publish_capabilities_v1')
+        .select('channel,consumed_at,revoked_at').eq('run_date',runDate)
+        .in('channel',['linkedin_personal','linkedin_company']),
     ]);
     const winnerResult = await db.from('powerhouse_instagram_daily_winners_v1').select('recommendation_id,score_version,selected_format').eq('run_date',runDate).maybeSingle();
     if (winnerResult.error) throw new Error('INSTAGRAM_DAILY_WINNER_READ_FAILED');
     const instagramWinner = winnerResult.data || null;
     const run = runResult.data, recs = recResult.data || [], rules = rulesResult.data || [], gov = governanceResult.data;
+    if(capabilitiesResult.error) throw new Error('SOCIAL_PUBLICATION_AUTHORITY_RECONCILIATION_READ_FAILED');
+    const consumedCapabilityChannels=new Set<string>((capabilitiesResult.data||[])
+      .filter((c:any)=>!!c.consumed_at&&!c.revoked_at).map((c:any)=>clean(c.channel)));
     const existing = existingResult.data || [], obligations = obligationsResult.data || [], mediaProof = mediaProofResult.data || null;
     if (!run) throw new Error('DAILY_RUN_MISSING');
     if (!gov || gov.approved !== true || gov.lifecycle_status !== 'ACTIVE' || gov.provider !== 'Anthropic') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
@@ -421,11 +435,18 @@ Deno.serve(async (req) => {
     stage = 'reconcile-decisions';
     for (const channel of CHANNELS) {
       const previous:any = existingByChannel.get(channel);
-      if (shouldPreserveExisting(previous,channel,personalSource)) continue;
-      const decision:any = plannedDecision(channel,recs,personalSource,instagramProof);
+      if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels)) continue;
+      const recoverableDuplicate=recoverableUniquenessDenial(previous);
+      const priorRejected=Array.isArray(previous?.delivery_evidence?.rejected_recommendation_ids)
+        ? previous.delivery_evidence.rejected_recommendation_ids.map(clean).filter(Boolean) : [];
+      const rejectedRecommendationIds=recoverableDuplicate
+        ? [...new Set([...priorRejected,clean(previous?.delivery_evidence?.fallback_recommendation_id)].filter(Boolean))]
+        : [];
+      const decision:any = plannedDecision(channel,recs,personalSource,instagramProof,
+        channel==='linkedin_company'?rejectedRecommendationIds:[]);
       const personalNoGapReopen = channel === 'linkedin_personal' && clean(previous?.state) === 'skipped' && !!personalSource
         && (clean(previous?.delivery_evidence?.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(previous?.delivery_evidence?.invalid_candidate));
-      const stale = personalNoGapReopen || recoverableUniquenessDenial(previous) || previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
+      const stale = personalNoGapReopen || recoverableDuplicate || previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
       const hour = String(decision.scheduled_hour_local).padStart(2,'0');
       const evidence = { ...(stale?{}:(previous?.delivery_evidence||{})), content_brief:decision.content_brief,decision_engine:VERSION,decision_source:decision.decision_source,
         capability_state:decision.capability_state,capability_reason:decision.capability_reason,executor_capabilities,
@@ -434,6 +455,7 @@ Deno.serve(async (req) => {
         daily_winner_score_version:channel==='instagram_company'?instagramWinner?.score_version||null:null,
         daily_winner_format:channel==='instagram_company'?instagramWinner?.selected_format||null:null,
         personal_source_recommendation_id:channel==='linkedin_personal'?personalSource?.recommendation_id||null:null,
+        rejected_recommendation_ids:channel==='linkedin_company' ? rejectedRecommendationIds : [],
         personal_truth_verified:channel==='linkedin_personal'?personalSource?.evidence?.personal_truth_verified===true:null,
         stale_delivery_ref:false,recovery_from_provider_missing:stale };
       const {error} = await db.from('powerhouse_channel_decisions').upsert({ run_date:runDate,channel,decision:decision.decision,state:decision.state,priority:decision.priority,
