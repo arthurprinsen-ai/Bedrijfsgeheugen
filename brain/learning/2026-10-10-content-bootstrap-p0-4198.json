@@ -1,0 +1,63 @@
+{
+  "id": "p0-4198-content-supervisor-decision-bootstrap-20261010-v1",
+  "date": "2026-10-10",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|content-loop|empty-channel-decisions|bootstrap-v1",
+  "root_cause": "Canonical content supervisor only invoked source-backed content orchestrator after a publish decision already existed. On fresh 2026-10-10 no decisions existed; daily posts remained PLANNED even while cron reported successful calls.",
+  "change": "Use existing source-backed powerhouse-content-orchestrator once under the existing supervisor lease whenever any of four operational channel decisions is absent, then continue bounded generation and provider delivery. On in-flight child timeout never invoke it again in same tick.",
+  "existing_authorities": {
+    "source": "Supabase powerhouse_content_recommendations and external signals",
+    "decisions": "powerhouse-content-orchestrator",
+    "supervisor": "powerhouse-content-loop",
+    "publishing": "powerhouse-social-publisher and powerhouse-blog-queue",
+    "media": "powerhouse-instagram-media-router",
+    "outcomes": "content_publication_obligations and Brain learning"
+  },
+  "safety": {
+    "no_parallel_scheduler": true,
+    "no_new_sender": true,
+    "retain_identity_gate": true,
+    "retain_duplicate_guard": true,
+    "retain_media_gate": true,
+    "retain_provider_readback_gate": true,
+    "retain_contact_consent": true,
+    "retain_channel_isolation": true
+  },
+  "production_truth": {
+    "observed_before": {
+      "date": "2026-10-10",
+      "daily_state": "degraded",
+      "decision_count": 0,
+      "channels": [
+        "linkedin_personal",
+        "linkedin_company",
+        "instagram",
+        "blog"
+      ],
+      "posts_provider_proven_today": 0
+    },
+    "after_change": "PR candidate only; no production-live claim without protected merge, Edge deploy, provider readback and measured outcome"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+    ],
+    "production_claim": "unproven until protected merge, exact Edge version readback, live provider confirmation"
+  },
+  "evidence": {
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4299",
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "test": "tests/powerhouse-content-bootstrap-p0-4198.test.mjs"
+  },
+  "prevention": [
+    "Fresh-day no-decision state must trigger existing decision materializer before generation logic.",
+    "Protect each lane by its existing source, quality, identity, asset, uniqueness and provider gates.",
+    "Never promote a candidate, attempted post, or database tick to delivered outcome without independent receipt."
+  ]
+}
