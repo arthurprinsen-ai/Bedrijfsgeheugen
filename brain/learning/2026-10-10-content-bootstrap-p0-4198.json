@@ -59,5 +59,12 @@
     "Fresh-day no-decision state must trigger existing decision materializer before generation logic.",
     "Protect each lane by its existing source, quality, identity, asset, uniqueness and provider gates.",
     "Never promote a candidate, attempted post, or database tick to delivered outcome without independent receipt."
-  ]
+  ],
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
