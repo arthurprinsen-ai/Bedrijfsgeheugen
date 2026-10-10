@@ -1160,6 +1160,20 @@ Deno.serve(async (req) => {
       const measured=await ensureLinkedInCompanyMeasuredLink(db,runDate,art);
       row.delivery_evidence={...(row.delivery_evidence||{}),measurable_link:measured.measuredUrl,measurable_link_verified:true,campaign_key:measured.campaignKey};
     }
+    // Never consume a day-scoped publication authority on a known provider-invalid payload.
+    if ((row.channel === 'linkedin_personal' || row.channel === 'linkedin_company')
+      && Array.from(clean(art.body)).length > 3000) {
+      const evidence={...(row.delivery_evidence||{}),error:'LINKEDIN_COMMENTARY_LIMIT_EXCEEDED',
+        actual_length:Array.from(clean(art.body)).length,allowed_length:3000,
+        provider_create_success:false,possible_provider_side_effect:false,republish_forbidden:false};
+      await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+        .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+      await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,
+        'Compact the canonical artifact and rerun original quality, identity and uniqueness gates before provider publication.',
+        'LINKEDIN_COMMENTARY_LIMIT_EXCEEDED');
+      results.push({channel:row.channel,status:'blocked_overlength',reason:'LINKEDIN_COMMENTARY_LIMIT_EXCEEDED'});
+      continue;
+    }
     const textHash = await digest(clean(art.body));
     const due = new Date(row.scheduled_for);
     const future = Number.isFinite(due.getTime()) && due.getTime() > Date.now() + 120000;
