@@ -1,3 +1,4 @@
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
@@ -101,6 +102,9 @@ function personalViolations(text: string, body: any, finalHash: string) {
   }
 
   require(body.forced_business_moral === false, 'FORCED_BUSINESS_MORAL_BLOCKED', 'Geforceerde businessmoraal is geblokkeerd.');
+  require(body.final_copy_approved === true, 'PERSONAL_EDITORIAL_APPROVAL_MISSING', 'Definitieve persoonlijke tekst is niet inhoudelijk goedgekeurd.');
+  require(body.editorial_policy_version === PERSONAL_EDITORIAL_POLICY, 'PERSONAL_EDITORIAL_POLICY_OUTDATED', 'Canoniek persoonlijk redactiecontract ontbreekt.');
+  out.push(...personalEditorialViolations(text,body));
   require(body.prediction_lineage_present === true && !!clean(body.prior_prediction_decision_id), 'PREDICTION_LINEAGE_REQUIRED', 'Prediction/decision-lineage ontbreekt.');
   require(body.publication_intent === 'publish', 'PUBLICATION_INTENT_REQUIRED', 'publication_intent=publish ontbreekt.');
   require(clean(body.final_text_hash) === finalHash, 'FINAL_TEXT_HASH_MISMATCH', 'Final-text hash is niet exact gebonden aan de beoordeelde tekst.');
