@@ -310,7 +310,14 @@ Deno.serve(async (req) => {
         && decision.state === 'blocked'
         && !clean(decision.delivery_ref)
         && evidence.possible_provider_side_effect !== true
-        && evidence.republish_forbidden !== true
+        // Historical uniqueness refusals wrongly persisted republish_forbidden=true
+        // before any transport call. Reopen ONLY proven unconsumed capabilities.
+        && (evidence.republish_forbidden !== true || (
+          reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:')
+          && evidence.global_uniqueness_gate === 'blocked'
+          && evidence.publication_authority?.issued === true
+          && evidence.publication_authority?.consumed === false
+        ))
         && evidence.provider_create_success !== true
         && evidence.provider_publication_ack_verified !== true
         && evidence.provider_truth_verified !== true
