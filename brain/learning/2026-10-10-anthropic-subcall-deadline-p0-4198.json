@@ -1,0 +1,42 @@
+{
+  "id": "p0-4198-anthropic-provider-internal-deadline-20261010",
+  "date": "2026-10-10",
+  "status": "CI_CANDIDATE",
+  "fingerprint": "powerhouse|content|anthropic-tool-use|internal-45s-abort|v1",
+  "root_cause": "Daily 2026-10-10 orchestrator v51 persisted errors artifact-ai:Signal timed out. at 08:35, 08:39 and 08:44 UTC. Existing Anthropic fetch AbortSignal.timeout(45000) fires before parent supervisor's 75-second allowed deadline; no provider content generated, leaving both LinkedIn duplicate-rematch candidates blocked despite merged recovery.",
+  "change": "Bound approved Anthropic tool-use at 90 seconds, parent invocation at 110 seconds, and request at most 1800 tokens for each single social artifact, preserving 4800 for blog and keeping only one generation per heartbeat.",
+  "compiler": {
+    "failure_class": "AI_PROVIDER_CHILD_TIMEOUT_BEFORE_PARENT_DEADLINE",
+    "scope": "CANONICAL_DAILY_CONTENT_ORCHESTRATOR",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "timestamp": [
+      "2026-10-10T08:35:02Z",
+      "2026-10-10T08:39:05Z",
+      "2026-10-10T08:44:59Z"
+    ],
+    "exact_error": "artifact-ai:Signal timed out.",
+    "source": "public.bg_gezondheid onderdeel=powerhouse-content-orchestrator",
+    "test": "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-anthropic-subcall-deadline-p0-4198.test.mjs"
+    ],
+    "production_claim": "Only successful supervised child and real provider posts count, source parity alone not enough"
+  },
+  "prevention": [
+    "Set external model request timeout below parent invocation limit with at least 20 seconds headroom for DB/verification.",
+    "Use a bounded one-call-per-tick generation budget to prevent four sequential 110-second requests.",
+    "Keep authoritative approved Anthropic model; never silently switch billing provider or bypass quality checks.",
+    "Capture actual child-stage error in existing bg_gezondheid and close only after generated content, new-story uniqueness and LinkedIn provider readback."
+  ]
+}
