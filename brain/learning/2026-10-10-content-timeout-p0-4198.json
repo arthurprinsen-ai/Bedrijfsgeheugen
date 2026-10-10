@@ -1,0 +1,48 @@
+{
+  "id": "p0-4198-anthropic-content-timeout-20261010-v1",
+  "date": "2026-10-10",
+  "status": "PROTECTED_CANDIDATE",
+  "fingerprint": "content-loop|anthropic|40-second-timeout|per-tick-bounded-v1",
+  "root_cause": "Live content supervisor v34 timed out its Anthropic-backed content orchestrator after 40 seconds. An in-flight downstream content generation later wrote a valid blog artifact but the supervisor recorded INITIAL_DECISION_MATERIALIZATION_FAILED, held the lease and did not process the remaining content. It can repeat hourly.",
+  "change": "Increase orchestrator child timeout to 75 seconds, perform at most one generative call per canonical tick and do not immediately call a second generation after bootstrap. Preserve hourly scheduler and provider side-effect fences. Avoid exceeding 120 second existing supervisory HTTP budget through sequential 4x75 second calls.",
+  "existing_authorities": {
+    "supervisor": "powerhouse-content-loop",
+    "generator": "powerhouse-content-orchestrator",
+    "cron": "powerhouse-content-orchestrator-daily-v1",
+    "social": "powerhouse-social-publisher",
+    "blog": "powerhouse-blog-queue"
+  },
+  "compiler": {
+    "failure_class": "CONTENT_ANTHROPIC_GENERATION_TIMEOUT",
+    "scope": "CANONICAL_DAILY_CONTENT_LOOP",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-generation-timeout-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-generation-timeout-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-generation-timeout-p0-4198.test.mjs"
+    ],
+    "production_claim": "requires protected PR merge, Edge v35 deployment, full provider readback"
+  },
+  "safety": {
+    "no_parallel_execution": true,
+    "no_sender_duplication": true,
+    "no_buffer": true,
+    "no_provider_gate_bypass": true
+  },
+  "production_truth": {
+    "observed_first_tick": "2026-10-10 Edge v34 returns 409, one timeout at child 40000ms, refreshed KVK blog generated asynchronously after timeout",
+    "publication_outcomes": "none confirmed on 10 Oct at diagnosis"
+  },
+  "prevention": [
+    "Constrain synchronous generation to one call per supervised tick; native hourly cron makes incremental progress.",
+    "Allow enough time for slow Anthropic output to complete before deciding outcome.",
+    "Provider sends still require prepublish, identity, dedupe and readback."
+  ]
+}
