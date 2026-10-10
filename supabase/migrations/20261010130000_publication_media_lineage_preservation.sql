@@ -120,3 +120,8 @@ begin
     'republish_forbidden',v_ob.external_id is not null);
 end
 $function$
+
+-- Reaffirm existing service-only executor privileges after CREATE OR REPLACE.
+-- No browser/anonymous role may invoke this SECURITY DEFINER operation.
+REVOKE ALL ON FUNCTION public.powerhouse_ensure_instagram_media_job_v1(date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_ensure_instagram_media_job_v1(date) TO service_role;
