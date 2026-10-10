@@ -909,7 +909,7 @@ function instagramIdentityProven(evidence: any) {
 async function reconcileExistingProviderTruth(db: any, token: string | null, runDate: string) {
   const [{ data: rows, error }, { data: obligations, error: obligationError }] = await Promise.all([
     db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence').eq('run_date', runDate).in('channel', ['linkedin_personal','linkedin_company','instagram_company']),
-    db.from('content_publication_obligations').select('channel,external_id,evidence,status').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', ['linkedin_personal','linkedin_company','instagram']),
+    db.from('content_publication_obligations').select('channel,external_id,canonical_url,evidence,status').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', ['linkedin_personal','linkedin_company','instagram']),
   ]);
   if (error) throw new Error(`DECISION_RECONCILE_READ:${error.message}`);
   if (obligationError) throw new Error(`OBLIGATION_RECONCILE_READ:${obligationError.message}`);
@@ -950,6 +950,32 @@ async function reconcileExistingProviderTruth(db: any, token: string | null, run
         const previous={...(obligation?.evidence||{}),...(row.delivery_evidence||{})};
         const providerCreateProven=previous?.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref);
         const permissionLimited=/\b(401|403|FORBIDDEN|UNAUTHORIZED|PERMISSION|REVOKED_ACCESS_TOKEN)\b/i.test(message);
+        // A later API 403 is not evidence that an independently verified
+        // public post has vanished. Preserve verified public author+copy proof
+        // for this same LinkedIn URN, but never promote a different post.
+        const publicProof=obligation?.evidence||{};
+        const independentPublicProof=clean(obligation?.external_id)===ref
+          && clean(obligation?.status)==='LIVE_PROVEN'
+          && publicProof.independent_public_readback_verified===true
+          && publicProof.readback_exact_first_85_characters_matched===true
+          && publicProof.readback_exact_last_90_characters_matched===true
+          && clean(obligation?.canonical_url).includes(ref);
+        if(providerCreateProven && independentPublicProof){
+          const evidence={...previous,provider:'composio',provider_post_id:ref,
+            provider_create_success:true,provider_publication_ack_verified:true,
+            provider_truth_verified:true,provider_truth_source:'independent_public_linkedin_page',
+            provider_truth_checked_at:new Date().toISOString(),
+            exact_public_page_proof_preserved:true,readback_permission_limited:permissionLimited,
+            republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2'};
+          for(const staleKey of ['error','provider_error','provider_auth_preflight','provider_auth_required'])delete evidence[staleKey];
+          await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+          await recordObligation(db,runDate,row.channel,'LIVE_PROVEN',ref,evidence,
+            'Independent public LinkedIn copy proof remains authoritative despite an optional API GET_POST_CONTENT 403. Never republish; collect outcomes.',null);
+          results.push({channel:row.channel,post_id:ref,state:'live_proven',provider:'composio',
+            provider_create_success:true,provider_truth_verified:true,
+            evidence_source:'independent_public_linkedin_page',readback_permission_limited:permissionLimited});
+          continue;
+        }
         const evidence={...previous,provider:'composio',provider_post_id:ref,provider_publication_ack_verified:providerCreateProven,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),readback_permission_limited:permissionLimited,error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
         if(providerCreateProven){
           await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
