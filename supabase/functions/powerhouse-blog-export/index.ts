@@ -24,9 +24,16 @@ Deno.serve(async(req)=>{
   if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published','measured','learned'].includes(clean(d.state))) return json({ok:false,error:'NO_APPROVED_BLOG_ARTIFACT',runDate},404);
 
-  const slug=clean(o?.slug)||clean(a.generation_evidence?.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
-  const contentId=clean(o?.content_id)||('blog:'+slug);
-  const canonical=clean(o?.canonical_url)||('https://www.bedrijfsgeheugen.nl/blog/'+slug+'/');
+  const slug=clean(a.generation_evidence?.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
+  // Never export a stale obligation's URL when the artifact was regenerated.
+  // A proven provider side effect is immutable: reconcile it, do not replace it.
+  if (clean(o?.slug) && clean(o.slug)!==slug
+      && (clean(o?.status)!=='GENERATED' || clean(o?.evidence?.provider_create_success)==='true'
+          || clean(o?.evidence?.republish_forbidden)==='true')) {
+    return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_REQUIRES_RECONCILIATION',runDate},409);
+  }
+  const contentId='blog:'+slug;
+  const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
   const focus=clean(a.generation_evidence?.focus_keyword)||'bedrijfsgeheugen';
   const meta=(clean(a.generation_evidence?.meta_description)||clean(a.content_brief)||clean(a.title)).slice(0,170);
 
