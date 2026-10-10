@@ -249,6 +249,7 @@ Deno.serve(async (req) => {
   if (!leaseAcquired) return json({ ok:true, runDate, skipped:true, reason:'ALREADY_RUNNING' }, 202);
 
   const stepResults: any[] = [];
+  const loopStartedAt = Date.now();
 
   try {
     const first = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
@@ -324,14 +325,13 @@ Deno.serve(async (req) => {
         && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED');
     });
     let bootstrapStillInFlight = false;
-    let bootstrapAttempted = false;
+    // A completed bootstrap is one of the normal bounded generation rounds.
     if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock) {
-      bootstrapAttempted = true;
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
       // this tick. Existing lease, next-hour retry and provider-id dedupe apply.
-      bootstrapStillInFlight = seeded.timed_out === true || seeded.http === 0;
+      bootstrapStillInFlight = seeded.timed_out === true || seeded.http === 0 || !seeded.ok;
       if (!seeded.ok) {
         stepResults.push({
           name: 'content-decision-bootstrap',
@@ -342,9 +342,13 @@ Deno.serve(async (req) => {
       }
     }
 
-    const MAX_CHANNEL_GENERATIONS = 1;
+    // Drain already-decided channels within the original single-writer lease.
+    // Reserve a bounded wall-time budget for provider dispatch and proof.
+    const MAX_CHANNEL_GENERATIONS = 3;
+    const MAX_GENERATION_ELAPSED_MS = 65_000;
     let generatedRounds = 0;
-    for (; generatedRounds < MAX_CHANNEL_GENERATIONS && !bootstrapStillInFlight && !bootstrapAttempted; generatedRounds++) {
+    for (; generatedRounds < MAX_CHANNEL_GENERATIONS && !bootstrapStillInFlight
+      && Date.now() - loopStartedAt < MAX_GENERATION_ELAPSED_MS; generatedRounds++) {
       const { data: pendingGeneration, error: pendingGenerationError } = await db
         .from('powerhouse_channel_decisions')
         .select('channel')
