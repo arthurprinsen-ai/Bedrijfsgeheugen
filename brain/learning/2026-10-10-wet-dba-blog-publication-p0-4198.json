@@ -40,13 +40,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      ".github/workflows/powerhouse-daily-blog.yml"
+      "tests/brain-blog-source-evidence-p0-4198.test.mjs"
     ],
     "shadow": [
-      "tools/seo-order-engine/validate.mjs"
+      "tests/brain-blog-stale-lineage-p0-4198.test.mjs"
     ],
     "canary": [
-      "blog/wet-dba-en-zelfstandigen-wat-betekent-dit-voor-jou-als-zzp-er-of-opdra/index.html"
+      "tests/brain-blog-source-evidence-p0-4198.test.mjs"
     ],
     "production_claim": "NOT_YET_PROVEN"
   }
