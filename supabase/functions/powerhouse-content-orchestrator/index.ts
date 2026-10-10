@@ -40,7 +40,7 @@ const executor_capabilities: Record<string, { executable: boolean; executor: str
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
-const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts"]);
+const DIRECT_TABLES=new Set(["bg_gezondheid","powerhouse_daily_runs","powerhouse_content_recommendations","bg_schrijfregels","brain_ai_governance_registry","powerhouse_channel_decisions","content_publication_obligations","powerhouse_media_proof_evidence_v1","powerhouse_instagram_daily_winners_v1","bg_campaign_links","powerhouse_content_artifacts","powerhouse_social_publish_capabilities_v1"]);
 const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_materialize_source_backed_channel_candidates_v2"]);
 const DB_JSON_COLUMNS=new Set([
  'bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload',
