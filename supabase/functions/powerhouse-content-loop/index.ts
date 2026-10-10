@@ -287,9 +287,36 @@ Deno.serve(async (req) => {
     // lower-priority LinkedIn personal post even when the canonical cron succeeded.
     // Keep this bounded within the existing single supervisor/lease. Do not bypass
     // prepublish, unique-publication, identity or media proof gates.
+    // Bootstrap the canonical daily decision set exactly once when the scheduled
+    // revenue runtime has not materialized it. Without this step the supervisor
+    // sees zero pending decisions and silently skips every publishing lane.
+    // Use the EXISTING orchestrator under the EXISTING content-loop lease.
+    const { data: initialDecisions, error: initialDecisionsError } = await db
+      .from('powerhouse_channel_decisions')
+      .select('channel')
+      .eq('run_date', runDate)
+      .limit(1);
+    if (initialDecisionsError) throw new Error('INITIAL_DECISION_READ_FAILED');
+    let bootstrapStillInFlight = false;
+    if (!initialDecisions?.length) {
+      const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
+      stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
+      // When the child may still be running, do not invoke it a second time in
+      // this tick. Existing lease, next-hour retry and provider-id dedupe apply.
+      bootstrapStillInFlight = seeded.timed_out === true || seeded.http === 0;
+      if (!seeded.ok) {
+        stepResults.push({
+          name: 'content-decision-bootstrap',
+          ok: false,
+          degraded: true,
+          error: 'INITIAL_DECISION_MATERIALIZATION_FAILED'
+        });
+      }
+    }
+
     const MAX_CHANNEL_GENERATIONS = 4;
     let generatedRounds = 0;
-    for (; generatedRounds < MAX_CHANNEL_GENERATIONS; generatedRounds++) {
+    for (; generatedRounds < MAX_CHANNEL_GENERATIONS && !bootstrapStillInFlight; generatedRounds++) {
       const { data: pendingGeneration, error: pendingGenerationError } = await db
         .from('powerhouse_channel_decisions')
         .select('channel')
