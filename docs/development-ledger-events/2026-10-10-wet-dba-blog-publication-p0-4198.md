@@ -8,3 +8,5 @@
 - This PR is the original website delivery obligation, not a new blog owner or additional scheduler.
 - Public provider/Netlify readback: NOT YET OBSERVED. Await protected merge and verified canonical link before writing LIVE_PROVEN.
 - Commercial CTA: existing Bedrijfsgeheugen Frisse Blik; count only observed leads, meetings or orders.
+
+- Protected candidate includes exactly one machine metadata header; original PR branch and content obligation retained for all subsequent required checks.
