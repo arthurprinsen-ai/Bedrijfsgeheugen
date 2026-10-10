@@ -51,3 +51,17 @@ test('historical provider mutation, OAuth and global duplicate gates stay mandat
   for(const symbol of ['reserveGlobalUniquePublication(db,runDate,row.channel','issuePublishCapability(db,runDate,row.channel','consumePublishCapability(db,capability','preflightLinkedInCompanyViaComposio','LINKEDIN_COMMENTARY_LIMIT_EXCEEDED','MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED'])assert.ok(social.includes(symbol),symbol);
   assert.match(loop,/const OPERATIONAL_CHANNELS = \['linkedin_personal','linkedin_company','instagram','blog'\]/);
 });
+
+test('independently verified public LinkedIn proof survives optional GET_POST_CONTENT 403',()=>{
+  const start=social.indexOf("if (row.channel === 'linkedin_personal' && (declaredProvider");
+  const end=social.indexOf("if (row.channel === 'linkedin_company' && (",start);
+  const reconcile=social.slice(start,end);
+  assert.ok(start>0&&end>start);
+  assert.match(reconcile,/publicProof\.independent_public_readback_verified===true/);
+  assert.match(reconcile,/publicProof\.readback_exact_first_85_characters_matched===true/);
+  assert.match(reconcile,/publicProof\.readback_exact_last_90_characters_matched===true/);
+  assert.match(reconcile,/clean\(obligation\?\.canonical_url\)\.includes\(ref\)/);
+  assert.match(reconcile,/provider_truth_source:'independent_public_linkedin_page'/);
+  assert.match(reconcile,/recordObligation\(db,runDate,row\.channel,'LIVE_PROVEN',ref,evidence/);
+  assert.match(reconcile,/republish_forbidden:true/);
+});
