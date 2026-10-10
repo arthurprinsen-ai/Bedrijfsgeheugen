@@ -31,5 +31,11 @@
     "Check deadline >= current publication date, not just freshness, for grant / law / subsidy sources.",
     "Duplicate blockers never bypassed.",
     "Only real provider readback counts as live."
-  ]
+  ],
+  "compiler": {
+    "failure_class": "EXPIRED_SOURCE_DEADLINE_CONTENT_SELECTION",
+    "scope": "CONTENT_EXTERNAL_MKB_SOURCE_SELECTION",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
 }
