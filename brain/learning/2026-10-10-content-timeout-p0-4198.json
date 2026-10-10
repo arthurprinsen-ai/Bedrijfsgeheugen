@@ -45,5 +45,13 @@
     "Do not treat a client-side timeout as proof that a generation has failed or did not persist; reconcile subsequent readback.",
     "Preserve one supervisor lease and never invoke the same child twice when a timed-out provider action could still be running.",
     "Real LinkedIn/Meta IDs and public readback are mandatory before a post is counted as delivered."
-  ]
+  ],
+  "evidence": {
+    "production_project": "adhjwmvyoixzjtmiroln",
+    "edge_at_diagnosis": "powerhouse-content-loop:v34",
+    "network_request_id": 2101,
+    "observation": "Supervised child call timed out at 40 seconds but fresh 2026-10-10 Wet DBA blog artifact was persisted after timeout; provider post receipt still absent.",
+    "regression_test": "tests/brain-content-generation-timeout-p0-4198.test.mjs",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4303"
+  }
 }
