@@ -294,14 +294,30 @@ Deno.serve(async (req) => {
     const requiredDecisionChannels = ['linkedin_personal', 'linkedin_company', 'instagram_company', 'blog'];
     const { data: initialDecisions, error: initialDecisionsError } = await db
       .from('powerhouse_channel_decisions')
-      .select('channel')
+      .select('channel,state,decision,delivery_ref,delivery_evidence')
       .eq('run_date', runDate)
       .in('channel', requiredDecisionChannels)
       .limit(4);
     if (initialDecisionsError) throw new Error('INITIAL_DECISION_READ_FAILED');
     const existingDecisionChannels = new Set((initialDecisions || []).map((decision: any) => clean(decision.channel)));
+    // A unique-content failure with no provider side effect can be safely
+    // reconsidered after fresher source materialization. Never retry a
+    // published/ambiguous side effect or bypass the uniqueness gate.
+    const retryableContentBlock = (initialDecisions || []).some((decision: any) => {
+      const evidence = decision.delivery_evidence || {};
+      const reason = clean(evidence.error);
+      return decision.decision === 'publish'
+        && decision.state === 'blocked'
+        && !clean(decision.delivery_ref)
+        && evidence.possible_provider_side_effect !== true
+        && evidence.republish_forbidden !== true
+        && evidence.provider_create_success !== true
+        && evidence.provider_publication_ack_verified !== true
+        && evidence.provider_truth_verified !== true
+        && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED');
+    });
     let bootstrapStillInFlight = false;
-    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel))) {
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock) {
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
