@@ -41,8 +41,9 @@
     "publication_outcomes": "none confirmed on 10 Oct at diagnosis"
   },
   "prevention": [
-    "Constrain synchronous generation to one call per supervised tick; native hourly cron makes incremental progress.",
-    "Allow enough time for slow Anthropic output to complete before deciding outcome.",
-    "Provider sends still require prepublish, identity, dedupe and readback."
+    "On every canonical hourly run, bound generative processing to one AI call with enough time for Anthropic inference.",
+    "Do not treat a client-side timeout as proof that a generation has failed or did not persist; reconcile subsequent readback.",
+    "Preserve one supervisor lease and never invoke the same child twice when a timed-out provider action could still be running.",
+    "Real LinkedIn/Meta IDs and public readback are mandatory before a post is counted as delivered."
   ]
 }
