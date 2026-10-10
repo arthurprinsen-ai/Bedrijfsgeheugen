@@ -41,5 +41,11 @@
       "tests/brain-linkedin-length-preflight-p0-4198.test.mjs"
     ],
     "canonical_eligible": false
-  }
+  },
+  "prevention": [
+    "Reject provider-invalid LinkedIn commentary prior to consuming publication authority.",
+    "Bound personal and company generated body text before final hash and review.",
+    "Keep duplicate, organization-admin OAuth and provider-readback proofs mandatory.",
+    "Recover historical consumed daily capability only with independent evidence that no provider side effect occurred."
+  ]
 }
