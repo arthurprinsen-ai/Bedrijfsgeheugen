@@ -1,0 +1,35 @@
+{
+  "id": "p0-4198-expired-content-signal-20261010-v1",
+  "date": "2026-10-10",
+  "status": "PRODUCTION_DATABASE_APPLIED_GITHUB_CANDIDATE",
+  "fingerprint": "content|source-selection|expired-deadline|source-backed-v1",
+  "root_cause": "On 2026-10-10 highest-confidence source had a CPNL submission deadline of 2026-10-06. The source selector ordered exclusively by trust and relevance without filtering expired dates, causing outdated copy and duplicate-post gate failures.",
+  "change": "Non-destructive canonical source selector now requires no explicit deadline or deadline on/after run date. Preserve historical signals, source-backed recommendation IDs, dedupe and blog/page ownership contracts.",
+  "production_truth": {
+    "migration": "applied to project adhjwmvyoixzjtmiroln 2026-10-10; success returned",
+    "prior_selected": "CPNL close 2026-10-06",
+    "eligible_new_candidate": "KVK Wet DBA deadline 2026-10-29",
+    "posts_delivered": "not yet proven"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-expired-content-signal-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-expired-content-signal-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-expired-content-signal-p0-4198.test.mjs"
+    ],
+    "production_claim": "migration applied, but no claim of delivery until publisher and provider readback"
+  },
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "migration": "supabase/migrations/20261010090900_filter_expired_content_signals_v1.sql"
+  },
+  "prevention": [
+    "Check deadline >= current publication date, not just freshness, for grant / law / subsidy sources.",
+    "Duplicate blockers never bypassed.",
+    "Only real provider readback counts as live."
+  ]
+}
