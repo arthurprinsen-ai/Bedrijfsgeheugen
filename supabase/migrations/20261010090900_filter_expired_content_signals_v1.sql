@@ -161,3 +161,7 @@ begin
   );
 end $function$
 ;
+
+-- Preserve the exact existing production ACL for the SECURITY DEFINER function.
+REVOKE EXECUTE ON FUNCTION public.powerhouse_materialize_source_backed_channel_candidates_v1(date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_materialize_source_backed_channel_candidates_v1(date) TO service_role;
