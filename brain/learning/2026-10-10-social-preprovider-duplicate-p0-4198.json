@@ -1,0 +1,49 @@
+{
+  "id": "p0-4198-social-preprovider-duplicate-false-sent-marker-20261010-v1",
+  "date": "2026-10-10",
+  "status": "CANDIDATE_PROTECTED_CHECKS",
+  "fingerprint": "powerhouse|social|global-duplicate-rejection|false-republish-forbidden|v1",
+  "root_cause": "On 10 Oct both LinkedIn artifacts were declined by existing global semantic/story-family uniqueness before any Composio call, but publisher set republish_forbidden=true regardless. Orchestrator and supervisor interpreted that as an existing provider side effect and permanently suppressed fresh source-backed rematching. Provider IDs absent, publication_authority issued but consumed=false, direct intent BLOCKED.",
+  "prevention": [
+    "Never mark republish_forbidden when global uniqueness check rejected content before any remote mutation.",
+    "Recover only when channel blocked, error is exact global uniqueness failure, capability issued but never consumed, no delivery reference and no provider create/ack/verified/potential side effect.",
+    "Clear stale error/uniqueness/republish metadata when canonical orchestrator chooses genuinely different source-backed recommendation; then rerun the original global uniqueness review.",
+    "Provider side effects remain immutable; any possible provider send must be reconciled, never re-sent.",
+    "Do not disable unique story-family/semantic review or replace canonical sender."
+  ],
+  "compiler": {
+    "failure_class": "SOCIAL_PRE_PROVIDER_DUPLICATE_FALSE_REPUBLISH_FORBIDDEN",
+    "scope": "CANONICAL_LINKEDIN_CONTENT_RECOVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "observed_date": "2026-10-10",
+    "linkedin_channels": [
+      "linkedin_personal",
+      "linkedin_company"
+    ],
+    "blocked_error": "GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE",
+    "both_delivery_ref": "NULL",
+    "provider_truth_verified": false,
+    "publication_authority_consumed": false,
+    "regression": "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ],
+    "production_claim": "Requires protected merge, exact Edge deployment of all three owners, one canonical provider-approved unique post and verified external readback."
+  },
+  "production_truth": {
+    "before": "No LinkedIn posts 10 October; both BLOCKED; republish_forbidden true but capability unconsumed",
+    "after": "not yet independently proven"
+  }
+}
