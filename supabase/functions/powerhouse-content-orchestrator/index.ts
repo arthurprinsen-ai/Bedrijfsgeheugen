@@ -1,3 +1,4 @@
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -521,6 +522,9 @@ Deno.serve(async (req) => {
       ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
       : pending.channel==='instagram_company' ? 'Mira verbeeldt één canoniek PH-P ondernemersprobleem. Verplichte caption: herkenbare scène, oorzaak, potentieel gevolg, concrete portaalcapaciteit/actie/eigenaar, meetpunt en menselijke pointe. Gebruik uitsluitend mira_entrepreneur_context, verzin geen klantresultaat, en claim geen onbewezen portalfeature. Laat in de bijschrifttekst zien wat het portaal doet; het beeld blijft één echte Mira-scène, geen corporate tekstkaart.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
+    const editorialSystem = pending.channel==='linkedin_personal'
+      ? system + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
+      : system;
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
     const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
@@ -531,7 +535,7 @@ Deno.serve(async (req) => {
     let fallbackReason:string|null=null;
     try {
       if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
-      artifact=await callAI(apiKey,gov.model_id,system,artifactInput,artifactTool,pending.channel==='blog'?4800:1800);
+      artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,pending.channel==='blog'?4800:1800);
     } catch(error) {
       if(!composioFallbackEligible(error))throw error;
       const {data:fallbackGov,error:fallbackGovError}=await db.from('brain_ai_governance_registry')
@@ -541,7 +545,7 @@ Deno.serve(async (req) => {
       generationProvider='Composio/Groq';
       generationModel=clean(fallbackGov.model_id);
       fallbackReason=clean((error as Error)?.message).slice(0,240);
-      artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:1800);
+      artifact=await callComposioArtifact(db,generationModel,editorialSystem,artifactInput,pending.channel==='blog'?4800:1800);
     }
     let bodyText = clean(artifact.body);
     if (pending.channel === 'linkedin_personal' || pending.channel === 'linkedin_company') bodyText = compactLinkedInCommentary(bodyText);
@@ -552,7 +556,11 @@ Deno.serve(async (req) => {
       if(!check.ok)throw new Error(check.reason);
       if(clean(instagramProof?.mira_business_problem_id)!==miraBusinessProblem.id)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
     }
-    if (pending.channel==='linkedin_personal' && !personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
+    if (pending.channel==='linkedin_personal') {
+      const editorialViolations=personalEditorialViolations(bodyText,personalSource?.evidence||{});
+      if(editorialViolations.length) throw new Error('PERSONAL_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map(x=>x.code).join(','));
+      if(!personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
+    }
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
       if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
@@ -580,7 +588,7 @@ Deno.serve(async (req) => {
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company',identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
+      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
