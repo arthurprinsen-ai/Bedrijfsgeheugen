@@ -119,7 +119,7 @@ begin
     'daily_winner_recommendation_id',v_winner.recommendation_id,'daily_winner_score_version',v_winner.score_version,
     'republish_forbidden',v_ob.external_id is not null);
 end
-$function$
+$function$;
 
 -- Reaffirm existing service-only executor privileges after CREATE OR REPLACE.
 -- No browser/anonymous role may invoke this SECURITY DEFINER operation.
