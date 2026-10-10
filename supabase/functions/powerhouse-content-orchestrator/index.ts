@@ -133,7 +133,7 @@ async function callAI(key: string, model: string, system: string, user: unknown,
     method: 'POST',
     headers: { 'x-api-key': key, 'anthropic-version':'2023-06-01','content-type':'application/json' },
     body: JSON.stringify({ model, max_tokens:maxTokens, system, messages:[{role:'user',content:JSON.stringify(user)}], tools:[tool], tool_choice:{type:'tool',name:tool.name} }),
-    signal: AbortSignal.timeout(45000),
+    signal: AbortSignal.timeout(90_000),
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -174,7 +174,7 @@ async function callComposioArtifact(db:any,model:string,system:string,user:unkno
       {role:'system',content:strictSystem},
       {role:'user',content:JSON.stringify(user)}
     ]}}),
-    signal:AbortSignal.timeout(45000),
+    signal:AbortSignal.timeout(45_000),
   });
   const body:any=await response.json().catch(()=>({}));
   if(!response.ok||body?.successful!==true)throw new Error('COMPOSIO_GENERATION_FAILED:'+response.status+':'+clean(body?.error||body?.message||body?.data?.message).slice(0,200));
@@ -492,7 +492,7 @@ Deno.serve(async (req) => {
     let fallbackReason:string|null=null;
     try {
       if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
-      artifact=await callAI(apiKey,gov.model_id,system,artifactInput,artifactTool,pending.channel==='blog'?4800:2600);
+      artifact=await callAI(apiKey,gov.model_id,system,artifactInput,artifactTool,pending.channel==='blog'?4800:1800);
     } catch(error) {
       if(!composioFallbackEligible(error))throw error;
       const {data:fallbackGov,error:fallbackGovError}=await db.from('brain_ai_governance_registry')
@@ -502,7 +502,7 @@ Deno.serve(async (req) => {
       generationProvider='Composio/Groq';
       generationModel=clean(fallbackGov.model_id);
       fallbackReason=clean((error as Error)?.message).slice(0,240);
-      artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:2600);
+      artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:1800);
     }
     let bodyText = clean(artifact.body);
     if (pending.channel==='instagram_company') {

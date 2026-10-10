@@ -64,7 +64,7 @@ const CHILD_TIMEOUTS: Record<string, number> = {
   'powerhouse-instagram-media-router': 10_000,
   'powerhouse-composio-linkedin-setup': 8_000,
   'powerhouse-social-publisher:audit': 12_000,
-  'powerhouse-content-orchestrator': 75_000,
+  'powerhouse-content-orchestrator': 110_000,
   'powerhouse-social-publisher': 25_000,
   'powerhouse-blog-queue': 25_000,
 };
