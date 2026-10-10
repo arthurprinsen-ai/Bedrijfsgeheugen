@@ -64,7 +64,7 @@ const CHILD_TIMEOUTS: Record<string, number> = {
   'powerhouse-instagram-media-router': 10_000,
   'powerhouse-composio-linkedin-setup': 8_000,
   'powerhouse-social-publisher:audit': 12_000,
-  'powerhouse-content-orchestrator': 40_000,
+  'powerhouse-content-orchestrator': 75_000,
   'powerhouse-social-publisher': 25_000,
   'powerhouse-blog-queue': 25_000,
 };
@@ -317,7 +317,9 @@ Deno.serve(async (req) => {
         && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED');
     });
     let bootstrapStillInFlight = false;
+    let bootstrapAttempted = false;
     if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock) {
+      bootstrapAttempted = true;
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
@@ -333,9 +335,9 @@ Deno.serve(async (req) => {
       }
     }
 
-    const MAX_CHANNEL_GENERATIONS = 4;
+    const MAX_CHANNEL_GENERATIONS = 1;
     let generatedRounds = 0;
-    for (; generatedRounds < MAX_CHANNEL_GENERATIONS && !bootstrapStillInFlight; generatedRounds++) {
+    for (; generatedRounds < MAX_CHANNEL_GENERATIONS && !bootstrapStillInFlight && !bootstrapAttempted; generatedRounds++) {
       const { data: pendingGeneration, error: pendingGenerationError } = await db
         .from('powerhouse_channel_decisions')
         .select('channel')
