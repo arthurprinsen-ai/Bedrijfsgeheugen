@@ -49,5 +49,17 @@
       "tests/brain-blog-source-evidence-p0-4198.test.mjs"
     ],
     "production_claim": "NOT_YET_PROVEN"
+  },
+  "root_cause": "Original day 2026-10-10 candidate selected expired Circular Plastics NL copy and retained its stale GENERATED slug. The existing writer re-rendered a newer Wet DBA artifact after the source-rematch and explicit public citation corrections; the quality gate and protected merge must validate the corrected draft before public publication.",
+  "evidence": {
+    "source_recommendation_id": "638f4514-55e5-40fa-8573-ed71c688f360",
+    "source_url": "https://www.kvk.nl/wetten-en-regels/wet-dba-voorkom-schijnzelfstandigheid/",
+    "protected_candidate_pr": 4300,
+    "blog_html_path": "blog/wet-dba-en-zelfstandigen-wat-betekent-dit-voor-jou-als-zzp-er-of-opdra/index.html",
+    "provider_live_proven": false,
+    "tests": [
+      "tests/brain-blog-source-evidence-p0-4198.test.mjs",
+      "tests/brain-blog-stale-lineage-p0-4198.test.mjs"
+    ]
   }
 }
