@@ -5,7 +5,7 @@
 - Reproduced logic error in active v32: no `decided` rows implies no call to decision-materializing `powerhouse-content-orchestrator`.
 - Protected candidate: introduce idempotent one-time bootstrap when any operational channel decision is missing.
 - Existing supervised lease and provider-specific quality/identity/dedupe/media gates remain unchanged; no parallel schedule.
-- Regression: `tests/powerhouse-content-bootstrap-p0-4198.test.mjs`.
+- Regression: `tests/brain-powerhouse-content-bootstrap-p0-4198.test.mjs`.
 - Brain learning: `brain/learning/2026-10-10-content-bootstrap-p0-4198.json`.
 - Canonical human doc: `docs/changes/2026-10-10-content-bootstrap-p0-4198.md`.
 - Production status remains unproven until required CI checks, protected merge, source parity, provider publication readback and observed commercial outcomes.
