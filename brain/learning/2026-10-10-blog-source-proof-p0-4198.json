@@ -1,0 +1,41 @@
+{
+  "id": "p0-4198-canonical-blog-public-source-20261010-v1",
+  "date": "2026-10-10",
+  "status": "CANDIDATE_PROTECTED_TESTS",
+  "fingerprint": "powerhouse|blog|public-source-proof|legacy-generation-evidence-string|v1",
+  "root_cause": "After the same-day blog source switched from expired CPNL to KVK Wet DBA, the canonical blog renderer produced the current article but the required SEO quality gate rejected it because the generated HTML had no evidence/BrOnnen section. The content artifact generation_evidence is JSON-string wrapped, so the export lost recommendation_id/focus/meta and could not attach the original KVK public source. Failed build then left dirty working tree, causing the next existing-PR recovery step to fail checkout.",
+  "prevention": [
+    "Always parse canonical generation evidence as object or legacy nested JSON-string before extracting recommendation id and SEO copy.",
+    "Source URLs may only come from the exact selected source-backed recommendation's external evidence; do not invent sources.",
+    "Render visible HTML source attribution with safe escaped HTTPS URL, retaining original SEO quality gate and commercial CTA.",
+    "On failed build, discard uncommitted runner-only build artifacts before checking out exact existing PR branch, never publish a failed page."
+  ],
+  "compiler": {
+    "failure_class": "BLOG_SOURCE_PROVENANCE_LOST_BETWEEN_BRAIN_AND_STATIC_PUBLICATION",
+    "scope": "CANONICAL_BLOG_RENDERER",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "runtime_blog_day": "2026-10-10",
+    "generated_article": "Wet DBA en zelfstandigen",
+    "source_url": "https://www.kvk.nl/wetten-en-regels/wet-dba-voorkom-schijnzelfstandigheid/",
+    "source_recommendation_id": "638f4514-55e5-40fa-8573-ed71c688f360",
+    "github_workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/38037848165",
+    "failing_quality_gate": "SEO order gate faalt: bewijs/bronnen ontbreekt",
+    "regression_test": "tests/brain-blog-source-evidence-p0-4198.test.mjs",
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-source-evidence-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-source-evidence-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-source-evidence-p0-4198.test.mjs"
+    ],
+    "production_claim": "not live until protected blog candidate #4300 is refreshed, required SEO/i18n tests pass, Netlify product deploy and public readback proven"
+  }
+}

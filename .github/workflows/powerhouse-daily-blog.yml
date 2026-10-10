@@ -157,6 +157,9 @@ jobs:
           fi
 
           # Always derive this read/write from the current canonical candidate.
+          # Discard uncommitted build output from a failed prior step first.
+          git reset --hard HEAD
+          git clean -fd
           git fetch origin "$branch"
           git checkout -B "$branch" "origin/$branch"
           npm install --prefer-offline --no-audit --no-fund --silent

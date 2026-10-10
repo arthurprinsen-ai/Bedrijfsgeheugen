@@ -210,6 +210,19 @@ def body_html(data):
         result.append(f"<p{css}>{inline_markdown(paragraph)}</p>")
         lead_written = True
     result.append(functional_figures(focus_plain))
+    # Visible, verified source links are required for claims about laws and
+    # external events; never synthesize a citation or remove the SEO proof gate.
+    sources = [source for source in data.get("sources", []) if isinstance(source, dict)
+               and str(source.get("url", "")).startswith("https://")]
+    if sources:
+        lines = ['<section class="artikel-bronnen" data-bg-evidence="publieke-bron"><h2>Bronnen en actualiteit</h2>',
+                 '<p>Controleer bij veranderende wetgeving altijd de meest actuele versie van de oorspronkelijke bron.</p><ul>']
+        for source in sources[:3]:
+            title = html.escape(str(source.get("title") or "Oorspronkelijke bron"))
+            url = html.escape(str(source["url"]), quote=True)
+            lines.append(f'<li><a href="{url}" rel="noopener noreferrer">{title}</a></li>')
+        lines.append('</ul></section>')
+        result.append("\n".join(lines))
     if data.get("cta"):
         result.append(
             '<p class="artikel-cta">'
