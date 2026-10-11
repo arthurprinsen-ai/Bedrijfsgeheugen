@@ -33,3 +33,14 @@ test('production transforms run in a disposable checkout so unrelated source-con
   assert.match(content,/git worktree remove --force/);
   assert.ok(content.indexOf('git worktree add --detach') < content.indexOf('node tools\/ci\/netlify-build-entry.mjs'));
 });
+
+test('the original fail-closed runtime and English cache tests remain mandatory',()=>{
+  const start=workflow.indexOf('name: Validate fail-closed static English cache before merge');
+  const end=workflow.indexOf('- name: Verify previously unwired test contracts',start);
+  const content=workflow.slice(start,end);
+  assert.match(content,/POWERHOUSE_I18N_REQUIRE_RUNTIME=1 node --test/);
+  assert.match(content,/tests\/brain-powerhouse-blog-i18n-prepublish\.test\.mjs/);
+  assert.match(content,/tests\/delivery-powerhouse-blog-i18n-prepublish\.integration\.test\.mjs/);
+  assert.match(content,/STATIC_I18N_NETWORK: '0'/);
+  assert.match(content,/STATIC_I18N_REQUIRE_CACHE: '1'/);
+});
