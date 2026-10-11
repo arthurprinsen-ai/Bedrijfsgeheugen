@@ -14,3 +14,7 @@ Production readback: one active job, hourly schedule, same function owner, same 
 ## Source and tests
 Migration: supabase/migrations/20261011110000_powerhouse_content_reconciliation_isolation_always_on_v1.sql.
 Regression: tests/brain-commercial-content-continuity-v1.test.mjs.
+
+## Protected production source registration
+
+The canonical content generator was missing from supabase/config.toml even after its source was merged to main in PR #4316. It has now been registered with the same in-function token authentication (verify_jwt=false). The existing provider-source parity workflow must prove exact production deployment; an attestation that checked other functions does not constitute proof for this generator. Publication remains unproven until provider-side verification.
