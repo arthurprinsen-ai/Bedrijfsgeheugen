@@ -275,7 +275,20 @@ jobs:
           STATIC_I18N_REQUIRE_CACHE: '1'
         run: |
           POWERHOUSE_I18N_REQUIRE_RUNTIME=1 node --test tests/brain-powerhouse-blog-i18n-prepublish.test.mjs tests/delivery-powerhouse-blog-i18n-prepublish.integration.test.mjs
-          node tools/site-shell/build-localized-routes.mjs --validate-cache
+          # Verify the translated, canonical transformed pages in an isolated
+          # checkout: production transforms mutate working files, and running
+          # unrelated source-contract tests on that mutated tree causes false
+          # failures. Keep fail-closed offline translation proof unchanged.
+          scratch="$(mktemp -d "${RUNNER_TEMP:-/tmp}/powerhouse-i18n-XXXXXX")"
+          worktree="$scratch/site"
+          git worktree add --detach "$worktree" HEAD
+          trap 'git worktree remove --force "$worktree" >/dev/null 2>&1 || true; rm -rf "$scratch"' EXIT
+          ln -s "$GITHUB_WORKSPACE/node_modules" "$worktree/node_modules"
+          (
+            cd "$worktree"
+            node tools/ci/netlify-build-entry.mjs --prepare-i18n-cache=ci-static-i18n-verification.json
+            node tools/site-shell/build-localized-routes.mjs --validate-cache
+          )
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
