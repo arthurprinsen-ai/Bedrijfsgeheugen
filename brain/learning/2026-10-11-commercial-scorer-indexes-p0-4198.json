@@ -21,5 +21,10 @@
     "protected_main_pending": true,
     "commercial_cron_success_pending": true,
     "provider_external_outcomes_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-correlated-scoring-indexes-p0-4198.test.mjs"
+    ]
   }
 }
