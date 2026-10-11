@@ -1,0 +1,28 @@
+{
+  "fingerprint": "powerhouse|p0-4198|content-loop-lease-release-sql-parameter-types|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "SQL_PARAMETER_TYPE_INFERENCE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 7,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-lease-release-typed.test.mjs"
+    ]
+  },
+  "root_cause": "The content-loop released its original single-writer lease using jsonb_build_object('run_date',$3) without casting $3. PostgreSQL cannot infer this parameter's type and the release failed repeatedly, leaving stale leases until expiration.",
+  "prevention_rule": "Explicitly type all SQL placeholders inside jsonb_build_object at lease release. Preserve the original tenant and exact lease-holder guard; never claim publication success from an unlocked lease.",
+  "evidence": {
+    "log_message": "CONTENT_LOOP_LEASE_RELEASE_FAILED could not determine data type of parameter $3",
+    "source": "supabase/functions/powerhouse-content-loop/index.ts",
+    "tests": [
+      "tests/brain-content-loop-lease-release-typed.test.mjs"
+    ]
+  },
+  "outcome": {
+    "provider_deployment_pending": true,
+    "social_publication_proven": false
+  }
+}
