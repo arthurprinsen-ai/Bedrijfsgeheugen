@@ -93,3 +93,10 @@ entrypoint = "./functions/powerhouse-salesrobot-ingest/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-scan-ingest/index.ts"
+
+# Canonical content generator: required for protected-main provider source parity.
+# Authentication is enforced inside this function via the existing scheduler token.
+[functions.powerhouse-content-orchestrator]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
