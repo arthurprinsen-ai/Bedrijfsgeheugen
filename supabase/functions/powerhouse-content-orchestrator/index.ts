@@ -579,7 +579,30 @@ Deno.serve(async (req) => {
       if(clean(instagramProof?.mira_business_problem_id)!==miraBusinessProblem.id)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
     }
     if (pending.channel==='linkedin_personal') {
-      const editorialViolations=personalEditorialViolations(bodyText,personalSource?.evidence||{});
+      let editorialViolations=personalEditorialViolations(bodyText,personalSource?.evidence||{});
+      // One source-grounded editorial rewrite is allowed before final rejection.
+      // This is not a publication bypass: all existing hard gates run again.
+      if (editorialViolations.length && generationProvider==='Anthropic' && apiKey) {
+        const correctionPrompt = editorialSystem
+          + ' HERZIEN: de vorige versie werd door het vaste redactiecontract afgekeurd ('
+          + editorialViolations.map((item:any)=>item.code).join(', ')
+          + '). Schrijf opnieuw, als op zichzelf staande LinkedIn-tekst, tussen 150 en 175 woorden. '
+          + 'Geen interne technische termen, geen statusrapport, geen verkooppraatje, geen fictieve ervaringen. '
+          + 'Gebruik uitsluitend de geverifieerde persoonlijke bron. Eindig bij een oprichtersverhaal met één open vraag. '
+          + 'Controleer zelf de woordlengte en brontrouw voordat je de definitieve body teruggeeft.';
+        const revision=await callAI(apiKey,gov.model_id,correctionPrompt,{
+          ...artifactInput,rejected_draft:bodyText,
+          editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
+        },artifactTool,2400);
+        const revisedText=compactLinkedInCommentary(clean(revision?.body));
+        if (revisedText
+          && personalEditorialViolations(revisedText,personalSource?.evidence||{}).length===0
+          && personalFinalCopyValid(revisedText,personalSource?.evidence||{})) {
+          bodyText=revisedText;
+          artifact={...artifact,...revision,body:revisedText};
+          editorialViolations=[];
+        }
+      }
       if(editorialViolations.length) throw new Error('PERSONAL_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map(x=>x.code).join(','));
       if(!personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     }
