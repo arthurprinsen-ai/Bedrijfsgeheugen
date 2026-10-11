@@ -1,0 +1,74 @@
+{
+  "id": "seo-pricing-article-trust-2026-10-11",
+  "date": "2026-10-11",
+  "status": "CANDIDATE",
+  "authority": [
+    "config/seo-growth-loop.json",
+    "config/seo-optimization-allowlist.json",
+    "site/seo-order-map.json"
+  ],
+  "decision": "UPDATE_MONEY_PAGE_SUPPORT",
+  "canonical_owner": "https://www.bedrijfsgeheugen.nl/prijzen",
+  "support_page": "https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/",
+  "intent": "kosten digitalisering mkb",
+  "hypothesis": "Removing contradictory legacy pricing and matching schema plus price-intent CTA to current published offers reduces qualified buyer distrust",
+  "evidence": {
+    "production_checked_on": "2026-10-11",
+    "published_prices": {
+      "free_frisse_blik_minutes": 30,
+      "scan_eur": 2950,
+      "starter_eur_per_month": 99,
+      "build_sprint_from_eur": 14500
+    },
+    "conflict": "Support article still claimed €2900 paid Frisse Blik, €29/month maintenance and no software sales",
+    "gsc": {
+      "property": "sc-domain:bedrijfsgeheugen.nl",
+      "range": [
+        "2026-09-11",
+        "2026-10-08"
+      ],
+      "country": "NLD",
+      "support_page_rows": 0,
+      "pricing_page_rows": 0,
+      "note": "Missing rows do not prove nonindexing or zero demand"
+    },
+    "dataforseo": {
+      "query_terms": [
+        "wat kost digitalisering mkb",
+        "kosten digitalisering mkb",
+        "digitalisering mkb kosten"
+      ],
+      "location": "Netherlands",
+      "result_items": 0
+    }
+  },
+  "changes": [
+    "pricing-copy-truth",
+    "FAQ-schema-freshness",
+    "price-intent-CTA"
+  ],
+  "target_metrics": [
+    "organic_landing",
+    "primary_cta_click",
+    "qualified_lead",
+    "paid_order",
+    "realized_revenue"
+  ],
+  "rollback": "Restore previous article and cache if search, accessibility, trust or qualified conversions regress",
+  "guardrails": {
+    "max_daily_changes": 3,
+    "no_new_content": true,
+    "no_fake_roi": true,
+    "english_cache_required": true
+  },
+  "delivery": {
+    "state": "CANDIDATE_NOT_LIVE",
+    "production_readback": false
+  },
+  "outcomes": {
+    "qualified_leads": null,
+    "paid_orders": null,
+    "realized_revenue_eur": null
+  },
+  "learning_path": "BG211 -> BG168 -> BG166 -> BG167"
+}
