@@ -127,10 +127,22 @@ revoke all on function public.powerhouse_connection_daily_pulse_v1(date,integer)
 -- Reuse the existing identity-graph job (id 138), not a new scheduler.
 -- Keep graph sync at its existing minute (:32) while assessing all contacts in bounded
 -- 500-contact batches four times per hour. At 1,000 per tick, ~24K complete in ~6h.
-select cron.alter_job(
-  138,
-  schedule => '2,17,32,47 * * * *',
-  command => $job$
+do $configure_canonical_owner$
+declare v_jobid bigint;
+begin
+  select jobid into v_jobid
+  from cron.job
+  where jobname='powerhouse-identity-graph-v1' and active=true
+  order by jobid limit 1;
+
+  -- Branch previews may not have the production cron numeric ID.
+  if v_jobid is null then
+    raise notice 'existing identity-graph scheduler unavailable in preview; no parallel job created';
+  else
+    perform cron.alter_job(
+      v_jobid,
+      schedule => '2,17,32,47 * * * *',
+      command => $job$
 do $runner$
 declare v_date date := (now() at time zone 'Europe/Amsterdam')::date;
 begin
@@ -150,4 +162,7 @@ begin
 end;
 $runner$;
 $job$
-);
+    );
+  end if;
+end;
+$configure_canonical_owner$;
