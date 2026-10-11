@@ -28,6 +28,9 @@ $function$;
 REVOKE EXECUTE ON FUNCTION public.powerhouse_channel_decision_evidence_normalize_v1()
   FROM PUBLIC, anon, authenticated;
 
+GRANT EXECUTE ON FUNCTION public.powerhouse_channel_decision_evidence_normalize_v1()
+  TO service_role;
+
 DROP TRIGGER IF EXISTS powerhouse_channel_decision_evidence_normalize_trg
   ON public.powerhouse_channel_decisions;
 
