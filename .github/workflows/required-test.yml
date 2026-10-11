@@ -186,9 +186,39 @@ jobs:
             prBody: livePrBody,
             manifest: oneLoopPolicy.deliveryCandidate,
           });
-          const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
+          let comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
             ? metadataAuthority.delivery.baseSha
             : context.baseSha;
+          // GitHub native PR events can carry a stale base SHA after another
+          // protected-main PR merges. Use the manifest-declared newer base only
+          // when it is PROVEN to descend from the event base and to be an
+          // ancestor of both current protected main and this immutable head.
+          // Otherwise fail closed: never hide an unrelated candidate file.
+          if (metadataAuthority.source === 'pr-body'
+            && metadataAuthority.delivery.baseSha !== context.baseSha) {
+            const declared=metadataAuthority.delivery.baseSha;
+            if(!/^[0-9a-f]{40}$/i.test(declared)) throw new Error('PR_DECLARED_BASE_INVALID');
+            execFileSync('git',['fetch','--no-tags','--depth=100','origin','main'],{stdio:'inherit'});
+            const protectedMain=execFileSync('git',['rev-parse','FETCH_HEAD'],{encoding:'utf8'}).trim();
+            try {
+              execFileSync('git',['cat-file','-e',`${declared}^{commit}`],{stdio:'ignore'});
+            } catch {
+              execFileSync('git',['fetch','--no-tags','--depth=100','origin',declared],{stdio:'inherit'});
+            }
+            for(const [a,b,reason] of [
+              [context.baseSha,declared,'PR_BASE_NOT_DESCENDANT_OF_EVENT'],
+              [declared,protectedMain,'PR_BASE_NOT_IN_PROTECTED_MAIN'],
+              [declared,context.changeHeadSha,'PR_BASE_NOT_IN_CANDIDATE_HISTORY'],
+            ]) {
+              try {
+                execFileSync('git',['merge-base','--is-ancestor',a,b],{stdio:'ignore'});
+              } catch {
+                throw new Error(reason);
+              }
+            }
+            comparisonBaseSha=declared;
+            console.log('VERIFIED_PROTECTED_PR_BASE_ADVANCE',JSON.stringify({event:context.baseSha,declared,protectedMain}));
+          }
           if(metadataAuthority.source === 'versioned-manifest' && metadataAuthority.delivery.baseSha !== context.baseSha) {
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
