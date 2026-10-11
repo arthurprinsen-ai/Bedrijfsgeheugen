@@ -310,6 +310,17 @@ async function runLinkedInCockpitAutopilot(db:any){
       results.push({action_id:action.action_id,status:'blocked',reason:'CONCRETE_POST_CONTEXT_REQUIRED'});
       continue;
     }
+    // Brain must supply an exact authoritative share/UGC URN. LinkedIn
+    // activity links cannot be guessed into share URNs, and ordinary post
+    // URLs are insufficient for the structured LinkedIn comment mutation.
+    const evidence=action.evidence||{};
+    const gate=evidence.social_execution_gate||{};
+    const sourceUrn=clean(evidence.linkedin_post_urn||evidence.post_urn||evidence?.commercial_intelligence?.post_urn||gate.post_urn)
+      ||(decodeURIComponent(sourceUrl).match(/urn:li:(?:share|ugcPost):[0-9]+/)||[])[0]||'';
+    if(gate.quality_passed!==true||!/^urn:li:(?:share|ugcPost):[0-9]+$/.test(sourceUrn)||message.length>1250){
+      results.push({action_id:action.action_id,status:'held',reason:'VERIFIED_POST_URN_AND_QUALITY_GATE_REQUIRED'});
+      continue;
+    }
     const {data:claimed,error:claimError}=await db.from('powerhouse_sales_actions')
       .update({status:'waiting',updated_at:new Date().toISOString()})
       .eq('action_id',action.action_id).eq('status','suggested')
@@ -319,12 +330,17 @@ async function runLinkedInCockpitAutopilot(db:any){
     let providerId='';
     let providerEvidence:any=null;
     try{
-      const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
-      const provider=await composioExecute(apiKey,accountId,'LINKEDIN_CREATE_COMMENT_ON_POST',
-        `Create this exact LinkedIn comment on the post at ${sourceUrl}. Comment text: ${message}`);
+      const {apiKey,accountId,userId,personId}=await composioLinkedInContext(db);
+      const post=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:sourceUrn});
+      const remotePostUrn=deepPickLinkedInPostUrn(post?.data||post);
+      if(remotePostUrn!==sourceUrn)throw new Error('LINKEDIN_TARGET_POST_READBACK_MISMATCH');
+      const provider=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_CREATE_COMMENT_ON_POST',{
+        target_urn:sourceUrn,object:sourceUrn,actor:'urn:li:person:'+personId,
+        message:{text:message}
+      });
       providerId=deepPickId(provider?.data||provider,['id','comment_id','commentId']);
       if(!providerId)throw new Error('COMPOSIO_LINKEDIN_COMMENT_ID_MISSING');
-      providerEvidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',tool:'LINKEDIN_CREATE_COMMENT_ON_POST',provider_id:providerId,source_url:sourceUrl,provider_ack_verified:true,exact_readback_available:false,republish_forbidden:true,executed_at:new Date().toISOString()}};
+      providerEvidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',tool:'LINKEDIN_CREATE_COMMENT_ON_POST',provider_id:providerId,source_url:sourceUrl,post_urn:sourceUrn,provider_ack_verified:true,exact_readback_available:false,republish_forbidden:true,executed_at:new Date().toISOString()}};
       const {error:updateError}=await db.from('powerhouse_sales_actions')
         .update({status:'done',executed_at:new Date().toISOString(),evidence:providerEvidence,updated_at:new Date().toISOString()})
         .eq('action_id',action.action_id).eq('status','waiting');
