@@ -71,3 +71,15 @@ $job$
   raise notice 'powerhouse-identity-graph-v1 not present in this environment; no duplicate job created';
  end if;
 end $migration$;
+
+-- Preserve the existing company-news research pipeline, but allow weekend source checks.
+-- The Edge Function retains the existing relevance, budget and provider gates.
+do $news$
+begin
+ if exists(select 1 from cron.job where jobname='bg-bedrijfsnieuws-werkdagen') then
+  perform cron.alter_job(
+    job_id := (select jobid from cron.job where jobname='bg-bedrijfsnieuws-werkdagen'),
+    schedule := '31 6 * * *'
+  );
+ end if;
+end $news$;
