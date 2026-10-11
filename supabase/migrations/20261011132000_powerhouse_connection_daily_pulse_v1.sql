@@ -47,7 +47,7 @@ begin
   -- Only facts already ingested from authorized/public sources are used here.
   -- The Brain's canonical NBA and provider gates decide whether any external action can execute.
   with todo as (
-    select s.person_key,
+    select s.person_key,s.enrichment_date,
       case
         when lower(coalesce(s.source_snapshot #>> '{core,status}',''))='rust'
           then 'NO_ACTION_HOLD'
@@ -68,8 +68,7 @@ begin
       s.company_news_120d,
       s.latest_external_at
     from public.powerhouse_connection_enrichment_state_v1 s
-    where s.enrichment_date=p_run_date
-      and s.source_snapshot #>> '{daily_decision,run_date}' is distinct from p_run_date::text
+    where s.source_snapshot #>> '{daily_decision,run_date}' is distinct from p_run_date::text
     order by s.enriched_at asc, s.person_key
     limit v_size
   ), updated as (
@@ -79,6 +78,8 @@ begin
       '{daily_decision}',
       jsonb_build_object(
         'run_date',p_run_date::text,
+        'source_enrichment_date',t.enrichment_date,
+        'review_based_on_historical_snapshot',t.enrichment_date is distinct from p_run_date,
         'reviewed_at',now(),
         'result',t.review_result,
         'evidence',jsonb_build_object(
@@ -102,8 +103,7 @@ begin
   from public.powerhouse_connection_enrichment_state_v1 where enrichment_date=p_run_date;
   select count(*) into v_reviewed_today
   from public.powerhouse_connection_enrichment_state_v1
-  where enrichment_date=p_run_date
-    and source_snapshot #>> '{daily_decision,run_date}'=p_run_date::text;
+  where source_snapshot #>> '{daily_decision,run_date}'=p_run_date::text;
 
   return jsonb_build_object(
     'contract','powerhouse-connection-daily-pulse-v1',
@@ -166,3 +166,64 @@ $job$
   end if;
 end;
 $configure_canonical_owner$;
+
+
+-- A parallel canonical refresh must not erase the date-stamped assessment.
+-- The preview environment may predate the production write-through hotfix.
+do $preserve$
+declare v_signature text; v_fn text;
+ v_needle text := $$'date',excluded.enrichment_date,$$;
+ v_enriched_decision text := $details$
+  'run_date',excluded.enrichment_date::text,
+  'reviewed_at',clock_timestamp(),
+  'result',case
+    when lower(coalesce(excluded.source_snapshot #>> '{core,status}',''))='rust' then 'NO_ACTION_HOLD'
+    when excluded.company_news_120d>0 and excluded.latest_external_at>=now()-interval '30 days' then 'COMPANY_SIGNAL_REVIEW'
+    when excluded.external_signals_90d>0 and excluded.latest_external_at>=now()-interval '30 days' then 'EXTERNAL_SIGNAL_REVIEW'
+    when excluded.linkedin_events_30d>0 then 'LINKEDIN_ENGAGEMENT_REVIEW'
+    when lower(coalesce(excluded.source_snapshot #>> '{core,status}',''))='in_gesprek' then 'FOLLOWUP_REVIEW'
+    when excluded.data_completeness<0.60 then 'CONTEXT_RESEARCH_REVIEW'
+    else 'NO_ACTION' end,
+  'evidence',jsonb_build_object(
+    'linkedin_events_30d',excluded.linkedin_events_30d,
+    'external_signals_90d',excluded.external_signals_90d,
+    'company_news_120d',excluded.company_news_120d,
+    'latest_external_at',excluded.latest_external_at),
+  'direct_provider_action_executed',false,
+  'fresh_external_lookup_performed',false,
+  'date',excluded.enrichment_date,
+$details$;
+ v_full_decision text;
+begin
+ foreach v_signature in array array[
+   'public.powerhouse_refresh_connection_enrichment_batch_v1(date,integer)',
+   'public.powerhouse_refresh_all_connection_enrichment_v1(date,integer)'
+ ] loop
+   v_fn := pg_get_functiondef(v_signature::regprocedure);
+   if position($$'run_date',excluded.enrichment_date::text$$ in v_fn)>0 then continue; end if;
+   if position(v_needle in v_fn)>0 then
+     execute replace(v_fn,v_needle,v_enriched_decision);
+   elsif position('source_snapshot=excluded.source_snapshot,' in v_fn)>0 then
+     v_full_decision := 'source_snapshot=excluded.source_snapshot || jsonb_build_object('||
+       quote_literal('daily_decision')||',jsonb_build_object('||
+       quote_literal('contract')||','||quote_literal('powerhouse-daily-decision-write-through-v1')||','||
+       v_enriched_decision||
+       quote_literal('automated_outreach_authorized')||',false,'||
+       quote_literal('requires_existing_policy_and_provider_evidence')||',true)),';
+     execute replace(v_fn,'source_snapshot=excluded.source_snapshot,',v_full_decision);
+   else
+     raise exception 'CANONICAL_REFRESH_DECISION_WRITE_THROUGH_ANCHOR_MISSING: %',v_signature;
+   end if;
+ end loop;
+end $preserve$;
+
+-- Use the original company-news provider lane on weekends; no additional executor.
+do $news$
+begin
+ if exists(select 1 from cron.job where jobname='bg-bedrijfsnieuws-werkdagen') then
+  perform cron.alter_job(
+   job_id := (select jobid from cron.job where jobname='bg-bedrijfsnieuws-werkdagen'),
+   schedule := '31 6 * * *'
+  );
+ end if;
+end $news$;

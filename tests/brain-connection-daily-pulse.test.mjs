@@ -37,3 +37,22 @@ test('keep existing identity graph cadence and separate error guards',()=>{
   assert.match(sql,/perform public\.powerhouse_sync_identity_graph_batch_v1\(100\)/);
   assert.match(sql,/exception when others then/);
 });
+
+test('daily assessment includes historical cached source snapshots without claiming new enrichment',()=>{
+  assert.match(sql,/select s\.person_key,s\.enrichment_date/);
+  assert.match(sql,/where s\.source_snapshot\s*#>>/);
+  assert.match(sql,/where source_snapshot\s*#>>/);
+  assert.match(sql,/review_based_on_historical_snapshot/);
+  assert.match(sql,/source_enrichment_date/);
+});
+test('canonical refresh functions preserve daily assessments atomically',()=>{
+  assert.match(sql,/powerhouse_refresh_connection_enrichment_batch_v1\(date,integer\)/);
+  assert.match(sql,/powerhouse_refresh_all_connection_enrichment_v1\(date,integer\)/);
+  assert.match(sql,/CANONICAL_REFRESH_DECISION_WRITE_THROUGH_ANCHOR_MISSING/);
+  assert.match(sql,/direct_provider_action_executed',false/);
+  assert.match(sql,/fresh_external_lookup_performed',false/);
+});
+test('existing company-news cron includes weekends',()=>{
+  assert.match(sql,/bg-bedrijfsnieuws-werkdagen/);
+  assert.match(sql,/schedule := '31 6 \* \* \*'/);
+});

@@ -11,3 +11,6 @@ Een dagelijkse review is **niet** hetzelfde als 23.295 nieuwe externe lookups, a
 
 ## Productievalidatie
 Bij onderzoek: 23.295 contactrecords, dagelijks verrijkt 0; bestaande SQL-actie #116 had time-outs. Bounded handmatige verwerking verhoogde de meting tot minstens 3.050. De nieuwe migratie is pas productiebewezen als beschermd gemerged, uitgerold, herlezen en 23.295/23.295 bevestigd. P0 #4198 blijft anders open.
+
+## Aanvullende integriteitscorrectie (11 oktober)
+De dagelijkse beoordeling leest de bestaande 23.295 canonieke bron-snapshots, ook wanneer de volledige externe verrijking van vandaag nog niet is voltooid. Iedere beslissing bewaart de brondatum en of een historische snapshot is gebruikt; dat telt nadrukkelijk niet als verse LinkedIn- of bedrijfsdata. Canonieke batch- en full-refresh bewaren de beoordeling atomair. Geen tweede uitvoerder, CRM of nieuw kanaal. Voor de oudere preview-migratieversie 20261011113000 wordt de reeds toegepaste ledgerreferentie zonder nieuwe database-mutatie hersteld; de functionele migratie 20261011132000 blijft één eigenaar.
