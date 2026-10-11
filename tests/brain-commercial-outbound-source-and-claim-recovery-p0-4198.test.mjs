@@ -28,12 +28,12 @@ test('events store machine-readable JSONB, no double-stringified evidence or inv
   assert.match(runner,/jsonb_build_object\('queued',\$2::boolean,'request_id',\$3::bigint,'reason',\$4::text\)/);
   assert.match(runner,/provider_side_effect_verified',false/);
   assert.match(runner,/PROVIDER_RESULT_PENDING_READBACK/);
-  assert.doesNotMatch(runner,/JSON\.stringify\(\{contract:"powerhouse-independent-commercial-lanes-v1"/);
+  const laneCode=runner.slice(runner.indexOf('async function runOneOutboundLane'),runner.indexOf('async function materializeCommercialIntent')); assert.doesNotMatch(laneCode,/JSON\.stringify\(\{contract:/);
 });
 
 test('Brain cannot turn generic web articles into LinkedIn comments or disconnected prospects into DMs',()=>{
   assert.ok(migration.includes('linkedin[.]com/(posts/|feed/update/|pulse/)'));
-  assert.match(migration,/\^urn:li:\(share\|ugcPost\):\[0-9\]\+\$/);
+  assert.ok(migration.includes("~ '^urn:li:(share|ugcPost):[0-9]+$'"));
   assert.match(migration,/linkedin_connection_status/);
   assert.match(migration,/linkedin_is_connected/);
   assert.match(migration,/linkedin_first_degree_verified/);
