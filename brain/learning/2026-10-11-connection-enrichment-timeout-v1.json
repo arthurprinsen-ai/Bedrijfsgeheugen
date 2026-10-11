@@ -7,7 +7,7 @@
   "security_sensitive": false,
   "observation": "Repeated statement_timeout failures in cron job 116 on 2026-10-11 prevent reliable daily completion; initial coverage 0 of 23,295. Bounded manual batches partially succeeded.",
   "root_cause_hypothesis": "Heavy commercial score calculations contend with contact-source joins under a two-minute statement deadline; bounded independent review scheduling and indexed normalized joins reduce blast radius.",
-  "prevention": "Reuse job 138 in isolated bounded batches with existing contact enrichment state; never claim external enrichment, messaging, or conversions without provider evidence.",
+  "prevention": "Use existing scheduler 138 in independent bounded batches; create company expression indexes and never let a timeout in heavy commercial scoring erase daily connection review. Preserve canonical consent and provider evidence gates.",
   "limitations": "Evaluation tests are static historical/shadow contract assertions, not an actual database canary or 23,295-contact completion proof.",
   "evaluation": {
     "historical_replay": [
@@ -16,5 +16,18 @@
     "shadow": [
       "tests/brain-connection-daily-pulse.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "TIMEOUT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 6,
+    "security_sensitive": false
+  },
+  "root_cause": "Verified failure: repeated SQL statement timeouts in hourly commercial scoring. Probable contributing factor: expensive repeated normalized company evidence joins; query plan root cause has not yet been fully profiled.",
+  "evidence": {
+    "supabase": "cron.job_run_details job 116 failed with SQL statement_timeout on 2026-10-11",
+    "enrichment_coverage": "23,295 eligible; 0 then 2,550 and 3,050 daily enriched on bounded manual runs",
+    "limitations": "No proof yet of full 23,295/23,295 reviews, external provider lookups or sending."
   }
 }
