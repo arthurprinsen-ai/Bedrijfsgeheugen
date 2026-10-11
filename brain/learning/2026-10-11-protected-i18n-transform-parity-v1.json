@@ -13,7 +13,7 @@
     ]
   },
   "root_cause": "The fail-closed protected preflight ran build-localized-routes.mjs against raw source HTML, although the canonical publisher prepared the cached English translations after all production SEO and UI transformations. The two source corpora had different text fragments, causing false STATIC_I18N_CACHE_INCOMPLETE errors despite a complete authorized patch.",
-  "prevention_rule": "Before the protected cache-only verification, replay the exact approved production transformations with STATIC_I18N_REQUIRE_CACHE=1 and STATIC_I18N_NETWORK=0, then validate the transformed corpus. Do not waive translation completeness or use network providers.",
+  "prevention_rule": "Before the protected cache-only verification, replay the exact approved production transformations with STATIC_I18N_REQUIRE_CACHE=1 and STATIC_I18N_NETWORK=0, then validate the transformed corpus. Do not waive translation completeness or use network providers. The recovery additionally validates any newer PR-base SHA against the original native event base, current protected main and candidate head before diffing file scope; this prevents concurrent unrelated main merges from being misclassified as PR changes.",
   "evidence": {
     "source": ".github/workflows/required-test.yml",
     "test": "tests/brain-protected-i18n-source-parity.test.mjs",
