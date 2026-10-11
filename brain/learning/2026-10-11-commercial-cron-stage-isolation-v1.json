@@ -1,0 +1,30 @@
+{
+  "id": "p0-4198-commercial-hourly-stage-timeout-isolation-v1",
+  "date": "2026-10-11",
+  "root_cause": "Hourly job 116 runs contact context and fourteen expensive commercial tasks within one PG cron statement; repeated SQL timeout aborts the entire combined execution. Query profiling shows portfolio view count can be computed in roughly three seconds, so simply raising a global timeout is unjustified.",
+  "action": "Reuse existing job 116 and fourteen functions, execute one stage per transaction at distinct minutes 3 through 42 each hour; leave contact assessment to job 138. Track typed internal stage receipts; never substitute those for provider delivery receipts.",
+  "invariants": {
+    "one_cron_job": true,
+    "no_new_sender": true,
+    "no_new_crm": true,
+    "no_auth_bypass": true,
+    "no_fake_provider_receipts": true
+  },
+  "production_status": "CANDIDATE_AWAITING_PROTECTED_MERGE_AND_CRON_PROVIDER_READBACK",
+  "evidence": {
+    "previous_job": "cron 116 repeated statement_timeout",
+    "existing_connection_job": "cron 138",
+    "latest_contact_review": "23295 of 23295 on 2026-10-11"
+  },
+  "evaluation": {
+    "static": [
+      "tests/brain-commercial-hourly-stage-isolation-v1.test.mjs"
+    ],
+    "runtime": [
+      "cron.job",
+      "cron.job_run_details",
+      "powerhouse_runtime_events"
+    ],
+    "requires_real_send_proof": true
+  }
+}
