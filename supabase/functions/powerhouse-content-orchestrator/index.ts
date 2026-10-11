@@ -389,11 +389,20 @@ Deno.serve(async (req) => {
   if (!expected || req.headers.get('x-powerhouse-token') !== expected) return json({ok:false,error:'UNAUTHORIZED'},401);
   let request:any = {}; try { request = await req.json(); } catch {}
   const runDate = clean(request.runDate) || localDate();
+  // Targeted generation runs only after the canonical bootstrap has decided for
+  // every channel. It must never rewrite other lanes' decisions or send posts.
+  const channelScope = clean(request.channel);
+  const allowedChannelScopes = new Set(['linkedin_personal','linkedin_company','instagram_company','blog']);
+  if(channelScope && !allowedChannelScopes.has(channelScope)) return json({ok:false,error:'UNKNOWN_CHANNEL_SCOPE'},400);
   let stage = 'materialize-source-backed-candidates';
   let selectedGeneration: {channel:string; evidence:any}|null = null;
   try {
-    const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
-    if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
+    // The unscoped bootstrap alone owns materialization; scoped workers share
+    // its persisted Brain decisions instead of racing on global state.
+    if(!channelScope){
+      const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
+      if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
+    }
     stage = 'load-context';
     const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult,capabilitiesResult] = await Promise.all([
       db.from('powerhouse_daily_runs').select('run_date').eq('run_date',runDate).maybeSingle(),
@@ -402,12 +411,19 @@ Deno.serve(async (req) => {
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle(),
       db.from('powerhouse_channel_decisions').select('channel,decision,state,priority,delivery_ref,delivery_evidence').eq('run_date',runDate),
       db.from('content_publication_obligations').select('channel,evidence').eq('tenant_id','canonical').eq('publication_date',runDate),
-      db.from('powerhouse_media_proof_evidence_v1').select('exact_media_retrievable,exact_media_sha256,identity_gate_result,media_url,proof_lineage,fingerprint').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle(),
-      db.from('powerhouse_social_publish_capabilities_v1')
-        .select('channel,consumed_at,revoked_at').eq('run_date',runDate)
-        .in('channel',['linkedin_personal','linkedin_company']),
+      (!channelScope || channelScope==='instagram_company')
+        ? db.from('powerhouse_media_proof_evidence_v1').select('exact_media_retrievable,exact_media_sha256,identity_gate_result,media_url,proof_lineage,fingerprint').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle()
+        : Promise.resolve({data:null,error:null}),
+      (!channelScope || channelScope.startsWith('linkedin_'))
+        ? db.from('powerhouse_social_publish_capabilities_v1')
+            .select('channel,consumed_at,revoked_at').eq('run_date',runDate)
+            .in('channel',['linkedin_personal','linkedin_company'])
+        : Promise.resolve({data:[],error:null}),
     ]);
-    const winnerResult = await db.from('powerhouse_instagram_daily_winners_v1').select('recommendation_id,score_version,selected_format').eq('run_date',runDate).maybeSingle();
+    // An unavailable Instagram selector cannot interrupt non-Instagram lanes.
+    const winnerResult = (!channelScope || channelScope==='instagram_company')
+      ? await db.from('powerhouse_instagram_daily_winners_v1').select('recommendation_id,score_version,selected_format').eq('run_date',runDate).maybeSingle()
+      : {data:null,error:null};
     if (winnerResult.error) throw new Error('INSTAGRAM_DAILY_WINNER_READ_FAILED');
     const instagramWinner = winnerResult.data || null;
     const run = runResult.data, recs = recResult.data || [], rules = rulesResult.data || [], gov = governanceResult.data;
@@ -436,7 +452,7 @@ Deno.serve(async (req) => {
     const existingByChannel = new Map(existing.map((r:any) => [r.channel,r]));
 
     stage = 'reconcile-decisions';
-    for (const channel of CHANNELS) {
+    for (const channel of (channelScope ? [] : CHANNELS)) {
       const previous:any = existingByChannel.get(channel);
       if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels)) continue;
       const recoverableDuplicate=recoverableUniquenessDenial(previous);
@@ -468,7 +484,7 @@ Deno.serve(async (req) => {
     }
 
     stage = 'select-pending';
-    const {data:pendingRows,error:pendingError} = await db.from('powerhouse_channel_decisions')
+    const pendingQuery=db.from('powerhouse_channel_decisions')
       .select('channel,priority,rationale,delivery_evidence')
       .eq('run_date',runDate)
       .eq('decision','publish')
@@ -476,6 +492,9 @@ Deno.serve(async (req) => {
       .order('priority',{ascending:false})
       .order('channel',{ascending:true})
       .limit(12);
+    const {data:pendingRows,error:pendingError}=await (
+      channelScope ? pendingQuery.eq('channel',channelScope) : pendingQuery
+    );
     if (pendingError) {
       console.error('PENDING_READ_FAILED', pendingError.code, pendingError.message, pendingError.details);
       throw new Error(`PENDING_READ_FAILED:${pendingError.code || 'UNKNOWN'}`);

@@ -345,7 +345,9 @@ Deno.serve(async (req) => {
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
       // this tick. Existing lease, next-hour retry and provider-id dedupe apply.
-      bootstrapStillInFlight = seeded.timed_out === true || seeded.http === 0 || !seeded.ok;
+      // An explicit failed bootstrap is terminal for that invocation, not
+      // an in-flight lease. Existing ready/decided lanes must keep progressing.
+      bootstrapStillInFlight = seeded.timed_out === true || seeded.http === 0;
       if (!seeded.ok) {
         stepResults.push({
           name: 'content-decision-bootstrap',
@@ -356,58 +358,51 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Drain already-decided channels within the original single-writer lease.
-    // Reserve a bounded wall-time budget for provider dispatch and proof.
-    const MAX_CHANNEL_GENERATIONS = 3;
-    const MAX_GENERATION_ELAPSED_MS = 65_000;
-    let generatedRounds = 0;
-    for (; generatedRounds < MAX_CHANNEL_GENERATIONS && !bootstrapStillInFlight
-      && Date.now() - loopStartedAt < MAX_GENERATION_ELAPSED_MS; generatedRounds++) {
-      const { data: pendingGeneration, error: pendingGenerationError } = await db
-        .from('powerhouse_channel_decisions')
-        .select('channel')
-        .eq('run_date', runDate)
-        .eq('decision', 'publish')
-        .eq('state', 'decided')
-        .order('channel', { ascending: true })
-        .limit(4);
-      if (pendingGenerationError) throw new Error('PENDING_GENERATION_READ_FAILED');
-      if (!pendingGeneration?.length) {
-        if (generatedRounds === 0) stepResults.push({ name:'powerhouse-content-orchestrator', ok:true, skipped:true, reason:'NO_PENDING_ARTIFACT' });
-        break;
+    // Fan out bounded generation by channel. Each worker reads shared Brain
+    // decisions but can only generate its own artifact. One failure does not
+    // consume other channels' generation budget or prevent ready publication.
+    const {data:pendingGeneration,error:pendingGenerationError}=await db
+      .from('powerhouse_channel_decisions')
+      .select('channel')
+      .eq('run_date',runDate)
+      .eq('decision','publish')
+      .eq('state','decided')
+      .in('channel',requiredDecisionChannels)
+      .limit(4);
+    if(pendingGenerationError){
+      stepResults.push({name:'pending-generation-read',ok:false,degraded:true,error:'PENDING_GENERATION_READ_FAILED'});
+    }else if(!bootstrapStillInFlight){
+      const pendingChannels=[...new Set((pendingGeneration||[]).map((item:any)=>clean(item.channel)))]
+        .filter(channel=>requiredDecisionChannels.includes(channel));
+      if(!pendingChannels.length){
+        stepResults.push({name:'powerhouse-content-orchestrator',ok:true,skipped:true,reason:'NO_PENDING_ARTIFACT'});
+      }else{
+        const generated=await Promise.all(pendingChannels.map(async channel=>{
+          const result=await invoke(url,expected,'powerhouse-content-orchestrator',{runDate,channel});
+          return {...result,name:'powerhouse-content-orchestrator:'+channel,channel};
+        }));
+        stepResults.push(...generated);
       }
-      const before = pendingGeneration.map((item:any) => clean(item.channel)).sort().join('|');
-      const generated = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
-      stepResults.push({ ...generated, generation_round: generatedRounds + 1 });
-      // A failed provider call cannot consume the entire tick. Delivery of already
-      // prepared artifacts continues, and the same canonical scheduler retries later.
-      if (!generated.ok) break;
-      const { data: afterRows, error: afterError } = await db
-        .from('powerhouse_channel_decisions')
-        .select('channel')
-        .eq('run_date', runDate)
-        .eq('decision', 'publish')
-        .eq('state', 'decided')
-        .order('channel', { ascending: true })
-        .limit(4);
-      if (afterError) throw new Error('PENDING_GENERATION_READBACK_FAILED');
-      const after = (afterRows || []).map((item:any) => clean(item.channel)).sort().join('|');
-      if (after === before) {
-        stepResults.push({ name:'content-generation-no-progress', ok:false, degraded:true, error:'GENERATION_NO_PROGRESS' });
-        break;
-      }
+    }else{
+      stepResults.push({name:'targeted-generation',ok:false,degraded:true,reason:'BOOTSTRAP_MAY_STILL_BE_RUNNING'});
     }
 
-    // Independent delivery lanes execute in parallel, once per tick.
-    const [socialDispatch, blogDispatch] = await Promise.all([
-      invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'publish_only' }),
-      invoke(url, expected, 'powerhouse-blog-queue', { runDate }),
-    ]);
-    stepResults.push(socialDispatch, blogDispatch);
-
-    // Commercial engagement is a separate non-publication lane: preserve cockpit automation
-    // without putting Composio comment execution back onto the publication critical path.
-    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'cockpit_autopilot' }));
+    // Existing provider publisher already supports exact channel selection.
+    // It is called separately for each social channel, in parallel with blog
+    // and engagement. Each call keeps its own auth, identity, media, uniqueness
+    // and provider-proof gates. No new sender or scheduler is introduced.
+    const deliveryLanes=[
+      ['linkedin_personal','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_personal']}],
+      ['linkedin_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_company']}],
+      ['instagram_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['instagram_company']}],
+      ['blog','powerhouse-blog-queue',{runDate}],
+      ['linkedin_engagement','powerhouse-social-publisher',{runDate,mode:'cockpit_autopilot'}]
+    ] as const;
+    const dispatchResults=await Promise.all(deliveryLanes.map(async ([channel,name,payload])=>{
+      const result=await invoke(url,expected,name,payload);
+      return {...result,name:name+':'+channel,channel};
+    }));
+    stepResults.push(...dispatchResults);
 
     // Buffer is legacy telemetry only and is deliberately absent from the critical path.
     stepResults.push({ name:'bg-buffer-sync', ok:true, skipped:true, non_blocking:true, linkedin_authority:'composio', reason:'LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH' });

@@ -18,8 +18,11 @@ test('Instagram selection failure cannot block independent blog or LinkedIn',()=
   assert.match(src,/name:'instagram_daily_winner', ok:false, degraded:true/);
   assert.match(src,/winner\.error \|\| winner\.data\?\.selected !== true/);
   assert.match(src,/name:'instagram_winner_media_job', ok:true, skipped:true/);
-  assert.match(src,/powerhouse-social-publisher', \{ runDate, mode: 'publish_only' \}/);
-  assert.match(src,/powerhouse-blog-queue', \{ runDate \}/);
+  assert.match(src,/\['linkedin_personal','powerhouse-social-publisher'/);
+  assert.match(src,/\['linkedin_company','powerhouse-social-publisher'/);
+  assert.match(src,/\['instagram_company','powerhouse-social-publisher'/);
+  assert.match(src,/\['blog','powerhouse-blog-queue'/);
+  assert.match(src,/Promise\.all\(deliveryLanes\.map/);
 });
 test('single authenticated content-loop retains lease, proof and dedupe',()=>{
   assert.match(src,/claimLoopLease\(runDate, leaseHolder\)/);
