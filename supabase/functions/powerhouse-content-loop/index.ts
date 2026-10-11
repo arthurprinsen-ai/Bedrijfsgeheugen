@@ -253,20 +253,34 @@ Deno.serve(async (req) => {
 
   try {
     const first = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
-    if (first.error) throw new Error('RECONCILE_PRE_FAILED');
-    stepResults.push({ name: 'reconcile_pre', ok: true });
+    // Readback is observational: a readback fault cannot cancel other safe
+    // publication lanes or grant any of them additional publishing rights.
+    if (first.error) {
+      stepResults.push({ name:'reconcile_pre', ok:false, degraded:true, error:'RECONCILE_PRE_FAILED' });
+    } else {
+      stepResults.push({ name:'reconcile_pre', ok:true });
+    }
 
     // Freeze one ex-ante Mira winner before any media generation or publication work.
     const winner = await db.rpc('powerhouse_select_instagram_daily_winner_v1', { p_date: runDate });
-    if (winner.error) throw new Error('INSTAGRAM_DAILY_WINNER_SELECTION_FAILED');
-    stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, selected: winner.data?.selected === true, recommendation_id: clean(winner.data?.recommendation_id), format: clean(winner.data?.format), reason: clean(winner.data?.reason) });
+    if (winner.error) {
+      stepResults.push({ name:'instagram_daily_winner', ok:false, degraded:true,
+        error:'INSTAGRAM_DAILY_WINNER_SELECTION_FAILED' });
+    } else {
+      stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, selected: winner.data?.selected === true, recommendation_id: clean(winner.data?.recommendation_id), format: clean(winner.data?.format), reason: clean(winner.data?.reason) });
+    }
     // Channel isolation: Instagram readiness may degrade Instagram, but must never block
     // blog/LinkedIn generation and delivery. Blog has its own no-gap obligation.
     if (winner.data?.selected !== true) {
       stepResults.push({ name: 'instagram_daily_winner_gate', ok: false, degraded: true, error: 'INSTAGRAM_DAILY_WINNER_REQUIRED' });
     }
-    const mediaJob = await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
-    if (mediaJob.error || mediaJob.data?.ok !== true) {
+    const mediaJob: any = winner.error || winner.data?.selected !== true
+      ? { data:null, error:null, skipped:true }
+      : await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
+    if (mediaJob.skipped === true) {
+      stepResults.push({ name:'instagram_winner_media_job', ok:true, skipped:true,
+        degraded:true, reason:'INSTAGRAM_WINNER_NOT_READY' });
+    } else if (mediaJob.error || mediaJob.data?.ok !== true) {
       stepResults.push({ name: 'instagram_winner_media_job', ok: false, degraded: true, error: 'INSTAGRAM_WINNER_MEDIA_JOB_FAILED', status: clean(mediaJob.data?.status), next_action: clean(mediaJob.data?.next_action) });
     } else {
       stepResults.push({ name: 'instagram_winner_media_job', ok: true, status: clean(mediaJob.data?.status), job_id: clean(mediaJob.data?.job_id) });
@@ -399,8 +413,11 @@ Deno.serve(async (req) => {
     stepResults.push({ name:'bg-buffer-sync', ok:true, skipped:true, non_blocking:true, linkedin_authority:'composio', reason:'LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH' });
 
     const final = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
-    if (final.error) throw new Error('RECONCILE_POST_FAILED');
-    stepResults.push({ name: 'reconcile_post', ok: true });
+    if (final.error) {
+      stepResults.push({ name:'reconcile_post', ok:false, degraded:true, error:'RECONCILE_POST_FAILED' });
+    } else {
+      stepResults.push({ name:'reconcile_post', ok:true });
+    }
 
     const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
@@ -419,7 +436,10 @@ Deno.serve(async (req) => {
       && !(d.delivery_evidence?.provider_truth_verified===true && !!clean(d.delivery_ref))
     ).map((d: any) => ({ channel: d.channel, reason: d.delivery_evidence?.capability_reason || d.rationale }));
     const allOperationalGreen = (obligations || []).length === OPERATIONAL_CHANNELS.length && (obligations || []).every((o: any) => obligationTerminal(o));
-    const loopState = blocked > 0 ? 'RED' : allOperationalGreen ? 'GREEN' : 'AMBER';
+    const reconciliationDegraded = stepResults.some((step:any) =>
+      (step.name === 'reconcile_pre' || step.name === 'reconcile_post') && step.ok !== true);
+    // Keep dispatch alive; never misrepresent incomplete readback as GREEN.
+    const loopState = blocked > 0 ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
       const status=clean(o.status),channel=clean(o.channel),evidence=o.evidence||{};
       if(channel==='linkedin_company'&&['DISPATCHED','PUBLISHED'].includes(status)){
@@ -454,13 +474,14 @@ Deno.serve(async (req) => {
       updated_at: d.updated_at,
     }));
     const result = {
-      ok: loopState !== 'RED' && providerTruthHealthy,
+      ok: loopState !== 'RED' && providerTruthHealthy && !reconciliationDegraded,
       loop_state: loopState,
       runDate,
       truth_contract: 'GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED',
       outcomeVerified,
       providerTruthVerified,
       providerTruthHealthy,
+      reconciliationDegraded,
       blocked,
       hardBoundaries,
       obligations: obligationSummary,
