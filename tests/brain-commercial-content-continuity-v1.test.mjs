@@ -28,3 +28,13 @@ test('no publication permission bypass or credential reconfiguration',()=>{
   assert.doesNotMatch(sql,/disable.*trigger/i);
   assert.doesNotMatch(sql,/set.*status\s*=\s*'LIVE_PROVEN'/i);
 });
+
+test('content orchestrator is registered for protected Supabase production delivery',()=>{
+  const config=readFileSync('supabase/config.toml','utf8');
+  assert.match(config,/\[functions\.powerhouse-content-orchestrator\][\s\S]*?entrypoint\s*=\s*"\.\/functions\/powerhouse-content-orchestrator\/index\.ts"/);
+  assert.match(config,/\[functions\.powerhouse-content-orchestrator\][\s\S]*?verify_jwt\s*=\s*false/);
+  const source=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+  assert.match(source,/selectNextContentChannel/);
+  assert.match(source,/generation_retry_after/);
+  assert.match(source,/x-powerhouse-token/);
+});
