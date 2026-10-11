@@ -1,4 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {canRecoverExpiredCompanyClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -1121,6 +1122,67 @@ function instagramInput(art:any,due:Date,future:boolean){
     metadata:{instagram:{type:postType,shouldShareToFeed:true}},assets:[{[assetKind]:{url:mediaUrl}}]};
 }
 
+
+/**
+ * Recover the ORIGINAL same-day company claim only when an authority lease expired
+ * without being consumed and BOTH decision + obligation prove zero provider side effects.
+ * This is not a new sender, scheduler, daily claim, or authorization bypass.
+ */
+async function recoverExpiredCompanyPublicationAuthority(db:any,runDate:string,channels:string[]) {
+  if(runDate!==today()||!channels.includes('linkedin_company'))
+    return {recovered:false,reason:'NOT_SAME_DAY_COMPANY_LANE'};
+  const {data:decision,error:de}=await db.from('powerhouse_channel_decisions')
+    .select('run_date,channel,decision,state,delivery_ref,delivery_evidence,updated_at')
+    .eq('run_date',runDate).eq('channel','linkedin_company').maybeSingle();
+  if(de)throw new Error('RECOVERY_DECISION_READ:'+de.message);
+  if(!decision || decision.state!=='blocked' ||
+     decision.delivery_evidence?.error!=='PUBLICATION_AUTHORITY_DENIED:DAILY_CHANNEL_PUBLICATION_ALREADY_CLAIMED')
+    return {recovered:false,reason:'NO_MATCHING_ORIGINAL_BLOCKED_CLAIM'};
+  const [{data:obligation,error:oe},{data:capabilities,error:ce},{data:reservations,error:re}]=await Promise.all([
+    db.from('content_publication_obligations')
+      .select('channel,status,external_id,live_proven_at,evidence')
+      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','linkedin_company').maybeSingle(),
+    db.from('powerhouse_social_publish_capabilities_v1')
+      .select('capability_id,expires_at,consumed_at,revoked_at,evidence')
+      .eq('run_date',runDate).eq('channel','linkedin_company'),
+    db.from('powerhouse_publication_uniqueness_v1')
+      .select('id').eq('publication_date',runDate).eq('channel','linkedin_company').limit(1)
+  ]);
+  if(oe||ce||re)throw new Error('RECOVERY_GUARD_READ:'+(oe?.message||ce?.message||re?.message));
+  const verdict=canRecoverExpiredCompanyClaim({
+    runDate,currentDate:today(),decision,obligation,capabilities,reservations,nowMs:Date.now()
+  });
+  if(!verdict.authorized)return {recovered:false,reason:verdict.reason};
+  const now=new Date().toISOString();
+  let revoked=0;
+  for(const cap of capabilities||[]) {
+    if(cap.revoked_at)continue;
+    // CAS on the exact unconsumed, expired lease; never touch a live or consumed capability.
+    const {data:removed,error:revocationError}=await db.from('powerhouse_social_publish_capabilities_v1')
+      .update({revoked_at:now,evidence:{...(cap.evidence||{}),
+        revocation_reason:'EXPIRED_UNCONSUMED_LEASE_AUTO_REVOKED',
+        recovery_contract:'p0-4198-existing-claim-auto-resume-v1',revoked_at:now}})
+      .eq('capability_id',cap.capability_id).is('consumed_at',null).is('revoked_at',null)
+      .lte('expires_at',now).select('capability_id').maybeSingle();
+    if(revocationError||!removed)throw new Error('RECOVERY_LEASE_CAS_FAILED:'+(revocationError?.message||'lease changed'));
+    revoked++;
+  }
+  const evidence={...(decision.delivery_evidence||{})};
+  delete evidence.error;
+  const {data:resumed,error:resumeError}=await db.from('powerhouse_channel_decisions')
+    .update({state:'content_ready',updated_at:now,delivery_evidence:{
+      ...evidence,recovery_contract:'p0-4198-existing-claim-auto-resume-v1',
+      recovery_reason:'EXPIRED_UNCONSUMED_PUBLICATION_AUTHORITY',recovered_at:now,
+      provider_create_success:false,provider_publication_ack_verified:false,
+      possible_provider_side_effect:false,republish_forbidden:false}})
+    .eq('run_date',runDate).eq('channel','linkedin_company')
+    .eq('decision','publish').eq('state','blocked')
+    .eq('updated_at',decision.updated_at).is('delivery_ref',null)
+    .select('channel').maybeSingle();
+  if(resumeError)throw new Error('RECOVERY_ORIGINAL_CLAIM_CAS:'+resumeError.message);
+  return {recovered:!!resumed,revoked,reason:resumed?'ORIGINAL_CLAIM_RESUMED':'CANONICAL_CLAIM_CHANGED'};
+}
+
 Deno.serve(async (req) => {
   try {
   if (req.method !== 'POST') return json({ ok: false, error: 'POST_ONLY' }, 405);
@@ -1172,6 +1234,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
+  const authority_recovery=await recoverExpiredCompanyPublicationAuthority(db,runDate,channels);
   const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
@@ -1538,7 +1601,7 @@ Deno.serve(async (req) => {
     await recordObligation(db, runDate, row.channel, providerStatus === 'sent' ? 'PUBLISHED' : 'DISPATCHED', readback.id, evidence, providerStatus === 'sent' ? 'Verify public/outcome proof, then measure and learn.' : 'Await provider send, then reconcile.', null);
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
-  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, cockpit_autopilot, results, buffer_circuit:bufferCircuit, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
+  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, cockpit_autopilot, authority_recovery, results, buffer_circuit:bufferCircuit, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
   } catch (error) {
     if (error instanceof BufferHttpError && error.status === 429) {
       return json({ ok: false, error: 'BUFFER_RATE_LIMITED', retryable: true, retry_after: error.retryAfter }, 429);
