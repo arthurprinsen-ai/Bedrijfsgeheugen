@@ -197,10 +197,10 @@ async function releaseLoopLease(runDate:string, holder:string) {
            verified=true,
            observed_at=$1::timestamptz,
            payload=jsonb_build_object(
-             'holder',$2,
-             'run_date',$3,
-             'expires_at',$1,
-             'released_at',$1,
+             'holder',$2::text,
+             'run_date',$3::text,
+             'expires_at',$1::timestamptz,
+             'released_at',$1::timestamptz,
              'lease','content-closed-loop-v1'
            ),
            updated_at=$1
