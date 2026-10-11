@@ -44,3 +44,18 @@ test('the original fail-closed runtime and English cache tests remain mandatory'
   assert.match(content,/STATIC_I18N_NETWORK: '0'/);
   assert.match(content,/STATIC_I18N_REQUIRE_CACHE: '1'/);
 });
+
+test('advanced PR base is accepted only after protected ancestry and exact candidate history proof',()=>{
+  const start=workflow.indexOf("const metadataAuthority=resolveDeliveryMetadataAuthority");
+  const end=workflow.indexOf("const changedPaths=execFileSync('git'",start);
+  assert.ok(start>=0 && end>start);
+  const code=workflow.slice(start,end);
+  assert.match(code,/metadataAuthority\.source === 'pr-body'/);
+  assert.match(code,/PR_DECLARED_BASE_INVALID/);
+  assert.match(code,/PR_BASE_NOT_DESCENDANT_OF_EVENT/);
+  assert.match(code,/PR_BASE_NOT_IN_PROTECTED_MAIN/);
+  assert.match(code,/PR_BASE_NOT_IN_CANDIDATE_HISTORY/);
+  assert.match(code,/merge-base','--is-ancestor'/);
+  assert.match(code,/comparisonBaseSha=declared/);
+  assert.match(code,/metadataAuthority\.source === 'versioned-manifest'/);
+});
