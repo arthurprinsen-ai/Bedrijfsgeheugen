@@ -17,14 +17,31 @@
     "latest_contact_review": "23295 of 23295 on 2026-10-11"
   },
   "evaluation": {
-    "static": [
+    "historical_replay": [
       "tests/brain-commercial-hourly-stage-isolation-v1.test.mjs"
     ],
-    "runtime": [
-      "cron.job",
-      "cron.job_run_details",
-      "powerhouse_runtime_events"
+    "shadow": [
+      "tests/brain-commercial-hourly-stage-isolation-v1.test.mjs"
     ],
-    "requires_real_send_proof": true
+    "canary": [
+      "tests/brain-commercial-hourly-stage-isolation-v1.test.mjs"
+    ]
+  },
+  "fingerprint": "powerhouse-commercial-cron-monolithic-timeout-20261011",
+  "failure_class": "TIMEOUT",
+  "scope": "DATABASE",
+  "machine_enforceable": true,
+  "repeat_count": 6,
+  "security_sensitive": true,
+  "observation": "Several cron #116 statements timed out after 120 seconds on 2026-10-11, starving later independent sales and learning stages.",
+  "root_cause_hypothesis": "The single job invokes source refresh plus fourteen stages within one statement budget; isolating stages reuses existing cron and prevents failure cascading.",
+  "prevention": "Existing cron #116 executes one canonical commercial function per separate scheduled transaction, with independently observed job success/failure; no additional queue, sender, CRM or permission bypass.",
+  "limitations": "Release candidate only: stage heartbeat and independent provider delivery must be verified after protected merge; a static test is not production proof.",
+  "compiler": {
+    "failure_class": "TIMEOUT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 6,
+    "security_sensitive": true
   }
 }
