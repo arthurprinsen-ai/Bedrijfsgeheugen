@@ -1,0 +1,49 @@
+{
+  "id": "p0-4198-daily-connection-intelligence-coverage-v1",
+  "date": "2026-10-11",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|connections|daily-relevant-evidence|same-cron|write-through-v1",
+  "root_cause": "Canonical contact data existed (23,295 records) but commercial-learning job repeatedly timed out, leaving daily full-graph coverage zero. Incremental refresh already existed but lacked bounded daily scheduling, while separate decisions in source_snapshot could be lost when another legitimate refresh replaced the JSON snapshot.",
+  "evidence": {
+    "total_connections": 23295,
+    "initial_assessed_today": 0,
+    "runtime_20261011": "An automatic existing-cron #138 run at 11:22 UTC succeeded with 500 contact assessments in 50 seconds. Readbacks progressed through 4,050 assessments and 4,050 manually recovered triage decisions; follow-up processing exceeded 7,150 assessed. Independent full-day completeness and outcome/profit are NOT proven.",
+    "commercial_learning_job": "existing cron #116 repeatedly statement_timeout; remains independently degraded",
+    "news_research": "existing bg-bedrijfsnieuws job manually invoked on Sunday; 15 companies researched and provider news corpus grew from 58 to 63, no provider-sent DM",
+    "heartbeat": "powerhouse_commercial_intelligence_heartbeat_v1 healthy 2026-10-11 11:26 UTC; 634 snapshot rows; read-only"
+  },
+  "change": "Reuse and reschedule only existing cron #138 for one 500-contact batch every ten minutes until daily coverage done. Preserve identity graph at minute 32 hourly and use canonical commercial Heartbeat. Keep existing company-news job #20, extending to seven days/week. Index normalized signal joins. Make daily decision write-through atomic in both existing batch and full enrichment functions.",
+  "prevention": [
+    "Catch and isolate recoverable scheduling stage errors without turning off the executor.",
+    "Do not equate checking contact data with fetching the live LinkedIn profile for every person daily.",
+    "Do not equate triage decision or DM draft with provider-sent outreach, acceptance, conversions or revenue.",
+    "Keep source evidence and canonical next-best-action authorities; only allowed/consented/eligible messages may be dispatched by existing channels.",
+    "Require runtime evidence that all connections were assessed and decisions survive later refreshes.",
+    "Do not close P0 #4198 while commercial full cycle is degraded or providers have no output receipts."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-daily-connection-intelligence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/powerhouse-daily-connection-intelligence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/powerhouse-daily-connection-intelligence-v1.test.mjs"
+    ],
+    "production_claim": "partial_bounded_batches_proven_full_daily_coverage_provider_output_outcome_learning_not_proven"
+  },
+  "truth_rules": {
+    "no_unauthorized_outreach": true,
+    "no_fake_delivery": true,
+    "no_fake_learning": true,
+    "no_new_scheduler": true,
+    "no_duplicate_contacts": true
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_LEARNING_TIMEOUT_AND_DAILY_CONTACT_DECISION_OVERWRITE",
+    "scope": "CONNECTIONS_DAILY_EVIDENCE_AND_CANONICAL_TRIAGE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}
