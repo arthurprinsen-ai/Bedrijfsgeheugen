@@ -100,3 +100,10 @@ entrypoint = "./functions/powerhouse-scan-ingest/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
+
+# Existing canonical content-loop; custom x-powerhouse-token authentication is
+# implemented in its entrypoint, so preserve its current verify_jwt=false.
+[functions.powerhouse-content-loop]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-content-loop/index.ts"
