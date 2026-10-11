@@ -8,7 +8,8 @@ test('reuses canonical connection and enrichment state, no parallel CRM',()=>{
   assert.doesNotMatch(sql,/create\s+table\s/i);
 });
 test('does not create duplicate scheduler or provider sender',()=>{
-  assert.match(sql,/cron\.alter_job\(\s*138\s*,/);
+  assert.match(sql,/cron\.alter_job\(\s*v_jobid\s*,/);
+  assert.match(sql,/jobname='powerhouse-identity-graph-v1'/);
   assert.match(sql,/2,17,32,47 \* \* \* \*/);
   assert.doesNotMatch(sql,/cron\.schedule\s*\(/);
   assert.doesNotMatch(sql,/net\.http_post\s*\(/);
