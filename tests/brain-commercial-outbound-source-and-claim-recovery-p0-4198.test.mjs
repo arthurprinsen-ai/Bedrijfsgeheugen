@@ -32,7 +32,7 @@ test('events store machine-readable JSONB, no double-stringified evidence or inv
 });
 
 test('Brain cannot turn generic web articles into LinkedIn comments or disconnected prospects into DMs',()=>{
-  assert.match(migration,/linkedin[.]com\/(posts\\/\|feed\\/update\\/\|pulse\\/)/);
+  assert.ok(migration.includes('linkedin[.]com/(posts/|feed/update/|pulse/)'));
   assert.match(migration,/\^urn:li:\(share\|ugcPost\):\[0-9\]\+\$/);
   assert.match(migration,/linkedin_connection_status/);
   assert.match(migration,/linkedin_is_connected/);
