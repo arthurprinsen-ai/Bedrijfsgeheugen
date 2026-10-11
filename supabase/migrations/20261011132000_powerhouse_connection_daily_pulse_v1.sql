@@ -1,5 +1,17 @@
 -- Reuse the existing Brain, connection store, evidence aggregation and identity-graph cron.
 -- A daily review is not proof of live LinkedIn access or a fresh public web lookup.
+-- The existing enrichment batch queries normalized company evidence for every contact.
+-- Support those lookups without changing the canonical matching semantics.
+create index if not exists powerhouse_runtime_events_company_norm_pulse_idx
+  on public.powerhouse_runtime_events
+  (lower(regexp_replace(trim(coalesce(company_key,'')), '\\s+', ' ', 'g')))
+  where company_key is not null;
+
+create index if not exists powerhouse_predictive_signals_company_norm_pulse_idx
+  on public.powerhouse_predictive_signals
+  (lower(regexp_replace(trim(entity_key), '\\s+', ' ', 'g')))
+  where entity_scope='company';
+
 create or replace function public.powerhouse_connection_daily_pulse_v1(
   p_run_date date default (now() at time zone 'Europe/Amsterdam')::date,
   p_batch_size integer default 500
