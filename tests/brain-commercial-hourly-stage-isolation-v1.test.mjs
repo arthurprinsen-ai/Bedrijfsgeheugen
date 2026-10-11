@@ -36,7 +36,7 @@ test('independent per-stage receipt and contact enrichment ownership',()=>{
 test('commercial lanes do not perform second full-contact refresh in timed job',()=>{
  assert.doesNotMatch(sql,/perform\s+public\.powerhouse_commercial_intelligence_context_stage_v1\(/);
  assert.doesNotMatch(sql,/perform\s+public\.powerhouse_refresh_all_connection_enrichment_v1\(/);
- assert.match(sql,/contact source refresh owner/i);
+ assert.match(sql,/contact_source_refresh_owner/);
 });
 test('stage duration is isolated into fourteen separate cron invocations',()=>{
  assert.match(sql,/array_position\(array\[3,6,9,12,15,18,21,24,27,30,33,36,39,42\]/);
