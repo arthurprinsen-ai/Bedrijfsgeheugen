@@ -44,7 +44,7 @@ begin
         coalesce(c.extra->>'salesrobot_thread_id','')<>'' or coalesce(c.extra->>'thread_id','')<>'' or
         coalesce(c.extra->>'salesrobot_unipile_chat_id','')<>'' or coalesce(c.extra->>'unipile_chat_id','')<>'' or
         coalesce(c.extra->>'salesrobot_sales_nav_chat_id','')<>'' or coalesce(c.extra->>'unipile_sales_nav_chat_id','')<>''
-      () and (
+      ) and (
         lower(coalesce(c.extra->>'linkedin_connection_status','')) in ('connected','first_degree','1st')
         or c.extra->>'linkedin_is_connected'='true'
         or c.extra->>'linkedin_first_degree_verified'='true'
