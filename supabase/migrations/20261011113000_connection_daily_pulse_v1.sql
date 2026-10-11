@@ -72,7 +72,7 @@ BEGIN
     FROM public.bg_connecties AS c
    WHERE s.person_key = coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
      AND s.enrichment_date = p_run_date
-     AND s.enriched_at >= v_started - interval '1 second';
+     AND s.enriched_at = transaction_timestamp();
   GET DIAGNOSTICS v_reviewed = ROW_COUNT;
 
   v_complete := coalesce((v_batch->>'full_graph_daily_refresh')::boolean,false);
@@ -132,12 +132,21 @@ GRANT EXECUTE ON FUNCTION public.powerhouse_connection_daily_pulse_v1(date,integ
 -- Change an existing scheduled owner; do NOT create a duplicate job.
 -- Every 10 minutes gives 72k record reviews/day capacity at 500 per slice;
 -- the preexisting identity-graph run remains at minute 32 hourly.
-SELECT cron.alter_job(
-  138,
-  schedule => '2,12,22,32,42,52 * * * *',
-  command => $cron$
-    SELECT public.powerhouse_connection_daily_pulse_v1(
-      (now() AT TIME ZONE 'Europe/Amsterdam')::date, 500
+DO $configure_existing_schedule$
+DECLARE v_jobid bigint;
+BEGIN
+  SELECT jobid INTO v_jobid FROM cron.job
+    WHERE jobname='powerhouse-identity-graph-v1' AND active=true;
+  IF v_jobid IS NOT NULL THEN
+    PERFORM cron.alter_job(
+      v_jobid,
+      schedule => '2,12,22,32,42,52 * * * *',
+      command => $cron$
+        SELECT public.powerhouse_connection_daily_pulse_v1(
+          (now() AT TIME ZONE 'Europe/Amsterdam')::date, 500
+        );
+      $cron$
     );
-  $cron$
-);
+  END IF;
+END;
+$configure_existing_schedule$;
