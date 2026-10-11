@@ -108,21 +108,88 @@ async function runHeartbeat(){
   });
 }
 
+// The EXISTING five-minute commercial Heartbeat owns these distinct lanes.
+// This is not a second scheduler or a new sender: the only provider calls are
+// dispatched by the three already deployed, approval- and CAS-gated executors.
+// Each hourly lane has its own unique runtime receipt and database transaction.
+type OutboundLane="email"|"linkedin_dm"|"linkedin_comment"|"linkedin_like";
+const outboundLanes=[
+  {lane:"email",executor:"powerhouse_dispatch_autonomous_outreach_v1",
+   eligible:"action_type='autonomous_email' and channel='email' and ((status='prepared' and evidence->>'human_approved'='true' and due_at<=now()) or (status='waiting' and evidence#>>'{autonomous_outbound,needs_readback}'='true'))"},
+  {lane:"linkedin_dm",executor:"powerhouse_dispatch_linkedin_sales_machine_v1",
+   eligible:"channel='linkedin_dm' and status in ('prepared','suggested') and evidence->>'human_approved'='true' and nullif(trim(coalesce(message_draft,'')),'') is not null"},
+  {lane:"linkedin_comment",executor:"powerhouse_dispatch_linkedin_comment_autopilot_v1",
+   eligible:"action_type='reply_post' and channel='linkedin_personal' and status='suggested' and nullif(trim(coalesce(message_draft,'')),'') is not null and source_url ~* '^https://(www[.])?linkedin[.]com/(posts/|feed/update/|pulse/)' and evidence#>>'{social_execution_gate,quality_passed}'='true'"},
+  {lane:"linkedin_like",executor:null,eligible:"action_type='like_post' and channel='linkedin_personal' and status='suggested'"}
+] as const;
+async function runOneOutboundLane(def:(typeof outboundLanes)[number]){
+  try{
+    return await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '12000ms'");
+      await tx.unsafe("set local lock_timeout = '2000ms'");
+      const bucketRows=await tx.unsafe("select to_char(now() at time zone 'UTC','YYYYMMDDHH24') bucket,(now() at time zone 'Europe/Amsterdam')::date as business_date");
+      const {bucket,business_date}=bucketRows[0];
+      const dedupeKey="commercial-channel-dispatch:"+def.lane+":"+bucket;
+      // The exact linkedIn like mutation is not exposed by the connected
+      // provider. A read/list-reactions tool must never masquerade as POST.
+      const rows=await tx.unsafe("select count(*)::int ready from public.powerhouse_sales_actions where "+def.eligible);
+      const ready=Number(rows[0]?.ready||0);
+      const state=def.executor===null?"PROVIDER_WRITE_NOT_AVAILABLE":ready===0?"NO_ELIGIBLE_APPROVED_ACTION":"READY";
+      const inserted=await tx.unsafe(
+        "insert into public.powerhouse_runtime_events (dedupe_key,event_type,source,subject_key,channel,occurred_at,state,data_quality,evidence,context) "+
+        "values ($1,'commercial_outbound_lane_dispatch','powerhouse-commercial-heartbeat-runner','growth-revenue-os',$2,now(),'observed','OBSERVED',$3::jsonb,$4::jsonb) "+
+        "on conflict (dedupe_key) do nothing returning event_id",
+        [dedupeKey,def.lane,JSON.stringify({contract:"powerhouse-independent-commercial-lanes-v1",lane:def.lane,ready,decision:state,provider_side_effect_verified:false}),JSON.stringify({source:"Brain+POWERHOUSE+Heartbeat",original_scheduler:true,no_parallel_sender:true})]
+      );
+      if(inserted.length===0)return {lane:def.lane,dispatched:false,reason:"ALREADY_EVALUATED_THIS_HOUR"};
+      if(state!=="READY"||def.executor===null)return {lane:def.lane,dispatched:false,ready,reason:state};
+      // Fixed whitelist only: each already-existing dispatcher fetches the
+      // canonical scheduler token and retains human approval, consent, target,
+      // quality, dedupe, pressure limits, and provider readback requirements.
+      const dispatched=await tx.unsafe(
+        "select public."+def.executor+"($1::date) as result",[business_date]
+      );
+      const receipt=dispatched[0]?.result||{};
+      const queued=receipt?.dispatched===true&&Number(receipt?.request_id)>0;
+      await tx.unsafe(
+        "update public.powerhouse_runtime_events set evidence=evidence||$2::jsonb,updated_at=now() where dedupe_key=$1",
+        [dedupeKey,JSON.stringify({queued,request_id:queued?Number(receipt.request_id):null,reason:queued?"PROVIDER_RESULT_PENDING_READBACK":clean(receipt?.reason)||"DISPATCH_DECLINED"})]
+      );
+      return {lane:def.lane,dispatched:queued,ready,request_id:queued?Number(receipt.request_id):null,
+        reason:queued?"QUEUED_NOT_DELIVERED":clean(receipt?.reason)||"DISPATCH_DECLINED"};
+    });
+  }catch(error){
+    console.error("COMMERCIAL_LANE_DISPATCH_FAILED",def.lane,error instanceof Error?error.message:String(error));
+    return {lane:def.lane,dispatched:false,reason:"INDEPENDENT_LANE_ERROR"};
+  }
+}
+async function runOutboundLanes(){
+  const results=await Promise.allSettled(outboundLanes.map(def=>runOneOutboundLane(def)));
+  return results.map((item,i)=>item.status==="fulfilled"?item.value:{
+    lane:outboundLanes[i].lane,dispatched:false,reason:"INDEPENDENT_LANE_UNHANDLED_FAILURE"
+  });
+}
+
 Deno.serve(async(req:Request)=>{
   if(req.method!=="POST")return json({ok:false,error:"METHOD_NOT_ALLOWED"},405);
 
   const provided=clean(req.headers.get("x-bg-service-token"));
   if(!provided||await sha256(provided)!==SERVICE_TOKEN_HASH)return json({ok:false,error:"UNAUTHORIZED"},401);
 
+  // The outbound lanes are not coupled to the expensive Brain transaction.
+  // A failure/timeout of the commercial scoring cycle cannot starve email,
+  // DM, comments, or the honest unsupported-likes status.
+  const outboundLanesResult=await runOutboundLanes();
   try{
     const result=await runHeartbeat();
-    return json(result,result.state==="SKIPPED_OVERLAP"?202:200);
+    return json({...result,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
   }catch(error){
     console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
     return json({
       ok:false,
       error:"COMMERCIAL_HEARTBEAT_FAILED",
-      contract:"powerhouse-commercial-heartbeat-external-v1"
+      contract:"powerhouse-commercial-heartbeat-external-v1",
+      outbound_lanes:outboundLanesResult
     },503);
   }
 });
