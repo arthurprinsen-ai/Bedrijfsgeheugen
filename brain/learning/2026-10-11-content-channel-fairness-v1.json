@@ -6,18 +6,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "date": "2026-10-11",
-        "state": "PROVIDER_OBSERVED",
-        "source": "bg_gezondheid:powerhouse-content-orchestrator",
-        "outcome": "REPRODUCED Anthropic 400 credit error and PERSONAL_EDITORIAL_WORD_COUNT"
-      },
-      {
-        "date": "2026-10-11",
-        "state": "CODE_REGRESSION_ADDED",
-        "source": "tests/brain-content-generation-fairness.test.mjs",
-        "outcome": "personal failure allows company/blog selection; cooldown expires"
-      }
+      "tests/brain-content-generation-fairness.test.mjs"
     ]
   },
   "root_cause": "Priority-sorted singleton content selection always picks the same failed personal LinkedIn item. A provider credit outage or an editorial rejection starves the blog and company.",
@@ -47,5 +36,19 @@
     "state": "PROPOSED_NOT_DEPLOYED",
     "protected_checks_required": true,
     "provider_publication_outcome_proven": false
-  }
+  },
+  "historical_provider_evidence": [
+    {
+      "date": "2026-10-11",
+      "state": "PROVIDER_OBSERVED",
+      "source": "bg_gezondheid:powerhouse-content-orchestrator",
+      "outcome": "Anthropic 400 credit error then strict word-count rejection"
+    },
+    {
+      "date": "2026-10-11",
+      "state": "REGRESSION_TEST_ADDED",
+      "source": "tests/brain-content-generation-fairness.test.mjs",
+      "outcome": "channel fairness and bounded retry checks"
+    }
+  ]
 }
