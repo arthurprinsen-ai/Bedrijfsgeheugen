@@ -178,7 +178,7 @@ exception when others then
     'error','verified',1,now()
   ) on conflict(dedupe_key) do nothing;
   return jsonb_build_object('contract','powerhouse-commercial-learning-v1','healthy',false,'error',sqlerrm,'sqlstate',sqlstate);
-end $function$
+end $function$;
 
 REVOKE EXECUTE ON FUNCTION public.powerhouse_commercial_learning_cycle_v1(date)
   FROM PUBLIC, anon, authenticated;
