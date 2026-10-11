@@ -12,3 +12,6 @@ No new cron, queue, publisher, CRM, provider permissions, emails, DM or outbound
 
 ## Remaining acceptance
 Re-run the original job 116 at its canonical schedule and confirm SUCCESS in `cron.job_run_details`, measure query latency and any remaining bottlenecks, confirm per-channel provider receipts, attribution and learning. Maintain P0 OPEN until verified end-to-end evidence.
+
+## 2026-10-11 10:12 UTC — Supabase Preview repair evidence
+The existing ephemeral branch linked to this PR was in `MIGRATIONS_FAILED` (duplicate historical version `20260915094213`). Applied the supported `rebase_branch` action to the **existing preview branch only** (no production reset and no new project), preserving branch identity. The Supabase branch control-plane then reported `FUNCTIONS_DEPLOYED`. Read-only `list_migrations` on preview project `pgcrjnmvhnwammnvybmc` confirms that version `20261011094454` is applied, and `pg_indexes` confirms all seven new canonical scorer lookup indexes on the preview database. A fresh immutable commit and hosted check readback is required for the protected GitHub `Supabase Preview` gate to turn green; historical failed check entries must not be presented as green.
