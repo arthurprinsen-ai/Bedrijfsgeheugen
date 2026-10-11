@@ -137,7 +137,7 @@ async function runOneOutboundLane(def:(typeof outboundLanes)[number]){
       const state=def.executor===null?"PROVIDER_WRITE_NOT_AVAILABLE":ready===0?"NO_ELIGIBLE_APPROVED_ACTION":"READY";
       const inserted=await tx.unsafe(
         "insert into public.powerhouse_runtime_events (dedupe_key,event_type,source,subject_key,channel,occurred_at,state,data_quality,evidence,context) "+
-        "values ($1,'commercial_outbound_lane_dispatch','powerhouse-commercial-heartbeat-runner','growth-revenue-os',$2,now(),'observed','OBSERVED',$3::jsonb,$4::jsonb) "+
+        "values ($1,'commercial_outbound_lane_dispatch','powerhouse-commercial-heartbeat-runner','growth-revenue-os',$2,now(),'observed','OBSERVED',$3::text::jsonb,$4::text::jsonb) "+
         "on conflict (dedupe_key) do nothing returning event_id",
         [dedupeKey,def.lane,JSON.stringify({contract:"powerhouse-independent-commercial-lanes-v1",lane:def.lane,ready,decision:state,provider_side_effect_verified:false}),JSON.stringify({source:"Brain+POWERHOUSE+Heartbeat",original_scheduler:true,no_parallel_sender:true})]
       );
@@ -152,7 +152,7 @@ async function runOneOutboundLane(def:(typeof outboundLanes)[number]){
       const receipt=dispatched[0]?.result||{};
       const queued=receipt?.dispatched===true&&Number(receipt?.request_id)>0;
       await tx.unsafe(
-        "update public.powerhouse_runtime_events set evidence=evidence||$2::jsonb,updated_at=now() where dedupe_key=$1",
+        "update public.powerhouse_runtime_events set evidence=evidence||$2::text::jsonb,updated_at=now() where dedupe_key=$1",
         [dedupeKey,JSON.stringify({queued,request_id:queued?Number(receipt.request_id):null,reason:queued?"PROVIDER_RESULT_PENDING_READBACK":clean(receipt?.reason)||"DISPATCH_DECLINED"})]
       );
       return {lane:def.lane,dispatched:queued,ready,request_id:queued?Number(receipt.request_id):null,
