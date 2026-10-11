@@ -45,7 +45,8 @@ begin
  end if;
  -- Names are taken only from the closed, constant catalogue above.
  execute format('select public.%I($1)',v_fn) into v_result using p_run_date;
- v_bad := (coalesce(v_result->>'degraded','false')='true' or
+ v_bad := (v_result is null or jsonb_typeof(v_result)<>'object' or
+           coalesce(v_result->>'degraded','false')='true' or
            coalesce(v_result->>'healthy','true')='false' or
            coalesce((v_result->>'failure_count')::int,0)>0);
  v_state := case when v_bad then 'error' else 'actioned' end;

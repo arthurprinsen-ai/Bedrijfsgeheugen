@@ -44,3 +44,8 @@ test('stage duration is isolated into fourteen separate cron invocations',()=>{
  assert.match(sql,/v_result->>'failure_count'/);
  assert.match(sql,/on conflict\(dedupe_key\) do update/);
 });
+
+test('NULL or malformed function return can never count as healthy',()=>{
+ assert.match(sql,/v_result is null/);
+ assert.match(sql,/jsonb_typeof\(v_result\)<>'object'/);
+});
