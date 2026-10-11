@@ -1,0 +1,20 @@
+{
+  "fingerprint": "powerhouse-contact-review-monolithic-timeout-20261011",
+  "failure_class": "TIMEOUT",
+  "scope": "DATABASE",
+  "machine_enforceable": true,
+  "repeat_count": 6,
+  "security_sensitive": false,
+  "observation": "Repeated statement_timeout failures in cron job 116 on 2026-10-11 prevent reliable daily completion; initial coverage 0 of 23,295. Bounded manual batches partially succeeded.",
+  "root_cause_hypothesis": "Heavy commercial score calculations contend with contact-source joins under a two-minute statement deadline; bounded independent review scheduling and indexed normalized joins reduce blast radius.",
+  "prevention": "Reuse job 138 in isolated bounded batches with existing contact enrichment state; never claim external enrichment, messaging, or conversions without provider evidence.",
+  "limitations": "Evaluation tests are static historical/shadow contract assertions, not an actual database canary or 23,295-contact completion proof.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connection-daily-pulse.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connection-daily-pulse.test.mjs"
+    ]
+  }
+}
