@@ -1,0 +1,25 @@
+{
+  "fingerprint": "p0-4198-channel-evidence-normalization-v1",
+  "compiler": {
+    "failure_class": "STATE_SERIALIZATION_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-evidence-jsonb-normalize.test.mjs"
+    ]
+  },
+  "root_cause": "JSON-encoded text in a JSONB delivery evidence field concealed retry timestamps and repeated a failed channel.",
+  "prevention_rule": "Normalize the existing field on write and reject data that cannot be parsed as an object without changing publication authority.",
+  "evidence": {
+    "source": "supabase/migrations/20261011111500_normalize_powerhouse_delivery_evidence_jsonb_v1.sql",
+    "production_readback": "All seven current-day channel decisions now contain structured objects."
+  },
+  "outcome": {
+    "normalization_live": true,
+    "provider_publication_proven": false
+  }
+}
