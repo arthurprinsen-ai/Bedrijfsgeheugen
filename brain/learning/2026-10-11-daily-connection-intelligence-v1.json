@@ -23,13 +23,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-daily-connection-intelligence-v1.test.mjs"
+      "tests/brain-daily-connection-intelligence-v1.test.mjs"
     ],
     "shadow": [
-      "tests/powerhouse-daily-connection-intelligence-v1.test.mjs"
+      "tests/brain-daily-connection-intelligence-v1.test.mjs"
     ],
     "canary": [
-      "tests/powerhouse-daily-connection-intelligence-v1.test.mjs"
+      "tests/brain-daily-connection-intelligence-v1.test.mjs"
     ],
     "production_claim": "partial_bounded_batches_proven_full_daily_coverage_provider_output_outcome_learning_not_proven"
   },
