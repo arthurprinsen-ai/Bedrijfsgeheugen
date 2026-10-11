@@ -1,0 +1,30 @@
+{
+  "contract": "powerhouse-development-ledger-v1",
+  "date": "2026-10-11",
+  "obligation_id": "P0-4198-CONNECTION-DAILY-PULSE",
+  "problem": "Existing hourly commercial stage repeatedly hit statement_timeout; daily full connection review remained incomplete.",
+  "observations": [
+    {
+      "source": "Supabase powerhouse_connection_enrichment_coverage_v1",
+      "fact": "23,295 eligible contact rows; 0 reviewed/enriched on first read; 2,550 then 3,050 enriched after bounded manual runs."
+    },
+    {
+      "source": "Supabase cron.job_run_details job 116",
+      "fact": "Repeated timeout failures on 2026-10-11; marketing pipeline can be blocked by heavyweight queries."
+    },
+    {
+      "source": "Existing stored functions",
+      "fact": "powerhouse_refresh_connection_enrichment_batch_v1 supports bounded 500; existing identity graph cron job 138 successful hourly."
+    }
+  ],
+  "change": "Reuse job 138 with 15-minute ticks, keep identity graph at minute 32, review 500 per call twice per tick, add company-index performance support and attach advisory daily_decision to canonical enrichment snapshot.",
+  "verification_required": [
+    "GitHub protected CI",
+    "Production migration readback",
+    "Cron next-run success",
+    "Daily enrichment count 23295/23295",
+    "Daily review count 23295/23295",
+    "Separate external source and provider delivery readback"
+  ],
+  "status": "PROPOSED_NOT_PRODUCTION_VERIFIED"
+}
