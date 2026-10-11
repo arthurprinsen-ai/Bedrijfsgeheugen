@@ -22,3 +22,14 @@ test('prebuild includes SEO/UI transforms before localized routes and never comm
   assert.match(entry,/if\(cacheOnlyPatch && name==='localized-routes'\)/);
   assert.doesNotMatch(workflow,/STATIC_I18N_REQUIRE_CACHE: '0'/);
 });
+
+test('production transforms run in a disposable checkout so unrelated source-contract tests see original files',()=>{
+  const start=workflow.indexOf('name: Validate fail-closed static English cache before merge');
+  const end=workflow.indexOf('- name: Verify previously unwired test contracts',start);
+  const content=workflow.slice(start,end);
+  assert.match(content,/git worktree add --detach "\$worktree" HEAD/);
+  assert.match(content,/ln -s "\$GITHUB_WORKSPACE\/node_modules" "\$worktree\/node_modules"/);
+  assert.match(content,/cd "\$worktree"/);
+  assert.match(content,/git worktree remove --force/);
+  assert.ok(content.indexOf('git worktree add --detach') < content.indexOf('node tools\/ci\/netlify-build-entry.mjs'));
+});
