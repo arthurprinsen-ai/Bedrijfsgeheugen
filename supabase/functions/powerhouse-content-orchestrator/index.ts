@@ -1,4 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -389,6 +390,7 @@ Deno.serve(async (req) => {
   let request:any = {}; try { request = await req.json(); } catch {}
   const runDate = clean(request.runDate) || localDate();
   let stage = 'materialize-source-backed-candidates';
+  let selectedGeneration: {channel:string; evidence:any}|null = null;
   try {
     const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v2',{p_date:runDate});
     if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
@@ -473,13 +475,14 @@ Deno.serve(async (req) => {
       .eq('state','decided')
       .order('priority',{ascending:false})
       .order('channel',{ascending:true})
-      .limit(1);
+      .limit(12);
     if (pendingError) {
       console.error('PENDING_READ_FAILED', pendingError.code, pendingError.message, pendingError.details);
       throw new Error(`PENDING_READ_FAILED:${pendingError.code || 'UNKNOWN'}`);
     }
-    const pending = Array.isArray(pendingRows) ? pendingRows[0] || null : null;
-    if (!pending) return json({ok:true,runDate,generated:false,reason:'NO_PENDING_ARTIFACT',executor_capabilities,personal_source_ready:!!personalSource});
+    const pending = selectNextContentChannel(pendingRows, Date.now());
+    if (!pending) return json({ok:true,runDate,generated:false,reason:Array.isArray(pendingRows) && pendingRows.length ? 'ALL_PENDING_CHANNELS_IN_BOUNDED_COOLDOWN' : 'NO_PENDING_ARTIFACT',cooldown_channels:Array.isArray(pendingRows)?pendingRows.map((row:any)=>clean(row.channel)):[],executor_capabilities,personal_source_ready:!!personalSource});
+    selectedGeneration = {channel:clean(pending.channel),evidence:pending.delivery_evidence||{}};
     if (pending.channel === 'linkedin_personal' && !personalSource) throw new Error('PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     if (pending.channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
 
@@ -601,6 +604,26 @@ Deno.serve(async (req) => {
   } catch (error) {
     const message = String((error as Error)?.message||error).slice(0,500);
     console.error('ORCHESTRATOR_ERROR',stage,message);
+    // A failed text generation has no provider publication side-effect. Cool down only
+    // that channel, so another due channel can progress without lowering any content,
+    // identity, authorization or publication gate. The canonical executor stays active.
+    if (stage === 'artifact-ai' && selectedGeneration) {
+      try {
+        const prior = selectedGeneration.evidence?.artifact_generation_failure;
+        const failure = contentGenerationCooldown(message, Date.now(), Number(prior?.attempts||0));
+        await db.from('powerhouse_channel_decisions').update({
+          delivery_evidence: {
+            ...selectedGeneration.evidence,
+            generation_retry_after: failure.retry_after,
+            artifact_generation_failure: failure
+          },
+          updated_at: new Date().toISOString()
+        }).eq('run_date',runDate).eq('channel',selectedGeneration.channel).eq('state','decided');
+      } catch (recoveryError) {
+        console.error('ORCHESTRATOR_CHANNEL_COOLDOWN_WRITE_FAILED',
+          clean((recoveryError as Error)?.message||recoveryError).slice(0,160));
+      }
+    }
     try { await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-content-orchestrator',soort:'edge-function',status:'fout',detail:`${stage}:${message}`.slice(0,400),gegevens:{runDate,version:VERSION,stage}}); } catch {}
     return json({ok:false,error:'ORCHESTRATOR_INTERNAL_ERROR',stage,runDate},500);
   }
