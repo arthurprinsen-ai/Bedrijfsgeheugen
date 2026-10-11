@@ -18,7 +18,7 @@ test('canonical commercial scorer lookups have their own non-destructive support
   }
   assert.equal((migration.match(/CREATE INDEX IF NOT EXISTS/g)||[]).length,7);
   assert.match(migration,/SET LOCAL lock_timeout = '3s'/);
-  assert.doesNotMatch(migration,/\\bDROP\\b|\\bTRUNCATE\\b|\\bDELETE\\b|\\bcron\\.schedule\\b|\\bnet\\.http_post\\b|\\bINSERT\\b|\\bUPDATE\\b/i);
+  assert.doesNotMatch(migration,/\bDROP\b|\bTRUNCATE\b|\bDELETE\b|\bcron\.schedule\b|\bnet\.http_post\b|\bINSERT\b|\bUPDATE\b/i);
   assert.match(migration,/ANALYZE public\.powerhouse_forecasts/);
 });
 
