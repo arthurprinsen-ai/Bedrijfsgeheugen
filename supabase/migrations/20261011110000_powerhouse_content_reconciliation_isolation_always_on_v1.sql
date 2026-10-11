@@ -51,6 +51,13 @@ BEGIN
 END
 $function$;
 
+-- Existing production ACL already admits service_role only. State that
+-- security boundary explicitly for clean hosted previews and replay safety.
+REVOKE EXECUTE ON FUNCTION public.powerhouse_content_closed_loop_tick_v1(timestamptz)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_content_closed_loop_tick_v1(timestamptz)
+  TO service_role;
+
 DO $guard$
 DECLARE v_job record;
 BEGIN
