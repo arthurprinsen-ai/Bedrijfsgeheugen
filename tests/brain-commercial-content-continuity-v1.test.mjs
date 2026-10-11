@@ -22,9 +22,9 @@ test('existing scheduler only, hourly round-the-clock, no new cron job',()=>{
   assert.doesNotMatch(sql,/cron\.schedule\(/);
   assert.doesNotMatch(sql,/cron\.unschedule\(/);
 });
-test('no publication permission bypass or credential reconfiguration',()=>{
-  assert.doesNotMatch(sql,/grant\s+/i);
-  assert.doesNotMatch(sql,/revoke\s+/i);
+test('scheduler execution is restricted to the pre-existing service role',()=>{
+  assert.match(sql,/REVOKE EXECUTE ON FUNCTION public\.powerhouse_content_closed_loop_tick_v1\(timestamptz\)\s+FROM PUBLIC, anon, authenticated/i);
+  assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_content_closed_loop_tick_v1\(timestamptz\)\s+TO service_role/i);
   assert.doesNotMatch(sql,/disable.*trigger/i);
   assert.doesNotMatch(sql,/set.*status\s*=\s*'LIVE_PROVEN'/i);
 });
