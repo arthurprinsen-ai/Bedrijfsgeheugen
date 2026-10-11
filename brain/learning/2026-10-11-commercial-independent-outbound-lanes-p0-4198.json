@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|p0-4198|independent-email-dm-comment-like-lanes|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "COMMERCIAL_CHANNEL_STARVATION_UNVERIFIED_PROVIDER_WRITES",
+    "scope": "ORCHESTRATION",
+    "machine_enforceable": true,
+    "repeat_count": 7,
+    "security_sensitive": true
+  },
+  "root_cause": "Existing commercial Heartbeat executes long Brain transaction and only calls some dispatchers. Email has separate daily cron, DM sender depends on a coupled sales-machine route, comments had an unstructured Composio mutation payload, and the connected LinkedIn toolkit has only a read/list reactions endpoint, no authenticated like mutation.",
+  "prevention_rule": "Use the existing 5-minute Heartbeat as single owner of separately evidenced hourly email, approved-DM and quality-approved-comment dispatch via the original safe RPC executors. Fail one lane independently; record queued != delivered. Do not create a like until a verified provider write capability exists. Require concrete post URN/readback for structured comment mutation and preserve human approval/consent/pressure/dedupe.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-independent-outbound-lanes-p0-4198.test.mjs"
+    ]
+  },
+  "evidence": {
+    "dated": "2026-10-11",
+    "email_latest_done": "2026-10-08",
+    "salesrobot_historical_sends": 5,
+    "salesrobot_execution_days_remaining": 0,
+    "linkedin_comment_latest_done": "2026-10-05",
+    "likes_provider_write_available": false
+  },
+  "outcome": {
+    "protected_merge_pending": true,
+    "production_source_parity_pending": true,
+    "externally_verified_daily_dispatch_pending": true,
+    "actual_likes_sent": false
+  }
+}
