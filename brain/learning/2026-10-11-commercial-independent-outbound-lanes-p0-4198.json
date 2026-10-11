@@ -12,6 +12,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-commercial-independent-outbound-lanes-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-independent-outbound-lanes-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-independent-outbound-lanes-p0-4198.test.mjs"
     ]
   },
   "evidence": {
