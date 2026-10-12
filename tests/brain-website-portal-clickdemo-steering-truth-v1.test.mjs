@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import vm from 'node:vm';
+import { spawnSync } from 'node:child_process';
 
 const source=fs.readFileSync('klantportaal-demo.html','utf8');
 
@@ -43,7 +43,8 @@ test('the journey is inert HTML, not concatenated into a dynamic innerHTML sink'
 test('existing demo JavaScript remains parseable and responsive',()=>{
   const js=source.match(/<script>([\s\S]*?)<\/script>/i)?.[1];
   assert.ok(js);
-  assert.doesNotThrow(()=>new vm.Script(js,{filename:'klantportaal-demo.html'}));
+  const syntax=spawnSync(process.execPath,['--check','-'],{input:js,encoding:'utf8',timeout:10000,shell:false});
+  assert.equal(syntax.status,0,syntax.stderr||syntax.error?.message||'demo script has a syntax error');
   assert.match(source, /@media\(max-width:540px\)\{\.demo-flow/);
   assert.match(source, /\.demo-flow button:focus-visible/);
 });
