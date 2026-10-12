@@ -173,7 +173,7 @@ begin
 
   return v_result;
 end;
-$function$
+$function$;
 
 revoke all on function public.powerhouse_daily_omnichannel_assurance_v1(timestamptz) from public,anon,authenticated;
 grant execute on function public.powerhouse_daily_omnichannel_assurance_v1(timestamptz) to postgres,service_role;
