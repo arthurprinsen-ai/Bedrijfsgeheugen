@@ -19,7 +19,11 @@ test('Portal V2 is standalone and never routes into the legacy portal', async ({
   expect(response, 'Portal V2 must return an HTTP response').not.toBeNull();
   expect(response.status(), 'Portal V2 must be reachable').toBeLessThan(400);
 
-  await expect(page.getByText('Portal V2 bevat alle portalonderdelen standaard', { exact: true })).toBeAttached();
+  await expect(page.getByText('Alle onderdelen van je ondernemingssturing', { exact: true })).toBeAttached();
+  await expect(page.locator('[data-bg-portal-daily-steering="v1"]')).toBeAttached();
+  await expect(page.locator('#dailySteeringTitle')).toHaveText('Wat verandert er in je bedrijf — en wat doe je ermee?');
+  await expect(page.locator('[data-portal-sample-only]')).toHaveCount(4);
+  await expect(page.locator('[data-portal-sample-only]:visible')).toHaveCount(0);
   await expect(page.locator('iframe[src*="/klantportaal"], iframe[src*="/portal-next/"]')).toHaveCount(0);
   await expect(page.locator('a[href*="/klantportaal"]')).toHaveCount(0);
   await expect(page.locator('a[href*="/portal-next/"]')).toHaveCount(0);
