@@ -108,7 +108,7 @@ Deno.serve(async(req)=>{
     out.push({action_id:a.action_id,status:'held',reason:'RECIPIENT_AUTHORITY_UNVERIFIED'});
     continue;
    }
-   if(composer?.contract!=='powerhouse-human-commercial-message-composer-v2'||composer?.quality_passed!==true||!strategy||!body){
+   if(composer?.contract!=='powerhouse-human-commercial-message-composer-v2'||composer?.quality_passed!==true||composer?.source_specific_evidence_ok!==true||composer?.semantic_novelty_ok!==true||composer?.new_followup_evidence_ok!==true||!strategy||!body){
      const ev={...(a.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composer?.quality_passed===true,composer_contract:s(composer?.contract)||null}};
      await db.from('powerhouse_sales_actions').update({evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
      out.push({action_id:a.action_id,status:'held',reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN'});
