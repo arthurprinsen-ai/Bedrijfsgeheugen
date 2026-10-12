@@ -223,6 +223,19 @@ select.niv:disabled{background:#F2F4F6;color:var(--zacht)}
 <div class="romp">
   <nav class="zij" id="zij" aria-label="Onderdelen"></nav>
   <div class="inhoud">
+    <section class="kaart demo-sturing" id="demoJourney" data-demo-steering="v1" aria-label="Demo dagelijkse ondernemingssturing" hidden>
+      <span class="demo-label">Bedrijfsgeheugen · dagelijkse ondernemingssturing</span>
+      <h2>Wat verandert er — wat beslis je — wat werkt?</h2>
+      <p>Niet nog een AI-tool of dashboard: deze klikdemo toont hoe interne informatie, strategie, keuzes, werk en geregistreerde veranderingen samen één cyclus vormen. Er zijn geen live klant- of externe bronnen gekoppeld.</p>
+      <div class="demo-flow" role="group" aria-label="Vijf stappen in de klikdemo">
+        <button type="button" data-demo-target="omgeving"><b>01 · Informatie</b><span>Welke interne signalen zijn bekend?</span></button>
+        <button type="button" data-demo-target="strategie"><b>02 · Impact</b><span>Wat betekent het voor onze koers?</span></button>
+        <button type="button" data-demo-target="maandag"><b>03 · Besluiten</b><span>Wat doen we deze week als eerste?</span></button>
+        <button type="button" data-demo-target="acties"><b>04 · Uitvoeren</b><span>Wie pakt welke actie op?</span></button>
+        <button type="button" data-demo-target="versies"><b>05 · Bewijs & leren</b><span>Welke veranderingen zijn vastgelegd?</span></button>
+      </div>
+      <p class="demo-proof">De gegevens, personen, scores en acties op deze pagina zijn gesimuleerd. De echte Portal V2 gebruikt de eigen bedrijfscontext en vereist bronbewijs voor gerealiseerde resultaten. <a href="https://www.bedrijfsgeheugen.nl/portal-v2/">Bekijk het echte portaal →</a></p>
+    </section>
     <section class="paneel aan" id="p-dashboard"></section>
     <section class="paneel" id="p-maandag"></section>
     <section class="paneel" id="p-wijzigingen"></section>
@@ -334,9 +347,15 @@ function tekenMenu(){
     b.addEventListener('click',function(){ganaar(b.dataset.p);});});
 }
 function ganaar(p){actief=p;gekozen=(p==='wijzigingen')?gekozen:null;
+ var journey=document.getElementById('demoJourney');if(journey)journey.hidden=p!=='dashboard';
  Array.prototype.forEach.call(document.querySelectorAll('.paneel'),function(s){
    s.classList.toggle('aan', s.id==='p-'+(EIGEN[p]?p:'rest'));});
- alles(); window.scrollTo({top:0,behavior:'smooth'});}
+ alles();
+ if(p==='dashboard'){
+   var demoIntro=document.querySelector('#p-dashboard>.uitleg');
+   if(demoIntro)demoIntro.textContent='Je bedrijf verandert iedere dag. Deze klikdemo gebruikt fictieve gegevens om beslissingen, uitvoering en verifieerbare veranderingen te laten zien.';
+ }
+ window.scrollTo({top:0,behavior:'smooth'});}
 function alles(){ tekenMenu(); tekenWie(); tekenKladbalk();
  if(EIGEN[actief]) ({dashboard:tekenDashboard,maandag:tekenMaandag,wijzigingen:tekenWijzigingen,acties:tekenActies,versies:tekenVersies,instellingen:tekenInstellingen})[actief]();
  else tekenRest(); }
@@ -351,15 +370,7 @@ document.getElementById('kiesWie').addEventListener('change',function(){IK=this.
 function tekenDashboard(){
   var vm=voorMij(), kl=klad();
   document.getElementById('p-dashboard').innerHTML=
-   '<h1 class="pk">Dag '+vnaam(IK)+'</h1><p class="uitleg">Je bedrijf verandert iedere dag. Deze klikdemo laat met fictieve gegevens zien hoe informatie leidt tot afwegingen, besluiten, acties en controle op de uitkomst. Dit is geen actuele bedrijfsanalyse.</p>'
-   +'<section class="kaart demo-sturing" data-demo-steering="v1" aria-label="Demo dagelijkse ondernemingssturing"><span class="demo-label">Bedrijfsgeheugen · dagelijkse ondernemingssturing</span><h2>Wat verandert er — wat beslis je — wat werkt?</h2><p>Niet nog een AI-tool of dashboard: bekijk hoe je bestaande onderdelen samen een sturingscyclus vormen. Klik op een stap voor het bijbehorende bestaande demoonderdeel.</p>'
-   +'<div class="demo-flow" role="group" aria-label="Vijf stappen in de klikdemo">'
-   +'<button type="button" data-tab="omgeving"><b>01 · Informatie</b><span>Welke interne signalen zijn bekend?</span></button>'
-   +'<button type="button" data-tab="strategie"><b>02 · Impact</b><span>Wat betekent het voor onze koers?</span></button>'
-   +'<button type="button" data-tab="maandag"><b>03 · Besluiten</b><span>Wat doen we deze week als eerste?</span></button>'
-   +'<button type="button" data-tab="acties"><b>04 · Uitvoeren</b><span>Wie pakt welke actie op?</span></button>'
-   +'<button type="button" data-tab="versies"><b>05 · Bewijs & leren</b><span>Welke veranderingen zijn aantoonbaar vastgelegd?</span></button>'
-   +'</div><p class="demo-proof">De gegevens, personen, scores en acties op deze pagina zijn gesimuleerd. De werkelijke Portal V2 gebruikt jouw eigen context en vereist bronbewijs voor gerealiseerde resultaten. <a href="https://www.bedrijfsgeheugen.nl/portal-v2/">Bekijk het echte portaal →</a></p></section>'
+   '<h1 class="pk">Dag '+vnaam(IK)+'</h1><p class="uitleg">Dit staat er vandaag voor u klaar. Alles wat hieronder staat is van u — de rest van het portaal blijft zoals u het kent.</p>'
    +'<div class="tegels4">'
    +'<div class="kaart'+(vm.beoordelen.length?' let':'')+'"><div class="sub">Wacht op uw akkoord</div><div class="getal">'+vm.beoordelen.length+'</div></div>'
    +'<div class="kaart"><div class="sub">Uw openstaande acties</div><div class="getal">'+vm.taken.length+'</div></div>'
@@ -721,6 +732,9 @@ document.getElementById('knopReset').addEventListener('click',function(){
  S=JSON.parse(JSON.stringify(START));IK='sanne';gekozen=null;subtab='open';
  document.getElementById('lintTekst').textContent='Ontdek de vijf sturingsstappen. Alle gegevens zijn fictief; de klikdemo legt geen live klantresultaten vast.';
  ganaar('dashboard');});
+document.querySelectorAll('#demoJourney [data-demo-target]').forEach(function(button){
+  button.addEventListener('click',function(){ganaar(button.dataset.demoTarget);});
+});
 ganaar('dashboard');
 </script>
 </body>
