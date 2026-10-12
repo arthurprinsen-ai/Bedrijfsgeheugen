@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|portal|2026-10-12|production-readback-obsolete-overview-title-after-approved-positioning|v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_TEST_EXPECTS_RETIRED_PORTAL_COPY",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Protected portal PR #4347 deployed the verified value-first overview, but two old Playwright production DOM tests still assert an exact outdated static heading in the all-pages drawer.",
+  "prevention_rule": "Read back the canonical five-stage operating dashboard heading and retain every previous standalone, protected-route, legacy-network and native capability assertion. Do not revert product positioning merely to satisfy outdated screenshot selectors.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-production-dom-title-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-production-dom-title-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-production-dom-title-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "merged_pr": 4347,
+    "production_commit": "51bdf9deec401c0f59e548a938f4b11542c1703d",
+    "netlify_deploy": "6accb2b9f4de3f939ce63151",
+    "failed_workflow_run": 38234937434,
+    "failed_checks": 2,
+    "passed_checks": 13
+  },
+  "outcome": {
+    "protected_candidate_pending": true,
+    "production_recheck_pending": true
+  }
+}
