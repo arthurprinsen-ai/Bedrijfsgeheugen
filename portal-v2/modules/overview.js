@@ -181,7 +181,40 @@ function renderDirectievragen(root,state){
  return true;
 }
 
+/**
+ * Visible proof boundary for the public portal shell. Static illustrative KPI
+ * cards are only unlocked for the explicit demo tenant. Real tenants see
+ * their own profile-derived calculations (if available), never sample revenue,
+ * actions, progress or AI scores pretending to be customer results.
+ */
+export function portalSteeringEvidenceState(state={}){
+ const demo=isDemoCustomer(state);
+ const profile=state?.portal?.profile;
+ const hasProfile=Boolean(profile && typeof profile==='object' && profile.maturity && typeof profile.maturity==='object');
+ return Object.freeze({
+  demo,hasProfile,
+  status:demo
+   ? 'Demonstratie: de voorbeeldcijfers en acties zijn fictief, geen klantresultaten.'
+   : hasProfile
+    ? 'Je hebt bedrijfsprofielgegevens ingevuld. Berekeningen uit klantinvoer zijn indicatief; gerealiseerde resultaten vereisen apart bewijs.'
+    : 'Nog geen geverifieerde klantcijfers. Vul je bedrijfssituatie in en koppel relevante bronnen; onbekende waarden blijven leeg.'
+ });
+}
+
+export function applyPortalSteeringEvidenceGate(root=document,state={}){
+ const evidence=portalSteeringEvidenceState(state);
+ root?.querySelectorAll?.('[data-portal-sample-only]').forEach(node=>{node.hidden=!evidence.demo;});
+ const status=root?.querySelector?.('#dailySteeringProof');
+ if(status)status.textContent=evidence.status;
+ const metrics=root?.querySelector?.('[data-portal-customer-metrics]');
+ if(metrics)metrics.hidden=!evidence.hasProfile||evidence.demo;
+ const lastStaticMetric=metrics?.querySelector?.('.kpi:last-child');
+ if(lastStaticMetric)lastStaticMetric.hidden=!evidence.demo;
+ return evidence;
+}
+
 export function applyOverviewDashboard(root=document,state={}){
+ applyPortalSteeringEvidenceGate(root,state);
  ensureCompanyCockpit(root);
  ensureControlPlaneCockpit(root);
  renderLegacyOverviewComplete(root,state,openPortalPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
