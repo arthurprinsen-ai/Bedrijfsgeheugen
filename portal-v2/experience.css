@@ -48,7 +48,7 @@ dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,1
 
 
 /* Canonical operating journey: one customer-facing decision cycle, no second menu. */
-[data-portal-sample-only][hidden], [data-portal-customer-metrics][hidden]{display:none!important}
+[data-portal-sample-only][hidden], [data-portal-customer-metrics][hidden], [data-portal-customer-metrics] > .kpi[hidden]{display:none!important}
 .dashboard:has(>.right[hidden]){display:block}
 .daily-steering{display:grid;gap:18px;padding:clamp(18px,2.6vw,28px);margin:0 0 22px;background:linear-gradient(125deg,#112348,#213f80);border:1px solid #304f94;border-radius:20px;box-shadow:var(--pv-shadow-rest);color:#fff;min-width:0}
 .daily-steering-head{max-width:1000px}
