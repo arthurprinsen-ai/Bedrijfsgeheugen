@@ -12,7 +12,7 @@ function extractJson(text:string){const t=clean(text);try{return JSON.parse(t);}
 const banned=[/ik zag (je|jouw) profiel/i,/we zijn al een tijd verbonden/i,/just following up/i,/even opvolgen/i,/heb je mijn (mail|bericht)/i,/ik heb nog niets gehoord/i,/in het huidige digitale landschap/i,/revolutionair/i,/game.?changer/i,/mis deze kans niet/i,/laatste kans/i,/synergie/i,/boek (hier|nu).*(agenda|meeting|afspraak)/i,/calendly\.com/i,/\b(inspirerend|indrukwekkend|geweldig|fantastisch|super interessant|mooi om te zien|goed om te zien|gaaf om te zien)\b[!.]?/i,/\bveel (bedrijven|organisaties|founders|ondernemers|teams|mkb.?bedrijven)\b/i,/\bals (founder|oprichter|directeur|eigenaar|mede.?oprichter) merk ik\b/i];
 function numberClaims(text:string){return [...text.matchAll(/\b\d+(?:[.,]\d+)?%?\b/g)].map(x=>x[0]);}
 function canonicalNumber(v:string){const raw=clean(v).replace(/%/g,'').replace(',','.');const n=Number(raw);return Number.isFinite(n)?String(n)+(clean(v).endsWith('%')?'%':''):normalize(v);}
-function quality(action:any,plan:any,out:any){
+function quality(action:any,plan:any,out:any,history:any[]=[]){
   const msg=clean(out?.message),subject=clean(out?.subject),anchor=clean(out?.personalization_anchor);
   const max=Number(plan?.max_words||100),channel=clean(action.channel_norm);
   const ev=action?.evidence||{},pub=ev?.public_source_evidence?.evidence||{};
@@ -62,10 +62,23 @@ function quality(action:any,plan:any,out:any){
     topicLeak=topic.test(msg)&&!topic.test(context);
   }
   const sourceSpecificEvidenceOk=plan?.human_readable_context===true&&plan?.source_trigger_relevance===true&&clean(action?.source_url).startsWith('https://')&&clean(ev?.headline||ev?.summary||pub?.headline||pub?.summary).length>=24;
-  const checks:any={source_specific_evidence_ok:sourceSpecificEvidenceOk,length_ok:lengthOk,word_count:words(msg),max_words:max,question_count:qCount,question_rule_ok:oneQuestion,banned_ok:noBanned,banned_hits:bannedHits,subject_ok:subjectOk,personalization_anchor_ok:specificOk,followup_evidence_match:followupEvidenceOk,personalization_anchor:anchor,personalization_anchor_human:!anchorMachine,trigger_human_readable_context_ok:triggerReadableOk,semantic_topic_leak_free:!topicLeak,unsupported_numeric_claims:nums,facts_ok:factsOk,one_primary_problem_declared:clean(out?.primary_problem).length>0,micro_commitment_present:plan?.cta_style==='no_question'||clean(out?.micro_commitment).length>0,human_reason_present:clean(out?.human_reason).length>0};
+  const terms=(s:string)=>new Set(normalize(s).split(/\s+/).filter(x=>x.length>=5));
+  const candidateTerms=terms(msg);
+  const genericAsk=(s:string)=>/proces|process|overdrachtsmoment|kennis/i.test(s)&&/slimmer|verbeter|effici|voorbeeld|kost|tijd/i.test(s);
+  const historicalMessages=history.map(h=>clean(h?.message_draft||h?.evidence?.sent_message_text));
+  const semanticNoveltyOk=historicalMessages.every(prev=>{
+    if(!prev)return false;
+    const earlier=terms(prev),shared=[...candidateTerms].filter(x=>earlier.has(x)).length;
+    const similarity=shared/Math.max(1,Math.min(candidateTerms.size,earlier.size));
+    return similarity<0.56&&!(genericAsk(prev)&&genericAsk(msg));
+  });
+  const previousSentAt=Math.max(0,...history.map(h=>Date.parse(clean(h?.executed_at))||0));
+  const newEvidenceAt=Date.parse(clean(ev?.public_source_evidence?.occurred_at||ev?.inbound?.occurred_at))||0;
+  const newFollowupEvidenceOk=plan?.play_key!=='followup_new_angle'||(history.length>0&&newEvidenceAt>previousSentAt);
+  const checks:any={semantic_novelty_ok:semanticNoveltyOk,new_followup_evidence_ok:newFollowupEvidenceOk,prior_messages_checked:history.length,source_specific_evidence_ok:sourceSpecificEvidenceOk,length_ok:lengthOk,word_count:words(msg),max_words:max,question_count:qCount,question_rule_ok:oneQuestion,banned_ok:noBanned,banned_hits:bannedHits,subject_ok:subjectOk,personalization_anchor_ok:specificOk,followup_evidence_match:followupEvidenceOk,personalization_anchor:anchor,personalization_anchor_human:!anchorMachine,trigger_human_readable_context_ok:triggerReadableOk,semantic_topic_leak_free:!topicLeak,unsupported_numeric_claims:nums,facts_ok:factsOk,one_primary_problem_declared:clean(out?.primary_problem).length>0,micro_commitment_present:plan?.cta_style==='no_question'||clean(out?.micro_commitment).length>0,human_reason_present:clean(out?.human_reason).length>0};
   const vals=[checks.length_ok,checks.question_rule_ok,checks.banned_ok,checks.subject_ok,checks.personalization_anchor_ok,checks.personalization_anchor_human,checks.trigger_human_readable_context_ok,checks.semantic_topic_leak_free,checks.facts_ok,checks.one_primary_problem_declared,checks.micro_commitment_present,checks.human_reason_present];
   const score=vals.filter(Boolean).length/vals.length;
-  const passed=score>=0.90&&lengthOk&&oneQuestion&&noBanned&&subjectOk&&specificOk&&!anchorMachine&&factsOk&&!topicLeak&&sourceSpecificEvidenceOk;
+  const passed=score>=0.90&&lengthOk&&oneQuestion&&noBanned&&subjectOk&&specificOk&&!anchorMachine&&factsOk&&!topicLeak&&sourceSpecificEvidenceOk&&semanticNoveltyOk&&newFollowupEvidenceOk;
   return {passed,score:Number(score.toFixed(4)),checks};
 }
 
