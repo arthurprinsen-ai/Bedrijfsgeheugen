@@ -1,0 +1,30 @@
+{
+  "fingerprint": "powerhouse|2026-10-12|homepage-stacked-copy-dilutes-daily-steering|v2",
+  "compiler": {
+    "failure_class": "POST_BUILD_HERO_OLD_COPY_SURVIVES_POSITIONING_UPDATE",
+    "scope": "WEBSITE_COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Live readback after protected PR 4342 showed correct NL/EN H1 and new introduction, but the projector inserted a second lead before the existing hero-sub. The original knowledge/integration sales pitch survived directly below, and AI-driven was still the hero kicker.",
+  "prevention_rule": "Project exactly one localized hero body into the existing hero-sub (or its single existing fallback), replace AI-first hero microcopy with the operator outcome, and describe Powerhouse benefits before enumerating agent technology. When upgrading earlier v1 generated HTML, remove the inserted paragraph and keep one hero. Preserve original CTA paths, canonical build order and honest outcome claims.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"],
+    "shadow": ["tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"],
+    "canary": ["tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"]
+  },
+  "evidence": {
+    "live_homepage_languages": ["nl", "en"],
+    "pr_4342_merged_sha": "e31dc132d4929e016340d919d0b1189dc201033a",
+    "netlify_deploy_id": "6acca6c9936626d8ca8b7153",
+    "live_h1_correct": true,
+    "live_hero_duplicate_text_confirmed": true
+  },
+  "outcome": {
+    "technical_fix_candidate": true,
+    "protected_merge_pending": true,
+    "live_readback_pending": true,
+    "sales_effect_unverified": true
+  }
+}
