@@ -27,5 +27,5 @@
     "live_homepage_readback_pending": true,
     "no_unverified_outcome_claim": true
   },
-  "website_regression": "tests/site-shell-homepage-daily-steering-positioning.test.mjs"
+  "website_regression": "tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"
 }
