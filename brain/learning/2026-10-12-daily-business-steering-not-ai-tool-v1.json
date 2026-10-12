@@ -10,9 +10,15 @@
   "root_cause": "The live public home hero sold knowledge retention, AFAS/Exact integration and AI tools before explaining the differentiating continuous decision/impact/action/outcome loop. After real prospect feedback, the page was too easily classified as another AI/automation vendor.",
   "prevention_rule": "Lead public positioning with continuous day-to-day business steering from internal and external signals to strategy impact, accountable action, measured outcome and learning. Describe Powerhouse and AI as enabling technology only. Never use AI features or agent inventory as primary customer promise. Show only verifiable production capabilities; demonstrations must be labeled.",
   "evaluation": {
-    "historical_replay": ["tests/site-shell-homepage-daily-steering-positioning.test.mjs"],
-    "shadow": ["tests/site-shell-homepage-daily-steering-positioning.test.mjs"],
-    "canary": ["tests/site-shell-homepage-daily-steering-positioning.test.mjs"]
+    "historical_replay": [
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
+    ]
   },
   "outcome": {
     "brand_rule_readback_verified": true,
@@ -20,5 +26,6 @@
     "protected_release_pending": true,
     "live_homepage_readback_pending": true,
     "no_unverified_outcome_claim": true
-  }
+  },
+  "website_regression": "tests/site-shell-homepage-daily-steering-positioning.test.mjs"
 }
