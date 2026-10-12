@@ -41,7 +41,7 @@ async function salesRobotContext(db:any){
   const connectedAccountId=clean(connected?.id||connected?.connected_account_id);
   const probe=await composioExecuteArgs(apiKey,connectedAccountId,'SALESROBOT_LIST_LINKEDIN_ACCOUNTS',{limit:25});
   const data:any=probe?.data||probe;
-  const accounts=Array.isArray(data?.items)?data.items:Array.isArray(data?.data?.data)?data.data.data:[];
+  const accounts=Array.isArray(data?.items)?data.items:Array.isArray(data?.data?.items)?data.data.items:Array.isArray(data?.data?.data)?data.data.data:[];
   const healthy=accounts.find((x:any)=>clean(x?.healthStatus).toUpperCase()==='HEALTHY'&&x?.cookieExpired!==true&&x?.connectionTempPaused!==true&&x?.connectionLimitReached!==true);
   if(!healthy)throw new Error('SALESROBOT_LINKEDIN_ACCOUNT_NOT_HEALTHY');
   const blocked=salesRobotExecutionBlock(healthy);
@@ -169,8 +169,9 @@ Deno.serve(async(req:Request)=>{
     let dmCapability='UNAVAILABLE';
     try{
       const sr=await salesRobotContext(db);
-      dmCapability='AVAILABLE';
-      await recordCapability(db,'salesrobot.linkedin_dm','AVAILABLE',{health_status:sr.healthStatus,subscription:sr.subscription,verified_at:now,tool:'SALESROBOT_SEND_MESSAGE'});
+      // Account health is not recipient eligibility nor a verified DM delivery receipt.
+      dmCapability='CONFIG_REQUIRED';
+      await recordCapability(db,'salesrobot.linkedin_dm','CONFIG_REQUIRED',{health_status:sr.healthStatus,subscription:sr.subscription,verified_at:now,account_transport_healthy:true,recipient_authority_unverified:true,provider_inbox_readback_required:true,tool:'SALESROBOT_SEND_MESSAGE',proof_boundary:'account_health_is_not_send_or_readback_proof'});
       for(const action of dmActions||[]){
         const composerProof=action?.evidence?.commercial_intelligence?.composer||{};
         const strategy=clean(action?.evidence?.commercial_intelligence?.message_strategy);
@@ -214,10 +215,12 @@ Deno.serve(async(req:Request)=>{
       }
     }catch(srError:any){
       const reason=clean(srError?.message||srError).slice(0,240);
-      const configRequired=/^SALESROBOT_(BILLING_INACTIVE|EXECUTION_DAYS_EXHAUSTED|CAMPAIGN_REQUIRED|ACTIVE_CAMPAIGN_REQUIRED)$/.test(reason);
-      dmCapability=configRequired?'CONFIG_REQUIRED':'UNAVAILABLE';
-      await recordCapability(db,'salesrobot.linkedin_dm',dmCapability,{error:reason,checked_at:now,send_proof:false});
-      dmResults.push({status:'held',reason:configRequired?reason:'SALESROBOT_CAPABILITY_UNAVAILABLE'});
+      // A failed API preflight (e.g. 400 from an adapter) cannot prove an account is disconnected.
+      // Keep it non-sendable while preserving the last known provider-health distinction.
+      const confirmedDisconnected=/^SALESROBOT_(CONNECTION_UNAVAILABLE|LINKEDIN_ACCOUNT_NOT_HEALTHY)$/.test(reason);
+      dmCapability=confirmedDisconnected?'UNAVAILABLE':'CONFIG_REQUIRED';
+      await recordCapability(db,'salesrobot.linkedin_dm',dmCapability,{error:reason,checked_at:now,send_proof:false,account_health_unverified:true,provider_probe_failed:true,retryable:!confirmedDisconnected,requires_exact_provider_readback:true,proof_boundary:'probe_error_is_not_verified_disconnection'});
+      dmResults.push({status:'held',reason:confirmedDisconnected?'SALESROBOT_PROVIDER_DISCONNECTED':'SALESROBOT_PROBE_OR_ELIGIBILITY_UNVERIFIED'});
     }
     return json({ok:true,contract:CONTRACT,prepared:prep,generated,autopilot,dm_capability:dmCapability,dm_provider:'salesrobot',dm_results:dmResults,dm_fallback:'REQUIRES_SEPARATE_EXECUTION_PROOF'});
   }catch(err:any){
