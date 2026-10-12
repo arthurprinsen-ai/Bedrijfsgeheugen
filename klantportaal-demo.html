@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Klantportaal — wijzigingen, klikbare demo | Bedrijfsgeheugen</title>
+<title>Bedrijfsgeheugen — dagelijkse ondernemingssturing (klikdemo)</title>
+<meta name="description" content="Klikdemo met fictieve bedrijfsgegevens: van interne signalen en impact naar besluiten, acties, bewijs en leren. Voor het echte klantenportaal gebruik je Portal V2.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Instrument+Sans:wght@400;500;600&display=optional" rel="stylesheet">
@@ -59,6 +60,19 @@ button{font:inherit}
 .kk h3{font-size:15px}.kk .re{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .sub{font-size:13px;color:var(--grijs)}
 h1.pk{font-size:22px;margin-bottom:2px}
+/* Existing clickdemo follows the main Portal V2 customer story without a second navigation model. */
+.demo-sturing{border:2px solid #D7DFF7;background:linear-gradient(145deg,#fff,#F6F8FF)}
+.demo-sturing h2{font-size:clamp(20px,2.5vw,27px);margin:5px 0 10px;line-height:1.25}
+.demo-sturing p{color:var(--grijs);margin:0 0 11px}
+.demo-label{font-size:11px;font-weight:800;letter-spacing:.09em;color:var(--blauw);text-transform:uppercase}
+.demo-flow{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0 0}
+.demo-flow button{display:grid;gap:7px;text-align:left;align-content:start;min-height:122px;border:1px solid #CFD7EC;border-radius:8px;background:#fff;padding:12px;cursor:pointer;color:#182443}
+.demo-flow button:hover,.demo-flow button:focus-visible{border-color:var(--blauw);outline-offset:2px}
+.demo-flow b{font-size:13px}.demo-flow span{font-size:12px;line-height:1.45;color:var(--grijs)}
+.demo-proof{font-size:12px;color:#5C646E;margin-top:12px!important}
+@media(max-width:900px){.demo-flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){.demo-flow{grid-template-columns:1fr}.demo-flow button{min-height:70px}}
+
 p.uitleg{color:var(--grijs);margin:0 0 14px;font-size:13.5px;max-width:78ch}
 
 .pil{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid var(--lijn);color:var(--grijs);background:var(--wit);white-space:nowrap}
@@ -204,7 +218,7 @@ select.niv:disabled{background:#F2F4F6;color:var(--zacht)}
   </div>
   <nav class="groeprij" id="groeprij" aria-label="Hoofdmenu"></nav>
 </header>
-<div class="lint"><b>Demo.</b><span id="lintTekst">Begin op het <b>Dashboard</b>: daar staat wat er voor u klaarligt. Klik daarna onderaan op "Wijzigingen maken".</span><button id="knopReset">Opnieuw beginnen</button></div>
+<div class="lint"><b>Klikdemo · fictieve gegevens</b><span id="lintTekst">Ontdek hoe een onderneming van informatie naar beslissingen, uitvoering en aantoonbaar resultaat beweegt. Er is geen live klantdata gekoppeld.</span><button id="knopReset">Opnieuw beginnen</button></div>
 
 <div class="romp">
   <nav class="zij" id="zij" aria-label="Onderdelen"></nav>
@@ -337,7 +351,15 @@ document.getElementById('kiesWie').addEventListener('change',function(){IK=this.
 function tekenDashboard(){
   var vm=voorMij(), kl=klad();
   document.getElementById('p-dashboard').innerHTML=
-   '<h1 class="pk">Dag '+vnaam(IK)+'</h1><p class="uitleg">Dit staat er vandaag voor u klaar. Alles wat hieronder staat is van u — de rest van het portaal blijft zoals u het kent.</p>'
+   '<h1 class="pk">Dag '+vnaam(IK)+'</h1><p class="uitleg">Je bedrijf verandert iedere dag. Deze klikdemo laat met fictieve gegevens zien hoe informatie leidt tot afwegingen, besluiten, acties en controle op de uitkomst. Dit is geen actuele bedrijfsanalyse.</p>'
+   +'<section class="kaart demo-sturing" data-demo-steering="v1" aria-label="Demo dagelijkse ondernemingssturing"><span class="demo-label">Bedrijfsgeheugen · dagelijkse ondernemingssturing</span><h2>Wat verandert er — wat beslis je — wat werkt?</h2><p>Niet nog een AI-tool of dashboard: bekijk hoe je bestaande onderdelen samen een sturingscyclus vormen. Klik op een stap voor het bijbehorende bestaande demoonderdeel.</p>'
+   +'<div class="demo-flow" role="group" aria-label="Vijf stappen in de klikdemo">'
+   +'<button type="button" data-tab="omgeving"><b>01 · Informatie</b><span>Welke interne signalen zijn bekend?</span></button>'
+   +'<button type="button" data-tab="strategie"><b>02 · Impact</b><span>Wat betekent het voor onze koers?</span></button>'
+   +'<button type="button" data-tab="maandag"><b>03 · Besluiten</b><span>Wat doen we deze week als eerste?</span></button>'
+   +'<button type="button" data-tab="acties"><b>04 · Uitvoeren</b><span>Wie pakt welke actie op?</span></button>'
+   +'<button type="button" data-tab="versies"><b>05 · Bewijs & leren</b><span>Welke veranderingen zijn aantoonbaar vastgelegd?</span></button>'
+   +'</div><p class="demo-proof">De gegevens, personen, scores en acties op deze pagina zijn gesimuleerd. De werkelijke Portal V2 gebruikt jouw eigen context en vereist bronbewijs voor gerealiseerde resultaten. <a href="https://www.bedrijfsgeheugen.nl/portal-v2/">Bekijk het echte portaal →</a></p></section>'
    +'<div class="tegels4">'
    +'<div class="kaart'+(vm.beoordelen.length?' let':'')+'"><div class="sub">Wacht op uw akkoord</div><div class="getal">'+vm.beoordelen.length+'</div></div>'
    +'<div class="kaart"><div class="sub">Uw openstaande acties</div><div class="getal">'+vm.taken.length+'</div></div>'
@@ -697,7 +719,7 @@ function melden(tekst,knop,actie){document.getElementById('toastTekst').textCont
  toast.classList.add('aan');clearTimeout(tt);tt=setTimeout(function(){toast.classList.remove('aan');},8000);}
 document.getElementById('knopReset').addEventListener('click',function(){
  S=JSON.parse(JSON.stringify(START));IK='sanne';gekozen=null;subtab='open';
- document.getElementById('lintTekst').innerHTML='Begin op het <b>Dashboard</b>: daar staat wat er voor u klaarligt. Klik daarna onderaan op "Wijzigingen maken".';
+ document.getElementById('lintTekst').textContent='Ontdek de vijf sturingsstappen. Alle gegevens zijn fictief; de klikdemo legt geen live klantresultaten vast.';
  ganaar('dashboard');});
 ganaar('dashboard');
 </script>
