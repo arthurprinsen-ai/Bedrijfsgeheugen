@@ -45,3 +45,23 @@ dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,1
 @media(max-width:900px){
   #portalFullMenuToggle{min-width:44px!important;min-height:44px!important;box-sizing:border-box!important}
 }
+
+
+/* Canonical operating journey: one customer-facing decision cycle, no second menu. */
+[data-portal-sample-only][hidden], [data-portal-customer-metrics][hidden], [data-portal-customer-metrics] > .kpi[hidden]{display:none!important}
+.dashboard:has(>.right[hidden]){display:block}
+.daily-steering{display:grid;gap:18px;padding:clamp(18px,2.6vw,28px);margin:0 0 22px;background:linear-gradient(125deg,#112348,#213f80);border:1px solid #304f94;border-radius:20px;box-shadow:var(--pv-shadow-rest);color:#fff;min-width:0}
+.daily-steering-head{max-width:1000px}
+.daily-steering-eyebrow{display:block;font-size:11px;font-weight:800;letter-spacing:.11em;color:#b2d2ff}
+.daily-steering h2{font-size:clamp(24px,3vw,36px);font-weight:850;line-height:1.13;letter-spacing:-.04em;margin:9px 0 12px;color:#fff}
+.daily-steering-head p{margin:0;color:#e0eaf8;line-height:1.6;max-width:86ch;font-size:14px}
+.daily-steering-steps{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:0;margin:0}
+.daily-steering-steps li{min-width:0;display:flex;flex-direction:column;gap:8px;background:#fff;border-radius:14px;padding:16px;color:#1a2c44;border:1px solid #dce7f3}
+.daily-steering-step{font-size:10px;color:#516b91;font-weight:850;letter-spacing:.06em}
+.daily-steering-steps strong{font-size:16px;line-height:1.22}
+.daily-steering-steps p{font-size:12px;line-height:1.5;margin:0 0 4px;color:#40536c;flex:1}
+.daily-steering-steps a{display:flex;align-items:center;min-height:44px;padding:8px 0;font-weight:800;color:#1450ac;text-decoration:underline;text-underline-offset:3px;font-size:12px}
+.daily-steering-steps a:focus-visible{outline:3px solid #f8b540!important;outline-offset:3px}
+.daily-steering-proof{margin:0;color:#dce8fc;border-top:1px solid #426092;padding-top:13px;font-size:12px;line-height:1.5}
+@media(max-width:1120px){.daily-steering-steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:720px){.daily-steering{border-radius:16px;padding:16px}.daily-steering-steps{grid-template-columns:1fr}.daily-steering-steps li{padding:14px}.daily-steering h2{font-size:26px}}
