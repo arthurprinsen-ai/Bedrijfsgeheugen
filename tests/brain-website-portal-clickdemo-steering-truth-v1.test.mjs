@@ -10,7 +10,7 @@ test('sales clickdemo leads with operator outcome, not a second AI-tool proposit
   assert.match(source, /dagelijkse ondernemingssturing/i);
   assert.match(source, /Wat verandert er — wat beslis je — wat werkt\?/);
   assert.match(source, /Niet nog een AI-tool of dashboard/);
-  assert.match(source, /eigen context en vereist bronbewijs/);
+  assert.match(source, /eigen bedrijfscontext en vereist bronbewijs/);
   assert.match(source, /href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/"/);
 });
 
