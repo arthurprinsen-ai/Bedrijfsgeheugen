@@ -11,7 +11,7 @@ test('one existing assurance owner, advisory lock, bounded enrichment repair',()
  assert.match(assurance,/powerhouse_daily_omnichannel_assurance_v1/);
  assert.match(assurance,/pg_try_advisory_xact_lock/);
  assert.match(assurance,/powerhouse_connection_daily_pulse_v1\(v_day,500\)/);
- assert.doesNotMatch(assurance,/cron\.schedule\s*\(/);
+ assert.match(assurance,/cron\.schedule\('powerhouse-autonomous-outreach-assurance-hourly-v1'/);
 });
 
 test('hourly stage isolation keeps the same named cron and bounded stages',()=>{
