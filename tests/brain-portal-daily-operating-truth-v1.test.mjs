@@ -44,7 +44,12 @@ test('demo, missing and customer-entered evidence are clearly distinguished',()=
  assert.equal(portalSteeringEvidenceState({}).demo,false);
  assert.equal(portalSteeringEvidenceState({}).hasProfile,false);
  assert.match(portalSteeringEvidenceState({}).status,/Nog geen geverifieerde klantcijfers/);
- const entered=portalSteeringEvidenceState({portal:{profile:{maturity:{finance:2}}}});
+ const partial=portalSteeringEvidenceState({portal:{profile:{maturity:{finance:2}}}});
+ assert.equal(partial.hasProfile,false);
+ assert.match(partial.status,/onvolledig/);
+ const allDimensions=['sturing','commercie','operatie','finance','mensen','analytics','quality','governance','tech','culture','service','security','duurzaam'];
+ const completeProfile={maturity:Object.fromEntries(allDimensions.map(id=>[id,3])),employees:24,hourlyCost:52};
+ const entered=portalSteeringEvidenceState({portal:{profile:completeProfile}});
  assert.equal(entered.demo,false);
  assert.equal(entered.hasProfile,true);
  assert.match(entered.status,/indicatief/);
@@ -64,6 +69,9 @@ test('proof gate hides all example cards for real customers and only shows deriv
  assert.equal(metrics.hidden,true);
  assert.equal(fifth.hidden,true);
  applyPortalSteeringEvidenceGate(root,{portal:{profile:{maturity:{finance:3}}}});
+ assert.equal(metrics.hidden,true,'a partial input must not fabricate default staff or cost assumptions');
+ const allDimensions=['sturing','commercie','operatie','finance','mensen','analytics','quality','governance','tech','culture','service','security','duurzaam'];
+ applyPortalSteeringEvidenceGate(root,{portal:{profile:{maturity:Object.fromEntries(allDimensions.map(id=>[id,3])),employees:24,hourlyCost:52}}});
  assert.ok(examples.every(x=>x.hidden));
  assert.equal(metrics.hidden,false);
  assert.equal(fifth.hidden,true);
