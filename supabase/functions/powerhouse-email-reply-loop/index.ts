@@ -52,12 +52,14 @@ function classify(textRaw:string){
   const hit=(xs:string[])=>xs.some(x=>t.includes(x));
   if(hit([' uitschrijven',' afmelden',' niet meer mailen',' verwijder mij',' unsubscribe',' stop emailing',' do not contact',' no more emails']))
     return {reply_class:'unsubscribe',objection_code:'do_not_contact',intent_score:-1,next_action:'suppress'};
+  if(hit([' meerdere keren per dag benaderd',' vergelijkbare dienstverlening',' andere zaken aan ons hoofd',' geen prioriteit',' te veel aanbiedingen',' too many similar pitches',' not a priority',' succes met je onderneming']))
+    return {reply_class:'negative',objection_code:'vendor_fatigue_other_priorities',intent_score:-1,next_action:'suppress'};
   if(hit([' te duur',' prijs',' budget',' kosten',' too expensive',' pricing',' budget']))
     return {reply_class:'objection_price',objection_code:'price_budget',intent_score:-0.2,next_action:'follow_up'};
   if(hit([' later',' nu niet',' geen tijd',' druk',' volgend kwartaal',' volgend jaar',' not now',' later on',' too busy']))
     return {reply_class:'objection_timing',objection_code:'timing',intent_score:0,next_action:'nurture_later'};
   if(hit([' niet relevant',' geen behoefte',' geen interesse',' no interest',' not relevant',' no need',' niet nodig']))
-    return {reply_class:'objection_need',objection_code:'need_fit',intent_score:-0.7,next_action:'close'};
+    return {reply_class:'objection_need',objection_code:'need_fit',intent_score:-0.7,next_action:'suppress'};
   if(hit([' niet bij mij',' verkeerde persoon',' collega',' contact opnemen met',' not me',' wrong person',' speak to']))
     return {reply_class:'objection_authority',objection_code:'authority',intent_score:0.1,next_action:'reroute'};
   if(hit([' graag',' interessant',' klinkt goed',' stuur maar',' laten we',' afspraak',' bellen',' meeting',' interested',' sounds good',' yes please',' sure',' happy to',' let\'s talk']))
@@ -65,7 +67,7 @@ function classify(textRaw:string){
   if(t.includes('?'))
     return {reply_class:'question',objection_code:null,intent_score:0.45,next_action:'follow_up'};
   if(hit([' nee dank',' nee bedankt',' no thanks',' not interested',' liever niet']))
-    return {reply_class:'negative',objection_code:'negative',intent_score:-0.8,next_action:'close'};
+    return {reply_class:'negative',objection_code:'negative',intent_score:-0.8,next_action:'suppress'};
   return {reply_class:'other',objection_code:null,intent_score:0,next_action:'review'};
 }
 function followupDraft(cls:string,name:string){
@@ -94,7 +96,7 @@ Deno.serve(async(req:Request)=>{
 
     const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions')
       .select('action_id,subject_key,person_key,company_key,content_key,topic_key,campaign_key,opportunity_key,expected_value_eur,person_name,company_name,role,evidence,executed_at')
-      .eq('channel','email').eq('action_type','autonomous_email').eq('status','done')
+      .eq('channel','email').in('action_type',['autonomous_email','reply_followup','email_followup','follow_up']).eq('status','done')
       .gte('executed_at',since).order('executed_at',{ascending:false}).limit(100);
     if(aErr)throw new Error('ACTIONS_READ:'+aErr.message);
 
@@ -156,9 +158,9 @@ Deno.serve(async(req:Request)=>{
         evidence:{contract:CONTRACT,reply_event_id:reply.reply_event_id,provider_message_id:messageId,provider_thread_id:clean(msg?.threadId),reply_class:c.reply_class}
       },{onConflict:'dedupe_key'});
 
-      if(c.reply_class==='unsubscribe'){
+      if(c.next_action==='suppress'){
         await db.from('powerhouse_email_contact_suppressions').upsert({
-          email:sender,reason:'explicit_unsubscribe',source_reply_event_id:reply.reply_event_id,active:true,lifted_at:null
+          email:sender,reason:c.reply_class==='unsubscribe'?'explicit_unsubscribe':('declined_'+clean(c.objection_code||c.reply_class)),source_reply_event_id:reply.reply_event_id,active:true,lifted_at:null
         },{onConflict:'email'});
         suppressions++;
       }
