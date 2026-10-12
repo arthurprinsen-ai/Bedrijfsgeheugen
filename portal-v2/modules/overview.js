@@ -190,13 +190,24 @@ function renderDirectievragen(root,state){
 export function portalSteeringEvidenceState(state={}){
  const demo=isDemoCustomer(state);
  const profile=state?.portal?.profile;
- const hasProfile=Boolean(profile && typeof profile==='object' && profile.maturity && typeof profile.maturity==='object');
+ const maturity=profile?.maturity;
+ const allDimensionsProvided=PROFILE_DIMENSION_LABELS.every(([id])=>{
+  const value=maturity?.[id];
+  return value!==undefined&&value!==null&&value!==''&&Number.isInteger(Number(value))&&Number(value)>=1&&Number(value)<=5;
+ });
+ const hasProfile=Boolean(
+  profile && allDimensionsProvided
+  && Number.isFinite(Number(profile.employees))&&Number(profile.employees)>0
+  && Number.isFinite(Number(profile.hourlyCost))&&Number(profile.hourlyCost)>0
+ );
+ const partiallyEntered=Boolean(maturity&&typeof maturity==='object'&&Object.keys(maturity).length>0);
  return Object.freeze({
   demo,hasProfile,
   status:demo
    ? 'Demonstratie: de voorbeeldcijfers en acties zijn fictief, geen klantresultaten.'
    : hasProfile
     ? 'Je hebt bedrijfsprofielgegevens ingevuld. Berekeningen uit klantinvoer zijn indicatief; gerealiseerde resultaten vereisen apart bewijs.'
+    : partiallyEntered ? 'Je bedrijfsprofiel is nog onvolledig. Vul alle onderdelen, medewerkers en uurkosten expliciet in voordat indicatieve KPI’s verschijnen.'
     : 'Nog geen geverifieerde klantcijfers. Vul je bedrijfssituatie in en koppel relevante bronnen; onbekende waarden blijven leeg.'
  });
 }
