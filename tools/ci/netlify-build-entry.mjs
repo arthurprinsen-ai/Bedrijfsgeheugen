@@ -28,6 +28,7 @@ const phases = Object.freeze([
   ['commercial-pricing','tools/site-shell/apply-commercial-pricing-v1.mjs'],
   ['revenue-links','tools/seo-order-engine/apply-revenue-links.mjs'],
   ['website-coherence','tools/site-shell/finalize-website-coherence-v1.mjs'],
+  ['daily-steering-positioning','tools/site-shell/apply-daily-steering-positioning.mjs'],
   ['cms-runtime','tools/site-shell/apply-cms-runtime.mjs'],
   ['sitemap','tools/genereer-sitemap.mjs'],
   ['locale-validation','tools/seo-order-engine/validate-locales.mjs'],
