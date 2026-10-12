@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<meta name="description" content="Interactief Bedrijfsgeheugen klantenportaal: Powerhouse Connect, Intelligence en Agents brengen bronnen, context, acties en aantoonbare resultaten samen.">
+<meta name="description" content="Bedrijfsgeheugen brengt dagelijkse ondernemingssturing samen: externe en interne signalen, strategische gevolgen, beslissingen, acties met een eigenaar en verifieerbare resultaten.">
 <title>Bedrijfsgeheugen · Klantenportaal V2</title>
 <base href="/portal-v2/">
 <style id="portalBoot">html.v2-hydrating body>*{visibility:hidden!important}html.v2-hydrating body::before{content:"Portaal laden…";position:fixed;inset:0;display:grid;place-items:center;background:#f7f9fc;color:#526076;font:600 15px system-ui;z-index:2147483647}</style>
@@ -41,14 +41,31 @@
 <main class="main">
  <section class="topbar">
   <button class="portal-hamburger" id="portalFullMenuToggle" type="button" aria-label="Open volledig portaalmenu" aria-haspopup="dialog" aria-controls="allPages">☰ <span>Menu</span></button>
-  <div class="welcome"><h1>Welkom terug, Arthur</h1><p>Grip op je bedrijf. Ruimte om te groeien.</p></div>
+  <div class="welcome"><h1>Welkom terug</h1><p>Elke dag zien wat verandert, bepalen wat telt en volgen wat werkt.</p></div>
   <div class="topactions">
    <div class="searchrow"><input class="search" placeholder="⌕  Zoek in kennis, processen, data, systemen..."><button class="smallbtn topaction-icon" id="portalNotifications" type="button" aria-label="Meldingen" aria-haspopup="dialog" aria-controls="portalNotificationsPanel" aria-expanded="false">🔔</button><button class="smallbtn topaction-icon" id="portalHelp" type="button" aria-label="Help en ondersteuning" aria-haspopup="dialog" aria-controls="portalHelpPanel" aria-expanded="false">?</button><button class="smallbtn topaction-icon" id="portalAccount" type="button" aria-label="Accountmenu" aria-haspopup="dialog" aria-controls="portalAccountPanel" aria-expanded="false">AP</button></div>
-   <div class="actionrow"><button class="smallbtn ai" id="portalAskAi" type="button" aria-haspopup="dialog" aria-controls="portalAskAiDialog">✦ Vraag Bedrijfsgeheugen AI</button><label class="period-control" for="portalPeriod"><span>Periode</span><select id="portalPeriod" aria-label="Kies rapportageperiode"><option value="2025-05" selected>Mei 2025</option><option value="2025-04">April 2025</option><option value="2025-03">Maart 2025</option><option value="2025-q1">Q1 2025</option><option value="2025-ytd">2025 YTD</option></select></label></div>
+   <div class="actionrow"><button class="smallbtn ai" id="portalAskAi" type="button" aria-haspopup="dialog" aria-controls="portalAskAiDialog">✦ Vraag Bedrijfsgeheugen</button><label class="period-control" for="portalPeriod"><span>Periode</span><select id="portalPeriod" aria-label="Kies rapportageperiode"><option value="2025-05" selected>Mei 2025</option><option value="2025-04">April 2025</option><option value="2025-03">Maart 2025</option><option value="2025-q1">Q1 2025</option><option value="2025-ytd">2025 YTD</option></select></label></div>
   </div>
  </section>
 
- <section class="executive-glance" aria-label="Managementoverzicht">
+ <section class="daily-steering" data-bg-portal-daily-steering="v1" aria-labelledby="dailySteeringTitle">
+  <div class="daily-steering-head">
+   <div><span class="daily-steering-eyebrow">BEDRIJFSGEHEUGEN · DAGELIJKSE ONDERNEMINGSSTURING</span>
+    <h2 id="dailySteeringTitle">Wat verandert er in je bedrijf — en wat doe je ermee?</h2>
+    <p>Geen verzameling AI-tools. Hier verbind je ontwikkelingen van binnen én buiten je onderneming aan doelen, gevolgen, keuzes, uitvoering en aantoonbaar resultaat. De bestaande onderdelen werken samen in één sturingscyclus.</p>
+   </div>
+  </div>
+  <ol class="daily-steering-steps">
+   <li><span class="daily-steering-step">01 · Signalen</span><strong>Wat verandert?</strong><p>Bekijk je omgeving en de herkomst van nieuwe ontwikkelingen.</p><a data-open-page="omgevingsradar" href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar">Omgevingsradar →</a></li>
+   <li><span class="daily-steering-step">02 · Impact</span><strong>Wat betekent het?</strong><p>Verbind signalen aan jouw strategie, doelen en bedrijfssituatie.</p><a data-open-page="bedrijfssituatie" href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=bedrijfssituatie">Bedrijfssituatie →</a></li>
+   <li><span class="daily-steering-step">03 · Beslissing</span><strong>Wat heeft prioriteit?</strong><p>Onderbouw wat je als eerste aanpakt; leg de keuze vast.</p><a data-open-page="strategie-naar-maandagochtend" href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=strategie-naar-maandagochtend">Van strategie naar actie →</a></li>
+   <li><span class="daily-steering-step">04 · Uitvoering</span><strong>Wie pakt het op?</strong><p>Volg eigenaren, taken en de status van de uitvoering.</p><a data-open-page="actieve-acties" href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=actieve-acties">Acties bekijken →</a></li>
+   <li><span class="daily-steering-step">05 · Leren</span><strong>Wat heeft het opgeleverd?</strong><p>Controleer bron, bewijs en gerealiseerd effect voordat je bijstuurt.</p><a data-open-page="outcomes-evidence" href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=outcomes-evidence">Uitkomsten & bewijs →</a></li>
+  </ol>
+  <p class="daily-steering-proof" id="dailySteeringProof" role="status">Geen klantresultaat zonder bronbewijs. De status van je bedrijf wordt bepaald door je eigen gegevens, niet door voorbeeldcijfers.</p>
+ </section>
+
+ <section class="executive-glance" data-portal-sample-only="true" hidden aria-label="Demonstratie van het managementoverzicht">
   <article class="glance-hero"><div><span class="glance-kicker">Vandaag</span><h2>Je bedrijf in één oogopslag</h2><p>Gezondheid, aandacht en de eerstvolgende acties — zonder eerst door het portaal te hoeven zoeken.</p></div><div class="glance-score"><span>Bedrijfsgezondheid</span><strong>72<small>/100</small></strong><em>▲ 4 deze maand</em></div></article>
   <div class="glance-grid">
     <article class="glance-card attention"><span>Aandacht</span><strong>Kennisborging</strong><p>Score 61/100 · daalt deze maand. Finance is de eerste plek om te borgen.</p><button type="button" data-open-page="profiel">Bekijk oorzaak →</button></article>
@@ -58,7 +75,7 @@
   </div>
  </section>
 
- <section class="kpis">
+ <section class="kpis" data-portal-customer-metrics="true" hidden>
   <article class="kpi"><div class="kpihead"><span class="kpiicon">♡</span>Bedrijfsgezondheid</div><div class="num">72<small>/100</small></div><div class="delta">▲ +4 deze maand</div><div class="spark"></div></article>
   <article class="kpi"><div class="kpihead"><span class="kpiicon">▤</span>Kennisborging</div><div class="num">61<small>/100</small></div><div class="delta down">▼ -3 deze maand</div><div class="spark"></div></article>
   <article class="kpi"><div class="kpihead"><span class="kpiicon">⚙</span>Processen</div><div class="num">69<small>/100</small></div><div class="delta">▲ +6 deze maand</div><div class="spark"></div></article>
@@ -68,7 +85,7 @@
 
  <div class="dashboard">
   <section class="card braincard">
-   <div class="brainhead"><div><h2>Zo werkt Powerhouse in je bedrijf ⓘ</h2><p>Connect verbindt je bronnen, Intelligence begrijpt wat er speelt en Agents zetten het om in uitvoerbare acties met aantoonbaar resultaat.</p></div><div class="live"><span class="livepill">● Interactief voorbeeld</span><span>Klik door bron, inzicht, actie en resultaat.</span></div></div>
+   <div class="brainhead"><div><h2>Van bron tot resultaat: zo werkt jouw bedrijfssturing ⓘ</h2><p>Volg hoe je interne en externe informatie aan strategie, beslissing, uitvoering en bewijs koppelt. Onderstaande stroom is een interactief voorbeeld, geen bevestiging van uitgevoerde klantacties.</p></div><div class="live"><span class="livepill">● Interactief voorbeeld</span><span>Klik door bron, inzicht, actie en resultaat.</span></div></div>
    <div class="brainlayout" id="brainLayout">
     <div class="brainflow" aria-label="Bedrijfsgeheugen verwerkingsflow">
      <article class="brainnode" data-stage="sources"><span class="nodeicon">▤</span><strong>Bronnen</strong><small>Documenten, systemen, processen, mensen en externe signalen.</small></article>
@@ -93,20 +110,20 @@
    </div>
   </section>
 
-  <aside class="right">
-   <section class="card"><h3>AI Management Summary</h3><p>Op basis van alle beschikbare data en signalen vat het Bedrijfsgeheugen AI de stand van zaken samen en wat aandacht vraagt.</p><div class="summary"><div class="g"><span><b>Kansen</b><br><small>Grote groeikansen geïdentificeerd</small></span><strong>7</strong></div><div class="o"><span><b>Risico’s</b><br><small>Risico’s vragen om aandacht</small></span><strong>5</strong></div><div class="b"><span><b>Trends</b><br><small>Belangrijke ontwikkelingen gesignaleerd</small></span><strong>4</strong></div></div><p style="color:#0d5bef;font-weight:800;margin-top:9px"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/compliance.html" style="text-decoration:none">Compliance & audit →</a></p></section>
+  <aside class="right" data-portal-sample-only="true" hidden>
+   <section class="card"><h3>Voorbeeld: samenvatting bedrijfssturing</h3><p>Op basis van alle beschikbare data en signalen vat het Bedrijfsgeheugen AI de stand van zaken samen en wat aandacht vraagt.</p><div class="summary"><div class="g"><span><b>Kansen</b><br><small>Grote groeikansen geïdentificeerd</small></span><strong>7</strong></div><div class="o"><span><b>Risico’s</b><br><small>Risico’s vragen om aandacht</small></span><strong>5</strong></div><div class="b"><span><b>Trends</b><br><small>Belangrijke ontwikkelingen gesignaleerd</small></span><strong>4</strong></div></div><p style="color:#0d5bef;font-weight:800;margin-top:9px"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/compliance.html" style="text-decoration:none">Compliance & audit →</a></p></section>
    <section class="card"><h3>Aanbevelingen <small style="float:right;color:#0d5bef">6 nieuw</small></h3><ul class="recs"><li>Automatiseer het offerteproces <span class="prio">🔴 Hoog</span></li><li>Borg kritieke kennis Finance <span class="prio">🔴 Hoog</span></li><li>Koppel Exact en CRM volledig <span class="prio">🟠 Middel</span></li><li>Verwijder dubbele klantdata <span class="prio">🟠 Middel</span></li><li>Optimaliseer onboarding proces <span class="prio">🔵 Laag</span></li><li>Update verouderde documentatie <span class="prio">🔵 Laag</span></li></ul><p style="color:#0d5bef;font-weight:800;margin-top:9px">Alle aanbevelingen bekijken →</p></section>
    <section class="card"><h3>Snelle links</h3><div class="quick"><button type="button" data-open-page="koppelingen"><i>∞</i>Koppelingen beheren</button><button type="button" data-open-page="koppelingen"><i>⌘</i>Koppeling bouwen</button><button><i>€</i>Facturen & abonnement</button><button><i>▤</i>Mijn taken</button><button><i>▥</i>Kennisbank</button><button><i>▣</i>Rapportages</button><button><i>◎</i>Gebruikers</button><button><i>⚙</i>Instellingen</button></div></section>
   </aside>
  </div>
 
- <section class="lower">
+ <section class="lower" data-portal-sample-only="true" hidden>
   <article class="card"><div class="sectiontitle"><h3>Roadmap & voortgang</h3><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=roadmap" data-open-page="roadmap">Bekijk volledige roadmap →</a></div><div class="timeline"><span>Nu<b>6</b></span><span>Volgende<b>8</b></span><span>Gepland<b>14</b></span><span>Afgerond<b>23</b></span></div><div class="progresslist"><div class="prow"><span>Klantdata opschonen</span><span class="bar"><i style="width:75%"></i></span><b>75%</b></div><div class="prow"><span>Onboarding optimaliseren</span><span class="bar"><i style="width:60%"></i></span><b>60%</b></div><div class="prow"><span>Kennisborging Finance</span><span class="bar"><i style="width:20%"></i></span><b>20%</b></div><div class="prow"><span>CRM koppeling uitbreiden</span><span class="bar"><i style="width:10%"></i></span><b>10%</b></div></div></article>
   <article class="card"><div class="sectiontitle"><h3>Kansen & bedreigingen</h3><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=ai-scan" data-open-page="ai-scan">Bekijk alles →</a></div><div class="ko"><div class="box chance"><b>Kansen</b><p>• Cross-sell potentieel €240K</p><p>• Automatisering bespaart 320 uur/maand</p><p>• Nieuwe marktsegmenten in sight</p></div><div class="box risk"><b>Bedreigingen</b><p>• Kennisafhankelijkheid Finance</p><p>• Datakwaliteit klantdata onvoldoende</p><p>• Wetgeving AVG impact stijgt</p></div></div></article>
   <article class="card impactcard"><div class="sectiontitle"><h3>Impact overzicht</h3><span>Deze maand⌄</span></div><div class="impact"><div class="impactitem"><span class="round">◷</span><div><b>Tijdwinst</b><small>▲ +12% t.o.v. vorige maand</small></div></div><div class="impactitem"><span class="round">€</span><div><b>Kostenbesparing</b><small>▲ +8% t.o.v. vorige maand</small></div></div><div class="impactitem"><span class="round">↗</span><div><b>Gerealiseerde waarde € 1,24M</b><small>YTD 2025</small></div></div></div></article>
  </section>
 
- <section class="card activities"><div class="sectiontitle"><h3>Recente activiteiten</h3><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=wijzigingen" data-open-page="wijzigingen">Bekijk alle activiteiten →</a></div><div class="items"><div class="act"><i>👩</i><span>Proces “Offerte tot Order” geüpdatet<br><small>Sanne · 2 uur geleden</small></span></div><div class="act"><i>◫</i><span>Koppeling met Exact gesynchroniseerd<br><small>Systeem · 3 uur geleden</small></span></div><div class="act"><i>👨</i><span>Nieuw document toegevoegd<br><small>Mark · 5 uur geleden</small></span></div><div class="act"><i>✓</i><span>Actie “Onboarding optimaliseren” afgerond<br><small>Lotte · 1 dag geleden</small></span></div></div></section>
+ <section class="card activities" data-portal-sample-only="true" hidden><div class="sectiontitle"><h3>Recente activiteiten</h3><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=wijzigingen" data-open-page="wijzigingen">Bekijk alle activiteiten →</a></div><div class="items"><div class="act"><i>👩</i><span>Proces “Offerte tot Order” geüpdatet<br><small>Sanne · 2 uur geleden</small></span></div><div class="act"><i>◫</i><span>Koppeling met Exact gesynchroniseerd<br><small>Systeem · 3 uur geleden</small></span></div><div class="act"><i>👨</i><span>Nieuw document toegevoegd<br><small>Mark · 5 uur geleden</small></span></div><div class="act"><i>✓</i><span>Actie “Onboarding optimaliseren” afgerond<br><small>Lotte · 1 dag geleden</small></span></div></div></section>
 </main>
 </div>
 
@@ -114,13 +131,13 @@
 <section class="portal-popover" id="portalHelpPanel" role="dialog" aria-label="Help en ondersteuning" hidden><div class="portal-popover-head"><h2>Help & ondersteuning</h2><button class="portal-popover-close" type="button" data-popover-close aria-label="Sluiten">×</button></div><p class="portal-popover-copy">Snel naar uitleg, kennis en ondersteuning.</p><div class="portal-popover-links"><a href="https://www.bedrijfsgeheugen.nl/kennis/">Kennisbank <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/contact/">Contact & ondersteuning <span>→</span></a><button type="button" id="portalHelpAllSections">Alle portalonderdelen <span>→</span></button></div></section>
 <section class="portal-popover" id="portalAccountPanel" role="dialog" aria-label="Account en beheer" hidden><div class="portal-popover-head"><h2>Account & beheer</h2><button class="portal-popover-close" type="button" data-popover-close aria-label="Sluiten">×</button></div><div class="portal-popover-meta"><span class="avatar">AP</span><div><strong>Arthur Prinsen</strong><small>Beheerder</small></div></div><div class="portal-popover-links"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=instellingen">Instellingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=gebruikers">Gebruikers <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=koppelingen">Data & koppelingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=rapportages">Rapportages & beheer <span>→</span></a></div></section>
 
-<div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Portal V2 bevat alle portalonderdelen standaard</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
+<div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Alle onderdelen van je ondernemingssturing</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
 <script type="module" src="./app.js"></script>
 <script type="module" src="./topbar-actions.js"></script>
 <dialog id="portalAskAiDialog" class="portal-ai-dialog" aria-labelledby="portalAskAiTitle">
- <form method="dialog" class="portal-ai-dialog-head"><div><span>BEDRIJFSGEHEUGEN AI</span><h2 id="portalAskAiTitle">Wat wil je weten?</h2></div><button value="cancel" aria-label="Sluiten">×</button></form>
+ <form method="dialog" class="portal-ai-dialog-head"><div><span>BEDRIJFSGEHEUGEN · JOUW BEDRIJFSCONTEXT</span><h2 id="portalAskAiTitle">Wat wil je weten of beslissen?</h2></div><button value="cancel" aria-label="Sluiten">×</button></form>
  <p>Vraag direct naar je bedrijf, acties, risico’s, kennis, processen of data. Het antwoord gebruikt alleen beschikbare portaalcontext.</p>
- <div class="portal-ai-compose"><input id="portalAskAiInput" maxlength="500" placeholder="Bijv. wat moet ik vandaag als eerste verbeteren?"><button id="portalAskAiSend" type="button">Vraag AI →</button></div>
+ <div class="portal-ai-compose"><input id="portalAskAiInput" maxlength="500" placeholder="Bijv. wat moet ik vandaag als eerste verbeteren?"><button id="portalAskAiSend" type="button">Stel je vraag →</button></div>
  <div id="portalAskAiAnswer" class="portal-ai-answer" aria-live="polite"></div>
 </dialog>
 <script type="module" src="./portal-polish.js?v=20261001-3"></script>\n<script type="module" src="./experience.js?v=20261004-2"></script>\n<script type="module" src="./nextgen-intelligence.js?v=20261004-1"></script>

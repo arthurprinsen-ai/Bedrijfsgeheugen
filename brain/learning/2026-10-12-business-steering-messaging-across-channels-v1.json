@@ -1,0 +1,8 @@
+{
+ "fingerprint":"powerhouse|2026-10-12|business-steering-brand-across-channel-generation|v1",
+ "compiler":{"failure_class":"GENERIC_AI_VENDOR_MESSAGING","scope":"COMMERCIAL","machine_enforceable":true,"repeat_count":2,"security_sensitive":false},
+ "root_cause":"Public positioning and existing generated messages could still communicate Bedrijfsgeheugen as a generic AI-enabled automation provider instead of its continuous business-steering proposition.",
+ "prevention_rule":"In the existing company-facing channel generator, frame measurable business value first: internal and external signal to strategic impact, assigned decision/action, measurable result and learning. Treat AI and POWERHOUSE as implementation enablers, never a primary standalone product promise. Preserve evidential truth and do not turn direct messages into a repeated product pitch.",
+ "evaluation":{"historical_replay":["tests/brain-commercial-daily-steering-positioning-v1.test.mjs"],"shadow":["tests/brain-commercial-daily-steering-positioning-v1.test.mjs"],"canary":["tests/brain-commercial-daily-steering-positioning-v1.test.mjs"]},
+ "outcome":{"protected_release_pending":true,"production_prompt_parity_pending":true,"verified_real_channel_copy_pending":true,"real_sales_claims_fabricated":false}
+}
