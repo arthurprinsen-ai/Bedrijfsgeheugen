@@ -10,6 +10,7 @@ const sales=fs.readFileSync('supabase/functions/powerhouse-linkedin-sales-machin
 test('one existing assurance owner, advisory lock, bounded enrichment repair',()=>{
  assert.match(assurance,/powerhouse_daily_omnichannel_assurance_v1/);
  assert.match(assurance,/pg_try_advisory_xact_lock/);
+ assert.match(assurance,/\$function\$;\s*revoke all on function public\.powerhouse_daily_omnichannel_assurance_v1/);
  assert.match(assurance,/powerhouse_connection_daily_pulse_v1\(v_day,500\)/);
  assert.match(assurance,/cron\.schedule\('powerhouse-autonomous-outreach-assurance-hourly-v1'/);
 });
