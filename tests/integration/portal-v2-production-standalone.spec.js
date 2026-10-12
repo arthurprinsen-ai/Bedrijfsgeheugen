@@ -19,7 +19,7 @@ test('Portal V2 is standalone and never routes into the legacy portal', async ({
   expect(response, 'Portal V2 must return an HTTP response').not.toBeNull();
   expect(response.status(), 'Portal V2 must be reachable').toBeLessThan(400);
 
-  await expect(page.getByText('Portal V2 bevat alle portalonderdelen standaard', { exact: true })).toBeAttached();
+  await expect(page.getByRole('heading', { name: 'Wat verandert er in je bedrijf — en wat doe je ermee?', exact: true }), 'the portal must present the canonical daily steering journey')).toBeAttached();
   await expect(page.locator('iframe[src*="/klantportaal"], iframe[src*="/portal-next/"]')).toHaveCount(0);
   await expect(page.locator('a[href*="/klantportaal"]')).toHaveCount(0);
   await expect(page.locator('a[href*="/portal-next/"]')).toHaveCount(0);
