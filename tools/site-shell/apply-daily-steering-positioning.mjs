@@ -8,6 +8,7 @@ const COPY = Object.freeze({
     lead:'Bedrijfsgeheugen verbindt wat er <strong>binnen én buiten je onderneming</strong> verandert met je strategie, doelen, mensen, processen en financiën. Je ziet wat geraakt wordt, welke beslissing nodig is en wie de actie oppakt. Het resultaat wordt gemeten en helpt bij de volgende keuze. <strong>Geen extra AI-tool: een manier om je onderneming iedere dag beter te sturen.</strong> Bovenop de systemen die je al gebruikt.',
     eyebrow:'POWERHOUSE · DAGELIJKSE ONDERNEMINGSSTURING',
     kicker:'Iedere dag beter sturen',
+    benefitsLabel:'Waarde voor ondernemers',
     benefits:['Kansen eerder herkennen','Risico’s tijdig begrijpen','Keuzes onderbouwen','Acties met eigenaar','Effecten meten','Continu verbeteren'],
     technologyCta:'Bekijk de technologie erachter →',
     sectionHeading:'Niet alleen inzicht. <span class="mark">Van verandering naar actie en resultaat.</span>',
@@ -18,6 +19,7 @@ const COPY = Object.freeze({
     lead:'Bedrijfsgeheugen connects what changes <strong>inside and outside your business</strong> to your strategy, goals, people, processes and finances. See what is affected, which decision matters and who owns the next action. Measure outcomes and use them to improve the next decision. <strong>Not another AI tool: a practical way to run your business better every day.</strong> On top of the software you already use.',
     eyebrow:'POWERHOUSE · EVERYDAY BUSINESS STEERING',
     kicker:'Better decisions, every day',
+    benefitsLabel:'Value for business owners',
     benefits:['Spot opportunities sooner','Understand emerging risks','Make informed decisions','Assign accountable actions','Measure real outcomes','Keep improving'],
     technologyCta:'Explore the technology behind it →',
     sectionHeading:'Beyond insights. <span class="mark">From change to action and results.</span>',
@@ -66,7 +68,7 @@ function positionPowerhouse(input,copy) {
   s=s.replace(/<h2\b([^>]*)>[\s\S]*?<\/h2>/i,(_,attrs)=>'<h2'+attrs+'>'+copy.sectionHeading+'</h2>');
   s=s.replace(/(<span\b[^>]*class=["'][^"']*(?:eyebrow|bg-ai-eyebrow)[^"']*["'][^>]*>)[\s\S]*?(<\/span>)/i,(_,a,z)=>a+copy.eyebrow+z);
   s=s.replace(/<p\b([^>]*class=["'][^"']*(?:lead|bg-ai-lead)[^"']*["'][^>]*)>[\s\S]*?<\/p>/i,(_,attrs)=>'<p'+attrs+'>'+copy.sectionLead+'</p>');
-  const benefits='<div class="bg-ai-agents" aria-label="Waarde voor ondernemers">'+copy.benefits.map(x=>'<span>'+x+'</span>').join('')+'</div>';
+  const benefits='<div class="bg-ai-agents" aria-label="'+copy.benefitsLabel+'">'+copy.benefits.map(x=>'<span>'+x+'</span>').join('')+'</div>';
   s=s.replace(/<div\b[^>]*class=["'][^"']*\bbg-ai-agents\b[^"']*["'][^>]*aria-label=["'](?:Voorbeelden van AI-agents|Examples of AI agents)["'][^>]*>[\s\S]*?<\/div>/i,benefits);
   s=s.replace(/(<a\b[^>]*href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/ai-ecosysteem["'][^>]*>)[\s\S]*?(<\/a>)/i,(_,a,z)=>a+copy.technologyCta+z);
   if(s.includes('data-bg-daily-steering-ecosystem="v1"'))s=s.replace('data-bg-daily-steering-ecosystem="v1"','data-bg-daily-steering-ecosystem="v2"');
