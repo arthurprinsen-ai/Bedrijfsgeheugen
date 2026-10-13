@@ -16,12 +16,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "scenario": "2026-10-13 personal LinkedIn content Anthropic 400",
-        "observed": "19 retries, no personal LinkedIn external publication ID",
-        "expected_after_fix": "Approved OpenAI model creates valid artifact and existing publisher returns verified ID",
-        "outcome": "NOT_YET_VERIFIED"
-      }
+      "tests/brain-openai-content-provider-migration-20261013.test.mjs"
     ]
   },
   "evidence": {
