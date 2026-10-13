@@ -4,7 +4,7 @@ import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
 const migration=readFileSync(new URL('../supabase/migrations/20261013132500_powerhouse_openai_content_governance_p0_4198.sql',import.meta.url),'utf8');
 test('canonical content route requests OpenAI and existing secret',()=>{
- assert.match(source,/https:\/\/api\.openai\.com\/v1\/responses/);
+ assert.ok(source.includes("https://api.openai.com/v1/responses"));
  assert.match(source,/p_naam:'OPENAI_API_KEY'/);
  assert.match(source,/gov\.provider !== 'OpenAI'/);
  assert.match(migration,/use_case_id='supabase-bg-native-content-generate-v4'/);
@@ -18,7 +18,7 @@ test('no new publisher and external proof still required',()=>{
 
 test('commercial composer uses the approved OpenAI route and retains the original quality checks',()=>{
  const composer=readFileSync(new URL('../supabase/functions/powerhouse-commercial-message-composer/index.ts',import.meta.url),'utf8');
- assert.match(composer,/https:\/\/api\.openai\.com\/v1\/responses/);
+ assert.ok(composer.includes("https://api.openai.com/v1/responses"));
  assert.match(composer,/secret\(db,'OPENAI_API_KEY'\)/);
  assert.match(composer,/gov\.provider!=='OpenAI'/);
  assert.match(composer,/qv=quality\(/);
