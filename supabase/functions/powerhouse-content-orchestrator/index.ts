@@ -30,7 +30,7 @@ const PERSONAL_GATE = 'channel-identity-hard-gate-v3';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
 const PERSONAL_LIFE_ONLY_POLICY = 'personal-linkedin-personal-life-only-v1';
 const PERSONAL_AI_NATIVE_POLICY = 'personal-linkedin-ai-native-builder-v1';
-const VERSION = 'v10-closed-loop';
+const VERSION = 'v11-openai-content';
 const COVERED_STATES = new Set(['content_ready','scheduled','published','measured','learned','skipped']);
 const executor_capabilities: Record<string, { executable: boolean; executor: string | null; reason?: string }> = {
   linkedin_personal: { executable: true, executor: 'powerhouse-social-publisher' },
@@ -151,25 +151,26 @@ class AIProviderHttpError extends Error {
   }
 }
 async function callAI(key: string, model: string, system: string, user: unknown, tool: any, maxTokens = 3200) {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: { 'x-api-key': key, 'anthropic-version':'2023-06-01','content-type':'application/json' },
-    body: JSON.stringify({ model, max_tokens:maxTokens, system, messages:[{role:'user',content:JSON.stringify(user)}], tools:[tool], tool_choice:{type:'tool',name:tool.name} }),
-    signal: AbortSignal.timeout(90_000),
+  const schema = { type:'object', properties:tool.input_schema.properties, required:tool.input_schema.required, additionalProperties:false };
+  const response = await fetch('https://api.openai.com/v1/responses', {
+    method:'POST',
+    headers:{authorization:'Bearer '+key,'content-type':'application/json'},
+    body:JSON.stringify({model,instructions:system,input:JSON.stringify(user),max_output_tokens:maxTokens,
+      text:{format:{type:'json_schema',name:tool.name,schema,strict:true}}}),
+    signal:AbortSignal.timeout(90_000),
   });
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const providerType=clean(body?.error?.type||body?.type||'');
-    const providerMessage=clean(body?.error?.message||body?.message||'');
-    const providerDetail=[providerType,providerMessage].filter(Boolean).join(':').slice(0,240);
-    console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status, model, providerDetail);
-    throw new AIProviderHttpError(response.status,model,providerDetail);
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok){
+    const detail=[clean(body?.error?.type),clean(body?.error?.message)].filter(Boolean).join(':').slice(0,240);
+    console.error('ORCHESTRATOR_AI_PROVIDER_ERROR',response.status,model,detail);
+    throw new AIProviderHttpError(response.status,model,detail);
   }
-  const result = (body.content || []).find((x:any) => x.type==='tool_use' && x.name===tool.name);
-  if (!result?.input) throw new Error('AI_TOOL_OUTPUT_MISSING:'+model);
-  return result.input;
+  const raw=(body.output||[]).flatMap((o:any)=>o.content||[]).filter((c:any)=>c.type==='output_text').map((c:any)=>c.text).join('');
+  if(!raw)throw new Error('AI_TOOL_OUTPUT_MISSING:'+model);
+  const result=JSON.parse(raw);
+  if(!validArtifactObject(result))throw new Error('AI_ARTIFACT_SCHEMA_INVALID:'+model);
+  return result;
 }
-
 
 const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
 const ARTIFACT_KEYS=['title','body','cta','hook_type','focus_keyword','meta_description'];
@@ -435,8 +436,8 @@ Deno.serve(async (req) => {
       .filter((c:any)=>!!c.consumed_at&&!c.revoked_at).map((c:any)=>clean(c.channel)));
     const existing = existingResult.data || [], obligations = obligationsResult.data || [], mediaProof = mediaProofResult.data || null;
     if (!run) throw new Error('DAILY_RUN_MISSING');
-    if (!gov || gov.approved !== true || gov.lifecycle_status !== 'ACTIVE' || gov.provider !== 'Anthropic') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
-    const apiKey = clean((await db.rpc('bg_geheim',{p_naam:'ANTHROPIC_API_KEY'})).data);
+    if (!gov || gov.approved !== true || gov.lifecycle_status !== 'ACTIVE' || gov.provider !== 'OpenAI') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
+    const apiKey = clean((await db.rpc('bg_geheim',{p_naam:'OPENAI_API_KEY'})).data);
 
 
     const personalSource = recs.filter(validPersonalSource)[0] || null;
@@ -555,7 +556,7 @@ Deno.serve(async (req) => {
     const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
       tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
-    let generationProvider='Anthropic';
+    let generationProvider='OpenAI';
     let generationModel=gov.model_id;
     let fallbackReason:string|null=null;
     try {
@@ -585,7 +586,7 @@ Deno.serve(async (req) => {
       let editorialViolations=personalEditorialViolations(bodyText,personalSource?.evidence||{});
       // One source-grounded editorial rewrite is allowed before final rejection.
       // This is not a publication bypass: all existing hard gates run again.
-      if (editorialViolations.length && generationProvider==='Anthropic' && apiKey) {
+      if (editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
         const correctionPrompt = editorialSystem
           + ' HERZIEN: de vorige versie werd door het vaste redactiecontract afgekeurd ('
           + editorialViolations.map((item:any)=>item.code).join(', ')
