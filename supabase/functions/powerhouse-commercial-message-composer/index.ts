@@ -90,6 +90,18 @@ async function anthropicGenerate(apiKey:string,model:string,system:string,allowe
   if(!r.ok)throw new Error('ANTHROPIC_'+r.status+':'+clean(body?.error?.message).slice(0,220));
   return {text:clean((body?.content||[]).find((x:any)=>x.type==='text')?.text),provider:'Anthropic',model};
 }
+async function openaiGenerate(apiKey:string,model:string,system:string,allowed:any){
+  const response=await fetch('https://api.openai.com/v1/responses',{
+    method:'POST',headers:{'authorization':'Bearer '+apiKey,'content-type':'application/json'},
+    body:JSON.stringify({model,instructions:system,input:JSON.stringify(allowed),text:{format:{type:'json_object'}}}),
+    signal:AbortSignal.timeout(45000)
+  });
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error('OPENAI_'+response.status+':'+clean(body?.error?.message).slice(0,220));
+  const text=clean(body?.output_text)||clean((body?.output||[]).flatMap((item:any)=>item?.content||[]).filter((item:any)=>item?.type==='output_text').map((item:any)=>item?.text).join(''));
+  if(!text)throw new Error('OPENAI_EMPTY_RESPONSE');
+  return {text,provider:'OpenAI',model};
+}
 async function groqGenerate(composioKey:string,system:string,allowed:any){
   const model='openai/gpt-oss-120b';
   const r=await fetch(COMPOSIO_BASE+'/tools/execute/COMPOSIO_SEARCH_GROQ_CHAT',{
@@ -129,17 +141,9 @@ async function generate(db:any,anthropicKey:string,anthropicModel:string,action:
   }
   const allowed={person_name:action.person_name,company_name:action.company_name,role:action.role,channel:action.channel_norm,action_type:action.action_type,source_url:action.source_url,predicted_problem:triggerRelevant?action.predicted_problem:null,predicted_buying_trigger:triggerRelevant?action.predicted_buying_trigger:null,predicted_objection:action.predicted_objection,action_reason:action.reason,evidence:safeEvidence,play:{play_key:plan.play_key,play_name:plan.play_name,objective:plan.objective,psychology:persuasion?.principles||plan.psychology,message_structure:plan.message_structure,cta_style:plan.cta_style,tone_rules:plan.tone_rules,prohibited:[...(Array.isArray(plan.prohibited)?plan.prohibited:[]),...(Array.isArray(persuasion?.do_not_use)?persuasion.do_not_use:[])],max_words:plan.max_words,source_trigger_relevance:triggerRelevant},canonical_persuasion:persuasion||null,brand_voice:plan.brand_voice,quality_contract:plan.quality_contract};
   const system='Je bent de Human Commercial Composer van Bedrijfsgeheugen. Gebruik alleen leesbare prospectcontext zoals een echte headline, samenvatting, concreet openbaar feit, eerder gesprek of relatiecontext. Toon nooit interne taxonomylabels, snake_case, scores, source keys of het woord trigger als intern systeembegrip. Schrijf als een slimme, sympathieke Nederlandse ondernemer; niet als een salesbot. Gebruik ALLEEN aangeleverde feiten. Verzin nooit persoonsdetails, gebeurtenissen, cijfers, urgentie, bewijs of problemen. Een hypothese moet hoorbaar als hypothese klinken (kan, mogelijk, ik vraag me af of). Externe AI-content of een AI-product is nooit automatisch bewijs van een intern data-, governance- of implementatieprobleem. Als source_trigger_relevance false is, negeer voorspelde problemen/triggers volledig en schrijf alleen vanuit de leesbare bron- of relatiecontext. Productwaarheid: Bedrijfsgeheugen is geen extra AI-tool, chatbot, dashboard of los adviestraject, maar helpt een ondernemer dagelijks sturen door interne en externe veranderingen te verbinden met strategie, gevolgen, besluiten, acties met eigenaar en meetbare resultaten. AI en POWERHOUSE zijn middelen onder de motorkap; presenteer geen lijst van agents, modellen of modules. Benoem dit onderscheid alleen wanneer het duidelijk aansluit op het bewezen probleem of signaal bij deze specifieke ontvanger; maak het geen standaardpitch. Geen onbewijsbare voorspelling, resultaat of claim dat alles autonoom wordt uitgevoerd. Doel: de kleinste logische commitment, niet meteen een afspraak. Pas exact de gekozen sales play en psychologische mechanismen toe zonder manipulatief te worden. Menselijk: korte zinnen, spreektaal, concreet, warm, licht droge humor alleen als die vanzelf past. Geen lege complimenten zoals inspirerend, indrukwekkend, geweldig of mooi om te zien. Vermijd onbewezen generalisaties zoals veel bedrijven, veel founders of veel organisaties. Als er geen echte bronpost, concrete publieke observatie of inbound/reply-context is, forceer dan geen persoonlijke boodschap: de quality gate moet die actie tegenhouden. Nooit humor ten koste van de prospect. Verboden: generieke complimenten/openingen, dienstencatalogus, AI-hype, corporate jargon, nep-schaarste, schuldgevoel bij geen reactie, agendalink, meerdere CTAs. LinkedIn-DM: maximaal 80 woorden. E-mail: maximaal het opgegeven maximum. Eén vraag maximaal. Follow-up: altijd nieuwe invalshoek; nooit even opvolgen, heb je mijn mail gezien of verwijt. Graceful close: geen vraag. DMs mogen niet eindigen als reclame voor Bedrijfsgeheugen. Geef uitsluitend JSON met keys: subject, message, personalization_anchor, fact_used, hypothesis_used, primary_problem, micro_commitment, predicted_objection, objection_response, human_reason. personalization_anchor moet een KORTE LETTERLIJKE frase zijn uit de aangeleverde context die de tekst werkelijk uniek maakt.';
-  let generated:any=null,primaryError='';
-  try{
-    if(!anthropicKey)throw new Error('ANTHROPIC_KEY_MISSING');
-    generated=await anthropicGenerate(anthropicKey,anthropicModel,system,allowed);
-  }catch(e:any){
-    primaryError=clean(e?.message||e);
-    const composioKey=await secret(db,'COMPOSIO_API_KEY');
-    if(!composioKey)throw new Error(primaryError+'; GROQ_FALLBACK_KEY_MISSING');
-    generated=await groqGenerate(composioKey,system,allowed);
-  }
-  return {output:extractJson(generated.text),provider:generated.provider,model:generated.model,primary_error:primaryError||null};
+  if(!anthropicKey)throw new Error('OPENAI_KEY_MISSING');
+  const generated=await openaiGenerate(anthropicKey,anthropicModel,system,allowed);
+  return {output:extractJson(generated.text),provider:generated.provider,model:generated.model,primary_error:null};
 }
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
@@ -150,9 +154,9 @@ Deno.serve(async(req:Request)=>{
   const limit=Math.max(1,Math.min(Number(input?.limit||10),50)),channels=Array.isArray(input?.channels)?input.channels.map((x:any)=>normalize(x).replace(/\s+/g,'_')):[],actionIds=Array.isArray(input?.action_ids)?input.action_ids.map(clean).filter(Boolean):[],dryRun=input?.dry_run===true,now=new Date().toISOString();
   try{
     await db.rpc('powerhouse_refresh_message_plans_v1',{p_limit:Math.max(limit,50)});
-    const apiKey=await secret(db,'ANTHROPIC_API_KEY');if(!apiKey)throw new Error('ANTHROPIC_API_KEY_MISSING');
+    const apiKey=await secret(db,'OPENAI_API_KEY');if(!apiKey)throw new Error('OPENAI_API_KEY_MISSING');
     const {data:gov,error:gErr}=await db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle();
-    if(gErr||!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='Anthropic')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
+    if(gErr||!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='OpenAI')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
     const {data,error}=await db.rpc('powerhouse_commercial_message_candidates_v1',{p_limit:limit,p_channels:channels.length?channels:null,p_action_ids:actionIds.length?actionIds:null});
     if(error)throw new Error('PLAN_READ:'+error.message);
     let rows=(data||[]);
