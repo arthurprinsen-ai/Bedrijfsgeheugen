@@ -21,7 +21,7 @@ test('commercial composer uses the approved OpenAI route and retains the origina
  assert.match(composer,/https:\/\/api\.openai\.com\/v1\/responses/);
  assert.match(composer,/secret\(db,'OPENAI_API_KEY'\)/);
  assert.match(composer,/gov\.provider!=='OpenAI'/);
- assert.match(composer,/const qv=quality\(/);
+ assert.match(composer,/qv=quality\(/);
  assert.match(composer,/powerhouse_message_quality_v1/);
  assert.doesNotMatch(composer,/generated=await anthropicGenerate\(/);
 });
