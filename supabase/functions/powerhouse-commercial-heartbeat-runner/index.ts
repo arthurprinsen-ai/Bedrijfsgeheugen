@@ -221,6 +221,22 @@ async function materializeCommercialIntent(){
     return {state:"INDEPENDENT_BRAIN_FEED_ERROR",ok:false};
   }
 }
+// Assess existing contact facts on every canonical Heartbeat tick. This never sends.
+// Independent transaction: an authority-review error cannot block other channels.
+async function reviewContactAuthority(){
+  try{
+    return await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '16000ms'");
+      await tx.unsafe("set local lock_timeout = '2000ms'");
+      const rows=await tx.unsafe("select public.powerhouse_contact_authority_review_batch_v1((now() at time zone 'Europe/Amsterdam')::date,500) as result");
+      return rows[0]?.result||{state:"NO_REVIEW_RECEIPT"};
+    });
+  }catch(error){
+    console.error("COMMERCIAL_CONTACT_AUTHORITY_REVIEW_FAILED",error instanceof Error?error.message:String(error));
+    return {state:"AUTHORITY_REVIEW_RETRYABLE_ERROR",external_messages_sent:0};
+  }
+}
+
 async function runOutboundLanes(){
   const results=await Promise.allSettled(outboundLanes.map(def=>runOneOutboundLane(def)));
   return results.map((item,i)=>item.status==="fulfilled"?item.value:{
@@ -238,10 +254,11 @@ Deno.serve(async(req:Request)=>{
   // A failure/timeout of the commercial scoring cycle cannot starve email,
   // DM, comments, or the honest unsupported-likes status.
   const brainActionFeed=await materializeCommercialIntent();
+  const contactAuthorityReview=await reviewContactAuthority();
   const outboundLanesResult=await runOutboundLanes();
   try{
     const result=await runHeartbeat();
-    return json({...result,brain_action_feed:brainActionFeed,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
+    return json({...result,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
   }catch(error){
     console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
     return json({
