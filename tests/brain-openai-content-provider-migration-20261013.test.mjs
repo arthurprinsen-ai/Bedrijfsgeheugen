@@ -15,3 +15,13 @@ test('no new publisher and external proof still required',()=>{
  assert.match(source,/linkedin_personal/);
  assert.match(source,/editorialViolations/);
 });
+
+test('commercial composer uses the approved OpenAI route and retains the original quality checks',()=>{
+ const composer=readFileSync(new URL('../supabase/functions/powerhouse-commercial-message-composer/index.ts',import.meta.url),'utf8');
+ assert.match(composer,/https:\/\/api\.openai\.com\/v1\/responses/);
+ assert.match(composer,/secret\(db,'OPENAI_API_KEY'\)/);
+ assert.match(composer,/gov\.provider!=='OpenAI'/);
+ assert.match(composer,/const qv=quality\(/);
+ assert.match(composer,/powerhouse_message_quality_v1/);
+ assert.doesNotMatch(composer,/generated=await anthropicGenerate\(/);
+});
