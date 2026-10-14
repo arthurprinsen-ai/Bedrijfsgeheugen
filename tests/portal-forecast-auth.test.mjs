@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createPortalForecastHandler,verifiedForecasts} from '../platform/api/portal-forecast-handler.mjs';
 const point=(date,value)=>({date,value});
-const valid={id:'revenue',metric:'revenue',source:'Finance ledger',model:'time-series-v1',updatedAt:'2026-10-14T10:00:00Z',verified:true,tenantId:'tenant42',validation:{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'},history:[point('2026-06',70),point('2026-07',80),point('2026-08',90)],forecast:[point('2026-11',110)]};
+const valid={id:'revenue',metric:'revenue',source:'Finance ledger',model:'time-series-v1',updatedAt:'2026-10-14T10:00:00Z',verified:true,tenantId:'tenant42',validation:{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'},history:[point('2026-04',50),point('2026-05',60),point('2026-06',70),point('2026-07',80),point('2026-08',90),point('2026-09',100)],forecast:[point('2026-11',110)]};
 test('unauthenticated request never touches canonical data',async()=>{
  let calls=0;const h=createPortalForecastHandler({getUser:async()=>null,getCanonical:async()=>{calls++}});
  const r=await h(new Request('https://example.test/api/portal-forecasts'));
@@ -27,6 +27,16 @@ test('authenticated forecast route scopes lookups to identity tenant',async()=>{
  assert.equal((await r.json()).forecasts.length,1);
  assert.equal(r.headers.get('cache-control'),'private, no-store');
 });
+test('insufficient financial history never survives authenticated readback',()=>{
+ const now=new Date('2026-10-14T20:00:00Z');
+ for(const count of [0,1,2,3,4,5]){
+  const projection={tenantId:'tenant42',forecasts:[{...valid,history:valid.history.slice(-count)}]};
+  assert.deepEqual(verifiedForecasts(projection,'tenant42',{now}),[],
+   'Financial history with '+count+' points must be rejected');
+ }
+ assert.equal(verifiedForecasts({forecasts:[valid]},'tenant42',{now}).length,1);
+});
+
 test('unvalidated numeric data are never exposed as model forecasts',()=>{
  const forecasts=verifiedForecasts({forecasts:[{...valid,validation:{status:'pending',tenantBound:true,tenantId:'tenant42'}},{...valid,history:[point('aug',null)]}]},'tenant42');
  assert.equal(forecasts.length,0);
