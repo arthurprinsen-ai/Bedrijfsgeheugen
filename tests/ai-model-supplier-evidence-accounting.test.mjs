@@ -317,3 +317,20 @@ test('canonical source URLs for Grok audio and moderation remain exact model pag
   assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
  }
 });
+
+test('Nova Premier English-card redirect cannot resolve contradictory AWS lifecycle',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const m=catalog.models.find(row=>row.id==='amazon-nova-premier');
+ assert.ok(m);
+ const r=m.supplier_audit?.public_english_card_http_readback_20261014;
+ assert.ok(r);
+ assert.equal(r.source_access_status,'PUBLIC_ENGLISH_CANONICAL_PAGE_UNAVAILABLE_AT_READBACK');
+ assert.equal(r.alternate_official_observed_status,'Legacy');
+ assert.equal(r.alternate_official_date_conflict.eol_no_sooner_than,'2026-10-31');
+ assert.equal(r.alternate_official_date_conflict.model_eol_date,'2026-09-14');
+ assert.equal(r.account_region_readback,false);
+ assert.equal(r.current_operational_lifecycle_resolved,false);
+ assert.equal(r.automatic_recommendation_eligible,false);
+ assert.notEqual(m.verification_evidence?.claim_scope,'full');
+ assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+});
