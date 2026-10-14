@@ -207,5 +207,11 @@ test('supplier identity receipts are internally consistent, source-aligned and d
    Object.keys(evidence.source_checks).filter(url=>!sources.has(url)).length);
  assert.equal(evidence.unavailable_sources,
    Object.values(evidence.source_checks).filter(x=>x.state!=='FETCHED').length);
+ for(const receipt of evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_NO_EXACT_MODEL_ID')){
+  const item=models.get(receipt.model_id);
+  assert.equal(item?.record_kind,'model_family',
+   'Unverified deployable model identity: '+receipt.model_id);
+  assert.equal(item?.selection_eligible,false,receipt.model_id);
+ }
  assert.equal(evidence.whole_model_verifications_added,0);
 });
