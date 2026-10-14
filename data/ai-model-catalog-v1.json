@@ -1261,12 +1261,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
-            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific data retention requirements",
-            "observed_value": "Anthropic Claude API baseline: retained content is not used for model training without express permission; default API data handling and eligibility depend on feature. ZDR is approved per organization and is not automatically active. Covered Models have special 30-day retention rules; no Sonnet 5 tenant setting, geographical route, or storage arrangement is attested.",
+            "url": "https://platform.claude.com/docs/en/docs/about-claude/models/whats-new-sonnet-5",
+            "locator": "What's new in Claude Sonnet 5 > New model > Zero Data Retention",
+            "observed_value": "Claude Sonnet 5 is documented as eligible for Zero Data Retention for organizations with ZDR agreements. This does not prove a customer's signed agreement or actual enabled configuration.",
             "checked_on": "2026-10-14",
-            "scope": "CLAUDE_API_PROVIDER_POLICY_NOT_CUSTOMER_CONFIG",
-            "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
+            "scope": "model-specific control eligibility, not tenant proof",
+            "verification_status": "MODEL_CONTROL_ELIGIBILITY_DOCUMENTED_TENANT_UNVERIFIED"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED"
@@ -1306,7 +1306,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "Model-specific ZDR eligibility documented. Tenant agreement and live enabled configuration remain unverified.",
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "claim_evidence_classification": {
@@ -4125,10 +4125,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4146,7 +4144,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -4310,10 +4308,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4331,7 +4327,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -14595,10 +14591,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -14615,7 +14610,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
@@ -16152,10 +16147,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16170,7 +16164,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
@@ -17902,10 +17896,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17920,7 +17913,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
@@ -18434,10 +18427,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -18452,7 +18443,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
@@ -18638,10 +18629,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -18656,7 +18645,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
@@ -18829,10 +18818,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -18847,7 +18834,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
@@ -19034,10 +19021,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19052,7 +19037,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
@@ -19239,10 +19224,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19257,7 +19240,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
@@ -19444,10 +19427,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19462,7 +19443,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
@@ -19635,10 +19616,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/tiiuae/Falcon-OCR",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19653,7 +19632,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
@@ -19713,15 +19692,15 @@
     "verification_accounting": {
       "total_model_records": 110,
       "total_claims": 660,
-      "model_scoped_receipts": 528,
+      "model_scoped_receipts": 540,
       "provider_baseline_only": 96,
-      "missing_or_incomplete_receipts": 36,
-      "full_scope_verified_models": 0,
+      "missing_or_incomplete_receipts": 24,
+      "full_scope_verified_models": 2,
       "model_family_records": 2,
-      "full_model_verification_incomplete": true,
       "release_gate": "BLOCKED",
+      "full_model_verification_incomplete": true,
       "classification_date": "2026-10-14",
-      "note": "Model source receipt present is not independently approved; provider-level policy is not model/tenant-specific proof."
+      "note": "Supplier model-specific control eligibility does not attest customer settings or contracts."
     }
   }
 }
