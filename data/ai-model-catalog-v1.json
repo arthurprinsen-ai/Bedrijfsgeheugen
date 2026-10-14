@@ -14941,10 +14941,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "model_id"
         ],
         "not_verified": [
-          "model_id",
           "governance"
         ],
         "claim_evidence": [
@@ -14977,13 +14977,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "model_id",
-            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
-            "locator": "Model page > model identifier",
-            "observed_value": "voxtral-mini-2602",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
             "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
@@ -14992,6 +14985,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+            "locator": "Model header > API ID",
+            "observed_value": "voxtral-mini-2602; Voxtral Mini Transcribe 2",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -15134,10 +15134,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "model_id"
         ],
         "not_verified": [
-          "model_id",
           "governance"
         ],
         "claim_evidence": [
@@ -15170,13 +15170,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "model_id",
-            "url": "https://docs.mistral.ai/resources/changelogs",
-            "locator": "February 4 release note",
-            "observed_value": "voxtral-mini-transcribe-realtime-2602",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
             "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
@@ -15185,6 +15178,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+            "locator": "Model header > API ID",
+            "observed_value": "voxtral-mini-transcribe-realtime-2602",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -19800,7 +19800,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -19829,43 +19829,22 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance",
           "current customer region-specific rate",
           "pricing"
         ],
         "claim_evidence": [
           {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html",
-            "locator": "Model Details > Model EOL date",
-            "observed_value": "EOL date September 30, 2026; should not be described as active or simply legacy in October 2026",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "capabilities",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html",
             "locator": "Model Details > Description",
             "observed_value": "Image generation from text and image prompts with watermark and moderation controls",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html",
-            "locator": "Programmatic Access > Model ID",
-            "observed_value": "amazon.nova-canvas-v1:0",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html",
-            "locator": "Programmatic Access > Endpoint",
-            "observed_value": "AWS bedrock-runtime regional InvokeModel endpoint; EOL 2026-09-30 so not eligible for new use",
             "checked_on": "2026-10-14"
           },
           {
@@ -19886,6 +19865,27 @@
             "checked_on": "2026-10-14",
             "scope": "Official AWS published example with its indicated workload/region; not a current live Bedrock Price List quote or customer contract attestation",
             "verification_status": "PUBLISHED_EXAMPLE_NOT_LIVE_BILL"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Reached EOL > Nova Canvas",
+            "observed_value": "amazon.nova-canvas-v1:0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Reached EOL > Nova Canvas",
+            "observed_value": "EOL 2026-09-30; requests fail in ap-northeast-1, eu-west-1, us-east-1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Nova Canvas model card > supported API",
+            "observed_value": "Previously Bedrock Runtime InvokeModel, not routable in retired regions",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -19909,7 +19909,10 @@
           "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_notes": [
+          "Model is not eligible for automatic routing where the official EOL date has passed; do not infer access elsewhere."
+        ]
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -20013,7 +20016,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20042,43 +20045,22 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance",
           "current customer region-specific rate",
           "pricing"
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
-            "locator": "Models that have reached EOL > Nova Reel",
-            "observed_value": "amazon.nova-reel-v1:0 and amazon.nova-reel-v1:1",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
-            "locator": "Models that have reached EOL > Nova Reel",
-            "observed_value": "EOL on 2026-09-30 in listed regions; new invocations fail",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "capabilities",
             "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
             "locator": "Model specifications > Nova Reel",
             "observed_value": "Text/image prompt to 1280x720 video at 24 fps; EOL model; do not deploy",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Asynchronous Invoke Model API",
-            "observed_value": "Amazon Bedrock asynchronous Invoke Model API; EOL model; do not deploy",
             "checked_on": "2026-10-14"
           },
           {
@@ -20099,6 +20081,27 @@
             "checked_on": "2026-10-14",
             "scope": "Official AWS published example with its indicated workload/region; not a current live Bedrock Price List quote or customer contract attestation",
             "verification_status": "PUBLISHED_EXAMPLE_NOT_LIVE_BILL"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Reached EOL > Nova Reel",
+            "observed_value": "amazon.nova-reel-v1:0 and amazon.nova-reel-v1:1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Reached EOL > Nova Reel",
+            "observed_value": "EOL 2026-09-30 in listed regions; requests fail",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Nova Reel model card > supported API",
+            "observed_value": "Previously Bedrock Runtime StartAsyncInvoke, not routable in retired regions",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -20122,7 +20125,10 @@
           "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_notes": [
+          "Model is not eligible for automatic routing where the official EOL date has passed; do not infer access elsewhere."
+        ]
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -20224,7 +20230,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20253,43 +20259,22 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance",
           "current regional and tenant pricing"
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html",
-            "locator": "Titan Text Embeddings V2 > Model ID",
-            "observed_value": "amazon.titan-embed-text-v2:0",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
-            "locator": "Model Details > Model lifecycle",
-            "observed_value": "Active in AWS model card; tenant access not tested",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "capabilities",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html",
             "locator": "Titan Text Embeddings V2 > output vector and limits",
             "observed_value": "8192 text tokens input; 1024, 512 or 256-dimensional vectors",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
-            "locator": "Programmatic Access > bedrock-runtime",
-            "observed_value": "InvokeModel with amazon.titan-embed-text-v2:0, regional AWS bedrock-runtime endpoint",
             "checked_on": "2026-10-14"
           },
           {
@@ -20310,6 +20295,27 @@
             "checked_on": "2026-10-14",
             "scope": "HISTORIC_VENDOR_RATE_NOT_CURRENT_PRICE",
             "verification_status": "CURRENT_PRICING_UNVERIFIED"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+            "locator": "Programmatic Access > Model ID",
+            "observed_value": "amazon.titan-embed-text-v2:0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Active model on official AWS card; tenant access not checked",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+            "locator": "Programmatic Access > model and endpoint",
+            "observed_value": "bedrock-runtime amazon.titan-embed-text-v2:0",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -20440,7 +20446,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20465,27 +20471,20 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "capabilities"
+          "capabilities",
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "model_id",
-          "status",
           "pricing",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-image-models.html",
-            "locator": "Titan Image Generator v2 > Model ID",
-            "observed_value": "amazon.titan-image-generator-v2:0",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "capabilities",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-image-models.html",
@@ -20498,13 +20497,6 @@
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
             "locator": "Programmatic Access > Model ID",
             "observed_value": "bedrock-runtime amazon.titan-image-generator-v2:0; regional account entitlement untested",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
-            "locator": "Model Details > Model lifecycle and EOL date",
-            "observed_value": "AWS lists lifecycle Legacy and EOL date June 30, 2026. Do not route automatically; current invoke eligibility not established.",
             "checked_on": "2026-10-14"
           },
           {
@@ -20525,6 +20517,20 @@
             "checked_on": "2026-10-14",
             "scope": "Pricing scheme only; no current supplier price amount or account-specific tariff verified",
             "verification_status": "PRICING_DIMENSION_CONFIRMED_NUMERICAL_RATE_NOT_VERIFIED"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+            "locator": "Programmatic Access > Model ID",
+            "observed_value": "amazon.titan-image-generator-v2:0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+            "locator": "Model Details > lifecycle and EOL",
+            "observed_value": "Legacy label and June 30 2026 EOL date in model card; after stated date, do not route without authenticated status",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -20549,7 +20555,10 @@
           "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_notes": [
+          "Model is not eligible for automatic routing where the official EOL date has passed; do not infer access elsewhere."
+        ]
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -20647,7 +20656,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20676,42 +20685,21 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-supported.html",
-            "locator": "Models that do not support Bedrock Guardrails > Titan Multimodal Embeddings G1",
-            "observed_value": "amazon.titan-embed-image-v1",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "capabilities",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-multiemb-models.html",
             "locator": "Amazon Titan Multimodal Embeddings G1 > Model specifications",
             "observed_value": "Text and image input into shared embedding space; input up to 256 English text tokens and 25MB image, 2048x2048 image max",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/inference-api.html",
-            "locator": "Generate embeddings from an image > CLI",
-            "observed_value": "AWS bedrock-runtime invoke-model with amazon.titan-embed-image-v1",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
-            "locator": "Model Details > Model lifecycle",
-            "observed_value": "AWS lists model lifecycle Active; AWS region/account access has not been verified.",
             "checked_on": "2026-10-14"
           },
           {
@@ -20732,6 +20720,27 @@
             "checked_on": "2026-10-14",
             "scope": "Pricing scheme only; no current supplier price amount or account-specific tariff verified",
             "verification_status": "PRICING_UNIT_SECONDARY_AWS_SUPPORT_AMOUNT_UNVERIFIED"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+            "locator": "Programmatic Access > Model ID",
+            "observed_value": "amazon.titan-embed-image-v1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Active model card; tenant access not checked",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+            "locator": "Programmatic Access > model and endpoint",
+            "observed_value": "bedrock-runtime amazon.titan-embed-image-v1",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
