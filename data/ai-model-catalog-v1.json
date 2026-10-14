@@ -1802,7 +1802,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -1811,7 +1811,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -1819,11 +1819,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -1863,8 +1862,8 @@
           {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
+            "locator": "Gemini API Additional Terms > Use Restrictions; Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
+            "observed_value": "Google Gemini API Additional Terms (effective 2026-03-23): Paid Services do not use prompts or responses to improve products and process them under a data processing addendum; limited abuse/security logging and international transient storage may apply. Unpaid Services outside stated EEA/Swiss/UK exception may use prompts and responses to improve products. For API clients in EEA, Switzerland or UK, Paid Services are required. Actual project billing status, data region, legal documents and runtime controls are not verified.",
             "checked_on": "2026-10-14",
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
@@ -1883,8 +1882,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://ai.google.dev/gemini-api/terms",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Free vs paid Google Gemini services vary significantly; actual billing, data handling, restrictions and tenant controls require separate authenticated validation."
+        },
+        "verification_scope_note": "Supplier-level identity, lifecycle, pricing, capabilities, consumption routes and public Gemini API usage/data processing conditions checked on 2026-10-14. No claim is made about customer billing status, tenant contract, regional processing or deployed data controls."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -1980,7 +1980,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -1989,7 +1989,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -1997,11 +1997,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -2041,8 +2040,8 @@
           {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
+            "locator": "Gemini API Additional Terms > Use Restrictions; Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
+            "observed_value": "Google Gemini API Additional Terms (effective 2026-03-23): Paid Services do not use prompts or responses to improve products and process them under a data processing addendum; limited abuse/security logging and international transient storage may apply. Unpaid Services outside stated EEA/Swiss/UK exception may use prompts and responses to improve products. For API clients in EEA, Switzerland or UK, Paid Services are required. Actual project billing status, data region, legal documents and runtime controls are not verified.",
             "checked_on": "2026-10-14",
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
@@ -2061,8 +2060,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://ai.google.dev/gemini-api/terms",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Free vs paid Google Gemini services vary significantly; actual billing, data handling, restrictions and tenant controls require separate authenticated validation."
+        },
+        "verification_scope_note": "Supplier-level identity, lifecycle, pricing, capabilities, consumption routes and public Gemini API usage/data processing conditions checked on 2026-10-14. No claim is made about customer billing status, tenant contract, regional processing or deployed data controls."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -2161,7 +2161,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -2170,7 +2170,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "verified_claims": [
@@ -2178,11 +2178,10 @@
           "status",
           "capabilities",
           "pricing",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -2222,8 +2221,8 @@
           {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
+            "locator": "Gemini API Additional Terms > Use Restrictions; Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
+            "observed_value": "Google Gemini API Additional Terms (effective 2026-03-23): Paid Services do not use prompts or responses to improve products and process them under a data processing addendum; limited abuse/security logging and international transient storage may apply. Unpaid Services outside stated EEA/Swiss/UK exception may use prompts and responses to improve products. For API clients in EEA, Switzerland or UK, Paid Services are required. Actual project billing status, data region, legal documents and runtime controls are not verified.",
             "checked_on": "2026-10-14",
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
@@ -2242,8 +2241,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://ai.google.dev/gemini-api/terms",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Free vs paid Google Gemini services vary significantly; actual billing, data handling, restrictions and tenant controls require separate authenticated validation."
+        },
+        "verification_scope_note": "Supplier-level identity, lifecycle, pricing, capabilities, consumption routes and public Gemini API usage/data processing conditions checked on 2026-10-14. No claim is made about customer billing status, tenant contract, regional processing or deployed data controls."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
