@@ -159,3 +159,12 @@ const incrementalParserContract=readFileSync('supabase/migrations/20261014135000
 test('incremental revenue UPSERT disambiguates SELECT from ON CONFLICT',()=>{
   assert.match(incrementalParserContract,/FROM pg_temp\.revenue_delta_stage\s+WHERE true[^\n]*\n\s+ON CONFLICT\(/);
 });
+
+test('scheduler cutover checks deployed task dependencies before retiring mux job 171',()=>{
+  assert.match(sql,/SCHEDULER_CUTOVER_DEPENDENCIES_MISSING/);
+  assert.match(sql,/pg_proc p JOIN pg_namespace n/);
+  assert.match(sql,/powerhouse_runtime_mux_task_v1/);
+  assert.match(sql,/powerhouse_reconciliation_worker_v2/);
+  assert.match(sql,/powerhouse_refresh_revenue_attribution_snapshot_v1/);
+  assert.ok(sql.indexOf('SCHEDULER_CUTOVER_DEPENDENCIES_MISSING') < sql.indexOf('SELECT cron.unschedule(171)'));
+});
