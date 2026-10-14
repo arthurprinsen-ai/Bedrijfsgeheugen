@@ -3978,7 +3978,7 @@
       "deployment": [
         "xAI API"
       ],
-      "source": "https://docs.x.ai/developers/models",
+      "source": "https://docs.x.ai/developers/models/grok-4.7",
       "limitations": [
         "xAI API data-retention controls and US regional availability are supplier-documented; actual tenant settings, DPA, CMK and permissions were not tested."
       ],
@@ -4007,7 +4007,7 @@
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_API_POLICY_ONLY",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.x.ai/developers/models",
+        "source_url": "https://docs.x.ai/developers/models/grok-4.7",
         "verified_claims": [
           "model_id",
           "status",
@@ -4108,7 +4108,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://docs.x.ai/developers/models",
+        "source_reference": "https://docs.x.ai/developers/models/grok-4.7",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -4130,7 +4130,18 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "official_exact_model_card_reconciliation_20261014": {
+          "checked_on": "2026-10-14",
+          "previous_generic_source": "https://docs.x.ai/developers/models",
+          "official_exact_model_card_url": "https://docs.x.ai/developers/models/grok-4.7",
+          "source_locator": "Supplier model-specific documentation; already referenced by model-scoped claim receipts",
+          "scope": "Correct catalog canonical source URL only; prior dated individual claim receipts retained and not re-certified",
+          "independent_customer_governance_accepted": false,
+          "customer_account_access_attested": false,
+          "pricing_or_contract_revalidated": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "independent_model_governance_review_20261014": {
         "checked_on": "2026-10-14",
@@ -8678,7 +8689,7 @@
       },
       "id": "gpt-audio-1.5",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
       "verification_evidence": {
         "claim_scope": "full",
         "verification_required": [
@@ -8690,7 +8701,7 @@
           "governance"
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -8794,7 +8805,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -8818,7 +8829,18 @@
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data"
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
+        "official_exact_model_card_reconciliation_20261014": {
+          "checked_on": "2026-10-14",
+          "previous_generic_source": "https://developers.openai.com/api/docs/models/all",
+          "official_exact_model_card_url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+          "source_locator": "Supplier model-specific documentation; already referenced by model-scoped claim receipts",
+          "scope": "Correct catalog canonical source URL only; prior dated individual claim receipts retained and not re-certified",
+          "independent_customer_governance_accepted": false,
+          "customer_account_access_attested": false,
+          "pricing_or_contract_revalidated": false,
+          "automatic_recommendation_eligible": false
+        }
       }
     },
     {
@@ -9258,7 +9280,7 @@
       },
       "id": "omni-moderation-latest",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/guides/moderation",
+      "source": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
       "verification_evidence": {
         "claim_scope": "full",
         "verification_required": [
@@ -9270,7 +9292,7 @@
           "governance"
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
-        "source_url": "https://developers.openai.com/api/docs/guides/moderation",
+        "source_url": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -9374,7 +9396,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/guides/moderation",
+        "source_reference": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -9398,7 +9420,18 @@
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data"
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
+        "official_exact_model_card_reconciliation_20261014": {
+          "checked_on": "2026-10-14",
+          "previous_generic_source": "https://developers.openai.com/api/docs/guides/moderation",
+          "official_exact_model_card_url": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
+          "source_locator": "Supplier model-specific documentation; already referenced by model-scoped claim receipts",
+          "scope": "Correct catalog canonical source URL only; prior dated individual claim receipts retained and not re-certified",
+          "independent_customer_governance_accepted": false,
+          "customer_account_access_attested": false,
+          "pricing_or_contract_revalidated": false,
+          "automatic_recommendation_eligible": false
+        }
       }
     },
     {
