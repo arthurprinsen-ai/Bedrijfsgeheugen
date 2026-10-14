@@ -8827,7 +8827,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/guides/moderation",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -8836,19 +8836,18 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/guides/moderation",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
+          "status",
           "pricing",
           "capabilities",
-          "status",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -8903,6 +8902,15 @@
             "locator": "Classify standalone inputs; API request example",
             "observed_value": "POST /v1/moderations model omni-moderation-latest, text/image inputs; client authorization untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/moderations; API Endpoint, tool and model support > /v1/moderations",
+            "observed_value": "The documented /v1/moderations endpoint (supported model omni-moderation-latest) has no training usage, no abuse-monitoring retention, no application-state retention, and is ZDR eligible in the official matrix. This does not attest a customer's contract, account/region settings, enabled controls or downstream storage.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected exact model-to-endpoint vendor policy; supplier only, never customer tenant/runtime attestation",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8918,7 +8926,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independent official-source supplier-only six-claim review on 2026-10-14: OpenAI model card confirms omni-moderation-latest identity, default published status, text/image modalities, and moderation free usage; Moderation guide confirms POST /v1/moderations use; OpenAI data-controls endpoint matrix explicitly lists /v1/moderations as no abuse-monitoring retention, no application-state retention, no training, ZDR eligible and model support for omni-moderation-latest. This documents vendor endpoint behavior only. Customer authenticated entitlement, enabled organization/project controls, executed agreements, actual residency and downstream logging remain UNVERIFIED. Not an authorization to production route."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8952,16 +8961,11 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data"
       }
     },
     {
