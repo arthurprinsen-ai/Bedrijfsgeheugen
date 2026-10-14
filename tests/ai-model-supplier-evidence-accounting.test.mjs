@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {classifySupplierClaim,supplierEvidenceWorklist} from './ai-model-supplier-evidence-worklist.mjs';
+import {classifySupplierClaim,supplierEvidenceWorklist,reconcileSupplierAudit} from './ai-model-supplier-evidence-worklist.mjs';
 
 const date='2026-10-14';
 const modelReceipt={
@@ -57,4 +57,32 @@ test('public model advisor must never promote provider-only policy to full model
  const source=html.slice(html.indexOf('function fullSupplierEvidence(m)'),html.indexOf('function eligible(m)'));
  assert.match(source,/PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED/);
  assert.match(source,/NOT model-specific/);
+});
+
+test('supplier ledger reconciliation is deterministic, scoped and fail-closed',()=>{
+ const original=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const catalog=structuredClone(original);
+ const model=catalog.models.find(m=>m.supplier_audit?.claim_evidence_classification);
+ assert.ok(model,'Expected a catalog model with an independent supplier audit');
+ const originalEvidence=JSON.stringify(model.verification_evidence);
+ const oldClassification=model.supplier_audit.claim_evidence_classification.governance;
+ model.supplier_audit.claim_evidence_classification.governance=
+  oldClassification==='NO_USABLE_MODEL_SOURCE_RECEIPT'
+   ? 'MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED' : 'NO_USABLE_MODEL_SOURCE_RECEIPT';
+ model.supplier_audit.missing_claim_receipts=['bogus-drift'];
+ model.supplier_audit.missing_receipt_count=99;
+ model.supplier_audit.automatic_recommendation_eligible=true;
+ model.supplier_audit.independent_verification_required=true;
+ const check=reconcileSupplierAudit(catalog);
+ assert.ok(check.changed_models>=1);
+ assert.equal(check.applied,false);
+ const repaired=reconcileSupplierAudit(catalog,{apply:true});
+ assert.ok(repaired.changed_model_ids.includes(model.id));
+ const second=reconcileSupplierAudit(catalog);
+ assert.equal(second.changed_models,0,'Reconciliation must be idempotent');
+ assert.equal(model.supplier_audit.automatic_recommendation_eligible,false,
+  'A reconciler cannot grant independent supplier approval');
+ assert.equal(model.supplier_audit.independent_verification_required,true);
+ assert.equal(JSON.stringify(model.verification_evidence),originalEvidence,
+  'Supplier claims, observations and evidence dates must be left untouched');
 });
