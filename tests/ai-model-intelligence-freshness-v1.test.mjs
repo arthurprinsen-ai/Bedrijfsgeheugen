@@ -12,14 +12,34 @@ test('supplier claim flags never contradict the evidence ledger',()=>{
   for(const claim of required){
    if(e.verified_claims?.includes(claim)&&e.not_verified?.includes(claim))
     problems.push(m.id+':CONTRADICTORY_CLAIM:'+claim);
-   if(e.verified_claims?.includes(claim)&&classifySupplierClaim(e,claim)==='PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF')
-    problems.push(m.id+':PROVIDER_BASELINE_FALSE_MODEL_APPROVAL:'+claim);
+   if(e.verified_claims?.includes(claim)&&classifySupplierClaim(e,claim)!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED')
+    problems.push(m.id+':NON_MODEL_SPECIFIC_OR_INCOMPLETE_CLAIM_APPROVAL:'+claim);
    if(e.verified_claims?.includes(claim)&&!e.claim_evidence?.some(x=>x.claim===claim&&
       typeof x.observed_value==='string'&&x.observed_value.trim()))
     problems.push(m.id+':UNSUPPORTED_VERIFIED_CLAIM:'+claim);
   }
  }
  assert.deepEqual(problems,[]);
+});
+
+test('all 110 supplier audit summaries reconcile with claim source classifications',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const required=['model_id','status','pricing','capabilities','deployment','governance'];
+ assert.equal(c.models.length,110);
+ const invalid=[];
+ for(const m of c.models){
+  const e=m.verification_evidence||{}, a=m.supplier_audit||{};
+  const classifications=Object.fromEntries(required.map(cl=>[cl,classifySupplierClaim(e,cl)]));
+  const missing=required.filter(cl=>classifications[cl]!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED');
+  const reviews=required.filter(cl=>!(classifications[cl]==='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED'&&
+    e.claim_scope==='full'&&e.source_url===m.source&&e.checked_on===m.verified_at&&
+    e.verified_claims?.includes(cl)&&!e.not_verified?.includes(cl)));
+  if(JSON.stringify(a.claim_evidence_classification)!==JSON.stringify(classifications))invalid.push(m.id+':CLASSIFICATION_STALE');
+  if(JSON.stringify(a.missing_claim_receipts)!==JSON.stringify(missing)||a.missing_receipt_count!==missing.length)invalid.push(m.id+':RECEIPTS_STALE');
+  if(JSON.stringify(a.review_required_claims)!==JSON.stringify(reviews)||a.pending_independent_claim_reviews!==reviews.length)invalid.push(m.id+':REVIEWS_STALE');
+  if(a.automatic_recommendation_eligible&&reviews.length)invalid.push(m.id+':UNVERIFIED_AUTO_RECOMMENDATION');
+ }
+ assert.deepEqual(invalid,[]);
 });
 
 test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit',()=>{
