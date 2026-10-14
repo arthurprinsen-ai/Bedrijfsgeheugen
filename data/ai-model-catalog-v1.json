@@ -5487,7 +5487,30 @@
         "license": "Llama 4 Community License; not an unrestricted Apache/MIT license",
         "license_url": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
         "checked_on": "2026-10-14",
-        "individual_model_claims_verified": false
+        "individual_model_claims_verified": false,
+        "representative_variant": {
+          "id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "verified_source_date": "2026-10-14",
+          "source_author": "Meta (official model card on its verified Hugging Face account)",
+          "released_on": "2025-04-05",
+          "context_tokens": 10000000,
+          "parameters_active_b": 17,
+          "parameters_total_b": 109,
+          "capabilities": [
+            "multilingual text input/output",
+            "image input and reasoning",
+            "code generation"
+          ],
+          "deployment": "downloadable gated weights; local Transformers / vLLM / SGLang; host selection required",
+          "pricing": "No universal model token price for downloaded weights; inference hardware and third-party hosting billed separately",
+          "license": "Llama 4 Community License; redistribution, usage and >700M MAU additional licensing conditions apply",
+          "governance": "License and supplier model card checked; actual operator, residency, retention, DPA and model endpoint remain unverified",
+          "canonical_id_checked": true,
+          "verified_family_claims": false,
+          "customer_runtime_verified": false,
+          "selection_status": "PROPOSED_VARIANT_NOT_YET_MIGRATED"
+        }
       },
       "catalog_entry_type": "model_family_placeholder",
       "catalog_record_type": "model_family",
@@ -5720,7 +5743,32 @@
         "license": "Qwen3-8B example is Apache-2.0; do not generalize its license to every Qwen model",
         "license_url": "https://huggingface.co/Qwen/Qwen3-8B",
         "checked_on": "2026-10-14",
-        "individual_model_claims_verified": false
+        "individual_model_claims_verified": false,
+        "representative_variant": {
+          "id": "Qwen/Qwen3-8B",
+          "source_url": "https://huggingface.co/Qwen/Qwen3-8B",
+          "secondary_official_url": "https://qwenlm.github.io/blog/qwen3/",
+          "verified_source_date": "2026-10-14",
+          "source_author": "Qwen (official Hugging Face publisher and project blog)",
+          "model_parameters_b": 8.2,
+          "context_tokens_native": 32768,
+          "context_tokens_extended": 131072,
+          "extension_condition": "131072 requires YaRN context extension; configuration affects shorter-context performance",
+          "capabilities": [
+            "text generation",
+            "multilingual reasoning",
+            "tool-use/agents",
+            "switchable thinking/non-thinking"
+          ],
+          "deployment": "downloadable weights supported with Transformers, vLLM and SGLang",
+          "pricing": "No universal token rate for downloaded open weights; actual self-host infrastructure or hosted provider price must be established",
+          "license": "Apache-2.0 on this specific Qwen3-8B model (not all Qwen variants)",
+          "governance": "License and publisher model card checked; hosting region, retention, DPA and customer controls not attested",
+          "canonical_id_checked": true,
+          "verified_family_claims": false,
+          "customer_runtime_verified": false,
+          "selection_status": "PROPOSED_VARIANT_NOT_YET_MIGRATED"
+        }
       },
       "provider_policy_research_20261014": {
         "claim": "alibaba_model_studio_provider_retention_policy",
@@ -16507,9 +16555,10 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 0.512,
       "modalities": [
-        "text"
+        "text",
+        "vision"
       ],
       "strengths": [
         "multilingual embeddings",
@@ -16634,11 +16683,12 @@
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
         },
         "pricing_research": {
-          "status": "NOT_INDEPENDENTLY_PRICED",
+          "status": "OFFICIAL_MODEL_SPEC_VERIFIED_RATE_UNPUBLISHED",
+          "model_spec_url": "https://docs.cohere.com/docs/cohere-embed",
+          "pricing_url": "https://cohere.com/pricing",
           "checked_on": "2026-10-14",
-          "provider_pricing_url": "https://cohere.com/pricing",
-          "billing_reference": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
-          "observation": "Official documentation says embedding billing uses embedded tokens and trial access can be free; no current model-specific production USD/token rate for embed-multilingual-v3.0 was independently verified. Do not infer prices from Embed 4 or Embed 5."
+          "observed_value": "Embed multilingual v3 remains listed with 512-token context and 1024 dimensions; public pricing page does not provide an exact current v3 pay-as-you-go token rate",
+          "rate_verified": false
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -16672,7 +16722,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "Exact Cohere Embed Multilingual v3 production per-token price cannot be confirmed from current official pricing page. Do not substitute Embed 4/5 price. An independently confirmed contract or vendor rate sheet is required.",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
@@ -16684,7 +16734,8 @@
         "evidence_accounting_date": "2026-10-14",
         "current_price_verified": false,
         "pricing_basis_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work"
-      }
+      },
+      "embedding_dimensions": 1024
     },
     {
       "tier": "economy",
