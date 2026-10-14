@@ -50,7 +50,8 @@ export function supplierEvidenceWorklist(catalog) {
   provider_baseline_only:0,
   missing_or_incomplete_receipts:0
  };
- let fullyVerifiedModels=0;
+ let structurallyCompleteModels=0;
+ let independentlyAcceptedModels=0;
  for(const model of catalog.models) {
   const e=model.verification_evidence||{};
   let allClaimsFullyDeclared=true;
@@ -75,7 +76,11 @@ export function supplierEvidenceWorklist(catalog) {
     });
    }
   }
-  if(allClaimsFullyDeclared) fullyVerifiedModels++;
+  if(allClaimsFullyDeclared) structurallyCompleteModels++;
+  // A complete receipt shape is not an independent supplier decision.
+  // Acceptance requires an explicit, non-pending audit and eligibility flag.
+  if(allClaimsFullyDeclared && model.supplier_audit?.independent_verification_required===false &&
+     model.supplier_audit?.automatic_recommendation_eligible===true) independentlyAcceptedModels++;
  }
  const totalClaims=catalog.models.length*REQUIRED_SUPPLIER_CLAIMS.length;
  const unproven=counters.provider_baseline_only+counters.missing_or_incomplete_receipts;
@@ -90,8 +95,11 @@ export function supplierEvidenceWorklist(catalog) {
   missing_claim_specific_receipts:unproven,
   existing_complete_receipts:counters.model_scoped_receipts,
   evidence_classification:counters,
-  fully_verified_models:fullyVerifiedModels,
-  ready_for_full_supplier_acceptance:rows.length===0,
+  structurally_complete_models:structurallyCompleteModels,
+  independently_accepted_models:independentlyAcceptedModels,
+  pending_independent_model_reviews:catalog.models.length-independentlyAcceptedModels,
+  fully_verified_models:independentlyAcceptedModels,
+  ready_for_full_supplier_acceptance:rows.length===0 && independentlyAcceptedModels===catalog.models.length,
   worklist:rows,
   notice:'Presence of model-scoped supplier content is not independent certification. Generic supplier policies cannot establish tenant agreements, residency, retention, enabled controls or model-level deployment terms.'
  };
