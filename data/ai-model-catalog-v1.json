@@ -13290,10 +13290,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -13392,7 +13392,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -13418,6 +13418,19 @@
         "details": "Standard paid: input USD 0.50 / 1M text/image/video tokens or USD 1.00 / 1M audio input tokens; output USD 3.00 / 1M tokens; batch and cache differ.",
         "caution": "Image and audio output per 1M modality-specific tokens; not interchangeable with text token price",
         "customer_billing_not_verified": true
+      },
+      "supplier_standard_paid_tariff_review_20261014": {
+        "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_locator": "Gemini 3 Flash Preview > Standard > Paid Tier",
+        "observed_value": "Standard paid: input USD 0.50 / 1M text/image/video tokens or USD 1.00 / 1M audio input tokens; output USD 3.00 / 1M tokens; batch and cache differ.",
+        "checked_on": "2026-10-14",
+        "tariff_scope": "MODEL_SPECIFIC_PUBLIC_STANDARD_PAID_ONLY",
+        "other_tiers_included": false,
+        "tenant_access_verified": false,
+        "customer_invoice_verified": false,
+        "customer_governance_verified": false,
+        "automatic_recommendation_eligible": false,
+        "production_approved": false
       }
     },
     {
@@ -13941,10 +13954,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -14046,7 +14059,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -14072,6 +14085,19 @@
         "details": "Standard paid: USD 1.00 / 1M text input tokens and USD 20.00 / 1M audio output tokens.",
         "caution": "Image and audio output per 1M modality-specific tokens; not interchangeable with text token price",
         "customer_billing_not_verified": true
+      },
+      "supplier_standard_paid_tariff_review_20261014": {
+        "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_locator": "Gemini 3.1 Flash TTS Preview > Standard > Paid Tier",
+        "observed_value": "Standard paid: USD 1.00 / 1M text input tokens and USD 20.00 / 1M audio output tokens.",
+        "checked_on": "2026-10-14",
+        "tariff_scope": "MODEL_SPECIFIC_PUBLIC_STANDARD_PAID_ONLY",
+        "other_tiers_included": false,
+        "tenant_access_verified": false,
+        "customer_invoice_verified": false,
+        "customer_governance_verified": false,
+        "automatic_recommendation_eligible": false,
+        "production_approved": false
       }
     },
     {
