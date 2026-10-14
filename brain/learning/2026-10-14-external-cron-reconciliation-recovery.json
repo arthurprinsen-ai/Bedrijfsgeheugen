@@ -7,12 +7,7 @@
   "prevention_rule": "Schedule the reconciler on Netlify independently of pg_cron, enforce finite HTTP timeout, deduplicate by cron job and run id, and never replay provider sends without readback.",
   "evaluation": {
     "historical_replay": [
-      {
-        "input": "Observed cron startup timeouts for jobs 46, 116, 138, 171 on 2026-10-14",
-        "expected": "Unique cron_failure_review records after authenticated reconciler execution",
-        "observed": "Gateway deployed in Supabase; no real scheduled production execution or queue records confirmed; acceptance pending",
-        "passed": false
-      }
+      "tests/brain-external-cron-recovery.test.mjs"
     ]
   },
   "evidence": {
