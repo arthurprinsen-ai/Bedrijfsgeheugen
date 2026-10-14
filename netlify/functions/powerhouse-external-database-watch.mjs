@@ -11,9 +11,11 @@ const timeoutMs=6000;
 const maxFailures=72; // 6h of five-minute observations, bounded per sweep.
 
 export default async function handler(){
+  // Preview deploys must never write into production's site-scoped outage store.
+  if(process.env.CONTEXT!=='production')return new Response(null,{status:204});
   const observedAt=new Date().toISOString();
   const bucket=observedAt.slice(0,16).replace(/[-:T]/g,'');
-  const store=getStore({name:'powerhouse-external-database-watch-v1',consistency:'strong'});
+  const store=getStore({name:'powerhouse-external-database-watch-v1',consistency:'strong',region:'eu-central-1'});
   const key='failures/'+bucket;
   const headers={'apikey':serviceKey||'',Authorization:'Bearer '+(serviceKey||'')};
   let status=null,ok=false,error=null;
