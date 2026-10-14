@@ -1,0 +1,3 @@
+# Commercial heartbeat recovery
+
+The commercial runner previously serialized Brain materialization, contact review and outbound dispatch. The code now launches these bounded stages independently using Promise.all, so contact-review latency need not prevent outbound dispatch from starting. This is a scheduling correction, not proof of sends. Deployment is permitted only after protected CI and provider readback. LinkedIn DM, Gmail, personal/company LinkedIn, Instagram and blog remain subject to channel-specific authorization and evidence; do not resend ambiguous attempts or bypass opt-out/approval checks.

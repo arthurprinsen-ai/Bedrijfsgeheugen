@@ -9,6 +9,15 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'tests/ai-model-official-source-evidence.test.mjs': 'backend',
+  'data/evidence/ai-model-official-sources-2026-10-14.json': 'backend',
+  'data/evidence/ai-model-official-sources-2026-10-14.json': 'backend',
+  'netlify/functions/powerhouse-external-database-watch.mjs': 'backend',
+  'scripts/sql/rollback_powerhouse_scheduler_isolation.sql': 'backend',
+  'scripts/sql/powerhouse_runtime_recovery_acceptance.sql': 'backend',
+  'scripts/brain/audit-ai-model-provider-sources.mjs': 'backend',
+  'scripts/brain/audit-ai-model-claim-coverage.mjs': 'backend',
+  'tests/powerhouse-runtime-scheduler-isolation.test.mjs': 'backend',
   'AGENTS.md': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
   'tools/delivery/predictive-controller.mjs': 'automation',

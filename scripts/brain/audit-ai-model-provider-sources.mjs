@@ -1,0 +1,126 @@
+// Provider documentation probe: source reachability is NOT contract, price,
+// model-availability or residency verification. Never modify verified_at.
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {createHash} from 'node:crypto';
+
+const catalogPath=process.argv[2] || 'data/ai-model-catalog-v1.json';
+const outPath=process.argv[3] || '.artifacts/ai-model-provider-source-audit.json';
+const catalog=JSON.parse(await fs.readFile(catalogPath,'utf8'));
+const providers=Object.freeze({
+  OpenAI:['developers.openai.com','platform.openai.com','openai.com'],
+  Anthropic:['anthropic.com','www.anthropic.com','docs.anthropic.com','platform.claude.com'],
+  Google:['ai.google.dev','cloud.google.com'],
+  'Mistral AI':['docs.mistral.ai','mistral.ai'],
+  xAI:['docs.x.ai','x.ai'],
+  DeepSeek:['api-docs.deepseek.com','deepseek.com'],
+  Cohere:['docs.cohere.com','cohere.com'],
+  Meta:['llama.com','www.llama.com','ai.meta.com','huggingface.co'],
+  'Alibaba/Qwen':['qwenlm.github.io','qwen.ai','www.qwen.ai','huggingface.co'],
+  Amazon:['docs.aws.amazon.com','aws.amazon.com'],
+  'TII/Falcon':['huggingface.co','www.huggingface.co']
+});
+const unique=[...new Set(catalog.models.map(m=>m.source))];
+const verdict=new Map();
+const concurrency=4;
+const maxSourceBytes=2_000_000;
+const exactModelToken=(page,id)=>{
+  const body=page.toLowerCase();
+  const token=id.toLowerCase();
+  let offset=0;
+  for(;;){
+    const i=body.indexOf(token,offset);
+    if(i===-1)return false;
+    const before=body[i-1]??' ';
+    const after=body[i+token.length]??' ';
+    const adjacent=/[a-z0-9_-]/i;
+    if(!adjacent.test(before)&&!adjacent.test(after))return true;
+    offset=i+token.length;
+  }
+};
+let cursor=0;
+async function worker(){
+  while(cursor<unique.length){
+    const url=unique[cursor++];
+    const matching=catalog.models.filter(m=>m.source===url);
+    // Hugging Face is a shared hosting domain. Trust only model cards hosted
+    // under the official publisher account, never an arbitrary uploader.
+    const allowed=matching.every(m=>{
+      const parsed=new URL(url);
+      if(!providers[m.provider]?.includes(parsed.hostname))return false;
+      if(parsed.hostname==='huggingface.co'){
+        const paths={'Meta':'/meta-llama/','Alibaba/Qwen':'/Qwen/','TII/Falcon':'/tiiuae/'};
+        return Boolean(paths[m.provider]&&parsed.pathname.startsWith(paths[m.provider]));
+      }
+      return true;
+    });
+    if(!allowed){verdict.set(url,{state:'UNTRUSTED_SOURCE_DOMAIN',http_status:null});continue;}
+    try{
+      const response=await fetch(url,{method:'GET',redirect:'follow',signal:AbortSignal.timeout(9000),
+        headers:{'user-agent':'POWERHOUSE-catalog-source-audit/1.0'}});
+      // A provider page mentioning a model ID is evidence of a mention only,
+      // not of model availability, prices, governance, residency or a DPA.
+      // Some official providers redirect legacy documentation routes. The
+      // final destination must remain on that provider's explicit allowlist.
+      const finalUrl=new URL(response.url);
+      if(!matching.every(m=>{
+        if(!providers[m.provider]?.includes(finalUrl.hostname))return false;
+        if(finalUrl.hostname==='huggingface.co'){
+          const publisherPaths={'Meta':'/meta-llama/','Alibaba/Qwen':'/Qwen/','TII/Falcon':'/tiiuae/'};
+          return Boolean(publisherPaths[m.provider]&&finalUrl.pathname.startsWith(publisherPaths[m.provider]));
+        }
+        return true;
+      })){
+        await response.body?.cancel();
+        verdict.set(url,{state:'UNTRUSTED_SOURCE_REDIRECT',http_status:response.status,
+          final_host:finalUrl.hostname});
+        continue;
+      }
+      const body=await response.text();
+      const bytes=Buffer.byteLength(body,'utf8');
+      const readable=response.ok&&bytes<=maxSourceBytes;
+      const mentions=readable?Object.fromEntries(matching.map(m=>[
+        m.id,m.record_kind==='model_family'?null:exactModelToken(body,m.provider_model_id||m.id)
+      ])):{};
+      verdict.set(url,{state:!response.ok?'SOURCE_HTTP_ERROR':!readable?
+        'SOURCE_TOO_LARGE_FOR_PROBE':'SOURCE_REACHABLE_NOT_CLAIM_VERIFIED',
+        http_status:response.status,final_url:response.url,body_bytes:bytes,
+        body_sha256:readable?createHash('sha256').update(body).digest('hex'):null,
+        model_id_mentions:mentions});
+    }catch(e){
+      verdict.set(url,{state:'SOURCE_FETCH_ERROR',http_status:null,
+        error:String(e?.name||'FETCH_FAILED').slice(0,80)});
+    }
+  }
+}
+await Promise.all(Array.from({length:concurrency},()=>worker()));
+const receipts=catalog.models.map(m=>({
+  model_id:m.id,record_kind:m.record_kind||'model',provider_model_id:m.provider_model_id||null,
+  checked_identifier:m.provider_model_id||m.id,
+  provider:m.provider,source:m.source,source_probe:verdict.get(m.source),
+  last_claim_verification:m.verified_at,
+  model_id_mentioned_in_document:verdict.get(m.source)?.model_id_mentions?.[m.id]===true,
+  provider_doc_identity_mention_only:true,
+  identity_check_applicable:m.record_kind!=='model_family',
+  claims_verified_by_this_probe:false,
+  contract_dpa_verified:false,
+  customer_runtime_residency_verified:false,
+  pricing_verified_by_this_probe:false
+}));
+const audit={
+  contract:'powerhouse-provider-source-probe-v1',created_at:new Date().toISOString(),
+  checked_models:receipts.length,unique_sources:unique.length,
+  source_reachable:receipts.filter(x=>x.source_probe?.state==='SOURCE_REACHABLE_NOT_CLAIM_VERIFIED').length,
+  identity_mentions:receipts.filter(x=>x.model_id_mentioned_in_document).length,
+  non_deployable_family_records:receipts.filter(x=>!x.identity_check_applicable).length,
+  claim_verifications_added:0,
+  note:'Reachability does not establish model availability, provider terms, residency, retention, pricing or customer contracts.',
+  receipts
+};
+await fs.mkdir(path.dirname(outPath),{recursive:true});
+await fs.writeFile(outPath,JSON.stringify(audit,null,2)+'\n');
+process.stdout.write(JSON.stringify({output:outPath,checked_models:audit.checked_models,
+  unique_sources:audit.unique_sources,source_reachable:audit.source_reachable,
+  identity_mentions:audit.identity_mentions,
+  non_deployable_family_records:audit.non_deployable_family_records,
+  claim_verifications_added:0})+'\n');

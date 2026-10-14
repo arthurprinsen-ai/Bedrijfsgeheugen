@@ -47,10 +47,10 @@
       "provider": "OpenAI",
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": 5,
-      "output_usd_m": 25,
-      "cached_input_usd_m": 0.5,
-      "context_k": 1000,
+      "input_usd_m": 10,
+      "output_usd_m": 50,
+      "cached_input_usd_m": 1,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -78,7 +78,7 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -92,17 +92,64 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
+      "pricing_tier": "standard_short_context",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 10,
+          "cached_input": 1,
+          "output": 50
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 10,
+          "cached_input_usd_m": 1,
+          "output_usd_m": 50
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 5,
+          "cached_input_usd_m": 0.5,
+          "output_usd_m": 25
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
+      }
     },
     {
       "id": "gpt-6-sol",
       "provider": "OpenAI",
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": 1,
-      "output_usd_m": 5,
-      "cached_input_usd_m": 0.1,
-      "context_k": 1000,
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.2,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -131,7 +178,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -145,17 +192,64 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
+      "pricing_tier": "standard_short_context",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 2,
+          "cached_input": 0.2,
+          "output": 10
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 2,
+          "cached_input_usd_m": 0.2,
+          "output_usd_m": 10
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 1,
+          "cached_input_usd_m": 0.1,
+          "output_usd_m": 5
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
+      }
     },
     {
       "id": "gpt-6-luna",
       "provider": "OpenAI",
       "tier": "economy",
       "status": "active",
-      "input_usd_m": 0.05,
-      "output_usd_m": 0.25,
-      "cached_input_usd_m": 0.005,
-      "context_k": 1000,
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.5,
+      "cached_input_usd_m": 0.01,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -184,7 +278,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -198,7 +292,54 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
+      "pricing_tier": "standard_short_context",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 0.1,
+          "cached_input": 0.01,
+          "output": 0.5
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 0.1,
+          "cached_input_usd_m": 0.01,
+          "output_usd_m": 0.5
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 0.05,
+          "cached_input_usd_m": 0.005,
+          "output_usd_m": 0.25
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
+      }
     },
     {
       "id": "gpt-5.6-sol",
@@ -208,7 +349,7 @@
       "input_usd_m": 4,
       "output_usd_m": 20,
       "cached_input_usd_m": 0.4,
-      "context_k": 400,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -235,7 +376,7 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -249,7 +390,44 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_tier": "standard_short_context",
+      "pricing_source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+      "pricing_source_verified_at": "2026-10-14",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_terms_note": "Published $4/$0.40/$20 per million standard text tokens; requests over 272K input tokens have a higher tariff; promotional price stated through at least 2026-11-21.",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "gpt-5.6",
+          "provider_name": "GPT-5.6 Sol"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1050000
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "standard",
+          "unit": "USD per 1M text tokens",
+          "input": 4,
+          "cached_input": 0.4,
+          "output": 20,
+          "pricing_caveat": ">272K input tokens incurs higher rates"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "claude-opus-5-5",
@@ -290,7 +468,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude/opus",
+      "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -304,7 +482,39 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_tier": "claude_api_direct",
+      "pricing_source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+      "pricing_source_verified_at": "2026-10-14",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1000000
+        },
+        "pricing": {
+          "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 4,
+          "cache_read": 0.2,
+          "output": 20,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "claude-sonnet-5-5",
@@ -313,7 +523,7 @@
       "status": "active",
       "input_usd_m": 2,
       "output_usd_m": 10,
-      "cached_input_usd_m": 0.2,
+      "cached_input_usd_m": 0.1,
       "context_k": 1000,
       "modalities": [
         "text",
@@ -346,7 +556,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude-sonnet-5-5",
+      "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -360,7 +570,39 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_tier": "claude_api_direct",
+      "pricing_source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+      "pricing_source_verified_at": "2026-10-14",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1000000
+        },
+        "pricing": {
+          "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 2,
+          "cache_read": 0.1,
+          "output": 10,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "claude-sonnet-5",
@@ -563,7 +805,7 @@
         "Gemini API",
         "Vertex AI"
       ],
-      "source": "https://ai.google.dev/gemini-api/docs/gemini-3",
+      "source": "https://ai.google.dev/gemini-api/docs/models.md",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -577,7 +819,21 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://ai.google.dev/gemini-api/docs/models.md",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_INDEX_MODEL_ID_LISTED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "gemini-3.1-flash-lite",
@@ -618,7 +874,7 @@
         "Gemini API",
         "Vertex AI"
       ],
-      "source": "https://ai.google.dev/gemini-api/docs/gemini-3",
+      "source": "https://ai.google.dev/gemini-api/docs/models.md",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -632,7 +888,21 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://ai.google.dev/gemini-api/docs/models.md",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_INDEX_MODEL_ID_LISTED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "gemini-2.5-flash-lite",
@@ -673,7 +943,9 @@
         "Vertex AI"
       ],
       "source": "https://ai.google.dev/gemini-api/docs/pricing",
-      "limitations": [],
+      "limitations": [
+        "Google limits Gemini 2.5 API models to users with prior usage; new projects should choose Gemini 3.5 Flash-Lite or Gemini 3.8 Flash."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -686,7 +958,17 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "new_project_access": "RESTRICTED_EXISTING_USERS",
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "access_policy": {
+          "source": "https://ai.google.dev/gemini-api/docs/models.md",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value": "RESTRICTED_EXISTING_USERS"
+        }
+      }
     },
     {
       "id": "mistral-medium-3-5",
@@ -726,7 +1008,7 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/inference/pricing",
+      "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -740,7 +1022,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "mistral-medium-3-5",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-medium-3-5"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 1.5,
+          "output": 7.5,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "mistral-large-3",
@@ -779,7 +1087,7 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -793,7 +1101,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "mistral-large-2512",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-large-2512"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.5,
+          "output": 1.5,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "mistral-small-4",
@@ -832,7 +1166,7 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
+      "source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -846,7 +1180,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "mistral-small-2603",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-small-2603"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.15,
+          "output": 0.6,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "ministral-3-14b",
@@ -936,7 +1296,7 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -950,7 +1310,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "ministral-8b-2512",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "ministral-8b-2512"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.15,
+          "output": 0.15,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "ministral-3-3b",
@@ -1143,7 +1529,7 @@
       "deployment": [
         "xAI API"
       ],
-      "source": "https://docs.x.ai/developers/models",
+      "source": "https://docs.x.ai/developers/models/grok-4.7",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -1157,7 +1543,40 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.x.ai/developers/models/grok-4.7",
+      "pricing_tier": "us_east_base_under_200k",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.x.ai/developers/models/grok-4.7",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://docs.x.ai/developers/models/grok-4.7",
+          "checked_at": "2026-10-14",
+          "value_tokens": 500000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing": {
+          "source": "https://docs.x.ai/developers/models/grok-4.7",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 2,
+          "cached_input": 0.5,
+          "output": 6,
+          "unit": "USD per 1 million tokens",
+          "note": "Tier and region dependent; higher context may cost more."
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "grok-4.6",
@@ -1207,7 +1626,57 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "grok-4.6",
+      "pricing_source": "https://docs.x.ai/developers/models/grok-4.6",
+      "pricing_source_verified_at": "2026-10-14",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_tier": "global_short_context_under_200k_tokens",
+      "pricing_variants": {
+        "global_short_context": {
+          "input_usd_m": 2,
+          "cached_input_usd_m": 0.5,
+          "output_usd_m": 6
+        },
+        "global_long_context": {
+          "input_usd_m": 4,
+          "cached_input_usd_m": 1,
+          "output_usd_m": 12
+        },
+        "us_regional_multiplier": 1.1,
+        "threshold_tokens": 200000
+      },
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.x.ai/developers/models/grok-4.6",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "grok-4.6"
+        },
+        "context_window": {
+          "source": "https://docs.x.ai/developers/models/grok-4.6",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 500000
+        },
+        "pricing": {
+          "source": "https://docs.x.ai/developers/models/grok-4.6",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per million tokens",
+          "processing_tier": "global_short_context",
+          "input": 2,
+          "cached_input": 0.5,
+          "output": 6,
+          "us_region_multiplier": 1.1
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "deepseek-flash",
@@ -1258,7 +1727,59 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "deepseek-flash",
+      "model_version": "DeepSeek-V4.1-Flash",
+      "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "peak_hours_utc_weekdays",
+      "pricing_variants": {
+        "peak": {
+          "input_usd_m": 0.3,
+          "cached_input_usd_m": 0.006,
+          "output_usd_m": 1.2
+        },
+        "off_peak": {
+          "input_usd_m": 0.15,
+          "cached_input_usd_m": 0.003,
+          "output_usd_m": 0.6
+        },
+        "rule": "Peak 01:00-04:00 UTC and 06:00-10:00 UTC Monday-Friday, excluding Chinese public holidays. Other times are off-peak."
+      },
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "deepseek-flash",
+          "model_version": "DeepSeek-V4.1-Flash"
+        },
+        "context_window": {
+          "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1000000
+        },
+        "pricing": {
+          "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per million tokens",
+          "base_tier": "peak",
+          "peak_input": 0.3,
+          "peak_cached": 0.006,
+          "peak_output": 1.2,
+          "off_peak_input": 0.15,
+          "off_peak_cached": 0.003,
+          "off_peak_output": 0.6
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "deepseek-v4-pro",
@@ -1294,7 +1815,7 @@
       "deployment": [
         "DeepSeek API"
       ],
-      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "source": "https://api-docs.deepseek.com/news/news260813/",
       "limitations": [],
       "governance": {
         "storage_residency": "EU storage not documented for this path",
@@ -1308,17 +1829,70 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "deepseek-v4-pro",
+          "model_version": "DeepSeek-V4-Pro-0813"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "context_window": {
+          "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1000000
+        },
+        "pricing": {
+          "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per million tokens",
+          "base_tier": "peak",
+          "peak_input": 1.32,
+          "peak_cached": 0.044,
+          "peak_output": 3.96,
+          "off_peak_input": 0.66,
+          "off_peak_cached": 0.022,
+          "off_peak_output": 1.98
+        }
+      },
+      "provider_model_id": "deepseek-v4-pro",
+      "model_version": "DeepSeek-V4-Pro-0813",
+      "pricing_source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "peak_hours_utc_weekdays",
+      "pricing_variants": {
+        "peak": {
+          "input_usd_m": 1.32,
+          "cached_input_usd_m": 0.044,
+          "output_usd_m": 3.96
+        },
+        "off_peak": {
+          "input_usd_m": 0.66,
+          "cached_input_usd_m": 0.022,
+          "output_usd_m": 1.98
+        },
+        "rule": "Peak 01:00-04:00 UTC and 06:00-10:00 UTC Monday-Friday, excluding Chinese public holidays. Other times are off-peak."
+      }
     },
     {
       "id": "command-a-plus",
       "provider": "Cohere",
       "tier": "enterprise",
-      "status": "active",
+      "status": "duplicate_alias",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -1360,17 +1934,30 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "selection_eligible": false,
+      "duplicate_of": "command-a-plus-05-2026",
+      "provider_model_id": "command-a-plus-05-2026",
+      "unit_price": "Model Vault L $17.50/hour; XL $32.50/hour; subject to provider access",
+      "claim_evidence": {
+        "duplicate_identity": {
+          "source": "https://docs.cohere.com/v1/docs/command-a-plus",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "canonical_catalog_id": "command-a-plus-05-2026",
+          "provider_model_id": "command-a-plus-05-2026"
+        }
+      }
     },
     {
       "id": "command-a",
       "provider": "Cohere",
       "tier": "enterprise",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 2.5,
+      "output_usd_m": 10,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text"
       ],
@@ -1412,7 +1999,41 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "command-a-03-2025",
+      "pricing_tier": "cohere_command_a_direct_token",
+      "pricing_source": "https://docs.cohere.com/v2/docs/command-a",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/v2/docs/command-a",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "command-a-03-2025"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/v2/docs/command-a",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 256000
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/v2/docs/command-a",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per 1 million tokens",
+          "input": 2.5,
+          "output": 10,
+          "processing_tier": "Direct API"
+        }
+      },
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "id": "embed-4",
@@ -1422,8 +2043,8 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
-      "unit_price": "Model Vault from $4/hour",
+      "context_k": 128,
+      "unit_price": "Model Vault Small $4/hour; Medium $5/hour; dedicated instances",
       "modalities": [
         "embedding"
       ],
@@ -1451,7 +2072,7 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing",
+      "source": "https://docs.cohere.com/v2/docs/cohere-embed",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -1465,7 +2086,41 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "embed-v4.0",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/v2/docs/cohere-embed",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "embed-v4.0"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/v2/docs/cohere-embed",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 128000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_S_hourly": 4,
+          "tier_M_hourly": 5,
+          "scope": "Model Vault"
+        }
+      },
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14"
     },
     {
       "id": "rerank-4-pro",
@@ -1475,8 +2130,8 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
-      "unit_price": "Model Vault from $5/hour",
+      "context_k": 32,
+      "unit_price": "Model Vault Medium $5/hour; Large $10/hour",
       "modalities": [
         "rerank"
       ],
@@ -1504,7 +2159,7 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing",
+      "source": "https://docs.cohere.com/docs/rerank",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -1518,19 +2173,54 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "rerank-v4.0-pro",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/docs/rerank",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "rerank-v4.0-pro"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/docs/rerank",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 32000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_M_hourly": 5,
+          "tier_L_hourly": 10,
+          "scope": "Model Vault"
+        }
+      },
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14"
     },
     {
-      "id": "llama-open-weight",
+      "id": "llama-4-scout-17b-16e-instruct",
       "provider": "Meta",
       "tier": "open-weight",
-      "status": "provider-dependent",
+      "status": "active",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 10000,
       "modalities": [
-        "text"
+        "text",
+        "vision"
       ],
       "strengths": [
         "self-hosting",
@@ -1546,44 +2236,86 @@
         "vision": 5,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "US",
       "deployment": [
-        "self-host",
-        "EU cloud",
-        "on-prem"
+        "downloadable weights",
+        "self-hosted",
+        "third-party hosted subject to customer agreement"
       ],
-      "source": "https://www.llama.com/",
-      "limitations": [],
+      "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "limitations": [
+        "Llama 4 Community License requires review; download may require license acceptance.",
+        "10M published context is not a guarantee of deployed hardware limits.",
+        "Self-host/hosting costs, residency, retention and contracts require an actual deployment."
+      ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
-        "subprocessors": "verify current provider list",
-        "dpa": "verify current product/contract",
-        "cmk": "verify current product/contract",
-        "private_networking": "verify current product/contract"
+        "storage_residency": "operator/deployment-specific, not verified",
+        "inference_residency": "operator/deployment-specific, not verified",
+        "training_on_customer_data": "operator/deployment-dependent",
+        "retention": "operator/deployment-dependent",
+        "zero_data_retention": "operator/deployment-dependent",
+        "subprocessors": "operator/deployment-dependent",
+        "dpa": "customer/operator contract required, not verified",
+        "cmk": "operator/deployment-dependent",
+        "private_networking": "operator/deployment-dependent"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "record_kind": "individual_model",
+      "selection_eligible": false,
+      "provider_model_id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "provider_model_id": "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+        },
+        "context_window": {
+          "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "native_context_tokens": 10000000,
+          "extended_context_tokens": null
+        },
+        "license": {
+          "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "checked_at": "2026-10-14",
+          "status": "PUBLISHED_LICENSE_IDENTIFIED_NOT_CUSTOMER_ACCEPTANCE",
+          "license": "Llama 4 Community License"
+        },
+        "pricing": {
+          "status": "NO_UNIVERSAL_HOSTING_TOKEN_TARIFF"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "legacy_catalog_aliases": [
+        "llama-open-weight"
+      ],
+      "license": "Llama 4 Community License",
+      "unit_price": "self-host / selected hosting-provider cost"
     },
     {
-      "id": "qwen-open-weight",
+      "id": "qwen3-32b",
       "provider": "Alibaba/Qwen",
       "tier": "open-weight",
-      "status": "provider-dependent",
+      "status": "active",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32.768,
       "modalities": [
-        "text",
-        "vision"
+        "text"
       ],
       "strengths": [
         "open-weight deployment",
@@ -1599,30 +2331,74 @@
         "vision": 8,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "China",
       "deployment": [
-        "self-host",
-        "cloud providers"
+        "downloadable weights",
+        "self-hosted",
+        "third-party hosted subject to customer agreement"
       ],
-      "source": "https://qwenlm.github.io/",
-      "limitations": [],
+      "source": "https://huggingface.co/Qwen/Qwen3-32B",
+      "limitations": [
+        "131,072-token context requires optional YaRN configuration; native context is 32,768 tokens.",
+        "Self-host/hosting costs, residency, retention and contracts require an actual deployment."
+      ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
-        "subprocessors": "verify current provider list",
-        "dpa": "verify current product/contract",
-        "cmk": "verify current product/contract",
-        "private_networking": "verify current product/contract"
+        "storage_residency": "operator/deployment-specific, not verified",
+        "inference_residency": "operator/deployment-specific, not verified",
+        "training_on_customer_data": "operator/deployment-dependent",
+        "retention": "operator/deployment-dependent",
+        "zero_data_retention": "operator/deployment-dependent",
+        "subprocessors": "operator/deployment-dependent",
+        "dpa": "customer/operator contract required, not verified",
+        "cmk": "operator/deployment-dependent",
+        "private_networking": "operator/deployment-dependent"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "record_kind": "individual_model",
+      "selection_eligible": false,
+      "provider_model_id": "Qwen/Qwen3-32B",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://huggingface.co/Qwen/Qwen3-32B",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "provider_model_id": "Qwen/Qwen3-32B"
+        },
+        "context_window": {
+          "source": "https://huggingface.co/Qwen/Qwen3-32B",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "native_context_tokens": 32768,
+          "extended_context_tokens": 131072
+        },
+        "license": {
+          "source": "https://huggingface.co/Qwen/Qwen3-32B",
+          "checked_at": "2026-10-14",
+          "status": "PUBLISHED_LICENSE_IDENTIFIED_NOT_CUSTOMER_ACCEPTANCE",
+          "license": "Apache-2.0"
+        },
+        "pricing": {
+          "status": "NO_UNIVERSAL_HOSTING_TOKEN_TARIFF"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "legacy_catalog_aliases": [
+        "qwen-open-weight"
+      ],
+      "extended_context_k": 131.072,
+      "license": "Apache-2.0",
+      "unit_price": "self-host / selected hosting-provider cost"
     },
     {
       "tier": "balanced",
@@ -1677,7 +2453,54 @@
       },
       "id": "gpt-6.1-sol",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 2,
+          "cached_input": 0.1,
+          "output": 10
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
+      "pricing_tier": "standard_short_context",
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 2,
+          "cached_input_usd_m": 0.1,
+          "output_usd_m": 10
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 1,
+          "cached_input_usd_m": 0.05,
+          "output_usd_m": 5
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
+      }
     },
     {
       "tier": "specialist",
@@ -2516,7 +3339,23 @@
       },
       "id": "claude-fable-5",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-fable-5",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-fable-5"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "frontier",
@@ -2627,7 +3466,23 @@
       },
       "id": "claude-opus-4-7",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-opus-4-7",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-opus-4-7"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "frontier",
@@ -2682,7 +3537,23 @@
       },
       "id": "claude-opus-4-6",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-opus-4-6",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-opus-4-6"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -2738,7 +3609,23 @@
       },
       "id": "claude-sonnet-4-6",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-sonnet-4-6",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-sonnet-4-6"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -2799,10 +3686,10 @@
     {
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.75,
+      "output_usd_m": 3.75,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 1049,
       "modalities": [
         "text",
         "vision"
@@ -2848,7 +3735,40 @@
       },
       "id": "gemini-3.8-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models"
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+      "model_source_verified_at": "2026-10-14",
+      "context_tokens": 1048576,
+      "pricing_source": "https://ai.google.dev/gemini-api/docs/latest-model",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "introductory_2026",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://ai.google.dev/gemini-api/docs/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://ai.google.dev/gemini-api/docs/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1048576
+        },
+        "pricing": {
+          "source": "https://ai.google.dev/gemini-api/docs/latest-model",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.75,
+          "output": 3.75,
+          "unit": "USD per 1 million tokens",
+          "note": "Introductory pricing through the end of 2026; check conditions before quoting."
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -3062,7 +3982,7 @@
     },
     {
       "tier": "balanced",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -3076,7 +3996,8 @@
         "agentic workflows"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Deprecated: API alias automatically routes to gemini-3.8-flash; avoid choosing this model for new workloads."
       ],
       "scores": {
         "reasoning": 8,
@@ -3111,7 +4032,26 @@
       },
       "id": "gemini-3.7-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models"
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+      "selection_eligible": false,
+      "effective_model_id": "gemini-3.8-flash",
+      "model_source_verified_at": "2026-10-14",
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_AUTO_ROUTED",
+          "effective_model_id": "gemini-3.8-flash"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -3168,7 +4108,7 @@
     },
     {
       "tier": "balanced",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -3182,7 +4122,8 @@
         "high-scale workflows"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Deprecated: API alias automatically routes to gemini-3.6-flash; avoid choosing this model for new workloads."
       ],
       "scores": {
         "reasoning": 8,
@@ -3217,7 +4158,26 @@
       },
       "id": "gemini-3.5-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models"
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+      "selection_eligible": false,
+      "effective_model_id": "gemini-3.6-flash",
+      "model_source_verified_at": "2026-10-14",
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_AUTO_ROUTED",
+          "effective_model_id": "gemini-3.6-flash"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "economy",
@@ -3744,11 +4704,11 @@
     },
     {
       "tier": "frontier",
-      "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "status": "duplicate_alias",
+      "input_usd_m": 1.5,
+      "output_usd_m": 7.5,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text",
         "vision"
@@ -3793,11 +4753,44 @@
       },
       "id": "mistral-medium-3.5",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+      "selection_eligible": false,
+      "duplicate_of": "mistral-medium-3-5",
+      "provider_model_id": "mistral-medium-3-5",
+      "claim_evidence": {
+        "duplicate_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "canonical_catalog_id": "mistral-medium-3-5"
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-medium-3-5"
+        },
+        "context_window": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 256000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      },
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "provider_direct_reference"
     },
     {
       "tier": "specialist",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -3811,7 +4804,8 @@
         "document structure"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral lists this model under deprecated/retired; use mistral-ocr-4-1 for new workloads where appropriate."
       ],
       "scores": {
         "reasoning": 3,
@@ -3845,7 +4839,32 @@
       },
       "id": "mistral-ocr-4.0",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/ocr-4-0",
+      "selection_eligible": false,
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://docs.mistral.ai/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_OR_RETIRED",
+          "suggested_alternative": "mistral-ocr-4-1"
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/ocr-4-0",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-ocr-4-0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "provider_model_id": "mistral-ocr-4-0",
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -3863,7 +4882,8 @@
         "document AI"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Superseded by OCR 4; still available for existing integrations. Prefer OCR 4 for new projects."
       ],
       "scores": {
         "reasoning": 3,
@@ -3897,7 +4917,35 @@
       },
       "id": "mistral-ocr-3",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/ocr-3-25-12",
+      "provider_model_id": "mistral-ocr-2512",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/ocr-3-25-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/ocr-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-ocr-2512"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/ocr-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": null,
+          "output": null,
+          "unit": "SPECIALIST_UNITS_NOT_TOKEN_PRICED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$2 per 1,000 pages / $3 per 1,000 annotated pages",
+      "selection_eligible": false
     },
     {
       "tier": "specialist",
@@ -3915,7 +4963,8 @@
         "voice cloning"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Open weights have CC BY-NC 4.0 licensing; verify commercial rights for self-host use."
       ],
       "scores": {
         "reasoning": 3,
@@ -3949,7 +4998,34 @@
       },
       "id": "voxtral-tts",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+      "provider_model_id": "voxtral-mini-tts-2603",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-mini-tts-2603"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": null,
+          "output": null,
+          "unit": "SPECIALIST_UNITS_NOT_TOKEN_PRICED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$16 per 1,000,000 output characters"
     },
     {
       "tier": "specialist",
@@ -3999,7 +5075,34 @@
       },
       "id": "voxtral-mini-transcribe-2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+      "provider_model_id": "voxtral-mini-2602",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-mini-2602"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": null,
+          "output": null,
+          "unit": "SPECIALIST_UNITS_NOT_TOKEN_PRICED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$0.003 per minute of transcription"
     },
     {
       "tier": "open-weight",
@@ -4051,15 +5154,32 @@
       },
       "id": "voxtral-mini-transcribe-realtime",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+      "provider_model_id": "voxtral-mini-transcribe-realtime-2602",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-mini-transcribe-realtime-2602"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$0.006 per minute of live transcription"
     },
     {
       "tier": "open-weight",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.4,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "modalities": [
         "text",
         "audio"
@@ -4104,15 +5224,41 @@
       },
       "id": "voxtral-small",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+      "provider_model_id": "voxtral-small-2507",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-small-2507"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.1,
+          "output": 0.4,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
+      "input_usd_m": 0.15,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 8,
       "modalities": [
         "code"
       ],
@@ -4155,15 +5301,40 @@
       },
       "id": "codestral-embed",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "codestral-embed-2505",
+      "pricing_source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "provider_direct_reference",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "codestral-embed-2505"
+        },
+        "context_window": {
+          "source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 8000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
+      "input_usd_m": 0.1,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 8,
       "modalities": [
         "text",
         "code"
@@ -4207,7 +5378,32 @@
       },
       "id": "mistral-embed",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "mistral-embed-2312",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "provider_direct_reference",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-embed-2312"
+        },
+        "context_window": {
+          "source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 8000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "open-weight",
@@ -4215,7 +5411,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "modalities": [
         "text",
         "vision"
@@ -4225,7 +5421,8 @@
         "safety"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Official page documents weights and 32k context but no managed API ID; don't route API traffic by catalog label."
       ],
       "scores": {
         "reasoning": 3,
@@ -4260,15 +5457,33 @@
       },
       "id": "shieldstral-1",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/shieldstral-1-0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/shieldstral-1-0",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "model_family": "Shieldstral 1.0",
+          "provider_model_id": "NOT_LISTED_ON_PRODUCT_PAGE"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "provider_model_id": null,
+      "selection_eligible": false
     },
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0,
+      "output_usd_m": 0,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -4311,11 +5526,37 @@
       },
       "id": "mistral-moderation-2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+      "provider_model_id": "mistral-moderation-2603",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-moderation-2603"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0,
+          "output": 0,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "open-weight",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4329,7 +5570,8 @@
         "formal verification"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral lists this model under deprecated/retired; verify availability before any new deployment."
       ],
       "scores": {
         "reasoning": 8,
@@ -4364,15 +5606,41 @@
       },
       "id": "leanstral-1.5",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/leanstral-1-5",
+      "selection_eligible": false,
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://docs.mistral.ai/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_OR_RETIRED",
+          "suggested_alternative": null
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/leanstral-1-5",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "labs-leanstral-1-5"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "provider_model_id": "labs-leanstral-1-5",
+      "model_source_verified_at": "2026-10-14",
+      "deprecated_at": "2026-09-29"
     },
     {
       "tier": "open-weight",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "input_usd_m": 1.4,
+      "output_usd_m": 4.4,
+      "cached_input_usd_m": 0.14,
+      "context_k": 1000,
       "modalities": [
         "text"
       ],
@@ -4416,11 +5684,38 @@
       },
       "id": "zai-glm-5.3",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/zai-glm-5-3",
+      "provider_model_id": "zai-glm-5-3",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/zai-glm-5-3",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "zai-glm-5-3"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/zai-glm-5-3",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 1.4,
+          "cached_input": 0.14,
+          "output": 4.4,
+          "unit": "USD per 1 million tokens"
+        }
+      },
+      "pricing_source": "https://docs.mistral.ai/models/zai-glm-5-3",
+      "pricing_source_verified_at": "2026-10-14"
     },
     {
       "tier": "open-weight",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4432,7 +5727,8 @@
         "long-context open-weight text"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral lists this model under deprecated/retired; use zai-glm-5.3 for new workloads where appropriate."
       ],
       "scores": {
         "reasoning": 8,
@@ -4467,7 +5763,34 @@
       },
       "id": "zai-glm-5.2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/zai-glm-5-2",
+      "selection_eligible": false,
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://docs.mistral.ai/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_OR_RETIRED",
+          "suggested_alternative": "zai-glm-5.3"
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/zai-glm-5-2",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "zai-glm-5-2"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "provider_model_id": "zai-glm-5-2",
+      "model_source_verified_at": "2026-10-14",
+      "deprecated_at": "2026-09-29",
+      "effective_model_id": "zai-glm-5.3"
     },
     {
       "tier": "specialist",
@@ -4620,7 +5943,39 @@
       },
       "id": "grok-imagine-video",
       "provider": "xAI",
-      "source": "https://docs.x.ai/developers/models"
+      "source": "https://docs.x.ai/developers/models/grok-imagine-video",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.x.ai/developers/models/grok-imagine-video",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "video_resolution_us_east_reference",
+      "unit_price": "USD per generated video second",
+      "pricing_variants": {
+        "resolution_480p_usd_per_sec": 0.05,
+        "resolution_720p_usd_per_sec": 0.07,
+        "notes": "Regional price and video input charges may vary; separate from text tokens."
+      },
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.x.ai/developers/models/grok-imagine-video",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "grok-imagine-video"
+        },
+        "video_pricing": {
+          "source": "https://docs.x.ai/developers/models/grok-imagine-video",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "resolution_480p_usd_per_sec": 0.05,
+          "resolution_720p_usd_per_sec": 0.07,
+          "region": "us-east-1 reference"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "frontier",
@@ -4628,7 +5983,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -4672,7 +6027,43 @@
       },
       "id": "command-a-plus-05-2026",
       "provider": "Cohere",
-      "source": "https://docs.cohere.com/v1/changelog"
+      "source": "https://docs.cohere.com/v1/changelog",
+      "provider_model_id": "command-a-plus-05-2026",
+      "max_output_tokens": 64000,
+      "unit_price": "Model Vault L $17.50/hour; XL $32.50/hour; subject to provider access",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/v1/docs/command-a-plus",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "command-a-plus-05-2026"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/v1/docs/command-a-plus",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 128000
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_L_hourly": 17.5,
+          "tier_XL_hourly": 32.5,
+          "scope": "Model Vault, NOT direct token API"
+        }
+      },
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -4680,7 +6071,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text"
       ],
@@ -4724,7 +6115,43 @@
       },
       "id": "command-a-reasoning-08-2025",
       "provider": "Cohere",
-      "source": "https://docs.cohere.com/v1/changelog"
+      "source": "https://docs.cohere.com/v1/changelog",
+      "provider_model_id": "command-a-reasoning-08-2025",
+      "max_output_tokens": 32000,
+      "unit_price": "Model Vault L $48/hour; XL $57.50/hour; dedicated access",
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/docs/command-a-reasoning",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "command-a-reasoning-08-2025"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/docs/command-a-reasoning",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 256000
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_L_hourly": 48,
+          "tier_XL_hourly": 57.5,
+          "scope": "Model Vault, NOT free trial token pricing"
+        }
+      },
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -4829,9 +6256,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
       "id": "amazon-nova-2-lite",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-2-lite-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-2-lite-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -4881,9 +6324,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
       "id": "amazon-nova-2-sonic",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-2-sonic-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-2-sonic-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "frontier",
@@ -4903,7 +6362,8 @@
         "model distillation"
       ],
       "limitations": [
-        "legacy lifecycle in Bedrock; verify successor before new production use"
+        "legacy lifecycle in Bedrock; verify successor before new production use",
+        "Unresolved AWS Bedrock lifecycle conflict: do not recommend or deploy until the actual account and region confirm availability via GetFoundationModel."
       ],
       "scores": {
         "reasoning": 9,
@@ -4935,9 +6395,39 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "source": "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html",
       "id": "amazon-nova-premier",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-premier-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-premier-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "status": "CONFLICT_NOT_APPROVED",
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "customer_region_readback": false
+        }
+      },
+      "selection_eligible": false,
+      "lifecycle_conflict": {
+        "state": "UNRESOLVED_REGION_SPECIFIC_AVAILABILITY",
+        "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "checked_at": "2026-10-14",
+        "reconciliation_required": "Authenticated GetFoundationModel in the actual AWS region/account; published lifecycle documents have conflicting/stale regional dates",
+        "not_releasable_as_active": true
+      }
     },
     {
       "tier": "balanced",
@@ -4989,9 +6479,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
       "id": "amazon-nova-pro",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-pro-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-pro-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "economy",
@@ -5043,9 +6549,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
       "id": "amazon-nova-lite",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-lite-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-lite-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "economy",
@@ -5096,13 +6618,29 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
       "id": "amazon-nova-micro",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-micro-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-micro-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5116,7 +6654,8 @@
         "realtime multilingual voice"
       ],
       "limitations": [
-        "legacy lifecycle in Bedrock; prefer current Sonic generation where applicable"
+        "legacy lifecycle in Bedrock; prefer current Sonic generation where applicable",
+        "AWS Bedrock lists the model as EOL (2026-09-14); requests fail in the listed regions. Do not offer for new deployments."
       ],
       "scores": {
         "reasoning": 5,
@@ -5150,7 +6689,33 @@
       },
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
       "id": "amazon-nova-sonic",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-sonic-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-sonic-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "EOL_REMOVED_IN_LISTED_REGIONS",
+          "eol_date": "2026-09-14"
+        }
+      },
+      "selection_eligible": false,
+      "eol_date": "2026-09-14",
+      "lifecycle_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -5170,7 +6735,8 @@
         "retrieval"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "Official Bedrock model card lists in-region deployment in us-east-1 and us-gov-west-1; do not infer EU processing without another authorized endpoint readback."
       ],
       "scores": {
         "reasoning": 1,
@@ -5202,13 +6768,30 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
       "id": "amazon-nova-multimodal-embeddings",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5223,7 +6806,8 @@
         "watermarking"
       ],
       "limitations": [
-        "legacy lifecycle in listed Bedrock version; verify current image-generation successor"
+        "legacy lifecycle in listed Bedrock version; verify current image-generation successor",
+        "AWS Bedrock lists the model as EOL (2026-09-30); requests fail in the listed regions. Do not offer for new deployments."
       ],
       "scores": {
         "reasoning": 2,
@@ -5257,11 +6841,37 @@
       },
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
       "id": "amazon-nova-canvas",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-canvas-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-canvas-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "EOL_REMOVED_IN_LISTED_REGIONS",
+          "eol_date": "2026-09-30"
+        }
+      },
+      "selection_eligible": false,
+      "eol_date": "2026-09-30",
+      "lifecycle_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5276,7 +6886,8 @@
         "camera motion controls"
       ],
       "limitations": [
-        "legacy lifecycle in listed Bedrock version; verify current video-generation successor"
+        "legacy lifecycle in listed Bedrock version; verify current video-generation successor",
+        "AWS Bedrock lists the model as EOL (2026-09-30); requests fail in the listed regions. Do not offer for new deployments."
       ],
       "scores": {
         "reasoning": 2,
@@ -5310,7 +6921,33 @@
       },
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
       "id": "amazon-nova-reel",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-reel-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-reel-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "EOL_REMOVED_IN_LISTED_REGIONS",
+          "eol_date": "2026-09-30"
+        }
+      },
+      "selection_eligible": false,
+      "eol_date": "2026-09-30",
+      "lifecycle_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -5360,9 +6997,26 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
       "id": "amazon-titan-text-embeddings-v2",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.titan-embed-text-v2:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.titan-embed-text-v2:0",
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -5413,9 +7067,26 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
       "id": "amazon-titan-image-generator-g1-v2",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.titan-image-generator-v2:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-image-models.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.titan-image-generator-v2:0",
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -5434,7 +7105,8 @@
         "recommendations"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "Published InvokeModel ID is amazon.titan-embed-image-v1; fine-tuning/model variants may use suffixes."
       ],
       "scores": {
         "reasoning": 1,
@@ -5466,9 +7138,26 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
       "id": "amazon-titan-multimodal-embeddings-g1",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.titan-embed-image-v1",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.titan-embed-image-v1",
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "falcon-h1-0.5b-instruct",
@@ -5791,10 +7480,12 @@
         "on-prem"
       ],
       "unit_price": "self-host / hosting-provider cost",
-      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
       "limitations": [
         "managed API pricing and residency depend on the chosen hosting path",
-        "verify license terms for the intended commercial deployment"
+        "verify license terms for the intended commercial deployment",
+        "Falcon-H1R-7B uses Falcon-LLM License, not permissive Apache/MIT; evaluate commercial terms.",
+        "Official model card reports no live Hugging Face Inference Provider; plan self-host or authorized deployment."
       ],
       "governance": {
         "storage_residency": "customer-controlled when self-hosted",
@@ -5808,7 +7499,29 @@
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "tiiuae/Falcon-H1R-7B",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_MODEL_CARD_CONFIRMED",
+          "provider_model_id": "tiiuae/Falcon-H1R-7B"
+        },
+        "license": {
+          "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value": "Falcon-LLM License; verify suitability for commercial deployment"
+        },
+        "tenant_governance": {
+          "status": "SELF_HOST_DEPLOYMENT_SPECIFIC"
+        },
+        "provider_contracts": {
+          "status": "HOSTING_PROVIDER_DEPENDENT"
+        }
+      }
     },
     {
       "id": "falcon-ocr",

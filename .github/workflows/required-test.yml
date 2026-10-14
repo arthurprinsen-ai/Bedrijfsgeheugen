@@ -289,6 +289,30 @@ jobs:
             node tools/ci/netlify-build-entry.mjs --prepare-i18n-cache=ci-static-i18n-verification.json
             node tools/site-shell/build-localized-routes.mjs --validate-cache
           )
+      - name: Collect official provider source identity evidence for all catalog models
+        if: steps.integration.outputs.full_shared_suite == 'true'
+        timeout-minutes: 4
+        run: node scripts/brain/audit-ai-model-provider-sources.mjs
+      - name: Preserve independent model source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-model-provider-identity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/ai-model-provider-source-audit.json
+          if-no-files-found: warn
+          retention-days: 30
+      - name: Audit all 110 model claim and customer-governance gaps
+        if: steps.integration.outputs.full_shared_suite == 'true'
+        timeout-minutes: 3
+        run: node scripts/brain/audit-ai-model-claim-coverage.mjs
+      - name: Retain immutable model claim gap receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-model-claim-gaps-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/ai-model-claim-coverage.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
@@ -317,8 +341,10 @@ jobs:
           tests/brain-ci-critical-path-acceleration-v1.test.mjs
           tests/brain-autonomous-engineering-fabric-v3.test.mjs
           tests/powerhouse-daily-self-evolution.test.mjs
+          tests/powerhouse-runtime-scheduler-isolation.test.mjs
           tests/brain-self-improvement-layer-v1.test.mjs
           tests/ai-model-intelligence-freshness-v1.test.mjs
+          tests/ai-model-official-source-evidence.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/cms-website-portal-v1.test.mjs
