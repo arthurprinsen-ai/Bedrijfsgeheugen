@@ -21,7 +21,15 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
    if(e.claim_scope!=='full') issues.push('partial verification');
    if((e.not_verified??[]).length) issues.push('unverified claims');
    if(e.checked_on!==m.verified_at) issues.push('evidence date differs');
-   for(const claim of required) if(!e.verified_claims?.includes(claim)) issues.push('unverified '+claim);
+   for(const claim of required) {
+    if(!e.verified_claims?.includes(claim)) issues.push('unverified '+claim);
+    const receipt=e.claim_evidence?.find(x=>x.claim===claim &&
+      typeof x.url==='string' && x.url.startsWith('https://') &&
+      typeof x.locator==='string' && x.locator.trim() &&
+      typeof x.observed_value==='string' && x.observed_value.trim() &&
+      x.checked_on===e.checked_on);
+    if(!receipt) issues.push('missing claim-specific evidence '+claim);
+   }
   }
   const age=(Date.now()-new Date((m.verified_at??'')+'T00:00:00Z'))/86400000;
   if(!Number.isFinite(age)||age<0||age>14) issues.push('stale verification');
