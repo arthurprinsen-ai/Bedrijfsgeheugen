@@ -19846,6 +19846,23 @@
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false,
           "required_auth": "AWS Bedrock authenticated GetFoundationModel/ListFoundationModels per intended account/Region"
+        },
+        "public_english_card_http_readback_20261014": {
+          "checked_on": "2026-10-14",
+          "requested_english_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+          "english_live_lookup_outcome": "Official English model-card URL redirected to https://docs.aws.amazon.com/bedrock/latest/userguide/ (generic root) during a public HTTP fetch. This is not proof that the model has been retired.",
+          "alternate_official_localized_card": "https://docs.aws.amazon.com/ru_ru/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+          "alternate_official_observed_status": "Legacy",
+          "alternate_official_date_conflict": {
+            "eol_no_sooner_than": "2026-10-31",
+            "model_eol_date": "2026-09-14"
+          },
+          "source_access_status": "PUBLIC_ENGLISH_CANONICAL_PAGE_UNAVAILABLE_AT_READBACK",
+          "account_region_readback": false,
+          "customer_entitlement_attested": false,
+          "current_operational_lifecycle_resolved": false,
+          "automatic_recommendation_eligible": false,
+          "operational_resolution_required": "AWS Bedrock authenticated GetFoundationModel/ListFoundationModels per intended region plus provider clarification."
         }
       },
       "supplier_source_conflicts": [
