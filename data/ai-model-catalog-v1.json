@@ -6512,7 +6512,10 @@
       ],
       "limitations": [
         "not a general reasoning model",
-        "usage priced by image/token metrics"
+        "usage priced by image/token metrics",
+        "Text and image tokens have different input tariffs; price must not be collapsed into a single token figure",
+        "Image-output Batch tariff USD 15 per million tokens; Standard USD 30",
+        "Account entitlement, ZDR and regional processing configuration not verified"
       ],
       "scores": {
         "reasoning": 2,
@@ -6532,7 +6535,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -6546,7 +6549,7 @@
       },
       "id": "gpt-image-2.5-sunburst",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -6558,54 +6561,19 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
-            "locator": "Body Parameters > model",
-            "observed_value": "gpt-image-2.5-sunburst",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Image models > GPT-Image-2.5 Sunburst",
-            "observed_value": "Listed as model for image generation and editing",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Image generation models > Standard > Sunburst",
-            "observed_value": "Image input USD 8 / 1M tokens, cached USD 2, output USD 30; text input USD 5 / 1M tokens; standard mode",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Image > GPT-Image-2.5 Sunburst",
-            "observed_value": "Image generation and editing",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
-            "locator": "POST /images/generations > model",
-            "observed_value": "Image generations endpoint accepts gpt-image-2.5-sunburst; account access not tested",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
@@ -6624,6 +6592,41 @@
             "checked_on": "2026-10-14",
             "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
+            "locator": "Model IDs and snapshots",
+            "observed_value": "gpt-image-2.5-sunburst (2026-09-08 snapshot)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
+            "locator": "Model heading > Default",
+            "observed_value": "Default OpenAI API model, customer entitlement not independently checked",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
+            "locator": "Pricing > Text tokens and Image tokens",
+            "observed_value": "Standard USD 5 text input, USD 1.25 cached text; USD 8 image input, USD 2 cached image, USD 30 image output per million tokens; image Batch output USD 15",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
+            "locator": "Model description; Modalities; Features",
+            "observed_value": "precision image editing and generation; text and image input, image output; low/medium/high/xhigh/max/auto quality; no audio/video/function calling/fine-tuning",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
+            "locator": "Model description, Image API and Responses image-generation tool; Endpoints",
+            "observed_value": "Images generations and edits and Responses image-generation tool documented; user-specific deployment untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -6642,7 +6645,7 @@
         }
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "MODEL_FACTS_OBSERVED_TENANT_GOVERNANCE_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -6653,7 +6656,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -6663,7 +6666,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "Official specific model card and multimodal prices checked; customer DPA, regional runtime and ZDR not attested",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -6682,7 +6685,19 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "pricing_by_modality": {
+        "currency": "USD",
+        "billing_unit": "per 1M tokens, Standard",
+        "text_input": 5,
+        "text_cached_input": 1.25,
+        "image_input": 8,
+        "image_cached_input": 2,
+        "image_output": 30,
+        "image_output_batch": 15
       }
     },
     {
@@ -6702,7 +6717,10 @@
         "high-volume creative"
       ],
       "limitations": [
-        "not for text reasoning"
+        "not for text reasoning",
+        "Text and image tokens have different input tariffs; price must not be collapsed into a single token figure",
+        "Image-output Batch tariff USD 15 per million tokens; Standard USD 30",
+        "Account entitlement, ZDR and regional processing configuration not verified"
       ],
       "scores": {
         "reasoning": 2,
@@ -6722,7 +6740,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -6736,7 +6754,7 @@
       },
       "id": "gpt-image-2.5-flare",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -6748,54 +6766,19 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
-            "locator": "Body Parameters > model",
-            "observed_value": "gpt-image-2.5-flare",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Image models > GPT-Image-2.5 Flare",
-            "observed_value": "Listed as image generation model",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Image generation models > Standard > Flare",
-            "observed_value": "Image input USD 8 / 1M tokens, cached USD 2, output USD 30; text input USD 5 / 1M tokens; standard mode",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Image > GPT-Image-2.5 Flare",
-            "observed_value": "Fast, high-quality image generation",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
-            "locator": "POST /images/generations > model",
-            "observed_value": "Image generations endpoint accepts gpt-image-2.5-flare; account access not tested",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
@@ -6814,6 +6797,41 @@
             "checked_on": "2026-10-14",
             "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
+            "locator": "Model IDs and snapshots",
+            "observed_value": "gpt-image-2.5-flare (2026-09-08 snapshot)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
+            "locator": "Model heading > Default",
+            "observed_value": "Default OpenAI API model, customer entitlement not independently checked",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
+            "locator": "Pricing > Text tokens and Image tokens",
+            "observed_value": "Standard USD 5 text input, USD 1.25 cached text; USD 8 image input, USD 2 cached image, USD 30 image output per million tokens; image Batch output USD 15",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
+            "locator": "Model description; Modalities; Features",
+            "observed_value": "fast image generation; text and image input, image output; low/medium/high/xhigh/max/auto quality; no audio/video/function calling/fine-tuning",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
+            "locator": "Model description, Image API and Responses image-generation tool; Endpoints",
+            "observed_value": "Images generations and edits and Responses image-generation tool documented; user-specific deployment untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -6832,7 +6850,7 @@
         }
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "MODEL_FACTS_OBSERVED_TENANT_GOVERNANCE_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -6843,7 +6861,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -6853,7 +6871,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "Official specific model card and multimodal prices checked; customer DPA, regional runtime and ZDR not attested",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -6872,7 +6890,19 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "pricing_by_modality": {
+        "currency": "USD",
+        "billing_unit": "per 1M tokens, Standard",
+        "text_input": 5,
+        "text_cached_input": 1.25,
+        "image_input": 8,
+        "image_cached_input": 2,
+        "image_output": 30,
+        "image_output_batch": 15
       }
     },
     {
