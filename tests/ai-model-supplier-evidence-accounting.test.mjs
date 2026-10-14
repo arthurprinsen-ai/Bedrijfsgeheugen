@@ -244,9 +244,28 @@ test('Google legacy preview Standard Paid prices are modality-scoped not blanket
    r.url==='https://ai.google.dev/gemini-api/docs/pricing' &&
    r.checked_on===evidence.checked_on && t.expected.test(r.observed_value||''));
   assert.ok(receipt,'Model-specific modal pricing source receipt required for '+t.id);
-  assert.equal(evidence.claim_scope,'partial','Published tariff cannot certify full supplier controls');
-  assert.ok(evidence.not_verified.includes('governance'));
-  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+  // A public price alone cannot certify a complete supplier claim set. When
+  // the six public claims have separately been sourced, "full" is still NOT
+  // independent approval, paid-tier entitlement, signed DPA, or tenant ZDR.
+  const modelSpecificPolicy=evidence.claim_evidence.find(r=>r.claim==='governance' &&
+   r.url==='https://ai.google.dev/gemini-api/docs/zdr' &&
+   r.checked_on===evidence.checked_on &&
+   String(r.scope??'').includes('supplier-public claim only') &&
+   String(r.observed_value??'').includes(t.id) &&
+   String(r.observed_value??'').includes('Actual tenant'));
+  if(evidence.claim_scope==='full'){
+   assert.ok(modelSpecificPolicy,'Full public supplier scope needs a model-specific governance source');
+   assert.deepEqual([...evidence.verified_claims].sort(),
+    ['model_id','status','pricing','capabilities','deployment','governance'].sort(),
+    'Full public supplier scope requires all six distinct sourced claims');
+   assert.deepEqual(evidence.not_verified,[],
+    'Full public supplier scope cannot conceal unverified supplier claims');
+  }else{
+   assert.equal(evidence.claim_scope,'partial');
+   assert.ok(evidence.not_verified.includes('governance'));
+  }
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false,
+   'Public evidence never grants automatic recommendation or tenant approval');
   assert.equal(model.supplier_audit.independent_verification_required,true);
  }
 });
