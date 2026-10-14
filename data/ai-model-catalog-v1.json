@@ -236,14 +236,24 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
         "source_check_scope": "Official per-model page checked for pricing, context, features, endpoints; governance remains unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000
     },
@@ -422,14 +432,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000
     },
@@ -622,14 +642,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -806,14 +836,24 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000
     },
@@ -1003,16 +1043,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000,
       "max_output_batch_tokens": 300000
@@ -1202,16 +1252,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000,
       "max_output_batch_tokens": 300000
@@ -1396,14 +1456,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000,
       "anthropic_api_governance_scope_20261014": {
@@ -1588,14 +1658,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -1774,14 +1854,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -1954,14 +2044,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 65536
     },
@@ -2133,14 +2233,24 @@
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 65536
     },
@@ -2315,14 +2425,24 @@
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 65536
     },
@@ -2504,14 +2624,24 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -2699,14 +2829,24 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "license_evidence": {
         "source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
@@ -2903,14 +3043,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3095,14 +3245,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3287,14 +3447,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3483,14 +3653,24 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "source_check_scope": "Official model page confirms API ID, context and token prices; governance remains unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3673,14 +3853,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3866,14 +4056,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -4047,14 +4247,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -4221,14 +4431,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/grok-4.6",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -4405,14 +4625,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
@@ -4594,14 +4824,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
@@ -4827,14 +5067,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -5042,14 +5292,24 @@
         "last_specific_source_check": "2026-10-14",
         "source_check_scope": "Official Command A page confirms 256K context, 8K output, API options and USD token price; customer governance unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 8000
     },
@@ -5091,7 +5351,9 @@
         "private deployment"
       ],
       "source": "https://docs.cohere.com/docs/models",
-      "limitations": [],
+      "limitations": [
+        "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -5120,7 +5382,6 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "capabilities",
-          "pricing",
           "model_id",
           "deployment"
         ],
@@ -5128,7 +5389,8 @@
           "status",
           "governance",
           "API per-token/per-search production pricing",
-          "actual tenant purchase/commitment"
+          "actual tenant purchase/commitment",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -5228,14 +5490,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -5285,7 +5557,9 @@
         "private deployment"
       ],
       "source": "https://cohere.com/pricing",
-      "limitations": [],
+      "limitations": [
+        "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -5313,8 +5587,7 @@
         "source_url": "https://cohere.com/pricing",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "capabilities",
-          "pricing"
+          "capabilities"
         ],
         "not_verified": [
           "model_id",
@@ -5322,7 +5595,8 @@
           "deployment",
           "governance",
           "API per-token/per-search production pricing",
-          "actual tenant purchase/commitment"
+          "actual tenant purchase/commitment",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -5417,14 +5691,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -5611,7 +5895,7 @@
         }
       },
       "supplier_audit": {
-        "assessment": "TENANT_GOVERNANCE_UNVERIFIED",
+        "assessment": "EVIDENCE_INCOMPLETE",
         "required_claims": [
           "model_id",
           "status",
@@ -5634,18 +5918,28 @@
         },
         "review_note": "Six supplier/public license facts documented, but tenant-specific runtime, contract, region and governance controls are not attested.",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "model_variant_selection_required": false,
         "model_specific_source_verified": true,
         "last_specific_source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "catalog_entry_type": "concrete_model",
       "catalog_record_type": "individual_model",
@@ -5882,7 +6176,7 @@
         }
       },
       "supplier_audit": {
-        "assessment": "TENANT_GOVERNANCE_UNVERIFIED",
+        "assessment": "EVIDENCE_INCOMPLETE",
         "required_claims": [
           "model_id",
           "status",
@@ -5905,18 +6199,28 @@
         },
         "review_note": "Concrete Qwen3-32B public model details evidenced. Qwen3-8B is a separate archived alternative, not the catalog model. Customer deployment/contract controls still unverified.",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "model_variant_selection_required": false,
         "model_specific_source_verified": true,
         "last_specific_source_url": "https://huggingface.co/Qwen/Qwen3-32B",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "alibaba_model_studio_provider_retention_policy",
@@ -6171,14 +6475,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -6351,14 +6665,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -6531,14 +6855,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -6714,14 +7048,24 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -6884,17 +7228,20 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-live-1",
         "last_specific_source_check": "2026-10-14",
-        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup"
+        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup",
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -7057,17 +7404,20 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
         "last_specific_source_check": "2026-10-14",
-        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup"
+        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup",
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -7230,17 +7580,20 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
         "last_specific_source_check": "2026-10-14",
-        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup"
+        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup",
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -7403,14 +7756,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -7574,14 +7937,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -7744,14 +8117,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -7923,14 +8306,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -8103,14 +8496,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -8283,14 +8686,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -8463,14 +8876,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -8638,12 +9061,12 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "supplier_distribution_review": {
@@ -8666,7 +9089,10 @@
           "customer_contracts_verified": false,
           "regional_runtime_verified": false,
           "zero_data_retention_enabled_verified": false
-        }
+        },
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 131072,
       "pricing_deployment_research_20261014": {
@@ -8840,12 +9266,12 @@
         "last_specific_source_check": "2026-10-14",
         "source_check_scope": "Official model page confirms 131072 context and max output, Apache 2.0 license and downloadable weights; pricing and tenant governance unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "supplier_distribution_review": {
@@ -8868,7 +9294,10 @@
           "customer_contracts_verified": false,
           "regional_runtime_verified": false,
           "zero_data_retention_enabled_verified": false
-        }
+        },
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 131072,
       "pricing_deployment_research_20261014": {
@@ -9056,14 +9485,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000
     },
@@ -9239,14 +9678,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000,
       "max_output_batch_tokens": 300000
@@ -9421,14 +9870,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000
     },
@@ -9602,14 +10061,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000
     },
@@ -9779,14 +10248,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -9961,14 +10440,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -10137,16 +10626,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 65536
     },
@@ -10317,16 +10816,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 65536
     },
@@ -10495,14 +11004,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -10671,14 +11190,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -10844,14 +11373,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -11035,14 +11574,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -11213,14 +11762,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11402,14 +11961,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11588,14 +12157,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11773,14 +12352,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_modalities": {
         "text_input": 0.5,
@@ -11960,14 +12549,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12146,14 +12745,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12333,14 +12942,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12554,14 +13173,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12763,14 +13392,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12961,14 +13600,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -13150,14 +13799,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -13337,14 +13996,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -13522,19 +14191,29 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "duplicate_model_alias": true,
         "canonical_model_id": "mistral-medium-3-5",
         "model_variant_selection_required": false,
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13736,14 +14415,24 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-4-0",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13922,14 +14611,24 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-3-25-12",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14107,14 +14806,24 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14287,14 +14996,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14478,14 +15197,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14673,15 +15402,25 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-small-25-07",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
-        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14859,15 +15598,25 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/codestral-embed-25-05",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
-        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15042,14 +15791,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15238,15 +15997,25 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/shieldstral-1-0",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
-        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15430,14 +16199,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15632,15 +16411,25 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
-        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15827,15 +16616,25 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
-        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -16032,15 +16831,25 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
-        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -16220,14 +17029,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/speech-to-text",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -16396,14 +17215,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -16572,14 +17401,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-video",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -16745,14 +17584,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -16918,14 +17767,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
     {
@@ -17103,16 +17962,26 @@
         },
         "review_note": "Exact Cohere Embed Multilingual v3 production per-token price cannot be confirmed from current official pricing page. Do not substitute Embed 4/5 price. An independently confirmed contract or vendor rate sheet is required.",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "current_price_verified": false,
-        "pricing_basis_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work"
+        "pricing_basis_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "embedding_dimensions": 1024
     },
@@ -17296,14 +18165,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -17336,7 +18215,8 @@
         "realtime voice conversations"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
       ],
       "scores": {
         "reasoning": 6,
@@ -17388,12 +18268,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment",
-          "pricing"
+          "deployment"
         ],
         "not_verified": [
           "governance",
-          "region and tier-specific current billing"
+          "region and tier-specific current billing",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -17494,14 +18374,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -17695,16 +18585,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "historical_pricing_reference": "https://aws.amazon.com/cn/campaigns/nc202501/",
-        "current_pricing_verified": false
+        "current_pricing_verified": false,
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_source_conflicts": [
         {
@@ -17917,14 +18817,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -18127,14 +19037,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -18336,14 +19256,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -18536,16 +19466,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "historical_pricing_reference": "https://aws.amazon.com/cn/campaigns/nc202501/",
-        "current_pricing_verified": false
+        "current_pricing_verified": false,
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -18737,14 +19677,24 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "aws_official_deployment_research_20261014": {
         "source": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
@@ -18787,7 +19737,8 @@
       ],
       "limitations": [
         "legacy lifecycle in listed Bedrock version; verify current image-generation successor",
-        "Official AWS model card states EOL September 30, 2026."
+        "Official AWS model card states EOL September 30, 2026.",
+        "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
       ],
       "scores": {
         "reasoning": 2,
@@ -18836,15 +19787,15 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "verified_claims": [
-          "capabilities",
-          "pricing"
+          "capabilities"
         ],
         "not_verified": [
           "model_id",
           "status",
           "deployment",
           "governance",
-          "current customer region-specific rate"
+          "current customer region-specific rate",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -18945,14 +19896,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -18989,7 +19950,8 @@
         "camera motion controls"
       ],
       "limitations": [
-        "legacy lifecycle in listed Bedrock version; verify current video-generation successor"
+        "legacy lifecycle in listed Bedrock version; verify current video-generation successor",
+        "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
       ],
       "scores": {
         "reasoning": 2,
@@ -19038,15 +20000,15 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "verified_claims": [
-          "capabilities",
-          "pricing"
+          "capabilities"
         ],
         "not_verified": [
           "model_id",
           "status",
           "deployment",
           "governance",
-          "current customer region-specific rate"
+          "current customer region-specific rate",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -19147,14 +20109,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19354,14 +20326,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19553,16 +20535,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "pricing_amount_verified": false,
-        "price_status": "PRICE_SCHEME_ONLY"
+        "price_status": "PRICE_SCHEME_ONLY",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19750,16 +20742,26 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "pricing_amount_verified": false,
-        "price_status": "PRICE_SCHEME_ONLY"
+        "price_status": "PRICE_SCHEME_ONLY",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19952,14 +20954,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -20159,14 +21171,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -20366,14 +21388,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -20574,14 +21606,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -20782,14 +21824,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -20990,14 +22042,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -21199,14 +22261,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
-          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "falcon_license_research_20261014": {
         "license_tag": "apache-2.0",
