@@ -4525,15 +4525,15 @@
           {
             "claim": "status",
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Model card > Default and Snapshots",
-            "observed_value": "Default model and alias text-embedding-3-large listed in official model card; tenant access not probed",
+            "locator": "Model heading > Default",
+            "observed_value": "Listed as Default in official OpenAI model reference",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
-            "url": "https://developers.openai.com/api/reference/resources/embeddings/methods/create",
-            "locator": "Create embeddings > HTTP POST /v1/embeddings and allowed EmbeddingModel IDs",
-            "observed_value": "POST https://api.openai.com/v1/embeddings accepts model text-embedding-3-large with authentication; tenant-specific access not tested",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+            "locator": "Endpoints > Embeddings",
+            "observed_value": "Official OpenAI API embeddings endpoint v1/embeddings; tenant-specific deployment and residency not verified",
             "checked_on": "2026-10-14"
           }
         ],
