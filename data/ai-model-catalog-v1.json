@@ -1273,7 +1273,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1282,7 +1282,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -1338,7 +1358,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1347,7 +1367,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -1402,7 +1442,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1411,7 +1451,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -1466,7 +1526,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1475,7 +1535,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -1531,7 +1611,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1540,7 +1620,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -1658,7 +1758,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1667,7 +1767,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models/ocr-4-1",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -5699,7 +5819,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -5708,7 +5828,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -5847,7 +5987,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -5856,7 +5996,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -5911,7 +6071,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -5920,7 +6080,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -5973,7 +6153,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -5982,7 +6162,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -6037,7 +6237,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -6046,7 +6246,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -6102,7 +6322,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -6111,7 +6331,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -6165,7 +6405,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -6174,7 +6414,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -6229,7 +6489,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -6238,7 +6498,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -6294,7 +6574,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -6303,7 +6583,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -6357,7 +6657,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -6366,7 +6666,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -6506,7 +6826,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -6515,7 +6835,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
