@@ -971,7 +971,7 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/inference/pricing",
+      "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -985,7 +985,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "mistral-medium-3-5",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-medium-3-5"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 1.5,
+          "output": 7.5,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "mistral-large-3",
@@ -1024,7 +1050,7 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -1038,7 +1064,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "mistral-large-2512",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-large-2512"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.5,
+          "output": 1.5,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "mistral-small-4",
@@ -1077,7 +1129,7 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
+      "source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -1091,7 +1143,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "mistral-small-2603",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-small-2603"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.15,
+          "output": 0.6,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "ministral-3-14b",
@@ -1181,7 +1259,7 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -1195,7 +1273,33 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "ministral-8b-2512",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "ministral-8b-2512"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.15,
+          "output": 0.15,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "ministral-3-3b",
@@ -4142,7 +4246,7 @@
     },
     {
       "tier": "frontier",
-      "status": "active",
+      "status": "duplicate_alias",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4191,7 +4295,18 @@
       },
       "id": "mistral-medium-3.5",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+      "selection_eligible": false,
+      "duplicate_of": "mistral-medium-3-5",
+      "provider_model_id": "mistral-medium-3-5",
+      "claim_evidence": {
+        "duplicate_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "canonical_catalog_id": "mistral-medium-3-5"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -4273,7 +4388,8 @@
         "document AI"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Superseded by OCR 4; still available for existing integrations. Prefer OCR 4 for new projects."
       ],
       "scores": {
         "reasoning": 3,
@@ -4307,7 +4423,35 @@
       },
       "id": "mistral-ocr-3",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/ocr-3-25-12",
+      "provider_model_id": "mistral-ocr-2512",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/ocr-3-25-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/ocr-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-ocr-2512"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/ocr-3-25-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": null,
+          "output": null,
+          "unit": "SPECIALIST_UNITS_NOT_TOKEN_PRICED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$2 per 1,000 pages / $3 per 1,000 annotated pages",
+      "selection_eligible": false
     },
     {
       "tier": "specialist",
@@ -4325,7 +4469,8 @@
         "voice cloning"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Open weights have CC BY-NC 4.0 licensing; verify commercial rights for self-host use."
       ],
       "scores": {
         "reasoning": 3,
@@ -4359,7 +4504,34 @@
       },
       "id": "voxtral-tts",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+      "provider_model_id": "voxtral-mini-tts-2603",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-mini-tts-2603"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": null,
+          "output": null,
+          "unit": "SPECIALIST_UNITS_NOT_TOKEN_PRICED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$16 per 1,000,000 output characters"
     },
     {
       "tier": "specialist",
@@ -4409,7 +4581,34 @@
       },
       "id": "voxtral-mini-transcribe-2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+      "provider_model_id": "voxtral-mini-2602",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-mini-2602"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": null,
+          "output": null,
+          "unit": "SPECIALIST_UNITS_NOT_TOKEN_PRICED"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$0.003 per minute of transcription"
     },
     {
       "tier": "open-weight",
@@ -4466,10 +4665,10 @@
     {
       "tier": "open-weight",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.4,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "modalities": [
         "text",
         "audio"
@@ -4514,7 +4713,33 @@
       },
       "id": "voxtral-small",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+      "provider_model_id": "voxtral-small-2507",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-small-2507"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.1,
+          "output": 0.4,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -4625,7 +4850,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "modalities": [
         "text",
         "vision"
@@ -4635,7 +4860,8 @@
         "safety"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Official page documents weights and 32k context but no managed API ID; don't route API traffic by catalog label."
       ],
       "scores": {
         "reasoning": 3,
@@ -4670,15 +4896,33 @@
       },
       "id": "shieldstral-1",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/shieldstral-1-0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/shieldstral-1-0",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "model_family": "Shieldstral 1.0",
+          "provider_model_id": "NOT_LISTED_ON_PRODUCT_PAGE"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "provider_model_id": null,
+      "selection_eligible": false
     },
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0,
+      "output_usd_m": 0,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -4721,7 +4965,33 @@
       },
       "id": "mistral-moderation-2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+      "provider_model_id": "mistral-moderation-2603",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-moderation-2603"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0,
+          "output": 0,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "open-weight",
