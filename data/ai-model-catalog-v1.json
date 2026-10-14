@@ -21567,7 +21567,7 @@
       "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
-        "inference_residency": "AWS region/deployment dependent",
+        "inference_residency": "Official AWS model card: Frankfurt eu-central-1 In-Region inference supported; Geo and Global cross-region profiles not supported. Customer account entitlement, actual selected region and storage/logging locality remain unverified.",
         "training_on_customer_data": "verify current Bedrock/Amazon model contract",
         "retention": "verify current Bedrock service terms",
         "zero_data_retention": "verify current service configuration",
@@ -21652,6 +21652,15 @@
             "locator": "Model Details > Model lifecycle; Programmatic Access",
             "observed_value": "Active Amazon Bedrock model; 8192 input tokens, configurable 1024/512/256 output dimensions; model ID amazon.titan-embed-text-v2:0",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+            "locator": "Programmatic Access > Model ID and Geo/Global inference IDs; Regional Availability > Frankfurt eu-central-1 In-Region/Geo/Global",
+            "observed_value": "Official AWS amazon-titan-text-embeddings-v2 uses API model amazon.titan-embed-text-v2:0. Frankfurt eu-central-1 has In-Region inference supported, Geo and Global inference not supported; there is no cross-region inference ID. EU In-Region support is supplier-public only; customer account rights, configured region, processing logs, downstream vector store and storage residency have not been authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API ID and EU In-Region model support; not account permission or customer data controls",
+            "verification_status": "OFFICIAL_AWS_MODEL_REGION_PUBLIC_SCOPE_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -21732,7 +21741,28 @@
         "last_specific_source_check": "2026-10-14",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "aws_eu_regional_availability_review_20261014": {
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+          "checked_on": "2026-10-14",
+          "model_id": "amazon.titan-embed-text-v2:0",
+          "frankfurt_in_region_supported": true,
+          "frankfurt_geo_supported": false,
+          "frankfurt_global_supported": false,
+          "other_published_eu_in_region": [
+            "eu-central-1",
+            "eu-central-2",
+            "eu-north-1",
+            "eu-south-1",
+            "eu-south-2",
+            "eu-west-1",
+            "eu-west-2",
+            "eu-west-3"
+          ],
+          "customer_account_entitlement_verified": false,
+          "tenant_region_config_verified": false,
+          "storage_residency_verified": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -22038,7 +22068,7 @@
       "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
-        "inference_residency": "AWS region/deployment dependent",
+        "inference_residency": "Official AWS model card: Frankfurt eu-central-1 In-Region inference supported; Geo and Global cross-region profiles not supported. Customer account entitlement, actual selected region and storage/logging locality remain unverified.",
         "training_on_customer_data": "verify current Bedrock/Amazon model contract",
         "retention": "verify current Bedrock service terms",
         "zero_data_retention": "verify current service configuration",
@@ -22122,6 +22152,15 @@
             "locator": "Model Details > Model lifecycle; Programmatic Access",
             "observed_value": "Active AWS model card with bedrock-runtime model ID amazon.titan-embed-image-v1; separate docs list text and image embeddings with 256/384/1024 dimensions",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+            "locator": "Programmatic Access > Model ID and Geo/Global inference IDs; Regional Availability > Frankfurt eu-central-1 In-Region/Geo/Global",
+            "observed_value": "Official AWS amazon-titan-multimodal-embeddings-g1 uses API model amazon.titan-embed-image-v1. Frankfurt eu-central-1 has In-Region inference supported, Geo and Global inference not supported; there is no cross-region inference ID. EU In-Region support is supplier-public only; customer account rights, configured region, processing logs, downstream vector store and storage residency have not been authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API ID and EU In-Region model support; not account permission or customer data controls",
+            "verification_status": "OFFICIAL_AWS_MODEL_REGION_PUBLIC_SCOPE_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -22198,7 +22237,22 @@
         "last_specific_source_check": "2026-10-14",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "aws_eu_regional_availability_review_20261014": {
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+          "checked_on": "2026-10-14",
+          "model_id": "amazon.titan-embed-image-v1",
+          "frankfurt_in_region_supported": true,
+          "frankfurt_geo_supported": false,
+          "frankfurt_global_supported": false,
+          "other_published_eu_in_region": [
+            "eu-central-1",
+            "eu-west-1"
+          ],
+          "customer_account_entitlement_verified": false,
+          "tenant_region_config_verified": false,
+          "storage_residency_verified": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
