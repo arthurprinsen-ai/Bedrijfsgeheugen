@@ -63,7 +63,7 @@ async function worker(){
       const bytes=Buffer.byteLength(body,'utf8');
       const readable=response.ok&&bytes<=maxSourceBytes;
       const mentions=readable?Object.fromEntries(matching.map(m=>[
-        m.id,exactModelToken(body,m.provider_model_id||m.id)
+        m.id,m.record_kind==='model_family'?null:exactModelToken(body,m.provider_model_id||m.id)
       ])):{};
       verdict.set(url,{state:!response.ok?'SOURCE_HTTP_ERROR':!readable?
         'SOURCE_TOO_LARGE_FOR_PROBE':'SOURCE_REACHABLE_NOT_CLAIM_VERIFIED',
@@ -78,12 +78,13 @@ async function worker(){
 }
 await Promise.all(Array.from({length:concurrency},()=>worker()));
 const receipts=catalog.models.map(m=>({
-  model_id:m.id,provider_model_id:m.provider_model_id||null,
+  model_id:m.id,record_kind:m.record_kind||'model',provider_model_id:m.provider_model_id||null,
   checked_identifier:m.provider_model_id||m.id,
   provider:m.provider,source:m.source,source_probe:verdict.get(m.source),
   last_claim_verification:m.verified_at,
   model_id_mentioned_in_document:verdict.get(m.source)?.model_id_mentions?.[m.id]===true,
   provider_doc_identity_mention_only:true,
+  identity_check_applicable:m.record_kind!=='model_family',
   claims_verified_by_this_probe:false,
   contract_dpa_verified:false,
   customer_runtime_residency_verified:false,
@@ -94,6 +95,7 @@ const audit={
   checked_models:receipts.length,unique_sources:unique.length,
   source_reachable:receipts.filter(x=>x.source_probe?.state==='SOURCE_REACHABLE_NOT_CLAIM_VERIFIED').length,
   identity_mentions:receipts.filter(x=>x.model_id_mentioned_in_document).length,
+  non_deployable_family_records:receipts.filter(x=>!x.identity_check_applicable).length,
   claim_verifications_added:0,
   note:'Reachability does not establish model availability, provider terms, residency, retention, pricing or customer contracts.',
   receipts
@@ -103,4 +105,5 @@ await fs.writeFile(outPath,JSON.stringify(audit,null,2)+'\n');
 process.stdout.write(JSON.stringify({output:outPath,checked_models:audit.checked_models,
   unique_sources:audit.unique_sources,source_reachable:audit.source_reachable,
   identity_mentions:audit.identity_mentions,
+  non_deployable_family_records:audit.non_deployable_family_records,
   claim_verifications_added:0})+'\n');
