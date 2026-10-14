@@ -504,3 +504,10 @@ Independent public-source readback of [Cohere Command A+](https://docs.cohere.co
 | `rerank-4-pro` | Medium USD 5.00/hour | Large USD 10.00/hour | Model Vault price, not API reranking per-search price |
 
 On 2026-10-14 these were written and read back from `public.ai_model_supplier_verification_v1` as **additional scoped public supplier evidence** under `cohere_command_plus_deployment_tariff_scope_20261014` and `cohere_vault_instance_rate_evidence_20261014`. None attests customer billing, a signed contract, deployment access, residence, or supplier full independent acceptance; all three remain `PARTIAL`, with automatic recommendations blocked. Do not fill catalog `input_usd_m`/`output_usd_m` from these hourly costs or infer a zero contractual price from free rate-limited usage.
+
+
+## Gemini 3.5 Live Translate scoped capability receipt — 2026-10-14
+
+Google's [exact model page](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview), [Live translation guide](https://ai.google.dev/gemini-api/docs/live-api/live-translate), and [model deprecations reference](https://ai.google.dev/gemini-api/docs/deprecations/) jointly document `gemini-3.5-live-translate-preview` as **Preview** with no announced shutdown date, audio speech input and translated audio/transcript output, 131,072 input tokens and 65,536 output tokens. It uses Gemini Live API; batch API, function calling and structured outputs are not supported for this model.
+
+A separate source-scoped receipt was stored and read back at `public.ai_model_supplier_verification_v1` / `gemini-3.5-live-translate-preview` / `catalog_record.google_live_translate_contract_20261014`. It does not attest a customer-specific price, geographic residency, account access or legal agreement. The model remains `PARTIAL` and ineligible for automatic recommendation until independent supplier/tenant checks are actually complete.
