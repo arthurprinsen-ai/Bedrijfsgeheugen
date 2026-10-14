@@ -376,6 +376,9 @@ function fullSupplierEvidence(m){
  return required.every(claim=>e.verified_claims.includes(claim)&&e.claim_evidence.some(r=>r.claim===claim&&r.checked_on===e.checked_on&&typeof r.url==='string'&&r.url.startsWith('https://')&&typeof r.locator==='string'&&r.locator.trim()&&typeof r.observed_value==='string'&&r.observed_value.trim()));
 }
 function eligible(m){
+ // Public model and provider claims cannot attest customer-specific enabled controls.
+ // A private, authenticated tenant acceptance API is required before any restricted recommendation.
+ if($('euOnly').checked||$('zdr').checked||$('customerControl').checked)return false;
  if(!fullSupplierEvidence(m))return false;
  if($('euOnly').checked&&m.eu_processing!==true)return false;
  if($('selfHost').checked&&!m.self_host)return false;
@@ -393,7 +396,7 @@ function advise(){
  const allRanked=catalog.models.filter(eligible).map(m=>({...m,_score:scoreModel(m,text,priority),_cost:monthlyCost(m)})).sort((a,b)=>b._score-a._score);
  const ranked=allRanked.slice(0,3);
  const holder=$('recommendations');
- if(!ranked.length){holder.innerHTML='<div class="rec"><h3>Geen model voldoet aan alle harde filters.</h3><p class="why">Er is momenteel geen volledig geverifieerd model beschikbaar voor automatisch advies. Het modelregister blijft ter oriëntatie beschikbaar; raadpleeg de officiële leverancier en toets deployment- en governancevoorwaarden voordat je een keuze maakt.</p></div>';$('route').innerHTML='<h3>Fail-closed</h3><p>De advisor gaat geen residency- of governance-eigenschap verzinnen om toch een uitkomst te tonen.</p>';$('result').classList.add('on');return;}
+ if(!ranked.length){holder.innerHTML='<div class="rec"><h3>Geen model voldoet aan alle harde filters.</h3><p class="why">Er is geen model met alle vereiste bewijzen beschikbaar. EU-residentie, ZDR of klantbeheer vereisen bovendien een afzonderlijke geauthenticeerde klantacceptatie; publieke leveranciersgegevens zijn hiervoor onvoldoende. Gebruik het register ter oriëntatie, niet als productieautorisatie.</p></div>';$('route').innerHTML='<h3>Fail-closed</h3><p>De advisor gaat geen residency- of governance-eigenschap verzinnen om toch een uitkomst te tonen.</p>';$('result').classList.add('on');return;}
  holder.innerHTML=ranked.map((m,i)=>`<article class="rec"><div class="recHead"><span class="rank">${i+1}</span><div><h3>${m.id}</h3><div class="provider">${m.provider} · ${m.tier} · ${m.status}</div></div></div><div class="badges">${governanceBadges(m)}</div><p class="why">${why(m,text)}</p>${governancePathHtml(m)}<div class="money">${m._cost==null?(m.unit_price||'Prijsstructuur niet token-based'):`${money(m._cost)} / maand indicatief`}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">Officiële bron ↗</a></div></article>`).join('');
  const top=ranked[0];
  const qualityFloor=Math.max(1,top._score*.68);
