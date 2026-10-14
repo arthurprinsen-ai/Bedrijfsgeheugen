@@ -323,3 +323,25 @@ Eight official Google model-specific documentation pages were checked for API ID
 | `gemini-3.5-transcribe` | https://ai.google.dev/gemini-api/docs/models/gemini-3.5-transcribe | Dedicated transcription model; audio-input semantics and available endpoints from model page |
 
 No commercial contract, actual billed image/audio usage, account model activation, tenant storage region or ZDR enabled status was inspected. These are eight public-source reviews with `release_eligible=false`; independently reviewed supplier claims and protected production release are separate gates.
+
+
+## Twelve OpenAI exact model-owner documentation reviews (2026-10-14)
+
+Exact model-specific OpenAI developer pages were inspected for supplier-listed model ID, features and intended API endpoint. Price basis differs across text, live audio, transcription, translation and moderation products; do not transpose USD per-token rates to USD per audio minute or a customer-specific invoice.
+
+| Catalog ID | Official OpenAI model-specific source | Public supplier product purpose |
+| --- | --- | --- |
+| `gpt-6-astra` | https://developers.openai.com/api/docs/models/gpt-6-astra | GPT-6 Astra model, documented context and pricing; regional and fast mode options have distinct eligibility |
+| `gpt-6-luna` | https://developers.openai.com/api/docs/models/gpt-6-luna | GPT-6 Luna model listing and API routes; tenant access and contract untested |
+| `gpt-6-sol` | https://developers.openai.com/api/docs/models/gpt-6-sol | GPT-6 Sol model listing, pricing and token limits; tenant route untested |
+| `gpt-6.1-sol` | https://developers.openai.com/api/docs/models/gpt-6.1-sol | GPT-6.1 Sol newer model listing and supported Responses route |
+| `gpt-audio-1.5` | https://developers.openai.com/api/docs/models/gpt-audio-1.5 | GPT Audio 1.5 audio input/output modality, not generic text-model tariff |
+| `gpt-live-1` | https://developers.openai.com/api/docs/models/gpt-live-1 | GPT-Live 1 low-latency voice model and native live audio session |
+| `gpt-live-transcribe` | https://developers.openai.com/api/docs/models/gpt-live-transcribe | Live transcription audio-input model; availability separate from voice conversation model |
+| `gpt-realtime-2.1` | https://developers.openai.com/api/docs/models/gpt-realtime-2.1 | Realtime 2.1 audio-first streaming model with endpoint-specific modality limitations |
+| `gpt-realtime-2.1-mini` | https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini | Realtime 2.1 mini variant; streaming audio endpoint |
+| `gpt-realtime-translate` | https://developers.openai.com/api/docs/models/gpt-realtime-translate | Realtime translation model for live speech language conversion |
+| `gpt-realtime-whisper` | https://developers.openai.com/api/docs/models/gpt-realtime-whisper | Realtime Whisper model for speech transcription rather than full text dialogue |
+| `omni-moderation-latest` | https://developers.openai.com/api/docs/models/omni-moderation-latest | OpenAI omni-moderation family classification model; moderation endpoint not arbitrary text-generation API |
+
+For each, a public source page is proof of documented product identity, **not** of enabled organization entitlement, region-specific processing, signed DPA, zero retention or actual customer endpoint configuration. Any alias or public price requires exact modality, tier and usage-quantity qualification. The supplemental review records are marked `customer_verified=false`, `release_eligible=false` and do not bypass protected model claim freshness or tenant acceptance.
