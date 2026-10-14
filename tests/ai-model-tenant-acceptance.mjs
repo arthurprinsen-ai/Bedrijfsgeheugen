@@ -14,6 +14,19 @@ const isRecent=x=>{const d=new Date(x);return Number.isFinite(+d)&&d<=referenceD
 const keyPem=process.env.TENANT_ATTESTATION_VERIFY_PUBLIC_KEY_PEM;
 if (!keyPem) errors.push('VERIFICATION_PUBLIC_KEY_REQUIRED');
 const rows=input.attestations;
+// TENANT_LIVE_READBACK_REQUIRED: every requested customer/model scope needs all compulsory claims.
+const requestedScopes=Array.isArray(input.scopes)?input.scopes:[];
+if(!requestedScopes.length) errors.push('NO_EXPLICIT_CUSTOMER_MODEL_SCOPES');
+for(const [i,scope] of requestedScopes.entries()) {
+ if(!scope?.tenant_id||!scope?.provider||!scope?.model_id) { errors.push('scopes['+i+']:INVALID_SCOPE');continue; }
+ for(const claim of claims) {
+  const matches=(Array.isArray(rows)?rows:[]).filter(r=>r.tenant_id===scope.tenant_id&&r.provider===scope.provider&&r.model_id===scope.model_id&&r.claim===claim);
+  if(matches.length!==1) errors.push('scopes['+i+']:MISSING_OR_DUPLICATE_CLAIM:'+claim);
+ }
+}
+for(const [i,row] of (Array.isArray(rows)?rows:[]).entries()) {
+ if(!requestedScopes.some(scope=>scope.tenant_id===row.tenant_id&&scope.provider===row.provider&&scope.model_id===row.model_id)) errors.push('attestations['+i+']:UNREQUESTED_CUSTOMER_MODEL_SCOPE');
+}
 if (!Array.isArray(rows)||!rows.length) errors.push('NO_TENANT_ATTESTATIONS');
 for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
  const p='attestations['+index+']';
