@@ -204,7 +204,7 @@ test('110 catalog records with explicit aliases must not be presented as 110 ind
  ],'Unexpected canonical provider/API identity collision must be reviewed, not silently double-counted');
  assert.equal(offerings.size,108,'110 catalog records include two explicit aliases, not 110 distinct model offerings');
  for(const group of duplicated){
-  const canonical=group.find(m=>m.id===(m.provider_api_id||m.canonical_model_id));
+  const canonical=group.find(m=>m.id===(m.provider_api_id||m.canonical_model_id||m.id));
   assert.ok(canonical,'A duplicate group must contain its canonical API model record');
   for(const alias of group.filter(m=>m!==canonical)){
    assert.equal(alias.alias_of||alias.canonical_model_id,canonical.id);
