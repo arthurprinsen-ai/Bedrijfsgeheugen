@@ -450,3 +450,15 @@ A 72-URL retrieval check returned 71 successful fetches and one denied automated
 The attempted standalone file `data/ai-model-supplier-source-content-audit-20261014.json` was committed at `8cd1b19756b167480124c4c843809510b4534548`, but the protected hygiene/admission check correctly rejected it as an unclassified delivery path. That file was removed by commit `7e0e14428521edf8a377478c6a7ea7649cc3874a`. The original supplier-review records remain stored in Supabase; this existing delivery-scoped change document is the GitHub summary.
 
 Release conditions are unchanged: 110/110 independently reviewable and accepted model-level evidence, resolved material lifecycle/identity conflicts (including an authorized account+region AWS lifecycle readback where required), green Required and CodeQL on the exact candidate SHA, protected merge and immutable production readback. Never infer production acceptance from document reachability, populated evidence fields or a mutable database `VERIFIED` label alone.
+
+
+## AWS Nova Premier lifecycle-index omission review — 2026-10-14
+
+An independent review of official public AWS references found a material source discrepancy:
+- The current [AWS legacy model lifecycle index](https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html) does not list `amazon.nova-premier-v1:0` among its visible scheduled-EOL or completed-EOL rows. Missing from an index **is not evidence of Active availability**.
+- The [individual Nova Premier model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html) still publishes mutually inconsistent "EOL no sooner than 2026-10-31" and "Model EOL date 2026-09-14" alongside a Legacy label.
+- A source-scoped observation is written and independently read back from the **existing** Supabase row `public.ai_model_supplier_verification_v1`, `model_id=amazon-nova-premier`, under `catalog_record.aws_legacy_index_omission_review_20261014`.
+- This adds public provenance only; it does **not** resolve lifecycle status, confirm a customer account entitlement, or authorize automatic recommendations. `verification_status=CONFLICT`, `release_eligible=false` and the existing CI/freshness gates remain in effect.
+- Definitive disposition requires authorized Bedrock `GetFoundationModel`/`ListFoundationModels` `modelLifecycle` readback for the intended AWS account/region, with retained response provenance, and then an independent supplier acceptance decision.
+
+Source-scoped observations must not be copied into tenant agreements, runtime eligibility, or validated financial measurement fields.
