@@ -21182,7 +21182,20 @@
         1024,
         512,
         256
-      ]
+      ],
+      "provider_api_id": "amazon.titan-embed-text-v2:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.titan-embed-text-v2:0",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "region_entitlement_verified": false,
+        "account_lifecycle_verified": false,
+        "account_pricing_verified": false,
+        "customer_contract_verified": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "tier": "specialist",
@@ -21396,7 +21409,20 @@
         "not_a_claim_receipt": true
       },
       "auto_recommendation_eligible": false,
-      "deployment_readiness": "not_eligible_eol"
+      "deployment_readiness": "not_eligible_eol",
+      "provider_api_id": "amazon.titan-image-generator-v2:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.titan-image-generator-v2:0",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "region_entitlement_verified": false,
+        "account_lifecycle_verified": false,
+        "account_pricing_verified": false,
+        "customer_contract_verified": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "tier": "specialist",
@@ -21610,7 +21636,20 @@
         256,
         384,
         1024
-      ]
+      ],
+      "provider_api_id": "amazon.titan-embed-image-v1",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.titan-embed-image-v1",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "region_entitlement_verified": false,
+        "account_lifecycle_verified": false,
+        "account_pricing_verified": false,
+        "customer_contract_verified": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "id": "falcon-h1-0.5b-instruct",
