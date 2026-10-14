@@ -81,14 +81,15 @@
       "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
       "limitations": [
         "Above 272K input tokens, input and cache rates are doubled and output rates are multiplied by 1.5",
-        "Fine-tuning unsupported on documented model page"
+        "Fine-tuning unsupported on documented model page",
+        "Supplier regional support is conditional: Fast mode is NOT offered with EU residency. A tenant setting must be verified independently before customer-specific EU or ZDR claims."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "EU data residency supported for documented services/modes; effective customer project setting not authenticated",
+        "inference_residency": "Supplier documents EU-region inference for supported API paths. Fast mode is NOT offered with EU residency. Supplier lists US and EU regional-processing options by supported service and mode. Customer configured region not authenticated.",
+        "training_on_customer_data": "OpenAI API content excluded from model training by default except explicit customer opt-in",
+        "retention": "API abuse-monitoring logs usually up to 30 days, with documented endpoint application-state exceptions",
+        "zero_data_retention": "Eligible Chat Completions and Responses paths allow ZDR with approval, with endpoint, feature and organization caveats; not confirmed enabled for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -108,12 +109,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -122,7 +122,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -162,21 +162,11 @@
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
+            "locator": "Storage requirements and retention controls per endpoint; API Endpoint, tool and model support > gpt-6 model-specific regional notes",
+            "observed_value": "OpenAI API data are not trained on by default. Endpoint retention/ZDR rules apply to supported Responses and Chat Completions. gpt-6-astra: Fast mode is NOT offered with EU residency. Supplier lists US and EU regional-processing options by supported service and mode. EU options are conditional on service, selected mode, and actual customer configuration. No customer ZDR, DPA, processor region or credentials were inspected.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
-            "observed_value": "gpt-6-astra via /v1/responses: Abuse monitoring generally up to 30 days, response state may persist 30 days when store enabled/default; approved ZDR forces store=false. Tools/caching can have further retention. Tenant not checked.",
-            "checked_on": "2026-10-14",
-            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
-            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+            "scope": "supplier-level documented model and endpoint data controls only; not customer governance acceptance",
+            "verification_status": "MODEL_ENDPOINT_POLICY_CONFIRMED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -298,14 +288,15 @@
       "limitations": [
         "Official OpenAI model directory now lists gpt-6.1-sol; legacy gpt-6-sol availability and price are not reverified. Do not route automatically based on this entry.",
         "OpenAI model directory identifies GPT-6.1 Sol as latest Sol offering; compare legacy model compatibility against provider before selection.",
-        "Catalog status is unverified; previous active flag was not independently supported by current official model listing."
+        "Catalog status is unverified; previous active flag was not independently supported by current official model listing.",
+        "Supplier regional support is conditional: Fast mode supports EU residency. A tenant setting must be verified independently before customer-specific EU or ZDR claims."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "EU data residency supported for documented services/modes; effective customer project setting not authenticated",
+        "inference_residency": "Supplier documents EU-region inference for supported API paths. Fast mode supports EU residency. Supplier lists US and EU regional-processing options by supported service and mode. Customer configured region not authenticated.",
+        "training_on_customer_data": "OpenAI API content excluded from model training by default except explicit customer opt-in",
+        "retention": "API abuse-monitoring logs usually up to 30 days, with documented endpoint application-state exceptions",
+        "zero_data_retention": "Eligible Chat Completions and Responses paths allow ZDR with approval, with endpoint, feature and organization caveats; not confirmed enabled for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -321,12 +312,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -335,7 +325,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -375,21 +365,11 @@
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
+            "locator": "Storage requirements and retention controls per endpoint; API Endpoint, tool and model support > gpt-6 model-specific regional notes",
+            "observed_value": "OpenAI API data are not trained on by default. Endpoint retention/ZDR rules apply to supported Responses and Chat Completions. gpt-6-sol: Fast mode supports EU residency. Supplier lists US and EU regional-processing options by supported service and mode. EU options are conditional on service, selected mode, and actual customer configuration. No customer ZDR, DPA, processor region or credentials were inspected.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
-            "observed_value": "gpt-6-sol on /v1/responses: OpenAI-operated Responses API only: default abuse monitoring up to 30 days, 30-day state when stored/default, approved ZDR forces store=false; separate Bedrock processing terms require their own evidence. Legacy model availability unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
-            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+            "scope": "supplier-level documented model and endpoint data controls only; not customer governance acceptance",
+            "verification_status": "MODEL_ENDPOINT_POLICY_CONFIRMED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -491,13 +471,15 @@
         "Amazon Bedrock"
       ],
       "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
-      "limitations": [],
+      "limitations": [
+        "Supplier regional support is conditional: Fast mode supports EU residency. A tenant setting must be verified independently before customer-specific EU or ZDR claims."
+      ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "EU data residency supported for documented services/modes; effective customer project setting not authenticated",
+        "inference_residency": "Supplier documents EU-region inference for supported API paths. Fast mode supports EU residency. Supplier lists US and EU regional-processing options by supported service and mode. Customer configured region not authenticated.",
+        "training_on_customer_data": "OpenAI API content excluded from model training by default except explicit customer opt-in",
+        "retention": "API abuse-monitoring logs usually up to 30 days, with documented endpoint application-state exceptions",
+        "zero_data_retention": "Eligible Chat Completions and Responses paths allow ZDR with approval, with endpoint, feature and organization caveats; not confirmed enabled for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -517,12 +499,11 @@
           "context_k",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -531,7 +512,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -571,21 +552,11 @@
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
+            "locator": "Storage requirements and retention controls per endpoint; API Endpoint, tool and model support > gpt-6 model-specific regional notes",
+            "observed_value": "OpenAI API data are not trained on by default. Endpoint retention/ZDR rules apply to supported Responses and Chat Completions. gpt-6-luna: Fast mode supports EU residency. Supplier lists US and EU regional-processing options by supported service and mode. EU options are conditional on service, selected mode, and actual customer configuration. No customer ZDR, DPA, processor region or credentials were inspected.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
-            "observed_value": "gpt-6-luna via /v1/responses: For OpenAI-operated API only, default monitoring up to 30 days and response-state retention when stored; approved ZDR forces store=false. Bedrock policy and tenant not checked.",
-            "checked_on": "2026-10-14",
-            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
-            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+            "scope": "supplier-level documented model and endpoint data controls only; not customer governance acceptance",
+            "verification_status": "MODEL_ENDPOINT_POLICY_CONFIRMED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6337,7 +6308,8 @@
       ],
       "limitations": [
         "higher cost than Luna",
-        "EU residency availability depends on processing mode"
+        "EU residency availability depends on processing mode",
+        "Supplier regional support is conditional: Fast mode supports EU residency. A tenant setting must be verified independently before customer-specific EU or ZDR claims."
       ],
       "scores": {
         "reasoning": 10,
@@ -6359,11 +6331,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "US and EU data residency documented",
-        "inference_residency": "US/EU options documented; fast mode excludes EU residency",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "EU data residency supported for documented services/modes; effective customer project setting not authenticated",
+        "inference_residency": "Supplier documents EU-region inference for supported API paths. Fast mode supports EU residency. Only US and EU residency regions are available for this model. Customer configured region not authenticated.",
+        "training_on_customer_data": "OpenAI API content excluded from model training by default except explicit customer opt-in",
+        "retention": "API abuse-monitoring logs usually up to 30 days, with documented endpoint application-state exceptions",
+        "zero_data_retention": "Eligible Chat Completions and Responses paths allow ZDR with approval, with endpoint, feature and organization caveats; not confirmed enabled for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -6373,7 +6345,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -6382,7 +6354,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -6394,11 +6366,10 @@
           "input_usd_m",
           "output_usd_m",
           "cached_input_usd_m",
-          "context_k"
-        ],
-        "not_verified": [
+          "context_k",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -6438,21 +6409,11 @@
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
+            "locator": "Storage requirements and retention controls per endpoint; API Endpoint, tool and model support > gpt-6 model-specific regional notes",
+            "observed_value": "OpenAI API data are not trained on by default. Endpoint retention/ZDR rules apply to supported Responses and Chat Completions. gpt-6.1-sol: Fast mode supports EU residency. Only US and EU residency regions are available for this model. EU options are conditional on service, selected mode, and actual customer configuration. No customer ZDR, DPA, processor region or credentials were inspected.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
-            "observed_value": "gpt-6.1-sol via /v1/responses: Abuse monitoring generally up to 30 days, response state may persist 30 days when store enabled/default; approved ZDR forces store=false. Tools/caching can have further retention. Tenant not checked.",
-            "checked_on": "2026-10-14",
-            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
-            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+            "scope": "supplier-level documented model and endpoint data controls only; not customer governance acceptance",
+            "verification_status": "MODEL_ENDPOINT_POLICY_CONFIRMED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
