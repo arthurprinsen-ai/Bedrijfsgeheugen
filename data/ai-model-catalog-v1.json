@@ -1415,10 +1415,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -1438,7 +1436,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -9065,7 +9063,7 @@
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": false,
+        "independent_verification_required": true,
         "provider_index_review": {
           "url": "https://developers.openai.com/api/docs/models/all",
           "reviewed_on": "2026-10-14",
@@ -9269,7 +9267,7 @@
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": false,
+        "independent_verification_required": true,
         "provider_index_review": {
           "url": "https://developers.openai.com/api/docs/models/all",
           "reviewed_on": "2026-10-14",
@@ -9475,8 +9473,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -9496,7 +9496,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
