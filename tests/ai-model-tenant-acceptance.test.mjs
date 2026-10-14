@@ -78,3 +78,9 @@ test('contract vault proof is bound to the exact model identity',()=>{
  const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
  assert.match(source,/receipt\.model_id!==r\.model_id/);
 });
+
+test('contract vault receipt requires executed agreement and matching independent approver',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/receipt\.agreement_status!=='executed'/);
+ assert.match(source,/receipt\.approved_by!==r\.approved_by/);
+});
