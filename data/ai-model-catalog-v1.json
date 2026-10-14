@@ -13145,13 +13145,15 @@
           {
             "claim": "model_id",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
-            "locator": "Bedrock legacy lifecycle table: EOL September 14 2026",
+            "locator": "Models that have reached EOL > Nova Sonic",
+            "observed_value": "amazon.nova-sonic-v1:0",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
-            "locator": "Bedrock legacy lifecycle table: EOL September 14 2026",
+            "locator": "Models that have reached EOL > Nova Sonic",
+            "observed_value": "EOL on 2026-09-14 in listed regions; new invocations fail",
             "checked_on": "2026-10-14"
           }
         ],
@@ -13176,14 +13178,12 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 4,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13287,6 +13287,13 @@
             "locator": "Model Details > Description",
             "observed_value": "Generates embeddings from text, images, and video for retrieval",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-supported.html",
+            "locator": "Models that do not support Bedrock Guardrails > Amazon Nova Multimodal Embeddings",
+            "observed_value": "amazon.nova-2-multimodal-embeddings-v1:0",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -13310,12 +13317,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "pricing",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 4,
+        "missing_receipt_count": 3,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13463,7 +13469,7 @@
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "eol",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -13542,6 +13548,20 @@
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Models that have reached EOL > Nova Reel",
+            "observed_value": "amazon.nova-reel-v1:0 and amazon.nova-reel-v1:1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+            "locator": "Models that have reached EOL > Nova Reel",
+            "observed_value": "EOL on 2026-09-30 in listed regions; new invocations fail",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -13565,14 +13585,12 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 4,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13662,9 +13680,31 @@
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html",
+            "locator": "Titan Text Embeddings V2 > Model ID",
+            "observed_value": "amazon.titan-embed-text-v2:0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Active in AWS model card; tenant access not tested",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
-            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html",
+            "locator": "Titan Text Embeddings V2 > output vector and limits",
+            "observed_value": "8192 text tokens input; 1024, 512 or 256-dimensional vectors",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+            "locator": "Programmatic Access > bedrock-runtime",
+            "observed_value": "InvokeModel with amazon.titan-embed-text-v2:0, regional AWS bedrock-runtime endpoint",
             "checked_on": "2026-10-14"
           }
         ],
@@ -13689,14 +13729,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13787,9 +13823,24 @@
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-image-models.html",
+            "locator": "Titan Image Generator v2 > Model ID",
+            "observed_value": "amazon.titan-image-generator-v2:0",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
-            "locator": "AWS Titan Image Generator family card; exact endpoint and regional availability not verified",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-image-models.html",
+            "locator": "Titan Image Generator v2 overview > supported use cases",
+            "observed_value": "Image generation and editing, variations, background removal, 1408 x 1408 maximum for specified features",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+            "locator": "Programmatic Access > Model ID",
+            "observed_value": "bedrock-runtime amazon.titan-image-generator-v2:0; regional account entitlement untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -13814,14 +13865,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13916,6 +13964,13 @@
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-supported.html",
+            "locator": "Models that do not support Bedrock Guardrails > Titan Multimodal Embeddings G1",
+            "observed_value": "amazon.titan-embed-image-v1",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -13939,14 +13994,13 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 5,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
