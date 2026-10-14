@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-14",
+  "obligation_id": "ai-model-catalog-evidence-recovery-20261014",
+  "lesson": "Catalog freshness requires verified claims and source-backed evidence; HTTP response does not prove model claims.",
+  "changes": [
+    "Official OpenAI pricing correction for Astra and Luna",
+    "Legacy Sol routing warning",
+    "Audit of source reachability and stale model claims"
+  ],
+  "limitations": [
+    "Other model claims not yet vendor-verified",
+    "Do not restamp dates in bulk",
+    "No production proof before protected merge"
+  ]
+}
