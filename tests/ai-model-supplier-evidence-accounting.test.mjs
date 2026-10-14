@@ -269,3 +269,28 @@ test('self-host-only Shieldstral cannot inherit Mistral managed API governance',
  assert.doesNotMatch(JSON.stringify(model.governance),/api\.eu\.mistral\.ai|approved paid-plan organization ZDR/i);
  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
 });
+
+test('three Amazon Nova per-model card identities do not grant runtime entitlement',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const expected={
+  'amazon-nova-lite':'amazon.nova-lite-v1:0',
+  'amazon-nova-micro':'amazon.nova-micro-v1:0',
+  'amazon-nova-multimodal-embeddings':'amazon.nova-2-multimodal-embeddings-v1:0'
+ };
+ for(const [id,modelId] of Object.entries(expected)){
+  const model=catalog.models.find(m=>m.id===id);
+  assert.ok(model);
+  const r=model.supplier_audit?.official_per_model_card_readback_20261014;
+  assert.ok(r);
+  assert.equal(r.checked_on,'2026-10-14');
+  assert.equal(r.source_url,model.source);
+  assert.equal(r.observed_value,modelId);
+  assert.equal(model.provider_api_id,modelId);
+  assert.equal(model.verification_evidence.source_url,model.source);
+  assert.equal(r.customer_account_readback,false);
+  assert.equal(r.independent_six_claim_supplier_approval,false);
+  assert.equal(r.automatic_recommendation_eligible,false);
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+  assert.equal(model.verification_evidence.claim_scope,'partial');
+ }
+});
