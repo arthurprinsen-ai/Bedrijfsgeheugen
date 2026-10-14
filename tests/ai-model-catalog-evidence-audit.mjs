@@ -3,6 +3,7 @@
 // Usage: node tests/ai-model-catalog-evidence-audit.mjs [output-file]
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { classifySupplierClaim } from './ai-model-supplier-evidence-worklist.mjs';
 const catalog = JSON.parse(await fs.readFile('data/ai-model-catalog-v1.json', 'utf8'));
 const now = new Date();
 const maxAgeDays = 14;
@@ -16,12 +17,7 @@ function hasFullEvidence(m) {
   // Reachable URLs, generic marketing links and restamped dates cannot satisfy this contract.
   if (!Array.isArray(e.claim_evidence)) return false;
   for (const claim of requiredClaims) {
-    const receipt = e.claim_evidence.find(x => x.claim === claim &&
-      typeof x.url === 'string' && x.url.startsWith('https://') &&
-      typeof x.locator === 'string' && x.locator.trim().length > 0 &&
-      typeof x.observed_value === 'string' && x.observed_value.trim().length > 0 &&
-      x.checked_on === e.checked_on && !String(x.scope??'').includes('NOT model-specific') && x.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
-    if (!receipt) return false;
+    if (classifySupplierClaim(e,claim)!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED') return false;
   }
   // A supplier-verified catalog may not certify customer-specific contracts or controls.
   // Those belong to a separate opt-in customer acceptance workflow.
@@ -49,15 +45,10 @@ for (let i = 0; i < sources.length; i += 5) {
   for (const entry of results) sourceChecks.set(entry.url, entry);
 }
 function missingClaimReceipts(m) {
-  const e = m.verification_evidence;
-  return requiredClaims.filter(claim => {
-    if (e?.claim_scope !== 'full' || !e.verified_claims?.includes(claim)) return true;
-    return !e.claim_evidence?.some(r =>
-      r.claim === claim && typeof r.url === 'string' && r.url.startsWith('https://') &&
-      typeof r.locator === 'string' && r.locator.trim().length > 0 &&
-      typeof r.observed_value === 'string' && r.observed_value.trim().length > 0 &&
-      r.checked_on === e.checked_on && !String(r.scope??'').includes('NOT model-specific') && r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
-  });
+  const e=m.verification_evidence;
+  return requiredClaims.filter(claim=>e?.claim_scope!=='full'||
+    !e.verified_claims?.includes(claim)||
+    classifySupplierClaim(e,claim)!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED');
 }
 const models = catalog.models.map(m => {
   const verified = m.verified_at ? new Date(m.verified_at + 'T00:00:00Z') : null;
@@ -65,7 +56,8 @@ const models = catalog.models.map(m => {
   const stale = ageDays === null || ageDays > maxAgeDays || ageDays < 0;
   const fullyVerified=hasFullEvidence(m);
   const receipts = m.verification_evidence?.claim_evidence ?? [];
-  const missingClaims = requiredClaims.filter(claim => !receipts.some(x => x.claim === claim && typeof x.url === 'string' && x.url.startsWith('https://') && typeof x.locator === 'string' && x.locator.trim() && typeof x.observed_value === 'string' && x.observed_value.trim() && x.checked_on === m.verification_evidence?.checked_on && !String(x.scope??'').includes('NOT model-specific') && x.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'));
+  const missingClaims = requiredClaims.filter(claim =>
+    classifySupplierClaim(m.verification_evidence,claim)!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED');
   return {
     id: m.id, provider: m.provider, declared_status: m.status,
     last_claim_verification_at: m.verified_at ?? null,
