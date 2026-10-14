@@ -4028,12 +4028,14 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
-          "governance",
           "contract-specific residency",
-          "tenant entitlement"
+          "tenant entitlement",
+          "ZDR retention and training controls by account",
+          "executed customer DPA"
         ],
         "claim_evidence": [
           {
@@ -4072,6 +4074,15 @@
             "checked_on": "2026-10-14",
             "scope": "specific API model name and published availability only; NOT tenant entitlement or runtime",
             "verification_status": "MODEL_SOURCE_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+            "locator": "Requirements and Restrictions 3.2–3.4; Inputs and Outputs 4.2; Personal Data 5.5",
+            "observed_value": "DeepSeek developer API terms assign the downstream operator responsibility for lawful personal-data processing, disclosure and security. The API terms do not establish model-specific zero-data-retention, no-training guarantees, EU inference region, a signed customer DPA or authenticated retention settings.",
+            "checked_on": "2026-10-14",
+            "scope": "Official DeepSeek Open Platform developer terms only; model-specific data controls, licensing and customer runtime configuration remain unverified",
+            "verification_status": "PROVIDER_TERMS_SCOPE_ONLY_CUSTOMER_UNVERIFIED"
           }
         ]
       },
@@ -4126,6 +4137,12 @@
           "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
         },
         "evidence_accounting_date": "2026-10-14"
+      },
+      "deepseek_terms_scope_20261014": {
+        "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+        "checked_on": "2026-10-14",
+        "customer_verified": false,
+        "model_retention_verified": false
       }
     },
     {
@@ -4185,12 +4202,14 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
-          "governance",
           "contract-specific residency",
-          "tenant entitlement"
+          "tenant entitlement",
+          "ZDR retention and training controls by account",
+          "executed customer DPA"
         ],
         "claim_evidence": [
           {
@@ -4229,6 +4248,15 @@
             "checked_on": "2026-10-14",
             "scope": "specific API model name and published availability only; NOT tenant entitlement or runtime",
             "verification_status": "MODEL_SOURCE_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+            "locator": "Requirements and Restrictions 3.2–3.4; Inputs and Outputs 4.2; Personal Data 5.5",
+            "observed_value": "DeepSeek developer API terms assign the downstream operator responsibility for lawful personal-data processing, disclosure and security. The API terms do not establish model-specific zero-data-retention, no-training guarantees, EU inference region, a signed customer DPA or authenticated retention settings.",
+            "checked_on": "2026-10-14",
+            "scope": "Official DeepSeek Open Platform developer terms only; model-specific data controls, licensing and customer runtime configuration remain unverified",
+            "verification_status": "PROVIDER_TERMS_SCOPE_ONLY_CUSTOMER_UNVERIFIED"
           }
         ]
       },
@@ -4283,6 +4311,12 @@
           "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
         },
         "evidence_accounting_date": "2026-10-14"
+      },
+      "deepseek_terms_scope_20261014": {
+        "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+        "checked_on": "2026-10-14",
+        "customer_verified": false,
+        "model_retention_verified": false
       }
     },
     {
