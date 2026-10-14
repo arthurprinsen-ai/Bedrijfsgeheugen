@@ -27,3 +27,8 @@ test('tenant governance acceptance rejects unsigned unsupported self-assertions'
   assert.match(r.stdout,/VERIFICATION_PUBLIC_KEY_REQUIRED/);
  } finally {fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('signature payload includes authenticated readback evidence',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/expected_value:r\.expected_value,readback:r\.readback/);
+});
