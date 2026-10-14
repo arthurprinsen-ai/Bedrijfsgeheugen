@@ -41,11 +41,15 @@ BEGIN
      'powerhouse-runtime-isolated-freshness-contradiction-cache',
      'powerhouse-runtime-isolated-prediction-learning-audit',
      'powerhouse-runtime-extras-v4',
-     'powerhouse-operational-retry-worker'
+     'powerhouse-operational-retry-worker',
+     'powerhouse-ops-independent-slot-reconciler'
    )
  LOOP
    IF v_name='powerhouse-runtime-extras-v4' AND
       v_command NOT LIKE 'select public.powerhouse_runtime_scheduler_extras_v4(%'
+   THEN RAISE EXCEPTION 'ROLLBACK_OWNER_DRIFT:%',v_name; END IF;
+   IF v_name='powerhouse-ops-independent-slot-reconciler' AND
+      v_command NOT LIKE 'select powerhouse_ops.reconcile_missed_operational_slots_v1(%'
    THEN RAISE EXCEPTION 'ROLLBACK_OWNER_DRIFT:%',v_name; END IF;
    IF v_name='powerhouse-operational-retry-worker' AND
       v_command NOT LIKE 'select powerhouse_ops.replay_operational_failures_v1(%'
@@ -80,7 +84,8 @@ BEGIN
      'powerhouse-runtime-isolated-freshness-contradiction-cache',
      'powerhouse-runtime-isolated-prediction-learning-audit',
      'powerhouse-runtime-extras-v4',
-     'powerhouse-operational-retry-worker'
+     'powerhouse-operational-retry-worker',
+     'powerhouse-ops-independent-slot-reconciler'
    )
  LOOP
    PERFORM cron.unschedule(v_name);
