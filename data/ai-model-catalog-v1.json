@@ -18905,7 +18905,7 @@
       "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
-        "inference_residency": "AWS region/deployment dependent",
+        "inference_residency": "Official Nova 2 Lite EU Geo profile routes among EU regions (Frankfurt, Stockholm, Milan, Spain, Ireland, Paris); single In-Region inference in Frankfurt is unsupported. Account permissions, selected route and EU data storage are unverified.",
         "training_on_customer_data": "verify current Bedrock/Amazon model contract",
         "retention": "verify current Bedrock service terms",
         "zero_data_retention": "verify current service configuration",
@@ -18996,6 +18996,14 @@
             "observed_value": "EU geo inference ID eu.amazon.nova-2-lite-v1:0, with published EU destination regions Frankfurt, Stockholm, Milan, Spain, Ireland and Paris; no customer account eligibility attested.",
             "checked_on": "2026-10-14",
             "scope": "Public supplier model-specific EU route; tenant configuration unverified"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+            "locator": "Regional Availability > eu-central-1 Frankfurt In-Region/Geo/Global; Geo: EU > destination regions",
+            "observed_value": "Official Nova 2 Lite model card lists Frankfurt eu-central-1 with In-Region unavailable, Geo available, Global available; EU geo model ID eu.amazon.nova-2-lite-v1:0 may route among Frankfurt, Stockholm, Milan, Spain, Ireland and Paris. This is not in-region-only, storage residency or authenticated customer runtime proof.",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific EU inference routing only, no customer entitlement, regional runtime or storage proof"
           }
         ],
         "provider_policy_evidence": {
@@ -19080,6 +19088,25 @@
           "independent_six_claim_supplier_approval": false,
           "customer_runtime_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "aws_eu_regional_availability_review_20261014": {
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+          "checked_on": "2026-10-14",
+          "model_id": "amazon.nova-2-lite-v1:0",
+          "geo_eu_profile": "eu.amazon.nova-2-lite-v1:0",
+          "frankfurt_in_region_supported": false,
+          "frankfurt_geo_supported": true,
+          "eu_geo_destinations": [
+            "eu-central-1",
+            "eu-north-1",
+            "eu-south-1",
+            "eu-south-2",
+            "eu-west-1",
+            "eu-west-3"
+          ],
+          "customer_account_entitlement_verified": false,
+          "tenant_region_config_verified": false,
+          "storage_residency_verified": false
         }
       },
       "supplier_pricing_research": {
