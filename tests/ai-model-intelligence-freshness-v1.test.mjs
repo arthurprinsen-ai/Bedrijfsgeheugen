@@ -165,3 +165,40 @@ test('publisher families are not mistaken for deployable model IDs; Falcon has a
  assert.equal(falcon.provider_model_id,'tiiuae/Falcon-H1R-7B');
  assert.equal(falcon.claim_evidence.license.value.startsWith('Falcon-LLM License'),true);
 });
+
+
+test('supplier identity receipts are internally consistent, source-aligned and do not certify missing claims',async()=>{
+ const {createHash}=await import('node:crypto');
+ const raw=fs.readFileSync('data/ai-model-catalog-v1.json');
+ const c=JSON.parse(raw.toString('utf8'));
+ const evidence=JSON.parse(fs.readFileSync('data/evidence/ai-model-official-sources-2026-10-14.json','utf8'));
+ const catalogBlobSha=createHash('sha1').update('blob '+raw.byteLength+'\\0').update(raw).digest('hex');
+ assert.equal(evidence.audited_catalog_blob_sha,catalogBlobSha,
+   'Evidence must be regenerated whenever the catalog changes');
+ assert.equal(evidence.models_checked,c.models.length);
+ assert.equal(evidence.receipts.length,c.models.length);
+ const models=new Map(c.models.map(m=>[m.id,m]));
+ assert.equal(models.size,c.models.length);
+ for(const receipt of evidence.receipts){
+   const m=models.get(receipt.model_id);
+   assert.ok(m,'Unknown model receipt: '+receipt.model_id);
+   assert.equal(receipt.source_url,m.source,receipt.model_id);
+   assert.equal(receipt.full_model_verification_granted,false,receipt.model_id);
+   assert.equal(receipt.customer_dpa_verified,false,receipt.model_id);
+   assert.equal(receipt.customer_runtime_residency_verified,false,receipt.model_id);
+ }
+ const idMentions=evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_MODEL_ID_MENTION').length;
+ const idMissing=evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_NO_EXACT_MODEL_ID').length;
+ assert.equal(idMentions,evidence.model_id_mentions);
+ assert.equal(idMissing,evidence.model_id_not_explicit);
+ assert.equal(idMentions+idMissing,c.models.length);
+ const sources=new Set(c.models.map(m=>m.source));
+ assert.equal(evidence.source_urls_checked,sources.size);
+ assert.equal(evidence.source_urls_retrieved,sources.size-evidence.unavailable_sources);
+ assert.equal(evidence.total_unique_source_documents_checked,Object.keys(evidence.source_checks).length);
+ assert.equal(evidence.supplemental_source_urls_checked,
+   Object.keys(evidence.source_checks).filter(url=>!sources.has(url)).length);
+ assert.equal(evidence.unavailable_sources,
+   Object.values(evidence.source_checks).filter(x=>x.state!=='FETCHED').length);
+ assert.equal(evidence.whole_model_verifications_added,0);
+});
