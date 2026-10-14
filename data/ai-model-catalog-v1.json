@@ -222,12 +222,12 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
         "source_check_scope": "Official per-model page checked for pricing, context, features, endpoints; governance remains unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -394,12 +394,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -580,12 +580,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -750,12 +750,12 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -940,12 +940,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -1125,12 +1125,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -1310,12 +1310,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -1495,12 +1495,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -1674,12 +1674,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -1847,12 +1847,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -2019,12 +2019,12 @@
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -2194,12 +2194,12 @@
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -2368,12 +2368,12 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -2547,12 +2547,12 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -2735,12 +2735,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -2911,12 +2911,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -3087,12 +3087,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -3267,12 +3267,12 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "source_check_scope": "Official model page confirms API ID, context and token prices; governance remains unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -3441,12 +3441,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -3618,12 +3618,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -3793,12 +3793,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -3961,12 +3961,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/grok-4.6",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -4139,12 +4139,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -4322,12 +4322,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -4547,12 +4547,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -4756,12 +4756,12 @@
         "last_specific_source_check": "2026-10-14",
         "source_check_scope": "Official Command A page confirms 256K context, 8K output, API options and USD token price; customer governance unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -4935,12 +4935,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -5117,12 +5117,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -5268,12 +5268,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "status": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "deployment": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+          "model_id": "MISSING_OR_INCOMPLETE",
+          "status": "MISSING_OR_INCOMPLETE",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MISSING_OR_INCOMPLETE",
+          "deployment": "MISSING_OR_INCOMPLETE",
+          "governance": "MISSING_OR_INCOMPLETE"
         },
         "evidence_accounting_date": "2026-10-14",
         "model_variant_selection_required": true
@@ -5429,12 +5429,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "status": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "deployment": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+          "model_id": "MISSING_OR_INCOMPLETE",
+          "status": "MISSING_OR_INCOMPLETE",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MISSING_OR_INCOMPLETE",
+          "deployment": "MISSING_OR_INCOMPLETE",
+          "governance": "MISSING_OR_INCOMPLETE"
         },
         "evidence_accounting_date": "2026-10-14",
         "model_variant_selection_required": true
@@ -5632,12 +5632,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -5799,12 +5799,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -5966,12 +5966,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6136,12 +6136,12 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6303,12 +6303,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6470,12 +6470,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6637,12 +6637,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6801,12 +6801,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6966,12 +6966,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7130,12 +7130,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7296,12 +7296,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7462,12 +7462,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7628,12 +7628,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7795,12 +7795,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7964,12 +7964,12 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -8139,12 +8139,12 @@
         "last_specific_source_check": "2026-10-14",
         "source_check_scope": "Official model page confirms 131072 context and max output, Apache 2.0 license and downloadable weights; pricing and tenant governance unverified",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -8321,12 +8321,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -8496,12 +8496,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -8670,12 +8670,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -8844,12 +8844,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -9014,12 +9014,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -9190,12 +9190,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -9358,12 +9358,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -9527,12 +9527,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -9696,12 +9696,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -9866,12 +9866,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -10033,12 +10033,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -10217,12 +10217,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -10389,12 +10389,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -10572,12 +10572,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -10752,12 +10752,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -10931,12 +10931,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -11112,12 +11112,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -11292,12 +11292,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -11473,12 +11473,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -11688,12 +11688,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -11891,12 +11891,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -12083,12 +12083,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -12266,12 +12266,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -12447,12 +12447,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -12625,12 +12625,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -12811,12 +12811,12 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-4-0",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -12991,12 +12991,12 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-3-25-12",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -13170,12 +13170,12 @@
         "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -13344,12 +13344,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -13520,12 +13520,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -13700,12 +13700,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-small-25-07",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -13877,12 +13877,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/codestral-embed-25-05",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -14053,12 +14053,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -14236,12 +14236,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/shieldstral-1-0",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -14421,12 +14421,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -14608,12 +14608,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -14787,12 +14787,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -14973,12 +14973,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -15151,12 +15151,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/speech-to-text",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -15321,12 +15321,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -15491,12 +15491,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-video",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -15658,12 +15658,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -15825,12 +15825,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -15993,12 +15993,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -16176,12 +16176,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -16358,12 +16358,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -16537,12 +16537,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -16735,10 +16735,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16751,12 +16750,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -16937,10 +16936,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16955,12 +16953,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -17140,10 +17138,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17158,12 +17155,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -17343,12 +17340,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -17525,12 +17522,12 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -17709,12 +17706,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -17888,12 +17885,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -18081,12 +18078,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -18266,12 +18263,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -18446,12 +18443,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_POLICY_ONLY"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -18641,12 +18638,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -18843,12 +18840,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -19045,12 +19042,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -19248,12 +19245,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -19451,12 +19448,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -19654,12 +19651,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -19856,12 +19853,12 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "claim_evidence_classification": {
-          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
