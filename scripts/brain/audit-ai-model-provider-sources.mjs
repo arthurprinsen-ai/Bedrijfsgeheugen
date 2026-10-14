@@ -15,8 +15,8 @@ const providers=Object.freeze({
   xAI:['docs.x.ai','x.ai'],
   DeepSeek:['api-docs.deepseek.com','deepseek.com'],
   Cohere:['docs.cohere.com','cohere.com'],
-  Meta:['llama.com','www.llama.com','ai.meta.com'],
-  'Alibaba/Qwen':['qwenlm.github.io','qwen.ai','www.qwen.ai'],
+  Meta:['llama.com','www.llama.com','ai.meta.com','huggingface.co'],
+  'Alibaba/Qwen':['qwenlm.github.io','qwen.ai','www.qwen.ai','huggingface.co'],
   Amazon:['docs.aws.amazon.com','aws.amazon.com'],
   'TII/Falcon':['huggingface.co','www.huggingface.co']
 });
@@ -43,7 +43,17 @@ async function worker(){
   while(cursor<unique.length){
     const url=unique[cursor++];
     const matching=catalog.models.filter(m=>m.source===url);
-    const allowed=matching.every(m=>providers[m.provider]?.includes(new URL(url).hostname));
+    // Hugging Face is a shared hosting domain. Trust only model cards hosted
+    // under the official publisher account, never an arbitrary uploader.
+    const allowed=matching.every(m=>{
+      const parsed=new URL(url);
+      if(!providers[m.provider]?.includes(parsed.hostname))return false;
+      if(parsed.hostname==='huggingface.co'){
+        const paths={'Meta':'/meta-llama/','Alibaba/Qwen':'/Qwen/','TII/Falcon':'/tiiuae/'};
+        return Boolean(paths[m.provider]&&parsed.pathname.startsWith(paths[m.provider]));
+      }
+      return true;
+    });
     if(!allowed){verdict.set(url,{state:'UNTRUSTED_SOURCE_DOMAIN',http_status:null});continue;}
     try{
       const response=await fetch(url,{method:'GET',redirect:'follow',signal:AbortSignal.timeout(9000),
