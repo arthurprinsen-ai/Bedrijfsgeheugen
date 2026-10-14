@@ -130,6 +130,10 @@ test('independent Netlify watch persists outage evidence and never replays provi
   assert.match(outsideWatch,/process\.env\.CONTEXT!=='production'/);
   assert.match(outsideWatch,/store\.setJSON\(key/);
   assert.match(outsideWatch,/REST_READBACK_RECOVERED/);
+  assert.match(outsideWatch,/previous\?\.state==='OUTAGE_OBSERVED'/);
+  assert.match(outsideWatch,/CONFIGURATION_ERROR/);
+  assert.match(outsideWatch,/state\/latest/);
+  assert.doesNotMatch(outsideWatch,/store\.list\(/);
   assert.match(outsideWatch,/db_cron_execution_proven:false/);
   assert.match(outsideWatch,/provider_delivery_verified:false/);
   assert.doesNotMatch(outsideWatch,/\/(?:functions\/v1|rpc\/)\w*dispatch|send_email|send_dm|publish_post/);
