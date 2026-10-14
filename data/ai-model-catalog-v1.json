@@ -16722,6 +16722,17 @@
         "customer_verified": false,
         "supplier_full_verification": false,
         "automatic_recommendation_eligible": false
+      },
+      "model_origin_provenance": {
+        "developer": "Z.ai",
+        "api_serving_provider": "Mistral AI",
+        "provider_field_meaning": "Mistral is the serving API and contractual vendor for this catalog deployment, not the developer of the GLM model weights",
+        "weight_origin": "Third-party open weight model supplied by Z.ai; Mistral docs explicitly state the model is served without modification",
+        "official_source": "https://docs.mistral.ai/models/zai-glm-5-3",
+        "reviewed_on": "2026-10-14",
+        "customer_runtime_authenticated": false,
+        "customer_contract_verified": false,
+        "independent_supplier_claims_full": false
       }
     },
     {
@@ -16951,6 +16962,17 @@
         "customer_verified": false,
         "supplier_full_verification": false,
         "automatic_recommendation_eligible": false
+      },
+      "model_origin_provenance": {
+        "developer": "Z.ai",
+        "api_serving_provider": "Mistral AI",
+        "provider_field_meaning": "Mistral is the serving API and contractual vendor for this catalog deployment, not the developer of the GLM model weights",
+        "weight_origin": "Third-party open weight model supplied by Z.ai; Mistral docs explicitly state the model is served without modification",
+        "official_source": "https://docs.mistral.ai/models/zai-glm-5-2",
+        "reviewed_on": "2026-10-14",
+        "customer_runtime_authenticated": false,
+        "customer_contract_verified": false,
+        "independent_supplier_claims_full": false
       }
     },
     {
