@@ -138,3 +138,19 @@ test('independent Netlify watch persists outage evidence and never replays provi
   assert.match(outsideWatch,/provider_delivery_verified:false/);
   assert.doesNotMatch(outsideWatch,/\/(?:functions\/v1|rpc\/)\w*dispatch|send_email|send_dm|publish_post/);
 });
+
+const outageReplay=readFileSync('supabase/migrations/20261014154000_runtime_outage_cursor_replay.sql','utf8');
+test('outage recovery advances only a committed bounded cursor after producer verification',()=>{
+  assert.match(outageReplay,/runtime_recovery_cursor/);
+  assert.match(outageReplay,/FOR UPDATE/);
+  assert.match(outageReplay,/interval '29 minutes'/);
+  assert.match(outageReplay,/CHECKPOINT_COMMITTED/);
+  assert.match(outageReplay,/PRODUCER_SCHEDULE_MISSING/);
+  assert.match(outageReplay,/checkpoint_advanced',false/);
+  assert.match(outageReplay,/ON CONFLICT\(task_name,slot_at\) DO NOTHING/);
+  assert.match(outageReplay,/cron\.schedule\('powerhouse-ops-independent-slot-reconciler'/);
+  assert.doesNotMatch(outageReplay,/send_email|send_dm|publish_post|composio/i);
+});
+test('rollback recognizes upgraded cursor reconciler',()=>{
+  assert.match(rollback,/reconcile_missed_operational_slots_cursor_v1/);
+});
