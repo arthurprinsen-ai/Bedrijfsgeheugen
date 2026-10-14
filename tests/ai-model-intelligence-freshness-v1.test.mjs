@@ -1,7 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { customerClaimStatus, customerClaimRequirements } from './ai-model-customer-governance-evidence.mjs';
 
 test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
@@ -22,12 +21,11 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
    if(e.claim_scope!=='full') issues.push('partial verification');
    if((e.not_verified??[]).length) issues.push('unverified claims');
    if(e.checked_on!==m.verified_at) issues.push('evidence date differs');
-   // Generic provider terms never prove tenant-specific contractual or enabled controls.
-   for(const claim of ['dpa',...Object.keys(customerClaimRequirements)]){
-    if(!e.verified_claims?.includes(claim))continue;
-    if(claim==='dpa'||customerClaimStatus({tenantId:e.customer_tenant_id,provider:m.provider,modelId:m.id,claim,receipts:e.tenant_evidence||[]}).status!=='VERIFIED')
-      issues.push('missing approved customer-specific evidence '+claim);
-   }
+   // Supplier facts may not declare tenant-specific agreements or enabled controls as verified.
+   // Customer acceptance is a separate, opt-in workflow, not a catalog release dependency.
+   const tenantOnly=['dpa','signed_dpa','contract','tenant_data_residency','tenant_zdr','customer_cmk','private_networking_enabled'];
+   for(const claim of tenantOnly) if(e.verified_claims?.includes(claim))
+     issues.push('tenant-specific claim incorrectly presented as supplier verified '+claim);
    for(const claim of required) {
     if(!e.verified_claims?.includes(claim)) issues.push('unverified '+claim);
     const receipt=e.claim_evidence?.find(x=>x.claim===claim &&
