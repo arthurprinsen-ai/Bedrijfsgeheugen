@@ -4523,7 +4523,31 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_model_source_crosscheck_20261014": {
+          "checked_on": "2026-10-14",
+          "classification": "INDEPENDENT_MODEL_SPECIFIC_OFFICIAL_PUBLIC_SOURCE_CROSSCHECK",
+          "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "locator": "Model Details, PRICING rows, note (1), note (2)",
+          "model_name": "deepseek-flash",
+          "underlying_version": "DeepSeek-V4.1-Flash",
+          "peak_usd_per_1m": {
+            "cache_miss_input": 0.3,
+            "cache_hit_input": 0.006,
+            "output": 1.2
+          },
+          "offpeak_usd_per_1m": {
+            "cache_miss_input": 0.15,
+            "cache_hit_input": 0.003,
+            "output": 0.6
+          },
+          "offpeak_definition": "Outside 01:00-04:00 and 06:00-10:00 UTC Monday-Friday except Chinese public holidays",
+          "vision": true,
+          "customer_api_access_verified": false,
+          "customer_governance_verified": false,
+          "independent_six_claim_acceptance": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
@@ -4722,7 +4746,31 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_model_source_crosscheck_20261014": {
+          "checked_on": "2026-10-14",
+          "classification": "INDEPENDENT_MODEL_SPECIFIC_OFFICIAL_PUBLIC_SOURCE_CROSSCHECK",
+          "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "locator": "Model Details, PRICING rows, note (2)",
+          "model_name": "deepseek-v4-pro",
+          "underlying_version": "DeepSeek-V4-Pro-0813",
+          "peak_usd_per_1m": {
+            "cache_miss_input": 1.32,
+            "cache_hit_input": 0.044,
+            "output": 3.96
+          },
+          "offpeak_usd_per_1m": {
+            "cache_miss_input": 0.66,
+            "cache_hit_input": 0.022,
+            "output": 1.98
+          },
+          "offpeak_definition": "Outside 01:00-04:00 and 06:00-10:00 UTC Monday-Friday except Chinese public holidays",
+          "vision": false,
+          "customer_api_access_verified": false,
+          "customer_governance_verified": false,
+          "independent_six_claim_acceptance": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
