@@ -309,3 +309,13 @@ test('Mistral canonical API IDs and negative Labs governance remain non-recommen
  assert.ok(labs.verification_evidence.claim_evidence.some(r=>r.claim==='governance'&&r.verification_status==='MODEL_LABS_EXCLUSION_OFFICIAL_POLICY_VERIFIED_TENANT_UNVERIFIED'));
  assert.equal(labs.supplier_audit.automatic_recommendation_eligible,false);
 });
+
+test('modelwijzer shows catalog source-registration date without implying supplier acceptance',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/id="catalogEvidenceDate"/);
+ assert.match(html,/niet alle claims geverifieerd/);
+ assert.doesNotMatch(html,/Laatst gecontroleerd: <b>30 september 2026<\/b>/);
+ assert.match(html,/m\.verification_evidence\?\.checked_on/);
+ assert.match(html,/dates\.sort\(\)\.at\(-1\)/);
+ assert.match(html,/timeZone:'UTC'/);
+});
