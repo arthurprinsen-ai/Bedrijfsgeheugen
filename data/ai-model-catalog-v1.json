@@ -1734,10 +1734,10 @@
           "model_id",
           "status",
           "capabilities",
-          "pricing"
+          "pricing",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -1768,6 +1768,13 @@
             "locator": "Gemini 2.5 Flash-Lite > Standard > Paid Tier per 1M tokens",
             "observed_value": "USD 0.10 input (text/image/video), USD 0.30 audio input, USD 0.40 output, USD 0.01 cached text/image/video input; batch rates differ",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
+            "locator": "Versions > Stable; Consumption options; access note",
+            "observed_value": "Google Gemini API stable model gemini-2.5-flash-lite; Batch API, Flex inference and Priority inference supported; access limited to users who previously actively used Gemini 2.5 models; customer access not tested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -1790,10 +1797,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
