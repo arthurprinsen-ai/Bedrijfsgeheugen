@@ -143,7 +143,7 @@ test('official AWS model identifiers and Falcon source pricing never imply custo
   assert.equal(evidence.not_a_claim_receipt,true);
   assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
   if(m.id==='falcon-ocr'){
-   assert.match(evidence.finding,/Apache-2\\.0/);
+   assert.match(evidence.finding,/Apache-2\.0/);
    assert.match(evidence.finding,/not Falcon-LLM License/);
   }
  }
