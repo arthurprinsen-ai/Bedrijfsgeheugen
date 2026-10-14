@@ -36,3 +36,24 @@ test('model advisor rejects EOL and family placeholders even when active-only fi
  for(const m of catalog.models.filter(x=>x.status==='eol'||x.record_kind==='model_family_placeholder'))
    assert.notEqual(m.auto_recommendation_eligible,true);
 });
+
+test('supplier source classifications remain fail-closed across all model records',async()=>{
+ const { classifySupplierClaim, REQUIRED_SUPPLIER_CLAIMS }=await import('./ai-model-supplier-evidence-worklist.mjs');
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const types={MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED:'MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED',
+ PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF:'PROVIDER_POLICY_ONLY',
+ NO_USABLE_MODEL_SOURCE_RECEIPT:'MISSING_OR_INCOMPLETE'};
+ let count=0;
+ for(const m of c.models){
+  const pending=[];
+  for(const claim of REQUIRED_SUPPLIER_CLAIMS){
+   const observed=classifySupplierClaim(m.verification_evidence,claim);
+   assert.equal(m.supplier_audit?.claim_evidence_classification?.[claim],types[observed],m.id+'/'+claim);
+   if(observed!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED')pending.push(claim);
+   count++;
+  }
+  assert.deepEqual(m.supplier_audit.missing_claim_receipts,pending,m.id+' evidence needs reconciliation');
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ }
+ assert.equal(count,660);
+});
