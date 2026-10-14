@@ -5235,7 +5235,7 @@
     },
     {
       "tier": "balanced",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5249,7 +5249,8 @@
         "high-scale workflows"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Official Google documentation: deprecated; API requests automatically route to gemini-3.6-flash. Prefer gemini-3.6-flash or gemini-3.8-flash for new workloads."
       ],
       "scores": {
         "reasoning": 8,
@@ -5286,7 +5287,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -5295,7 +5296,39 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "checked_on": "2026-10-14",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "verified_claims": [
+          "model_id",
+          "status",
+          "capabilities"
+        ],
+        "not_verified": [
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash.md",
+            "locator": "Deprecated model code and model capabilities",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash.md",
+            "locator": "Deprecated model code and model capabilities",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash.md",
+            "locator": "Deprecated model code and model capabilities",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
