@@ -3,12 +3,12 @@
   "checked_at": "2026-10-14",
   "scope": "110 model ID checks against 41 catalog-supplied official URLs",
   "source_type": "supplier-hosted-documentation",
-  "source_urls_checked": 65,
-  "source_urls_retrieved": 65,
+  "source_urls_checked": 66,
+  "source_urls_retrieved": 66,
   "source_failures": [],
   "models_checked": 110,
-  "model_id_mentions": 74,
-  "model_id_not_explicit": 36,
+  "model_id_mentions": 76,
+  "model_id_not_explicit": 34,
   "unavailable_sources": 110,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
@@ -143,12 +143,12 @@
     {
       "model_id": "gpt-5.6-sol",
       "provider": "OpenAI",
-      "source_url": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 60616,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 55027,
+      "evidence_excerpt": "om/api/docs/guides/moderation) [Models](http://developers.openai.com/api/docs/models) ![gpt-5.6-sol](http://developers.openai.com/images/api/models/icons/gpt-5.6-sol.png) GPT-5.6 Sol Default GPT-5.6 flagship model for com",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -1471,12 +1471,12 @@
     {
       "model_id": "grok-imagine-video",
       "provider": "xAI",
-      "source_url": "https://docs.x.ai/developers/models",
+      "source_url": "https://docs.x.ai/developers/models/grok-imagine-video",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 16765,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 13492,
+      "evidence_excerpt": "l](http://docs.x.ai/developers/faq/general) [Models](http://docs.x.ai/docs/models) / # grok-imagine-video grok-imagine-video Copy for LLM[View as Markdown](http://docs.x.ai/developers/models/grok-imagine-video.md) [Try in playg",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -2261,9 +2261,21 @@
       "checked_at": "2026-10-14",
       "text_length": 18876,
       "error": null
+    },
+    "https://developers.openai.com/api/docs/models/gpt-5.6-sol": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 55027,
+      "error": null
+    },
+    "https://docs.x.ai/developers/models/grok-imagine-video": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 13492,
+      "error": null
     }
   },
   "model_source_fetch_failed": 0,
   "not_yet_checked": 0,
-  "audited_catalog_blob_sha": "fc3ec44202e2245d98e32046740f03d0e124ed0f"
+  "audited_catalog_blob_sha": "c67563cae40bf2814cb3b6beee52cffe1a605dee"
 }
