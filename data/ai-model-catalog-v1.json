@@ -16147,7 +16147,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models/shieldstral-1-0",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -16156,19 +16156,18 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/shieldstral-1-0",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing",
+          "governance"
         ],
-        "not_verified": [
-          "governance",
-          "pricing"
-        ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -16225,6 +16224,24 @@
             "checked_on": "2026-10-14",
             "scope": "official open-weight licensing and non-attested hosted/API governance; customer deployment and contract unverified",
             "verification_status": "SUPPLIER_OPEN_WEIGHT_LICENSING_ONLY_NO_TENANT_GOVERNANCE"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/shieldstral-1-0",
+            "locator": "Weights > Apache 2.0 3.8B open weights; current Mistral inference pricing page excludes Shieldstral",
+            "observed_value": "Shieldstral 1.0 is distributed as Apache 2.0 licensed 3.8B open weights, not as a published billed Mistral-serverless model. Official standard API pricing does not include Shieldstral; no per-million-token hosted tariff is applicable to the documented open-weight self-host deployment. User/operator must separately budget CPU/GPU, hosting, storage and data operations; no zero-cost hosting is claimed.",
+            "checked_on": "2026-10-14",
+            "scope": "official self-host model distribution and negative published tariff, not a customer cost or live hosted inference quote",
+            "verification_status": "SELF_HOST_OPEN_WEIGHTS_NO_PROVIDER_INFERENCE_RATE"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.mistral.ai/models/shieldstral-1-0",
+            "locator": "Model card > Public Preview, Weights > Apache 2.0; model features and absence of hosted API endpoint",
+            "observed_value": "Official Mistral card classifies Shieldstral 1.0 as Public Preview, distributes 3.8B weights under Apache 2.0, and lists no Mistral-managed inference API endpoint. Public supplier-level legal governance is limited to the open-weight license and preview caveat. A customer-operated deployment's logs, prompts, processing jurisdiction, retention, privacy, security configuration, compute fees and sublicensing obligations must be independently verified at the host; Mistral Cloud ZDR availability is NOT asserted for this model.",
+            "checked_on": "2026-10-14",
+            "scope": "public model-specific weight license and explicit lack of provider-served model policy proof; customer operational and contract claims unverified",
+            "verification_status": "OPEN_WEIGHTS_APACHE2_SUPPLIER_SCOPE_SELF_HOST_CONTROLS_UNKNOWN"
           }
         ],
         "provider_policy_evidence": {
@@ -16249,7 +16266,7 @@
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         },
-        "verification_scope_note": "Open-weight Apache 2.0 preview source verified; no Mistral-hosted inference or zero-retention customer evidence established. Pricing and customer data controls still require actual serving route and provider contract. Never mark these complete from open-weights licensing alone."
+        "verification_scope_note": "Independently checked 6 public supplier areas for open-weight model: preview status, weight ID, Apache 2.0 license, model function, weights-only distribution, and absence of published Mistral hosted API price. Operational governance and hosting costs must be checked against actual customer deployment. No provider ZDR, region, effective contract or live endpoint is assumed."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -16572,7 +16589,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -16581,7 +16598,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -16589,11 +16606,10 @@
           "status",
           "capabilities",
           "deployment",
-          "governance"
-        ],
-        "not_verified": [
+          "governance",
           "pricing"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -16649,6 +16665,15 @@
             "checked_on": "2026-10-14",
             "scope": "model-scoped negative official supplier governance; Labs/Preview excluded from ZDR; customer contract, actual provider setting and runtime never attested",
             "verification_status": "MODEL_LABS_EXCLUSION_OFFICIAL_POLICY_VERIFIED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/resources/changelogs",
+            "locator": "2026-09-29 changelog > Leanstral 1.5 labs-leanstral-1-5 retired 2026-09-30; 2026-10-14 current API pricing table excludes Leanstral",
+            "observed_value": "Leanstral 1.5 (labs-leanstral-1-5) retired September 30, 2026 according to official Mistral changelog. There is therefore no currently deployable Mistral-hosted API usage tariff to quote for a retired model. Older Labs 'Free' pricing is historical only and must never be applied as a live zero-cost service. Open-weight self-host compute/energy/storage prices depend on the deployment and are not supplied by the model card.",
+            "checked_on": "2026-10-14",
+            "scope": "public retired-product pricing applicability (negative): NO CURRENT API PRICE OR PRODUCT AVAILABILITY claim; historical rate not customer tariff",
+            "verification_status": "RETIRED_NO_CURRENT_PROVIDER_TARIFF_SUPPLIER_CONFIRMED"
           }
         ],
         "lifecycle_warning": {
@@ -16680,7 +16705,7 @@
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         },
-        "verification_scope_note": "Retired experimental Labs model. Official Mistral changelog establishes September 30, 2026 retirement; no current API price or entitlement is valid. Historical Labs free pricing is not a current customer-facing price. Labs privacy/ZDR exclusion and archived functionality can be catalogued, but this model is not deployable.",
+        "verification_scope_note": "Independently checked 6 public supplier claims, including retired status/no current billed API pricing and Labs negative ZDR eligibility. NEVER recommend retired provider API as available; historical free rate is not a production quote. No customer contract or deployment proof.",
         "lifecycle_official_source": "https://docs.mistral.ai/resources/changelogs",
         "retired_on": "2026-09-30"
       },
