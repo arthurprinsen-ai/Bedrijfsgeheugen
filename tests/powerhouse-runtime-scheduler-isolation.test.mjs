@@ -84,3 +84,15 @@ test('provider catalog probe remains strictly evidence-only and never self-verif
   assert.match(catalogAudit,/claim_verifications_added:0/);
   assert.doesNotMatch(catalogAudit,/m\.verified_at\s*=|writeFile\(catalogPath/);
 });
+
+const rollback=readFileSync('scripts/sql/rollback_powerhouse_scheduler_isolation.sql','utf8');
+test('manual rollback restores canonical schedule before retiring isolated jobs atomically',()=>{
+  assert.match(rollback,/REFUSE_ROLLBACK_UNKNOWN_SCHEDULER_OWNER/);
+  assert.match(rollback,/ROLLBACK_OWNER_DRIFT/);
+  assert.match(rollback,/BEGIN;/);
+  assert.match(rollback,/COMMIT;/);
+  assert.match(rollback,/cron\.schedule\([\s\S]*?'powerhouse-runtime-scheduler-mux-v1'/);
+  assert.ok(rollback.indexOf("SELECT cron.schedule(")<rollback.indexOf("PERFORM cron.unschedule(v_name)"));
+  assert.match(rollback,/powerhouse-operational-retry-worker/);
+  assert.doesNotMatch(rollback,/DROP TABLE|DROP SCHEMA|TRUNCATE TABLE/i);
+});
