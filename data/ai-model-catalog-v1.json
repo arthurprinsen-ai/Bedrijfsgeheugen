@@ -4055,10 +4055,10 @@
     {
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 3,
+      "output_usd_m": 15,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 1000,
       "modalities": [
         "text",
         "vision"
@@ -4106,18 +4106,29 @@
       },
       "id": "claude-sonnet-4-6",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+      "source": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
       "verification_evidence": {
-        "claim_scope": "unverified",
-        "verification_required": [
+        "source_url": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
           "model_id",
           "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
+          "lifecycle_legacy",
+          "input_usd_m",
+          "output_usd_m",
+          "context_k",
+          "capabilities_text_images_to_text",
+          "deployment_platforms"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "not_verified": [
+          "governance",
+          "customer-specific entitlement",
+          "data residency",
+          "contract-specific pricing",
+          "performance scores"
+        ],
+        "claim_scope": "partial",
+        "evidence_note": "Official provider page describes active legacy status; first-party standard pricing $3/$15 per 1M tokens; 1M context; platforms Claude API, Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; platform terms and governance not fully verified."
       }
     },
     {
