@@ -856,7 +856,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://platform.claude.com/docs/en/models/overview",
+      "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -872,7 +872,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "source_url": "https://platform.claude.com/docs/en/models/overview",
+        "source_url": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -923,9 +923,9 @@
           },
           {
             "claim": "capabilities",
-            "observed_value": "Text and image input; text output; multilingual, vision and tool use; 1M token context",
-            "locator": "Compare models > current models capabilities and context window",
-            "url": "https://platform.claude.com/docs/en/models/overview",
+            "observed_value": "1M token context, 128K standard maximum output and 300K beta Batch API maximum output; adaptive thinking always on; text/image input to text output",
+            "locator": "Specifications > Capabilities > Max output; Max output (Batch API, beta); Thinking",
+            "url": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
             "checked_on": "2026-10-14"
           },
           {
@@ -991,7 +991,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://platform.claude.com/docs/en/models/overview",
+        "source_reference": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -1010,8 +1010,12 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
-      }
+        "evidence_accounting_date": "2026-10-14",
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "max_output_tokens": 128000,
+      "max_output_batch_tokens": 300000
     },
     {
       "id": "claude-sonnet-5-5",
@@ -9973,10 +9977,12 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 1048.576,
       "modalities": [
         "text",
-        "vision"
+        "vision",
+        "audio",
+        "video"
       ],
       "strengths": [
         "long-horizon software engineering",
@@ -10019,7 +10025,7 @@
       },
       "id": "gemini-3.8-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models",
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -10032,7 +10038,7 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
         "verified_claims": [
           "model_id",
           "status",
@@ -10067,9 +10073,9 @@
           },
           {
             "claim": "capabilities",
-            "url": "https://ai.google.dev/gemini-api/docs/whats-new-gemini-3.8",
-            "locator": "New model > context and thinking levels",
-            "observed_value": "1M context, 64K maximum output, configurable thinking levels low/medium/high, built-in tools",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+            "locator": "Model code; Supported data types; Token limits; Capabilities",
+            "observed_value": "1,048,576-token input, 65,536-token output; text/image/video/audio/PDF input and text output; caching, code execution, functions, structured output; minimal thinking unsupported",
             "checked_on": "2026-10-14"
           },
           {
@@ -10119,7 +10125,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -10138,8 +10144,11 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
-      }
+        "evidence_accounting_date": "2026-10-14",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "max_output_tokens": 65536
     },
     {
       "tier": "specialist",
@@ -10147,10 +10156,12 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 131.072,
       "modalities": [
         "text",
-        "audio"
+        "vision",
+        "audio",
+        "video"
       ],
       "strengths": [
         "low-latency voice agents"
@@ -10191,7 +10202,7 @@
       },
       "id": "gemini-3.8-live",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models",
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -10204,7 +10215,7 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
         "verified_claims": [
           "model_id",
           "status",
@@ -10243,8 +10254,8 @@
           {
             "claim": "capabilities",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
-            "locator": "gemini-3.8-live > Supported data types, Token limits and Capabilities",
-            "observed_value": "Text/image/audio/video input; text/audio output; 131072 input / 65536 output tokens; function calling, Live API and interleaved reasoning; Batch unavailable",
+            "locator": "Model code; Supported data types; Token limits; Capabilities; Consumption options",
+            "observed_value": "131,072 input and 65,536 output tokens; text/image/audio/video input, text/audio output; Live API, streaming, interleaved reasoning and function calling; Batch API and caching unsupported",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
@@ -10294,7 +10305,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -10313,8 +10324,11 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
-      }
+        "evidence_accounting_date": "2026-10-14",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "max_output_tokens": 65536
     },
     {
       "tier": "specialist",
