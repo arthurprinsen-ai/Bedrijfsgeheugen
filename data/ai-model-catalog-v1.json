@@ -1236,7 +1236,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1245,7 +1245,39 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/inference/pricing",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status",
+          "capabilities"
+        ],
+        "not_verified": [
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "Generalist models: Mistral Medium 3.5 v26.04, multimodal coding and agentic",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "Generalist models: Mistral Medium 3.5 v26.04, multimodal coding and agentic",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "Generalist models: Mistral Medium 3.5 v26.04, multimodal coding and agentic",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -1721,7 +1753,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1730,7 +1762,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/inference/pricing",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "Code models: Codestral code completion",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3844,7 +3896,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3853,7 +3905,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "capabilities"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Open-weight models: gpt-oss-120b",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Open-weight models: gpt-oss-120b",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3908,7 +3986,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3917,7 +3995,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "capabilities"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Open-weight models: gpt-oss-20b",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Open-weight models: gpt-oss-20b",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7609,7 +7713,7 @@
       "provider": "Cohere",
       "source": "https://docs.cohere.com/v1/changelog",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7618,7 +7722,39 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.cohere.com/v1/changelog",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status",
+          "capabilities"
+        ],
+        "not_verified": [
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/docs/models",
+            "locator": "Models table: Live, reasoning, 256k input 32k output",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/docs/models",
+            "locator": "Models table: Live, reasoning, 256k input 32k output",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/docs/models",
+            "locator": "Models table: Live, reasoning, 256k input 32k output",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -9253,7 +9389,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -9262,7 +9398,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+            "locator": "Supplier collection links to Falcon-H1R family; exact 7B model not attested",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
