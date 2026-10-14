@@ -14557,14 +14557,16 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "audio_input_usd_per_min": 0.004,
+      "audio_input_price_unit": "USD per input audio minute, separately from text-token pricing"
     },
     {
       "tier": "specialist",
       "status": "active",
       "input_usd_m": 0.15,
       "output_usd_m": null,
-      "cached_input_usd_m": null,
+      "cached_input_usd_m": 0.015,
       "context_k": 8,
       "modalities": [
         "code"
@@ -15683,7 +15685,10 @@
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       },
-      "max_output_tokens": 128000
+      "max_output_tokens": 128000,
+      "model_developer": "Z.ai",
+      "serving_provider": "Mistral AI",
+      "model_origin_note": "Third-party Z.ai open-weight model served without Mistral modifications; enterprise tenant deployment settings unverified"
     },
     {
       "tier": "open-weight",
@@ -15876,7 +15881,10 @@
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       },
-      "max_output_tokens": 128000
+      "max_output_tokens": 128000,
+      "model_developer": "Z.ai",
+      "serving_provider": "Mistral AI",
+      "model_origin_note": "Third-party Z.ai open-weight model served without Mistral modifications; enterprise tenant deployment settings unverified"
     },
     {
       "tier": "specialist",
