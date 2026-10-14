@@ -3,12 +3,12 @@
   "checked_at": "2026-10-14",
   "scope": "110 model ID checks against 41 catalog-supplied official URLs",
   "source_type": "supplier-hosted-documentation",
-  "source_urls_checked": 50,
-  "source_urls_retrieved": 46,
+  "source_urls_checked": 56,
+  "source_urls_retrieved": 53,
   "source_failures": [],
   "models_checked": 110,
-  "model_id_mentions": 62,
-  "model_id_not_explicit": 34,
+  "model_id_mentions": 68,
+  "model_id_not_explicit": 26,
   "unavailable_sources": 110,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
@@ -228,32 +228,34 @@
     {
       "model_id": "gemini-3.1-pro-preview",
       "provider": "Google",
-      "source_url": "https://ai.google.dev/gemini-api/docs/gemini-3",
+      "source_url": "https://ai.google.dev/gemini-api/docs/models.md",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 34562,
+      "evidence_excerpt": " ``` gemini-3-pro-image ``` [Gemini 3.1 Pro](http://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview) ``` gemini-3.1-pro-preview ``` [Gemini 3 Flash](http://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview) ``` ",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "gemini-3.1-flash-lite",
       "provider": "Google",
-      "source_url": "https://ai.google.dev/gemini-api/docs/gemini-3",
+      "source_url": "https://ai.google.dev/gemini-api/docs/models.md",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 34562,
+      "evidence_excerpt": "models at a fraction of the cost. \\ Stable](http://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite) [🍌🍌 **Nano Banana 2.1** \\ High-efficiency image generation and editing model with improved visual quality, typography,",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "gemini-2.5-flash-lite",
@@ -274,12 +276,12 @@
     {
       "model_id": "mistral-medium-3-5",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/inference/pricing",
+      "source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 6441,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 6836,
+      "evidence_excerpt": "for agentic and coding use cases. Released as open weights under a Modified MIT license. mistral-medium-3-5+2 Speed Performance Modalities [](http://docs.mistral.ai/studio/conversations/reasoning)[](http://docs.mistral.ai/studio",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -290,12 +292,12 @@
     {
       "model_id": "mistral-large-3",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 6606,
+      "evidence_excerpt": "-guide?models=mistral-large-3-25-12)[Legal](https://legal.mistral.ai/ai-governance/models/mistral-large-3) ![Cat](http://docs.mistral.ai/_next/image?url=%2Fassets%2Fsprites%2Fcat_idle.gif&w=640&q=75) December 2, 2025[Blog](https",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -306,10 +308,10 @@
     {
       "model_id": "mistral-small-4",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
+      "source_url": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 7254,
+      "source_text_chars": 6719,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -338,12 +340,12 @@
     {
       "model_id": "ministral-3-8b",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 6477,
+      "evidence_excerpt": "n-guide?models=ministral-3-8b-25-12)[Legal](https://legal.mistral.ai/ai-governance/models/ministral-3-8b) ![Cat](http://docs.mistral.ai/_next/image?url=%2Fassets%2Fsprites%2Fcat_idle.gif&w=640&q=75) December 2, 2025[Blog](https",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -1202,10 +1204,10 @@
     {
       "model_id": "mistral-medium-3.5",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
+      "source_text_chars": 6836,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1234,12 +1236,12 @@
     {
       "model_id": "mistral-ocr-3",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/ocr-3-25-12",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 5930,
+      "evidence_excerpt": "ets%2Fsprites%2Fcat_idle.gif&w=640&q=75) December 18, 2025[Blog](https://mistral.ai/news/mistral-ocr-3) GAPremierv25.12 # OCR 3 Our OCR service powering our Document AI stack that enables our users to extract interleaved tex",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -1250,10 +1252,10 @@
     {
       "model_id": "voxtral-tts",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
+      "source_text_chars": 5586,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1266,10 +1268,10 @@
     {
       "model_id": "voxtral-mini-transcribe-2",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
+      "source_text_chars": 5842,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1298,9 +1300,9 @@
     {
       "model_id": "voxtral-small",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/voxtral-small-25-07",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 21130,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1346,9 +1348,9 @@
     {
       "model_id": "shieldstral-1",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/shieldstral-1-0",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 21130,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1362,9 +1364,9 @@
     {
       "model_id": "mistral-moderation-2",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 21130,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1522,7 +1524,7 @@
     {
       "model_id": "amazon-nova-2-lite",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1537,7 +1539,7 @@
     {
       "model_id": "amazon-nova-2-sonic",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1552,9 +1554,9 @@
     {
       "model_id": "amazon-nova-premier",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "source_url": "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 15275,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1568,7 +1570,7 @@
     {
       "model_id": "amazon-nova-pro",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1583,7 +1585,7 @@
     {
       "model_id": "amazon-nova-lite",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1598,7 +1600,7 @@
     {
       "model_id": "amazon-nova-micro",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1629,7 +1631,7 @@
     {
       "model_id": "amazon-nova-multimodal-embeddings",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1676,7 +1678,7 @@
     {
       "model_id": "amazon-titan-text-embeddings-v2",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1691,7 +1693,7 @@
     {
       "model_id": "amazon-titan-image-generator-g1-v2",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1706,7 +1708,7 @@
     {
       "model_id": "amazon-titan-multimodal-embeddings-g1",
       "provider": "Amazon",
-      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
       "checked_at": "2026-10-14",
       "status": "PROBE_NOT_RUN",
       "source_text_chars": 0,
@@ -1887,10 +1889,10 @@
       "error": null
     },
     "https://ai.google.dev/gemini-api/docs/models.md": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text"
+      "text_length": 34562,
+      "error": null
     },
     "https://ai.google.dev/gemini-api/docs/pricing": {
       "state": "FETCH_FAILED",
@@ -2131,8 +2133,50 @@
       "checked_at": "2026-10-14",
       "text_length": 28353,
       "error": null
+    },
+    "https://docs.mistral.ai/models/mistral-medium-3-5-26-04": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 6836,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/mistral-large-3-25-12": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 6606,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/mistral-small-4-0-26-03": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 6719,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/ministral-3-8b-25-12": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 6477,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/ocr-3-25-12": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5930,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/voxtral-tts-26-03": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5586,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5842,
+      "error": null
     }
   },
   "model_source_fetch_failed": 3,
-  "not_yet_checked": 11
+  "not_yet_checked": 13
 }
