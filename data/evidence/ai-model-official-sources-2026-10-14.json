@@ -9,7 +9,7 @@
   "models_checked": 110,
   "model_id_mentions": 76,
   "model_id_not_explicit": 34,
-  "unavailable_sources": 110,
+  "unavailable_sources": 0,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
   "by_provider": {
@@ -2277,5 +2277,8 @@
   },
   "model_source_fetch_failed": 0,
   "not_yet_checked": 0,
-  "audited_catalog_blob_sha": "c67563cae40bf2814cb3b6beee52cffe1a605dee"
+  "audited_catalog_blob_sha": "c67563cae40bf2814cb3b6beee52cffe1a605dee",
+  "supplemental_source_urls_checked": 4,
+  "total_unique_source_documents_checked": 70,
+  "counting_note": "source_urls_checked counts unique catalog-supplied URLs, supplemental sources counted separately; unavailable_sources counts documented non-FETCHED URL results, not unverified model claims; no whole-model approval implied."
 }
