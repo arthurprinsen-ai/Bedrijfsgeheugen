@@ -15,8 +15,8 @@ test('recovery is bounded and errors propagate', () => {
  assert.match(worker, /if \(!response\.ok\) throw/);
 });
 test('gateway is restricted to service role and does not replay sends', () => {
- assert.match(gateway, /request\.jwt\.claim\.role/);
- assert.match(gateway, /service_role/);
+ assert.match(gateway, /token_sha256=sha256\(convert_to\(p_token/);
+ assert.match(gateway, /grant execute on function.*to anon,service_role/i);
  assert.match(gateway, /revoke all on function/);
  assert.match(gateway, /reconcile_cron_failures/);
  assert.doesNotMatch(worker, /sendMail|sendEmail|sendMessage|sendLinkedinDm|provider\.send/);
