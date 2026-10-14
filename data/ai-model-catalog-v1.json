@@ -10143,7 +10143,9 @@
         "document AI"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "OCR 4 is newer; OCR 3 retained for existing production integrations",
+        "Pricing measured per 1,000 pages, not text tokens"
       ],
       "scores": {
         "reasoning": 3,
@@ -10163,7 +10165,7 @@
         "Mistral API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -10177,7 +10179,7 @@
       },
       "id": "mistral-ocr-3",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/ocr-3-25-12",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -10188,38 +10190,46 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://docs.mistral.ai/models",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models/ocr-3-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities"
         ],
         "not_verified": [
-          "model_id",
-          "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/ocr-3-25-12",
+            "locator": "OCR 3 heading and version",
+            "observed_value": "OCR 3, version 25.12; API identifier mistral-ocr-2512 corroborated by Mistral release notes",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "model_id",
-            "url": "https://docs.mistral.ai/resources/changelogs",
-            "locator": "December 18 release note",
-            "observed_value": "mistral-ocr-2512",
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/ocr-3-25-12",
+            "locator": "Model description",
+            "observed_value": "GA v25.12, remains available to existing integrations; OCR 4 newer",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/ocr-3-25-12",
+            "locator": "Price per 1000 pages",
+            "observed_value": "USD 2 per 1,000 pages, USD 3 per 1,000 annotated pages",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://docs.mistral.ai/resources/changelogs",
-            "locator": "December 18 > OCR 3",
-            "observed_value": "OCR output can include tables in markdown or HTML, header/footer extraction and hyperlinks",
+            "url": "https://docs.mistral.ai/models/ocr-3-25-12",
+            "locator": "Features",
+            "observed_value": "OCR, structured annotations, batching",
             "checked_on": "2026-10-14"
           }
         ]
@@ -10235,13 +10245,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
-          "pricing",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 4,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models/ocr-3-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -10251,7 +10259,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://docs.mistral.ai/models/ocr-3-25-12",
+        "last_specific_source_check": "2026-10-14"
       }
     },
     {
