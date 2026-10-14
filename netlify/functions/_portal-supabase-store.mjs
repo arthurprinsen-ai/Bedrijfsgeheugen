@@ -34,13 +34,22 @@ export function createSupabasePortalProjectionStore({
     if(data?.scope?.authenticatedTenant!==expectedTenant)throw new Error('EU portal intelligence tenant scope mismatch');
     return data;
   }
+  async function getValidatedFinancialForecasts(tenantId){
+    const expectedTenant=String(tenantId);
+    if(!expectedTenant.trim())throw new Error('EU financial forecast tenant required');
+    const data=await gateway({action:'financial_forecasts',tenantId:expectedTenant});
+    if(data?.tenantId!==expectedTenant||!Array.isArray(data?.forecasts)||
+       data.forecasts.some(row=>row?.tenantId!==expectedTenant))
+      throw new Error('EU financial forecast tenant scope mismatch');
+    return {forecasts:data.forecasts};
+  }
   async function putLayer(tenantId,layer,next){
     const payload={...next,origin:layer};
     const data=await gateway({action:'put',tenantId:String(tenantId),layer,payload});
     return {stored:Boolean(data.stored),stale:Boolean(data.stale),record:data.record||payload};
   }
   return Object.freeze({
-    getLayer,getGovernance,getResourceBusinessValue,getEntrepreneurIntelligence,
+    getLayer,getGovernance,getResourceBusinessValue,getEntrepreneurIntelligence,getValidatedFinancialForecasts,
     async get(tenantId){
       const [legacy,canonical,aiGovernance,resourceBusinessValue]=await Promise.all([
         getLayer(tenantId,PORTAL_LAYERS.LEGACY),
