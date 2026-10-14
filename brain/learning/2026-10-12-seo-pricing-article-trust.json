@@ -97,5 +97,8 @@
     "historical_replay": [
       "tests/brain-seo-pricing-trust.test.mjs"
     ]
-  }
+  },
+  "fingerprint": "seo-pricing-trust-correction-20261014",
+  "root_cause": "Indexed supporting article and FAQ retained obsolete prices after canonical pricing changed.",
+  "prevention": "Historical replay test requires matching published pricing and rejects obsolete claims before release."
 }
