@@ -189,9 +189,16 @@ test('supplier identity receipts are internally consistent, source-aligned and d
  }
  const idMentions=evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_MODEL_ID_MENTION').length;
  const idMissing=evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_NO_EXACT_MODEL_ID').length;
+ const apiIdMentions=evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_API_ID_MENTION').length;
+ const fetchFailures=evidence.receipts.filter(r=>r.status==='SOURCE_FETCH_FAILED').length;
  assert.equal(idMentions,evidence.model_id_mentions);
  assert.equal(idMissing,evidence.model_id_not_explicit);
- assert.equal(idMentions+idMissing,c.models.length);
+ assert.equal(idMentions+idMissing+apiIdMentions+fetchFailures,c.models.length);
+ assert.equal(fetchFailures,evidence.model_source_fetch_failed);
+ for(const row of evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_API_ID_MENTION')){
+  assert.ok(row.provider_api_id,'Provider API mention requires a concrete provider API identifier');
+  assert.equal(row.provider_api_id_mentioned_in_document,true);
+ }
  const sources=new Set(c.models.map(m=>m.source));
  assert.equal(evidence.source_urls_checked,sources.size);
  assert.equal(evidence.source_urls_retrieved,sources.size-evidence.unavailable_sources);
