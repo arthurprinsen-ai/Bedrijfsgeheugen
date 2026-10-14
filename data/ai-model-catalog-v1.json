@@ -2350,8 +2350,8 @@
         "vision": 9,
         "agents": 9
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -2362,7 +2362,8 @@
       ],
       "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "limitations": [
-        "Open weights are available under a Modified MIT license; review license terms before deployment"
+        "Open weights are available under a Modified MIT license; review license terms before deployment",
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
       ],
       "governance": {
         "storage_residency": "EU option documented",
@@ -2461,6 +2462,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -2537,8 +2546,8 @@
         "vision": 9,
         "agents": 8
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -2548,7 +2557,9 @@
         "cloud partners"
       ],
       "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
-      "limitations": [],
+      "limitations": [
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -2646,6 +2657,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -2734,8 +2753,8 @@
         "vision": 8,
         "agents": 8
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -2744,7 +2763,9 @@
         "self-host"
       ],
       "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
-      "limitations": [],
+      "limitations": [
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -2842,6 +2863,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -2916,8 +2945,8 @@
         "vision": 8,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -2926,7 +2955,9 @@
         "self-host"
       ],
       "source": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
-      "limitations": [],
+      "limitations": [
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -3024,6 +3055,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -3098,8 +3137,8 @@
         "vision": 7,
         "agents": 6
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -3108,7 +3147,9 @@
         "self-host"
       ],
       "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
-      "limitations": [],
+      "limitations": [
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -3206,6 +3247,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -3281,8 +3330,8 @@
         "vision": 7,
         "agents": 5
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -3291,7 +3340,9 @@
         "self-host"
       ],
       "source": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
-      "limitations": [],
+      "limitations": [
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -3389,6 +3440,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -3465,8 +3524,8 @@
         "vision": 1,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": false,
       "self_host": false,
       "jurisdiction": "EU/France",
@@ -3474,7 +3533,9 @@
         "Mistral API"
       ],
       "source": "https://docs.mistral.ai/inference/pricing",
-      "limitations": [],
+      "limitations": [
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -3572,6 +3633,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -3648,8 +3717,8 @@
         "vision": 10,
         "agents": 4
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": false,
       "self_host": false,
       "jurisdiction": "EU/France",
@@ -3657,7 +3726,9 @@
         "Mistral API"
       ],
       "source": "https://docs.mistral.ai/models/ocr-4-1",
-      "limitations": [],
+      "limitations": [
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -3755,6 +3826,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -14205,7 +14284,8 @@
         "self-hostable audio"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
       ],
       "scores": {
         "reasoning": 3,
@@ -14216,8 +14296,8 @@
         "vision": 1,
         "agents": 5
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -14325,6 +14405,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -14389,7 +14477,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "Audio input billed per minute, separately from input/output token pricing"
+        "Audio input billed per minute, separately from input/output token pricing",
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
       ],
       "scores": {
         "reasoning": 6,
@@ -14400,8 +14489,8 @@
         "vision": 1,
         "agents": 5
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -14509,6 +14598,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -14944,7 +15041,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "Public-preview open-weight model, no Mistral hosted inference endpoint; compute costs depend on deployment"
+        "Public-preview open-weight model, no Mistral hosted inference endpoint; compute costs depend on deployment",
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
       ],
       "scores": {
         "reasoning": 3,
@@ -14955,8 +15053,8 @@
         "vision": 9,
         "agents": 5
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -15065,6 +15163,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -15323,7 +15429,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "Retired 2026-09-30: not eligible for new API deployments or recommendations"
+        "Retired 2026-09-30: not eligible for new API deployments or recommendations",
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
       ],
       "scores": {
         "reasoning": 8,
@@ -15334,8 +15441,8 @@
         "vision": 1,
         "agents": 5
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -15450,6 +15557,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -15516,7 +15631,8 @@
         "reasoning"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
       ],
       "scores": {
         "reasoning": 8,
@@ -15527,8 +15643,8 @@
         "vision": 1,
         "agents": 5
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -15636,6 +15752,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
@@ -15705,7 +15829,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "Deprecated 2026-09-29, scheduled retirement 2026-10-31; prefer zai-glm-5-3"
+        "Deprecated 2026-09-29, scheduled retirement 2026-10-31; prefer zai-glm-5-3",
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
       ],
       "scores": {
         "reasoning": 8,
@@ -15716,8 +15841,8 @@
         "vision": 1,
         "agents": 5
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "EU/France",
@@ -15832,6 +15957,14 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "regional_policy_evidence": {
+          "url": "https://docs.mistral.ai/inference/regional-inference",
+          "locator": "Regional inference > What regions are supported?; What is supported by regional inference?; Limitations",
+          "observed_value": "api.mistral.ai is global and has no guaranteed inference geography. api.eu.mistral.ai provides eligible EU regional inference at an upcharge, with model/feature eligibility limits. Regional inference does not guarantee regional control-plane data storage.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
+          "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         }
       },
       "supplier_audit": {
