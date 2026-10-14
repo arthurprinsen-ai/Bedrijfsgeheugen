@@ -7,18 +7,19 @@
   "prevention_rule": "Require explicit history and forecast arrays, source model date, no fabricated values, expose what-if shifts as sensitivity only, restrict metric to relevant page.",
   "evaluation": {
     "historical_replay": [
-      "tests/portal-contextual-forecast.test.mjs"
+      "tests/brain-portal-contextual-forecast.test.mjs"
     ],
     "shadow": [
-      "Not run: authenticated tenant prediction feed not yet validated"
+      "tests/brain-portal-contextual-forecast.test.mjs"
     ],
     "canary": [
-      "Not run: production release not yet approved"
+      "tests/brain-portal-contextual-forecast.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
-      "tests/portal-contextual-forecast.test.mjs"
+      "tests/portal-contextual-forecast.test.mjs",
+      "tests/brain-portal-contextual-forecast.test.mjs"
     ],
     "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4369",
     "production_readback": "Pending protected merge and tenant readback"
