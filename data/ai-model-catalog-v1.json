@@ -2885,7 +2885,8 @@
       "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
       "limitations": [
         "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
-        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route.",
+        "Mistral Chat ZDR is not blanket ZDR for every endpoint, and regional availability is not confirmed without authenticated model listing."
       ],
       "governance": {
         "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
@@ -2901,7 +2902,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -2910,7 +2911,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -2918,11 +2919,10 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -2961,13 +2961,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
-            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
-            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "What zero data retention covers; Supported API endpoints > /v1/chat/completions; Exclusions and request approval",
+            "observed_value": "mistral-small-4 has an official Mistral Chat Completions API model (mistral-small-2603). Paid-plan approved organization ZDR covers only eligible stateless /v1/chat/completions calls; batches, agents, conversations, files and product chat remain excluded. Training opt-out is separate. Self-hosted open weights, where offered, put retention and region under the operator. No tenant ZDR setting or regional model availability verified.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "documented supplier model/API behavior; no customer-contract or runtime approval"
           }
         ],
         "provider_policy_evidence": {
@@ -2991,6 +2989,11 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
+        },
+        "identity_warning": {
+          "status": "CATALOG_DISPLAY_LABEL_IS_NOT_PROVIDER_API_ID",
+          "official_id": "mistral-small-2603",
+          "checked_on": "2026-10-14"
         }
       },
       "supplier_audit": {
@@ -3046,7 +3049,8 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "provider_api_id": "mistral-small-2603"
     },
     {
       "id": "ministral-3-14b",
@@ -3087,7 +3091,8 @@
       "source": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
       "limitations": [
         "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
-        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route.",
+        "Mistral Chat ZDR is not blanket ZDR for every endpoint, and regional availability is not confirmed without authenticated model listing."
       ],
       "governance": {
         "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
@@ -3103,7 +3108,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -3112,7 +3117,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -3120,11 +3125,10 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "status",
@@ -3163,13 +3167,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
-            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
-            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "What zero data retention covers; Supported API endpoints > /v1/chat/completions; Exclusions and request approval",
+            "observed_value": "ministral-3-14b has an official Mistral Chat Completions API model (ministral-14b-2512). Paid-plan approved organization ZDR covers only eligible stateless /v1/chat/completions calls; batches, agents, conversations, files and product chat remain excluded. Training opt-out is separate. Self-hosted open weights, where offered, put retention and region under the operator. No tenant ZDR setting or regional model availability verified.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "documented supplier model/API behavior; no customer-contract or runtime approval"
           }
         ],
         "provider_policy_evidence": {
@@ -3193,6 +3195,11 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
+        },
+        "identity_warning": {
+          "status": "CATALOG_DISPLAY_LABEL_IS_NOT_PROVIDER_API_ID",
+          "official_id": "ministral-14b-2512",
+          "checked_on": "2026-10-14"
         }
       },
       "supplier_audit": {
@@ -3248,7 +3255,8 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "provider_api_id": "ministral-14b-2512"
     },
     {
       "id": "ministral-3-8b",
@@ -3289,7 +3297,8 @@
       "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
       "limitations": [
         "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
-        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route.",
+        "Mistral Chat ZDR is not blanket ZDR for every endpoint, and regional availability is not confirmed without authenticated model listing."
       ],
       "governance": {
         "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
@@ -3305,7 +3314,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -3314,7 +3323,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -3322,11 +3331,10 @@
           "pricing",
           "capabilities",
           "deployment",
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "status",
@@ -3365,13 +3373,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
-            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
-            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "What zero data retention covers; Supported API endpoints > /v1/chat/completions; Exclusions and request approval",
+            "observed_value": "ministral-3-8b has an official Mistral Chat Completions API model (ministral-8b-2512). Paid-plan approved organization ZDR covers only eligible stateless /v1/chat/completions calls; batches, agents, conversations, files and product chat remain excluded. Training opt-out is separate. Self-hosted open weights, where offered, put retention and region under the operator. No tenant ZDR setting or regional model availability verified.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "documented supplier model/API behavior; no customer-contract or runtime approval"
           }
         ],
         "provider_policy_evidence": {
@@ -3395,6 +3401,11 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
+        },
+        "identity_warning": {
+          "status": "CATALOG_DISPLAY_LABEL_IS_NOT_PROVIDER_API_ID",
+          "official_id": "ministral-8b-2512",
+          "checked_on": "2026-10-14"
         }
       },
       "supplier_audit": {
@@ -3450,7 +3461,8 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "provider_api_id": "ministral-8b-2512"
     },
     {
       "id": "ministral-3-3b",
@@ -3492,7 +3504,8 @@
       "source": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
       "limitations": [
         "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
-        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route.",
+        "Mistral Chat ZDR is not blanket ZDR for every endpoint, and regional availability is not confirmed without authenticated model listing."
       ],
       "governance": {
         "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
@@ -3508,7 +3521,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -3517,7 +3530,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -3525,11 +3538,10 @@
           "pricing",
           "capabilities",
           "deployment",
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "status",
@@ -3568,13 +3580,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
-            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
-            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "What zero data retention covers; Supported API endpoints > /v1/chat/completions; Exclusions and request approval",
+            "observed_value": "ministral-3-3b has an official Mistral Chat Completions API model (ministral-3b-2512). Paid-plan approved organization ZDR covers only eligible stateless /v1/chat/completions calls; batches, agents, conversations, files and product chat remain excluded. Training opt-out is separate. Self-hosted open weights, where offered, put retention and region under the operator. No tenant ZDR setting or regional model availability verified.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "documented supplier model/API behavior; no customer-contract or runtime approval"
           }
         ],
         "provider_policy_evidence": {
@@ -3598,6 +3608,11 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
+        },
+        "identity_warning": {
+          "status": "CATALOG_DISPLAY_LABEL_IS_NOT_PROVIDER_API_ID",
+          "official_id": "ministral-3b-2512",
+          "checked_on": "2026-10-14"
         }
       },
       "supplier_audit": {
@@ -3656,7 +3671,8 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "provider_api_id": "ministral-3b-2512"
     },
     {
       "id": "codestral",
@@ -15218,7 +15234,8 @@
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
         "Audio input billed per minute, separately from input/output token pricing",
         "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
-        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route.",
+        "Mistral Chat ZDR is not blanket ZDR for every endpoint, and regional availability is not confirmed without authenticated model listing."
       ],
       "scores": {
         "reasoning": 6,
@@ -15255,7 +15272,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -15264,7 +15281,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/voxtral-small-25-07",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -15272,22 +15289,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
-            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
-            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://docs.mistral.ai/models/voxtral-small-25-07",
@@ -15322,6 +15328,14 @@
             "locator": "Model card > Features, API or model weights",
             "observed_value": "Chat Completions and Batching features documented; specific tenant access not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "What zero data retention covers; Supported API endpoints > /v1/chat/completions; Exclusions and request approval",
+            "observed_value": "voxtral-small has an official Mistral Chat Completions API model (voxtral-small-2507). Paid-plan approved organization ZDR covers only eligible stateless /v1/chat/completions calls; batches, agents, conversations, files and product chat remain excluded. Training opt-out is separate. Self-hosted open weights, where offered, put retention and region under the operator. No tenant ZDR setting or regional model availability verified.",
+            "checked_on": "2026-10-14",
+            "scope": "documented supplier model/API behavior; no customer-contract or runtime approval"
           }
         ],
         "provider_policy_evidence": {
@@ -15345,6 +15359,11 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
+        },
+        "identity_warning": {
+          "status": "CATALOG_DISPLAY_LABEL_IS_NOT_PROVIDER_API_ID",
+          "official_id": "voxtral-small-2507",
+          "checked_on": "2026-10-14"
         }
       },
       "supplier_audit": {
@@ -15405,7 +15424,8 @@
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       },
       "audio_input_usd_per_min": 0.004,
-      "audio_input_price_unit": "USD per input audio minute, separately from text-token pricing"
+      "audio_input_price_unit": "USD per input audio minute, separately from text-token pricing",
+      "provider_api_id": "voxtral-small-2507"
     },
     {
       "tier": "specialist",
