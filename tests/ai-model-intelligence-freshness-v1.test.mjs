@@ -3,6 +3,23 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { classifySupplierClaim } from './ai-model-supplier-evidence-worklist.mjs';
 
+test('supplier claim flags never contradict the evidence ledger',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const required=['model_id','status','pricing','capabilities','deployment','governance'];
+ const problems=[];
+ for(const m of c.models){
+  const e=m.verification_evidence||{};
+  for(const claim of required){
+   if(e.verified_claims?.includes(claim)&&e.not_verified?.includes(claim))
+    problems.push(m.id+':CONTRADICTORY_CLAIM:'+claim);
+   if(e.verified_claims?.includes(claim)&&!e.claim_evidence?.some(x=>x.claim===claim&&
+      typeof x.observed_value==='string'&&x.observed_value.trim()))
+    problems.push(m.id+':UNSUPPORTED_VERIFIED_CLAIM:'+claim);
+  }
+ }
+ assert.deepEqual(problems,[]);
+});
+
 test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
  assert.ok(c.models.length>=100);
