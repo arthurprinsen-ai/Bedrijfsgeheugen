@@ -2504,7 +2504,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2513,8 +2513,35 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
-      }
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://cohere.com/pricing",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "capabilities",
+          "pricing"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://cohere.com/pricing",
+            "locator": "Model Vault: Rerank 4 Pro, medium $5/hr $3250/mo; large $10/hr $6500/mo; instance rates (not API token price)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://cohere.com/pricing",
+            "locator": "Model Vault: Rerank 4 Pro, medium $5/hr $3250/mo; large $10/hr $6500/mo; instance rates (not API token price)",
+            "checked_on": "2026-10-14"
+          }
+        ]
+      },
+      "pricing_basis": "Model Vault pricing is per-instance: medium $5/hour or $3250/month; large $10/hour or $6500/month; does not establish pay-as-you-go API price."
     },
     {
       "id": "llama-open-weight",
@@ -2632,7 +2659,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2641,7 +2668,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://qwenlm.github.io/",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://qwenlm.github.io/",
+            "locator": "Official Qwen project describes Qwen model family, not individual API endpoint",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7379,7 +7426,7 @@
       "provider": "xAI",
       "source": "https://docs.x.ai/developers/release-notes",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7388,7 +7435,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.x.ai/developers/release-notes",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/release-notes",
+            "locator": "Official provider release notes and voice transcription family; exact endpoint unverified",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -8792,7 +8859,7 @@
       "id": "amazon-titan-image-generator-g1-v2",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8801,7 +8868,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "AWS Titan Image Generator family card; exact endpoint and regional availability not verified",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
