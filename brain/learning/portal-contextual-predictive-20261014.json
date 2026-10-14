@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|portal|contextual-forecast-source-gating|v1",
+  "compiler": {
+    "failure_class": "CONTEXTUAL_FORECAST_UNVERIFIED_OR_ABSENT"
+  },
+  "root_cause": "Entrepreneur portal previously had no reusable forecast visualization, contextual metric selection or clear scenario provenance; generic KPI trends cannot safely be forecast data.",
+  "prevention_rule": "Require explicit history and forecast arrays, source model date, no fabricated values, expose what-if shifts as sensitivity only, restrict metric to relevant page.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case": "No forecasts in portal state",
+        "outcome": "Explicit absence message, never fabricated SVG chart"
+      },
+      {
+        "case": "Complete revenue forecast",
+        "outcome": "Render source-labeled series and selectable horizon"
+      },
+      {
+        "case": "Risk-only forecast on Today",
+        "outcome": "No unrelated prediction shown"
+      }
+    ],
+    "shadow": [
+      {
+        "status": "not run",
+        "reason": "No authenticated tenant dataset exposed in connector"
+      }
+    ],
+    "canary": [
+      {
+        "status": "not run",
+        "reason": "Production release not approved"
+      }
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/portal-contextual-forecast.test.mjs"
+    ],
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4369",
+    "production_readback": "Pending protected merge and tenant readback"
+  },
+  "outcome": "Code integration candidate; not production verified"
+}
