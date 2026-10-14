@@ -3,7 +3,7 @@
 // Usage: node tests/ai-model-catalog-evidence-audit.mjs [output-file]
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { customerClaimStatus, customerClaimRequirements } from '../scripts/customer-ai-governance-evidence.mjs';
+import { customerClaimStatus, customerClaimRequirements } from '../platform/api/customer-ai-governance-evidence.mjs';
 const catalog = JSON.parse(await fs.readFile('data/ai-model-catalog-v1.json', 'utf8'));
 const now = new Date();
 const maxAgeDays = 14;
