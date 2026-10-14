@@ -3983,7 +3983,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -3992,7 +3992,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_API_POLICY_ONLY",
         "checked_on": "2026-10-14",
         "source_url": "https://docs.x.ai/developers/models",
         "verified_claims": [
@@ -4000,11 +4000,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -4081,7 +4080,8 @@
           "source_url": "https://docs.x.ai/developers/faq/security",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independent supplier model-specific US route eligibility verified via xAI regions page; 30-day default data-retention and team-wide ZDR documented by xAI Security FAQ. No customer-selected endpoint, actual ZDR header, executed DPA or tenant runtime control was observed."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -4115,16 +4115,20 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+      },
+      "independent_model_governance_review_20261014": {
+        "checked_on": "2026-10-14",
+        "model_id": "grok-4.7",
+        "official_model_policy": "https://docs.x.ai/developers/advanced-api-usage/regions",
+        "official_api_data_policy": "https://docs.x.ai/developers/faq/security",
+        "observed_value": "grok-4.7 is explicitly supported on xAI US API endpoint for request handling, inference, moderation and retained content; US regional price premium is 10%. Default API retention 30 days, ZDR team-level when enabled; Files, server-side tools and network routing excluded. Neither page verifies the customer's actual endpoint nor enabled ZDR.",
+        "scope": "official supplier model API route and baseline; no customer contract, account or runtime approval",
+        "verified_customer_settings": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -4179,7 +4183,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -4188,7 +4192,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_API_POLICY_ONLY",
         "source_url": "https://docs.x.ai/developers/models/grok-4.6",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -4196,11 +4200,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -4277,7 +4280,8 @@
           "source_url": "https://docs.x.ai/developers/faq/security",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independent supplier model-specific US route eligibility verified via xAI regions page; 30-day default data-retention and team-wide ZDR documented by xAI Security FAQ. No customer-selected endpoint, actual ZDR header, executed DPA or tenant runtime control was observed."
       },
       "pricing_basis": "USD/1M tokens standard under 200k: input 2, cached 0.5, output 6; >=200k: input 4, cached 1, output 12; US regional endpoint 1.1x, priority 2x.",
       "supplier_audit": {
@@ -4314,16 +4318,20 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+      },
+      "independent_model_governance_review_20261014": {
+        "checked_on": "2026-10-14",
+        "model_id": "grok-4.6",
+        "official_model_policy": "https://docs.x.ai/developers/advanced-api-usage/regions",
+        "official_api_data_policy": "https://docs.x.ai/developers/faq/security",
+        "observed_value": "grok-4.6 is explicitly supported on xAI US API endpoint for request handling, inference, moderation and retained content; US regional price premium is 10%. Default API retention 30 days, ZDR team-level when enabled; Files, server-side tools and network routing excluded. Neither page verifies the customer's actual endpoint nor enabled ZDR.",
+        "scope": "official supplier model API route and baseline; no customer contract, account or runtime approval",
+        "verified_customer_settings": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
