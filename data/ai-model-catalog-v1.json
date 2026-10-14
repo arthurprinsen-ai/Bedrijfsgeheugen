@@ -14208,6 +14208,18 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
+      },
+      "catalog_alias": "mistral-ocr-4.0",
+      "alias_of": "mistral-ocr-4-0",
+      "canonical_model_id": "mistral-ocr-4-0",
+      "independent_api_identity_review_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.mistral.ai/resources/changelogs",
+        "locator": "September 29: OCR 4.0 retires September 30, 2026",
+        "observed_value": "Mistral OCR 4.0 official API ID mistral-ocr-4-0; retired 2026-09-30; replacement mistral-ocr-4-1 or mistral-ocr-latest",
+        "review_scope": "published identity and lifecycle; separate full supplier claim proof governed by verification_evidence; no tenant authorization asserted",
+        "customer_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
