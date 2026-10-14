@@ -8896,22 +8896,15 @@
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "verified_claims": [
           "capabilities",
-          "model_id",
           "status",
           "deployment"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "governance",
+          "model_id"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
-            "locator": "Nova 2 Lite > Model Details",
-            "observed_value": "Amazon Nova 2 Lite model card; exact Bedrock inference model ID requires separate check",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "status",
             "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
@@ -8942,7 +8935,10 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
-        }
+        },
+        "verification_notes": [
+          "Exact Bedrock inference ID not confirmed by the model card"
+        ]
       }
     },
     {
@@ -10160,11 +10156,11 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
-          "pricing"
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -10194,14 +10190,10 @@
             "locator": "Usage > Transformers / vLLM / llama.cpp",
             "observed_value": "Self-hosting via Transformers, vLLM or llama.cpp as documented; hosted API not assumed",
             "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
-            "locator": "Model Details > License",
-            "observed_value": "Falcon-LLM License; no claim of Apache 2.0, EU residency, or zero-retention service",
-            "checked_on": "2026-10-14"
           }
+        ],
+        "verification_notes": [
+          "License only, not full security and governance assessment"
         ]
       }
     },
