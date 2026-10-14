@@ -16,14 +16,14 @@ const relevant = {
 let selected='auto',horizon=6,adjustment=0;
 const points = data => Array.isArray(data) ? data.map(p=>({date:String(p?.date??p?.period??''),value:number(p?.value)})).filter(p=>p.date&&p.value!==null).slice(0,48) : [];
 function datasets(state){
-  const raw=Array.isArray(state?.forecasts)?state.forecasts:Array.isArray(state?.predictions)?state.predictions:[];
+  const raw=Array.isArray(state?.forecasts)?state.forecasts:[]; // No predictive KPI fallback can authorize finance charts.
   return raw.filter(x=>x&&typeof x==='object').map(x=>({
     id:String(x.id??x.metric??'custom'),metric:allowed.includes(x.metric)?x.metric:'custom',
     title:String(x.title||labels[x.metric]||'Prognose'),unit:String(x.unit||''),
     history:points(x.history),future:points(x.forecast??x.baseline),
     low:points(x.low??x.lower),high:points(x.high??x.upper),
     updatedAt:x.updatedAt||null,source:x.source||null,model:x.model||null,
-    verified:x.verified===true && Boolean(x.source) && Boolean(x.updatedAt),
+    verified:x.verified===true && Boolean(x.source) && Boolean(x.updatedAt) && Boolean(x.model) && x.validation?.status==='passed' && x.validation?.tenantBound===true && typeof x.tenantId==='string' && x.tenantId.trim().length>0 && x.validation?.tenantId===x.tenantId && Number.isFinite(Date.parse(x.validation?.verifiedAt)),
   })).filter(x=>x.history.length&&x.future.length&&x.future.every(p=>p.value!==null));
 }
 const format=(n,unit)=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(n)+(unit?' '+clean(unit):'');
