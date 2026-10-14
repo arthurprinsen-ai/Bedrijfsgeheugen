@@ -44,6 +44,17 @@ for (let i = 0; i < sources.length; i += 5) {
   const results = await Promise.all(sources.slice(i, i + 5).map(probe));
   for (const entry of results) sourceChecks.set(entry.url, entry);
 }
+function missingClaimReceipts(m) {
+  const e = m.verification_evidence;
+  return requiredClaims.filter(claim => {
+    if (e?.claim_scope !== 'full' || !e.verified_claims?.includes(claim)) return true;
+    return !e.claim_evidence?.some(r =>
+      r.claim === claim && typeof r.url === 'string' && r.url.startsWith('https://') &&
+      typeof r.locator === 'string' && r.locator.trim().length > 0 &&
+      typeof r.observed_value === 'string' && r.observed_value.trim().length > 0 &&
+      r.checked_on === e.checked_on);
+  });
+}
 const models = catalog.models.map(m => {
   const verified = m.verified_at ? new Date(m.verified_at + 'T00:00:00Z') : null;
   const ageDays = verified && Number.isFinite(+verified) ? (now - verified) / 86400000 : null;
@@ -58,6 +69,7 @@ const models = catalog.models.map(m => {
     source: m.source ?? null,
     source_reachable: sourceChecks.get(m.source)?.reachable ?? false,
     classification: fullyVerified ? 'FULL_CLAIMS_VERIFIED' : (stale ? 'STALE_CLAIMS_UNVERIFIED' : 'DATED_CLAIMS_REQUIRE_EVIDENCE'),
+    missing_verified_claims: missingClaimReceipts(m),
     eligible_for_automatic_freshness_attestation: fullyVerified,
     missing_claim_receipts: missingClaims,
     missing_claim_receipt_count: missingClaims.length
