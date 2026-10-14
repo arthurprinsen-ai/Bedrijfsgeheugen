@@ -50,7 +50,7 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
  if (!r.readback || !Object.hasOwn(r.readback,'observed_value') ||
      JSON.stringify(r.readback.observed_value)!==JSON.stringify(r.observed_value))
    errors.push(p+':READBACK_VALUE_MISMATCH');
- // Optionally perform the actual provider readback through a pinned HTTPS endpoint.
+ // Perform the actual provider readback through a pinned HTTPS endpoint.
  // This is deliberately fail-closed; no endpoint, token or matching tenant => no approval.
  if (r.claim !== 'signed_dpa') {
    const endpoint=process.env.TENANT_LIVE_READBACK_ENDPOINT;
@@ -74,6 +74,31 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
        throw new Error('LIVE_PROVIDER_CONFIGURATION_MISMATCH');
      if(!isRecent(live.observed_at)) throw new Error('LIVE_PROVIDER_READBACK_STALE');
    } catch(error) { errors.push(p+':'+String(error.message??error)); }
+ }
+ // A repository label and signed attestation do not prove that a DPA exists.
+ // Require a separate authenticated contract-vault verification for contract claims.
+ if(r.claim==='signed_dpa'){
+  try {
+   const endpoint=process.env.TENANT_CONTRACT_VERIFY_ENDPOINT;
+   const origin=process.env.TENANT_CONTRACT_VERIFY_ALLOWED_ORIGIN;
+   const token=process.env.TENANT_CONTRACT_VERIFY_TOKEN;
+   if(!endpoint||!origin||!token) throw new Error('CONTRACT_VAULT_CONNECTION_REQUIRED');
+   const url=new URL(endpoint),allowed=new URL(origin);
+   if(url.protocol!=='https:'||allowed.protocol!=='https:'||url.origin!==allowed.origin)
+    throw new Error('INVALID_PINNED_CONTRACT_ENDPOINT');
+   const response=await fetch(url,{method:'POST',redirect:'error',
+    signal:AbortSignal.timeout(12000),
+    headers:{'content-type':'application/json',authorization:'Bearer '+token},
+    body:JSON.stringify({tenant_id:r.tenant_id,provider:r.provider,
+     model_id:r.model_id,evidence_reference:r.evidence_reference})});
+   if(!response.ok) throw new Error('CONTRACT_VAULT_HTTP_'+response.status);
+   const receipt=await response.json();
+   if(receipt.tenant_id!==r.tenant_id||receipt.provider!==r.provider||
+      receipt.evidence_reference!==r.evidence_reference||
+      receipt.signature_valid!==true||receipt.approved!==true||
+      !isRecent(receipt.verified_at))
+    throw new Error('SIGNED_CONTRACT_NOT_AUTHENTICATED');
+  }catch(error){errors.push(p+':'+String(error.message??error));}
  }
  if(r.claim==='signed_dpa' && r.readback?.source!=='approved_contract_repository') errors.push(p+':SIGNED_DPA_NOT_IN_APPROVED_VAULT');
  if(r.claim!=='signed_dpa' && r.readback?.source!=='authenticated_provider_api') errors.push(p+':PROVIDER_API_READBACK_REQUIRED');
