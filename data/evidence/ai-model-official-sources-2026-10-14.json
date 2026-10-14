@@ -2409,8 +2409,8 @@
   "model_source_fetch_failed": 0,
   "not_yet_checked": 0,
   "audited_catalog_blob_sha": "b08cf5fc5a4807ca9a93d9cee6fd36bc76e8ffee",
-  "supplemental_source_urls_checked": 4,
-  "total_unique_source_documents_checked": 70,
+  "supplemental_source_urls_checked": 6,
+  "total_unique_source_documents_checked": 76,
   "counting_note": "source_urls_checked counts unique catalog-supplied URLs, supplemental sources counted separately; unavailable_sources counts documented non-FETCHED URL results, not unverified model claims; no whole-model approval implied.",
   "provider_api_id_mentions": 19
 }
