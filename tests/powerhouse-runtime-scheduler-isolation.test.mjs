@@ -96,3 +96,16 @@ test('manual rollback restores canonical schedule before retiring isolated jobs 
   assert.match(rollback,/powerhouse-operational-retry-worker/);
   assert.doesNotMatch(rollback,/DROP TABLE|DROP SCHEMA|TRUNCATE TABLE/i);
 });
+
+const missed=readFileSync('supabase/migrations/20261014151000_runtime_missed_slot_reconciler.sql','utf8');
+test('missed slots are detected independently and enqueued once with bounded backlog',()=>{
+  assert.match(missed,/generate_series\(/);
+  assert.match(missed,/cron\.job_run_details/);
+  assert.match(missed,/d\.status='succeeded'/);
+  assert.match(missed,/ON CONFLICT\(task_name,slot_at\) DO NOTHING/);
+  assert.match(missed,/p_lookback_minutes > 60/);
+  assert.match(missed,/interval '3 minutes'/);
+  assert.match(missed,/pg_try_advisory_xact_lock/);
+  assert.match(missed,/cron\.schedule\('powerhouse-ops-independent-slot-reconciler'/);
+  assert.doesNotMatch(missed,/send_dm|send_email|composio|gmail\.send/i);
+});
