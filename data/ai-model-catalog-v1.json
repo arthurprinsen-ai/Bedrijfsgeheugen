@@ -677,7 +677,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://platform.claude.com/docs/en/models/overview",
@@ -707,37 +707,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+            "locator": "Specifications > Model IDs",
             "observed_value": "claude-sonnet-5-5",
-            "locator": "Compare models > Claude API ID (model column)",
-            "url": "https://platform.claude.com/docs/en/models/overview",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "observed_value": "Listed current model in Compare models",
-            "locator": "Compare models (current model lineup)",
-            "url": "https://platform.claude.com/docs/en/models/overview",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+            "locator": "Availability > Status / Retirement",
+            "observed_value": "Active (latest); retirement not sooner than September 28, 2027",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
-            "observed_value": "Standard Claude API USD per 1M tokens: input $2, output $10; variant/partner rates excluded",
-            "locator": "Compare models > Pricing",
-            "url": "https://platform.claude.com/docs/en/models/overview",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+            "locator": "Specifications > Pricing",
+            "observed_value": "USD 2 input / 10 output per million tokens; excludes cache, batch, regional charges",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "observed_value": "Text and image input; text output; multilingual, vision and tool use; 1M token context",
-            "locator": "Compare models > current models capabilities and context window",
-            "url": "https://platform.claude.com/docs/en/models/overview",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "1M token context; text and image inputs; text output; 128K max output; adaptive thinking",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
-            "url": "https://platform.claude.com/docs/en/models/overview",
-            "locator": "Model IDs > supported platform identifiers",
-            "observed_value": "Anthropic API claude-sonnet-5-5; Bedrock anthropic.claude-sonnet-5-5; Google Cloud claude-sonnet-5-5; Microsoft Foundry claude-sonnet-5-5. Region and customer entitlement not confirmed.",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+            "locator": "Specifications > Model IDs > Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; tenant entitlements not tested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -908,22 +908,20 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "pricing"
+          "pricing",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "model status and lifecycle",
-          "capabilities",
-          "context window",
-          "deployment and region eligibility",
-          "governance",
-          "rate applicability across providers and processing modes"
+          "governance"
         ],
         "claim_scope": "partial",
         "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ.",
@@ -934,7 +932,45 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
-        }
+        },
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/opus-5/overview",
+            "locator": "Specifications > Model IDs",
+            "observed_value": "claude-opus-5",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/opus-5/overview",
+            "locator": "Availability > Status / Retirement",
+            "observed_value": "Active (legacy); retirement not sooner than July 24, 2027",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/opus-5/overview",
+            "locator": "Specifications > Pricing",
+            "observed_value": "USD 5 input / 25 output per million tokens; excludes cache, batch, regional charges",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/opus-5/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "1M token context; text and image inputs; text output; 128K max output; adaptive thinking",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/opus-5/overview",
+            "locator": "Specifications > Model IDs > Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; tenant entitlements not tested",
+            "checked_on": "2026-10-14"
+          }
+        ],
+        "evidence_status": "PARTIALLY_VERIFIED"
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
