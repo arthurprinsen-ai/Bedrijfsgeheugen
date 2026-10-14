@@ -1,0 +1,42 @@
+name: Portal Financial Forecast Isolation
+on:
+  pull_request:
+    paths:
+      - 'platform/api/portal-forecast-handler.mjs'
+      - 'platform/read-models/portal-server-state.mjs'
+      - 'platform/read-models/portal-projection-layers.mjs'
+      - 'netlify/functions/_portal-supabase-store.mjs'
+      - 'netlify/functions/portal-forecasts.mjs'
+      - 'supabase/functions/portal-state-eu/index.ts'
+      - 'supabase/migrations/*portal*financial*forecast*.sql'
+      - 'tests/portal-forecast-auth.test.mjs'
+      - 'tests/portal-financial-forecast-store.test.mjs'
+      - 'tests/portal-contextual-forecast.test.mjs'
+      - 'tests/brain-portal-contextual-forecast.test.mjs'
+      - '.github/workflows/portal-financial-forecast-isolation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  forecast-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Authenticated tenant and source contract regression
+        run: |
+          node --test tests/portal-forecast-auth.test.mjs tests/portal-financial-forecast-store.test.mjs
+      - name: Finance scenario panel regression
+        run: |
+          node --test tests/portal-contextual-forecast.test.mjs tests/brain-portal-contextual-forecast.test.mjs
+      - name: Sanity-check SQL migration source
+        run: |
+          test -s supabase/migrations/20261014191753_portal_tenant_financial_forecast_evidence_source_v1.sql
+          test -s supabase/migrations/20261014193133_portal_financial_forecast_backtest_integrity_v2.sql
+# This job is diagnostic only. Protected Required, CodeQL, governed merge,
+# tenant validation, Supabase/Netlify deploy, and production readback stay mandatory.
