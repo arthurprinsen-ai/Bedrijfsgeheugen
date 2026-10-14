@@ -8361,13 +8361,36 @@
           {
             "claim": "model_id",
             "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "locator": "All Gemini 3 models > Gemini 3.8 Flash-Lite TTS",
+            "observed_value": "gemini-3.8-flash-lite-tts",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/deprecations/",
+            "locator": "Gemini 3 models > gemini-3.8-flash-lite-tts",
+            "observed_value": "Released 2026-09-22; no announced shutdown date; account access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Flash-Lite TTS > Standard Paid Tier",
+            "observed_value": "Through 2026-12-31: text input USD 0.50 per 1M tokens; audio output USD 6.00 per 1M tokens; from 2027-01-01 USD 1.00 and USD 12.00 respectively",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
             "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "locator": "Audio models > Gemini 3.8 Flash-Lite TTS",
+            "observed_value": "Low-latency, high-throughput text-to-speech across 101 languages",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "All Gemini 3 models > endpoint",
+            "observed_value": "Gemini API model identifier gemini-3.8-flash-lite-tts; live authenticated access not verified",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8391,14 +8414,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8414,7 +8432,7 @@
     },
     {
       "tier": "balanced",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": 0.75,
       "output_usd_m": 3.75,
       "cached_input_usd_m": null,
@@ -8428,7 +8446,8 @@
         "agentic workflows"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Deprecated in official Google release notes; do not select for new deployments."
       ],
       "scores": {
         "reasoning": 8,
@@ -8487,6 +8506,13 @@
             "locator": "Gemini 3.7 Flash, Standard, Paid Tier table; dated prices until Dec 31 2026 and beginning Jan 1 2027",
             "observed_value": "USD 0.75 input / USD 3.75 output per 1M tokens through 2026-12-31; thereafter USD 1.50 / USD 7.50",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/deprecations/",
+            "locator": "Gemini 3 models > gemini-3.7-flash",
+            "observed_value": "Deprecated 2026-10-08; API requests automatically routed to gemini-3.8-flash; replace model ID for new deployments",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -8526,12 +8552,11 @@
         ],
         "missing_claim_receipts": [
           "model_id",
-          "status",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 5,
+        "missing_receipt_count": 4,
         "source_reference": "https://ai.google.dev/gemini-api/docs/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8692,7 +8717,8 @@
       ],
       "limitations": [
         "verify exact endpoint pricing and regional processing for production",
-        "Official Google documentation: deprecated; API requests automatically route to gemini-3.6-flash. Prefer gemini-3.6-flash or gemini-3.8-flash for new workloads."
+        "Official Google documentation: deprecated; API requests automatically route to gemini-3.6-flash. Prefer gemini-3.6-flash or gemini-3.8-flash for new workloads.",
+        "Deprecated in official Google release notes; do not select for new deployments."
       ],
       "scores": {
         "reasoning": 8,
@@ -8759,15 +8785,16 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "status",
+            "claim": "capabilities",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash.md",
             "locator": "Deprecated model code and model capabilities",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "capabilities",
-            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash.md",
-            "locator": "Deprecated model code and model capabilities",
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/deprecations/",
+            "locator": "Gemini 3 models > gemini-3.5-flash",
+            "observed_value": "Deprecated 2026-10-08; API calls routed to gemini-3.6-flash",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8792,13 +8819,12 @@
         ],
         "missing_claim_receipts": [
           "model_id",
-          "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 5,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8943,7 +8969,7 @@
     },
     {
       "tier": "specialist",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -8957,7 +8983,8 @@
         "image editing"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Deprecated in official Google release notes; do not select for new deployments."
       ],
       "scores": {
         "reasoning": 3,
@@ -9019,14 +9046,23 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image",
+            "locator": "Model code",
+            "observed_value": "gemini-3.1-flash-image",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "url": "https://ai.google.dev/gemini-api/docs/changelog",
+            "locator": "October 8 2026 > deprecation announcement",
+            "observed_value": "Deprecated; no shutdown date announced; recommended successor gemini-nano-banana-2.1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image",
+            "locator": "Supported data types; Capabilities",
+            "observed_value": "Text, image, video, PDF inputs; text and image outputs; image generation and search grounding supported",
             "checked_on": "2026-10-14"
           }
         ],
@@ -9050,14 +9086,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
