@@ -160,3 +160,16 @@ test('supplier identity audit stays a scoped verification artifact without imply
  assert.equal(report.summary.independent_full_claim_review_completed,false,
   'Model identity/source reviews do not constitute six-claim supplier verification');
 });
+
+test('Google Gemini 3.1 Flash Image October 6 deprecation date matches official release notes',()=>{
+ const models=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8')).models;
+ const m=models.find(x=>x.id==='gemini-3.1-flash-image');
+ const statuses=(m.verification_evidence?.claim_evidence||[]).filter(x=>x.claim==='status'&&x.url==='https://ai.google.dev/gemini-api/docs/changelog');
+ assert.ok(statuses.length>0);
+ for(const s of statuses){
+  assert.doesNotMatch(s.locator||'',/October 8,? 2026/i);
+  assert.doesNotMatch(s.observed_value||'',/2026-10-08/);
+ }
+ assert.equal(m.source_date_correction_20261014?.supplier_announcement_date,'2026-10-06');
+ assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false);
+});

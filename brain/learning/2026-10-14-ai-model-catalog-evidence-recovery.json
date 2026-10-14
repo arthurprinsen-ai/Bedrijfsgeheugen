@@ -7,7 +7,8 @@
     "Legacy Sol routing warning",
     "Audit of source reachability and stale model claims",
     "Blob-SHA GitHub readback for large catalog files, explicit Cohere alias-to-official provider_api_id mapping, and preserved non-approval gates",
-    "Complete all seven Cohere provider_api_id mappings, correct Command A Reasoning 256K input/32K output and image input from official model page; do not grant supplier or tenant approval."
+    "Complete all seven Cohere provider_api_id mappings, correct Command A Reasoning 256K input/32K output and image input from official model page; do not grant supplier or tenant approval.",
+    "Verified October 6 Google image deprecation announcement date and repaired two inaccurate October 8 source citations"
   ],
   "limitations": [
     "Other model claims not yet vendor-verified",
@@ -60,5 +61,12 @@
     "model_count": 110,
     "customer_contracts_or_provider_account_verified": false,
     "independent_supplier_approval": false
+  },
+  "google_image_lifecycle_date_repair": {
+    "model_id": "gemini-3.1-flash-image",
+    "date": "2026-10-06",
+    "url": "https://ai.google.dev/gemini-api/docs/changelog",
+    "tenant_verification": false,
+    "existing_scope_retained": "full"
   }
 }

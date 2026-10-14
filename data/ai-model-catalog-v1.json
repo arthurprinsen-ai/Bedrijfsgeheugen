@@ -12266,7 +12266,7 @@
           {
             "claim": "status",
             "url": "https://ai.google.dev/gemini-api/docs/changelog",
-            "locator": "October 8 2026 > deprecation announcement",
+            "locator": "October 6, 2026 > deprecation announcement",
             "observed_value": "Deprecated; no shutdown date announced; recommended successor gemini-nano-banana-2.1",
             "checked_on": "2026-10-14"
           },
@@ -12304,8 +12304,8 @@
           {
             "claim": "status",
             "url": "https://ai.google.dev/gemini-api/docs/changelog",
-            "locator": "October 8, 2026 > deprecation announcement for gemini-3.1-flash-image",
-            "observed_value": "Deprecated 2026-10-08, no shutdown date announced; recommended replacement gemini-nano-banana-2.1; API endpoint may still be callable",
+            "locator": "October 6, 2026 > deprecation announcement for gemini-3.1-flash-image",
+            "observed_value": "Deprecated 2026-10-06, no shutdown date announced; recommended replacement gemini-nano-banana-2.1; API endpoint may still be callable",
             "checked_on": "2026-10-14",
             "scope": "official lifecycle notice"
           }
@@ -12370,6 +12370,16 @@
         "mode": "Standard paid",
         "checked_on": "2026-10-14",
         "source": "https://ai.google.dev/gemini-api/docs/pricing"
+      },
+      "source_date_correction_20261014": {
+        "source": "https://ai.google.dev/gemini-api/docs/changelog",
+        "claim": "status",
+        "supplier_announcement_date": "2026-10-06",
+        "previous_erroneous_date": "2026-10-08",
+        "corrected_on": "2026-10-14",
+        "reason": "Official Gemini changelog places Nano Banana 2.1 image-model deprecation Oct 6; Oct 8 concerns Flash text models",
+        "tenant_evidence": false,
+        "automatic_recommendation_granted": false
       }
     },
     {
