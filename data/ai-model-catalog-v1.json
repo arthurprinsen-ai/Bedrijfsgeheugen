@@ -577,7 +577,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/news/claude-sonnet-5",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -593,16 +593,22 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
-        "verification_required": [
+        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
           "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
+          "pricing"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "not_verified": [
+          "model status and lifecycle",
+          "capabilities",
+          "context window",
+          "deployment and region eligibility",
+          "governance",
+          "rate applicability across providers and processing modes"
+        ],
+        "claim_scope": "partial",
+        "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ."
       }
     },
     {
@@ -643,7 +649,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/news/claude-opus-5",
+      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -659,16 +665,22 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
-        "verification_required": [
+        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
           "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
+          "pricing"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "not_verified": [
+          "model status and lifecycle",
+          "capabilities",
+          "context window",
+          "deployment and region eligibility",
+          "governance",
+          "rate applicability across providers and processing modes"
+        ],
+        "claim_scope": "partial",
+        "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ."
       }
     },
     {
