@@ -85,5 +85,17 @@
     "paid_orders": null,
     "realized_revenue_eur": null
   },
-  "learning_path": "BG211 -> BG168 -> BG166 -> BG167"
+  "learning_path": "BG211 -> BG168 -> BG166 -> BG167",
+  "compiler": {
+    "failure_class": "CONTENT_TRUST_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-pricing-trust.test.mjs"
+    ]
+  }
 }
