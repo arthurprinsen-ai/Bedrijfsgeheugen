@@ -22101,20 +22101,20 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "PUBLIC_MODEL_CARD_CONTRADICTORY_LIFECYCLE_UNRESOLVED",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "capabilities",
           "model_id",
-          "status",
           "deployment"
         ],
         "not_verified": [
           "pricing",
           "governance",
           "current tenant region-specific pricing",
-          "customer deployment and governance"
+          "customer deployment and governance",
+          "status"
         ],
         "claim_evidence": [
           {
@@ -22291,6 +22291,21 @@
         "account_pricing_verified": false,
         "customer_contract_verified": false,
         "automatic_recommendation_eligible": false
+      },
+      "independent_official_aws_titan_model_card_review_20261014": {
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+        "checked_on": "2026-10-14",
+        "exact_provider_model_id": "amazon.titan-image-generator-v2:0",
+        "published_eol_date": "2026-06-30",
+        "published_lifecycle_label": "Legacy",
+        "unresolved_supplier_lifecycle_conflict": true,
+        "current_customer_region_modelLifecycle": "UNVERIFIED",
+        "authenticated_GetFoundationModel_required": true,
+        "public_model_id_supported": true,
+        "supplier_lifecycle_claim_approved": false,
+        "automatic_recommendation_eligible": false,
+        "production_release_approved": false,
+        "assurance": "Published official documentation is internally inconsistent: EOL has passed yet lifecycle label Legacy. Treat source status as unresolved and do not infer continued API availability."
       }
     },
     {
