@@ -22802,6 +22802,38 @@
           "commercial_tariff_attested": false,
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_model_card_self_host_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "official_supplier_model_card": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-0.5B-Instruct",
+          "source_locator": "Model card > Model description; Usage > Transformers/vLLM/llama.cpp; License metadata",
+          "observed_architecture": "Hybrid Transformers + Mamba causal decoder",
+          "observed_capability": "Causal text generation, instruction following and multilingual/reasoning tasks (per exact model card)",
+          "observed_license": "falcon-llm-license",
+          "observed_local_inference_frameworks": [
+            "Transformers",
+            "vLLM",
+            "llama.cpp"
+          ],
+          "observed_distribution": "Supplier-hosted downloadable model repository and local/self-host inference instructions; not an authenticated managed inference endpoint",
+          "assessed_public_claims": [
+            "model repository identity",
+            "license label",
+            "model-card capabilities",
+            "documented local inference/distribution"
+          ],
+          "not_verified": [
+            "supplier-operated live API availability or per-million-token tariff",
+            "third-party hosting/storage/compute cost",
+            "actual customer entitlement or deployment",
+            "customer DPA/retention/training/residency/access and encryption controls",
+            "license rights interpretation for the customer's specific use"
+          ],
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23078,6 +23110,38 @@
           "commercial_tariff_attested": false,
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_model_card_self_host_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "official_supplier_model_card": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-1.5B-Instruct",
+          "source_locator": "Model card > Model description; Usage > Transformers/vLLM/llama.cpp; License metadata",
+          "observed_architecture": "Hybrid Transformers + Mamba causal decoder",
+          "observed_capability": "Causal text generation, instruction following and multilingual/reasoning tasks (per exact model card)",
+          "observed_license": "falcon-llm-license",
+          "observed_local_inference_frameworks": [
+            "Transformers",
+            "vLLM",
+            "llama.cpp"
+          ],
+          "observed_distribution": "Supplier-hosted downloadable model repository and local/self-host inference instructions; not an authenticated managed inference endpoint",
+          "assessed_public_claims": [
+            "model repository identity",
+            "license label",
+            "model-card capabilities",
+            "documented local inference/distribution"
+          ],
+          "not_verified": [
+            "supplier-operated live API availability or per-million-token tariff",
+            "third-party hosting/storage/compute cost",
+            "actual customer entitlement or deployment",
+            "customer DPA/retention/training/residency/access and encryption controls",
+            "license rights interpretation for the customer's specific use"
+          ],
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23353,6 +23417,38 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        },
+        "public_model_card_self_host_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "official_supplier_model_card": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-3B-Instruct",
+          "source_locator": "Model card > Model description; Usage > Transformers/vLLM/llama.cpp; License metadata",
+          "observed_architecture": "Hybrid Transformers + Mamba causal decoder",
+          "observed_capability": "Causal text generation, instruction following and multilingual/reasoning tasks (per exact model card)",
+          "observed_license": "falcon-llm-license",
+          "observed_local_inference_frameworks": [
+            "Transformers",
+            "vLLM",
+            "llama.cpp"
+          ],
+          "observed_distribution": "Supplier-hosted downloadable model repository and local/self-host inference instructions; not an authenticated managed inference endpoint",
+          "assessed_public_claims": [
+            "model repository identity",
+            "license label",
+            "model-card capabilities",
+            "documented local inference/distribution"
+          ],
+          "not_verified": [
+            "supplier-operated live API availability or per-million-token tariff",
+            "third-party hosting/storage/compute cost",
+            "actual customer entitlement or deployment",
+            "customer DPA/retention/training/residency/access and encryption controls",
+            "license rights interpretation for the customer's specific use"
+          ],
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
         }
       },
@@ -23631,6 +23727,38 @@
           "commercial_tariff_attested": false,
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_model_card_self_host_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "official_supplier_model_card": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-7B-Instruct",
+          "source_locator": "Model card > Model description; Usage > Transformers/vLLM/llama.cpp; License metadata",
+          "observed_architecture": "Hybrid Transformers + Mamba causal decoder",
+          "observed_capability": "Causal text generation, instruction following and multilingual/reasoning tasks (per exact model card)",
+          "observed_license": "falcon-llm-license",
+          "observed_local_inference_frameworks": [
+            "Transformers",
+            "vLLM",
+            "llama.cpp"
+          ],
+          "observed_distribution": "Supplier-hosted downloadable model repository and local/self-host inference instructions; not an authenticated managed inference endpoint",
+          "assessed_public_claims": [
+            "model repository identity",
+            "license label",
+            "model-card capabilities",
+            "documented local inference/distribution"
+          ],
+          "not_verified": [
+            "supplier-operated live API availability or per-million-token tariff",
+            "third-party hosting/storage/compute cost",
+            "actual customer entitlement or deployment",
+            "customer DPA/retention/training/residency/access and encryption controls",
+            "license rights interpretation for the customer's specific use"
+          ],
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23908,6 +24036,38 @@
           "commercial_tariff_attested": false,
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_model_card_self_host_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "official_supplier_model_card": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-34B-Instruct",
+          "source_locator": "Model card > Model description; Usage > Transformers/vLLM/llama.cpp; License metadata",
+          "observed_architecture": "Hybrid Transformers + Mamba causal decoder",
+          "observed_capability": "Causal text generation, instruction following and multilingual/reasoning tasks (per exact model card)",
+          "observed_license": "falcon-llm-license",
+          "observed_local_inference_frameworks": [
+            "Transformers",
+            "vLLM",
+            "llama.cpp"
+          ],
+          "observed_distribution": "Supplier-hosted downloadable model repository and local/self-host inference instructions; not an authenticated managed inference endpoint",
+          "assessed_public_claims": [
+            "model repository identity",
+            "license label",
+            "model-card capabilities",
+            "documented local inference/distribution"
+          ],
+          "not_verified": [
+            "supplier-operated live API availability or per-million-token tariff",
+            "third-party hosting/storage/compute cost",
+            "actual customer entitlement or deployment",
+            "customer DPA/retention/training/residency/access and encryption controls",
+            "license rights interpretation for the customer's specific use"
+          ],
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24184,6 +24344,38 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        },
+        "public_model_card_self_host_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "official_supplier_model_card": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "canonical_repository": "tiiuae/Falcon-H1R-7B",
+          "source_locator": "Model description > Falcon-H1R-7B; Usage > Transformers/vLLM/SGLang; License metadata",
+          "observed_architecture": "Hybrid Transformers + Mamba2 causal decoder",
+          "observed_capability": "Text generation optimized for reasoning, mathematical and programming tasks",
+          "observed_license": "falcon-llm-license",
+          "observed_local_inference_frameworks": [
+            "Transformers",
+            "vLLM",
+            "SGLang"
+          ],
+          "observed_distribution": "Supplier-hosted downloadable model repository and local/self-host inference instructions; not an authenticated managed inference endpoint",
+          "assessed_public_claims": [
+            "model repository identity",
+            "license label",
+            "model-card capabilities",
+            "documented local inference/distribution"
+          ],
+          "not_verified": [
+            "supplier-operated live API availability or per-million-token tariff",
+            "third-party hosting/storage/compute cost",
+            "actual customer entitlement or deployment",
+            "customer DPA/retention/training/residency/access and encryption controls",
+            "license rights interpretation for the customer's specific use"
+          ],
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
         }
       },
