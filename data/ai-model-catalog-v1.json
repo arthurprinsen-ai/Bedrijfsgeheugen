@@ -10808,8 +10808,8 @@
     {
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.75,
+      "output_usd_m": 3.75,
       "cached_input_usd_m": null,
       "context_k": 1048.576,
       "modalities": [
@@ -10901,8 +10901,8 @@
           {
             "claim": "pricing",
             "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "Gemini 3.8 Flash > Standard > Paid Tier per 1M tokens",
-            "observed_value": "Through 2026-12-31: input USD 0.75, output USD 3.75; 2027-01-01 onward: input USD 1.50, output USD 7.50",
+            "locator": "gemini-3.8-flash > Standard > Paid Tier per 1M tokens, 2026 pricing and 2027 step-up",
+            "observed_value": "Standard Paid Tier: through 2026-12-31 USD 0.75 input and USD 3.75 output per 1M tokens; from 2027-01-01 USD 1.50 input and USD 7.50 output. Does not include caching, Batch, Flex, Priority, grounding or a negotiated customer tariff.",
             "checked_on": "2026-10-14"
           },
           {
@@ -10975,13 +10975,29 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/pricing",
         "last_specific_source_check": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
-      "max_output_tokens": 65536
+      "max_output_tokens": 65536,
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "processing_mode": "Gemini Developer API Standard paid tier",
+        "model_specific_source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "observation_date": "2026-10-14",
+        "effective_from": "2026-01-01",
+        "valid_through": "2026-12-31",
+        "current_input_usd_m": 0.75,
+        "current_output_usd_m": 3.75,
+        "from_2027_01_01_input_usd_m": 1.5,
+        "from_2027_01_01_output_usd_m": 7.5,
+        "account_specific_billing_not_verified": true,
+        "non_standard_tiers_excluded": true,
+        "notes": "Google's dated promotional Standard paid tariff applies only until 2026-12-31; do not carry it into 2027 without pricing refresh. Batch/Flex/Priority/grounding/caching billed separately."
+      }
     },
     {
       "tier": "specialist",
@@ -11926,8 +11942,8 @@
     {
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": 1.5,
-      "output_usd_m": 7.5,
+      "input_usd_m": 0.75,
+      "output_usd_m": 3.75,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -12043,6 +12059,14 @@
             "observed_value": "gemini-3.6-flash: Gemini Developer API paid services do not train on user prompts/responses for product improvement; paid-tier logging and endpoint state remain subject to privacy/abuse conditions. For stateless generation, avoid stateful Interactions, explicit caches and File storage to reduce retention; Interactions store=true by default and Google Maps grounding has an exception. This is supplier conditional policy, not a verified customer paid tier or tenant ZDR.",
             "checked_on": "2026-10-14",
             "scope": "official supplier Gemini Developer API baseline applied to named stable model; tenant settings and Vertex deployments excluded"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "gemini-3.6-flash > Standard > Paid Tier per 1M tokens, 2026 pricing and 2027 step-up",
+            "observed_value": "Through 2026-12-31: USD 0.75 input and USD 3.75 output per 1M; from 2027-01-01 USD 1.50 input and USD 7.50 output.",
+            "checked_on": "2026-10-14",
+            "scope": "official public tier only, excludes nonstandard billing and customer pricing"
           }
         ],
         "provider_policy_evidence": {
@@ -12094,16 +12118,25 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+        "last_specific_source_check": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
         "unit": "per 1M tokens",
-        "processing_mode": "Standard paid tier",
+        "processing_mode": "Gemini Developer API Standard paid tier",
         "model_specific_source": "https://ai.google.dev/gemini-api/docs/pricing",
         "observation_date": "2026-10-14",
-        "notes": "Standard paid: USD 0.75 per 1M input tokens and USD 3.75 per 1M output tokens through 2026-12-31; from 2027-01-01 USD 1.50 and USD 7.50 respectively.",
-        "tenant_billing_not_verified": true
+        "effective_from": "2026-01-01",
+        "valid_through": "2026-12-31",
+        "current_input_usd_m": 0.75,
+        "current_output_usd_m": 3.75,
+        "from_2027_01_01_input_usd_m": 1.5,
+        "from_2027_01_01_output_usd_m": 7.5,
+        "account_specific_billing_not_verified": true,
+        "non_standard_tiers_excluded": true,
+        "notes": "Google's dated promotional Standard paid tariff applies only until 2026-12-31; do not carry it into 2027 without pricing refresh. Batch/Flex/Priority/grounding/caching billed separately."
       }
     },
     {
