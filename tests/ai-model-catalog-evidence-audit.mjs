@@ -72,6 +72,12 @@ const productionUrl = process.env.MODEL_CATALOG_PRODUCTION_URL;
 report.production_readback = {
   status: 'NOT_REQUESTED', local_sha256: createHash('sha256').update(JSON.stringify(catalog)).digest('hex')
 };
+// In release mode, absence of a production target is a hard failure.
+if (process.env.MODEL_CATALOG_REQUIRE_PRODUCTION_READBACK === '1' && !productionUrl) {
+  report.production_readback.status = 'FAILED';
+  report.production_readback.error = 'PRODUCTION_URL_REQUIRED';
+  process.exitCode = 2;
+}
 if (productionUrl) {
   report.production_readback.status = 'FAILED';
   report.production_readback.url = productionUrl;
