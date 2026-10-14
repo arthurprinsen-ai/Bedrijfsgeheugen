@@ -16743,7 +16743,23 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "origin_host_distinction_review_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_developer": "Z.ai",
+          "model_weights_origin": "Z.ai GLM family",
+          "catalog_api_platform": "Mistral AI",
+          "api_model_id": "zai-glm-5-3",
+          "source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
+          "model_card_observation": "Official Mistral model card explicitly calls this an unmodified third-party open-weight Z.ai model hosted by Mistral.",
+          "supplier_price_basis": "Mistral-hosted API catalog offer only; must not equate any Mistral SKU rates with Z.ai's first-party API rates, local hardware costs or third-party cloud rates.",
+          "lifecycle_note": "Mistral GA third-party offering as of 2026-10-14.",
+          "api_tenant_authorization_verified": false,
+          "model_specific_retention_verified": false,
+          "public_model_source_verification_status": "SCOPE_LIMITED_PROVENANCE_VERIFIED_NO_FULL_GOVERNANCE_APPROVAL",
+          "automatic_recommendation_eligible": false,
+          "production_approved": false
+        }
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -16983,7 +16999,23 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "origin_host_distinction_review_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_developer": "Z.ai",
+          "model_weights_origin": "Z.ai GLM family",
+          "catalog_api_platform": "Mistral AI",
+          "api_model_id": "zai-glm-5-2",
+          "source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
+          "model_card_observation": "Official Mistral model card explicitly calls this an unmodified third-party open-weight Z.ai model hosted by Mistral.",
+          "supplier_price_basis": "Mistral-hosted API catalog offer only; must not equate any Mistral SKU rates with Z.ai's first-party API rates, local hardware costs or third-party cloud rates.",
+          "lifecycle_note": "Deprecated by Mistral on 2026-09-29; GLM 5.3 is the published successor.",
+          "api_tenant_authorization_verified": false,
+          "model_specific_retention_verified": false,
+          "public_model_source_verification_status": "SCOPE_LIMITED_PROVENANCE_VERIFIED_NO_FULL_GOVERNANCE_APPROVAL",
+          "automatic_recommendation_eligible": false,
+          "production_approved": false
+        }
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
