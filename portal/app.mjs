@@ -50,11 +50,28 @@ function identityCurrent(){try{return window.netlifyIdentity?.currentUser?.()||n
 function cacheKeyFor(user){const email=(user?.email||'scan').toLowerCase();return`bg.portal.state.v4.${encodeURIComponent(email)}`}
 async function authHeaders(user){if(!user)return{};try{const token=await user.jwt();return token?{authorization:`Bearer ${token}`}:{}}catch{return{}}}
 async function readServerStateResult(user){if(!user)return{status:'unavailable',state:null};try{const headers=await authHeaders(user);if(!headers.authorization)return{status:'unavailable',state:null};const r=await fetch('/api/portal-state',{headers:{accept:'application/json',...headers},credentials:'same-origin'});if(r.ok)return{status:'found',state:await r.json()};if(r.status===404)return{status:'missing',state:null};return{status:'unavailable',state:null}}catch{return{status:'unavailable',state:null}}}
+async function readVerifiedForecasts(user){
+ if(!user)return[];
+ try{
+  const headers=await authHeaders(user);
+  if(!headers.authorization)return[];
+  const response=await fetch('/api/portal-forecasts',{headers:{accept:'application/json',...headers},credentials:'same-origin',cache:'no-store'});
+  if(!response.ok)return[];
+  const data=await response.json();
+  return Array.isArray(data?.forecasts)?data.forecasts:[];
+ }catch{return[]}
+}
+async function loadAuthenticatedForecasts(user,generation){
+ const forecasts=await readVerifiedForecasts(user);
+ if(generation!==loadGeneration||!user)return;
+ state={...state,forecasts};
+ appRender();
+}
 async function readServerState(user){const result=await readServerStateResult(user);return result.status==='found'?result.state:null}
 async function writeServerState(user,local){if(!user||!local||local.sourceMeta?.kind==='empty')return false;try{const headers=await authHeaders(user);if(!headers.authorization)return false;const r=await fetch('/api/portal-state',{method:'POST',headers:{'content-type':'application/json',...headers},credentials:'same-origin',body:JSON.stringify(local)});return r.ok}catch{return false}}
 async function loadBestState(user){const local=readLegacyBrowserState({storage:window.localStorage,user});if(!user)return local;const serverResult=await readServerStateResult(user);if(serverResult.status==='found')return serverResult.state;if(serverResult.status==='missing'&&local){const written=await writeServerState(user,local);if(!written)return local;const verified=await readServerStateResult(user);return verified.status==='found'?verified.state:local}if(serverResult.status==='unavailable')return local;return null}
 function makeAdapter(user,empty){return createPortalDataAdapter({storage:window.sessionStorage,cacheKey:cacheKeyFor(user),fallbackState:empty,loadLive:async()=>loadBestState(user)})}
-async function loadForUser(user){const generation=++loadGeneration;const empty=createEmptyPortalState({user});const nextAdapter=makeAdapter(user,empty);const initial=await nextAdapter.loadInitial();if(generation!==loadGeneration)return;adapter=nextAdapter;state=initial.state||empty;source=initial.source||'empty';inputDraft=null;inputDirty=false;inputError='';inputSaved='';appRender();queueMicrotask(async()=>{const refreshed=await nextAdapter.refresh();if(generation!==loadGeneration)return;if(refreshed?.state&&(refreshed.changed||source!==refreshed.source)){state=refreshed.state;source=refreshed.source;inputDraft=null;inputDirty=false;appRender()}})}
+async function loadForUser(user){const generation=++loadGeneration;const empty=createEmptyPortalState({user});const nextAdapter=makeAdapter(user,empty);const initial=await nextAdapter.loadInitial();if(generation!==loadGeneration)return;adapter=nextAdapter;state=initial.state||empty;source=initial.source||'empty';inputDraft=null;inputDirty=false;inputError='';inputSaved='';state={...state,forecasts:[]};appRender();if(user)void loadAuthenticatedForecasts(user,generation);queueMicrotask(async()=>{const refreshed=await nextAdapter.refresh();if(generation!==loadGeneration)return;if(refreshed?.state&&(refreshed.changed||source!==refreshed.source)){state={...refreshed.state,forecasts:state.forecasts||[]};source=refreshed.source;inputDraft=null;inputDirty=false;appRender()}})}
 function waitForIdentity(){if(!window.netlifyIdentity)return Promise.resolve(null);return new Promise(resolve=>{let done=false;const finish=u=>{if(done)return;done=true;resolve(u||null)};window.netlifyIdentity.on('init',finish);const current=identityCurrent();if(current)finish(current);setTimeout(()=>finish(identityCurrent()),500)})}
 async function boot(){const user=await waitForIdentity();await loadForUser(user);if(window.netlifyIdentity){window.netlifyIdentity.on('login',u=>{window.netlifyIdentity.close();loadForUser(u)});window.netlifyIdentity.on('logout',()=>loadForUser(null))}}
 boot();
