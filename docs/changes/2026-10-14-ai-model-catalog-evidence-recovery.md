@@ -99,3 +99,24 @@ This is an audit of the existing catalog's evidence *structure and scope*, not a
 
 **Resolution lanes**: (1) Fill 35 absent claims from exact authoritative model or product documentation; (2) fill four empty observed values only after checking the cited source; (3) for 111 scope-insufficient claims, assess model/provider/region and commercial-SKU applicability and keep customer-dependent controls behind the separate authorized tenant readback and contract verifier. The existing protected freshness gate and customer-governance controls remain unchanged.
 
+
+
+## Supplier evidence checkpoint (2026-10-14, classifier reconciliation)
+
+The 110-model catalog has 660 required supplier claim positions. At this checkpoint, 530 positions contain an inspectable model-scoped supplier-source receipt **awaiting independent validation**, 96 have general provider-policy information **not specific-model governance proof**, and 34 have no adequate current/model-specific receipt (including incomplete or historical price references). Total lacking complete model-scoped source receipts: 130. These are source-completeness metrics, **not** a count of verified claims.
+
+```
+OpenAI: 18 source gaps / 20 models
+Anthropic: 10 source gaps / 11 models
+Google: 21 source gaps / 21 models
+Mistral AI: 22 source gaps / 22 models
+xAI: 5 source gaps / 5 models
+DeepSeek: 0 source gaps / 2 models
+Cohere: 10 source gaps / 7 models
+Meta: 6 source gaps / 1 models
+Alibaba/Qwen: 6 source gaps / 1 models
+Amazon: 25 source gaps / 13 models
+TII/Falcon: 7 source gaps / 7 models
+```
+
+The canonical supplier classifier is shared by the worklist, protected freshness test and production-readback audit. It does not accept historical price references, illustrative billing examples, or only a pricing unit as current price verification. Full-scope labels must not be automatically inferred from a source URL or these counters. Two currently declared-full open-weight models remain subject to independent review and customer-specific controls on hosting, region and retention. The protected merge, Required test, CodeQL, and exact production readback remain mandatory.
