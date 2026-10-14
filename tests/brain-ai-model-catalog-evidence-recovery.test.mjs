@@ -233,3 +233,37 @@ test('audio-minute model prices retain their units and do not enter token-cost p
  assert.match(html,/basis\.usd_per_minute\.toFixed\(3\)/);
  assert.match(html,/if\(m\.input_usd_m==null\|\|m\.output_usd_m==null\)return null/);
 });
+
+test('audio price display is unit-aware in both catalog and advisor, without token projections', async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const models=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8')).models;
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ const start=html.indexOf('function priceDescriptor(m){');
+ const end=html.indexOf('function governanceBadges(m){',start);
+ assert.ok(start>=0&&end>start,'Modelwijzer pricing functions must be present');
+ const scope={
+  $:id=>({tasks:{value:'100'},inputTokens:{value:'1000'},outputTokens:{value:'1000'}}[id]),
+ };
+ runInNewContext(html.slice(start,end),scope,{timeout:1000});
+ assert.equal(typeof scope.priceDescriptor,'function');
+ assert.equal(typeof scope.monthlyCost,'function');
+ for(const [id,rate] of Object.entries({
+  'gpt-realtime-translate':0.034,
+  'gpt-live-transcribe':0.017,
+  'gpt-realtime-whisper':0.017
+ })){
+  const model=models.find(m=>m.id===id);
+  assert.ok(model,id);
+  assert.equal(model.pricing_basis?.unit,'audio_minute',id);
+  assert.equal(model.pricing_basis.usd_per_minute,rate,id);
+  assert.equal(scope.monthlyCost(model),null,'Audio minutes must not be projected as text tokens: '+id);
+  assert.match(scope.priceDescriptor(model),new RegExp('USD '+rate.toFixed(3)+' per audiominuut'),id);
+  assert.doesNotMatch(scope.priceDescriptor(model),/\/M|miljoen tokens/i,id);
+ }
+ const tokenModel=models.find(m=>m.input_usd_m!=null&&m.output_usd_m!=null);
+ assert.ok(tokenModel);
+ const projected=100*((1000/1e6)*tokenModel.input_usd_m+(1000/1e6)*tokenModel.output_usd_m);
+ assert.ok(Math.abs(scope.monthlyCost(tokenModel)-projected)<1e-9);
+ assert.match(html,/m\._cost==null\?priceDescriptor\(m\)/,'Advisor must display the audio unit when a verified model becomes recommendable');
+ assert.match(html,/m\.input_usd_m!=null\?[^\n]*priceDescriptor\(m\)/,'Catalog cards must display the audio rate rather than a token rate');
+});
