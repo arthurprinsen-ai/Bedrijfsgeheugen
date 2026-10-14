@@ -25,8 +25,18 @@ const verdict=new Map();
 const concurrency=4;
 const maxSourceBytes=2_000_000;
 const exactModelToken=(page,id)=>{
-  const escaped=id.replace(/[.*+?^${}()|[\]\\]/g,'\\const concurrency=4;');
-  return new RegExp('(^|[^a-zA-Z0-9_-])'+escaped+'(?=$|[^a-zA-Z0-9_-])','i').test(page);
+  const body=page.toLowerCase();
+  const token=id.toLowerCase();
+  let offset=0;
+  for(;;){
+    const i=body.indexOf(token,offset);
+    if(i===-1)return false;
+    const before=body[i-1]??' ';
+    const after=body[i+token.length]??' ';
+    const adjacent=/[a-z0-9_-]/i;
+    if(!adjacent.test(before)&&!adjacent.test(after))return true;
+    offset=i+token.length;
+  }
 };
 let cursor=0;
 async function worker(){
