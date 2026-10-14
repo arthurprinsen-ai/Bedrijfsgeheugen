@@ -24,3 +24,13 @@ Supabase project `adhjwmvyoixzjtmiroln` bevat `powerhouse_forecasts`, `powerhous
 - **Niet live:** de nieuwe Edge-route en Netlify-route zijn uitsluitend in deze PR gewijzigd. De gebruikte Edge productieversie is nog niet via beschermd releaseproces bijgewerkt. Er zijn nog geen echte gevalideerde tijdreeksen ingelezen en geen tenant-backtest/eindgebruikerstest gedaan.
 - **CI-blokkade:** preflight faalde op `tests/ai-model-intelligence-freshness-v1.test.mjs` (`gpt-6-astra verification is stale`). Leveranciersbewijs niet artificieel goedkeuren of uit het verplichte testpad halen. CodeQL voor de voorgaande PR-head was groen; nieuw hoofd vereist eigen CI.
 - **Vervolg voor acceptatie:** bevoegde klantbron autoriseren, authentieke historie importeren, historische voorspellingen backtesten, onafhankelijk valideren en readback uitvoeren; vervolgens exacte-head Required + CodeQL, beschermde merge, Edge-deploy, Netlify-productie en geauthenticeerde cross-tenant/live readback. Geen productieclaim zolang een van deze eisen ontbreekt.
+
+
+## Afzonderlijke integriteitsversterking
+
+- Live migratie `20261014193133_portal_financial_forecast_backtest_integrity_v2` vereist bij `passed`: minimaal drie holdout-waarnemingen, gemeten MAE en baseline-MAE. Bandreeksen zijn allebei aanwezig of allebei afwezig en moeten dezelfde lengte hebben als de prognosepunten. Databaseconstraints zijn teruggelezen.
+- De Netlify-API leest nu ook **directe** `{forecasts:[...]}`-antwoorden van de tenantgebonden EU-gateway; voorheen werden alleen `payload.data`, `payload` of `data` gelezen, waardoor valide directe antwoorden leeg bleven.
+- De serverfilter accepteert alleen canonieke geordende dag- of maandperioden, minimaal drie historische observaties, een toekomstig prognosebereik en passende onzekerheidsbanden. Ongeldige kalenderdagen, dubbele periodes, ontbrekende punten en perioden die elkaar overlappen vallen af.
+- De Edge-gateway vereist nu ook een geregistreerde bronbewijsreferentie en expliciete backtestmetingen, zonder het interne bronbewijs aan de browser te verstrekken.
+- Nieuwe en gewijzigde tests staan in `tests/portal-forecast-auth.test.mjs` en `tests/portal-financial-forecast-store.test.mjs`; een volledige succesvolle beschermde CI-run op de laatste commit is nog niet aangetoond.
+- Source state blijft **0 klantreeksen, 0 geverifieerde prognoses**; vendor-gate en productie-readback blijven onafhankelijk vereist. Vertrouw de `VERIFIED`-status niet zonder claimniveau-evidence.
