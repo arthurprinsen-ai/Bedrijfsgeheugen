@@ -2830,7 +2830,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -2865,26 +2865,31 @@
           },
           {
             "claim": "model_id",
-            "url": "https://docs.cohere.com/docs/models",
-            "locator": "Embed table > Model Name",
-            "observed_value": "Provider model identifier embed-v4.0, catalog display name embed-4",
+            "locator": "Embedding Models table > Embed v4",
+            "observed_value": "embed-v4.0 (official Cohere API model identifier; catalog alias embed-4)",
+            "url": "https://docs.cohere.com/docs/cohere-embed",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://docs.cohere.com/docs/models",
-            "locator": "Embed table > embed-v4.0",
-            "observed_value": "Text, images and mixed text/image PDFs; 128k context; embeddings sizes 256, 512, 1024, 1536",
+            "locator": "Embed v4.0 row > Supported Types / Dimensions / Context",
+            "observed_value": "Text, images, mixed PDF inputs; 128K context; selectable output dimensions 256/512/1024/1536; embedding similarity search",
+            "url": "https://docs.cohere.com/docs/cohere-embed",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
-            "url": "https://docs.cohere.com/docs/models",
-            "locator": "Using Embed Models on Different Platforms > embed-v4.0",
-            "observed_value": "Bedrock coming soon; SageMaker deployment-specific ID; Azure cohere-embed-v-4-plan; Oracle OCI coming soon, availability varies by customer",
+            "locator": "Embed v4.0 row > API endpoint",
+            "observed_value": "Cohere Embed endpoint; authenticated tenant availability not tested",
+            "url": "https://docs.cohere.com/docs/cohere-embed",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "identity_warning": {
+          "status": "CATALOG_ALIAS_DIFFERS_FROM_API_ID",
+          "official_id": "embed-v4.0",
+          "checked_on": "2026-10-14"
+        }
       },
       "pricing_basis": "Cohere Standard Vault instance-based, small $4/hour or $2500/month; medium $5/hour or $3250/month. Do not present as API per-token price."
     },
@@ -7203,37 +7208,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
+            "locator": "Header / API ID",
+            "observed_value": "mistral-medium-3-5; catalog name mistral-medium-3.5 is not necessarily the API model ID",
             "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "locator": "Mistral Medium 3.5 > API ID",
-            "observed_value": "mistral-medium-3-5",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "locator": "Mistral Medium 3.5 > GA",
-            "observed_value": "Generally available, version 26.04",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
-            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
             "locator": "Price /M Tokens",
-            "observed_value": "Input $1.50/M tokens; output $7.50/M tokens",
+            "observed_value": "USD 1.50 per million input tokens, USD 7.50 per million output tokens",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
+            "locator": "Features, Context",
+            "observed_value": "256K context; multimodal model; function calling, structured outputs and document QnA",
             "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "locator": "Features > Modalities and context",
-            "observed_value": "256K context; multimodal, function calling, structured outputs, document QnA",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
+            "locator": "Features endpoints",
+            "observed_value": "Chat Completions, Conversations, Batch and Agents interfaces listed",
             "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "locator": "Features > API routes",
-            "observed_value": "/v1/chat/completions, /v1/conversations, /v1/batch, /v1/agents documented",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "locator": "Model heading",
+            "observed_value": "GA; version 26.04",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
             "checked_on": "2026-10-14"
           }
         ]
