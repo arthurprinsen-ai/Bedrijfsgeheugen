@@ -10323,7 +10323,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -10335,25 +10335,47 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
-            "checked_on": "2026-10-14",
-            "locator": "falcon-h1-1.5b-instruct"
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+            "locator": "TII official Hugging Face model repository",
+            "observed_value": "tiiuae/Falcon-H1-1.5B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+            "locator": "Model repository > Files and versioned artifacts",
+            "observed_value": "Published model repository and downloadable weights; hosted service availability not established",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+            "locator": "Model card > Text Generation",
+            "observed_value": "Text-generation model with public weights in tiiuae/Falcon-H1-1.5B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+            "locator": "Model card > Use this model > Transformers",
+            "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
+            "checked_on": "2026-10-14"
           }
         ]
       }
@@ -10412,7 +10434,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -10424,25 +10446,47 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
-            "checked_on": "2026-10-14",
-            "locator": "falcon-h1-3b-instruct"
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+            "locator": "TII official Hugging Face model repository",
+            "observed_value": "tiiuae/Falcon-H1-3B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+            "locator": "Model repository > Files and versioned artifacts",
+            "observed_value": "Published model repository and downloadable weights; hosted service availability not established",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+            "locator": "Model card > Text Generation",
+            "observed_value": "Text-generation model with public weights in tiiuae/Falcon-H1-3B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+            "locator": "Model card > Use this model > Transformers",
+            "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
+            "checked_on": "2026-10-14"
           }
         ]
       }
@@ -10501,7 +10545,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -10513,25 +10557,47 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
-            "checked_on": "2026-10-14",
-            "locator": "falcon-h1-7b-instruct"
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+            "locator": "TII official Hugging Face model repository",
+            "observed_value": "tiiuae/Falcon-H1-7B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+            "locator": "Model repository > Files and versioned artifacts",
+            "observed_value": "Published model repository and downloadable weights; hosted service availability not established",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+            "locator": "Model card > Text Generation",
+            "observed_value": "Text-generation model with public weights in tiiuae/Falcon-H1-7B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+            "locator": "Model card > Use this model > Transformers",
+            "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
+            "checked_on": "2026-10-14"
           }
         ]
       }
@@ -10590,7 +10656,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -10602,25 +10668,47 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
-            "checked_on": "2026-10-14",
-            "locator": "falcon-h1-34b-instruct"
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+            "locator": "TII official Hugging Face model repository",
+            "observed_value": "tiiuae/Falcon-H1-34B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+            "locator": "Model repository > Files and versioned artifacts",
+            "observed_value": "Published model repository and downloadable weights; hosted service availability not established",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+            "locator": "Model card > Text Generation",
+            "observed_value": "Text-generation model with public weights in tiiuae/Falcon-H1-34B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+            "locator": "Model card > Use this model > Transformers",
+            "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
+            "checked_on": "2026-10-14"
           }
         ]
       }
@@ -10679,7 +10767,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -10695,20 +10783,42 @@
         "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+            "locator": "TII official Hugging Face model repository",
+            "observed_value": "tiiuae/Falcon-H1R-7B",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+            "locator": "Model repository > Files and versioned artifacts",
+            "observed_value": "Published model repository and downloadable weights; hosted service availability not established",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
-            "locator": "Supplier collection links to Falcon-H1R family; exact 7B model not attested",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+            "locator": "Model card > Text Generation",
+            "observed_value": "Text-generation model with public weights in tiiuae/Falcon-H1R-7B",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+            "locator": "Model card > Use this model > Transformers",
+            "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
             "checked_on": "2026-10-14"
           }
         ]
