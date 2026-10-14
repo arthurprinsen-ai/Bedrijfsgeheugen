@@ -2149,6 +2149,16 @@
             "locator": "Features > API endpoints; Weights",
             "observed_value": "Chat completions, conversations, batch and agent endpoints listed; downloadable weights; tenant deployment not attested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -2291,6 +2301,16 @@
             "locator": "Model page > model identifier",
             "observed_value": "mistral-large-2512",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -2444,6 +2464,16 @@
             "locator": "Feature endpoints",
             "observed_value": "Chat Completions, Agents, Conversations and Batch APIs",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -2583,6 +2613,16 @@
             "locator": "Model card > API identifier",
             "observed_value": "ministral-14b-2512; catalog identifier ministral-3-14b is a friendly alias",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -2722,6 +2762,16 @@
             "locator": "Model card > API identifier",
             "observed_value": "ministral-8b-2512; catalog identifier ministral-3-8b is a friendly alias",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -2862,6 +2912,16 @@
             "locator": "Model card > model identifier",
             "observed_value": "Official API model ID ministral-3b-2512 (catalog name ministral-3-3b is an alias)",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -3002,6 +3062,16 @@
             "locator": "Features / endpoints",
             "observed_value": "Chat Completions, structured outputs, function calling, batching and FIM documented",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -3142,6 +3212,16 @@
             "locator": "Endpoints",
             "observed_value": "/v1/ocr, /v1/batch",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -3280,6 +3360,16 @@
             "locator": "Model detail > Region and Batch API",
             "observed_value": "us-east-1 displayed; Batch API unsupported; region and customer entitlement not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "FAQ - API Security > Zero Data Retention; How to check that ZDR is enabled; Can I keep my data in the United States?",
+            "observed_value": "xAI API ZDR must be enabled for an individual team, and an x-zero-data-retention response header signals current API enforcement. The global api.x.ai endpoint does not guarantee processing region; US regional processing is documented for selected Grok text models only. No customer enabled setting, endpoint or eligibility was authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -3406,6 +3496,16 @@
             "url": "https://docs.x.ai/developers/models/grok-4.6",
             "locator": "Model ID grok-4.6, $2/$6 standard short-context, image+text input, 500k context, long context threshold 200k",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "FAQ - API Security > Zero Data Retention; How to check that ZDR is enabled; Can I keep my data in the United States?",
+            "observed_value": "xAI API ZDR must be enabled for an individual team, and an x-zero-data-retention response header signals current API enforcement. The global api.x.ai endpoint does not guarantee processing region; US regional processing is documented for selected Grok text models only. No customer enabled setting, endpoint or eligibility was authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -3830,6 +3930,16 @@
             "locator": "Model page > Production and API Endpoints",
             "observed_value": "Public model documentation lists Command A+ and production via Cohere Model Vault; availability under customer contract not verified",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cohere.com/enterprise-data-commitments",
+            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
+            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
         "identity_warning": {
@@ -4017,6 +4127,16 @@
             "locator": "API Endpoints / model detail",
             "observed_value": "Cohere Command A API model; customer tenant access untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cohere.com/enterprise-data-commitments",
+            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
+            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -4206,6 +4326,16 @@
             "locator": "Announcing Embed Multimodal v4 > Availability",
             "observed_value": "Embed v4 published as available on Cohere Platform, AWS SageMaker and Azure AI Foundry; tenant access not validated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cohere.com/enterprise-data-commitments",
+            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
+            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
         "identity_warning": {
@@ -4352,6 +4482,16 @@
             "locator": "Standard Vault Pricing > Rerank 4 Pro",
             "observed_value": "Listed for Standard Vault Medium and Large tiers; this is Vault availability, not proof of public API entitlement",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cohere.com/enterprise-data-commitments",
+            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
+            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -10758,6 +10898,16 @@
             "observed_value": "GA; version 26.04",
             "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -10891,6 +11041,16 @@
             "locator": "Feature endpoints",
             "observed_value": "/v1/ocr and /v1/batch documented; customer availability not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
         "lifecycle_warning": {
@@ -11035,6 +11195,16 @@
             "locator": "Features",
             "observed_value": "OCR, structured annotations, batching",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -11171,6 +11341,16 @@
             "locator": "Model description and features",
             "observed_value": "Text to speech, zero-shot voice cloning, 9 languages, audio streaming ~90ms time to first audio",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -11311,6 +11491,16 @@
             "locator": "Model page > model identifier",
             "observed_value": "voxtral-mini-2602",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -11450,6 +11640,16 @@
             "locator": "February 4 release note",
             "observed_value": "voxtral-mini-transcribe-realtime-2602",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -11561,6 +11761,16 @@
             "url": "https://docs.mistral.ai/models",
             "locator": "All models listing, available model family (not exact endpoint eligibility)",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -11690,6 +11900,16 @@
             "locator": "Model description",
             "observed_value": "Semantic embeddings of source-code extracts",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -11834,6 +12054,16 @@
             "locator": "Features > Embeddings and Batching",
             "observed_value": "Embeddings /v1/embeddings and Batching /v1/batch APIs documented",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -11945,6 +12175,16 @@
             "url": "https://docs.mistral.ai/models",
             "locator": "All models listing, available model family (not exact endpoint eligibility)",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -12088,6 +12328,16 @@
             "locator": "Features",
             "observed_value": "Moderations and Batching listed; customer-specific API access not verified",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -12201,6 +12451,16 @@
             "url": "https://docs.mistral.ai/models",
             "locator": "Deprecated & retired models table",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
         "lifecycle_warning": {
@@ -12323,6 +12583,16 @@
             "url": "https://docs.mistral.ai/models",
             "locator": "All models listing, available model family (not exact endpoint eligibility)",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -12437,6 +12707,16 @@
             "url": "https://docs.mistral.ai/models",
             "locator": "Deprecated & retired models table",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
+            "observed_value": "Mistral commercial products may use customer inputs/outputs for model training under product opt-in/opt-out terms, feedback, order-form terms, or Labs/Preview models. Labs/Preview input and output may be used for training and ZDR choices for other products do not apply. Paid eligible stateless API ZDR is separate; no customer setting, model endpoint or deployed hosting is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
         "lifecycle_warning": {
@@ -12557,6 +12837,16 @@
             "url": "https://docs.x.ai/developers/release-notes",
             "locator": "Official provider release notes and voice transcription family; exact endpoint unverified",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "FAQ - API Security > Zero Data Retention; How to check that ZDR is enabled; Can I keep my data in the United States?",
+            "observed_value": "xAI API ZDR must be enabled for an individual team, and an x-zero-data-retention response header signals current API enforcement. The global api.x.ai endpoint does not guarantee processing region; US regional processing is documented for selected Grok text models only. No customer enabled setting, endpoint or eligibility was authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -12678,6 +12968,16 @@
             "url": "https://docs.x.ai/developers/models",
             "locator": "Model selection recommends Grok Imagine Image 2.0 for images",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "FAQ - API Security > Zero Data Retention; How to check that ZDR is enabled; Can I keep my data in the United States?",
+            "observed_value": "xAI API ZDR must be enabled for an individual team, and an x-zero-data-retention response header signals current API enforcement. The global api.x.ai endpoint does not guarantee processing region; US regional processing is documented for selected Grok text models only. No customer enabled setting, endpoint or eligibility was authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -12793,6 +13093,16 @@
             "url": "https://docs.x.ai/developers/models",
             "locator": "Model selection recommends Grok Imagine Video 1.5 for videos, catalog identifier may be alias",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "FAQ - API Security > Zero Data Retention; How to check that ZDR is enabled; Can I keep my data in the United States?",
+            "observed_value": "xAI API ZDR must be enabled for an individual team, and an x-zero-data-retention response header signals current API enforcement. The global api.x.ai endpoint does not guarantee processing region; US regional processing is documented for selected Grok text models only. No customer enabled setting, endpoint or eligibility was authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -12937,6 +13247,16 @@
             "locator": "Distribution and Technical Integration",
             "observed_value": "Chat V2 API, private Model Vault deployment and Apache 2.0 weights; private hardware 1xB200 or 2xH100",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cohere.com/enterprise-data-commitments",
+            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
+            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -13076,6 +13396,16 @@
             "locator": "API Endpoints > Chat V2 / Chat V1",
             "observed_value": "Chat V2 and Chat V1; production via Cohere Model Vault where applicable",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cohere.com/enterprise-data-commitments",
+            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
+            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
@@ -13208,6 +13538,16 @@
             "locator": "Retirement notice > recommended replacements",
             "observed_value": "embed-multilingual-v3.0 explicitly recommended as active alternative for retired Embed v2; tenant access not validated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://cohere.com/enterprise-data-commitments",
+            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
+            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
+            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
+            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ]
       },
