@@ -213,3 +213,23 @@ test('110 catalog records with explicit aliases must not be presented as 110 ind
   }
  }
 });
+
+test('audio-minute model prices retain their units and do not enter token-cost projections',()=>{
+ const models=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8')).models;
+ const expected={'gpt-realtime-translate':0.034,'gpt-live-transcribe':0.017,'gpt-realtime-whisper':0.017};
+ for(const [id,rate] of Object.entries(expected)){
+  const m=models.find(x=>x.id===id);
+  assert.ok(m,'Missing model '+id);
+  assert.equal(m.pricing_basis?.unit,'audio_minute');
+  assert.equal(m.pricing_basis?.usd_per_minute,rate);
+  assert.equal(m.input_usd_m,null);
+  assert.equal(m.output_usd_m,null);
+  assert.equal(m.verification_evidence?.claim_scope,'partial');
+  assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false);
+ }
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/function priceDescriptor\(m\)/);
+ assert.match(html,/basis\.unit==='audio_minute'/);
+ assert.match(html,/basis\.usd_per_minute\.toFixed\(3\)/);
+ assert.match(html,/if\(m\.input_usd_m==null\|\|m\.output_usd_m==null\)return null/);
+});
