@@ -16499,15 +16499,15 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
-        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
-        "training_on_customer_data": "Training preference is a separate control from ZDR, independently configurable by organization and service; not attested",
-        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
-        "zero_data_retention": "Approved paid-plan organization ZDR covers supported STATELESS endpoints: /v1/chat/completions, /v1/fim/completions, /v1/embeddings, /v1/moderations, /v1/chat/moderations, /v1/classifications, /v1/chat/classifications, /v1/ocr, /v1/audio/speech, /v1/audio/transcriptions. Excludes Agents, Batch file processing, Conversations, Libraries, /v1/files, Vibe Work, Chat, and Labs models. Training opt-out separate; actual account approval and regional route have not been verified.",
-        "subprocessors": "verify current provider list",
-        "dpa": "verify current product/contract",
-        "cmk": "verify current product/contract",
-        "private_networking": "verify current product/contract"
+        "storage_residency": "Customer/operator-selected storage location for self-hosted deployment; actual region, backups and logging are not attested.",
+        "inference_residency": "Customer/operator-selected self-hosted inference region; no deployed customer runtime has been authenticated.",
+        "training_on_customer_data": "Mistral hosted API data-training settings do not apply to the documented self-hosted inference path; downstream training/telemetry controls and actual operator settings remain unverified.",
+        "retention": "Customer/operator-controlled logging, prompts, inference buffers and retention; no customer runtime setting or signed contract has been inspected.",
+        "zero_data_retention": "Mistral API Zero Data Retention is NOT an entitlement or property of this self-host-only model. Customer operator must independently demonstrate its own zero-retention controls, if required.",
+        "subprocessors": "Determine from actual hosting operator, infrastructure and agreements; no list is attested for a customer deployment.",
+        "dpa": "Verify signed agreements of the actual customer hosting operator and relevant processors; no DPA has been provided.",
+        "cmk": "Customer/operator encryption and key-management configuration unknown; Mistral SaaS CMK claims are inapplicable.",
+        "private_networking": "Operator-owned networking and exposure of self-hosted endpoint unknown; no private route attested."
       },
       "id": "shieldstral-1",
       "provider": "Mistral AI",
@@ -16672,7 +16672,28 @@
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
-        "public_preview_not_production_eligible": true
+        "public_preview_not_production_eligible": true,
+        "self_host_governance_boundary_review_20261014": {
+          "checked_on": "2026-10-14",
+          "official_model_card": "https://docs.mistral.ai/models/shieldstral-1-0",
+          "official_self_host_cookbook": "https://docs.mistral.ai/fr/resources/cookbooks/mistral-moderation-shieldstral_policy_moderation",
+          "source_locator": "Cookbook introduction: Shieldstral is self-hosted only—no Mistral API endpoint is available; local Transformers or vLLM.",
+          "verified_public_claims": [
+            "Self-hosted/open-weight only; no current Mistral managed model inference API",
+            "Mistral API regional inference/ZDR settings are not customer-operated Shieldstral deployment attestations"
+          ],
+          "not_verified": [
+            "Customer operator/runtime, actual processing geography, storage and logging",
+            "Actual ZDR/retention/training/CMK/private-networking settings",
+            "Customer DPA and subprocessors",
+            "Hosting compute and financial cost"
+          ],
+          "customer_deployment_attested": false,
+          "provider_api_available": false,
+          "managed_saas_region_or_zdr_applicable": false,
+          "independent_customer_governance_accepted": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
