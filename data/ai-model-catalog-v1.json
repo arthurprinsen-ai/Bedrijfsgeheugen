@@ -5380,9 +5380,9 @@
           "model_id",
           "status",
           "pricing",
-          "governance",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -5399,12 +5399,13 @@
           }
         ],
         "identity_warning": {
-          "status": "FAMILY_PLACEHOLDER_NOT_RUNNABLE_ID",
+          "status": "FAMILY_PLACEHOLDER_NOT_API_MODEL_ID",
+          "explanation": "This catalog entry represents multiple distinct model variants and cannot receive model-specific full verification until a concrete model is selected.",
           "checked_on": "2026-10-14",
-          "explanation": "A supplier model family is not an exact, callable model/version and cannot meet six-claim model-specific acceptance without replacement by an independently verified model ID.",
-          "example_verified_model_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-          "model_card_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
-          "example_license": "llama4"
+          "examples": [
+            "Llama 4 Scout",
+            "Llama 4 Maverick"
+          ]
         },
         "governance_baseline_classification": {
           "type": "FAMILY_IDENTIFIER_UNRESOLVED",
@@ -5425,7 +5426,25 @@
             "checked_on": "2026-10-14",
             "selection_status": "NOT_SELECTED"
           }
-        ]
+        ],
+        "family_observations": {
+          "checked_on": "2026-10-14",
+          "scope": "family examples only; no family-wide model identity, pricing, runtime or residency attestation",
+          "examples": [
+            {
+              "model": "Llama 4 Scout",
+              "source": "https://ai.meta.com/blog/llama-4-multimodal-intelligence/",
+              "facts": "17B active parameters, 16 experts, 10M advertised context; text and image input; separately downloadable model"
+            },
+            {
+              "model": "Llama 4 Maverick",
+              "source": "https://ai.meta.com/blog/llama-4-multimodal-intelligence/",
+              "facts": "17B active parameters, 128 experts; separately downloadable model"
+            }
+          ],
+          "license_source": "https://ai.meta.com/resources/models-and-libraries/llama-downloads/",
+          "license_observation": "The published Llama 4 Scout/Maverick distributions use the Llama 4 Community License Agreement; terms differ from Apache 2.0."
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -5558,7 +5577,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://qwenlm.github.io/",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -5568,9 +5587,9 @@
           "model_id",
           "status",
           "pricing",
+          "capabilities",
           "deployment",
-          "governance",
-          "capabilities"
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -5581,12 +5600,12 @@
           }
         ],
         "identity_warning": {
-          "status": "FAMILY_PLACEHOLDER_NOT_RUNNABLE_ID",
+          "status": "FAMILY_PLACEHOLDER_NOT_API_MODEL_ID",
+          "explanation": "This catalog entry represents multiple distinct model variants and cannot receive model-specific full verification until a concrete model is selected.",
           "checked_on": "2026-10-14",
-          "explanation": "A supplier model family is not an exact, callable model/version and cannot meet six-claim model-specific acceptance without replacement by an independently verified model ID.",
-          "example_verified_model_id": "Qwen/Qwen3-235B-A22B",
-          "model_card_url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
-          "example_license": "apache-2.0"
+          "examples": [
+            "Qwen/Qwen3-32B"
+          ]
         },
         "governance_baseline_classification": {
           "type": "FAMILY_IDENTIFIER_UNRESOLVED",
@@ -5607,7 +5626,20 @@
             "checked_on": "2026-10-14",
             "selection_status": "NOT_SELECTED"
           }
-        ]
+        ],
+        "family_observations": {
+          "checked_on": "2026-10-14",
+          "scope": "family examples only; no family-wide model identity, pricing, runtime or residency attestation",
+          "examples": [
+            {
+              "model": "Qwen/Qwen3-32B",
+              "source": "https://huggingface.co/Qwen/Qwen3-32B",
+              "facts": "32.8B parameter instruct-capable open-weight model; 32,768 native context, up to 131,072 with YaRN; Apache-2.0; documented local deployment with Transformers, vLLM and SGLang"
+            }
+          ],
+          "license_source": "https://huggingface.co/Qwen/Qwen3-32B",
+          "license_observation": "Qwen3-32B weights are published under Apache-2.0; other Qwen family members require their own license and API-price checks."
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -16542,11 +16574,11 @@
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
         },
         "pricing_research": {
-          "status": "CURRENT_PUBLIC_MODEL_RATE_UNVERIFIED",
-          "url": "https://cohere.com/pricing",
+          "status": "NOT_INDEPENDENTLY_PRICED",
           "checked_on": "2026-10-14",
-          "scope": "Cohere Embed multilingual v3.0",
-          "reason": "The official pricing page explains token/production billing and private Model Vault tiers but does not state a current public price for this exact legacy model. Do not substitute a newer Embed 5 rate."
+          "provider_pricing_url": "https://cohere.com/pricing",
+          "billing_reference": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+          "observation": "Official documentation says embedding billing uses embedded tokens and trial access can be free; no current model-specific production USD/token rate for embed-multilingual-v3.0 was independently verified. Do not infer prices from Embed 4 or Embed 5."
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
