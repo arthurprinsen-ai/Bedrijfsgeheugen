@@ -889,7 +889,6 @@ if (PREPARE_CACHE_PATCH_NAME) {
   const before = loadCache();
   const missingBefore = [...allStrings].filter(source => typeof before[source] !== 'string' || !before[source].trim());
   if (missingBefore.length && String(process.env.STATIC_I18N_NETWORK || '').trim() !== '1') {
-    console.error('STATIC_I18N_CACHE_MISSING', JSON.stringify(missingBefore));
     throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s)');
   }
   if (missingBefore.length) await translateAll([...allStrings]);
