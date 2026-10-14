@@ -13139,9 +13139,17 @@
         ],
         "claim_evidence": [
           {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Active; EOL not specified",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
-            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+            "locator": "Model Details > Description",
+            "observed_value": "Generates embeddings from text, images, and video for retrieval",
             "checked_on": "2026-10-14"
           }
         ],
@@ -13167,13 +13175,11 @@
         ],
         "missing_claim_receipts": [
           "model_id",
-          "status",
           "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 4,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13189,7 +13195,7 @@
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "eol",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -13204,7 +13210,8 @@
         "watermarking"
       ],
       "limitations": [
-        "legacy lifecycle in listed Bedrock version; verify current image-generation successor"
+        "legacy lifecycle in listed Bedrock version; verify current image-generation successor",
+        "Official AWS model card states EOL September 30, 2026."
       ],
       "scores": {
         "reasoning": 2,
@@ -13264,9 +13271,17 @@
         ],
         "claim_evidence": [
           {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html",
+            "locator": "Model Details > Model EOL date",
+            "observed_value": "EOL date September 30, 2026; should not be described as active or simply legacy in October 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
-            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html",
+            "locator": "Model Details > Description",
+            "observed_value": "Image generation from text and image prompts with watermark and moderation controls",
             "checked_on": "2026-10-14"
           }
         ],
@@ -13292,13 +13307,11 @@
         ],
         "missing_claim_receipts": [
           "model_id",
-          "status",
           "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 4,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
