@@ -1748,11 +1748,11 @@
       "id": "command-a-plus",
       "provider": "Cohere",
       "tier": "enterprise",
-      "status": "active",
+      "status": "duplicate_alias",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -1794,17 +1794,30 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "selection_eligible": false,
+      "duplicate_of": "command-a-plus-05-2026",
+      "provider_model_id": "command-a-plus-05-2026",
+      "unit_price": "Model Vault L $17.50/hour; XL $32.50/hour; subject to provider access",
+      "claim_evidence": {
+        "duplicate_identity": {
+          "source": "https://docs.cohere.com/v1/docs/command-a-plus",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "canonical_catalog_id": "command-a-plus-05-2026",
+          "provider_model_id": "command-a-plus-05-2026"
+        }
+      }
     },
     {
       "id": "command-a",
       "provider": "Cohere",
       "tier": "enterprise",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 2.5,
+      "output_usd_m": 10,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text"
       ],
@@ -1846,7 +1859,41 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "command-a-03-2025",
+      "pricing_tier": "cohere_command_a_direct_token",
+      "pricing_source": "https://docs.cohere.com/v2/docs/command-a",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/v2/docs/command-a",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "command-a-03-2025"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/v2/docs/command-a",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 256000
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/v2/docs/command-a",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per 1 million tokens",
+          "input": 2.5,
+          "output": 10,
+          "processing_tier": "Direct API"
+        }
+      },
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "id": "embed-4",
@@ -1857,7 +1904,7 @@
       "output_usd_m": null,
       "cached_input_usd_m": null,
       "context_k": 128,
-      "unit_price": "Model Vault from $4/hour",
+      "unit_price": "Model Vault Small $4/hour; Medium $5/hour; dedicated instances",
       "modalities": [
         "embedding"
       ],
@@ -1920,8 +1967,20 @@
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_S_hourly": 4,
+          "tier_M_hourly": 5,
+          "scope": "Model Vault"
         }
-      }
+      },
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14"
     },
     {
       "id": "rerank-4-pro",
@@ -1932,7 +1991,7 @@
       "output_usd_m": null,
       "cached_input_usd_m": null,
       "context_k": 32,
-      "unit_price": "Model Vault from $5/hour",
+      "unit_price": "Model Vault Medium $5/hour; Large $10/hour",
       "modalities": [
         "rerank"
       ],
@@ -1995,8 +2054,20 @@
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_M_hourly": 5,
+          "tier_L_hourly": 10,
+          "scope": "Model Vault"
         }
-      }
+      },
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14"
     },
     {
       "id": "llama-open-weight",
@@ -5725,7 +5796,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -5769,7 +5840,43 @@
       },
       "id": "command-a-plus-05-2026",
       "provider": "Cohere",
-      "source": "https://docs.cohere.com/v1/changelog"
+      "source": "https://docs.cohere.com/v1/changelog",
+      "provider_model_id": "command-a-plus-05-2026",
+      "max_output_tokens": 64000,
+      "unit_price": "Model Vault L $17.50/hour; XL $32.50/hour; subject to provider access",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/v1/docs/command-a-plus",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "command-a-plus-05-2026"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/v1/docs/command-a-plus",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 128000
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_L_hourly": 17.5,
+          "tier_XL_hourly": 32.5,
+          "scope": "Model Vault, NOT direct token API"
+        }
+      },
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -5777,7 +5884,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text"
       ],
@@ -5821,7 +5928,43 @@
       },
       "id": "command-a-reasoning-08-2025",
       "provider": "Cohere",
-      "source": "https://docs.cohere.com/v1/changelog"
+      "source": "https://docs.cohere.com/v1/changelog",
+      "provider_model_id": "command-a-reasoning-08-2025",
+      "max_output_tokens": 32000,
+      "unit_price": "Model Vault L $48/hour; XL $57.50/hour; dedicated access",
+      "pricing_tier": "cohere_model_vault_dedicated_hourly",
+      "pricing_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "pricing_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/docs/command-a-reasoning",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "command-a-reasoning-08-2025"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/docs/command-a-reasoning",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 256000
+        },
+        "pricing": {
+          "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "unit": "USD per hosted instance-hour",
+          "tier_L_hourly": 48,
+          "tier_XL_hourly": 57.5,
+          "scope": "Model Vault, NOT free trial token pricing"
+        }
+      },
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
