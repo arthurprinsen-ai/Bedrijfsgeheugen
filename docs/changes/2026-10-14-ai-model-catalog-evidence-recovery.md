@@ -345,3 +345,20 @@ Exact model-specific OpenAI developer pages were inspected for supplier-listed m
 | `omni-moderation-latest` | https://developers.openai.com/api/docs/models/omni-moderation-latest | OpenAI omni-moderation family classification model; moderation endpoint not arbitrary text-generation API |
 
 For each, a public source page is proof of documented product identity, **not** of enabled organization entitlement, region-specific processing, signed DPA, zero retention or actual customer endpoint configuration. Any alias or public price requires exact modality, tier and usage-quantity qualification. The supplemental review records are marked `customer_verified=false`, `release_eligible=false` and do not bypass protected model claim freshness or tenant acceptance.
+
+
+## Seven regional AWS Bedrock model-owner documentation checks (2026-10-14)
+
+Seven public AWS-owned model cards / AWS official legacy lifecycle tables were independently read for exact model identity, modality, lifecycle and regional availability claims. AWS explicitly says `modelLifecycle` is authoritative for a given region/account; a model can have different lifecycle statuses by region. Historical EOL dates or a surviving webpage alone are not tenant entitlements. The AWS Premier public card contradicts its own dates and must remain `CONFLICT` until authenticated region-scoped readback.
+
+| Catalog model | AWS official model or lifecycle documentation | Scope-bound public observation |
+| --- | --- | --- |
+| `amazon-nova-canvas` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html | Amazon Nova Canvas image generation; bedrock-runtime Invoke; EOL 2026-09-30 in specifically listed three regions; model card Legacy label conflicts with elapsed date |
+| `amazon-nova-lite` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html | Amazon Nova Lite 300K context and 10K output; card says Active; per-account regional eligibility not inferred |
+| `amazon-nova-multimodal-embeddings` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html | Nova 2 Multimodal Embeddings hosted in Bedrock, model and region-specific invocation; no generic token tariff |
+| `amazon-nova-premier` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html | AWS Nova Premier card contradicts itself: EOL no sooner 2026-10-31 vs EOL 2026-09-14 and Legacy label; tenant-region AWS modelLifecycle readback required |
+| `amazon-nova-reel` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-reel.html | Amazon Nova Reel video generation; EOL 2026-09-30 in listed AWS regions; do not infer global retirement |
+| `amazon-nova-sonic` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-sonic.html | Amazon Nova Sonic realtime speech-to-speech; model amazon.nova-sonic-v1:0 EOL 2026-09-14 in listed regions; InvokeModelWithBidirectionalStream |
+| `amazon-titan-multimodal-embeddings-g1` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html | Amazon Titan Multimodal Embeddings G1 for text and image embedding, via AWS Bedrock runtime; current regional price/eligibility account-dependent |
+
+The official AWS lifecycle listing https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html provides region-qualified removals and directs consumers to `GetFoundationModel`/`ListFoundationModels`; these are not callable using public sources alone. No customer AWS credentials were read, no contracts asserted, no provider `CONFLICT` overwritten, and every public source review remains `release_eligible=false`. Pricing and approved tenant retention require separate evidence.
