@@ -32,7 +32,9 @@ function poolerUrl(){
 
 function db(){
   if(!sql)sql=postgres(poolerUrl(),{
-    max:1,
+    // Four independent transactions must not serialize behind one client connection.
+    // Bound the pool to the three commercial stages plus the heartbeat readback.
+    max:4,
     prepare:false,
     connect_timeout:4,
     idle_timeout:10,
