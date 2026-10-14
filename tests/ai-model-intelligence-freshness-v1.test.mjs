@@ -193,7 +193,17 @@ test('supplier identity receipts are internally consistent, source-aligned and d
  const fetchFailures=evidence.receipts.filter(r=>r.status==='SOURCE_FETCH_FAILED').length;
  assert.equal(idMentions,evidence.model_id_mentions);
  assert.equal(idMissing,evidence.model_id_not_explicit);
- assert.equal(idMentions+idMissing+apiIdMentions+fetchFailures,c.models.length);
+ const publisherFamilies=evidence.receipts.filter(r=>r.status==='PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID').length;
+ assert.equal(publisherFamilies,evidence.non_deployable_family_references);
+ assert.equal(apiIdMentions,evidence.provider_api_id_mentions);
+ assert.equal(idMentions+idMissing+apiIdMentions+publisherFamilies+fetchFailures,c.models.length);
+ for(const receipt of evidence.receipts.filter(r=>r.status==='PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID')){
+  const item=models.get(receipt.model_id);
+  assert.equal(item?.record_kind,'model_family');
+  assert.equal(item?.selection_eligible,false);
+  assert.equal(receipt.identity_claim_verified,false);
+  assert.equal(receipt.family_reference_only,true);
+ }
  assert.equal(fetchFailures,evidence.model_source_fetch_failed);
  for(const row of evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_API_ID_MENTION')){
   assert.ok(row.provider_api_id,'Provider API mention requires a concrete provider API identifier');
@@ -213,5 +223,21 @@ test('supplier identity receipts are internally consistent, source-aligned and d
    'Unverified deployable model identity: '+receipt.model_id);
   assert.equal(item?.selection_eligible,false,receipt.model_id);
  }
+ const countedByProvider={};
+ for(const receipt of evidence.receipts){
+  const p=countedByProvider[receipt.provider]??={total:0,identity_mentions:0,provider_api_id_mentions:0,
+   family_references:0,no_exact_id:0,fetch_failed:0,not_run:0};
+  p.total++;
+  switch(receipt.status){
+   case 'OFFICIAL_PAGE_MODEL_ID_MENTION':p.identity_mentions++;break;
+   case 'OFFICIAL_PAGE_API_ID_MENTION':p.provider_api_id_mentions++;break;
+   case 'PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID':p.family_references++;break;
+   case 'OFFICIAL_PAGE_NO_EXACT_MODEL_ID':p.no_exact_id++;break;
+   case 'SOURCE_FETCH_FAILED':p.fetch_failed++;break;
+   default:p.not_run++;break;
+  }
+ }
+ assert.deepEqual(evidence.by_provider,countedByProvider,
+  'Provider totals must reconcile with exactly one category per catalog record');
  assert.equal(evidence.whole_model_verifications_added,0);
 });
