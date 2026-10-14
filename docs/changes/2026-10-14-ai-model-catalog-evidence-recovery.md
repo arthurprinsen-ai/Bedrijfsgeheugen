@@ -413,3 +413,22 @@ These six public source observations are stored with `classification=INDEPENDENT
 The provider API-ID mapping is now present for all seven Cohere catalog records. Added `embed-v4.0` for catalog alias `embed-4`; `embed-multilingual-v3.0` for that named record; and `command-a-reasoning-08-2025` for Command A Reasoning. Official [Embed](https://docs.cohere.com/docs/cohere-embed) and [Command A Reasoning](https://docs.cohere.com/docs/command-a-reasoning) pages are the scoped public sources. Command A Reasoning publicly specifies 256,000 context tokens, 32,000 maximum output tokens and image input.
 
 No missing per-token model price, customer data retention configuration, regional deployment or DPA is inferred. The seven model records remain fail-closed (`supplier_audit.automatic_recommendation_eligible=false`) unless the independent audit and actual tenant evidence have passed. This mapping adds an explicit API identity field; it does not prove runtime connectivity to Cohere. Regressions are asserted in `tests/brain-ai-model-catalog-evidence-recovery.test.mjs`.
+
+
+## All 110 public model-source pages reconciled; release gate still closed (2026-10-14)
+
+All **110 of 110** catalog rows now have an independently scoped **public model-source review** persisted in Supabase `catalog_record.independent_model_source_review_20261014`, with official supplier URL, model-specific location, an observed public fact, check date and the following explicit limits on **every** row:
+
+- `classification=INDEPENDENT_PUBLIC_MODEL_PAGE_REVIEW_ONLY`
+- `customer_verified=false`, `provider_account_verified=false`, `contract_verified=false`
+- `all_six_supplier_claims_independently_certified=false`, `release_eligible=false`
+
+A separate readback counted exactly **110 source reviews** and **110 release_eligible=false** markers. These are supplier *model-page discovery/evidence* accomplishments; they are NOT 660 independently approved six-claim supplier attestation outcomes and are NOT 110 customer-accepted models.
+
+The live database at the subsequent check (same day) reported **10 `VERIFIED`, 99 `PARTIAL`, 1 `CONFLICT`**. These row statuses can change under concurrent writers. The ten `VERIFIED` rows still showed `supplier_audit.automatic_recommendation_eligible=false`, legacy quality-audit `all_six_claims_verified=false`, and `public-review.release_eligible=false`. Two gpt-oss rows additionally had a historical `verification_consistency_hold_20261014.verified_safely=false` marker. Reconcile the claim-specific independent supplier acceptance lineage and stale-quality metadata before treating those rows as fully **production** accepted. Do not erase original evidence or automatically demote/promote rows based only on outdated audits.
+
+Protected Required workflow for PR #4368 at source SHA `6f479c32ea5e6177ebaaca1be282a4741141589c`: [run 38617721385](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/38617721385) **failed preflight** in `tests/ai-model-intelligence-freshness-v1.test.mjs`, reporting **60/110 models** failing full supplier-freshness evidence requirements. Earlier source receipts and full-page reviews do not satisfy this substantive test by themselves. The corresponding CodeQL Python/JS jobs succeeded. Further commits require their own exact-head CI readback; a previous commit's CodeQL success is not current-head production approval.
+
+The one unresolved `CONFLICT` is `amazon-nova-premier`: official AWS [model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html) presents mutually incompatible lifecycle labels/dates while the [Bedrock lifecycle table](https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html) lists region-specific 2026-09-14 EOL. Only an authorized region/account `GetFoundationModel`/`ListFoundationModels` modelLifecycle readback can close the account-specific interpretation. Do **not** mark it accepted based only on a public webpage.
+
+**Blocking finish condition:** independently validated model-specific six-claim supplier facts with no conflicts; fresh and internally consistent attestation/audit metadata; protected Required/CodeQL success on exact head; protected merge; deploy and matching immutable production readback. Customer DPA, signed contracts and enabled tenant provider settings remain a separate authenticated acceptance boundary, never simulated from public docs.
