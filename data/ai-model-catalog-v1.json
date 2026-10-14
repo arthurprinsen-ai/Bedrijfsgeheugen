@@ -5513,7 +5513,27 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_rate_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "review_type": "OFFICIAL_PUBLIC_PRICING_SCOPE_CROSSCHECK_NO_TENANT_RATE_ATTESTATION",
+          "provider_pricing_url": "https://cohere.com/pricing",
+          "provider_billing_guide": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+          "customer_effective_price_verified": false,
+          "customer_entitlement_verified": false,
+          "automatic_recommendation_eligible": false,
+          "model_source_url": "https://docs.cohere.com/docs/cohere-embed",
+          "standard_vault_pricing_url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "public_vault_documented_rates": "Embed 4 Small USD 4 per instance-hour; Medium USD 5 per instance-hour on Standard Vault document",
+          "current_primary_pricing_page_note": "Current cohere.com/pricing public self-service Vault table lists Embed 5 variants, not Embed 4; does not prove Embed 4 can currently be purchased at the older Vault documentation rate",
+          "api_billing_basis": "Embedded tokens; no independently corroborated current Embed 4 pay-as-you-go price",
+          "missing": [
+            "current API price",
+            "effective dedicated instance entitlement",
+            "customer agreement",
+            "tenant processing region"
+          ]
+        }
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -5717,7 +5737,26 @@
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_url": "https://docs.cohere.com/v2/docs/rerank",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "public_rate_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "review_type": "OFFICIAL_PUBLIC_PRICING_SCOPE_CROSSCHECK_NO_TENANT_RATE_ATTESTATION",
+          "provider_pricing_url": "https://cohere.com/pricing",
+          "provider_billing_guide": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+          "customer_effective_price_verified": false,
+          "customer_entitlement_verified": false,
+          "automatic_recommendation_eligible": false,
+          "model_source_url": "https://docs.cohere.com/docs/rerank",
+          "standard_vault_pricing_url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "published_vault_rates": "Rerank 4 Pro Medium USD 5 per instance-hour, Large USD 10 per instance-hour; also listed on Cohere main pricing page",
+          "api_billing_basis": "API Rerank billed by search units; published dedicated Vault hourly rates are not the API per-search price",
+          "missing": [
+            "current API price per search",
+            "customer-specific paid Vault/region entitlement",
+            "customer agreement",
+            "tenant configuration"
+          ]
+        }
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -18023,7 +18062,24 @@
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_url": "https://docs.cohere.com/docs/cohere-embed",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "public_rate_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "review_type": "OFFICIAL_PUBLIC_PRICING_SCOPE_CROSSCHECK_NO_TENANT_RATE_ATTESTATION",
+          "provider_pricing_url": "https://cohere.com/pricing",
+          "provider_billing_guide": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+          "customer_effective_price_verified": false,
+          "customer_entitlement_verified": false,
+          "automatic_recommendation_eligible": false,
+          "model_source_url": "https://docs.cohere.com/docs/cohere-embed",
+          "api_billing_basis": "Embedding models bill per embedded token; exact public current per-model dollar rate not independently confirmed",
+          "current_primary_pricing_page_note": "Main Cohere pricing page currently advertises Embed 5 Vault tiers, not an Embed multilingual v3 tariff",
+          "missing": [
+            "current Embed multilingual v3 API token rate",
+            "customer account price and availability",
+            "tenant-specific governance and region"
+          ]
+        }
       },
       "embedding_dimensions": 1024,
       "provider_api_id": "embed-multilingual-v3.0"
