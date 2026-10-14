@@ -4379,15 +4379,19 @@
         ],
         "not_verified": [
           "status",
-          "pricing",
-          "governance"
+          "governance",
+          "API per-token/per-search production pricing",
+          "actual tenant purchase/commitment"
         ],
         "claim_evidence": [
           {
             "claim": "pricing",
             "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
-            "locator": "Embed 4 small $4/hr $2500/mo and medium $5/hr $3250/mo Standard Vault; separate API token billing not established",
-            "checked_on": "2026-10-14"
+            "locator": "Standard Vault Pricing > Models table > Embed 4 > Small and Medium",
+            "observed_value": "Cohere Standard Vault (managed dedicated instance) Embed 4 Small: USD 4.00 per instance-hour / USD 2,500 per instance-month; Medium: USD 5.00/hour / USD 3,250/month. NOT a public API per-token price; enterprise commitments, region and customer entitlement vary.",
+            "checked_on": "2026-10-14",
+            "scope": "Official Cohere Standard Vault managed-inference instance pricing only. Non-Vault API charges are not established; no customer entitlement or executed contract is attested.",
+            "verification_status": "SUPPLIER_VAULT_SKU_PRICE_OBSERVED_API_PRICE_UNVERIFIED"
           },
           {
             "claim": "model_id",
@@ -4461,6 +4465,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "vault_pricing_research_20261014": {
+        "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+        "checked_on": "2026-10-14",
+        "sku": "embed-4",
+        "observed": "Cohere Standard Vault (managed dedicated instance) Embed 4 Small: USD 4.00 per instance-hour / USD 2,500 per instance-month; Medium: USD 5.00/hour / USD 3,250/month. NOT a public API per-token price; enterprise commitments, region and customer entitlement vary.",
+        "price_type": "managed_single_tenant_per_instance",
+        "public_api_pricing": "UNVERIFIED",
+        "customer_subscription": "UNVERIFIED"
       }
     },
     {
@@ -4536,14 +4549,19 @@
           "model_id",
           "status",
           "deployment",
-          "governance"
+          "governance",
+          "API per-token/per-search production pricing",
+          "actual tenant purchase/commitment"
         ],
         "claim_evidence": [
           {
             "claim": "pricing",
-            "url": "https://cohere.com/pricing",
-            "locator": "Model Vault: Rerank 4 Pro, medium $5/hr $3250/mo; large $10/hr $6500/mo; instance rates (not API token price)",
-            "checked_on": "2026-10-14"
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing > Models table > Rerank 4 Pro > Medium and Large",
+            "observed_value": "Cohere Standard Vault (managed dedicated instance) Rerank 4 Pro Medium: USD 5.00 per instance-hour / USD 3,250 per instance-month; Large: USD 10.00/hour / USD 6,500/month. NOT a default pay-as-you-go Rerank API per-search rate; enterprise commitments vary.",
+            "checked_on": "2026-10-14",
+            "scope": "Official Cohere Standard Vault managed-inference instance pricing only. Non-Vault API charges are not established; no customer entitlement or executed contract is attested.",
+            "verification_status": "SUPPLIER_VAULT_SKU_PRICE_OBSERVED_API_PRICE_UNVERIFIED"
           },
           {
             "claim": "model_id",
@@ -4612,6 +4630,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "vault_pricing_research_20261014": {
+        "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+        "checked_on": "2026-10-14",
+        "sku": "rerank-4-pro",
+        "observed": "Cohere Standard Vault (managed dedicated instance) Rerank 4 Pro Medium: USD 5.00 per instance-hour / USD 3,250 per instance-month; Large: USD 10.00/hour / USD 6,500/month. NOT a default pay-as-you-go Rerank API per-search rate; enterprise commitments vary.",
+        "price_type": "managed_single_tenant_per_instance",
+        "public_api_pricing": "UNVERIFIED",
+        "customer_subscription": "UNVERIFIED"
       }
     },
     {
