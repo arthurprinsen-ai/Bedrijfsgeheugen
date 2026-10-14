@@ -1003,7 +1003,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
@@ -1013,15 +1013,14 @@
           "input_usd_m",
           "output_usd_m",
           "context_k",
-          "input_output_modalities"
+          "input_output_modalities",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "governance",
-          "customer region eligibility",
-          "contract pricing",
-          "lifecycle status against current models overview",
-          "all deployment permission scopes",
-          "scores"
+          "governance"
         ],
         "claim_scope": "partial",
         "evidence_note": "Official model documentation lists Claude API alias claude-haiku-4-5, canonical snapshot claude-haiku-4-5-20251001, 200K context, $1 input/$5 output per million tokens; remains legacy, so does not imply current preferred or unrestricted availability.",
@@ -1033,7 +1032,45 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
-        }
+        },
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
+            "locator": "Specifications > Model IDs > Claude API alias and ID",
+            "observed_value": "Alias claude-haiku-4-5; pinned claude-haiku-4-5-20251001",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
+            "locator": "Availability > Status and Retirement",
+            "observed_value": "Active (legacy); retirement no sooner than 2026-10-15",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
+            "locator": "Specifications > Pricing",
+            "observed_value": "USD 1 per million input tokens, USD 5 per million output; batch 50% discount",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "200K context, 64K max output; text/image input, text output, manual extended thinking",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
+            "locator": "Specifications > Model IDs and Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; tenant entitlements untested",
+            "checked_on": "2026-10-14"
+          }
+        ],
+        "evidence_status": "PARTIALLY_VERIFIED"
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -9178,33 +9215,40 @@
         "verified_claims": [
           "capabilities",
           "status",
-          "deployment"
+          "deployment",
+          "model_id"
         ],
         "not_verified": [
           "pricing",
-          "governance",
-          "model_id"
+          "governance"
         ],
         "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+            "locator": "Programmatic Access > bedrock-runtime > Model ID",
+            "observed_value": "amazon.nova-2-lite-v1:0; distinct EU geo inference ID eu.amazon.nova-2-lite-v1:0",
+            "checked_on": "2026-10-14"
+          },
           {
             "claim": "status",
             "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
             "locator": "Model Details > Model lifecycle",
-            "observed_value": "Active; launch Dec 02 2025; EOL no sooner than Dec 02 2026",
+            "observed_value": "Active; launched 2025-12-02; EOL no sooner than 2026-12-02",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
-            "locator": "Model Details > Input Modalities / Output Modalities / Context window",
-            "observed_value": "Multimodal text, image and video inputs; 1M token context and 64K max output; API capability options subject to model card",
+            "locator": "Model Details > Context and Output",
+            "observed_value": "1M context tokens, max output 64K; text, image and video processing per model card",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
-            "locator": "Model card > APIs supported / Endpoints supported",
-            "observed_value": "Amazon Bedrock supported interfaces; region and account entitlements require independent check",
+            "locator": "Programmatic Access and Geo EU table",
+            "observed_value": "Amazon Bedrock runtime via https://bedrock-runtime.{region}.amazonaws.com; EU inference geo ID eu.amazon.nova-2-lite-v1:0; user-specific region entitlement untested",
             "checked_on": "2026-10-14"
           }
         ],
