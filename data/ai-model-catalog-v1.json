@@ -1085,7 +1085,7 @@
       "id": "claude-sonnet-5",
       "provider": "Anthropic",
       "tier": "balanced",
-      "status": "active",
+      "status": "legacy",
       "input_usd_m": 2,
       "output_usd_m": 10,
       "cached_input_usd_m": 0.2,
@@ -1164,37 +1164,42 @@
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Model IDs",
-            "observed_value": "claude-sonnet-5 (Claude API pinned model ID)",
-            "checked_on": "2026-10-14"
+            "locator": "Specifications > Model IDs > Claude API",
+            "observed_value": "claude-sonnet-5; Amazon Bedrock ID anthropic.claude-sonnet-5",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "status",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Availability > Status / Released / Retirement",
-            "observed_value": "Active (legacy), released 2026-06-30, retirement not sooner than 2027-06-30",
-            "checked_on": "2026-10-14"
+            "locator": "Availability > Status, Released, Retirement",
+            "observed_value": "Active (legacy); released 2026-06-30; retirement no sooner than 2027-06-30",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "pricing",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Pricing / Input, Output, Cache read",
-            "observed_value": "USD 2 input, 10 output, 0.2 cache read per 1M tokens; Batch API 50% discount",
-            "checked_on": "2026-10-14"
+            "locator": "Specifications > Pricing",
+            "observed_value": "Standard Claude API input $2/MTok, output $10/MTok, cache read $0.20/MTok, Batch 50% discount",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Context, Max output, Thinking, Input → output",
-            "observed_value": "1M context, 128K standard max output; text and image input to text output; adaptive thinking",
-            "checked_on": "2026-10-14"
+            "locator": "Specifications > Capabilities",
+            "observed_value": "1M context, 128K max output, adaptive thinking, text/image input and text output",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "deployment",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Platforms",
-            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
-            "checked_on": "2026-10-14"
+            "locator": "Specifications > Model IDs and Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; tenant entitlement not probed",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED"
@@ -8679,7 +8684,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8709,12 +8714,12 @@
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
-          "pricing",
+          "status",
           "capabilities",
           "deployment",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
@@ -8733,13 +8738,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "capabilities",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 > Stable models > Description",
-            "observed_value": "Stable Gemini 3 model for low-latency live audio conversations",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
             "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
@@ -8750,18 +8748,28 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking, and Gemini 3.1 Flash Live Preview > Standard",
-            "observed_value": "Paid tier per 1M tokens USD input text 0.75, audio 3.00, image/video 1.00; output text 4.50, audio 12.00. Audio also displayed as $0.005 input and $0.018 output per minute.",
-            "checked_on": "2026-10-14"
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
+            "locator": "gemini-3.8-live > Supported data types, Token limits and Capabilities",
+            "observed_value": "Text/image/audio/video input; text/audio output; 131072 input / 65536 output tokens; function calling, Live API and interleaved reasoning; Batch unavailable",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "deployment",
-            "url": "https://ai.google.dev/gemini-api/docs/live-api",
-            "locator": "Technical specifications > Protocol and implementation approach",
-            "observed_value": "Gemini Live API supports stateful WebSocket (WSS), with model ID gemini-3.8-live from official model listing; customer account access not tested.",
-            "checked_on": "2026-10-14"
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
+            "locator": "gemini-3.8-live > Versions / Consumption options",
+            "observed_value": "Stable Gemini Live API code gemini-3.8-live; Batch API unsupported; customer API access not tested",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking and Gemini 3.1 Flash Live Preview > Standard Paid Tier",
+            "observed_value": "Standard Paid per 1M tokens: text input $0.75; audio input $3.00; image/video input $1.00; text output $4.50; audio output $12.00; voice session history may be re-billed",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           }
         ],
         "provider_policy_evidence": {
@@ -8834,7 +8842,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8864,12 +8872,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
-          "pricing",
+          "status",
           "capabilities",
           "deployment",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
@@ -8888,13 +8896,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "capabilities",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 > Stable models > Description",
-            "observed_value": "Stable Gemini 3 Live model with extended reasoning",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
             "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
@@ -8905,18 +8906,28 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking, and Gemini 3.1 Flash Live Preview > Standard",
-            "observed_value": "Paid tier per 1M tokens USD input text 0.75, audio 3.00, image/video 1.00; output text 4.50, audio 12.00. Audio also displayed as $0.005 input and $0.018 output per minute.",
-            "checked_on": "2026-10-14"
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
+            "locator": "gemini-3.8-live-extended-thinking > Supported data types, Token limits and Capabilities",
+            "observed_value": "Text/image/audio/video input; text/audio output; 131072 input / 65536 output tokens; asynchronous function calling and background thinking; Batch unavailable",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "deployment",
-            "url": "https://ai.google.dev/gemini-api/docs/live-api",
-            "locator": "Technical specifications > Protocol and implementation approach",
-            "observed_value": "Gemini Live API supports stateful WebSocket (WSS), with model ID gemini-3.8-live-extended-thinking from official model listing; customer account access not tested.",
-            "checked_on": "2026-10-14"
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
+            "locator": "gemini-3.8-live-extended-thinking > Versions / Live API",
+            "observed_value": "Stable Gemini Live API code gemini-3.8-live-extended-thinking; Batch unsupported; customer access untested",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking and Gemini 3.1 Flash Live Preview > Standard Paid Tier",
+            "observed_value": "Standard Paid per 1M tokens: text input $0.75; audio input $3.00; image/video input $1.00; text output $4.50; audio output $12.00; voice session history may be re-billed",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           }
         ],
         "provider_policy_evidence": {
@@ -8990,7 +9001,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -9020,12 +9031,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
-          "pricing",
+          "status",
           "capabilities",
           "deployment",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
@@ -9044,13 +9055,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "capabilities",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 > Stable models > Description",
-            "observed_value": "Gemini 3.8 Flash text-to-speech model",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
             "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
@@ -9061,18 +9065,28 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "Gemini 3.8 Flash TTS > Standard paid tier",
-            "observed_value": "Through Dec 31 2026 USD 0.50 / 1M text input tokens and USD 9.00 / 1M audio output tokens; Jan 1 2027 USD 1.00 and USD 18.00 respectively.",
-            "checked_on": "2026-10-14"
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-tts",
+            "locator": "gemini-3.8-flash-tts > Model code, Supported data types, Token limits, Languages",
+            "observed_value": "Text input/audio output; 8192 input and 16384 output serving token limits; 130 supported languages; custom voices",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "deployment",
-            "url": "https://ai.google.dev/gemini-api/docs/speech-generation",
-            "locator": "Generate speech > Gemini API examples",
-            "observed_value": "Google Gemini API text-to-speech model gemini-3.8-flash-tts via Gemini generateContent; tenant access not tested.",
-            "checked_on": "2026-10-14"
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-tts",
+            "locator": "gemini-3.8-flash-tts > Consumption options and Migration guide",
+            "observed_value": "GenerateContent and Interactions API TTS schema; Batch, Flex and Priority supported; no Live API",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Flash TTS > Standard Paid Tier",
+            "observed_value": "Through 2026-12-31 per 1M tokens: $0.50 text input, $9.00 audio output; 2027-01-01 onward $1.00 input, $18.00 output",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           }
         ],
         "provider_policy_evidence": {
@@ -9972,7 +9986,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -10002,12 +10016,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -10041,6 +10055,22 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image",
+            "locator": "gemini-3.1-flash-image > Model code and Consumption options",
+            "observed_value": "Gemini API model code gemini-3.1-flash-image; Batch supported; Flex/Priority unavailable; tenant entitlement untested",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.1 Flash Image > Standard Paid Tier",
+            "observed_value": "Input $0.50 per 1M text/image tokens; output $3 per 1M text/thinking tokens and $60 per 1M image tokens; image pricing varies by resolution",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           }
         ],
         "provider_policy_evidence": {
@@ -10837,7 +10867,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -10867,12 +10897,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -10911,36 +10941,6 @@
             "scope": "official model-specific API or pricing documentation; tenant permissions untested"
           },
           {
-            "claim": "deployment",
-            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview",
-            "locator": "Model code; Capabilities > Live API",
-            "observed_value": "Gemini Live API model gemini-3.1-flash-live-preview; Batch not supported; account authorization untested",
-            "checked_on": "2026-10-14",
-            "scope": "official model-specific API or pricing documentation; tenant permissions untested"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking, and Gemini 3.1 Flash Live Preview > Standard",
-            "observed_value": "Shared paid Standard table: USD 0.75/1M text input, USD 3.00/1M audio input, USD 1.00/1M image/video input, USD 4.50/1M text output and USD 12.00/1M audio output; also published per-minute equivalents.",
-            "checked_on": "2026-10-14",
-            "scope": "official model-specific API or pricing documentation; tenant permissions untested"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking, and Gemini 3.1 Flash Live Preview > Standard",
-            "observed_value": "Paid tier per 1M tokens USD input text 0.75, audio 3.00, image/video 1.00; output text 4.50, audio 12.00. Audio also displayed as $0.005 input and $0.018 output per minute.",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://ai.google.dev/gemini-api/docs/live-api",
-            "locator": "Technical specifications > Protocol and implementation approach",
-            "observed_value": "Gemini Live API supports stateful WebSocket (WSS), with model ID gemini-3.1-flash-live-preview from official model listing; customer account access not tested.",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "model_id",
             "url": "https://ai.google.dev/gemini-api/docs/models",
             "locator": "Gemini 3 > All Gemini 3 models > Endpoint",
@@ -10960,6 +10960,22 @@
             "locator": "Audio models > Gemini 3.1 Flash Live",
             "observed_value": "Real-time audio-to-audio preview model for live dialogue; legacy preview.",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview",
+            "locator": "gemini-3.1-flash-live-preview > Model code, Capabilities and Versions",
+            "observed_value": "Gemini Live API preview model gemini-3.1-flash-live-preview; Batch not supported; legacy preview; tenant availability untested",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking and Gemini 3.1 Flash Live Preview > Standard Paid Tier",
+            "observed_value": "Standard Paid per 1M tokens: text input $0.75; audio input $3.00; image/video input $1.00; text output $4.50; audio output $12.00; voice session history may be re-billed",
+            "checked_on": "2026-10-14",
+            "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           }
         ],
         "provider_policy_evidence": {
