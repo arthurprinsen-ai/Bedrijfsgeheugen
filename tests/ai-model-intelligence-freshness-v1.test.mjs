@@ -14,7 +14,7 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
    const e=m.verification_evidence;
    assert.ok(e && typeof e==='object',`${m.id} missing claim-level supplier evidence`);
    assert.equal(e.source_url,m.source,`${m.id} evidence source does not match catalog source`);
-   assert.match(e.checked_on ?? '',/^\\d{4}-\\d{2}-\\d{2}$/,`${m.id} missing evidence check date`);
+   assert.match(e.checked_on ?? '',/^\d{4}-\d{2}-\d{2}$/,`${m.id} missing evidence check date`);
    assert.equal(e.checked_on,m.verified_at,`${m.id} verification date must equal evidence date`);
    assert.equal(e.claim_scope,'full',`${m.id} verification is partial`);
    assert.deepEqual(e.not_verified ?? [],[],`${m.id} still has unverified claims`);
