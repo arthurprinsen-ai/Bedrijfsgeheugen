@@ -4395,7 +4395,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
@@ -4575,7 +4575,10 @@
           "customer_governance_verified": false,
           "independent_six_claim_acceptance": false,
           "automatic_recommendation_eligible": false
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
@@ -4631,7 +4634,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
@@ -4811,7 +4814,10 @@
           "customer_governance_verified": false,
           "independent_six_claim_acceptance": false,
           "automatic_recommendation_eligible": false
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
@@ -4872,7 +4878,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://docs.cohere.com/docs/command-a-plus",
@@ -5120,7 +5126,10 @@
           "contractual_price_verified": false,
           "customer_account_entitlement_verified": false,
           "automatic_recommendation_eligible": false
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "provider_api_id": "command-a-plus-05-2026",
       "catalog_alias": "command-a-plus",
@@ -5471,7 +5480,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -5633,7 +5642,10 @@
             "customer agreement",
             "tenant processing region"
           ]
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -5698,7 +5710,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -5856,7 +5868,10 @@
             "customer agreement",
             "tenant configuration"
           ]
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -11761,7 +11776,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -11936,7 +11951,10 @@
           "customer_access_verified": false,
           "independent_six_claim_acceptance": false,
           "automatic_recommendation_eligible": false
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       }
     },
     {
@@ -12179,7 +12197,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -12342,7 +12360,10 @@
           "customer_access_verified": false,
           "independent_six_claim_acceptance": false,
           "automatic_recommendation_eligible": false
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12790,7 +12811,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -12936,7 +12957,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12984,7 +13008,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13130,7 +13154,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -13179,7 +13206,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13325,7 +13352,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -13373,7 +13403,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13540,7 +13570,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -13803,7 +13836,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13952,7 +13985,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -14003,7 +14039,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -14149,7 +14185,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -14198,7 +14237,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -14344,7 +14383,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -18491,7 +18533,7 @@
         "private deployment where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -18669,7 +18711,10 @@
             "customer account price and availability",
             "tenant-specific governance and region"
           ]
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "embedding_dimensions": 1024,
       "provider_api_id": "embed-multilingual-v3.0"
@@ -18713,7 +18758,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -18871,7 +18916,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -18938,7 +18986,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -19116,7 +19164,10 @@
           "independent_six_claim_supplier_approval": false,
           "automatic_recommendation_eligible": false,
           "scope": "Official AWS public model card only. Region publication is not authentication or customer runtime/configuration evidence; neither pricing nor tenant governance may be approved."
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19175,7 +19226,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -19331,7 +19382,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_source_conflicts": [
         {
@@ -19401,7 +19455,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -19562,7 +19616,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19632,7 +19689,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "EU regions documented among supported Bedrock regions; exact profile must be selected",
@@ -19795,7 +19852,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19864,7 +19924,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20054,7 +20114,10 @@
           "independent_six_claim_supplier_approval": false,
           "automatic_recommendation_eligible": false,
           "scope": "Official AWS public model card only. Region publication is not authentication or customer runtime/configuration evidence; neither pricing nor tenant governance may be approved."
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -20112,7 +20175,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20268,7 +20331,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -20332,7 +20398,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20509,7 +20575,10 @@
           "independent_six_claim_supplier_approval": false,
           "automatic_recommendation_eligible": false,
           "scope": "Official AWS public model card only. Region publication is not authentication or customer runtime/configuration evidence; neither pricing nor tenant governance may be approved."
-        }
+        },
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "aws_official_deployment_research_20261014": {
         "source": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
@@ -20574,7 +20643,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20732,7 +20801,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -20803,7 +20875,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -20961,7 +21033,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -21030,7 +21105,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -21195,7 +21270,10 @@
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -21268,7 +21346,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -21431,7 +21509,10 @@
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -21495,7 +21576,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -21655,7 +21736,10 @@
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -21737,7 +21821,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -21897,7 +21981,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -21988,7 +22075,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -22146,7 +22233,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22238,7 +22328,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -22395,7 +22485,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22487,7 +22580,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -22645,7 +22738,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22737,7 +22833,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -22895,7 +22991,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22987,7 +23086,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -23145,7 +23244,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "prior_full_verification_date_restored": "2026-09-30",
+        "claim_source_review_date": "2026-10-14",
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
