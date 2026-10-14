@@ -267,3 +267,21 @@ test('audio price display is unit-aware in both catalog and advisor, without tok
  assert.match(html,/m\._cost==null\?priceDescriptor\(m\)/,'Advisor must display the audio unit when a verified model becomes recommendable');
  assert.match(html,/m\.input_usd_m!=null\?[^\n]*priceDescriptor\(m\)/,'Catalog cards must display the audio rate rather than a token rate');
 });
+
+test('GPT-Live and Voxtral audio rates remain duration-based with no synthetic token price',()=>{
+ const models=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8')).models;
+ const expected={'gpt-live-1':0.05,'voxtral-mini-transcribe-2':0.003,'voxtral-mini-transcribe-realtime':0.006};
+ for(const [id,rate] of Object.entries(expected)){
+  const m=models.find(m=>m.id===id);
+  assert.ok(m,'Missing audio model '+id);
+  assert.equal(m.pricing_basis?.unit,'audio_minute');
+  assert.equal(m.pricing_basis?.usd_per_minute,rate);
+  assert.equal(m.input_usd_m,null);
+  assert.equal(m.output_usd_m,null);
+  assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false);
+  assert.equal(m.supplier_audit?.public_minute_tariff_review_20261014?.customer_contract_verified,false);
+ }
+ const live=models.find(m=>m.id==='gpt-live-1');
+ assert.equal(live.pricing_basis.billing_resolution,'second');
+ assert.match(live.pricing_basis.additional_costs_or_conditions,/Backend/);
+});
