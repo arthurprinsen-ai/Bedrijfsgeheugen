@@ -1120,7 +1120,9 @@
         "Microsoft Foundry"
       ],
       "source": "https://platform.claude.com/docs/en/about-claude/pricing",
-      "limitations": [],
+      "limitations": [
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "no EU processing in this listed path",
@@ -1158,7 +1160,44 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
-        }
+        },
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
+            "locator": "Specifications > Model IDs > Claude API",
+            "observed_value": "claude-sonnet-5",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
+            "locator": "Availability > Status and retirement",
+            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
+            "locator": "Specifications > Pricing > Input / Output",
+            "observed_value": "Claude first-party standard token pricing USD 2 per 1M input and USD 10 per 1M output tokens. Partner-platform prices can differ.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
+            "locator": "Specifications > Model IDs; Availability > Platforms",
+            "observed_value": "Claude API model claude-sonnet-5; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "checked_on": "2026-10-14"
+          }
+        ]
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1184,14 +1223,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7484,8 +7518,8 @@
     {
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 10,
+      "output_usd_m": 50,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -7498,7 +7532,8 @@
         "writing"
       ],
       "limitations": [
-        "verify current pricing before cost-sensitive deployment"
+        "verify current pricing before cost-sensitive deployment",
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
       ],
       "scores": {
         "reasoning": 9,
@@ -7561,18 +7596,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
-            "locator": "Claude Fable 5 API name active; retirement not sooner than June 9 2027",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
-            "locator": "Claude Fable 5 API name active; retirement not sooner than June 9 2027",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
             "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
@@ -7581,6 +7604,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
+            "locator": "Specifications > Model IDs > Claude API",
+            "observed_value": "claude-fable-5",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
+            "locator": "Availability > Status and retirement",
+            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
+            "locator": "Specifications > Pricing > Input / Output",
+            "observed_value": "Claude first-party standard token pricing USD 10 per 1M input and USD 50 per 1M output tokens. Partner-platform prices can differ.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive always on thinking",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
+            "locator": "Specifications > Model IDs; Availability > Platforms",
+            "observed_value": "Claude API model claude-fable-5; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -7602,15 +7660,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "missing_receipt_count": 6,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7627,8 +7678,8 @@
     {
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 5,
+      "output_usd_m": 25,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -7641,7 +7692,8 @@
         "long-running agents"
       ],
       "limitations": [
-        "older than Opus 5; evaluate migration path"
+        "older than Opus 5; evaluate migration path",
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
       ],
       "scores": {
         "reasoning": 9,
@@ -7704,18 +7756,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table: active",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table: active",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
             "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
@@ -7724,6 +7764,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
+            "locator": "Specifications > Model IDs > Claude API",
+            "observed_value": "claude-opus-4-8",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
+            "locator": "Availability > Status and retirement",
+            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
+            "locator": "Specifications > Pricing > Input / Output",
+            "observed_value": "Claude first-party standard token pricing USD 5 per 1M input and USD 25 per 1M output tokens. Partner-platform prices can differ.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
+            "locator": "Specifications > Model IDs; Availability > Platforms",
+            "observed_value": "Claude API model claude-opus-4-8; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -7745,15 +7820,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "missing_receipt_count": 6,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7770,8 +7838,8 @@
     {
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 5,
+      "output_usd_m": 25,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -7783,7 +7851,8 @@
         "coding"
       ],
       "limitations": [
-        "older lifecycle generation"
+        "older lifecycle generation",
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
       ],
       "scores": {
         "reasoning": 9,
@@ -7846,18 +7915,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table: active",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table: active",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
             "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
@@ -7866,6 +7923,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
+            "locator": "Specifications > Model IDs > Claude API",
+            "observed_value": "claude-opus-4-7",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
+            "locator": "Availability > Status and retirement",
+            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
+            "locator": "Specifications > Pricing > Input / Output",
+            "observed_value": "Claude first-party standard token pricing USD 5 per 1M input and USD 25 per 1M output tokens. Partner-platform prices can differ.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
+            "locator": "Specifications > Model IDs; Availability > Platforms",
+            "observed_value": "Claude API model claude-opus-4-7; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -7887,15 +7979,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "missing_receipt_count": 6,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7912,8 +7997,8 @@
     {
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 5,
+      "output_usd_m": 25,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -7925,7 +8010,8 @@
         "coding"
       ],
       "limitations": [
-        "older lifecycle generation"
+        "older lifecycle generation",
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
       ],
       "scores": {
         "reasoning": 9,
@@ -7988,18 +8074,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table: active",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table: active",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
             "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
@@ -8008,6 +8082,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
+            "locator": "Specifications > Model IDs > Claude API",
+            "observed_value": "claude-opus-4-6",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
+            "locator": "Availability > Status and retirement",
+            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
+            "locator": "Specifications > Pricing > Input / Output",
+            "observed_value": "Claude first-party standard token pricing USD 5 per 1M input and USD 25 per 1M output tokens. Partner-platform prices can differ.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
+            "locator": "Specifications > Model IDs; Availability > Platforms",
+            "observed_value": "Claude API model claude-opus-4-6; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -8029,15 +8138,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "missing_receipt_count": 6,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8619,6 +8721,20 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking, and Gemini 3.1 Flash Live Preview > Standard",
+            "observed_value": "Paid tier per 1M tokens USD input text 0.75, audio 3.00, image/video 1.00; output text 4.50, audio 12.00. Audio also displayed as $0.005 input and $0.018 output per minute.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/live-api",
+            "locator": "Technical specifications > Protocol and implementation approach",
+            "observed_value": "Gemini Live API supports stateful WebSocket (WSS), with model ID gemini-3.8-live from official model listing; customer account access not tested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -8640,12 +8756,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing",
-          "deployment",
-          "governance"
-        ],
-        "missing_receipt_count": 3,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8764,6 +8876,20 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking, and Gemini 3.1 Flash Live Preview > Standard",
+            "observed_value": "Paid tier per 1M tokens USD input text 0.75, audio 3.00, image/video 1.00; output text 4.50, audio 12.00. Audio also displayed as $0.005 input and $0.018 output per minute.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/live-api",
+            "locator": "Technical specifications > Protocol and implementation approach",
+            "observed_value": "Gemini Live API supports stateful WebSocket (WSS), with model ID gemini-3.8-live-extended-thinking from official model listing; customer account access not tested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -8785,12 +8911,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing",
-          "deployment",
-          "governance"
-        ],
-        "missing_receipt_count": 3,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8910,6 +9032,20 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Flash TTS > Standard paid tier",
+            "observed_value": "Through Dec 31 2026 USD 0.50 / 1M text input tokens and USD 9.00 / 1M audio output tokens; Jan 1 2027 USD 1.00 and USD 18.00 respectively.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/speech-generation",
+            "locator": "Generate speech > Gemini API examples",
+            "observed_value": "Google Gemini API text-to-speech model gemini-3.8-flash-tts via Gemini generateContent; tenant access not tested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -8931,12 +9067,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing",
-          "deployment",
-          "governance"
-        ],
-        "missing_receipt_count": 3,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10560,6 +10692,41 @@
             "observed_value": "Paid USD 3.50 per 1M audio input tokens and USD 21.00 per 1M audio output tokens; estimated total USD 0.0368/min at published token rates.",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; tenant permissions untested"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 > All Gemini 3 models > Endpoint",
+            "observed_value": "gemini-3.5-live-translate-preview",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 > Model list > Gemini 3.5 Live Translate",
+            "observed_value": "Published preview model in Gemini directory; tenant entitlement untested.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.5 Live Translate > Standard paid tier",
+            "observed_value": "USD 3.50 per 1M input audio tokens (approx $0.0053/min); USD 21 per 1M output audio tokens (approx $0.0315/min).",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.5 Live Translate > Description",
+            "observed_value": "Low-latency real-time speech-to-speech translation supporting over 70 languages.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/live-api",
+            "locator": "Use cases > Translation; Technical specifications > Protocol",
+            "observed_value": "Google Gemini Live API WebSocket model ID gemini-3.5-live-translate-preview listed in official models directory; access not tested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -10581,10 +10748,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10733,6 +10898,41 @@
             "observed_value": "Shared paid Standard table: USD 0.75/1M text input, USD 3.00/1M audio input, USD 1.00/1M image/video input, USD 4.50/1M text output and USD 12.00/1M audio output; also published per-minute equivalents.",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; tenant permissions untested"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Live, Gemini 3.8 Live Extended Thinking, and Gemini 3.1 Flash Live Preview > Standard",
+            "observed_value": "Paid tier per 1M tokens USD input text 0.75, audio 3.00, image/video 1.00; output text 4.50, audio 12.00. Audio also displayed as $0.005 input and $0.018 output per minute.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/live-api",
+            "locator": "Technical specifications > Protocol and implementation approach",
+            "observed_value": "Gemini Live API supports stateful WebSocket (WSS), with model ID gemini-3.1-flash-live-preview from official model listing; customer account access not tested.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 > All Gemini 3 models > Endpoint",
+            "observed_value": "gemini-3.1-flash-live-preview",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 > Audio models > Gemini 3.1 Flash Live",
+            "observed_value": "Listed as legacy audio-to-audio preview; model is not stable.",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Audio models > Gemini 3.1 Flash Live",
+            "observed_value": "Real-time audio-to-audio preview model for live dialogue; legacy preview.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -10754,10 +10954,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
