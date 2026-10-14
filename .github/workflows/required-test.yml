@@ -289,6 +289,18 @@ jobs:
             node tools/ci/netlify-build-entry.mjs --prepare-i18n-cache=ci-static-i18n-verification.json
             node tools/site-shell/build-localized-routes.mjs --validate-cache
           )
+      - name: Collect official provider source identity evidence for all catalog models
+        if: steps.integration.outputs.full_shared_suite == 'true'
+        timeout-minutes: 4
+        run: node scripts/brain/audit-ai-model-provider-sources.mjs
+      - name: Preserve independent model source evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-model-provider-identity-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/ai-model-provider-source-audit.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
