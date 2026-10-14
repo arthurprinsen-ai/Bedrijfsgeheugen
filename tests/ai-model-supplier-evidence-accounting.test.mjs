@@ -353,3 +353,27 @@ test('Nova Premier English-card redirect cannot resolve contradictory AWS lifecy
  assert.notEqual(m.verification_evidence?.claim_scope,'full');
  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
 });
+
+test('Falcon exact model-card inference receipts cannot authorize hosted API or customer runtime',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const ids=['falcon-h1-0.5b-instruct','falcon-h1-1.5b-instruct','falcon-h1-3b-instruct',
+  'falcon-h1-7b-instruct','falcon-h1-34b-instruct','falcon-h1r-7b'];
+ for(const id of ids){
+  const m=c.models.find(row=>row.id===id);
+  assert.ok(m,id+' must be present');
+  const r=m.supplier_audit?.public_model_card_self_host_scope_review_20261014;
+  assert.ok(r,id+': public exact model card missing');
+  assert.equal(r.checked_on,'2026-10-14');
+  assert.equal(r.official_supplier_model_card,m.source);
+  assert.equal(r.canonical_repository,m.source.replace('https://huggingface.co/',''));
+  assert.equal(r.observed_license,'falcon-llm-license');
+  assert.ok(r.observed_local_inference_frameworks.includes('Transformers'));
+  assert.ok(r.observed_local_inference_frameworks.includes('vLLM'));
+  assert.equal(r.independent_six_claim_supplier_approval,false);
+  assert.equal(r.commercial_tariff_attested,false);
+  assert.equal(r.customer_runtime_attested,false);
+  assert.equal(r.automatic_recommendation_eligible,false);
+  assert.equal(m.verification_evidence?.claim_scope,'partial');
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ }
+});
