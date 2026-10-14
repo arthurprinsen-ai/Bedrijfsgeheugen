@@ -16844,11 +16844,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
-          "governance"
+          "governance",
+          "region and tier-specific current billing"
         ],
         "claim_evidence": [
           {
@@ -16888,6 +16889,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet",
+            "locator": "Amazon Nova pricing table > Nova 2 Sonic (speech tokens) > input and output USD per million",
+            "observed_value": "AWS Builder Center published comparative pricing reference lists Amazon Nova 2 Sonic at USD 3 per million input speech tokens and USD 12 per million output speech tokens. This is speech-token reference pricing only; text tokens, service tier, AWS region, and currently billed rates are not verified against a live AWS Price List.",
+            "checked_on": "2026-10-14",
+            "scope": "AWS Builder Center published comparative reference (not an authoritative current billing API readback); tenant region/contract and text-token rates remain UNVERIFIED",
+            "verification_status": "PUBLIC_REFERENCE_NOT_LIVE_REGION_PRICE"
           }
         ],
         "provider_policy_evidence": {
@@ -16956,6 +16966,13 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "aws_sonic_price_reference_20261014": {
+        "speech_input_usd_per_million": 3,
+        "speech_output_usd_per_million": 12,
+        "source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet",
+        "checked_on": "2026-10-14",
+        "live_rate_verified": false
       }
     },
     {
