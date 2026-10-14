@@ -70,3 +70,17 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
  assert.ok(c.models.some(m=>(m.modalities||[]).includes('video')));
  assert.ok(c.models.some(m=>m.self_host===true));
 });
+test('supplier verification ledger explicitly accounts for every required claim',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const claims=['model_id','status','pricing','capabilities','deployment','governance'];
+ const omissions=[];
+ for(const m of c.models){
+  const e=m.verification_evidence||{};
+  for(const claim of claims){
+   const verified=e.verified_claims?.includes(claim)===true;
+   const unverified=e.not_verified?.includes(claim)===true;
+   if(verified===unverified) omissions.push(m.id+':'+claim+':INVALID_CLAIM_ACCOUNTING');
+  }
+ }
+ assert.deepEqual(omissions,[]);
+});
