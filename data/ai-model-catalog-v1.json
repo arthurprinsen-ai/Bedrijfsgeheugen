@@ -168,6 +168,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
+            "observed_value": "gpt-6-astra via /v1/responses: Abuse monitoring generally up to 30 days, response state may persist 30 days when store enabled/default; approved ZDR forces store=false. Tools/caching can have further retention. Tenant not checked.",
+            "checked_on": "2026-10-14",
+            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -210,10 +219,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-6-astra",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -543,6 +550,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
+            "observed_value": "gpt-6-luna via /v1/responses: For OpenAI-operated API only, default monitoring up to 30 days and response-state retention when stored; approved ZDR forces store=false. Bedrock policy and tenant not checked.",
+            "checked_on": "2026-10-14",
+            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -585,10 +601,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-6-luna",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5982,6 +5996,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
+            "observed_value": "gpt-6.1-sol via /v1/responses: Abuse monitoring generally up to 30 days, response state may persist 30 days when store enabled/default; approved ZDR forces store=false. Tools/caching can have further retention. Tenant not checked.",
+            "checked_on": "2026-10-14",
+            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6010,10 +6033,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -6503,6 +6524,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/images/generations, /v1/images/edits",
+            "observed_value": "gpt-image-2 via /v1/images/generations and /v1/images/edits: No application-state retention; default 30-day abuse monitoring; conditional ZDR eligibility with image-input exceptions. Customer settings unverified.",
+            "checked_on": "2026-10-14",
+            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6530,10 +6560,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7900,6 +7928,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/embeddings",
+            "observed_value": "text-embedding-3-large via /v1/embeddings: No application-state retention; default abuse monitoring up to 30 days, conditional ZDR. Tenant policy and downstream vector database not verified.",
+            "checked_on": "2026-10-14",
+            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -7928,10 +7965,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8073,6 +8108,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/embeddings",
+            "observed_value": "text-embedding-3-small via /v1/embeddings: No application-state retention; default abuse monitoring up to 30 days, conditional ZDR. Tenant policy and downstream vector database not verified.",
+            "checked_on": "2026-10-14",
+            "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8101,10 +8145,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
