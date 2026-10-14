@@ -20864,6 +20864,24 @@
         "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "independent_supplier_license_audit_20261014": {
+        "checked_on": "2026-10-14",
+        "supplier_model_source": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+        "terms_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+        "observed_license": "Falcon-LLM License (publisher model card)",
+        "observation": "Official TII Falcon-H1 publisher card labels this exact model Falcon-LLM License and links to the TII terms page. The terms page contains multiple dated Falcon license families; a model-specific license-version/commercial-fee mapping was not established from the public text.",
+        "remaining_unverified": [
+          "applicable Falcon-H1 commercial-license version and hosting restrictions",
+          "royalties or license payments for specific customer use",
+          "provider API tariff",
+          "tenant controls and contract"
+        ],
+        "claim_scope": "public model-license reference and model-specific caveats; NOT a customer license grant",
+        "pricing_verified": false,
+        "tenant_verified": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -21081,6 +21099,24 @@
         "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "independent_supplier_license_audit_20261014": {
+        "checked_on": "2026-10-14",
+        "supplier_model_source": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+        "terms_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+        "observed_license": "Falcon-LLM License (publisher model card)",
+        "observation": "Official TII Falcon-H1 publisher card labels this exact model Falcon-LLM License and links to the TII terms page. The terms page contains multiple dated Falcon license families; a model-specific license-version/commercial-fee mapping was not established from the public text.",
+        "remaining_unverified": [
+          "applicable Falcon-H1 commercial-license version and hosting restrictions",
+          "royalties or license payments for specific customer use",
+          "provider API tariff",
+          "tenant controls and contract"
+        ],
+        "claim_scope": "public model-license reference and model-specific caveats; NOT a customer license grant",
+        "pricing_verified": false,
+        "tenant_verified": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -21298,6 +21334,24 @@
         "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "independent_supplier_license_audit_20261014": {
+        "checked_on": "2026-10-14",
+        "supplier_model_source": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+        "terms_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+        "observed_license": "Falcon-LLM License (publisher model card)",
+        "observation": "Official TII Falcon-H1 publisher card labels this exact model Falcon-LLM License and links to the TII terms page. The terms page contains multiple dated Falcon license families; a model-specific license-version/commercial-fee mapping was not established from the public text.",
+        "remaining_unverified": [
+          "applicable Falcon-H1 commercial-license version and hosting restrictions",
+          "royalties or license payments for specific customer use",
+          "provider API tariff",
+          "tenant controls and contract"
+        ],
+        "claim_scope": "public model-license reference and model-specific caveats; NOT a customer license grant",
+        "pricing_verified": false,
+        "tenant_verified": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -21516,6 +21570,24 @@
         "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "independent_supplier_license_audit_20261014": {
+        "checked_on": "2026-10-14",
+        "supplier_model_source": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "terms_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+        "observed_license": "Falcon-LLM License (publisher model card)",
+        "observation": "Official TII Falcon-H1 publisher card labels this exact model Falcon-LLM License and links to the TII terms page. The terms page contains multiple dated Falcon license families; a model-specific license-version/commercial-fee mapping was not established from the public text.",
+        "remaining_unverified": [
+          "applicable Falcon-H1 commercial-license version and hosting restrictions",
+          "royalties or license payments for specific customer use",
+          "provider API tariff",
+          "tenant controls and contract"
+        ],
+        "claim_scope": "public model-license reference and model-specific caveats; NOT a customer license grant",
+        "pricing_verified": false,
+        "tenant_verified": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -21734,6 +21806,24 @@
         "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "independent_supplier_license_audit_20261014": {
+        "checked_on": "2026-10-14",
+        "supplier_model_source": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+        "terms_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+        "observed_license": "Falcon-LLM License (publisher model card)",
+        "observation": "Official TII Falcon-H1 publisher card labels this exact model Falcon-LLM License and links to the TII terms page. The terms page contains multiple dated Falcon license families; a model-specific license-version/commercial-fee mapping was not established from the public text.",
+        "remaining_unverified": [
+          "applicable Falcon-H1 commercial-license version and hosting restrictions",
+          "royalties or license payments for specific customer use",
+          "provider API tariff",
+          "tenant controls and contract"
+        ],
+        "claim_scope": "public model-license reference and model-specific caveats; NOT a customer license grant",
+        "pricing_verified": false,
+        "tenant_verified": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -21952,6 +22042,24 @@
         "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "independent_supplier_license_audit_20261014": {
+        "checked_on": "2026-10-14",
+        "supplier_model_source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+        "terms_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+        "observed_license": "Falcon-LLM License (publisher model card)",
+        "observation": "Official TII Falcon-H1 publisher card labels this exact model Falcon-LLM License and links to the TII terms page. The terms page contains multiple dated Falcon license families; a model-specific license-version/commercial-fee mapping was not established from the public text.",
+        "remaining_unverified": [
+          "applicable Falcon-H1 commercial-license version and hosting restrictions",
+          "royalties or license payments for specific customer use",
+          "provider API tariff",
+          "tenant controls and contract"
+        ],
+        "claim_scope": "public model-license reference and model-specific caveats; NOT a customer license grant",
+        "pricing_verified": false,
+        "tenant_verified": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -22171,6 +22279,22 @@
         "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "independent_supplier_license_audit_20261014": {
+        "checked_on": "2026-10-14",
+        "supplier_model_source": "https://huggingface.co/tiiuae/Falcon-OCR",
+        "terms_link": "https://huggingface.co/tiiuae/Falcon-OCR",
+        "observed_license": "Apache-2.0",
+        "observation": "Official tiiuae/Falcon-OCR publisher model card labels this exact OCR checkpoint Apache-2.0 and provides self-host deployment instructions.",
+        "remaining_unverified": [
+          "commercial deployment and hosting costs",
+          "tenant controls and contract"
+        ],
+        "claim_scope": "public model-license reference and model-specific caveats; NOT a customer license grant",
+        "pricing_verified": false,
+        "tenant_verified": false,
+        "approved_for_production_release": false,
+        "automatic_recommendation_eligible": false
       }
     }
   ],
