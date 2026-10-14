@@ -1,17 +1,29 @@
 #!/usr/bin/env node
-// Read-only supplier evidence gap inventory; never treats a reachable URL as verified.
+// Read-only evidence triage: a receipt is not an independent verification or a tenant attestation.
 import fs from 'node:fs';
+import { supplierEvidenceWorklist, classifySupplierClaim, REQUIRED_SUPPLIER_CLAIMS } from './ai-model-supplier-evidence-worklist.mjs';
+
 const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
-const required=['model_id','status','pricing','capabilities','deployment','governance'];
-const rows=catalog.models.map(m=>{
- const e=m.verification_evidence||{};
- const missing=required.filter(claim=>!Array.isArray(e.claim_evidence)||!e.claim_evidence.some(r=>
-  r.claim===claim && typeof r.url==='string' && r.url.startsWith('https://') &&
-  typeof r.locator==='string' && !!r.locator.trim() &&
-  typeof r.observed_value==='string' && !!r.observed_value.trim() &&
-  r.checked_on===e.checked_on && !String(r.scope??'').includes('NOT model-specific') && r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'));
- return {model_id:m.id,provider:m.provider,full_verified:e.claim_scope==='full'&&missing.length===0,missing_claims:missing};
+const review=supplierEvidenceWorklist(catalog);
+const rows=catalog.models.map(model=>{
+ const e=model.verification_evidence||{};
+ const byClaim=Object.fromEntries(REQUIRED_SUPPLIER_CLAIMS.map(claim=>[claim,classifySupplierClaim(e,claim)]));
+ const pending=REQUIRED_SUPPLIER_CLAIMS.filter(claim=>byClaim[claim]!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED');
+ return {model_id:model.id,provider:model.provider,claim_scope:e.claim_scope??'none',
+  automatic_recommendation_eligible:false,claim_evidence_classification:byClaim,
+  claims_without_model_scoped_source:pending,
+  full_independent_verification_complete:false};
 });
-const summary={models:rows.length,fully_evidenced:rows.filter(r=>r.full_verified).length,
- missing_by_claim:Object.fromEntries(required.map(c=>[c,rows.filter(r=>r.missing_claims.includes(c)).length]))};
-console.log(JSON.stringify({summary,models:rows},null,2));
+const classifications=review.evidence_classification;
+const totals={model_records:catalog.models.length,required_claims_per_model:REQUIRED_SUPPLIER_CLAIMS.length,
+ total_claims:review.total_claims,
+ model_source_receipts_for_independent_review:classifications.model_scoped_receipts,
+ provider_policy_only_not_model_proof:classifications.provider_baseline_only,
+ no_usable_model_source:classifications.missing_or_incomplete_receipts,
+ still_lacking_model_scoped_source:classifications.provider_baseline_only+classifications.missing_or_incomplete_receipts,
+ awaiting_full_independent_claim_verification:review.pending_claim_reviews,
+ independently_fully_verified_models:review.fully_verified_models};
+if(totals.model_source_receipts_for_independent_review+totals.still_lacking_model_scoped_source!==totals.total_claims)
+ throw new Error('EVIDENCE_CLASSIFICATION_TOTAL_MISMATCH');
+if(rows.length!==110)throw new Error('MODEL_COUNT_MISMATCH');
+console.log(JSON.stringify({summary:totals,note:'A dated model source receipt is only a review candidate. General supplier policies never attest to a specific model or customer. CI and production acceptance remain blocked until independently verified.',models:rows},null,2));
