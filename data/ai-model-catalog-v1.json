@@ -2077,7 +2077,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -2089,37 +2089,54 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://docs.x.ai/developers/models",
         "verified_claims": [
           "model_id",
           "status",
-          "pricing"
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://docs.x.ai/developers/models",
-            "checked_on": "2026-10-14",
-            "locator": "grok-4.7"
+            "url": "https://docs.x.ai/developers/models/grok-4.7",
+            "locator": "Grok 4.7 > Model name",
+            "observed_value": "grok-4.7",
+            "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://docs.x.ai/developers/models",
-            "checked_on": "2026-10-14",
-            "locator": "grok-4.7"
+            "url": "https://docs.x.ai/developers/models/grok-4.7",
+            "locator": "Grok 4.7 model page and current pricing",
+            "observed_value": "Listed current model with API pricing; tenant entitlement not tested",
+            "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
-            "url": "https://docs.x.ai/developers/models",
-            "checked_on": "2026-10-14",
-            "locator": "grok-4.7"
+            "url": "https://docs.x.ai/developers/models/grok-4.7",
+            "locator": "Pricing > Input, Cached tokens and Output",
+            "observed_value": "USD/1M: input 2.00, cached 0.50, output 6.00; rates vary above 200K context",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/models/grok-4.7",
+            "locator": "At a glance and Capabilities",
+            "observed_value": "Text and image input; text output; 500K context; function calling, structured outputs, configurable reasoning",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.x.ai/developers/models/grok-4.7",
+            "locator": "Model detail > Region and Batch API",
+            "observed_value": "us-east-1 displayed; Batch API unsupported; region and customer entitlement not tested",
+            "checked_on": "2026-10-14"
           }
         ]
       }
@@ -2552,7 +2569,14 @@
             "observed_value": "Cohere deployments per terms; Apache 2.0 open source deployment on Hugging Face",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "identity_warning": {
+          "status": "UNVERIFIED_ALIAS",
+          "official_id": "command-a-plus-05-2026",
+          "source": "https://docs.cohere.com/docs/command-a-plus",
+          "explanation": "Generic catalog label has not been proven to be a valid API model ID",
+          "checked_on": "2026-10-14"
+        }
       },
       "pricing_basis": {
         "source": "https://docs.cohere.com/docs/command-a-plus",
@@ -8546,7 +8570,7 @@
         "private enterprise deployment"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8577,30 +8601,47 @@
         "verified_claims": [
           "model_id",
           "status",
-          "capabilities"
+          "capabilities",
+          "pricing",
+          "deployment"
         ],
         "not_verified": [
-          "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://docs.cohere.com/v1/changelog",
-            "locator": "Model Name and Availability; 128k input, 64k output, API and private deployment option",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "API Endpoints > Model ID",
+            "observed_value": "command-a-plus-05-2026",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://docs.cohere.com/v1/changelog",
-            "locator": "Model Name and Availability; 128k input, 64k output, API and private deployment option",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Pricing and API Endpoints",
+            "observed_value": "Documented for Chat V2 and Chat V1; production via Cohere Model Vault subject to contract",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Pricing",
+            "observed_value": "No per-token price listed; free until rate limits on trial and production keys; Model Vault pricing contract-dependent",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://docs.cohere.com/v1/changelog",
-            "locator": "Model Name and Availability; 128k input, 64k output, API and private deployment option",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Capabilities; Specifications",
+            "observed_value": "Reasoning, multilingual, image input, citations, tool use and structured outputs; 128K context, 64K output",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Distribution and Technical Integration",
+            "observed_value": "Chat V2 API, private Model Vault deployment and Apache 2.0 weights; private hardware 1xB200 or 2xH100",
             "checked_on": "2026-10-14"
           }
         ]
