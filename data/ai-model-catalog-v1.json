@@ -5527,7 +5527,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "unit_price": "Model Vault from $5/hour",
       "modalities": [
         "rerank"
@@ -5556,7 +5556,7 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing",
+      "source": "https://docs.cohere.com/v2/docs/rerank",
       "limitations": [
         "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
       ],
@@ -5571,7 +5571,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -5583,20 +5583,19 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://cohere.com/pricing",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.cohere.com/v2/docs/rerank",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
-          "deployment",
-          "governance",
-          "API per-token/per-search production pricing",
-          "actual tenant purchase/commitment",
-          "pricing"
+          "deployment"
+        ],
+        "not_verified": [
+          "API pay-as-you-go monetary price",
+          "customer contract and tenant entitlement",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -5609,34 +5608,6 @@
             "verification_status": "SUPPLIER_VAULT_SKU_PRICE_OBSERVED_API_PRICE_UNVERIFIED"
           },
           {
-            "claim": "model_id",
-            "url": "https://docs.cohere.com/v2/docs/rerank",
-            "locator": "Latest Model table",
-            "observed_value": "Provider API model ID rerank-v4.0-pro",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.cohere.com/v2/docs/rerank",
-            "locator": "Latest Model table",
-            "observed_value": "Multilingual text and semi-structured JSON reranking; 32k context",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.cohere.com/v2/docs/rerank",
-            "locator": "Latest Model > Endpoints",
-            "observed_value": "Cohere Rerank API endpoint; actual account authorization not checked",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
-            "locator": "Standard Vault Pricing > Rerank 4 Pro",
-            "observed_value": "Listed for Standard Vault Medium and Large tiers; this is Vault availability, not proof of public API entitlement",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://cohere.com/enterprise-data-commitments",
             "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
@@ -5645,6 +5616,34 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/v2/docs/rerank",
+            "locator": "Latest Model table",
+            "observed_value": "Official model ID rerank-v4.0-pro; catalog ID rerank-4-pro is a friendly label",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/v2/docs/rerank",
+            "locator": "Latest Model table and Rerank API reference",
+            "observed_value": "Model documented for Rerank v2 API as of 2026-10-14; tenant key entitlement untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/v2/docs/rerank",
+            "locator": "Latest Model table and Context",
+            "observed_value": "32K multilingual English/non-English and semi-structured JSON reranking; optimized for best quality over fast variant",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/reference/rerank",
+            "locator": "Rerank API v2 model parameter and billed_units.search_units",
+            "observed_value": "Cohere Rerank v2 API accepts rerank-v4.0-pro; response billed by search units; paid production entitlement unverified",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -5665,7 +5664,7 @@
       },
       "pricing_basis": "Model Vault pricing is per-instance: medium $5/hour or $3250/month; large $10/hour or $6500/month; does not establish pay-as-you-go API price.",
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "MODEL_FACTS_DOCUMENTED_PRICE_AND_TENANT_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -5679,7 +5678,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://cohere.com/pricing",
+        "source_reference": "https://docs.cohere.com/v2/docs/rerank",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -5689,7 +5688,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "Cohere exact API model ID/32K/Rerank endpoint confirmed. Vault hourly prices do not establish Rerank API per-search tariffs; no tenant data controls attested",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -5708,7 +5707,9 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://docs.cohere.com/v2/docs/rerank",
+        "last_specific_source_check": "2026-10-14"
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -5718,7 +5719,8 @@
         "price_type": "managed_single_tenant_per_instance",
         "public_api_pricing": "UNVERIFIED",
         "customer_subscription": "UNVERIFIED"
-      }
+      },
+      "provider_api_id": "rerank-v4.0-pro"
     },
     {
       "id": "llama-4-scout-17b-16e-instruct",
@@ -17834,7 +17836,7 @@
       "context_k": 0.512,
       "modalities": [
         "text",
-        "vision"
+        "image"
       ],
       "strengths": [
         "multilingual embeddings",
@@ -17862,7 +17864,7 @@
         "private deployment where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -17876,7 +17878,7 @@
       },
       "id": "embed-multilingual-v3.0",
       "provider": "Cohere",
-      "source": "https://docs.cohere.com/v1/changelog",
+      "source": "https://docs.cohere.com/docs/cohere-embed",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -17889,46 +17891,18 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.cohere.com/v1/changelog",
+        "source_url": "https://docs.cohere.com/docs/cohere-embed",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
+          "current per-model dollar-denominated embedding rate",
+          "customer-specific governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://docs.cohere.com/changelog/embed-v3-is-multimodal",
-            "locator": "API Changes > example request",
-            "observed_value": "model parameter embed-multilingual-v3.0",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.cohere.com/changelog/embed-v3-is-multimodal",
-            "locator": "API Changes and Restrictions",
-            "observed_value": "Text and image embeddings; image formats PNG JPEG WebP GIF; one image/request and 5 MB maximum",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.cohere.com/changelog/embed-v3-is-multimodal",
-            "locator": "API Changes > cURL example",
-            "observed_value": "Cohere POST https://api.cohere.ai/v1/embed with input_type=image",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.cohere.com/changelog/2026-04-04-embed-v2-aya-8b-retirement",
-            "locator": "Retirement notice > recommended replacements",
-            "observed_value": "embed-multilingual-v3.0 explicitly recommended as active alternative for retired Embed v2; tenant access not validated",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://cohere.com/enterprise-data-commitments",
@@ -17947,6 +17921,34 @@
             "checked_on": "2026-10-14",
             "verification_status": "PRICING_BASIS_ONLY_CURRENT_RATE_UNKNOWN",
             "scope": "Official supplier billing basis only; not price amount or customer tariff"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/docs/cohere-embed",
+            "locator": "Embed models table",
+            "observed_value": "embed-multilingual-v3.0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/changelog/2026-04-04-embed-v2-aya-8b-retirement",
+            "locator": "Replacement recommendations",
+            "observed_value": "Cohere recommends embed-multilingual-v3.0 as replacement for retired Embed v2, API entitlement not checked",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/docs/cohere-embed",
+            "locator": "Embed v3 family models table",
+            "observed_value": "Text and image embeddings; 512 input token context, 1024 output dimensions, supports >100 languages",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/docs/cohere-embed",
+            "locator": "Embed model table > Endpoints and Platforms",
+            "observed_value": "Cohere Embed and Embed Jobs endpoints; selected Bedrock/OCI/SageMaker integrations listed; actual region/customer access untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -17974,7 +17976,7 @@
         }
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "MODEL_FACTS_DOCUMENTED_PRICING_RATE_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -17988,7 +17990,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.cohere.com/v1/changelog",
+        "source_reference": "https://docs.cohere.com/docs/cohere-embed",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -17998,7 +18000,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Exact Cohere Embed Multilingual v3 production per-token price cannot be confirmed from current official pricing page. Do not substitute Embed 4/5 price. An independently confirmed contract or vendor rate sheet is required.",
+        "review_note": "Official 512-token / 1024-dimensional multimodal embedding model confirmed. Pricing basis documented but no exact dollar tariff independently verified",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -18019,7 +18021,9 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://docs.cohere.com/docs/cohere-embed",
+        "last_specific_source_check": "2026-10-14"
       },
       "embedding_dimensions": 1024
     },
