@@ -305,3 +305,21 @@ Official per-model developer documentation inspected, with exact model ID, API s
 | `gemini-3.5-flash` | https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash | Deprecated; automatically routed to gemini-3.6-flash |
 
 Important distinctions: `gemini-2.5-flash-lite` remains listed as **not deprecated**, yet API access for newly created accounts is restricted; `gemini-3.7-flash` is deprecated and aliases 3.8 Flash; `gemini-3.5-flash` is deprecated and aliases 3.6 Flash. Do not certify these as independent active backends. All seven public model-page reviews are `release_eligible=false`, and pricing/tenant governance remain separately unverified until provider- and customer-specific checks are complete.
+
+
+## Eight Gemini image, live and speech model-owner page reviews (2026-10-14)
+
+Eight official Google model-specific documentation pages were checked for API IDs and distinct image, speech/transcription and Live preview modalities. Prices for image rendering or live audio sessions are **not equivalent** to generic text-token prices, and API model aliases are not proof of customer access.
+
+| Catalog model | Official Google per-model page | Observed model-specific capability |
+| --- | --- | --- |
+| `gemini-3-pro-image` | https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image | Stable image generation/editing; image/text input and output; 65,536 input and 32,768 output token limits |
+| `gemini-3.1-flash-image` | https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-image | Stable Nano Banana 2 image generation/editing; text/image/video/PDF input, image/text output, 131,072 input/32,768 output |
+| `gemini-3.1-flash-lite-image` | https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite-image | Dedicated image generation model listing; verify per-image pricing separately |
+| `gemini-3.1-flash-live-preview` | https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview | Live multimodal realtime preview model code, not interchangeable with ordinary text-only generateContent |
+| `gemini-3.1-flash-tts-preview` | https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview | Text-to-speech preview model; spoken audio output, not generic text pricing |
+| `gemini-3.5-flash-lite` | https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite | Flash-Lite model code and current lifecycle shown in Google's model-specific page |
+| `gemini-3.5-live-translate-preview` | https://ai.google.dev/gemini-api/docs/models/gemini-3.5-live-translate-preview | Preview live translation and audio modality; provider-priced duration not generic per-text token rate |
+| `gemini-3.5-transcribe` | https://ai.google.dev/gemini-api/docs/models/gemini-3.5-transcribe | Dedicated transcription model; audio-input semantics and available endpoints from model page |
+
+No commercial contract, actual billed image/audio usage, account model activation, tenant storage region or ZDR enabled status was inspected. These are eight public-source reviews with `release_eligible=false`; independently reviewed supplier claims and protected production release are separate gates.
