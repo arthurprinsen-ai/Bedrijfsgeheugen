@@ -91,7 +91,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
@@ -101,13 +101,13 @@
           "input_usd_m",
           "output_usd_m",
           "cached_input_usd_m",
-          "context_k"
-        ],
-        "not_verified": [
+          "context_k",
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_scope": "partial",
@@ -123,8 +123,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+            "locator": "Model heading",
+            "observed_value": "GPT-6 Astra",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+            "locator": "Model heading; pricing and model details",
+            "observed_value": "Model listed in official API documentation; tenant availability not confirmed",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+            "locator": "Pricing > Text tokens > Per 1M tokens",
+            "observed_value": "Standard input $10; cached input $1; output $50; higher rates apply above 272K input tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+            "locator": "Modalities and Features",
+            "observed_value": "Text input/output, image input; function calling and structured outputs supported; audio/video inputs unsupported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+            "locator": "Endpoints",
+            "observed_value": "Responses v1/responses and Chat Completions v1/chat/completions documented; authenticated tenant access untested",
             "checked_on": "2026-10-14"
           }
         ],
