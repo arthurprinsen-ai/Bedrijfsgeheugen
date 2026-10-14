@@ -4478,6 +4478,19 @@
           "source_url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "official_lifecycle_notice_discrepancy_20261014": {
+          "checked_on": "2026-10-14",
+          "launch_url": "https://www.deepseek.com/en/news/deepseek-v4-1-flash/",
+          "launch_observation": "DeepSeek public V4.1 Flash launch news describes routing deepseek-v4-pro to Flash at Flash pricing from Sept 14, 2026.",
+          "api_changelog_url": "https://api-docs.deepseek.com/updates/",
+          "api_changelog_observation": "DeepSeek API changelog for Sept 10 explicitly says V4 Pro service continues after Sept 14 with billing method unchanged, contradicting the original launch routing statement.",
+          "conclusion": "The provider's model-specific API changelog clarifies that Pro service continues. Do not assert forced alias routing or Flash billing without authenticated current provider model and invoice validation.",
+          "full_supplier_claim_verification": false,
+          "customer_route_verified": false,
+          "customer_billing_verified": false,
+          "automatic_recommendation_eligible": false,
+          "production_release_approved": false
         }
       },
       "pricing_basis": {
@@ -4701,6 +4714,19 @@
           "source_url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "official_lifecycle_notice_discrepancy_20261014": {
+          "checked_on": "2026-10-14",
+          "launch_url": "https://www.deepseek.com/en/news/deepseek-v4-1-flash/",
+          "launch_observation": "DeepSeek public V4.1 Flash launch news describes routing deepseek-v4-pro to Flash at Flash pricing from Sept 14, 2026.",
+          "api_changelog_url": "https://api-docs.deepseek.com/updates/",
+          "api_changelog_observation": "DeepSeek API changelog for Sept 10 explicitly says V4 Pro service continues after Sept 14 with billing method unchanged, contradicting the original launch routing statement.",
+          "conclusion": "The provider's model-specific API changelog clarifies that Pro service continues. Do not assert forced alias routing or Flash billing without authenticated current provider model and invoice validation.",
+          "full_supplier_claim_verification": false,
+          "customer_route_verified": false,
+          "customer_billing_verified": false,
+          "automatic_recommendation_eligible": false,
+          "production_release_approved": false
         }
       },
       "pricing_basis": {
