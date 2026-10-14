@@ -11836,7 +11836,22 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_google_lifecycle_route_review_20261014": {
+          "checked_on": "2026-10-14",
+          "classification": "OFFICIAL_GOOGLE_DEPRECATED_ALIAS_ROUTE_INDEPENDENTLY_CHECKED",
+          "source": "https://ai.google.dev/gemini-api/docs/changelog",
+          "source_locator": "October 8, 2026",
+          "deprecated_on": "2026-10-08",
+          "previous_model_id": "gemini-3.7-flash",
+          "api_requests_routed_to": "gemini-3.8-flash",
+          "user_action": "Migrate callers to gemini-3.8-flash",
+          "historical_catalog_price_not_a_quote_for_routed_requests": true,
+          "effective_routed_model_price_not_approved": true,
+          "customer_access_verified": false,
+          "independent_six_claim_acceptance": false,
+          "automatic_recommendation_eligible": false
+        }
       }
     },
     {
@@ -12210,7 +12225,22 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_google_lifecycle_route_review_20261014": {
+          "checked_on": "2026-10-14",
+          "classification": "OFFICIAL_GOOGLE_DEPRECATED_ALIAS_ROUTE_INDEPENDENTLY_CHECKED",
+          "source": "https://ai.google.dev/gemini-api/docs/changelog",
+          "source_locator": "October 8, 2026",
+          "deprecated_on": "2026-10-08",
+          "previous_model_id": "gemini-3.5-flash",
+          "api_requests_routed_to": "gemini-3.6-flash",
+          "user_action": "Migrate callers to gemini-3.6-flash or gemini-3.8-flash",
+          "historical_catalog_price_not_a_quote_for_routed_requests": true,
+          "effective_routed_model_price_not_approved": true,
+          "customer_access_verified": false,
+          "independent_six_claim_acceptance": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -12584,7 +12614,22 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_google_lifecycle_route_review_20261014": {
+          "checked_on": "2026-10-14",
+          "classification": "OFFICIAL_GOOGLE_MODEL_DEPRECATION_INDEPENDENTLY_CHECKED",
+          "source": "https://ai.google.dev/gemini-api/docs/changelog",
+          "source_locator": "October 6, 2026",
+          "deprecated_on": "2026-10-06",
+          "previous_model_id": "gemini-3.1-flash-image",
+          "suggested_replacement": "gemini-nano-banana-2.1",
+          "automatic_routing_not_established": true,
+          "official_shutdown_date_announced": false,
+          "historical_catalog_price_not_a_quote_for_replacement": true,
+          "customer_access_verified": false,
+          "independent_six_claim_acceptance": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "pricing_modalities": {
         "text_input": 0.5,
