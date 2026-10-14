@@ -2108,7 +2108,7 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -2134,16 +2134,16 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
           "deployment"
         ],
         "not_verified": [
-          "model_id",
           "governance"
         ],
         "claim_evidence": [
@@ -2198,7 +2198,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference": "https://docs.mistral.ai/models/mistral-large-3-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -2208,7 +2208,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+        "last_specific_source_check": "2026-10-14"
       },
       "license_evidence": {
         "source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
@@ -10191,7 +10193,7 @@
     },
     {
       "tier": "specialist",
-      "status": "retired",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -10205,7 +10207,8 @@
         "document structure"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Deprecated September 29, 2026; OCR 4.1 recommended for new integrations"
       ],
       "scores": {
         "reasoning": 3,
@@ -10225,7 +10228,7 @@
         "Mistral API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -10239,7 +10242,7 @@
       },
       "id": "mistral-ocr-4.0",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/ocr-4-0",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -10251,23 +10254,45 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/ocr-4-0",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "model_id",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/ocr-4-0",
+            "locator": "Model ID under title",
+            "observed_value": "mistral-ocr-4-0",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "Deprecated & retired models table",
+            "url": "https://docs.mistral.ai/models/ocr-4-0",
+            "locator": "Deprecated banner",
+            "observed_value": "Deprecated 2026-09-29; replacement OCR 4.1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/ocr-4-0",
+            "locator": "Features",
+            "observed_value": "OCR, paragraph bounding boxes, structured annotations, batch processing",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/ocr-4-0",
+            "locator": "Feature endpoints",
+            "observed_value": "/v1/ocr and /v1/batch documented; customer availability not tested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -10290,15 +10315,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models/ocr-4-0",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -10308,7 +10329,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://docs.mistral.ai/models/ocr-4-0",
+        "last_specific_source_check": "2026-10-14"
       }
     },
     {
