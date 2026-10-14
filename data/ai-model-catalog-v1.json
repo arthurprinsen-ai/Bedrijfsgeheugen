@@ -5082,9 +5082,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
+          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 1,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.cohere.com/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5099,7 +5100,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -5270,9 +5271,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
+          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 1,
+        "missing_receipt_count": 2,
         "source_reference": "https://cohere.com/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5287,7 +5289,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -16745,9 +16747,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
+          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 1,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16762,7 +16765,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -17365,9 +17368,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
+          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 1,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17382,7 +17386,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -17572,9 +17576,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
+          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 1,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17591,7 +17596,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -17780,9 +17785,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
+          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 1,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17799,7 +17805,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -18799,9 +18805,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
+          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 1,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -18816,7 +18823,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -18998,10 +19005,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19016,7 +19022,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MISSING_OR_INCOMPLETE",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
@@ -19400,8 +19406,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "pricing"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19416,7 +19424,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
@@ -19608,8 +19616,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "pricing"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19624,7 +19634,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
@@ -19816,8 +19826,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "pricing"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -19832,7 +19844,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
@@ -20025,8 +20037,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "pricing"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -20041,7 +20055,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
@@ -20234,8 +20248,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "pricing"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -20250,7 +20266,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
@@ -20443,8 +20459,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "pricing"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -20459,7 +20477,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
@@ -20651,8 +20669,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "pricing"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/tiiuae/Falcon-OCR",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -20667,7 +20687,7 @@
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MISSING_OR_INCOMPLETE",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
