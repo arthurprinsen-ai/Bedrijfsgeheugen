@@ -1658,19 +1658,14 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "input_usd_m",
-          "output_usd_m",
-          "context_k",
-          "input_output_modalities",
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "evidence_note": "Official model documentation lists Claude API alias claude-haiku-4-5, canonical snapshot claude-haiku-4-5-20251001, 200K context, $1 input/$5 output per million tokens; remains legacy, so does not imply current preferred or unrestricted availability.",
         "official_lifecycle_source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "provider_policy_evidence": {
@@ -1734,16 +1729,25 @@
             "checked_on": "2026-10-14",
             "scope": "specific model is excluded from enumerated Covered Models exception; conditional standard supplier API terms only; tenant not verified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
+            "locator": "Model-specific data retention requirements > Covered Models exclusive list; Zero data retention > What ZDR covers; Messages API feature eligibility",
+            "observed_value": "Official Anthropic published Covered Models with mandatory 30-day retention enumerate Claude Fable/Mythos 5 and 5.1; claude-haiku-4-5 is not on that exception list. /v1/messages is ZDR eligible under conditional commercial-organization and feature rules. No customer ZDR entitlement, signed DPA, runtime retention, region or third-party cloud processor controls attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently checked model exclusion from enumerated supplier exception; documented direct Anthropic API policy only",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Official direct Anthropic API baseline; not evidence of customer contract, ZDR, processing region, enabled settings or third-party cloud processor controls."
         },
-        "verification_scope_note": "All six supplier-level claims inspected against official model documentation and Anthropic commercial API retention/ZDR policies on 2026-10-14. Full supplier baseline is NOT customer-specific proof of tenant access, region, signed agreement, ZDR approval or runtime settings."
+        "verification_scope_note": "Independent 2026-10-14 review confirms six public supplier model claims against official model card and Anthropic model-exception + Messages API retention policy. claude-haiku-4-5 not listed among Covered Models subject to exceptional mandatory 30-day retention; ordinary ZDR eligibility is conditional on qualifying organization and features. The model may be hosted by independent third-party clouds with distinct data processors. No tenant, DPA, configured ZDR or regional runtime has been verified."
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1790,15 +1794,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
@@ -9689,7 +9686,7 @@
       "provider": "Anthropic",
       "source": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -9698,7 +9695,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "checked_on": "2026-10-14",
         "source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
         "verified_claims": [
@@ -9706,11 +9703,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -9764,6 +9760,15 @@
             "checked_on": "2026-10-14",
             "scope": "specific model is excluded from enumerated Covered Models exception; conditional standard supplier API terms only; tenant not verified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
+            "locator": "Model-specific data retention requirements > Covered Models exclusive list; Zero data retention > What ZDR covers; Messages API feature eligibility",
+            "observed_value": "Official Anthropic published Covered Models with mandatory 30-day retention enumerate Claude Fable/Mythos 5 and 5.1; claude-opus-4-8 is not on that exception list. /v1/messages is ZDR eligible under conditional commercial-organization and feature rules. No customer ZDR entitlement, signed DPA, runtime retention, region or third-party cloud processor controls attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently checked model exclusion from enumerated supplier exception; documented direct Anthropic API policy only",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -9780,7 +9785,7 @@
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific agreement, data residency, enabled ZDR, runtime evidence or third-party-host contract."
         },
-        "verification_scope_note": "Six documented supplier-level claims independently inspected 2026-10-14 against official model and API privacy/retention documentation. Full supplier baseline does not prove a signed customer DPA, region, tenant access, approved ZDR or authenticated live configuration."
+        "verification_scope_note": "Independent 2026-10-14 review confirms six public supplier model claims against official model card and Anthropic model-exception + Messages API retention policy. claude-opus-4-8 not listed among Covered Models subject to exceptional mandatory 30-day retention; ordinary ZDR eligibility is conditional on qualifying organization and features. The model may be hosted by independent third-party clouds with distinct data processors. No tenant, DPA, configured ZDR or regional runtime has been verified."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -9816,15 +9821,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000,
