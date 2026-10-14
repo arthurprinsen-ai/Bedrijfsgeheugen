@@ -94,7 +94,7 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
    if(!response.ok) throw new Error('CONTRACT_VAULT_HTTP_'+response.status);
    const receipt=await response.json();
    if(receipt.tenant_id!==r.tenant_id||receipt.provider!==r.provider||
-      receipt.evidence_reference!==r.evidence_reference||
+      receipt.model_id!==r.model_id||receipt.evidence_reference!==r.evidence_reference||
       receipt.signature_valid!==true||receipt.approved!==true||
       !isRecent(receipt.verified_at))
     throw new Error('SIGNED_CONTRACT_NOT_AUTHENTICATED');
