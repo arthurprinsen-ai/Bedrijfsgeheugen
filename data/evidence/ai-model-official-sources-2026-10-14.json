@@ -3,12 +3,12 @@
   "checked_at": "2026-10-14",
   "scope": "110 model ID checks against 41 catalog-supplied official URLs",
   "source_type": "supplier-hosted-documentation",
-  "source_urls_checked": 59,
-  "source_urls_retrieved": 58,
+  "source_urls_checked": 64,
+  "source_urls_retrieved": 63,
   "source_failures": [],
   "models_checked": 110,
-  "model_id_mentions": 71,
-  "model_id_not_explicit": 22,
+  "model_id_mentions": 73,
+  "model_id_not_explicit": 27,
   "unavailable_sources": 110,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
@@ -1030,16 +1030,16 @@
       "provider": "Google",
       "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
       "checked_at": "2026-10-14",
-      "status": "SOURCE_FETCH_FAILED",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 19096,
+      "evidence_excerpt": "g)](http://ai.google.dev/) `/` - [English](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash) - [Deutsch](https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash?hl=de) - [Español – América Latina](https://ai.go",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 400: {\"code\":\"REQS001\",\"detail\":\"Requ"
+      "source_error": null
     },
     {
       "model_id": "gemini-3.5-flash-lite",
@@ -1350,10 +1350,10 @@
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/shieldstral-1-0",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 21130,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 5685,
+      "evidence_excerpt": " RAM at bf16 - fp4 (GB)Context Size (tokens) [Weights↗](https://huggingface.co/mistralai/Shieldstral-1.0) [Apache 2.0↗](https://www.apache.org/licenses/LICENSE-2.0.txt) 3.83.8 N/A i 32k Other Models ### Other Models [![",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -1366,8 +1366,8 @@
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 21130,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 5534,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1382,8 +1382,8 @@
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/leanstral-1-5",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 21130,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 5903,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1398,8 +1398,8 @@
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 21130,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 6522,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1414,8 +1414,8 @@
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 21130,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 6316,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1526,22 +1526,23 @@
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 28755,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "amazon-nova-2-sonic",
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
+      "status": "SOURCE_FETCH_FAILED",
       "source_text_chars": 0,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1549,7 +1550,8 @@
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUTH006\",\"detail\":\"The "
     },
     {
       "model_id": "amazon-nova-premier",
@@ -2033,10 +2035,10 @@
       "error": null
     },
     "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 400: {\"code\":\"REQS001\",\"detail\":\"Requ"
+      "text_length": 19096,
+      "error": null
     },
     "https://docs.x.ai/developers/release-notes": {
       "state": "FETCHED",
@@ -2063,10 +2065,10 @@
       "error": null
     },
     "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html": {
-      "state": "FETCHED",
+      "state": "FETCH_FAILED",
       "checked_at": "2026-10-14",
-      "text_length": 14668,
-      "error": null
+      "text_length": 0,
+      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUTH006\",\"detail\":\"The "
     },
     "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html": {
       "state": "FETCHED",
@@ -2205,9 +2207,39 @@
       "checked_at": "2026-10-14",
       "text_length": 6324,
       "error": null
+    },
+    "https://docs.mistral.ai/models/shieldstral-1-0": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5685,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/mistral-moderation-26-03": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5534,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/leanstral-1-5": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5903,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/zai-glm-5-3": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 6522,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/zai-glm-5-2": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 6316,
+      "error": null
     }
   },
   "model_source_fetch_failed": 1,
-  "not_yet_checked": 16,
+  "not_yet_checked": 9,
   "audited_catalog_blob_sha": "fc3ec44202e2245d98e32046740f03d0e124ed0f"
 }
