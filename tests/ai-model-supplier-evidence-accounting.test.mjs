@@ -200,3 +200,27 @@ test('Nova Premier public-list omission cannot attest AWS account/region lifecyc
  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
  assert.notEqual(m.verification_evidence?.claim_scope,'full');
 });
+
+test('active Amazon Nova catalog records cite their exact model cards without supplier or customer approval',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const cards={
+  'amazon-nova-2-lite':'https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html',
+  'amazon-nova-2-sonic':'https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html',
+  'amazon-nova-pro':'https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html'
+ };
+ for(const [id,url] of Object.entries(cards)){
+  const model=catalog.models.find(x=>x.id===id);
+  assert.ok(model,id+' must be present');
+  assert.equal(model.source,url,id+' canonical model-specific source');
+  assert.equal(model.verification_evidence.source_url,url,id+' evidence source');
+  assert.equal(model.supplier_audit.source_reference,url,id+' audit source');
+  const review=model.supplier_audit.exact_model_card_source_20261014;
+  assert.equal(review.exact_model_card_url,url);
+  assert.equal(review.official_bedrock_model_id,model.provider_api_id);
+  assert.equal(review.independent_six_claim_supplier_approval,false);
+  assert.equal(review.customer_runtime_attested,false);
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+  assert.equal(model.verification_evidence.claim_scope,'partial',
+   'Public model card reference is not full six-claim supplier verification');
+ }
+});
