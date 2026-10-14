@@ -1,0 +1,25 @@
+{
+  "fingerprint": "commercial-heartbeat-sequential-starvation-20261014",
+  "date": "2026-10-14",
+  "obligation_id": "f0f46705-7c6c-42d5-9aab-23662dc0e6b9",
+  "compiler": {
+    "failure_class": "SEQUENTIAL_LANE_STARVATION"
+  },
+  "root_cause": "The canonical commercial heartbeat awaited contact review before outbound dispatch, so a slow review could delay independent outbound lanes.",
+  "prevention": "Run bounded independent stages concurrently with Promise.all, retaining independent failure handling and per-lane idempotency; never interpret scheduling as provider send proof.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case": "slow contact authority review",
+        "before": "outbound awaited completion of review",
+        "after": "outbound starts independently",
+        "status": "source-level regression reasoning; production not verified"
+      }
+    ]
+  },
+  "evidence": {
+    "source": "supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts",
+    "required_run": "38528983237",
+    "status": "admission blocked before executable tests; provider send evidence not established"
+  }
+}
