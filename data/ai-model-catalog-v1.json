@@ -10875,16 +10875,21 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 131.072,
       "modalities": [
         "text",
-        "audio"
+        "vision",
+        "audio",
+        "video"
       ],
       "strengths": [
         "voice agents with deeper reasoning"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Extended Thinking only supports non-blocking asynchronous tool declarations; synchronous blocking tool calls fail",
+        "Client lifecycle must use interaction_status IDLE/IN_PROGRESS rather than interpreting turnComplete as idle",
+        "Batch API and caching are unsupported; proactive audio cannot be disabled"
       ],
       "scores": {
         "reasoning": 9,
@@ -10919,7 +10924,7 @@
       },
       "id": "gemini-3.8-live-extended-thinking",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models",
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -10931,7 +10936,7 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -10971,16 +10976,16 @@
           {
             "claim": "capabilities",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
-            "locator": "gemini-3.8-live-extended-thinking > Supported data types, Token limits and Capabilities",
-            "observed_value": "Text/image/audio/video input; text/audio output; 131072 input / 65536 output tokens; asynchronous function calling and background thinking; Batch unavailable",
+            "locator": "Model code > Token limits; Capabilities; Upgrading to Gemini 3.8 Live Extended Thinking",
+            "observed_value": "131072 input / 65536 output tokens; text/image/audio/video input; text/audio output; Live streaming and background thinking (low/medium/high); asynchronous non-blocking function calls only; Batch/caching unsupported",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
           {
             "claim": "deployment",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
-            "locator": "gemini-3.8-live-extended-thinking > Versions / Live API",
-            "observed_value": "Stable Gemini Live API code gemini-3.8-live-extended-thinking; Batch unsupported; customer access untested",
+            "locator": "Versions > Stable; Upgrading to Gemini 3.8 Live Extended Thinking",
+            "observed_value": "Stable Live API endpoint gemini-3.8-live-extended-thinking; thinkingConfig low/medium/high; interaction_status tracks idle; tenant access untested",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
           },
@@ -11022,7 +11027,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -11051,8 +11056,11 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
-      }
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "max_output_tokens": 65536
     },
     {
       "tier": "specialist",
