@@ -3,81 +3,92 @@
   "checked_at": "2026-10-14",
   "scope": "110 model ID checks against 41 catalog-supplied official URLs",
   "source_type": "supplier-hosted-documentation",
-  "source_urls_checked": 64,
-  "source_urls_retrieved": 64,
+  "source_urls_checked": 65,
+  "source_urls_retrieved": 65,
   "source_failures": [],
   "models_checked": 110,
-  "model_id_mentions": 73,
-  "model_id_not_explicit": 35,
+  "model_id_mentions": 74,
+  "model_id_not_explicit": 36,
   "unavailable_sources": 110,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
   "by_provider": {
     "OpenAI": {
       "total": 20,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 20
+      "identity_mentions": 19,
+      "no_exact_id": 1,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "Anthropic": {
       "total": 11,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 11
+      "identity_mentions": 7,
+      "no_exact_id": 4,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "Google": {
       "total": 21,
-      "mentions": 0,
+      "identity_mentions": 21,
       "no_exact_id": 0,
-      "unavailable": 21
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "Mistral AI": {
       "total": 22,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 22
+      "identity_mentions": 10,
+      "no_exact_id": 12,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "xAI": {
       "total": 5,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 5
+      "identity_mentions": 4,
+      "no_exact_id": 1,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "DeepSeek": {
       "total": 2,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 2
+      "identity_mentions": 1,
+      "no_exact_id": 1,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "Cohere": {
       "total": 7,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 7
+      "identity_mentions": 5,
+      "no_exact_id": 2,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "Meta": {
       "total": 1,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 1
+      "identity_mentions": 0,
+      "no_exact_id": 1,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "Alibaba/Qwen": {
       "total": 1,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 1
+      "identity_mentions": 0,
+      "no_exact_id": 1,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "Amazon": {
       "total": 13,
-      "mentions": 0,
-      "no_exact_id": 0,
-      "unavailable": 13
+      "identity_mentions": 0,
+      "no_exact_id": 13,
+      "fetch_failed": 0,
+      "not_run": 0
     },
     "TII/Falcon": {
       "total": 7,
-      "mentions": 0,
+      "identity_mentions": 7,
       "no_exact_id": 0,
-      "unavailable": 7
+      "fetch_failed": 0,
+      "not_run": 0
     }
   },
   "receipts": [
@@ -1718,15 +1729,16 @@
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 15147,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "falcon-h1-0.5b-instruct",
@@ -1813,10 +1825,10 @@
       "provider": "TII/Falcon",
       "source_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 14577,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 18876,
+      "evidence_excerpt": "cqFMal71WD.jpeg)](http://huggingface.co/tiiuae) [tiiuae](http://huggingface.co/tiiuae) / [Falcon-H1R-7B](http://huggingface.co/tiiuae/Falcon-H1R-7B) Like 222 Follow ![](https://cdn-avatars.huggingface.co/v1/production/uploads/61",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -2243,9 +2255,15 @@
       "checked_at": "2026-10-14",
       "text_length": 6316,
       "error": null
+    },
+    "https://huggingface.co/tiiuae/Falcon-H1R-7B": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 18876,
+      "error": null
     }
   },
   "model_source_fetch_failed": 0,
-  "not_yet_checked": 2,
+  "not_yet_checked": 0,
   "audited_catalog_blob_sha": "fc3ec44202e2245d98e32046740f03d0e124ed0f"
 }
