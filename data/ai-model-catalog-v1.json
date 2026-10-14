@@ -2536,10 +2536,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "model_id"
         ],
         "not_verified": [
-          "model_id",
           "governance"
         ],
         "claim_evidence": [
@@ -2570,6 +2570,13 @@
             "locator": "Features / Weights",
             "observed_value": "Apache 2.0 open weights for local deployment; chat and batch API endpoints documented",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+            "locator": "Model card > model identifier",
+            "observed_value": "Official API model ID ministral-3b-2512 (catalog name ministral-3-3b is an alias)",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -2584,10 +2591,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
