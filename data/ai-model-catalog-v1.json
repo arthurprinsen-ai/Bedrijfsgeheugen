@@ -370,7 +370,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude/opus",
+      "source": "https://platform.claude.com/docs/en/models/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -384,7 +384,29 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "verification_evidence": {
+        "source_url": "https://platform.claude.com/docs/en/models/overview",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status",
+          "input_usd_m",
+          "output_usd_m",
+          "context_k"
+        ],
+        "not_verified": [
+          "pricing modifiers and specific deployment billing",
+          "capabilities beyond official overview",
+          "deployment eligibility",
+          "governance and data-processing terms",
+          "custom contractual pricing",
+          "all model scores"
+        ],
+        "claim_scope": "partial",
+        "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
+        "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing"
+      }
     },
     {
       "id": "claude-sonnet-5-5",
@@ -426,7 +448,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude-sonnet-5-5",
+      "source": "https://platform.claude.com/docs/en/models/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -440,7 +462,29 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "verification_evidence": {
+        "source_url": "https://platform.claude.com/docs/en/models/overview",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status",
+          "input_usd_m",
+          "output_usd_m",
+          "context_k"
+        ],
+        "not_verified": [
+          "pricing modifiers and specific deployment billing",
+          "capabilities beyond official overview",
+          "deployment eligibility",
+          "governance and data-processing terms",
+          "custom contractual pricing",
+          "all model scores"
+        ],
+        "claim_scope": "partial",
+        "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
+        "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing"
+      }
     },
     {
       "id": "claude-sonnet-5",
