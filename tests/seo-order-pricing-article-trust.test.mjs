@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const article = readFileSync(new URL('../blog/wat-kost-digitalisering-mkb/index.html', import.meta.url), 'utf8');
 const pricing = readFileSync(new URL('../prijzen.html', import.meta.url), 'utf8');
-const cache = JSON.parse(readFileSync(new URL('../config/bg-static-i18n-en.d/2026-10-14-pricing-article-trust.json', import.meta.url), 'utf8'));
+const cache = JSON.parse(readFileSync(new URL('../config/bg-static-i18n-en.d/2026-10-12-pricing-article-trust.json', import.meta.url), 'utf8'));
 const openTag = '<script type="application/ld+json">';
 const start = article.indexOf(openTag);
 const end = article.indexOf('</script>', start);
