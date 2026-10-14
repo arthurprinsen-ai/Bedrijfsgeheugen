@@ -16521,6 +16521,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+            "locator": "How Are Costs Calculated for Different Cohere Models? > Embedding models priced by embedded token count",
+            "observed_value": "Official Cohere billing guide confirms embedding models are charged by number of tokens embedded; no published current USD rate specific to embed-multilingual-v3.0 was found on the source or Cohere public pricing page. Current per-model rate remains unverified.",
+            "checked_on": "2026-10-14",
+            "verification_status": "PRICING_BASIS_ONLY_CURRENT_RATE_UNKNOWN",
+            "scope": "Official supplier billing basis only; not price amount or customer tariff"
           }
         ],
         "provider_policy_evidence": {
@@ -16580,7 +16589,9 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "current_price_verified": false,
+        "pricing_basis_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work"
       }
     },
     {
