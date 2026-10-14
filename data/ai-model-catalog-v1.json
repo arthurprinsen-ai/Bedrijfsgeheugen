@@ -21053,10 +21053,10 @@
           "model_id",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "status"
         ],
         "not_verified": [
-          "status",
           "customer-specific governance",
           "commercial license terms and fees",
           "pricing"
