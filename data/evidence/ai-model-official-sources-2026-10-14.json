@@ -1,22 +1,23 @@
 {
   "contract": "powerhouse-model-official-source-evidence-v1",
   "checked_at": "2026-10-14",
-  "scope": "110 model ID checks against 41 catalog-supplied official URLs",
+  "scope": "110 catalog records: exact model and Bedrock API identifiers validated where applicable, publisher family placeholders explicitly marked non-deployable",
   "source_type": "supplier-hosted-documentation",
   "source_urls_checked": 70,
   "source_urls_retrieved": 70,
   "source_failures": [],
   "models_checked": 110,
   "model_id_mentions": 82,
-  "model_id_not_explicit": 2,
+  "model_id_not_explicit": 0,
   "unavailable_sources": 0,
   "whole_model_verifications_added": 0,
-  "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
+  "governance_note": "Supplier model ID matches are identity evidence only. Two family placeholders are not deployable models. Do not infer customer contracts, residency, pricing, retention or API entitlement and do not advance verified_at.",
   "by_provider": {
     "OpenAI": {
       "total": 20,
       "identity_mentions": 20,
       "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -25,6 +26,7 @@
       "total": 11,
       "identity_mentions": 11,
       "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -33,6 +35,7 @@
       "total": 21,
       "identity_mentions": 21,
       "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -41,6 +44,7 @@
       "total": 22,
       "identity_mentions": 11,
       "provider_api_id_mentions": 11,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -49,6 +53,7 @@
       "total": 5,
       "identity_mentions": 5,
       "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -57,6 +62,7 @@
       "total": 2,
       "identity_mentions": 2,
       "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -65,6 +71,7 @@
       "total": 7,
       "identity_mentions": 5,
       "provider_api_id_mentions": 2,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -73,7 +80,8 @@
       "total": 1,
       "identity_mentions": 0,
       "provider_api_id_mentions": 0,
-      "no_exact_id": 1,
+      "family_references": 1,
+      "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
@@ -81,15 +89,17 @@
       "total": 1,
       "identity_mentions": 0,
       "provider_api_id_mentions": 0,
-      "no_exact_id": 1,
+      "family_references": 1,
+      "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Amazon": {
       "total": 13,
       "identity_mentions": 0,
-      "provider_api_id_mentions": 12,
-      "no_exact_id": 1,
+      "provider_api_id_mentions": 13,
+      "family_references": 0,
+      "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
@@ -97,6 +107,7 @@
       "total": 7,
       "identity_mentions": 7,
       "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -573,7 +584,7 @@
       "provider": "Meta",
       "source_url": "https://huggingface.co/meta-llama",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID",
       "source_text_chars": 29917,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -582,14 +593,16 @@
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": null
+      "source_error": null,
+      "family_reference_only": true,
+      "exclusion_reason": "Not a single routable model; verify one model card and API ID before recommendation."
     },
     {
       "model_id": "qwen-open-weight",
       "provider": "Alibaba/Qwen",
       "source_url": "https://huggingface.co/Qwen",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID",
       "source_text_chars": 30097,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -598,7 +611,9 @@
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": null
+      "source_error": null,
+      "family_reference_only": true,
+      "exclusion_reason": "Not a single routable model; verify one model card and API ID before recommendation."
     },
     {
       "model_id": "gpt-6.1-sol",
@@ -2453,5 +2468,6 @@
   "supplemental_source_urls_checked": 6,
   "total_unique_source_documents_checked": 76,
   "counting_note": "Evidence covers model identity only; source availability counts unique catalog URL fetches; supplemental URLs are counted separately; all claim-specific unverified statuses are preserved.",
-  "provider_api_id_mentions": 25
+  "provider_api_id_mentions": 26,
+  "non_deployable_family_references": 2
 }
