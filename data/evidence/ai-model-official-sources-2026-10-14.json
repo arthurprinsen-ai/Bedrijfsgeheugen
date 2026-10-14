@@ -8,7 +8,7 @@
   "source_failures": [],
   "models_checked": 110,
   "model_id_mentions": 82,
-  "model_id_not_explicit": 3,
+  "model_id_not_explicit": 2,
   "unavailable_sources": 0,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
@@ -1839,10 +1839,10 @@
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "OFFICIAL_PAGE_API_ID_MENTION",
       "source_text_chars": 8908,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "evidence_excerpt": "Official AWS Bedrock Titan Image Generator G1 v2 card > Programmatic Access > bedrock-runtime | amazon.titan-image-generator-v2:0",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -1852,7 +1852,8 @@
       "api_id_probe_attempted": true,
       "api_id_probe_error": null,
       "provider_api_id": "amazon.titan-image-generator-v2:0",
-      "provider_api_id_mentioned_in_document": false
+      "provider_api_id_mentioned_in_document": true,
+      "model_id_mentioned_in_document": false
     },
     {
       "model_id": "amazon-titan-multimodal-embeddings-g1",
