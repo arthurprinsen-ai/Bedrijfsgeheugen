@@ -19429,7 +19429,21 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "current_public_table_recheck_20261014": {
+          "checked_on": "2026-10-14",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "source_section": "Models that have reached EOL (public table)",
+          "observed_value": "The currently retrievable official AWS legacy EOL table lists Nova Canvas, Nova Reel and Nova Sonic as EOL; no entry matching Nova Premier or amazon.nova-premier-v1:0 appears in that table.",
+          "scope": "Negative public listing observation only; absence does NOT imply active, available, entitled or supported in any account/Region.",
+          "conflict_with_historical_receipt": "Historical catalog receipt said Nova Premier EOL September 14 2026 from this legacy table; that positive listing is not reproducible in today's retrieved version.",
+          "model_card_discrepancy_retained": true,
+          "account_region_modelLifecycle_readback": false,
+          "current_pricing_verified": false,
+          "release_eligible": false,
+          "independent_supplier_full_verification": false,
+          "resolution_required": "Use authenticated AWS Bedrock GetFoundationModel/ListFoundationModels for each intended Region and request clarification of contradictory official Nova Premier model-card dates."
+        }
       },
       "supplier_source_conflicts": [
         {
