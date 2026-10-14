@@ -224,3 +224,29 @@ test('active Amazon Nova catalog records cite their exact model cards without su
    'Public model card reference is not full six-claim supplier verification');
  }
 });
+
+test('Google legacy preview Standard Paid prices are modality-scoped not blanket account approval',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const tariffs=[
+  {id:'gemini-3-flash-preview',input:0.50,output:3.00,expected:/audio input tokens|audio input/i},
+  {id:'gemini-3.1-flash-tts-preview',input:1.00,output:20.00,expected:/audio output tokens/i}
+ ];
+ for(const t of tariffs){
+  const model=catalog.models.find(m=>m.id===t.id);
+  assert.ok(model,'Missing Google model '+t.id);
+  assert.equal(model.provider,'Google');
+  assert.equal(model.input_usd_m,t.input);
+  assert.equal(model.output_usd_m,t.output);
+  const evidence=model.verification_evidence;
+  assert.ok(evidence.verified_claims.includes('pricing'));
+  assert.ok(!evidence.not_verified.includes('pricing'));
+  const receipt=evidence.claim_evidence.find(r=>r.claim==='pricing' &&
+   r.url==='https://ai.google.dev/gemini-api/docs/pricing' &&
+   r.checked_on===evidence.checked_on && t.expected.test(r.observed_value||''));
+  assert.ok(receipt,'Model-specific modal pricing source receipt required for '+t.id);
+  assert.equal(evidence.claim_scope,'partial','Published tariff cannot certify full supplier controls');
+  assert.ok(evidence.not_verified.includes('governance'));
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+  assert.equal(model.supplier_audit.independent_verification_required,true);
+ }
+});
