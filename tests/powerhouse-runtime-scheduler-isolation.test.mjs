@@ -75,3 +75,12 @@ test('cron cutover aborts safely if production scheduler identity drifts',()=>{
   assert.match(sql,/powerhouse_runtime_scheduler_mux_v3\(now\(\)\)/);
   assert.ok(sql.indexOf('SCHEDULER_171_DRIFT_ABORT') < sql.indexOf('cron.unschedule(171)'));
 });
+
+const catalogAudit=readFileSync('scripts/brain/audit-ai-model-provider-sources.mjs','utf8');
+test('provider catalog probe remains strictly evidence-only and never self-verifies claims',()=>{
+  assert.match(catalogAudit,/claims_verified_by_this_probe:false/);
+  assert.match(catalogAudit,/contract_dpa_verified:false/);
+  assert.match(catalogAudit,/customer_runtime_residency_verified:false/);
+  assert.match(catalogAudit,/claim_verifications_added:0/);
+  assert.doesNotMatch(catalogAudit,/m\.verified_at\s*=|writeFile\(catalogPath/);
+});
