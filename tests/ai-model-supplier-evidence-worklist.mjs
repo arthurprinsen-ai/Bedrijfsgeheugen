@@ -13,7 +13,7 @@ export function supplierEvidenceWorklist(catalog){
      r.claim===claim&&typeof r.url==='string'&&r.url.startsWith('https://')&&
      typeof r.locator==='string'&&r.locator.trim()&&
      typeof r.observed_value==='string'&&r.observed_value.trim()&&
-     r.checked_on===e.checked_on);
+     r.checked_on===e.checked_on && !String(r.scope??'').includes('NOT model-specific') && r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
    const fullyDeclared=e.claim_scope==='full'&&e.source_url===model.source&&
      e.checked_on===model.verified_at&&Array.isArray(e.verified_claims)&&e.verified_claims.includes(claim)&&
      !e.not_verified?.includes(claim);
