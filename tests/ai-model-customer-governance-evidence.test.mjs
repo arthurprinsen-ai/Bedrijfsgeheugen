@@ -61,3 +61,35 @@ test('generic receipt without observed value is not accepted',()=>{
  const result=supplierEvidenceWorklist(catalog);
  assert.equal(result.pending_claim_reviews,6);
 });
+
+// Reconciliation must not silently turn provider-wide governance into per-model approval.
+test('supplier evidence reconciliation retracts only unsupported approvals',async()=>{
+ const {reconcileSupplierEvidenceCatalog}=await import('./ai-model-supplier-evidence-reconcile.mjs');
+ const baseline={version:'test',models:[{id:'m1',source:'https://vendor.example/models/m1',verified_at:'2026-10-14',
+  verification_evidence:{claim_scope:'full',evidence_status:'FULLY_VERIFIED',source_url:'https://vendor.example/models/m1',checked_on:'2026-10-14',
+   verified_claims:['model_id','status','pricing','capabilities','deployment','governance'],not_verified:[],
+   claim_evidence:['model_id','status','pricing','capabilities','deployment'].map(cl=>({claim:cl,url:'https://vendor.example/models/m1',locator:cl,observed_value:'documented '+cl,checked_on:'2026-10-14'})).concat([{claim:'governance',url:'https://vendor.example/policy',locator:'Provider policy',observed_value:'Generic provider rules',checked_on:'2026-10-14',scope:'NOT model-specific or tenant attestation',verification_status:'PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'}])},supplier_audit:{automatic_recommendation_eligible:true}}]};
+ const before=JSON.stringify(baseline),{catalog,report}=reconcileSupplierEvidenceCatalog(baseline),m=catalog.models[0];
+ assert.equal(JSON.stringify(baseline),before,'input is not changed');
+ assert.equal(m.verified_at,'2026-10-14');
+ assert.equal(m.verification_evidence.checked_on,'2026-10-14');
+ assert.deepEqual(m.verification_evidence.claim_evidence,baseline.models[0].verification_evidence.claim_evidence);
+ assert.ok(m.verification_evidence.not_verified.includes('governance'));
+ assert.ok(!m.verification_evidence.verified_claims.includes('governance'));
+ assert.equal(m.verification_evidence.claim_scope,'partial');
+ assert.deepEqual(m.supplier_audit.missing_claim_receipts,['governance']);
+ assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ assert.deepEqual(report.removed_unsupported_approvals,[{model_id:'m1',claim:'governance',reason:'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF'}]);
+ assert.deepEqual(reconcileSupplierEvidenceCatalog(catalog).catalog,catalog,'idempotent');
+});
+
+test('incomplete supplier pricing remains unverified after reconciliation',async()=>{
+ const {reconcileSupplierEvidenceCatalog}=await import('./ai-model-supplier-evidence-reconcile.mjs');
+ const cat={models:[{id:'embed-test',source:'https://vendor.example/embed',verified_at:'2026-10-14',verification_evidence:{
+  claim_scope:'partial',checked_on:'2026-10-14',verified_claims:['model_id'],not_verified:['governance'],
+  claim_evidence:[{claim:'pricing',url:'https://vendor.example/pricing',locator:'Per token',observed_value:'Basis only',checked_on:'2026-10-14',verification_status:'PRICING_BASIS_ONLY_CURRENT_RATE_UNKNOWN'}]}}]};
+ const m=reconcileSupplierEvidenceCatalog(cat).catalog.models[0];
+ assert.ok(m.verification_evidence.not_verified.includes('pricing'));
+ assert.equal(m.supplier_audit.claim_evidence_classification.pricing,'NO_USABLE_MODEL_SOURCE_RECEIPT');
+ assert.equal(m.supplier_audit.pending_independent_claim_reviews,6);
+});
