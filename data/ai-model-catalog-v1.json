@@ -177,6 +177,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": {
@@ -366,6 +372,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -538,6 +550,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": {
@@ -720,6 +738,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -897,6 +921,12 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_evidence": {
@@ -1084,6 +1114,12 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_evidence": {
@@ -1269,7 +1305,13 @@
             "verification_status": "MODEL_CONTROL_ELIGIBILITY_DOCUMENTED_TENANT_UNVERIFIED"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1452,7 +1494,13 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1633,7 +1681,13 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1817,6 +1871,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -1989,6 +2049,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -2164,6 +2230,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -2338,6 +2410,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -2517,6 +2595,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -2707,6 +2791,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -2883,6 +2973,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -3059,6 +3155,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -3236,6 +3338,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -3413,6 +3521,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -3590,6 +3704,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -3765,6 +3885,12 @@
           "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
           "checked_on": "2026-10-14",
           "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.x.ai/developers/faq/security",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -3930,6 +4056,12 @@
           "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
           "checked_on": "2026-10-14",
           "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.x.ai/developers/faq/security",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": "USD/1M tokens standard under 200k: input 2, cached 0.5, output 6; >=200k: input 4, cached 1, output 12; US regional endpoint 1.1x, priority 2x.",
@@ -4096,6 +4228,12 @@
           "limitations": "Contract-specific and model-specific data processing or retention guarantees must be verified separately. This is a terms-of-service baseline, not a verified tenant configuration.",
           "checked_on": "2026-10-14",
           "scope": "official API developer terms; account and model controls unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": {
@@ -4279,6 +4417,12 @@
           "limitations": "Contract-specific and model-specific data processing or retention guarantees must be verified separately. This is a terms-of-service baseline, not a verified tenant configuration.",
           "checked_on": "2026-10-14",
           "scope": "official API developer terms; account and model controls unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": {
@@ -4473,6 +4617,12 @@
           "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
           "checked_on": "2026-10-14",
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cohere.com/enterprise-data-commitments",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": {
@@ -4686,6 +4836,12 @@
           "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
           "checked_on": "2026-10-14",
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cohere.com/enterprise-data-commitments",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "governance_evidence": {
@@ -4906,6 +5062,12 @@
           "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
           "checked_on": "2026-10-14",
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cohere.com/enterprise-data-commitments",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": "Cohere Standard Vault instance-based, small $4/hour or $2500/month; medium $5/hour or $3250/month. Do not present as API per-token price.",
@@ -5088,6 +5250,12 @@
           "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
           "checked_on": "2026-10-14",
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cohere.com/enterprise-data-commitments",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "pricing_basis": "Model Vault pricing is per-instance: medium $5/hour or $3250/month; large $10/hour or $6500/month; does not establish pay-as-you-go API price.",
@@ -5235,6 +5403,12 @@
           "example_verified_model_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
           "model_card_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
           "example_license": "llama4"
+        },
+        "governance_baseline_classification": {
+          "type": "FAMILY_IDENTIFIER_UNRESOLVED",
+          "source_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+          "reviewed_on": "2026-10-14",
+          "limits": "Family placeholder is not a verified callable model ID"
         }
       },
       "supplier_audit": {
@@ -5396,6 +5570,12 @@
           "example_verified_model_id": "Qwen/Qwen3-235B-A22B",
           "model_card_url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
           "example_license": "apache-2.0"
+        },
+        "governance_baseline_classification": {
+          "type": "FAMILY_IDENTIFIER_UNRESOLVED",
+          "source_url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
+          "reviewed_on": "2026-10-14",
+          "limits": "Family placeholder is not a verified callable model ID"
         }
       },
       "supplier_audit": {
@@ -5604,6 +5784,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -5771,6 +5957,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -5938,6 +6130,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -6106,6 +6304,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -6275,6 +6479,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -6442,6 +6652,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -6609,6 +6825,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -6773,6 +6995,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -6938,6 +7166,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -7102,6 +7336,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -7268,6 +7508,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -7434,6 +7680,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -7600,6 +7852,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -7767,6 +8025,12 @@
           "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://developers.openai.com/api/docs/guides/your-data",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -7936,7 +8200,13 @@
           "limitations": "Only applies to direct self-hosted gpt-oss usage; separate hosting-provider data-use and regional terms require independent review.",
           "scope": "model-specific open-weight distribution, not customer hosting attestation"
         },
-        "verification_scope_note": "Source-verified model identity, weight availability and license, capabilities, self-host pricing and supplier privacy baseline only. Customer-specific hosting, region, runtime retention and contract controls are not asserted."
+        "verification_scope_note": "Source-verified model identity, weight availability and license, capabilities, self-host pricing and supplier privacy baseline only. Customer-specific hosting, region, runtime retention and contract controls are not asserted.",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8110,7 +8380,13 @@
           "limitations": "Only applies to direct self-hosted gpt-oss usage; separate hosting-provider data-use and regional terms require independent review.",
           "scope": "model-specific open-weight distribution, not customer hosting attestation"
         },
-        "verification_scope_note": "Source-verified model identity, weight availability and license, capabilities, self-host pricing and supplier privacy baseline only. Customer-specific hosting, region, runtime retention and contract controls are not asserted."
+        "verification_scope_note": "Source-verified model identity, weight availability and license, capabilities, self-host pricing and supplier privacy baseline only. Customer-specific hosting, region, runtime retention and contract controls are not asserted.",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8291,6 +8567,12 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -8466,6 +8748,12 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -8640,6 +8928,12 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -8814,6 +9108,12 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -8986,7 +9286,13 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -9162,6 +9468,12 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -9330,6 +9642,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -9499,6 +9817,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -9668,6 +9992,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -9838,6 +10168,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -10005,6 +10341,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -10173,7 +10515,13 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         },
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -10361,6 +10709,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -10544,6 +10898,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -10724,6 +11084,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -10903,6 +11269,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -11084,6 +11456,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -11264,6 +11642,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -11445,6 +11829,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -11660,6 +12050,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -11863,6 +12259,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -12055,6 +12457,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -12238,6 +12646,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -12419,6 +12833,12 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://ai.google.dev/gemini-api/terms",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -12597,6 +13017,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -12781,6 +13207,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -12961,6 +13393,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -13140,6 +13578,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -13316,6 +13760,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -13492,6 +13942,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -13670,6 +14126,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -13847,6 +14309,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -14025,6 +14493,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -14206,6 +14680,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -14391,6 +14871,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -14578,6 +15064,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -14757,6 +15249,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -14943,6 +15441,12 @@
           "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
           "checked_on": "2026-10-14",
           "scope": "provider policy baseline; tenant and model applicability conditional"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -15121,6 +15625,12 @@
           "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
           "checked_on": "2026-10-14",
           "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.x.ai/developers/faq/security",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -15291,6 +15801,12 @@
           "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
           "checked_on": "2026-10-14",
           "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.x.ai/developers/faq/security",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -15461,6 +15977,12 @@
           "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
           "checked_on": "2026-10-14",
           "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.x.ai/developers/faq/security",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -15630,6 +16152,12 @@
           "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
           "checked_on": "2026-10-14",
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cohere.com/enterprise-data-commitments",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -15797,6 +16325,12 @@
           "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
           "checked_on": "2026-10-14",
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cohere.com/enterprise-data-commitments",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -15964,6 +16498,12 @@
           "checked_on": "2026-10-14",
           "scope": "Cohere Embed multilingual v3.0",
           "reason": "The official pricing page explains token/production billing and private Model Vault tiers but does not state a current public price for this exact legacy model. Do not substitute a newer Embed 5 rate."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://cohere.com/enterprise-data-commitments",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -16148,6 +16688,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -16329,6 +16875,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -16508,6 +17060,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -16722,6 +17280,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -16923,6 +17487,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -17125,6 +17695,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -17311,6 +17887,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -17491,6 +18073,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -17677,6 +18265,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -17856,6 +18450,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -18050,6 +18650,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -18234,7 +18840,13 @@
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         },
-        "lifecycle_note": "AWS lists EOL date 2026-06-30 for Titan Image Generator G1 v2, despite model card also showing legacy lifecycle label. EOL date takes precedence for October 2026 planning."
+        "lifecycle_note": "AWS lists EOL date 2026-06-30 for Titan Image Generator G1 v2, despite model card also showing legacy lifecycle label. EOL date takes precedence for October 2026 planning.",
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -18414,6 +19026,12 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        },
+        "governance_baseline_classification": {
+          "type": "PROVIDER_POLICY_OBSERVED",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "reviewed_on": "2026-10-14",
+          "limits": "Not tenant-specific authorization, residency or contract evidence"
         }
       },
       "supplier_audit": {
@@ -18612,6 +19230,12 @@
             "deployment-specific retention and residency",
             "commercial operational terms where applicable"
           ]
+        },
+        "governance_baseline_classification": {
+          "type": "MODEL_LICENSE_OBSERVED",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "reviewed_on": "2026-10-14",
+          "limits": "Deployed security, data location and hosting costs depend on operator"
         }
       },
       "supplier_audit": {
@@ -18814,6 +19438,12 @@
           "source": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
           "official_metered_price_confirmed": false,
           "hosting_costs_unverified": true
+        },
+        "governance_baseline_classification": {
+          "type": "MODEL_LICENSE_OBSERVED",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "reviewed_on": "2026-10-14",
+          "limits": "Deployed security, data location and hosting costs depend on operator"
         }
       },
       "supplier_audit": {
@@ -19016,6 +19646,12 @@
             "deployment-specific retention and residency",
             "commercial operational terms where applicable"
           ]
+        },
+        "governance_baseline_classification": {
+          "type": "MODEL_LICENSE_OBSERVED",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "reviewed_on": "2026-10-14",
+          "limits": "Deployed security, data location and hosting costs depend on operator"
         }
       },
       "supplier_audit": {
@@ -19219,6 +19855,12 @@
           "source": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
           "official_metered_price_confirmed": false,
           "hosting_costs_unverified": true
+        },
+        "governance_baseline_classification": {
+          "type": "MODEL_LICENSE_OBSERVED",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "reviewed_on": "2026-10-14",
+          "limits": "Deployed security, data location and hosting costs depend on operator"
         }
       },
       "supplier_audit": {
@@ -19422,6 +20064,12 @@
           "source": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
           "official_metered_price_confirmed": false,
           "hosting_costs_unverified": true
+        },
+        "governance_baseline_classification": {
+          "type": "MODEL_LICENSE_OBSERVED",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "reviewed_on": "2026-10-14",
+          "limits": "Deployed security, data location and hosting costs depend on operator"
         }
       },
       "supplier_audit": {
@@ -19625,6 +20273,12 @@
           "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
           "official_metered_price_confirmed": false,
           "hosting_costs_unverified": true
+        },
+        "governance_baseline_classification": {
+          "type": "MODEL_LICENSE_OBSERVED",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "reviewed_on": "2026-10-14",
+          "limits": "Deployed security, data location and hosting costs depend on operator"
         }
       },
       "supplier_audit": {
@@ -19827,6 +20481,12 @@
             "deployment-specific retention and residency",
             "commercial operational terms where applicable"
           ]
+        },
+        "governance_baseline_classification": {
+          "type": "MODEL_LICENSE_OBSERVED",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-OCR",
+          "reviewed_on": "2026-10-14",
+          "limits": "Deployed security, data location and hosting costs depend on operator"
         }
       },
       "supplier_audit": {
