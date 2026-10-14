@@ -491,3 +491,16 @@ A scoped supplier observation was persisted/read back at `public.ai_model_suppli
 The six official TII Hugging Face model cards for `falcon-h1-0.5b-instruct`, `falcon-h1-1.5b-instruct`, `falcon-h1-3b-instruct`, `falcon-h1-7b-instruct`, `falcon-h1-34b-instruct` and `falcon-h1r-7b` each identify the **Falcon-LLM License**. The 7B [model card](https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct/blob/main/README.md) links to [TII's general license-terms page](https://falconllm.tii.ae/falcon-terms-and-conditions.html), which contains distinctly versioned terms for earlier Falcon families; a definitive H1-specific commercial permission, royalty rate or fee cannot be inferred from a different family's text. Model availability for local inference is not an authorization to offer a third-party hosted API.
 
 A guarded Supabase write and independent SELECT readback confirmed six matching `PARTIAL` records at `public.ai_model_supplier_verification_v1`, each with `catalog_record.supplier_audit.falcon_h1_license_mapping_review_20261014`, model-specific official source, general terms link, and explicit `commercial_permission_verified=false`, `commercial_license_fee_verified=false`, `customer_contract_verified=false` and `automatic_recommendation_eligible=false`. Supplier/customer clearance, six-claim freshness, protected CI and production readback remain outstanding; this note does not promote verification scope or rewrite license obligations.
+
+
+## Cohere Standard Vault versus per-token price evidence — 2026-10-14
+
+Independent public-source readback of [Cohere Command A+](https://docs.cohere.com/docs/command-a-plus) and [Standard Vault pricing](https://docs.cohere.com/docs/model-vault/standard/pricing) found these **instance-hour**, not per-million-token, list rates:
+
+| Catalog model | Performance tier 1 | Performance tier 2 | Supplier-scoped claim |
+| --- | --- | --- | --- |
+| `command-a-plus` / API `command-a-plus-05-2026` | L USD 17.50/hour | XL USD 32.50/hour | Model Vault price; API listing states free only up to rate limits |
+| `embed-4` | Small USD 4.00/hour | Medium USD 5.00/hour | Model Vault price, not hosted embedding token price |
+| `rerank-4-pro` | Medium USD 5.00/hour | Large USD 10.00/hour | Model Vault price, not API reranking per-search price |
+
+On 2026-10-14 these were written and read back from `public.ai_model_supplier_verification_v1` as **additional scoped public supplier evidence** under `cohere_command_plus_deployment_tariff_scope_20261014` and `cohere_vault_instance_rate_evidence_20261014`. None attests customer billing, a signed contract, deployment access, residence, or supplier full independent acceptance; all three remain `PARTIAL`, with automatic recommendations blocked. Do not fill catalog `input_usd_m`/`output_usd_m` from these hourly costs or infer a zero contractual price from free rate-limited usage.
