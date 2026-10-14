@@ -26,6 +26,9 @@ export function classifySupplierClaim(evidence, claim) {
    // DeepSeek API platform terms apply to the service, not either exact model.
    (claim==='governance'&&(
     scope==='API_PLATFORM_TERMS_BASELINE_ONLY'||
+    // A stateless API endpoint establishes transport behavior, not
+    // model-specific data handling, processing contracts or tenant controls.
+    scope==='endpoint-only supplier fact, not platform-wide/tenant retention guarantee'||
     status==='PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED'))||
    (claim==='governance'&&/^(verified supplier-wide|verified supplier-level)/.test(scope))||
    (claim==='governance'&&status==='OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED'&&
