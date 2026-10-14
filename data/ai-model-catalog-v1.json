@@ -1639,7 +1639,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1648,7 +1648,19 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ]
       }
     },
     {
@@ -1701,7 +1713,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1710,7 +1722,19 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ]
       }
     },
     {
@@ -3589,7 +3613,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3598,7 +3622,19 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ]
       }
     },
     {
@@ -3653,7 +3689,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3662,7 +3698,19 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ]
       }
     },
     {
