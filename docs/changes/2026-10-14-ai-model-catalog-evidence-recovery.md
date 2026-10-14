@@ -195,3 +195,23 @@ Nine more supplier pages were checked for model-specific ID, lifecycle, pricing,
 | `amazon-titan-text-embeddings-v2` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html — Model Details / lifecycle date | Model card currently labels Active, 8K token context, Amazon Bedrock Invoke. **The same page contains an internally inconsistent “EOL no sooner than 2025-04-30” and “Model EOL date: No sooner than 4/30/2024”**. Preserve that discrepancy; do not derive a definitive model EOL date from it. | Authorized regional `GetFoundationModel.modelLifecycle` needed; no customer-provider confirmation |
 
 This checkpoint does not modify the fail-closed freshness test or mark any tenant controls as verified. The nine public-page observations are stored as independent review context in Supabase and checked by readback; the two conflicting date fields for Titan Text Embeddings V2 are an unresolved provider-documentation ambiguity rather than evidence for turning the model EOL automatically.
+
+
+## Fourth independent source pass: model aliases, open weights and AWS model cards
+
+Checked directly against official model-owner pages on 2026-10-14. The following observations never imply model account entitlement, negotiated hosting prices, contract signatures or release eligibility.
+
+| Catalog model | Supplier URL | Exact public observation |
+| --- | --- | --- |
+| `gpt-oss-120b` | https://developers.openai.com/api/docs/models/gpt-oss-120b | Downloadable open weights, Apache-2.0, 117B parameters/5.1B active, 131,072-token context, single H100-class device possible. Model-page API rate-limit tiers show zero throughput; do not interpret the general endpoint list as a paid OpenAI API inference offer. |
+| `gpt-oss-20b` | https://developers.openai.com/api/docs/models/gpt-oss-20b | Downloadable Apache-2.0 weights, 21B parameters/3.6B active, 131,072-token context; provider shows zero hosted API throughput in listed account tiers. |
+| `command-a` | https://docs.cohere.com/v2/docs/command-a | Canonical Cohere API ID `command-a-03-2025`, not a proven generic `command-a` alias; $2.50 input/$10 output per million tokens; 256K context, 8K output. |
+| `embed-4` | https://docs.cohere.com/docs/cohere-embed | Canonical API ID `embed-v4.0`; text and image/PDF embeddings, 128K context and configurable output dimensions. Pricing for Cohere Model Vault is separate from hosted API tariff. |
+| `rerank-4-pro` | https://docs.cohere.com/v2/docs/rerank | Canonical API ID `rerank-v4.0-pro`, multilingual reranking for text and semistructured JSON; published listing does **not** establish the per-search/API billing rate. |
+| `codestral` | https://docs.mistral.ai/models/codestral-25-08 | Canonical API model code `codestral-2508`; GA v25.08, 128K context, code completion and fill-in-the-middle, $0.30 input/$0.90 output per million. |
+| `mistral-ocr-4-1` | https://docs.mistral.ai/models/ocr-4-1 | GA OCR 4.1, API ID `mistral-ocr-4-1`, $4/1,000 ordinary pages and $5/1,000 annotated pages; /v1/ocr and batch APIs. |
+| `amazon-nova-micro` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html | Model card says Active, 128K context, 5K max output, text-only; EOL statement is an earliest-not-before date, **not** proof of actual retirement. |
+| `amazon-nova-pro` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html | Model card says Active, 300K context, 5K max output, multimodal text/image/video input; actual AWS region and entitlement not inspected. |
+| `amazon-titan-image-generator-g1-v2` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html | Official AWS card shows model EOL date 2026-06-30 while still labelling lifecycle Legacy. That is a real provider-document conflict; preserve `CONFLICT` and avoid recommendations until modelLifecycle is checked for the user's AWS account/region. |
+
+**Evidence boundary:** all 10 are public model-source reviews only, copied to scoped Supabase `catalog_record.independent_model_source_review_20261014` and verified with a database readback. Alias differences are **not** automatically promoted to equivalent API IDs. The existing 110-model supplier and tenant acceptance gates remain enforced.
