@@ -121,3 +121,36 @@ test('residency cannot be attested by matching unspecified values',()=>{
   assert.match(r.stdout,/RESIDENCY_LOCATION_UNVERIFIED/);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('disabled security controls never count as accepted even when expected matches observed',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tenant-disabled-'));
+ try{
+  const now=new Date().toISOString(), filepath=path.join(dir,'disabled.json');
+  fs.writeFileSync(filepath,JSON.stringify({
+   scopes:[{tenant_id:'customer-a',provider:'OpenAI',model_id:'gpt-6-astra'}],
+   attestations:[{tenant_id:'customer-a',provider:'OpenAI',model_id:'gpt-6-astra',
+    claim:'tenant_zdr',expected_value:false,observed_value:false,
+    checked_at:now,evidence_reference:'restricted://config/1',approved_by:'security',
+    readback:{source:'authenticated_provider_api',identity:'customer-a',observed_at:now,observed_value:false}}]
+  }));
+  const r=spawnSync(process.execPath,['tests/ai-model-tenant-acceptance.mjs',filepath],{encoding:'utf8'});
+  assert.equal(r.status,2);
+  assert.match(r.stdout,/REQUIRED_SECURITY_CONTROL_NOT_ENABLED/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+test('tenant region is not proven by a vague or boolean residency assertion',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tenant-region-'));
+ try{
+  const now=new Date().toISOString(),filepath=path.join(dir,'region.json');
+  fs.writeFileSync(filepath,JSON.stringify({
+   scopes:[{tenant_id:'customer-a',provider:'OpenAI',model_id:'gpt-6-astra'}],
+   attestations:[{tenant_id:'customer-a',provider:'OpenAI',model_id:'gpt-6-astra',
+    claim:'tenant_data_residency',expected_value:true,observed_value:true,
+    checked_at:now,evidence_reference:'restricted://config/region',approved_by:'security',
+    readback:{source:'authenticated_provider_api',identity:'customer-a',observed_at:now,observed_value:true}}]
+  }));
+  const r=spawnSync(process.execPath,['tests/ai-model-tenant-acceptance.mjs',filepath],{encoding:'utf8'});
+  assert.equal(r.status,2);
+  assert.match(r.stdout,/TENANT_RESIDENCY_REGION_UNVERIFIED/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
