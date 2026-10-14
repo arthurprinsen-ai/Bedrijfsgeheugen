@@ -483,10 +483,10 @@
           "output_usd_m",
           "context_k",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_scope": "partial",
@@ -528,6 +528,13 @@
             "observed_value": "Text and image input; text output; multilingual, vision and tool use; 1M token context",
             "locator": "Compare models > current models capabilities and context window",
             "url": "https://platform.claude.com/docs/en/models/overview",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Model IDs > supported platform identifiers",
+            "observed_value": "Anthropic API claude-opus-5-5; Bedrock anthropic.claude-opus-5-5; Google Cloud claude-opus-5-5; Microsoft Foundry claude-opus-5-5. Region and customer entitlement not confirmed.",
             "checked_on": "2026-10-14"
           }
         ]
@@ -610,10 +617,10 @@
           "model_id",
           "pricing",
           "status",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_scope": "partial",
@@ -655,6 +662,13 @@
             "observed_value": "Text and image input; text output; multilingual, vision and tool use; 1M token context",
             "locator": "Compare models > current models capabilities and context window",
             "url": "https://platform.claude.com/docs/en/models/overview",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Model IDs > supported platform identifiers",
+            "observed_value": "Anthropic API claude-sonnet-5-5; Bedrock anthropic.claude-sonnet-5-5; Google Cloud claude-sonnet-5-5; Microsoft Foundry claude-sonnet-5-5. Region and customer entitlement not confirmed.",
             "checked_on": "2026-10-14"
           }
         ]
@@ -4037,33 +4051,40 @@
         "verified_claims": [
           "model_id",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "status"
         ],
         "not_verified": [
-          "status",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/guides/moderation",
-            "locator": "Moderation guide > model code",
+            "url": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
+            "locator": "Snapshots and aliases",
             "observed_value": "omni-moderation-latest",
             "checked_on": "2026-10-14"
           },
           {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
+            "locator": "Model page > Default",
+            "observed_value": "Default moderation model, published current alias",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/guides/moderation",
-            "locator": "Moderation guide > Overview",
-            "observed_value": "The moderation endpoint is free to use",
+            "url": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
+            "locator": "Model overview > Moderation models",
+            "observed_value": "Free usage for moderation models",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/guides/moderation",
-            "locator": "Moderation guide > Overview",
-            "observed_value": "Text and image inputs; no audio classification; image files up to 20 MB",
+            "url": "https://developers.openai.com/api/docs/models/omni-moderation-latest",
+            "locator": "Modalities",
+            "observed_value": "Text and image classification; audio and video not supported",
             "checked_on": "2026-10-14"
           }
         ]
@@ -4148,14 +4169,16 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Open-weight models: gpt-oss-120b",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
+            "locator": "Model header",
+            "observed_value": "gpt-oss-120b",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Open-weight models: gpt-oss-120b",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
+            "locator": "Model type",
+            "observed_value": "Open-weight reasoning model",
             "checked_on": "2026-10-14"
           }
         ]
@@ -4238,14 +4261,16 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Open-weight models: gpt-oss-20b",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
+            "locator": "Model header",
+            "observed_value": "gpt-oss-20b",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Open-weight models: gpt-oss-20b",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
+            "locator": "Model type",
+            "observed_value": "Open-weight reasoning model",
             "checked_on": "2026-10-14"
           }
         ]
