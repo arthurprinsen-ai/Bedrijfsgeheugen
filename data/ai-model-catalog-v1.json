@@ -7573,7 +7573,7 @@
       "id": "amazon-nova-2-lite",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7582,7 +7582,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7637,7 +7657,7 @@
       "id": "amazon-nova-2-sonic",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7646,7 +7666,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7769,7 +7809,7 @@
       "id": "amazon-nova-pro",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7778,7 +7818,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7835,7 +7895,7 @@
       "id": "amazon-nova-lite",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7844,7 +7904,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7900,7 +7980,7 @@
       "id": "amazon-nova-micro",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7909,7 +7989,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -8030,7 +8130,7 @@
       "id": "amazon-nova-multimodal-embeddings",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8039,7 +8139,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -8095,7 +8215,7 @@
       "id": "amazon-nova-canvas",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8104,7 +8224,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -8160,7 +8300,7 @@
       "id": "amazon-nova-reel",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8169,7 +8309,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -8224,7 +8384,7 @@
       "id": "amazon-titan-text-embeddings-v2",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8233,7 +8393,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -8354,7 +8534,7 @@
       "id": "amazon-titan-multimodal-embeddings-g1",
       "provider": "Amazon",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8363,7 +8543,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
