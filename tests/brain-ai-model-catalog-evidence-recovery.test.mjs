@@ -144,12 +144,19 @@ test('Cohere remaining official API mappings remain fail-closed',()=>{
  assert.ok(r.modalities.includes('image'));
 });
 
-test('supplier identity audit artifact has an explicit, narrowly scoped delivery lane',()=>{
+test('supplier identity audit stays a scoped verification artifact without implying release acceptance',()=>{
+ const artifact='tests/ai-model-supplier-identity-content-audit-20261014.json';
  const policy=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
- const artifact='data/ai-model-supplier-identity-content-audit-20261014.json';
- const website=policy.lanes.find(lane=>lane.id==='website');
- assert.ok(website,'Expected explicit website lane');
- assert.ok(website.paths.includes(artifact),'Audit file must be classified before protected CI');
- assert.ok(!website.paths.includes('data/ai-model-supplier-'),'No broad supplier wildcard classification');
- assert.ok(fs.existsSync(artifact),'Audited supplier identity report must exist');
+ assert.ok(fs.existsSync(artifact),'The immutable supplier-source review report must exist');
+ assert.ok(artifact.startsWith('tests/'),'Verification-only evidence must live in the tests namespace');
+ assert.ok(!policy.lanes.some(lane=>(lane.paths||[]).some(path=>path==='data/ai-model-supplier-'||path==='data/')),'No broad supplier evidence bypass in delivery lanes');
+ const report=JSON.parse(fs.readFileSync(artifact,'utf8'));
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ assert.equal(report.summary.total_models,110);
+ assert.equal(report.summary.model_records_reviewed,110);
+ assert.equal(report.records.length,110);
+ assert.equal(new Set(report.records.map(item=>item.model_id)).size,110);
+ assert.deepEqual(new Set(report.records.map(item=>item.model_id)),new Set(catalog.models.map(item=>item.id)));
+ assert.equal(report.summary.independent_full_claim_review_completed,false,
+  'Model identity/source reviews do not constitute six-claim supplier verification');
 });
