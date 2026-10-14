@@ -78,7 +78,8 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
      if(!endpoint || !token || !allowedOrigin) throw new Error('LIVE_PROVIDER_CONNECTION_REQUIRED');
      const target=new URL(endpoint), origin=new URL(allowedOrigin);
      if(target.protocol!=='https:' || origin.protocol!=='https:' ||
-        target.origin!==origin.origin || !target.pathname.startsWith('/'))
+        target.origin!==origin.origin || target.username || target.password || target.hash ||
+        origin.username || origin.password || origin.hash)
        throw new Error('INVALID_PINNED_PROVIDER_ENDPOINT');
      const response=await fetch(target,{method:'POST',redirect:'error',
        signal:AbortSignal.timeout(12000),
@@ -102,7 +103,8 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
    const token=process.env.TENANT_CONTRACT_VERIFY_TOKEN;
    if(!endpoint||!origin||!token) throw new Error('CONTRACT_VAULT_CONNECTION_REQUIRED');
    const url=new URL(endpoint),allowed=new URL(origin);
-   if(url.protocol!=='https:'||allowed.protocol!=='https:'||url.origin!==allowed.origin)
+   if(url.protocol!=='https:'||allowed.protocol!=='https:'||url.origin!==allowed.origin||
+      url.username||url.password||url.hash||allowed.username||allowed.password||allowed.hash)
     throw new Error('INVALID_PINNED_CONTRACT_ENDPOINT');
    const response=await fetch(url,{method:'POST',redirect:'error',
     signal:AbortSignal.timeout(12000),
