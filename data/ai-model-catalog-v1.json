@@ -5656,6 +5656,14 @@
             "id": "Qwen/Qwen3-8B",
             "capability": "text generation; Transformers local deployment; Apache-2.0 license",
             "url": "https://huggingface.co/Qwen/Qwen3-8B"
+          },
+          {
+            "id": "Qwen/Qwen3.5-27B",
+            "capability": "Specific open-weight 27B image-text-to-text model; Apache-2.0 license; Transformers and vLLM deployment examples. This is one variant, not evidence for the full Qwen family.",
+            "url": "https://huggingface.co/Qwen/Qwen3.5-27B",
+            "license": "apache-2.0",
+            "checked_on": "2026-10-14",
+            "verified_specific_variant_not_family": true
           }
         ],
         "license": "Qwen3-8B example is Apache-2.0; do not generalize its license to every Qwen model",
@@ -18944,6 +18952,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-image-models.html",
+            "locator": "Output > Image generation G1 pricing segmentation by output width/height and quality",
+            "observed_value": "AWS documents two image-size billing bands (up to 512×512 versus larger images up to 1024×1024), with image quality also affecting the charge. No model-specific current numerical USD tariff verified for Titan Image Generator G1 v2; production region, size and quality remain unknown.",
+            "checked_on": "2026-10-14",
+            "scope": "Pricing scheme only; no current supplier price amount or account-specific tariff verified",
+            "verification_status": "PRICING_DIMENSION_CONFIRMED_NUMERICAL_RATE_NOT_VERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -19004,7 +19021,9 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pricing_amount_verified": false,
+        "price_status": "PRICE_SCHEME_ONLY"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19131,6 +19150,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://www.repost.aws/questions/QUlv-pKEXXQe--k-sKyGBzZQ/amazon-titan-multimodal-embeddings-g1-model-token-usage-bedrock",
+            "locator": "AWS re:Post accepted support-reviewed answer to Titan Multimodal Embeddings G1 token-usage and billing question",
+            "observed_value": "Historical AWS re:Post guidance describes flat per-image pricing for Titan Multimodal Embeddings G1 and separate text-token reporting; support reply is AI-assisted and not a current price-list quote. Numerical 2026 regional image/text tariffs remain unverified.",
+            "checked_on": "2026-10-14",
+            "scope": "Pricing scheme only; no current supplier price amount or account-specific tariff verified",
+            "verification_status": "PRICING_UNIT_SECONDARY_AWS_SUPPORT_AMOUNT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -19190,7 +19218,9 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "pricing_amount_verified": false,
+        "price_status": "PRICE_SCHEME_ONLY"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
