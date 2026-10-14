@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { classifySupplierClaim } from './ai-model-supplier-evidence-worklist.mjs';
 
 test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
@@ -28,12 +29,8 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
      issues.push('tenant-specific claim incorrectly presented as supplier verified '+claim);
    for(const claim of required) {
     if(!e.verified_claims?.includes(claim)) issues.push('unverified '+claim);
-    const receipt=e.claim_evidence?.find(x=>x.claim===claim &&
-      typeof x.url==='string' && x.url.startsWith('https://') &&
-      typeof x.locator==='string' && x.locator.trim() &&
-      typeof x.observed_value==='string' && x.observed_value.trim() &&
-      x.checked_on===e.checked_on && !String(x.scope??'').includes('NOT model-specific') && x.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
-    if(!receipt) issues.push('missing claim-specific evidence '+claim);
+    if(classifySupplierClaim(e,claim)!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED')
+      issues.push('missing independently reviewable model claim receipt '+claim);
    }
   }
   const age=(Date.now()-new Date((m.verified_at??'')+'T00:00:00Z'))/86400000;
