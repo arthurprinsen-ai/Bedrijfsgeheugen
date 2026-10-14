@@ -5516,49 +5516,6 @@
         "last_specific_source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
         "last_specific_source_check": "2026-10-14"
       },
-      "family_evidence": {
-        "scope": "archived_family_history_not_current_model_assertion",
-        "note": "Historical family entry replaced in GitHub by a concrete model variant. This background does not alter or verify this model's tenant controls.",
-        "examples": [
-          {
-            "id": "Llama 4 Scout",
-            "capability": "text and image input, text output, 10M context",
-            "url": "https://dev.meta.ai/llama/docs/model-cards-and-prompt-formats/llama4"
-          },
-          {
-            "id": "Llama 4 Maverick",
-            "capability": "text and image input, text output, 1M context",
-            "url": "https://dev.meta.ai/llama/docs/model-cards-and-prompt-formats/llama4"
-          }
-        ],
-        "license": "Llama 4 Community License; not an unrestricted Apache/MIT license",
-        "license_url": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
-        "checked_on": "2026-10-14",
-        "individual_model_claims_verified": false,
-        "representative_variant": {
-          "id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
-          "source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
-          "verified_source_date": "2026-10-14",
-          "source_author": "Meta (official model card on its verified Hugging Face account)",
-          "released_on": "2025-04-05",
-          "context_tokens": 10000000,
-          "parameters_active_b": 17,
-          "parameters_total_b": 109,
-          "capabilities": [
-            "multilingual text input/output",
-            "image input and reasoning",
-            "code generation"
-          ],
-          "deployment": "downloadable gated weights; local Transformers / vLLM / SGLang; host selection required",
-          "pricing": "No universal model token price for downloaded weights; inference hardware and third-party hosting billed separately",
-          "license": "Llama 4 Community License; redistribution, usage and >700M MAU additional licensing conditions apply",
-          "governance": "License and supplier model card checked; actual operator, residency, retention, DPA and model endpoint remain unverified",
-          "canonical_id_checked": true,
-          "verified_family_claims": false,
-          "customer_runtime_verified": false,
-          "selection_status": "GITHUB_CANDIDATE_MODEL_SELECTED_PRODUCTION_NOT_ACCEPTED"
-        }
-      },
       "catalog_entry_type": "concrete_model",
       "catalog_record_type": "individual_model",
       "record_kind": "individual_model",
@@ -5614,12 +5571,16 @@
       "model_specific_pricing_type": "self_host_operator_cost",
       "previous_family_placeholder_id": "llama-open-weight",
       "model_selection_note": "Concrete model variant selected to replace unverifiable family placeholder; other family variants require separate rows.",
-      "governance_baseline_classification": {
-        "type": "MODEL_LICENSE_OBSERVED_TENANT_UNVERIFIED",
-        "source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
-        "reviewed_on": "2026-10-14",
-        "limits": "Only public supplier-model license and documentation verified; residency, retention, DPA, ZDR and customer/provider runtime controls need authenticated evidence"
-      }
+      "variant_migration_record": {
+        "original_catalog_id": "llama-open-weight",
+        "selection_reason": "Catalog requires individual, provider-identifiable model variants, not broad family placeholders.",
+        "original_family_source": null
+      },
+      "scores_provenance": {
+        "status": "HEURISTIC_NOT_INDEPENDENTLY_BENCHMARKED",
+        "note": "Historical family-level heuristic scores retained for continuity; not validated as this particular model's benchmark and ineligible for autonomous recommendation."
+      },
+      "runtime_residency_verification": "TENANT_RUNTIME_READBACK_REQUIRED"
     },
     {
       "id": "qwen3-32b",
@@ -5817,81 +5778,6 @@
         "last_specific_source_url": "https://huggingface.co/Qwen/Qwen3-32B",
         "last_specific_source_check": "2026-10-14"
       },
-      "family_evidence": {
-        "scope": "archived_family_history_not_current_model_assertion",
-        "note": "Historical family entry replaced in GitHub by a concrete model variant. This background does not alter or verify this model's tenant controls.",
-        "examples": [
-          {
-            "id": "Qwen/Qwen3-8B",
-            "capability": "text generation; Transformers local deployment; Apache-2.0 license",
-            "url": "https://huggingface.co/Qwen/Qwen3-8B"
-          },
-          {
-            "id": "Qwen/Qwen3.5-27B",
-            "capability": "Specific open-weight 27B image-text-to-text model; Apache-2.0 license; Transformers and vLLM deployment examples. This is one variant, not evidence for the full Qwen family.",
-            "url": "https://huggingface.co/Qwen/Qwen3.5-27B",
-            "license": "apache-2.0",
-            "checked_on": "2026-10-14",
-            "verified_specific_variant_not_family": true
-          }
-        ],
-        "license": "Qwen3-8B example is Apache-2.0; do not generalize its license to every Qwen model",
-        "license_url": "https://huggingface.co/Qwen/Qwen3-8B",
-        "checked_on": "2026-10-14",
-        "individual_model_claims_verified": false,
-        "representative_variant": {
-          "id": "Qwen/Qwen3-32B",
-          "source_url": "https://huggingface.co/Qwen/Qwen3-32B",
-          "verified_source_date": "2026-10-14",
-          "source_author": "Qwen official publisher model card",
-          "model_parameters_b": 32.8,
-          "context_tokens_native": 32768,
-          "context_tokens_extended": 131072,
-          "extension_condition": "YaRN must be enabled to extend 32,768 native context to 131,072",
-          "modalities": [
-            "text"
-          ],
-          "capabilities": [
-            "text generation",
-            "reasoning",
-            "coding",
-            "agent/tool-use"
-          ],
-          "deployment": "downloadable open weights; Transformers, vLLM and SGLang serving examples",
-          "license": "Apache-2.0 for this exact model",
-          "pricing": "No universally fixed price per token for independently self-hosted weights; quote by operator and hardware",
-          "governance": "License published; region, data retention, contracts, DPA and runtime settings depend on actual host",
-          "canonical_id_checked": true,
-          "verified_model_specific_public_claims": true,
-          "customer_runtime_verified": false,
-          "selection_status": "GITHUB_CANDIDATE_MODEL_SELECTED_PRODUCTION_NOT_ACCEPTED"
-        },
-        "archived_alternative_variant": {
-          "id": "Qwen/Qwen3-8B",
-          "source_url": "https://huggingface.co/Qwen/Qwen3-8B",
-          "secondary_official_url": "https://qwenlm.github.io/blog/qwen3/",
-          "verified_source_date": "2026-10-14",
-          "source_author": "Qwen (official Hugging Face publisher and project blog)",
-          "model_parameters_b": 8.2,
-          "context_tokens_native": 32768,
-          "context_tokens_extended": 131072,
-          "extension_condition": "131072 requires YaRN context extension; configuration affects shorter-context performance",
-          "capabilities": [
-            "text generation",
-            "multilingual reasoning",
-            "tool-use/agents",
-            "switchable thinking/non-thinking"
-          ],
-          "deployment": "downloadable weights supported with Transformers, vLLM and SGLang",
-          "pricing": "No universal token rate for downloaded open weights; actual self-host infrastructure or hosted provider price must be established",
-          "license": "Apache-2.0 on this specific Qwen3-8B model (not all Qwen variants)",
-          "governance": "License and publisher model card checked; hosting region, retention, DPA and customer controls not attested",
-          "canonical_id_checked": true,
-          "verified_family_claims": false,
-          "customer_runtime_verified": false,
-          "selection_status": "PROPOSED_VARIANT_NOT_YET_MIGRATED"
-        }
-      },
       "provider_policy_research_20261014": {
         "claim": "alibaba_model_studio_provider_retention_policy",
         "url": "https://www.alibabacloud.com/help/en/model-studio/data-retention-policy",
@@ -5957,12 +5843,16 @@
       "model_specific_pricing_type": "self_host_operator_cost",
       "previous_family_placeholder_id": "qwen-open-weight",
       "model_selection_note": "Concrete model variant selected to replace unverifiable family placeholder; other family variants require separate rows.",
-      "governance_baseline_classification": {
-        "type": "MODEL_LICENSE_OBSERVED_TENANT_UNVERIFIED",
-        "source_url": "https://huggingface.co/Qwen/Qwen3-32B",
-        "reviewed_on": "2026-10-14",
-        "limits": "Only public supplier-model license and documentation verified; residency, retention, DPA, ZDR and customer/provider runtime controls need authenticated evidence"
-      }
+      "variant_migration_record": {
+        "original_catalog_id": "qwen-open-weight",
+        "selection_reason": "Catalog requires individual, provider-identifiable model variants, not broad family placeholders.",
+        "original_family_source": null
+      },
+      "scores_provenance": {
+        "status": "HEURISTIC_NOT_INDEPENDENTLY_BENCHMARKED",
+        "note": "Historical family-level heuristic scores retained for continuity; not validated as this particular model's benchmark and ineligible for autonomous recommendation."
+      },
+      "runtime_residency_verification": "TENANT_RUNTIME_READBACK_REQUIRED"
     },
     {
       "tier": "balanced",
