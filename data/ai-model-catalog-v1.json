@@ -9315,6 +9315,15 @@
             "checked_on": "2026-10-14",
             "scope": "verified Claude direct API supplier-level retention and model eligibility; never a tenant DPA or runtime attestation",
             "verification_status": "OFFICIAL_SUPPLIER_POLICY_CONFIRMED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
+            "locator": "Model-specific data retention requirements > Claude Fable 5; Zero data retention > What ZDR does not cover",
+            "observed_value": "Anthropic expressly designates Claude Fable 5 a Covered Model requiring 30-day retention on the Claude API. Default ZDR access is excluded unless Anthropic expressly authorizes it; a workspace with required retention must be configured separately. This source documents model-specific eligibility, not any customer's approved tenant configuration, actual retention or signed agreement.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific Covered Model retention restriction documented by supplier; tenant approval and configuration unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -9342,10 +9351,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -9365,7 +9372,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
