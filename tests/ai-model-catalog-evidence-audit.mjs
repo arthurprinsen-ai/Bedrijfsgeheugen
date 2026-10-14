@@ -2,6 +2,7 @@
 // Evidence-first catalog audit: URL reachability is NOT a verification of model claims.
 // Usage: node tests/ai-model-catalog-evidence-audit.mjs [output-file]
 import fs from 'node:fs/promises';
+import { createHash } from 'node:crypto';
 const catalog = JSON.parse(await fs.readFile('data/ai-model-catalog-v1.json', 'utf8'));
 const now = new Date();
 const maxAgeDays = 14;
@@ -64,6 +65,31 @@ const report = {
   counts: { models: models.length, sources: sources.length, stale: models.filter(m => m.classification === 'STALE_CLAIMS_UNVERIFIED').length, fully_verified: models.filter(m => m.eligible_for_automatic_freshness_attestation).length, not_fully_verified: models.filter(m => !m.eligible_for_automatic_freshness_attestation).length, unreachable_sources: [...sourceChecks.values()].filter(x => !x.reachable).length, duplicate_ids: duplicateIds.length, missing_official_urls: missingSources.length },
   duplicate_model_ids: [...new Set(duplicateIds)], missing_source_models: missingSources, source_checks: [...sourceChecks.values()], models
 };
+// Production readback is explicit and immutable: compare semantic catalog JSON, not HTTP 200.
+// The URL must point to the deployed canonical JSON artifact and be supplied by the release job.
+// No URL => no claim of production validation. A mismatch or fetch failure blocks acceptance.
+const productionUrl = process.env.MODEL_CATALOG_PRODUCTION_URL;
+report.production_readback = {
+  status: 'NOT_REQUESTED', local_sha256: createHash('sha256').update(JSON.stringify(catalog)).digest('hex')
+};
+if (productionUrl) {
+  report.production_readback.status = 'FAILED';
+  report.production_readback.url = productionUrl;
+  try {
+    if (!productionUrl.startsWith('https://')) throw new Error('HTTPS_REQUIRED');
+    const response = await fetch(productionUrl, { signal: AbortSignal.timeout(15000), cache: 'no-store' });
+    if (!response.ok) throw new Error('HTTP_' + response.status);
+    const live = await response.json();
+    const liveHash = createHash('sha256').update(JSON.stringify(live)).digest('hex');
+    report.production_readback.live_sha256 = liveHash;
+    if (liveHash !== report.production_readback.local_sha256) throw new Error('CATALOG_CONTENT_MISMATCH');
+    if (live.version !== catalog.version || live.models?.length !== catalog.models.length) throw new Error('CATALOG_SCHEMA_MISMATCH');
+    report.production_readback.status = 'MATCH';
+  } catch (error) {
+    report.production_readback.error = String(error.message ?? error);
+    process.exitCode = 2;
+  }
+}
 const json = JSON.stringify(report, null, 2) + '\n';
 if (process.argv[2]) await fs.writeFile(process.argv[2], json);
 else process.stdout.write(json);
