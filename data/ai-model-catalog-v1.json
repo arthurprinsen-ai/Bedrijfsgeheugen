@@ -4958,6 +4958,15 @@
             "observed_value": "Standard Vault per-instance hourly: Command A+ L USD 17.50, XL USD 32.50. Separate from rate-limited free Chat API usage. Customer entitlement, terms, and final pricing are unverified.",
             "checked_on": "2026-10-14",
             "scope": "Official Cohere Standard Vault instance pricing only, NOT pay-as-you-go API token pricing or an executed customer tariff."
+          },
+          {
+            "claim": "pricing_vault",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing / Generative models / Command A+",
+            "observed_value": "L $17.50 per instance-hour; XL $32.50 per instance-hour; access typically waitlisted.",
+            "scope": "Generative Model Vault requires access approval; monthly and annual commitments negotiated; not standard API per-token quote.",
+            "checked_on": "2026-10-14",
+            "verification_type": "independently_observed_model_specific_standard_vault_price"
           }
         ],
         "identity_warning": {
@@ -5150,7 +5159,20 @@
         "automatic_recommendation_eligible": false
       },
       "api_model_id": "command-a-plus-05-2026",
-      "max_output_tokens": 64000
+      "max_output_tokens": 64000,
+      "cohere_public_standard_vault_pricing_review_20261014": {
+        "official_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+        "source_locator": "Standard Vault Pricing / Generative models / Command A+",
+        "observed_public_rates": "L $17.50 per instance-hour; XL $32.50 per instance-hour; access typically waitlisted.",
+        "scope": "Generative Model Vault requires access approval; monthly and annual commitments negotiated; not standard API per-token quote.",
+        "checked_on": "2026-10-14",
+        "api_usage_price_verified": false,
+        "private_contract_verified": false,
+        "provider_account_entitlement_verified": false,
+        "customer_residency_verified": false,
+        "production_release_approved": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "id": "command-a",
@@ -5558,6 +5580,15 @@
             "locator": "Latest Model table > embed-v4.0",
             "observed_value": "embed-v4.0 listed as a supported embedding model on Cohere Platform; later v5 models also listed; tenant access not authenticated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing_vault",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing / Embed 4",
+            "observed_value": "Small $4/hour, $2,500/month or $25,000/year; Medium $5/hour, $3,250/month or $32,500/year.",
+            "scope": "Public Model Vault instance pricing; API per-token rate and individual customer contract separate.",
+            "checked_on": "2026-10-14",
+            "verification_type": "independently_observed_model_specific_standard_vault_price"
           }
         ],
         "identity_warning": {
@@ -5660,7 +5691,20 @@
         "public_api_pricing": "UNVERIFIED",
         "customer_subscription": "UNVERIFIED"
       },
-      "provider_api_id": "embed-v4.0"
+      "provider_api_id": "embed-v4.0",
+      "cohere_public_standard_vault_pricing_review_20261014": {
+        "official_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+        "source_locator": "Standard Vault Pricing / Embed 4",
+        "observed_public_rates": "Small $4/hour, $2,500/month or $25,000/year; Medium $5/hour, $3,250/month or $32,500/year.",
+        "scope": "Public Model Vault instance pricing; API per-token rate and individual customer contract separate.",
+        "checked_on": "2026-10-14",
+        "api_usage_price_verified": false,
+        "private_contract_verified": false,
+        "provider_account_entitlement_verified": false,
+        "customer_residency_verified": false,
+        "production_release_approved": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "id": "rerank-4-pro",
@@ -5788,6 +5832,15 @@
             "locator": "Rerank API v2 model parameter and billed_units.search_units",
             "observed_value": "Cohere Rerank v2 API accepts rerank-v4.0-pro; response billed by search units; paid production entitlement unverified",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing_vault",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing / Rerank 4 Pro",
+            "observed_value": "Medium $5/hour, $3,250/month or $32,500/year; Large $10/hour, $6,500/month or $65,000/year.",
+            "scope": "Public Model Vault instance pricing; API per-search rate and individual customer contract separate.",
+            "checked_on": "2026-10-14",
+            "verification_type": "independently_observed_model_specific_standard_vault_price"
           }
         ],
         "provider_policy_evidence": {
@@ -5886,7 +5939,20 @@
         "public_api_pricing": "UNVERIFIED",
         "customer_subscription": "UNVERIFIED"
       },
-      "provider_api_id": "rerank-v4.0-pro"
+      "provider_api_id": "rerank-v4.0-pro",
+      "cohere_public_standard_vault_pricing_review_20261014": {
+        "official_source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+        "source_locator": "Standard Vault Pricing / Rerank 4 Pro",
+        "observed_public_rates": "Medium $5/hour, $3,250/month or $32,500/year; Large $10/hour, $6,500/month or $65,000/year.",
+        "scope": "Public Model Vault instance pricing; API per-search rate and individual customer contract separate.",
+        "checked_on": "2026-10-14",
+        "api_usage_price_verified": false,
+        "private_contract_verified": false,
+        "provider_account_entitlement_verified": false,
+        "customer_residency_verified": false,
+        "production_release_approved": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "id": "llama-4-scout-17b-16e-instruct",
