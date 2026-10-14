@@ -13411,7 +13411,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -13428,10 +13428,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -13556,7 +13557,13 @@
         "claim_source_review_date": "2026-10-14",
         "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/zdr"
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/zdr",
+        "public_source_scope_correction_20261014": {
+          "date": "2026-10-14",
+          "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
+          "independent_review_complete": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -13633,7 +13640,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -13650,10 +13657,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -13793,14 +13801,27 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 0,
-        "review_required_claims": [],
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
         "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/zdr",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "public_source_scope_correction_20261014": {
+          "date": "2026-10-14",
+          "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
+          "independent_review_complete": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -14091,7 +14112,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -14108,10 +14129,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14262,6 +14284,12 @@
           "meaning": "Google states shutdown dates are earliest possible dates; do not treat the date as confirmed exact endpoint cutoff.",
           "tenant_access_verified": false,
           "production_recommendation_eligible": false
+        },
+        "public_source_scope_correction_20261014": {
+          "date": "2026-10-14",
+          "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
+          "independent_review_complete": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "pricing_basis": {
@@ -14342,7 +14370,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -14359,10 +14387,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14482,12 +14511,25 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 0,
-        "review_required_claims": [],
+        "pending_independent_claim_reviews": 6,
+        "review_required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_source_scope_correction_20261014": {
+          "date": "2026-10-14",
+          "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
+          "independent_review_complete": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "pricing_basis": {
         "currency": "USD",
