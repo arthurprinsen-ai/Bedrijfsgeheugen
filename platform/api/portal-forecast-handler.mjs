@@ -12,7 +12,7 @@ export function verifiedForecasts(projection,tenantId,{now=new Date()}={}){
   return Number.isFinite(age)&&age>=0&&age<=30*86400000;};
  const source=projection?.payload?.data||projection?.payload||projection?.data||{};
  const forecasts=Array.isArray(source?.forecasts)?source.forecasts:[];
- return forecasts.filter(f=>f&&f.verified===true&&f.validation?.status==='passed'&&f.validation?.tenantBound===true&&f.tenantId===tenantId&&f.validation?.tenantId===tenantId&&
+ return forecasts.filter(f=>f&&f.verified===true&&f.validation?.status==='passed'&&f.validation?.tenantBound===true&&typeof f.validation?.verifiedAt==='string'&&fresh(f.validation.verifiedAt)&&f.tenantId===tenantId&&f.validation?.tenantId===tenantId&&
  typeof f.source==='string'&&f.source.trim()&&typeof f.model==='string'&&f.model.trim()&&
  typeof f.updatedAt==='string'&&fresh(f.updatedAt)&&
  dates(f.history)&&dates(f.forecast)&&
