@@ -79,7 +79,10 @@
         "OpenAI API"
       ],
       "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
-      "limitations": [],
+      "limitations": [
+        "Above 272K input tokens, input and cache rates are doubled and output rates are multiplied by 1.5",
+        "Fine-tuning unsupported on documented model page"
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "no EU processing in this listed path",
@@ -146,7 +149,7 @@
             "claim": "capabilities",
             "url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
             "locator": "Modalities and Features",
-            "observed_value": "Text input/output, image input; function calling and structured outputs supported; audio/video inputs unsupported",
+            "observed_value": "Text input/output, image input, 1,050,000 context window, 128,000 maximum output tokens; structured outputs/function calling supported, audio/video input unsupported",
             "checked_on": "2026-10-14"
           },
           {
@@ -204,8 +207,12 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+        "source_check_scope": "Official per-model page checked for pricing, context, features, endpoints; governance remains unverified"
+      },
+      "max_output_tokens": 128000
     },
     {
       "id": "gpt-6-sol",
@@ -2604,7 +2611,10 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+        "source_check_scope": "Official model page confirms API ID, context and token prices; governance remains unverified"
       }
     },
     {
