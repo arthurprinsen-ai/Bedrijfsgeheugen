@@ -359,7 +359,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -372,23 +372,23 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "source_url": "https://developers.openai.com/api/docs/pricing",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
+          "status",
           "input_usd_m",
           "output_usd_m",
+          "cached_input_usd_m",
           "context_k",
-          "cached_input_usd_m"
-        ],
-        "not_verified": [
-          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_scope": "partial",
@@ -404,8 +404,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+            "locator": "Model heading and Snapshots",
+            "observed_value": "gpt-6-luna",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+            "locator": "Model heading and Snapshots",
+            "observed_value": "Listed in official OpenAI API documentation; tenant access not tested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+            "locator": "Pricing > Text tokens > Per 1M tokens",
+            "observed_value": "Standard input USD 0.10, cached input USD 0.01, output USD 0.50; higher rates above 272K input tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+            "locator": "Modalities and Features",
+            "observed_value": "Text input/output; image input only; no audio/video; function calling and structured outputs supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+            "locator": "Endpoints > Responses, Chat Completions; Snapshots",
+            "observed_value": "v1/responses and v1/chat/completions documented; live tenant access not tested",
             "checked_on": "2026-10-14"
           }
         ],
