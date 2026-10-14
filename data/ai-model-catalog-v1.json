@@ -5341,7 +5341,8 @@
       ],
       "source": "https://www.llama.com/",
       "limitations": [
-        "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required."
+        "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required.",
+        "A concrete source-backed model candidate is documented, but the family alias itself remains non-callable and not eligible for automatic recommendations."
       ],
       "governance": {
         "storage_residency": "EU option documented",
@@ -5493,7 +5494,50 @@
       "record_kind": "model_family_placeholder",
       "canonical_runnable_id_verified": false,
       "auto_recommendation_eligible": false,
-      "catalog_record_kind": "model_family_placeholder"
+      "catalog_record_kind": "model_family_placeholder",
+      "supplier_specific_variant_review": {
+        "status": "SOURCE_BACKED_CANDIDATE_NOT_FAMILY_VERIFICATION",
+        "candidate": {
+          "model_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+          "supplier": "Meta",
+          "model_card_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+          "source_owner": "meta-llama",
+          "checked_on": "2026-10-14",
+          "status": "OFFICIAL_MODEL_WEIGHTS_PUBLISHED; hosted inference authorization not established",
+          "context_tokens": 1000000,
+          "modalities": {
+            "input": [
+              "text",
+              "image"
+            ],
+            "output": [
+              "text",
+              "code"
+            ]
+          },
+          "parameters": "17B active / 400B total mixture-of-experts",
+          "license": "Llama 4 Community License (llama4), commercial redistribution/use conditions apply",
+          "deployment": "Transformers local load or vLLM serve meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8; actual deploy/availability untested",
+          "pricing": "NO_PROVIDER_UNIVERSAL_PER_TOKEN_RATE: open-weight self-host compute/hardware charges depend on the chosen host; do not display a fabricated token price",
+          "governance": "Model weights subject to custom Llama 4 license. Deployed processing region, retention, DPAs and CMK are determined by the actual host; no tenant controls proven",
+          "receipt_locators": {
+            "model_id": "Model repository heading and identifier",
+            "status": "Model card > Model Information > Model Release Date",
+            "capabilities": "Model card > Model Information > architecture, input and output modalities, context length",
+            "deployment": "Use this model > Transformers; vLLM examples",
+            "governance": "Model card > License and license agreement"
+          }
+        },
+        "license_not_customer_governance": true,
+        "no_automatic_selection": true,
+        "not_verified": [
+          "provider-specific API token price",
+          "actual tenant/model endpoint availability",
+          "data residency and controls",
+          "customer DPA and contract"
+        ],
+        "verified_at": "2026-10-14"
+      }
     },
     {
       "id": "qwen-open-weight",
@@ -5533,7 +5577,8 @@
       ],
       "source": "https://qwenlm.github.io/",
       "limitations": [
-        "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required."
+        "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required.",
+        "A concrete source-backed model candidate is documented, but the family alias itself remains non-callable and not eligible for automatic recommendations."
       ],
       "governance": {
         "storage_residency": "EU option documented",
@@ -5691,7 +5736,50 @@
       "record_kind": "model_family_placeholder",
       "canonical_runnable_id_verified": false,
       "auto_recommendation_eligible": false,
-      "catalog_record_kind": "model_family_placeholder"
+      "catalog_record_kind": "model_family_placeholder",
+      "supplier_specific_variant_review": {
+        "status": "SOURCE_BACKED_CANDIDATE_NOT_FAMILY_VERIFICATION",
+        "candidate": {
+          "model_id": "Qwen/Qwen3-8B",
+          "supplier": "Qwen",
+          "model_card_url": "https://huggingface.co/Qwen/Qwen3-8B",
+          "source_owner": "Qwen",
+          "checked_on": "2026-10-14",
+          "status": "OFFICIAL_MODEL_WEIGHTS_PUBLISHED; hosted inference authorization not established",
+          "context_tokens": 32768,
+          "optional_extended_context_tokens": 131072,
+          "extension": "YaRN configuration required for context above native 32,768 tokens",
+          "modalities": {
+            "input": [
+              "text"
+            ],
+            "output": [
+              "text"
+            ]
+          },
+          "parameters": "8.2B",
+          "license": "Apache-2.0, scoped to Qwen3-8B checkpoint",
+          "deployment": "Transformers AutoModelForCausalLM and local vLLM serve Qwen/Qwen3-8B; hosting environment/configuration untested",
+          "pricing": "NO_PROVIDER_UNIVERSAL_PER_TOKEN_RATE: open-weight self-host compute/hardware charges depend on the chosen host; external inference providers have separate tariffs",
+          "governance": "Apache-2.0 licenses model checkpoint; does not prove hosting location, customer data retention, zero-data-retention or provider contracts",
+          "receipt_locators": {
+            "model_id": "Model repository heading",
+            "status": "Model card > Downloadable model files",
+            "capabilities": "Model Overview > context length and supported modes",
+            "deployment": "Quickstart > Transformers and vLLM",
+            "governance": "Model card > License: apache-2.0"
+          }
+        },
+        "license_not_customer_governance": true,
+        "no_automatic_selection": true,
+        "not_verified": [
+          "provider-specific API token price",
+          "actual tenant/model endpoint availability",
+          "data residency and controls",
+          "customer DPA and contract"
+        ],
+        "verified_at": "2026-10-14"
+      }
     },
     {
       "tier": "balanced",
