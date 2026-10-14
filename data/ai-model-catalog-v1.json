@@ -5409,7 +5409,21 @@
           "source_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
           "reviewed_on": "2026-10-14",
           "limits": "Family placeholder is not a verified callable model ID"
-        }
+        },
+        "replacement_candidates": [
+          {
+            "model_id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+            "source_url": "https://github.com/meta-llama/llama-models/blob/main/models/sku_list.py",
+            "checked_on": "2026-10-14",
+            "selection_status": "NOT_SELECTED"
+          },
+          {
+            "model_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct",
+            "source_url": "https://github.com/meta-llama/llama-models/blob/main/models/sku_list.py",
+            "checked_on": "2026-10-14",
+            "selection_status": "NOT_SELECTED"
+          }
+        ]
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -5476,7 +5490,8 @@
       "catalog_record_type": "model_family",
       "record_kind": "model_family_placeholder",
       "canonical_runnable_id_verified": false,
-      "auto_recommendation_eligible": false
+      "auto_recommendation_eligible": false,
+      "catalog_record_kind": "model_family_placeholder"
     },
     {
       "id": "qwen-open-weight",
@@ -5576,7 +5591,21 @@
           "source_url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
           "reviewed_on": "2026-10-14",
           "limits": "Family placeholder is not a verified callable model ID"
-        }
+        },
+        "replacement_candidates": [
+          {
+            "model_id": "Qwen/Qwen3-8B",
+            "source_url": "https://github.com/QwenLM/Qwen3",
+            "checked_on": "2026-10-14",
+            "selection_status": "NOT_SELECTED"
+          },
+          {
+            "model_id": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+            "source_url": "https://github.com/QwenLM/Qwen3/blob/main/docs/source/getting_started/quickstart.md",
+            "checked_on": "2026-10-14",
+            "selection_status": "NOT_SELECTED"
+          }
+        ]
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -5647,7 +5676,8 @@
       "catalog_record_type": "model_family",
       "record_kind": "model_family_placeholder",
       "canonical_runnable_id_verified": false,
-      "auto_recommendation_eligible": false
+      "auto_recommendation_eligible": false,
+      "catalog_record_kind": "model_family_placeholder"
     },
     {
       "tier": "balanced",
