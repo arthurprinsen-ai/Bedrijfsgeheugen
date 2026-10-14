@@ -331,3 +331,29 @@ test('modelwijzer shows catalog source-registration date without implying suppli
  assert.match(html,/dates\.sort\(\)\.at\(-1\)/);
  assert.match(html,/timeZone:'UTC'/);
 });
+
+test('AWS Nova public model-card readback preserves exact IDs and customer authorization hold',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const expected={
+  'amazon-nova-2-sonic':{api:'amazon.nova-2-sonic-v1:0',context_k:1000,max_output_tokens:64000,regional:['eu-north-1','us-east-1']},
+  'amazon-nova-micro':{api:'amazon.nova-micro-v1:0',context_k:128,max_output_tokens:5000,regional:['eu-west-2','us-east-1']},
+  'amazon-nova-multimodal-embeddings':{api:'amazon.nova-2-multimodal-embeddings-v1:0',context_k:null,max_output_tokens:null,regional:['us-east-1']}
+ };
+ for(const [id,asserted] of Object.entries(expected)){
+  const model=catalog.models.find(m=>m.id===id);
+  assert.ok(model,id+' missing');
+  assert.equal(model.provider_api_id,asserted.api,id+' provider ID');
+  if(asserted.context_k!=null)assert.equal(model.context_k,asserted.context_k,id+' input context');
+  if(asserted.max_output_tokens!=null)assert.equal(model.max_output_tokens,asserted.max_output_tokens,id+' output ceiling');
+  const audit=model.supplier_audit?.public_aws_model_card_crosscheck_20261014;
+  assert.ok(audit?.model_specific_card_url?.startsWith('https://docs.aws.amazon.com/bedrock/'),id+' official source');
+  assert.equal(audit.canonical_bedrock_model_id,asserted.api,id+' audited ID');
+  for(const region of asserted.regional)assert.ok(audit.public_in_region_supported?.includes(region),id+' '+region);
+  assert.equal(audit.customer_region_and_model_entitlement_verified,false,id+' customer authorization is unverified');
+  assert.equal(audit.effective_processing_or_storage_region_verified,false,id+' tenant region unverified');
+  assert.equal(audit.current_account_rate_verified,false,id+' price not attested');
+  assert.equal(audit.independent_six_claim_supplier_approval,false,id+' no independent supplier signoff');
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false,id+' no auto recommendation');
+  assert.notEqual(model.verification_evidence?.claim_scope,'full',id+' missing source claims cannot become full');
+ }
+});
