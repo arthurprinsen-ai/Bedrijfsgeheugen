@@ -1724,6 +1724,15 @@
             "checked_on": "2026-10-14",
             "scope": "verified Claude direct API supplier-level retention and model eligibility; never a tenant DPA or runtime attestation",
             "verification_status": "OFFICIAL_SUPPLIER_POLICY_CONFIRMED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
+            "locator": "Model-specific data retention requirements > Exhaustive Covered Models list; Zero data retention > What ZDR covers",
+            "observed_value": "Anthropic lists only Fable 5/5.1 and Mythos 5/5.1 as Covered Models requiring the exceptional mandatory 30-day retention; claude-haiku-4-5 is not on this Covered Models list. The normal direct Claude API retention policy is still feature- and organization-conditional, and ZDR is available only to specifically enabled commercial organizations for eligible routes. No customer's retention setting, DPA or runtime region is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "specific model is excluded from enumerated Covered Models exception; conditional standard supplier API terms only; tenant not verified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -1758,10 +1767,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -1779,7 +1786,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -9515,6 +9522,15 @@
             "checked_on": "2026-10-14",
             "scope": "verified Claude direct API supplier-level retention and model eligibility; never a tenant DPA or runtime attestation",
             "verification_status": "OFFICIAL_SUPPLIER_POLICY_CONFIRMED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
+            "locator": "Model-specific data retention requirements > Exhaustive Covered Models list; Zero data retention > What ZDR covers",
+            "observed_value": "Anthropic lists only Fable 5/5.1 and Mythos 5/5.1 as Covered Models requiring the exceptional mandatory 30-day retention; claude-opus-4-8 is not on this Covered Models list. The normal direct Claude API retention policy is still feature- and organization-conditional, and ZDR is available only to specifically enabled commercial organizations for eligible routes. No customer's retention setting, DPA or runtime region is attested.",
+            "checked_on": "2026-10-14",
+            "scope": "specific model is excluded from enumerated Covered Models exception; conditional standard supplier API terms only; tenant not verified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -9543,10 +9559,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -9566,7 +9580,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
