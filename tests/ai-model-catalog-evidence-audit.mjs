@@ -3,7 +3,6 @@
 // Usage: node tests/ai-model-catalog-evidence-audit.mjs [output-file]
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { customerClaimStatus, customerClaimRequirements } from './ai-model-customer-governance-evidence.mjs';
 const catalog = JSON.parse(await fs.readFile('data/ai-model-catalog-v1.json', 'utf8'));
 const now = new Date();
 const maxAgeDays = 14;
@@ -24,14 +23,10 @@ function hasFullEvidence(m) {
       x.checked_on === e.checked_on);
     if (!receipt) return false;
   }
-  // Supplier verification is global; customer rights are never inferred from provider policy.
-  const tenantClaims=['dpa',...Object.keys(customerClaimRequirements)];
-  for(const claim of tenantClaims){
-    if(!e.verified_claims.includes(claim))continue;
-    if(claim==='dpa')return false; // Ambiguous generic DPA label cannot attest a signed contract.
-    const tenantId=e.customer_tenant_id;
-    if(customerClaimStatus({tenantId,provider:m.provider,modelId:m.id,claim,receipts:e.tenant_evidence||[],asOf:now}).status!=='VERIFIED')return false;
-  }
+  // A supplier-verified catalog may not certify customer-specific contracts or controls.
+  // Those belong to a separate opt-in customer acceptance workflow.
+  const tenantOnly=['dpa','signed_dpa','contract','tenant_data_residency','tenant_zdr','customer_cmk','private_networking_enabled'];
+  if (tenantOnly.some(claim => e.verified_claims.includes(claim))) return false;
   const age=(now-new Date(e.checked_on+'T00:00:00Z'))/86400000;
   return Number.isFinite(age) && age >= 0 && age <= maxAgeDays;
 }
