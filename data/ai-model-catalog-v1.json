@@ -7629,6 +7629,15 @@
             "locator": "Realtime audio duration > Per minute",
             "observed_value": "USD 0.034 per minute of translated audio (duration-based, not per-million text tokens)",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support > /v1/realtime/translations > Supported models; Support by region > /v1/realtime/translations",
+            "observed_value": "OpenAI lists gpt-realtime-translate as the supported model for /v1/realtime/translations and lists United States and Europe (EEA + Switzerland) as supported processing regions for this endpoint. Published eligibility does NOT attest customer regional routing, tenant access, data storage locality, retention or ZDR approval.",
+            "checked_on": "2026-10-14",
+            "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
+            "verification_status": "MODEL_ENDPOINT_REGIONAL_ELIGIBILITY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -7656,10 +7665,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7677,7 +7684,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -7689,7 +7696,14 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "model_region_public_observation_20261014": {
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "endpoint": "/v1/realtime/translations",
+          "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
+          "customer_region_verified": false,
+          "full_governance_verified": false
+        }
       }
     },
     {
@@ -7810,6 +7824,15 @@
             "locator": "Realtime audio duration > Per minute",
             "observed_value": "USD 0.017 per minute of audio transcription (duration-based)",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support > /v1/realtime/transcription_sessions > Supported models; Support by region > /v1/realtime/transcription_sessions",
+            "observed_value": "OpenAI lists gpt-live-transcribe as a supported model on /v1/realtime/transcription_sessions and lists United States and Europe (EEA + Switzerland) as supported processing regions for that endpoint. Published eligibility does NOT attest customer regional routing, tenant access, data storage locality, retention or ZDR approval.",
+            "checked_on": "2026-10-14",
+            "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
+            "verification_status": "MODEL_ENDPOINT_REGIONAL_ELIGIBILITY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -7837,10 +7860,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7858,7 +7879,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -7870,7 +7891,14 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "model_region_public_observation_20261014": {
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "endpoint": "/v1/realtime/transcription_sessions",
+          "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
+          "customer_region_verified": false,
+          "full_governance_verified": false
+        }
       }
     },
     {
@@ -7990,6 +8018,15 @@
             "locator": "Realtime audio duration > Per minute",
             "observed_value": "USD 0.017 per minute of audio transcription (duration-based)",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support > /v1/realtime/transcription_sessions > Supported models; Support by region > /v1/realtime/transcription_sessions",
+            "observed_value": "OpenAI lists gpt-realtime-whisper as a supported model on /v1/realtime/transcription_sessions and lists United States and Europe (EEA + Switzerland) as supported processing regions for that endpoint. Published eligibility does NOT attest customer regional routing, tenant access, data storage locality, retention or ZDR approval.",
+            "checked_on": "2026-10-14",
+            "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
+            "verification_status": "MODEL_ENDPOINT_REGIONAL_ELIGIBILITY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8017,10 +8054,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8038,7 +8073,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -8050,7 +8085,14 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "model_region_public_observation_20261014": {
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "endpoint": "/v1/realtime/transcription_sessions",
+          "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
+          "customer_region_verified": false,
+          "full_governance_verified": false
+        }
       }
     },
     {
