@@ -31,6 +31,15 @@ BEGIN
   SELECT next_slot INTO v_cursor FROM powerhouse_ops.runtime_recovery_cursor
   WHERE cursor_name='operational-slot-scan-v1' FOR UPDATE;
   IF NOT FOUND THEN RAISE EXCEPTION 'RECOVERY_CURSOR_MISSING'; END IF;
+  -- Never advance the cursor if either canonical producer has been disabled;
+  -- otherwise missing schedules could be silently declared handled.
+  IF (SELECT count(*) FROM cron.job
+      WHERE active AND jobname IN (
+        'powerhouse-runtime-isolated-execution-resilience-watchdog',
+        'powerhouse-runtime-isolated-reconciliation-worker'))<>2 THEN
+    RETURN jsonb_build_object('state','PRODUCER_SCHEDULE_MISSING',
+      'checkpoint_advanced',false,'created',0);
+  END IF;
   -- Never process more than 30 minutes of slots in one invocation, even after
   -- days of database downtime. The next tick resumes from the committed cursor.
   v_end:=least(v_latest,v_cursor+interval '29 minutes');
