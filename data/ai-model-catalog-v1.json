@@ -23207,7 +23207,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -23216,21 +23216,18 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://huggingface.co/tiiuae/Falcon-OCR",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
+          "status",
+          "pricing",
           "capabilities",
           "deployment",
-          "governance",
-          "status"
+          "governance"
         ],
-        "not_verified": [
-          "customer-specific governance",
-          "commercial license terms and fees",
-          "pricing"
-        ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -23277,6 +23274,24 @@
             "checked_on": "2026-10-14",
             "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
             "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Official model repository > Apache-2.0 license, downloadable weights and local execution / vLLM serving (no TII token API tariff)",
+            "observed_value": "Falcon OCR is distributed as downloadable Apache-2.0 licensed model weights for local/self-managed inference. No TII-operated per-million-token or per-request API SKU or published tariff is stated on its official model card. Supplier distribution cost classification: self-hostable open-weight model, NOT a zero-cost inference service; GPU, operations and any independent hosting fees must be priced per deployment.",
+            "checked_on": "2026-10-14",
+            "scope": "published model distribution and absence of a quoted vendor-hosted token price; actual infrastructure cost, third-party hosting price and customer agreement remain unverified",
+            "verification_status": "SELF_HOST_DISTRIBUTION_NO_VENDOR_API_TOKEN_PRICE_OBSERVED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Official model card > license: apache-2.0; local Transformers and vLLM/Docker inference instructions",
+            "observed_value": "TII Falcon OCR model card tags Apache-2.0 and documents local inference and Docker serving on operator-controlled compute. The model vendor does not supply a managed processing-region or ZDR attestation for this self-host route. Actual storage, logging, regional routing, GPU hosting, security controls, subprocessor chain and the data protection obligations of any cloud service are controlled/contracted by the deployer, not proven by the model licence.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented licence and deployment governance only; no tenant-level DPA, actual infrastructure or security readback",
+            "verification_status": "SELF_HOSTED_MODEL_LICENSE_OFFICIAL_SUPPLIER_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "pricing_disclosure": {
@@ -23304,10 +23319,17 @@
           "source_url": "https://huggingface.co/tiiuae/Falcon-OCR",
           "reviewed_on": "2026-10-14",
           "limits": "Deployed security, data location and hosting costs depend on operator"
-        }
+        },
+        "tenant_unverified": [
+          "chosen hardware/cloud infrastructure cost and any third-party usage fees",
+          "customer security and processing region runtime",
+          "operator logs, retention and zero-data-retention configuration",
+          "customer processor terms and independent cloud provider contract"
+        ],
+        "verification_scope_note": "Six supplier-public attributes independently crosschecked against TII's official downloadable Falcon-OCR model card. Pricing is classified as no TII-hosted API token tariff (NOT free operation); deployment is self-managed under Apache-2.0 with user-selected cloud/compute cost and privacy controls. Nothing here attests a particular customer's cloud, DPA, retention, model output quality, costs or enabled controls."
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "SUPPLIER_PUBLIC_VERIFIED_TENANT_ACCEPTANCE_PENDING",
         "required_claims": [
           "model_id",
           "status",
@@ -23316,10 +23338,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://huggingface.co/tiiuae/Falcon-OCR",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -23349,7 +23369,10 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://huggingface.co/tiiuae/Falcon-OCR",
+        "last_specific_source_check": "2026-10-14",
+        "pricing_scope": "SELF_HOSTED_OPEN_WEIGHTS_VENDOR_API_TARIFF_NOT_PUBLISHED"
       },
       "falcon_license_research_20261014": {
         "license_tag": "apache-2.0",
