@@ -8609,7 +8609,7 @@
         }
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "SUPPLIER_OPEN_WEIGHT_DISTRIBUTION_VERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -8623,14 +8623,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true,
+        "independent_verification_required": false,
         "provider_index_review": {
           "url": "https://developers.openai.com/api/docs/models/all",
           "reviewed_on": "2026-10-14",
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "Six supplier distribution claims corroborated against exact OpenAI model documentation and official gpt-oss Help article. This is not authentication, customer terms, effective region, hosting security or runtime attestation.",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
@@ -8641,7 +8641,28 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "supplier_distribution_review": {
+          "evidence_source_model": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
+          "evidence_source_terms": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+          "independently_reviewed_on": "2026-10-14",
+          "verified_scope": [
+            "exact model identifier",
+            "published open-weight availability",
+            "no OpenAI API tariff",
+            "documented model capabilities",
+            "self-host distribution",
+            "provider's self-hosted data-handling baseline"
+          ],
+          "license": "Apache-2.0 with gpt-oss usage policy",
+          "openai_api_available": false,
+          "weight_download_cost_usd": 0,
+          "third_party_hosting_price": "not attested; varies by host",
+          "customer_tenant_runtime_verified": false,
+          "customer_contracts_verified": false,
+          "regional_runtime_verified": false,
+          "zero_data_retention_enabled_verified": false
+        }
       },
       "max_output_tokens": 131072,
       "pricing_deployment_research_20261014": {
@@ -8789,7 +8810,7 @@
         }
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "SUPPLIER_OPEN_WEIGHT_DISTRIBUTION_VERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -8803,14 +8824,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true,
+        "independent_verification_required": false,
         "provider_index_review": {
           "url": "https://developers.openai.com/api/docs/models/all",
           "reviewed_on": "2026-10-14",
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "Six supplier distribution claims corroborated against exact OpenAI model documentation and official gpt-oss Help article. This is not authentication, customer terms, effective region, hosting security or runtime attestation.",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "last_specific_source_check": "2026-10-14",
         "source_check_scope": "Official model page confirms 131072 context and max output, Apache 2.0 license and downloadable weights; pricing and tenant governance unverified",
@@ -8822,7 +8843,28 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "supplier_distribution_review": {
+          "evidence_source_model": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
+          "evidence_source_terms": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+          "independently_reviewed_on": "2026-10-14",
+          "verified_scope": [
+            "exact model identifier",
+            "published open-weight availability",
+            "no OpenAI API tariff",
+            "documented model capabilities",
+            "self-host distribution",
+            "provider's self-hosted data-handling baseline"
+          ],
+          "license": "Apache-2.0 with gpt-oss usage policy",
+          "openai_api_available": false,
+          "weight_download_cost_usd": 0,
+          "third_party_hosting_price": "not attested; varies by host",
+          "customer_tenant_runtime_verified": false,
+          "customer_contracts_verified": false,
+          "regional_runtime_verified": false,
+          "zero_data_retention_enabled_verified": false
+        }
       },
       "max_output_tokens": 131072,
       "pricing_deployment_research_20261014": {
