@@ -18853,6 +18853,19 @@
         "checked_on": "2026-10-14",
         "observed_price": "Official AWS 2026 document-processing example: USD 0.30 per million input tokens, USD 2.50 per million output tokens and fixed 230 image input tokens per image. Current account region, service tier and invoice rate are NOT verified.",
         "current_tenant_price_verified": false
+      },
+      "provider_api_id": "amazon.nova-2-lite-v1:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.nova-2-lite-v1:0",
+        "official_model_page": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/core-inference.html",
+        "source_locator": "Core inference > Nova 2 Lite model IDs; base model and cross-region inference profile prefixes",
+        "checked_on": "2026-10-14",
+        "scope": "AWS public programmable foundation-model identifier, NOT proof of tenant account entitlement, enabled region, regional lifecycle, executed contract or actual pricing",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "entitlement_verified": false,
+        "regional_lifecycle_verified": false,
+        "regional_pricing_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -19533,6 +19546,19 @@
         "checked_on": "2026-10-14",
         "scope": "historical baseline; not guaranteed live price",
         "customer_region_verified": false
+      },
+      "provider_api_id": "amazon.nova-pro-v1:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.nova-pro-v1:0",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "scope": "AWS public programmable foundation-model identifier, NOT proof of tenant account entitlement, enabled region, regional lifecycle, executed contract or actual pricing",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "entitlement_verified": false,
+        "regional_lifecycle_verified": false,
+        "regional_pricing_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -19753,6 +19779,19 @@
         "checked_on": "2026-10-14",
         "scope": "historical baseline; not guaranteed live price",
         "customer_region_verified": false
+      },
+      "provider_api_id": "amazon.nova-lite-v1:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.nova-lite-v1:0",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "scope": "AWS public programmable foundation-model identifier, NOT proof of tenant account entitlement, enabled region, regional lifecycle, executed contract or actual pricing",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "entitlement_verified": false,
+        "regional_lifecycle_verified": false,
+        "regional_pricing_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -20207,7 +20246,20 @@
         "not_a_claim_receipt": true
       },
       "auto_recommendation_eligible": false,
-      "deployment_readiness": "not_eligible_eol"
+      "deployment_readiness": "not_eligible_eol",
+      "provider_api_id": "amazon.nova-sonic-v1:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.nova-sonic-v1:0",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-sonic.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "scope": "AWS public programmable foundation-model identifier, NOT proof of tenant account entitlement, enabled region, regional lifecycle, executed contract or actual pricing",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "entitlement_verified": false,
+        "regional_lifecycle_verified": false,
+        "regional_pricing_verified": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "tier": "specialist",
@@ -20665,6 +20717,19 @@
         "reference_cost_usd": 0.04,
         "reference_unit": "standard image",
         "customer_billing_verified": false
+      },
+      "provider_api_id": "amazon.nova-canvas-v1:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.nova-canvas-v1:0",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-canvas.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "scope": "AWS public programmable foundation-model identifier, NOT proof of tenant account entitlement, enabled region, regional lifecycle, executed contract or actual pricing",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "entitlement_verified": false,
+        "regional_lifecycle_verified": false,
+        "regional_pricing_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -20881,6 +20946,19 @@
         "reference_cost_usd": 0.08,
         "reference_unit": "generated second",
         "customer_billing_verified": false
+      },
+      "provider_api_id": "amazon.nova-reel-v1:0",
+      "bedrock_identity_evidence_20261014": {
+        "official_model_id": "amazon.nova-reel-v1:0",
+        "official_model_page": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-reel.html",
+        "source_locator": "Programmatic Access > bedrock-runtime Model ID",
+        "checked_on": "2026-10-14",
+        "scope": "AWS public programmable foundation-model identifier, NOT proof of tenant account entitlement, enabled region, regional lifecycle, executed contract or actual pricing",
+        "status": "OFFICIAL_MODEL_ID_ONLY_NO_CUSTOMER_ACCOUNT_READBACK",
+        "entitlement_verified": false,
+        "regional_lifecycle_verified": false,
+        "regional_pricing_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
