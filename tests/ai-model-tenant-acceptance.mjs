@@ -96,6 +96,8 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
    if(receipt.tenant_id!==r.tenant_id||receipt.provider!==r.provider||
       receipt.model_id!==r.model_id||receipt.evidence_reference!==r.evidence_reference||
       receipt.signature_valid!==true||receipt.approved!==true||
+      receipt.approved_by!==r.approved_by||
+      receipt.agreement_status!=='executed'||
       !isRecent(receipt.verified_at))
     throw new Error('SIGNED_CONTRACT_NOT_AUTHENTICATED');
   }catch(error){errors.push(p+':'+String(error.message??error));}
