@@ -52,3 +52,14 @@ test('expired or absent independent forecast verification cannot be presented as
  assert.deepEqual(verifiedForecasts({forecasts:[{...valid,validation:{...valid.validation,verifiedAt:'2026-08-01T00:00:00Z'}}]},'tenant42',{now}),[]);
  assert.deepEqual(verifiedForecasts({forecasts:[{...valid,validation:{...valid.validation,verifiedAt:null}}]},'tenant42',{now}),[]);
 });
+
+
+test('authenticated tenant with no independently validated finance returns explicit unavailable state',async()=>{
+  const h=createPortalForecastHandler({
+    getUser:async()=>({id:'user42',app_metadata:{tenantId:'tenant42'}}),
+    getCanonical:async()=>({forecasts:[]})
+  });
+  const r=await h(new Request('https://example.test/api/portal-forecasts'));
+  assert.equal(r.status,200);
+  assert.deepEqual(await r.json(),{forecasts:[],status:'NO_VALIDATED_FINANCIAL_FORECASTS'});
+});
