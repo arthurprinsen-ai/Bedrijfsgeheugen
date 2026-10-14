@@ -4735,7 +4735,8 @@
       "cached_input_usd_m": null,
       "context_k": 128,
       "modalities": [
-        "text"
+        "text",
+        "image"
       ],
       "strengths": [
         "enterprise RAG",
@@ -4960,7 +4961,8 @@
           "governance"
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
-      }
+      },
+      "provider_api_id": "command-a-plus-05-2026"
     },
     {
       "id": "command-a",
@@ -4972,7 +4974,8 @@
       "cached_input_usd_m": null,
       "context_k": 256,
       "modalities": [
-        "text"
+        "text",
+        "image"
       ],
       "strengths": [
         "enterprise generation",
@@ -5183,7 +5186,8 @@
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
-      "max_output_tokens": 8000
+      "max_output_tokens": 8000,
+      "provider_api_id": "command-a-03-2025"
     },
     {
       "id": "embed-4",
@@ -17119,9 +17123,10 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
-        "text"
+        "text",
+        "image"
       ],
       "strengths": [
         "multilingual enterprise generation",
@@ -17291,7 +17296,8 @@
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
-      }
+      },
+      "provider_api_id": "command-a-plus-05-2026"
     },
     {
       "tier": "specialist",

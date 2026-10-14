@@ -248,3 +248,11 @@ Six exact Mistral model-owner pages were read. The catalog's friendly display ID
 | `mistral-ocr-3` | https://docs.mistral.ai/models/ocr-3-25-12 | `mistral-ocr-2512` | $2 per 1,000 pages / $3 per 1,000 annotated pages | Available for existing integrations; /v1/ocr and /v1/batch; OCR 4 newer |
 
 All prices are the provider's published standard product rates and **not** evidence of negotiated customer charges, region, quota, account access, signed contract, specific endpoint data-retention or residency. Open-weight license scope and local deployment are distinct from paid hosted inference. Six public-source reviews only; full supplier certification, tenant governance, Required/CodeQL, protected merge and production parity remain blocked until separately proven.
+
+## Cohere API identity readback and mapping — 2026-10-14
+
+GitHub's path-level fetch may return only metadata for the large (~1.1 MB) catalog. The exact tree entry's Git blob SHA can be read through the authenticated GitHub blob endpoint, then parsed and compared without replacing unseen catalog content. This workflow preserves the 110-model catalog and existing customer/governance holds.
+
+Official Cohere sources: [Command A](https://docs.cohere.com/docs/command-a) confirms `command-a-03-2025`, 256K context, image input and USD 2.50/10.00 per million input/output tokens; [Command A+](https://docs.cohere.com/docs/command-a-plus) confirms `command-a-plus-05-2026`, 128K context and image input. The provider API ID is now recorded separately from the catalog-friendly alias using existing `provider_api_id` convention. No token-based rate is invented for A+.
+
+Regression: `tests/brain-ai-model-catalog-evidence-recovery.test.mjs` asserts canonical IDs, pricing, contexts and fail-closed supplier recommendation gates. **No customer contract, enabled Cohere account settings, region or production acceptance is attested by these public documents.** Protected CI and exact production readback still required.

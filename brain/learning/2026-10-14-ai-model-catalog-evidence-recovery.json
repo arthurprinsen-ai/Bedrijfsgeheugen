@@ -5,7 +5,8 @@
   "changes": [
     "Official OpenAI pricing correction for Astra and Luna",
     "Legacy Sol routing warning",
-    "Audit of source reachability and stale model claims"
+    "Audit of source reachability and stale model claims",
+    "Blob-SHA GitHub readback for large catalog files, explicit Cohere alias-to-official provider_api_id mapping, and preserved non-approval gates"
   ],
   "limitations": [
     "Other model claims not yet vendor-verified",
@@ -30,5 +31,22 @@
   "evidence": {
     "regression_test": "tests/brain-ai-model-catalog-evidence-recovery.test.mjs",
     "ci_status": "Requires protected GitHub gates; no successful production readback claimed."
+  },
+  "cohere_api_identity_recovery_20261014": {
+    "verified_sources": [
+      "https://docs.cohere.com/docs/command-a",
+      "https://docs.cohere.com/docs/command-a-plus"
+    ],
+    "catalog_count_unchanged": 110,
+    "canonical_api_ids": {
+      "command-a": "command-a-03-2025",
+      "command-a-plus": "command-a-plus-05-2026",
+      "command-a-plus-05-2026": "command-a-plus-05-2026"
+    },
+    "command_a_input_usd_per_m": 2.5,
+    "command_a_output_usd_per_m": 10,
+    "customer_governance_proven": false,
+    "unverified_claims_auto_approved": false,
+    "github_readback": "Use fetch_blob on exact tree blob SHA when fetch_file returns metadata without content."
   }
 }

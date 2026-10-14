@@ -86,3 +86,26 @@ test('advisor explains unverified recommendations rather than concealing the aud
  assert.match(html,/Geen automatisch geverifieerde aanbeveling beschikbaar/);
  assert.match(html,/De onafhankelijke leveranciersaudit is nog niet volledig afgerond/);
 });
+
+test('Cohere aliases resolve to official API IDs without granting supplier or tenant approval',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const byId=new Map(c.models.map(m=>[m.id,m]));
+ for(const [id,expected] of Object.entries({
+  'command-a':'command-a-03-2025',
+  'command-a-plus':'command-a-plus-05-2026',
+  'command-a-plus-05-2026':'command-a-plus-05-2026'
+ })){
+  const m=byId.get(id);
+  assert.equal(m.provider_api_id,expected);
+  assert.ok(m.modalities.includes('image'));
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ }
+ const a=byId.get('command-a');
+ assert.equal(a.context_k,256);
+ assert.equal(a.input_usd_m,2.5);
+ assert.equal(a.output_usd_m,10);
+ const plus=byId.get('command-a-plus-05-2026');
+ assert.equal(plus.context_k,128);
+ assert.equal(plus.input_usd_m,null);
+ assert.equal(plus.output_usd_m,null);
+});
