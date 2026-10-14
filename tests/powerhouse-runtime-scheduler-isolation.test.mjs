@@ -168,3 +168,14 @@ test('scheduler cutover checks deployed task dependencies before retiring mux jo
   assert.match(sql,/powerhouse_refresh_revenue_attribution_snapshot_v1/);
   assert.ok(sql.indexOf('SCHEDULER_CUTOVER_DEPENDENCIES_MISSING') < sql.indexOf('SELECT cron.unschedule(171)'));
 });
+
+
+test('provider source probe records immutable document fingerprints and model mentions without self-approval',()=>{
+  assert.match(catalogAudit,/createHash\('sha256'\)/);
+  assert.match(catalogAudit,/model_id_mentioned_in_document/);
+  assert.match(catalogAudit,/maxSourceBytes=2_000_000/);
+  assert.match(catalogAudit,/claims_verified_by_this_probe:false/);
+  assert.match(catalogAudit,/provider_doc_identity_mention_only:true/);
+  assert.match(catalogAudit,/pricing_verified_by_this_probe:false/);
+  assert.doesNotMatch(catalogAudit,/m\.verified_at\s*=|writeFile\(catalogPath/);
+});
