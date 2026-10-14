@@ -253,9 +253,13 @@ Deno.serve(async(req:Request)=>{
   // The outbound lanes are not coupled to the expensive Brain transaction.
   // A failure/timeout of the commercial scoring cycle cannot starve email,
   // DM, comments, or the honest unsupported-likes status.
-  const brainActionFeed=await materializeCommercialIntent();
-  const contactAuthorityReview=await reviewContactAuthority();
-  const outboundLanesResult=await runOutboundLanes();
+  // Independent, bounded DB transactions: slow contact review must not starve
+  // materialization or outbound dispatch. All three own their own failure gates.
+  const [brainActionFeed,contactAuthorityReview,outboundLanesResult]=await Promise.all([
+    materializeCommercialIntent(),
+    reviewContactAuthority(),
+    runOutboundLanes()
+  ]);
   try{
     const result=await runHeartbeat();
     return json({...result,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
