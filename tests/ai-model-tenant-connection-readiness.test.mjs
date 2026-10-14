@@ -24,7 +24,7 @@ test('configured values remain unverified without actual contract/provider reads
  TENANT_LIVE_READBACK_TOKEN:'private-gateway-token-should-never-print',
  TENANT_ATTESTATION_VERIFY_PUBLIC_KEY_PEM:'public-key-placeholder'};
  const r=spawnSync(process.execPath,['tests/ai-model-tenant-connection-readiness.mjs'],{encoding:'utf8',env});
- assert.equal(r.status,0);
+ assert.equal(r.status,2);
  assert.equal(JSON.parse(r.stdout).status,'CONFIGURED_NOT_VERIFIED');
  assert.doesNotMatch(r.stdout,/private-(vault|gateway)-token/);
 });
