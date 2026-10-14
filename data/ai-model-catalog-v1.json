@@ -3506,7 +3506,7 @@
       "deployment": [
         "xAI API"
       ],
-      "source": "https://docs.x.ai/developers/pricing",
+      "source": "https://docs.x.ai/developers/models/grok-4.6",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -3519,7 +3519,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -3532,43 +3532,19 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.x.ai/developers/pricing",
+        "source_url": "https://docs.x.ai/developers/models/grok-4.6",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
           "status",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://docs.x.ai/developers/models/grok-4.6",
-            "locator": "Model ID grok-4.6, $2/$6 standard short-context, image+text input, 500k context, long context threshold 200k",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.x.ai/developers/models/grok-4.6",
-            "locator": "Model ID grok-4.6, $2/$6 standard short-context, image+text input, 500k context, long context threshold 200k",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://docs.x.ai/developers/models/grok-4.6",
-            "locator": "Model ID grok-4.6, $2/$6 standard short-context, image+text input, 500k context, long context threshold 200k",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.x.ai/developers/models/grok-4.6",
-            "locator": "Model ID grok-4.6, $2/$6 standard short-context, image+text input, 500k context, long context threshold 200k",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://docs.x.ai/developers/faq/security",
@@ -3578,6 +3554,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.x.ai/developers/models/grok-4.6",
+            "locator": "Model name",
+            "observed_value": "grok-4.6",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.x.ai/developers/models/grok-4.6",
+            "locator": "Model header; listed on official xAI models page",
+            "observed_value": "Available API model; actual team access not authenticated",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.x.ai/developers/models/grok-4.6",
+            "locator": "Pricing; long context notice",
+            "observed_value": "USD 2 input, 0.50 cached input, 6 output per million for short context. At >=200k input tokens: 4 input, 1 cached, 12 output per million",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/models/grok-4.6",
+            "locator": "Modalities, context, capabilities",
+            "observed_value": "500000 context; text/image inputs, text output; function calling, structured outputs and configurable reasoning",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.x.ai/developers/models/grok-4.6",
+            "locator": "Details > Batch API; API quickstart",
+            "observed_value": "xAI text API, Batch API not supported for this model, reasoning effort low/medium/high/xhigh; team access not tested",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -3593,15 +3604,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.x.ai/developers/pricing",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.x.ai/developers/models/grok-4.6",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -3611,7 +3617,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-4.6"
       }
     },
     {
@@ -13405,7 +13413,8 @@
         "speech-to-text"
       ],
       "limitations": [
-        "US provider; verify regional/data controls"
+        "US provider; verify regional/data controls",
+        "Pricing per hour of audio, not per million tokens; streaming and batch priced differently"
       ],
       "scores": {
         "reasoning": 2,
@@ -13425,7 +13434,7 @@
         "xAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13439,7 +13448,7 @@
       },
       "id": "grok-voice-transcribe-2.0",
       "provider": "xAI",
-      "source": "https://docs.x.ai/developers/release-notes",
+      "source": "https://docs.x.ai/developers/models/speech-to-text",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -13450,26 +13459,20 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://docs.x.ai/developers/release-notes",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.x.ai/developers/models/speech-to-text",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
           "pricing",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "capabilities",
-            "url": "https://docs.x.ai/developers/release-notes",
-            "locator": "Official provider release notes and voice transcription family; exact endpoint unverified",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://docs.x.ai/developers/faq/security",
@@ -13479,6 +13482,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.x.ai/developers/models/speech-to-text",
+            "locator": "Default model identifier",
+            "observed_value": "grok-voice-transcribe-2.0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.x.ai/developers/models/speech-to-text",
+            "locator": "Speech to Text API > Default model; updated October 3, 2026",
+            "observed_value": "Default xAI transcription model documented and active for API; customer tenant access not checked",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.x.ai/developers/models/speech-to-text",
+            "locator": "Pricing > REST / Streaming",
+            "observed_value": "Batch REST USD 0.10 per hour audio; streaming USD 0.20 per hour audio",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/models/speech-to-text",
+            "locator": "Capabilities; modalities",
+            "observed_value": "Audio-to-text, 38+ languages with detection, REST batch or streaming, interim results, domain keyterms and turn detection",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.x.ai/developers/models/speech-to-text",
+            "locator": "Availability and API mode",
+            "observed_value": "REST batch and streaming endpoints, advertised us-east-1 cluster; tenant eligibility/region not authenticated",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -13493,15 +13531,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.x.ai/developers/release-notes",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.x.ai/developers/models/speech-to-text",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -13511,7 +13544,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.x.ai/developers/models/speech-to-text"
       }
     },
     {
@@ -13530,7 +13565,8 @@
         "image editing"
       ],
       "limitations": [
-        "per-image pricing; governance differs from text API"
+        "per-image pricing; governance differs from text API",
+        "Per-image pricing varies with resolution and quality, not expressed as USD per million tokens"
       ],
       "scores": {
         "reasoning": 2,
@@ -13550,7 +13586,7 @@
         "xAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13564,7 +13600,7 @@
       },
       "id": "grok-imagine-image-2.0",
       "provider": "xAI",
-      "source": "https://docs.x.ai/developers/models",
+      "source": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -13576,31 +13612,19 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.x.ai/developers/models",
+        "source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "status",
           "pricing",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://docs.x.ai/developers/models",
-            "locator": "Model selection recommends Grok Imagine Image 2.0 for images",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.x.ai/developers/models",
-            "locator": "Model selection recommends Grok Imagine Image 2.0 for images",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://docs.x.ai/developers/faq/security",
@@ -13610,6 +13634,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+            "locator": "Model name",
+            "observed_value": "grok-imagine-image-2.0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+            "locator": "Official model card and API pricing",
+            "observed_value": "Listed for image generation and editing; tenant access not tested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+            "locator": "Pricing > input image and output per image",
+            "observed_value": "USD 0.01 per input image; USD 0.04 per generated 1K-low image; rate rises with resolution and quality, up to USD 0.08 for 2K-medium",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+            "locator": "Modalities > Text, Image -> Image",
+            "observed_value": "Text and image input, image output; still-image generation and image editing",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+            "locator": "Details > Region; Batch API",
+            "observed_value": "xAI API in us-east-1 and us-west-2; Batch API supported; tenant access not tested",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -13624,15 +13683,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.x.ai/developers/models",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -13642,7 +13696,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0"
       }
     },
     {
@@ -13661,7 +13717,8 @@
       ],
       "limitations": [
         "per-second pricing; not a general language model",
-        "Official model selector lists Grok Imagine Video 1.5; catalog alias is not yet confirmed as an exact callable API ID."
+        "Official model selector lists Grok Imagine Video 1.5; catalog alias is not yet confirmed as an exact callable API ID.",
+        "Per-second video charges and additional image/video inputs; promotional extension rates subject to change"
       ],
       "scores": {
         "reasoning": 2,
@@ -13681,7 +13738,7 @@
         "xAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13695,7 +13752,7 @@
       },
       "id": "grok-imagine-video",
       "provider": "xAI",
-      "source": "https://docs.x.ai/developers/models",
+      "source": "https://docs.x.ai/developers/models/grok-imagine-video",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -13707,25 +13764,19 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.x.ai/developers/models",
+        "source_url": "https://docs.x.ai/developers/models/grok-imagine-video",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
           "pricing",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "capabilities",
-            "url": "https://docs.x.ai/developers/models",
-            "locator": "Model selection recommends Grok Imagine Video 1.5 for videos, catalog identifier may be alias",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://docs.x.ai/developers/faq/security",
@@ -13735,6 +13786,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-video",
+            "locator": "Model name",
+            "observed_value": "grok-imagine-video",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-video",
+            "locator": "Official model card > Pricing and details",
+            "observed_value": "API video model listed; tenant access untested; newer video 1.5 models also available",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-video",
+            "locator": "Pricing > per-second and input image/video",
+            "observed_value": "Output 480p USD 0.05/sec; 720p USD 0.07/sec; input image USD 0.002/image; input video USD 0.01/sec; extension promotional pricing may change",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-video",
+            "locator": "Modalities; video capabilities overview",
+            "observed_value": "Text, image or video input to video; image-to-video, text-to-video, video extension/editing; up to 720p for this model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.x.ai/developers/models/grok-imagine-video",
+            "locator": "Details > Batch API; API docs",
+            "observed_value": "xAI Imagine REST API, Batch API available in us-east-1 and us-west-2; customer access not tested",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -13749,15 +13835,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.x.ai/developers/models",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.x.ai/developers/models/grok-imagine-video",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -13767,7 +13848,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-video"
       }
     },
     {
