@@ -12009,10 +12009,10 @@
     {
       "tier": "open-weight",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.4,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "modalities": [
         "text",
         "audio"
@@ -12022,7 +12022,8 @@
         "instruction following"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Audio input billed per minute, separately from input/output token pricing"
       ],
       "scores": {
         "reasoning": 6,
@@ -12043,7 +12044,7 @@
         "self-host/customer cloud"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by deployment when self-hosted",
         "inference_residency": "controlled by deployment when self-hosted",
@@ -12057,7 +12058,7 @@
       },
       "id": "voxtral-small",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/voxtral-small-25-07",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -12068,26 +12069,20 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://docs.mistral.ai/models",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models/voxtral-small-25-07",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
           "model_id",
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
@@ -12097,6 +12092,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/voxtral-small-25-07",
+            "locator": "Model heading and model identifier",
+            "observed_value": "Voxtral Small, API model voxtral-small-2507",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/voxtral-small-25-07",
+            "locator": "Model header > GA v25.07",
+            "observed_value": "Generally available, release July 15 2025",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/voxtral-small-25-07",
+            "locator": "Price > audio minute and token rate",
+            "observed_value": "Audio input $0.004 per minute; text input USD 0.10 per million tokens, output USD 0.40 per million tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/voxtral-small-25-07",
+            "locator": "Description > 32K context and features",
+            "observed_value": "32K context; audio-input instruct model; structured outputs, document Q&A, prefix and function calling",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/voxtral-small-25-07",
+            "locator": "Features > endpoints",
+            "observed_value": "Chat Completions and Conversations APIs, plus Batch API documented; customer-specific authorization not checked",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -12111,15 +12141,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models/voxtral-small-25-07",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -12129,7 +12154,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-small-25-07"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12144,10 +12171,10 @@
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
+      "input_usd_m": 0.15,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 8,
       "modalities": [
         "code"
       ],
@@ -12205,37 +12232,16 @@
         "source_url": "https://docs.mistral.ai/models/codestral-embed-25-05",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status",
           "model_id",
-          "capabilities"
-        ],
-        "not_verified": [
           "status",
           "pricing",
-          "deployment",
+          "capabilities",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "model_id",
-            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
-            "locator": "Model heading and URL",
-            "observed_value": "Codestral Embed, version 25.05",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
-            "locator": "Model description",
-            "observed_value": "Semantic embeddings of source-code extracts",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
@@ -12245,6 +12251,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+            "locator": "Model card heading and identifier",
+            "observed_value": "Codestral Embed, API identifier codestral-embed-2505 (release notes also list public alias codestral-embed)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+            "locator": "Model header > GA Premier v25.05",
+            "observed_value": "Generally available, released May 28 2025",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+            "locator": "Price > USD per million tokens",
+            "observed_value": "Input USD 0.15 per million tokens; not a text generation model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+            "locator": "Description > Context",
+            "observed_value": "8K context; embeddings of source-code extracts",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+            "locator": "Features > Embeddings and Batching",
+            "observed_value": "/v1/embeddings and /v1/batch; customer credential access not tested",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -12259,12 +12300,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
-          "pricing",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 4,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/codestral-embed-25-05",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -12449,11 +12487,11 @@
     },
     {
       "tier": "open-weight",
-      "status": "active",
+      "status": "preview",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "modalities": [
         "text",
         "vision"
@@ -12463,7 +12501,8 @@
         "safety"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Public-preview open-weight model, no Mistral hosted inference endpoint; compute costs depend on deployment"
       ],
       "scores": {
         "reasoning": 3,
@@ -12480,11 +12519,10 @@
       "self_host": true,
       "jurisdiction": "EU/France",
       "deployment": [
-        "Mistral API",
-        "self-host/customer cloud"
+        "self-host"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by deployment when self-hosted",
         "inference_residency": "controlled by deployment when self-hosted",
@@ -12498,7 +12536,7 @@
       },
       "id": "shieldstral-1",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/shieldstral-1-0",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -12509,26 +12547,20 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://docs.mistral.ai/models",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models/shieldstral-1-0",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "model_id",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
@@ -12538,6 +12570,34 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/shieldstral-1-0",
+            "locator": "Model card > Heading, Weights",
+            "observed_value": "Shieldstral 1.0 / mistralai/Shieldstral-1.0-3B weights on Hugging Face",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/shieldstral-1-0",
+            "locator": "Model header > Public Preview v1.0",
+            "observed_value": "Public Preview; released August 4 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/shieldstral-1-0",
+            "locator": "Description and weights",
+            "observed_value": "32K context, 3.8B active parameters; text/image moderation, policy yes-no classifier and refusal detection",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/resources/cookbooks/mistral-moderation-shieldstral_policy_moderation",
+            "locator": "Official Shieldstral policy-based moderation cookbook > self-hosted only",
+            "observed_value": "Open weights Apache 2.0; run locally with Transformers or vLLM. No Mistral API endpoint available",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -12552,15 +12612,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models/shieldstral-1-0",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -12570,7 +12626,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/shieldstral-1-0"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12747,7 +12805,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text",
         "code"
@@ -12757,7 +12815,8 @@
         "formal verification"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Retired 2026-09-30: not eligible for new API deployments or recommendations"
       ],
       "scores": {
         "reasoning": 8,
@@ -12778,7 +12837,7 @@
         "self-host/customer cloud"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by deployment when self-hosted",
         "inference_residency": "controlled by deployment when self-hosted",
@@ -12792,7 +12851,7 @@
       },
       "id": "leanstral-1.5",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -12804,25 +12863,19 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "model_id",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "Deprecated & retired models table",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
@@ -12832,6 +12885,34 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/resources/changelogs",
+            "locator": "Official changelog > June 30 release",
+            "observed_value": "labs-leanstral-1-5",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
+            "locator": "Deprecated model page; changelog Sept 29",
+            "observed_value": "Deprecated Sept 29 2026 and retired Sept 30 2026; not available for new production deployments",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
+            "locator": "Description > context and features",
+            "observed_value": "Lean 4 automated theorem proving / autoformalization; 119B total / 6.5B active parameters; 256K context, 128K max output",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
+            "locator": "Model card > Features, lifecycle",
+            "observed_value": "Labs Chat Completions, function calling, agents, structured output documented historically; API model retired Sept 30 2026",
+            "checked_on": "2026-10-14"
           }
         ],
         "lifecycle_warning": {
@@ -12853,15 +12934,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -12871,7 +12948,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12881,15 +12960,16 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "max_output_tokens": 128000
     },
     {
       "tier": "open-weight",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "input_usd_m": 1.4,
+      "output_usd_m": 4.4,
+      "cached_input_usd_m": 0.14,
+      "context_k": 1000,
       "modalities": [
         "text"
       ],
@@ -12919,7 +12999,7 @@
         "self-host/customer cloud"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by deployment when self-hosted",
         "inference_residency": "controlled by deployment when self-hosted",
@@ -12933,7 +13013,7 @@
       },
       "id": "zai-glm-5.3",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/zai-glm-5-3",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -12944,26 +13024,20 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://docs.mistral.ai/models",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
           "model_id",
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
@@ -12973,6 +13047,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-3",
+            "locator": "Changelog > September 28 > release",
+            "observed_value": "zai-glm-5-3",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-3",
+            "locator": "Model header > GA Third-party v5.3",
+            "observed_value": "Z.ai GLM 5.3 hosted by Mistral, GA Sept 2026; third-party model, Mistral does not modify it",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-3",
+            "locator": "Price > USD per million tokens",
+            "observed_value": "Standard input USD 1.40; cached input USD 0.14; output USD 4.40 per million tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-3",
+            "locator": "Description > context, output, features",
+            "observed_value": "1M context, max 128K output; long-context coding/agents; function calling, structured and predicted outputs",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-3",
+            "locator": "Features > endpoints",
+            "observed_value": "Mistral-hosted third-party API, Chat Completions and Batch with tools; tenant access untested",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -12987,15 +13096,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models/zai-glm-5-3",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -13005,7 +13109,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-3"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13015,15 +13121,16 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "max_output_tokens": 128000
     },
     {
       "tier": "open-weight",
       "status": "deprecated",
-      "input_usd_m": null,
-      "output_usd_m": null,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "input_usd_m": 1.4,
+      "output_usd_m": 4.4,
+      "cached_input_usd_m": 0.14,
+      "context_k": 1000,
       "modalities": [
         "text"
       ],
@@ -13031,7 +13138,8 @@
         "long-context open-weight text"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Deprecated 2026-09-29, scheduled retirement 2026-10-31; prefer zai-glm-5-3"
       ],
       "scores": {
         "reasoning": 8,
@@ -13052,7 +13160,7 @@
         "self-host/customer cloud"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by deployment when self-hosted",
         "inference_residency": "controlled by deployment when self-hosted",
@@ -13066,7 +13174,7 @@
       },
       "id": "zai-glm-5.2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/zai-glm-5-2",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -13078,25 +13186,19 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
           "model_id",
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "Deprecated & retired models table",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
@@ -13106,6 +13208,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-2",
+            "locator": "Official model card and changelog > September 29",
+            "observed_value": "zai-glm-5-2",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-2",
+            "locator": "Changelog > September 29, deprecated",
+            "observed_value": "Deprecated Sept 29 2026, retirement October 31 2026, replacement zai-glm-5-3",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-2",
+            "locator": "Price > USD per million tokens",
+            "observed_value": "Standard input USD 1.40; cached input USD 0.14; output USD 4.40 per million tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-2",
+            "locator": "Description > context and features",
+            "observed_value": "1M context, 128K max output; coding and agent workflows, function calling, structured outputs",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/zai-glm-5-2",
+            "locator": "Features > endpoints",
+            "observed_value": "Third-party model hosted by Mistral API; Chat Completions and Batch documented; soon retired",
+            "checked_on": "2026-10-14"
           }
         ],
         "lifecycle_warning": {
@@ -13127,15 +13264,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models/zai-glm-5-2",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -13145,7 +13277,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-2"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13155,7 +13289,8 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "max_output_tokens": 128000
     },
     {
       "tier": "specialist",
