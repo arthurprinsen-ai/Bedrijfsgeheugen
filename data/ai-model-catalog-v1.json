@@ -16916,7 +16916,10 @@
         "customer_runtime_authenticated": false,
         "customer_contract_verified": false,
         "independent_supplier_claims_full": false
-      }
+      },
+      "provider_api_id": "zai-glm-5-3",
+      "provider_api_id_source": "https://docs.mistral.ai/models/zai-glm-5-3",
+      "provider_api_id_scope": "Official Mistral-hosted API ID, no customer account entitlement attested"
     },
     {
       "tier": "open-weight",
@@ -16973,7 +16976,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models/zai-glm-5-2",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -16982,7 +16985,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -16990,11 +16993,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -17022,9 +17024,9 @@
           },
           {
             "claim": "pricing",
-            "url": "https://docs.mistral.ai/models/zai-glm-5-2",
-            "locator": "Model card > Price (per unit as indicated)",
-            "observed_value": "USD 1.40 input, USD 0.14 cached input and USD 4.40 output / million tokens as shown on model card (legacy model)",
+            "url": "https://docs.mistral.ai/inference/pricing",
+            "locator": "Third-party hosted > Z.ai GLM 5.2 row > Standard USD /M tokens",
+            "observed_value": "Mistral-hosted GLM 5.2 public standard rates USD 1.40 input, USD 0.14 cached input and USD 4.40 output per million tokens. Deprecated 2026-09-29; scheduled retirement 2026-10-31. Published price is not an entitlement to keep using a retired model.",
             "checked_on": "2026-10-14"
           },
           {
@@ -17038,8 +17040,17 @@
             "claim": "deployment",
             "url": "https://docs.mistral.ai/models/zai-glm-5-2",
             "locator": "Model card > Features, API or model weights",
-            "observed_value": "Third-party preview model hosted by Mistral via Chat Completions/Batching; deprecated, avoid for new integrations",
+            "observed_value": "Third-party open-weight Z.ai GLM 5.2 model hosted by Mistral via Chat Completions/Batching; deprecated since 2026-09-29, retirement scheduled 2026-10-31. New integrations should use GLM 5.3. Account entitlement unknown.",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "Supported API endpoints > /v1/chat/completions; models except Labs; paid-plan eligibility/exclusions",
+            "observed_value": "Mistral official deprecated third-party hosted Z.ai GLM 5.2 model page lists /v1/chat/completions and is not classified Labs. Official Mistral policy offers ZDR to approved paid organizations on stateless /v1/chat/completions across supported models except Labs; it excludes stateful Agents, Conversations, Batch files, and Files; training opt-out is separate. The Mistral-hosted platform policy is not a claim about the underlying Z.ai host, actual customer access, enabled ZDR, agreements or regional data routing.",
+            "checked_on": "2026-10-14",
+            "scope": "supplier public hosted-model / API endpoint eligibility only; customer region, DPA, tenant ZDR, actual runtime and license not verified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "lifecycle_warning": {
@@ -17070,7 +17081,8 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
-        }
+        },
+        "verification_scope_note": "Independent 2026-10-14 supplier-public six-claim check of Mistral-hosted Z.ai GLM 5.2 model card, hosted pricing, lifecycle, API endpoints, commercial terms and stateless API/ZDR eligibility. Customer agreement, provider account access, enabled ZDR, region and actual billing not tested. Deprecated Sep 29 and retiring Oct 31: never recommend as new integration."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -17098,7 +17110,7 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
+        "last_specific_source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -17196,7 +17208,10 @@
         "customer_runtime_authenticated": false,
         "customer_contract_verified": false,
         "independent_supplier_claims_full": false
-      }
+      },
+      "provider_api_id": "zai-glm-5-2",
+      "provider_api_id_source": "https://docs.mistral.ai/models/zai-glm-5-2",
+      "provider_api_id_scope": "Official Mistral-hosted API ID, no customer account entitlement attested"
     },
     {
       "tier": "specialist",
