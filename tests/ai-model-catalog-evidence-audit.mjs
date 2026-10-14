@@ -11,6 +11,17 @@ function hasFullEvidence(m) {
   if (!e || e.claim_scope !== 'full' || e.source_url !== m.source || e.checked_on !== m.verified_at) return false;
   if (!Array.isArray(e.verified_claims) || requiredClaims.some(claim => !e.verified_claims.includes(claim))) return false;
   if (Array.isArray(e.not_verified) && e.not_verified.length) return false;
+  // A claimed full verification must have one scoped, inspectable supplier receipt per required claim.
+  // Reachable URLs, generic marketing links and restamped dates cannot satisfy this contract.
+  if (!Array.isArray(e.claim_evidence)) return false;
+  for (const claim of requiredClaims) {
+    const receipt = e.claim_evidence.find(x => x.claim === claim &&
+      typeof x.url === 'string' && x.url.startsWith('https://') &&
+      typeof x.locator === 'string' && x.locator.trim().length > 0 &&
+      typeof x.observed_value === 'string' && x.observed_value.trim().length > 0 &&
+      x.checked_on === e.checked_on);
+    if (!receipt) return false;
+  }
   const age=(now-new Date(e.checked_on+'T00:00:00Z'))/86400000;
   return Number.isFinite(age) && age >= 0 && age <= maxAgeDays;
 }
