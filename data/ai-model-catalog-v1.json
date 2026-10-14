@@ -16631,6 +16631,15 @@
             "locator": "Availability and API mode",
             "observed_value": "REST batch and streaming endpoints, advertised us-east-1 cluster; tenant eligibility/region not authenticated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/advanced-api-usage/regions",
+            "locator": "Regional Endpoints > Model availability > US endpoint model exclusions; What the guarantee covers",
+            "observed_value": "grok-voice-transcribe-2.0 is an xAI voice transcription model. The official xAI Regional Endpoints documentation states that only grok-4.7 and grok-4.6 are served by https://us.api.x.ai/v1, explicitly excluding image, video and voice APIs from that region guarantee. The Speech to Text model card lists cluster us-east-1, but that alone is not a customer data-residency guarantee. The global endpoint does not guarantee location, and no customer configuration or contract has been authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented negative regional eligibility; no customer tenant or contract claim",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -16659,10 +16668,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.x.ai/developers/models/speech-to-text",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16682,7 +16689,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -16818,6 +16825,15 @@
             "locator": "Details > Region; Batch API",
             "observed_value": "xAI API in us-east-1 and us-west-2; Batch API supported; tenant access not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/advanced-api-usage/regions",
+            "locator": "Regional Endpoints > Model availability > US endpoint model exclusions; What the guarantee covers",
+            "observed_value": "grok-imagine-image-2.0 is an xAI image generation model. The official xAI Regional Endpoints documentation states that only grok-4.7 and grok-4.6 are served by https://us.api.x.ai/v1, explicitly excluding image, video and voice APIs from that region guarantee. The US regional endpoint does not serve image generation APIs. The global endpoint does not guarantee location, and no customer configuration or contract has been authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented negative regional eligibility; no customer tenant or contract claim",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -16846,10 +16862,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16869,7 +16883,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -17005,6 +17019,15 @@
             "locator": "Details > Batch API; API docs",
             "observed_value": "xAI Imagine REST API, Batch API available in us-east-1 and us-west-2; customer access not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/advanced-api-usage/regions",
+            "locator": "Regional Endpoints > Model availability > US endpoint model exclusions; What the guarantee covers",
+            "observed_value": "grok-imagine-video is an xAI video generation model. The official xAI Regional Endpoints documentation states that only grok-4.7 and grok-4.6 are served by https://us.api.x.ai/v1, explicitly excluding image, video and voice APIs from that region guarantee. The US regional endpoint does not serve video generation APIs. The global endpoint does not guarantee location, and no customer configuration or contract has been authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented negative regional eligibility; no customer tenant or contract claim",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17033,10 +17056,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.x.ai/developers/models/grok-imagine-video",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17056,7 +17077,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
