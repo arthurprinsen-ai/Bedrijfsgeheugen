@@ -11800,14 +11800,14 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
           "model_id API entitlement",
           "status and lifecycle",
           "governance",
-          "pricing for other tiers",
-          "pricing"
+          "pricing for other tiers"
         ],
         "claim_scope": "partial",
         "claim_evidence": [
@@ -11859,6 +11859,15 @@
             "observed_value": "Deprecated Gemini API model ID gemini-3.7-flash transparently routes to gemini-3.8-flash; Batch/Flex/Priority supported on documented interface; account access not tested",
             "checked_on": "2026-10-14",
             "scope": "official supplier model documentation; tenant entitlement not verified"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.7 Flash / Standard / Paid Tier > effective price date schedule",
+            "observed_value": "USD 0.75 input / USD 3.75 output per million tokens through December 31 2026; USD 1.50 input / USD 7.50 output per million tokens starting January 1 2027.",
+            "checked_on": "2026-10-14",
+            "scope": "Exact public Standard Paid schedule only. Other tiers, deprecated alias entitlement and tenant billing are unverified.",
+            "verification_type": "independent_exact_official_model_pricing_table"
           }
         ],
         "provider_policy_evidence": {
@@ -11955,6 +11964,18 @@
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
         "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+      },
+      "official_paid_standard_pricing_review_20261014": {
+        "official_source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_locator": "Gemini 3.7 Flash / Standard / Paid Tier > effective price date schedule",
+        "observed_tariff": "USD 0.75 input / USD 3.75 output per million tokens through December 31 2026; USD 1.50 input / USD 7.50 output per million tokens starting January 1 2027.",
+        "reviewed_on": "2026-10-14",
+        "only_published_standard_paid_price_verified": true,
+        "tenant_entitlement_verified": false,
+        "customer_invoice_verified": false,
+        "governance_verified": false,
+        "production_approved": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -19584,6 +19605,34 @@
         },
         "lifecycle": "OFFICIAL_MODEL_CARD_DATE_CONFLICT_NO_ACCOUNT_READBACK",
         "resolution": "Do not mark verified active or use for new deployment without authenticated modelLifecycle readback by region and provider clarification."
+      },
+      "independent_aws_premier_multilocale_recheck_20261014": {
+        "review_date": "2026-10-14",
+        "model_id": "amazon.nova-premier-v1:0",
+        "evidence_sources": [
+          "https://docs.aws.amazon.com/es_es/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+          "https://docs.aws.amazon.com/it_it/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+        ],
+        "spanish_model_card": {
+          "lifecycle_label": "Legacy",
+          "eol_date": "2026-09-14",
+          "eol_no_sooner_than": "2026-10-31"
+        },
+        "italian_lifecycle_table": {
+          "eol_date": "2026-09-14",
+          "regions": [
+            "us-east-1",
+            "us-east-2",
+            "us-west-2"
+          ]
+        },
+        "english_lifecycle_table": "Current public English legacy EOL table did not list Nova Premier; this absence does not mean model is Active",
+        "review_status": "UNRESOLVED_PUBLISHED_DOCUMENT_CONTRADICTION",
+        "authenticated_GetFoundationModel_modelLifecycle": false,
+        "tenant_access_verified": false,
+        "production_approved": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
