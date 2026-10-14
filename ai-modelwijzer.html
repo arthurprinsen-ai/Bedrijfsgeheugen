@@ -367,6 +367,8 @@ function why(m,text){
  return reasons.slice(0,3).join(' · ')||m.strengths.slice(0,3).join(' · ');
 }
 function fullSupplierEvidence(m){
+ // The independent supplier audit can veto recommendation even when catalog labels say full.
+ if(m.supplier_audit?.automatic_recommendation_eligible!==true||m.supplier_audit?.independent_verification_required===true)return false;
  const e=m.verification_evidence;
  if(!e||e.claim_scope!=='full'||e.source_url!==m.source||e.checked_on!==m.verified_at)return false;
  const age=(Date.now()-Date.parse(e.checked_on+'T00:00:00Z'))/86400000;
