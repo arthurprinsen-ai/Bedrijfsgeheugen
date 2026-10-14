@@ -32,9 +32,9 @@ function poolerUrl(){
 
 function db(){
   if(!sql)sql=postgres(poolerUrl(),{
-    // Four independent transactions must not serialize behind one client connection.
-    // Bound the pool to the three commercial stages plus the heartbeat readback.
-    max:4,
+    // Four outbound lanes, Brain materialization, contact review and heartbeat
+    // can overlap. Cap at seven clients so one lane cannot monopolize the pool.
+    max:7,
     prepare:false,
     connect_timeout:4,
     idle_timeout:10,
