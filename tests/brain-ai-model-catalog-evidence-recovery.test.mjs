@@ -199,7 +199,7 @@ test('110 catalog records with explicit aliases must not be presented as 110 ind
  const duplicated=[...offerings.values()].filter(group=>group.length>1);
  const observed=duplicated.map(group=>group.map(m=>m.id).sort().join('|')).sort();
  assert.deepEqual(observed,[
-  'command-a-plus-05-2026|command-a-plus',
+  'command-a-plus|command-a-plus-05-2026',
   'mistral-medium-3-5|mistral-medium-3.5'
  ],'Unexpected canonical provider/API identity collision must be reviewed, not silently double-counted');
  assert.equal(offerings.size,108,'110 catalog records include two explicit aliases, not 110 distinct model offerings');
