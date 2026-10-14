@@ -15483,6 +15483,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Official AWS model card lists Amazon Nova Lite as Active, model amazon.nova-lite-v1:0. Account and regional eligibility untested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -15506,11 +15513,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -15630,6 +15636,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Official AWS model card lists Amazon Nova Micro as Active, model amazon.nova-micro-v1:0. Account and regional eligibility untested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -15653,11 +15666,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -15940,6 +15952,13 @@
             "checked_on": "2026-10-14",
             "scope": "Amazon Bedrock official model-specific API invocation instructions; no customer access or regional entitlement attested",
             "verification_status": "SUPPLIER_API_DOCUMENTED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+            "locator": "Programmatic Access > bedrock-runtime; Sample Code > StartAsyncInvoke",
+            "observed_value": "Amazon Bedrock model amazon.nova-2-multimodal-embeddings-v1:0 uses asynchronous bedrock-runtime StartAsyncInvoke, not standard InvokeModel. Region / tenant entitlement untested.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -15964,10 +15983,9 @@
         ],
         "missing_claim_receipts": [
           "pricing",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
