@@ -68,3 +68,10 @@ test('recovery queue is private, bounded, idempotent and does not replay provide
   assert.match(recovery,/cron\.schedule\('powerhouse-operational-retry-worker'/);
   assert.doesNotMatch(recovery,/composio\.execute|gmail\.send|send_email|send_dm|send_linkedin/i);
 });
+
+test('cron cutover aborts safely if production scheduler identity drifts',()=>{
+  assert.match(sql,/SCHEDULER_171_DRIFT_ABORT/);
+  assert.match(sql,/WHERE jobid=171/);
+  assert.match(sql,/powerhouse_runtime_scheduler_mux_v3\(now\(\)\)/);
+  assert.ok(sql.indexOf('SCHEDULER_171_DRIFT_ABORT') < sql.indexOf('cron.unschedule(171)'));
+});
