@@ -4777,7 +4777,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://docs.cohere.com/docs/command-a-plus",
@@ -4949,7 +4949,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Official Cohere Command A+ source and listed API identity were rechecked on 2026-10-14; date is the documented partial supplier-source review, not certification of unverified pricing/governance or customer configuration.",
+        "review_note": "Claim receipt dates record 2026-10-14 public source checks only. Full verified_at is intentionally not restamped while supplier pricing and model-specific governance remain unverified. Official Command A+ API model ID is command-a-plus-05-2026; tenant configuration unverified.",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
