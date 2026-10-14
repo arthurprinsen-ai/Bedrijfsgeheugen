@@ -172,7 +172,7 @@ test('supplier identity receipts are internally consistent, source-aligned and d
  const raw=fs.readFileSync('data/ai-model-catalog-v1.json');
  const c=JSON.parse(raw.toString('utf8'));
  const evidence=JSON.parse(fs.readFileSync('data/evidence/ai-model-official-sources-2026-10-14.json','utf8'));
- const catalogBlobSha=createHash('sha1').update('blob '+raw.byteLength+'\\0').update(raw).digest('hex');
+ const catalogBlobSha=createHash('sha1').update('blob '+raw.byteLength+String.fromCharCode(0)).update(raw).digest('hex');
  assert.equal(evidence.audited_catalog_blob_sha,catalogBlobSha,
    'Evidence must be regenerated whenever the catalog changes');
  assert.equal(evidence.models_checked,c.models.length);
