@@ -521,6 +521,21 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "pricing_evidence": {
+        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "checked_on": "2026-10-14",
+        "currency": "USD",
+        "unit": "per 1 million tokens",
+        "standard_input_usd": 4,
+        "standard_output_usd": 20,
+        "cache_read_usd": 0.2,
+        "batch_input_usd": 2,
+        "batch_output_usd": 10,
+        "fast_input_usd": 8,
+        "fast_output_usd": 40,
+        "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
+        "claim_scope": "pricing_only"
       }
     },
     {
@@ -623,6 +638,19 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "pricing_evidence": {
+        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "checked_on": "2026-10-14",
+        "currency": "USD",
+        "unit": "per 1 million tokens",
+        "standard_input_usd": 2,
+        "standard_output_usd": 10,
+        "cache_read_usd": 0.1,
+        "batch_input_usd": 1,
+        "batch_output_usd": 5,
+        "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
+        "claim_scope": "pricing_only"
       }
     },
     {
@@ -695,6 +723,19 @@
         ],
         "claim_scope": "partial",
         "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ."
+      },
+      "pricing_evidence": {
+        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "checked_on": "2026-10-14",
+        "currency": "USD",
+        "unit": "per 1 million tokens",
+        "standard_input_usd": 2,
+        "standard_output_usd": 10,
+        "cache_read_usd": 0.2,
+        "batch_input_usd": 1,
+        "batch_output_usd": 5,
+        "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
+        "claim_scope": "pricing_only"
       }
     },
     {
@@ -767,6 +808,21 @@
         ],
         "claim_scope": "partial",
         "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ."
+      },
+      "pricing_evidence": {
+        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "checked_on": "2026-10-14",
+        "currency": "USD",
+        "unit": "per 1 million tokens",
+        "standard_input_usd": 5,
+        "standard_output_usd": 25,
+        "cache_read_usd": 0.5,
+        "batch_input_usd": 2.5,
+        "batch_output_usd": 12.5,
+        "fast_input_usd": 10,
+        "fast_output_usd": 50,
+        "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
+        "claim_scope": "pricing_only"
       }
     },
     {
@@ -843,6 +899,19 @@
         "claim_scope": "partial",
         "evidence_note": "Official model documentation lists Claude API alias claude-haiku-4-5, canonical snapshot claude-haiku-4-5-20251001, 200K context, $1 input/$5 output per million tokens; remains legacy, so does not imply current preferred or unrestricted availability.",
         "official_lifecycle_source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      },
+      "pricing_evidence": {
+        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "checked_on": "2026-10-14",
+        "currency": "USD",
+        "unit": "per 1 million tokens",
+        "standard_input_usd": 1,
+        "standard_output_usd": 5,
+        "cache_read_usd": 0.1,
+        "batch_input_usd": 0.5,
+        "batch_output_usd": 2.5,
+        "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
+        "claim_scope": "pricing_only"
       }
     },
     {
