@@ -49,6 +49,8 @@ const models = catalog.models.map(m => {
   const ageDays = verified && Number.isFinite(+verified) ? (now - verified) / 86400000 : null;
   const stale = ageDays === null || ageDays > maxAgeDays || ageDays < 0;
   const fullyVerified=hasFullEvidence(m);
+  const receipts = m.verification_evidence?.claim_evidence ?? [];
+  const missingClaims = requiredClaims.filter(claim => !receipts.some(x => x.claim === claim && typeof x.url === 'string' && x.url.startsWith('https://') && typeof x.locator === 'string' && x.locator.trim() && typeof x.observed_value === 'string' && x.observed_value.trim() && x.checked_on === m.verification_evidence?.checked_on));
   return {
     id: m.id, provider: m.provider, declared_status: m.status,
     last_claim_verification_at: m.verified_at ?? null,
@@ -56,13 +58,17 @@ const models = catalog.models.map(m => {
     source: m.source ?? null,
     source_reachable: sourceChecks.get(m.source)?.reachable ?? false,
     classification: fullyVerified ? 'FULL_CLAIMS_VERIFIED' : (stale ? 'STALE_CLAIMS_UNVERIFIED' : 'DATED_CLAIMS_REQUIRE_EVIDENCE'),
-    eligible_for_automatic_freshness_attestation: fullyVerified
+    eligible_for_automatic_freshness_attestation: fullyVerified,
+    missing_claim_receipts: missingClaims,
+    missing_claim_receipt_count: missingClaims.length
   };
 });
 const report = {
   generated_at: now.toISOString(), catalog_version: catalog.version,
   important: 'HTTP reachability cannot verify prices, lifecycle, model IDs, deployment, capabilities or governance; no verified_at timestamps are changed.',
   counts: { models: models.length, sources: sources.length, stale: models.filter(m => m.classification === 'STALE_CLAIMS_UNVERIFIED').length, fully_verified: models.filter(m => m.eligible_for_automatic_freshness_attestation).length, not_fully_verified: models.filter(m => !m.eligible_for_automatic_freshness_attestation).length, unreachable_sources: [...sourceChecks.values()].filter(x => !x.reachable).length, duplicate_ids: duplicateIds.length, missing_official_urls: missingSources.length },
+  supplier_claim_backlog: Object.entries(models.reduce((groups, m) => { (groups[m.provider] ??= []).push(m); return groups; }, {})).map(([provider, entries]) => ({ provider, models: entries.length, fully_verified: entries.filter(x => x.eligible_for_automatic_freshness_attestation).length, missing_receipts: entries.reduce((sum, x) => sum + x.missing_claim_receipt_count, 0), missing_by_claim: Object.fromEntries(requiredClaims.map(claim => [claim, entries.filter(x => x.missing_claim_receipts.includes(claim)).length])) })),
+  total_missing_claim_receipts: models.reduce((sum, x) => sum + x.missing_claim_receipt_count, 0),
   duplicate_model_ids: [...new Set(duplicateIds)], missing_source_models: missingSources, source_checks: [...sourceChecks.values()], models
 };
 // Production readback is explicit and immutable: compare semantic catalog JSON, not HTTP 200.
