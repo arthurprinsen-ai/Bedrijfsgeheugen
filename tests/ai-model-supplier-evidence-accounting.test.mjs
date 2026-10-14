@@ -148,3 +148,25 @@ test('official AWS model identifiers and Falcon source pricing never imply custo
   }
  }
 });
+
+test('Falcon license source crosschecks remain public-only and non-promoting',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const falcon=catalog.models.filter(model=>model.provider==='TII/Falcon');
+ assert.equal(falcon.length,7);
+ for(const model of falcon){
+  const audit=model.supplier_audit;
+  const receipt=audit.public_license_source_review_20261014;
+  assert.ok(receipt,model.id+': supplier license source review missing');
+  assert.equal(receipt.source_url,model.source);
+  assert.equal(receipt.checked_on,'2026-10-14');
+  assert.equal(receipt.canonical_repository,model.source.replace('https://huggingface.co/',''));
+  assert.equal(receipt.observed_license_label,
+   model.id==='falcon-ocr'?'apache-2.0':'falcon-llm-license');
+  assert.equal(receipt.customer_runtime_attested,false);
+  assert.equal(receipt.commercial_tariff_attested,false);
+  assert.equal(receipt.independent_supplier_full_verification,false);
+  assert.equal(receipt.automatic_recommendation_eligible,false);
+  assert.equal(audit.automatic_recommendation_eligible,false);
+  assert.ok(receipt.not_verified.some(x=>x.includes('deployment costs')));
+ }
+});
