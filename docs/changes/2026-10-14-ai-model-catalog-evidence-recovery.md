@@ -84,3 +84,18 @@ Observed on 2026-10-14 (official provider model documentation).
 The generic supplier-privacy baseline is **not** proof of a tenant's enabled controls, contract, data residency, or zero-data-retention settings. This record does not create a `claim_scope: full` assertion or change the production acceptance gate.
 
 Evidence follow-up: corroborate governance against the exact official policy and product availability; verify any conflicting catalog claims; only then enter supported, dated per-claim receipts in `data/ai-model-catalog-v1.json` and run the protected freshness test.
+
+## Evidence gap classification (2026-10-14 follow-up)
+
+The 110-model supplier worklist was re-read from `data/ai-model-catalog-v1.json` on the PR branch after supplier-source corrections. At that readback the 150 pending claim reviews split into:
+
+- **35 absent claim-evidence records** (no receipt object for the model/claim).
+- **4 incomplete claim-evidence records** (receipt exists but no non-empty observed value).
+- **111 scope-insufficient records** (a cited observed value exists, but the supplier-audit deliberately still requires deeper verification; provider-wide policies, tenant-specific governance assertions, and deployment-specific prices cannot silently count as model-specific certification).
+
+By claim, the 150 are: governance 105, pricing 30, status 6, model_id 3, capabilities 3, deployment 3.
+
+This is an audit of the existing catalog's evidence *structure and scope*, not an approval of any pending claim. Source existence and HTTP reachability alone do not establish a specific customer's DPA, enabled zero-data-retention setting, region of processing, contract terms, model entitlement, or authenticated cloud endpoint.
+
+**Resolution lanes**: (1) Fill 35 absent claims from exact authoritative model or product documentation; (2) fill four empty observed values only after checking the cited source; (3) for 111 scope-insufficient claims, assess model/provider/region and commercial-SKU applicability and keep customer-dependent controls behind the separate authorized tenant readback and contract verifier. The existing protected freshness gate and customer-governance controls remain unchanged.
+
