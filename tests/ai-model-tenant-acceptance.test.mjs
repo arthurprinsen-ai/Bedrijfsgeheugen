@@ -32,3 +32,9 @@ test('signature payload includes authenticated readback evidence',()=>{
  const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
  assert.match(source,/expected_value:r\.expected_value,readback:r\.readback/);
 });
+
+test('tenant readback value must be present and match attested value',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/READBACK_VALUE_MISMATCH/);
+ assert.match(source,/Object\.hasOwn\(r\.readback,'observed_value'\)/);
+});
