@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { repairBusinessInputsFromAuthority } from './business-input-read-repair.js';
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
+import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
@@ -147,22 +148,7 @@ Deno.serve(async(req:Request)=>{
       .eq('verification_status','passed')
       .order('verified_at',{ascending:false}).limit(30);
     if(error)return json({error:'FINANCIAL_FORECAST_READ_FAILED'},503);
-    const forecasts=(rows||[]).filter(row=>
-      row.tenant_id===tenantId && row.verification_status==='passed' &&
-      row.verified_at && row.verified_by && row.source_evidence_ref?.trim() &&
-      row.backtest?.status==='passed' && Number.isInteger(row.backtest?.holdout_count) &&
-      row.backtest.holdout_count>=3 && row.backtest.holdout_count<=120 &&
-      row.independent_review?.approved_by===row.verified_by &&
-      typeof row.independent_review?.prepared_by==='string' && row.independent_review.prepared_by.trim() &&
-      row.independent_review.prepared_by!==row.independent_review.approved_by &&
-      typeof row.independent_review?.approval_evidence_ref==='string' && row.independent_review.approval_evidence_ref.trim() &&
-      typeof row.independent_review?.backtest_evidence_ref==='string' && row.independent_review.backtest_evidence_ref.trim() &&
-      row.independent_review?.financial_source_evidence_ref===row.source_evidence_ref &&
-      typeof row.backtest.mae==='number' && Number.isFinite(row.backtest.mae) && row.backtest.mae>=0 &&
-      typeof row.backtest.baseline_mae==='number' && Number.isFinite(row.backtest.baseline_mae) && row.backtest.baseline_mae>=0 &&
-      Array.isArray(row.historical_points) && row.historical_points.length>=6 && row.backtest.holdout_count<=row.historical_points.length-3 &&
-      Array.isArray(row.forecast_points) && row.forecast_points.length>0
-    ).map(row=>({
+    const forecasts=(rows||[]).filter(row=>eligibleFinancialForecast(row,tenantId)).map(row=>({
       id:row.forecast_id,tenantId,metric:row.metric,title:row.title,unit:row.unit,
       source:row.source_name,model:row.model_version,updatedAt:row.source_updated_at,
       history:row.historical_points,forecast:row.forecast_points,
