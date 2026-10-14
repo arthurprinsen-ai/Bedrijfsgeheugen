@@ -13145,11 +13145,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
-          "governance"
+          "governance",
+          "third-party hosting cost",
+          "customer infrastructure cost"
         ],
         "claim_evidence": [
           {
@@ -13189,6 +13191,15 @@
             "locator": "Official Shieldstral policy-based moderation cookbook > self-hosted only",
             "observed_value": "Open weights Apache 2.0; run locally with Transformers or vLLM. No Mistral API endpoint available",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/shieldstral-1-0",
+            "locator": "Model card > Weights > Apache 2.0 and Inference pricing table > Specialized models (Shieldstral absent); official self-host-only cookbook",
+            "observed_value": "Shieldstral 1.0 is distributed as Apache 2.0 licensed 3.8B open weights for self-hosted inference. The official Mistral API pricing schedule does not list a billed Shieldstral endpoint; therefore API per-token pricing is not applicable for the documented local deployment. Host compute, storage and any third-party serving fees are not specified by this license or model card.",
+            "checked_on": "2026-10-14",
+            "scope": "Mistral official open-weights and non-billed self-host pricing model only; NOT a quote of hosting cost or proof of any customer deployment",
+            "verification_status": "SELF_HOST_OPEN_WEIGHT_NO_PUBLISHED_API_RATE"
           }
         ]
       },
@@ -13229,6 +13240,14 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
+      },
+      "price_scope_20261014": {
+        "mode": "self_host_open_weights",
+        "api_per_m_tokens": "NOT_APPLICABLE_NO_DOCUMENTED_PUBLIC_API_ENDPOINT",
+        "hosting_price": "UNVERIFIED",
+        "license": "Apache-2.0",
+        "supplier_price_source": "https://docs.mistral.ai/models/shieldstral-1-0",
+        "checked_on": "2026-10-14"
       }
     },
     {
