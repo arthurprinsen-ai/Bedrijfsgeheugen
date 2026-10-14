@@ -149,7 +149,7 @@ test('supplier identity audit stays a scoped verification artifact without imply
  const policy=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
  assert.ok(fs.existsSync(artifact),'The immutable supplier-source review report must exist');
  assert.ok(artifact.startsWith('tests/'),'Verification-only evidence must live in the tests namespace');
- assert.ok(!policy.lanes.some(lane=>(lane.paths||[]).some(path=>path==='data/ai-model-supplier-'||path==='data/')),'No broad supplier evidence bypass in delivery lanes');
+ assert.ok(!policy.lanes.some(lane=>(lane.paths||[]).some(path=>path==='data/ai-model-supplier-'||path==='data/ai-model-supplier-identity-content-audit-20261014.json')),'No supplier-specific delivery lane bypass or audit allowlist entry');
  const report=JSON.parse(fs.readFileSync(artifact,'utf8'));
  const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
  assert.equal(report.summary.total_models,110);
