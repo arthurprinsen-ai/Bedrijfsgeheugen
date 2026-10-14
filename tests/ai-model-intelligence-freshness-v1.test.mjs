@@ -309,3 +309,15 @@ test('DeepSeek peak/off-peak tiers and Grok long-context premiums are explicit',
  assert.equal(grok.pricing_variants.us_regional_multiplier,1.1);
  assert.deepEqual(Object.values(grok.pricing_variants.global_long_context),[4,1,12]);
 });
+
+
+test('unresolved region-specific Nova Premier lifecycle can never be recommended automatically',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const m=c.models.find(m=>m.id==='amazon-nova-premier');
+ assert.ok(m);
+ assert.equal(m.status,'legacy');
+ assert.equal(m.selection_eligible,false);
+ assert.equal(m.lifecycle_conflict.state,'UNRESOLVED_REGION_SPECIFIC_AVAILABILITY');
+ assert.equal(m.claim_evidence.lifecycle.status,'CONFLICT_NOT_APPROVED');
+ assert.equal(m.lifecycle_conflict.not_releasable_as_active,true);
+});
