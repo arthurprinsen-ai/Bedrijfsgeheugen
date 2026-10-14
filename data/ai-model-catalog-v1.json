@@ -4946,6 +4946,20 @@
           "source_url": "https://cohere.com/enterprise-data-commitments",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "supplier_pricing_guidance_discrepancy_20261014": {
+          "checked_on": "2026-10-14",
+          "model_id": "command-a-plus-05-2026",
+          "model_specific_url": "https://docs.cohere.com/docs/command-a-plus",
+          "model_specific_observation": "Command A+ documentation says both trial and production keys are free until the respective model's API rate limit; production via dedicated Model Vault is separately offered.",
+          "general_pricing_url": "https://cohere.com/pricing",
+          "provider_general_observation": "Cohere public FAQ describes generic production keys as pay-as-you-go billable and trial keys as unsuitable for commercial production.",
+          "significance": "A model-specific exception may coexist with the provider-general policy. Do not treat the free allowance as a signed customer tariff, claim zero cost above rate limits, or substitute Vault hourly billing for API token billing.",
+          "supplier_claim_decision": "Published pricing mode documented; model-specific production billing applicability and customer invoice/entitlement remain UNVERIFIED.",
+          "tenant_rate_verified": false,
+          "customer_contract_verified": false,
+          "automatic_recommendation_eligible": false,
+          "production_release_approved": false
         }
       },
       "pricing_basis": {
@@ -18119,6 +18133,20 @@
           "official_id": "command-a-plus-05-2026",
           "source": "https://docs.cohere.com/docs/command-a-plus",
           "checked_on": "2026-10-14"
+        },
+        "supplier_pricing_guidance_discrepancy_20261014": {
+          "checked_on": "2026-10-14",
+          "model_id": "command-a-plus-05-2026",
+          "model_specific_url": "https://docs.cohere.com/docs/command-a-plus",
+          "model_specific_observation": "Command A+ documentation says both trial and production keys are free until the respective model's API rate limit; production via dedicated Model Vault is separately offered.",
+          "general_pricing_url": "https://cohere.com/pricing",
+          "provider_general_observation": "Cohere public FAQ describes generic production keys as pay-as-you-go billable and trial keys as unsuitable for commercial production.",
+          "significance": "A model-specific exception may coexist with the provider-general policy. Do not treat the free allowance as a signed customer tariff, claim zero cost above rate limits, or substitute Vault hourly billing for API token billing.",
+          "supplier_claim_decision": "Published pricing mode documented; model-specific production billing applicability and customer invoice/entitlement remain UNVERIFIED.",
+          "tenant_rate_verified": false,
+          "customer_contract_verified": false,
+          "automatic_recommendation_eligible": false,
+          "production_release_approved": false
         }
       },
       "supplier_audit": {
