@@ -89,6 +89,9 @@ jobs:
         run: |
           node tools/ci/portal-auth-evidence-freshness.mjs
           node --test tests/portal-auth-evidence-freshness.test.mjs
+      - name: Verify independent financial forecast evidence contracts
+        run: |
+          node --test tests/portal-financial-forecast-evidence.test.mjs tests/portal-financial-forecast-store.test.mjs tests/portal-forecast-auth.test.mjs
       - name: Verify immutable release artifact identity regression
         run: node --test tests/release-artifact-identity.test.mjs
       - name: Verify fail-closed Supabase provider preview classification
