@@ -19625,7 +19625,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
       "id": "amazon-nova-premier",
       "provider": "Amazon",
       "verification_evidence": {
@@ -19639,17 +19639,17 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status",
           "capabilities",
           "deployment"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "governance",
+          "status"
         ],
         "claim_evidence": [
           {
@@ -19661,10 +19661,12 @@
           },
           {
             "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
-            "locator": "Legacy and end-of-life (EOL) models > Amazon > Nova Premier",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+            "locator": "Model Details > EOL no sooner than / Model EOL date / Model lifecycle",
             "checked_on": "2026-10-14",
-            "observed_value": "AWS Bedrock legacy lifecycle table lists Nova Premier (amazon.nova-premier-v1:0) EOL 2026-09-14 for US regions. Official Nova Premier model card also has a conflicting 'EOL no sooner than 2026-10-31' field; treat as documented supplier discrepancy, not accepted account access."
+            "observed_value": "Official AWS card: EOL no sooner than October 31, 2026; separate printed Model EOL date September 14, 2026; model lifecycle label Legacy. Official legacy EOL table currently does not list Nova Premier. Actual AWS account/Region lifecycle not attested.",
+            "scope": "PUBLIC_OFFICIAL_CARD_CONTRADICTORY_NOT_AUTHENTICATED_ACCOUNT_REGION",
+            "verification_status": "PUBLIC_SOURCE_CONFLICT_UNRESOLVED"
           },
           {
             "claim": "governance",
@@ -19786,6 +19788,24 @@
           "release_eligible": false,
           "independent_supplier_full_verification": false,
           "resolution_required": "Use authenticated AWS Bedrock GetFoundationModel/ListFoundationModels for each intended Region and request clarification of contradictory official Nova Premier model-card dates."
+        },
+        "disputed_legacy_table_receipts_20261014": {
+          "checked_on": "2026-10-14",
+          "old_receipts": [
+            {
+              "claim": "status",
+              "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+              "locator": "Legacy and end-of-life (EOL) models > Amazon > Nova Premier",
+              "checked_on": "2026-10-14",
+              "observed_value": "AWS Bedrock legacy lifecycle table lists Nova Premier (amazon.nova-premier-v1:0) EOL 2026-09-14 for US regions. Official Nova Premier model card also has a conflicting 'EOL no sooner than 2026-10-31' field; treat as documented supplier discrepancy, not accepted account access."
+            }
+          ],
+          "source_observation": "Currently retrieved official AWS legacy EOL table does not list Nova Premier; previous positive table assertion is unreproducible. The separate AWS model card is internally contradictory.",
+          "corrected_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+          "conflict_unresolved": true,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false,
+          "required_auth": "AWS Bedrock authenticated GetFoundationModel/ListFoundationModels per intended account/Region"
         }
       },
       "supplier_source_conflicts": [
