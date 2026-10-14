@@ -26,3 +26,9 @@ When any of `dpa`, `signed_dpa`, `contract`, `tenant_data_residency`, `tenant_zd
 `claim`, `scope: "customer_specific"`, `tenant_id`, `approved_by`, `evidence_reference`, and `checked_on` matching the review date.
 
 Only record opaque evidence references in the public repository. Signed agreements, confidential contract terms, customer identifiers and security attestations belong in access-controlled storage. Do not claim a tenant is approved solely on public documentation or generic vendor assurances. These fields are presence checks; independent document verification and tenant-configuration readback remain separately required before production approval.
+
+## Private tenant attestation acceptance
+
+`node tests/ai-model-tenant-acceptance.mjs /private/attestations.json` validates a separately supplied tenant evidence manifest. It rejects missing private input, stale evidence, absent approval, unsupported claims, mismatched expected/observed values, unsigned evidence, invalid Ed25519 signatures and missing readback metadata. Set `TENANT_ATTESTATION_VERIFY_PUBLIC_KEY_PEM` to the pinned, trusted attestation signing public key. The signer must be an independent authorized reviewer; never commit the private manifest, tenant identifiers, confidential contracts, signing keys or provider credentials.
+
+**Important boundary:** A signed manifest is an *attestation*; it is not itself a live provider API request or independent contract-signature verification. An approved verifier must inspect the signed agreement in the contract repository, query the actual authenticated tenant configuration at the provider, verify the readback identity and values, then sign the manifest. The verifier and vault integrations are not wired into this repository by this change. Until real contract-vault and provider adapters exist, production acceptance must remain blocked. The existing supplier freshness check and protected merge requirements remain in force.
