@@ -14135,6 +14135,15 @@
             "corroborating_model_pricing_url": "https://ai.google.dev/gemini-api/docs/pricing",
             "corroborating_model_page_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview",
             "commercial_terms_url": "https://ai.google.dev/gemini-api/terms"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/deprecations/",
+            "locator": "Preview models > gemini-3.1-flash-tts-preview",
+            "observed_value": "Google's official lifecycle table lists Gemini 3.1 Flash TTS Preview for earliest shutdown on 2026-11-17; recommends Gemini 3.8 Flash TTS or 3.8 Flash-Lite TTS. Exact cutoff is subject to Google advance notice.",
+            "checked_on": "2026-10-14",
+            "scope": "official public lifecycle timeline; not account runtime validation or exact shutdown timestamp",
+            "verification_status": "SUPPLIER_PUBLIC_LIFECYCLE_DATE_VERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -14202,7 +14211,21 @@
         "claim_source_review_date": "2026-10-14",
         "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/zdr"
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/zdr",
+        "lifecycle_shutdown_review_20261014": {
+          "reviewed_on": "2026-10-14",
+          "source_url": "https://ai.google.dev/gemini-api/docs/deprecations/",
+          "source_locator": "Preview models > gemini-3.1-flash-tts-preview",
+          "published_earliest_shutdown_date": "2026-11-17",
+          "replacement_models": [
+            "gemini-3.8-flash-tts",
+            "gemini-3.8-flash-lite-tts"
+          ],
+          "risk": "LEGACY_PREVIEW_ANNOUNCED_EARLIEST_SHUTDOWN",
+          "meaning": "Google states shutdown dates are earliest possible dates; do not treat the date as confirmed exact endpoint cutoff.",
+          "tenant_access_verified": false,
+          "production_recommendation_eligible": false
+        }
       },
       "pricing_basis": {
         "currency": "USD",
