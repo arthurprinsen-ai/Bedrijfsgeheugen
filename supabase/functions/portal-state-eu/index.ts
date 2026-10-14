@@ -138,6 +138,32 @@ Deno.serve(async(req:Request)=>{
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
 
+  // Authoritative tenant financial series only. No market-signal-to-finance conversion.
+  // This gateway is service-token protected; a browser never receives a database key.
+  if(action==='financial_forecasts'){
+    const {data:rows,error}=await client.from('portal_financial_forecasts_v1')
+      .select('tenant_id,forecast_id,metric,title,unit,source_name,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest')
+      .eq('tenant_id',tenantId)
+      .eq('verification_status','passed')
+      .order('verified_at',{ascending:false}).limit(30);
+    if(error)return json({error:'FINANCIAL_FORECAST_READ_FAILED'},503);
+    const forecasts=(rows||[]).filter(row=>
+      row.tenant_id===tenantId && row.verification_status==='passed' &&
+      row.verified_at && row.verified_by && row.backtest?.status==='passed' &&
+      Array.isArray(row.historical_points) && row.historical_points.length>=3 &&
+      Array.isArray(row.forecast_points) && row.forecast_points.length>0
+    ).map(row=>({
+      id:row.forecast_id,tenantId,metric:row.metric,title:row.title,unit:row.unit,
+      source:row.source_name,model:row.model_version,updatedAt:row.source_updated_at,
+      history:row.historical_points,forecast:row.forecast_points,
+      ...(row.lower_points?{low:row.lower_points}:{}),
+      ...(row.upper_points?{high:row.upper_points}:{}),
+      verified:true,
+      validation:{status:'passed',tenantBound:true,tenantId,verifiedAt:row.verified_at}
+    }));
+    return json({tenantId,forecasts});
+  }
+
   if(action==='cms_public'){
     const cmsSurface=String(body?.surface||'website').trim();
     const cmsLocale=String(body?.locale||'nl-NL').trim();
