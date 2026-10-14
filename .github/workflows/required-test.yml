@@ -321,6 +321,7 @@ jobs:
           tests/ai-model-intelligence-freshness-v1.test.mjs
           tests/ai-model-customer-governance-evidence.test.mjs
           tests/ai-model-tenant-acceptance.test.mjs
+          tests/ai-model-tenant-connection-readiness.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/cms-website-portal-v1.test.mjs
@@ -490,6 +491,7 @@ jobs:
           tests/ai-model-intelligence-freshness-v1.test.mjs
           tests/ai-model-customer-governance-evidence.test.mjs
           tests/ai-model-tenant-acceptance.test.mjs
+          tests/ai-model-tenant-connection-readiness.test.mjs
           tests/brain-autonomous-engineering-fabric-v3.test.mjs
           tests/brain-security-operations-closure-v1.test.mjs
           tests/security-operations-proof.test.mjs
