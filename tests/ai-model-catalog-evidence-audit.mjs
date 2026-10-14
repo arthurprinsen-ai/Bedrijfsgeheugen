@@ -3,6 +3,7 @@
 // Usage: node tests/ai-model-catalog-evidence-audit.mjs [output-file]
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
+import { customerClaimStatus, customerClaimRequirements } from '../scripts/customer-ai-governance-evidence.mjs';
 const catalog = JSON.parse(await fs.readFile('data/ai-model-catalog-v1.json', 'utf8'));
 const now = new Date();
 const maxAgeDays = 14;
@@ -23,16 +24,13 @@ function hasFullEvidence(m) {
       x.checked_on === e.checked_on);
     if (!receipt) return false;
   }
-  const tenantClaims=['dpa','signed_dpa','contract','tenant_data_residency','tenant_zdr','customer_cmk','private_networking_enabled'];
-  for (const claim of tenantClaims) {
-    if (!e.verified_claims.includes(claim)) continue;
-    const approved = e.tenant_evidence?.some(r =>
-      r.claim===claim && r.scope==='customer_specific' &&
-      typeof r.tenant_id==='string' && r.tenant_id.trim() &&
-      typeof r.approved_by==='string' && r.approved_by.trim() &&
-      typeof r.evidence_reference==='string' && r.evidence_reference.trim() &&
-      r.checked_on===e.checked_on);
-    if (!approved) return false;
+  // Supplier verification is global; customer rights are never inferred from provider policy.
+  const tenantClaims=['dpa',...Object.keys(customerClaimRequirements)];
+  for(const claim of tenantClaims){
+    if(!e.verified_claims.includes(claim))continue;
+    if(claim==='dpa')return false; // Ambiguous generic DPA label cannot attest a signed contract.
+    const tenantId=e.customer_tenant_id;
+    if(customerClaimStatus({tenantId,provider:m.provider,modelId:m.id,claim,receipts:e.tenant_evidence||[],asOf:now}).status!=='VERIFIED')return false;
   }
   const age=(now-new Date(e.checked_on+'T00:00:00Z'))/86400000;
   return Number.isFinite(age) && age >= 0 && age <= maxAgeDays;
