@@ -28,3 +28,11 @@ test('catalog audit requires byte-equivalent semantic production readback when r
  assert.match(audit,/createHash\('sha256'\)/);
  assert.match(audit,/process\.exitCode = 2/);
 });
+
+test('model advisor rejects EOL and family placeholders even when active-only filter is off',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/m\.status==='eol'\|\|m\.auto_recommendation_eligible===false\|\|m\.record_kind==='model_family_placeholder'/);
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ for(const m of catalog.models.filter(x=>x.status==='eol'||x.record_kind==='model_family_placeholder'))
+   assert.notEqual(m.auto_recommendation_eligible,true);
+});
