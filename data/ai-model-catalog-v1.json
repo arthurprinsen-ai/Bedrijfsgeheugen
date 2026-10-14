@@ -1489,7 +1489,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1501,24 +1501,46 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "model_id",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+            "locator": "GA and model specification",
+            "observed_value": "Generally available, v25.12",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+            "locator": "Price /M Tokens",
+            "observed_value": "Input $0.50 per million; output $1.50 per million",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+            "locator": "Context and multimodal features",
+            "observed_value": "256K context; multimodal; structured outputs, function calling, document QnA",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
+            "locator": "Features > API endpoints",
+            "observed_value": "/v1/chat/completions, /v1/conversations and /v1/batch documented",
             "checked_on": "2026-10-14"
           }
         ]
@@ -7140,7 +7162,7 @@
         "Mistral API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7165,24 +7187,53 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Mistral Medium 3.5 > API ID",
+            "observed_value": "mistral-medium-3-5",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Mistral Medium 3.5 > GA",
+            "observed_value": "Generally available, version 26.04",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Price /M Tokens",
+            "observed_value": "Input $1.50/M tokens; output $7.50/M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Features > Modalities and context",
+            "observed_value": "256K context; multimodal, function calling, structured outputs, document QnA",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Features > API routes",
+            "observed_value": "/v1/chat/completions, /v1/conversations, /v1/batch, /v1/agents documented",
             "checked_on": "2026-10-14"
           }
         ]
@@ -8977,7 +9028,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -9006,20 +9057,42 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+            "locator": "Programmatic Access > Model ID",
+            "observed_value": "amazon.nova-2-sonic-v1:0 (Bedrock API ID; catalog label amazon-nova-2-sonic)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Active, launch Dec 2 2025",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
-            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+            "locator": "Input / Output Modalities and APIs",
+            "observed_value": "Real-time speech/text input and speech/text output; 1M context; bidirectional streaming",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+            "locator": "Programmatic Access > bedrock-runtime",
+            "observed_value": "Bedrock runtime API InvokeModelWithBidirectionalStream; in-region endpoint bedrock-runtime.{region}.amazonaws.com",
             "checked_on": "2026-10-14"
           }
         ],
