@@ -52,6 +52,9 @@ test('source reachability and mention are not misreported as full model or tenan
  assert.equal(evidence.model_id_not_explicit,unresolved,'Do not count intentional families as unidentified models');
  assert.equal(evidence.non_deployable_family_references,familyReferences);
  assert.equal(mentions+familyReferences+unresolved,catalog.models.length);
+ assert.equal(evidence.model_id_not_explicit,0,'All 110 official model identity receipts must be explicit');
+ assert.equal(evidence.non_deployable_family_references,0,'No generic family placeholders can masquerade as deployable catalog rows');
+ assert.equal(mentions,catalog.models.length,'Every individual catalog model requires an official identity source');
  assert.equal(evidence.whole_model_verifications_added,0);
  assert.ok(catalog.models.every(m=>!m.claim_evidence?.tenant_governance
    ||['UNVERIFIED_REQUIRES_CUSTOMER_READBACK','SELF_HOST_DEPLOYMENT_SPECIFIC'].includes(m.claim_evidence.tenant_governance.status)));
