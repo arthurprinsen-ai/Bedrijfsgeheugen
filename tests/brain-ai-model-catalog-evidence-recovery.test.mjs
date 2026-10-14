@@ -285,3 +285,27 @@ test('GPT-Live and Voxtral audio rates remain duration-based with no synthetic t
  assert.equal(live.pricing_basis.billing_resolution,'second');
  assert.match(live.pricing_basis.additional_costs_or_conditions,/Backend/);
 });
+
+
+test('Mistral canonical API IDs and negative Labs governance remain non-recommendable',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const byId=new Map(catalog.models.map(m=>[m.id,m]));
+ const medium=byId.get('mistral-medium-3.5');
+ assert.equal(medium.provider_api_id,'mistral-medium-3-5');
+ assert.equal(medium.supplier_audit.automatic_recommendation_eligible,false);
+ assert.ok(medium.verification_evidence.claim_evidence.some(r=>r.claim==='governance'&&r.url==='https://docs.mistral.ai/admin/monitor-comply/zero-data-retention'&&r.verification_status==='MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED'));
+ const legacy=byId.get('zai-glm-5.2');
+ assert.equal(legacy.provider_api_id,'zai-glm-5-2');
+ assert.equal(legacy.status,'deprecated');
+ assert.equal(legacy.verification_evidence.lifecycle_warning.retirement_date,'2026-10-31');
+ assert.ok(legacy.verification_evidence.claim_evidence.some(r=>r.claim==='pricing'&&r.url==='https://docs.mistral.ai/inference/pricing'));
+ assert.equal(legacy.supplier_audit.automatic_recommendation_eligible,false);
+ const current=byId.get('zai-glm-5.3');
+ assert.equal(current.provider_api_id,'zai-glm-5-3');
+ const labs=byId.get('leanstral-1.5');
+ assert.equal(labs.status,'retired');
+ assert.equal(labs.provider_api_id,'labs-leanstral-1-5');
+ assert.ok(labs.verification_evidence.not_verified.includes('pricing'),'Retired Labs model must not be sold as currently free/deployable');
+ assert.ok(labs.verification_evidence.claim_evidence.some(r=>r.claim==='governance'&&r.verification_status==='MODEL_LABS_EXCLUSION_OFFICIAL_POLICY_VERIFIED_TENANT_UNVERIFIED'));
+ assert.equal(labs.supplier_audit.automatic_recommendation_eligible,false);
+});
