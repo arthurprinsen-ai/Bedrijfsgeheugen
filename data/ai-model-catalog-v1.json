@@ -17073,6 +17073,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/cn/campaigns/nc202501/",
+            "locator": "Amazon Nova model comparison table > Nova Premier > price per million input and output tokens",
+            "observed_value": "AWS 2025 Nova campaign published a reference tariff of USD 2.50 per million input tokens and USD 12.50 per million output tokens for Nova Premier. Historical pre-EOL comparison only; NOT validated as a current October 2026 regional rate or available runtime.",
+            "checked_on": "2026-10-14",
+            "scope": "AWS historical published comparison; not current 2026 Bedrock rate nor tenant invoice",
+            "verification_status": "HISTORICAL_PROVIDER_REFERENCE_CURRENT_PRICE_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17132,7 +17141,9 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "historical_pricing_reference": "https://aws.amazon.com/cn/campaigns/nc202501/",
+        "current_pricing_verified": false
       },
       "supplier_source_conflicts": [
         {
@@ -17900,6 +17911,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/cn/campaigns/nc202501/",
+            "locator": "Amazon Nova speech-to-speech model comparison table > Nova Sonic audio and text token rates",
+            "observed_value": "AWS Nova campaign lists Nova Sonic historical reference prices per million tokens: audio input USD 3.40; audio output USD 13.60; text input USD 0.06; text output USD 0.24. Historical first-generation Sonic only, NOT Nova 2 Sonic and NOT a verified current regional rate.",
+            "checked_on": "2026-10-14",
+            "scope": "AWS historical published comparison; not current 2026 Bedrock rate nor tenant invoice",
+            "verification_status": "HISTORICAL_PROVIDER_REFERENCE_CURRENT_PRICE_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17959,7 +17979,9 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "historical_pricing_reference": "https://aws.amazon.com/cn/campaigns/nc202501/",
+        "current_pricing_verified": false
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
