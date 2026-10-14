@@ -30,7 +30,7 @@ test('authenticated forecast route scopes lookups to identity tenant',async()=>{
 test('insufficient financial history never survives authenticated readback',()=>{
  const now=new Date('2026-10-14T20:00:00Z');
  for(const count of [0,1,2,3,4,5]){
-  const projection={tenantId:'tenant42',forecasts:[{...valid,history:valid.history.slice(-count)}]};
+  const projection={tenantId:'tenant42',forecasts:[{...valid,history:count?valid.history.slice(-count):[]}]};
   assert.deepEqual(verifiedForecasts(projection,'tenant42',{now}),[],
    'Financial history with '+count+' points must be rejected');
  }
