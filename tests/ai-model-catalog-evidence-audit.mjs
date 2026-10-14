@@ -17,7 +17,7 @@ function hasFullEvidence(m) {
 const sources = [...new Set(catalog.models.map(m => m.source).filter(Boolean))];
 const ids = catalog.models.map(m => m.id);
 const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
-const missingSources = catalog.models.filter(m => !m.source || !/^https:\\/\\//.test(m.source)).map(m => m.id);
+const missingSources = catalog.models.filter(m => !m.source || !m.source.startsWith('https://')).map(m => m.id);
 async function probe(url) {
   try {
     const response = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(12000), headers: { 'user-agent': 'Bedrijfsgeheugen-model-catalog-audit/1.0' }, redirect: 'follow' });
