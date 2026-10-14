@@ -2458,7 +2458,7 @@
   },
   "model_source_fetch_failed": 0,
   "not_yet_checked": 0,
-  "audited_catalog_blob_sha": "1975f14928a2aaba87b363e301977f21dbf32a54",
+  "audited_catalog_blob_sha": "bda010d5e64e93c2eb0ef5c107defcdd0e7a910f",
   "supplemental_source_urls_checked": 8,
   "total_unique_source_documents_checked": 78,
   "counting_note": "Evidence covers model identity only; source availability counts unique catalog URL fetches; supplemental URLs are counted separately; all claim-specific unverified statuses are preserved. model_id_not_explicit counts only unresolved identity/family records, excluding confirmed provider API IDs.",
