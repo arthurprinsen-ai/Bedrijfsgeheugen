@@ -151,3 +151,17 @@ test('Mistral models use verified hosted API IDs and no duplicate aliases for ne
  const glm=c.models.find(x=>x.id==='zai-glm-5.3');
  assert.deepEqual([glm.input_usd_m,glm.cached_input_usd_m,glm.output_usd_m],[1.4,0.14,4.4]);
 });
+
+
+test('publisher families are not mistaken for deployable model IDs; Falcon has a specific licensed card',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ for(const id of ['llama-open-weight','qwen-open-weight']){
+  const m=c.models.find(x=>x.id===id);
+  assert.equal(m.record_kind,'model_family');
+  assert.equal(m.selection_eligible,false);
+  assert.equal(m.claim_evidence.model_identity.status,'NOT_A_SINGLE_DEPLOYABLE_MODEL_ID');
+ }
+ const falcon=c.models.find(x=>x.id==='falcon-h1r-7b');
+ assert.equal(falcon.provider_model_id,'tiiuae/Falcon-H1R-7B');
+ assert.equal(falcon.claim_evidence.license.value.startsWith('Falcon-LLM License'),true);
+});
