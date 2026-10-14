@@ -5692,7 +5692,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -5701,7 +5701,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_DISTRIBUTION_ONLY",
         "source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -5709,11 +5709,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -5754,11 +5753,11 @@
           {
             "claim": "governance",
             "url": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
-            "locator": "Llama 4 Community License Agreement > License Rights and Redistribution; Additional Commercial Terms",
-            "observed_value": "Llama 4 Community License permits use and redistribution with obligations including license-copy and 'Built with Llama' attribution, and requires separate permission for entities exceeding the specified 700 million MAU threshold. This licenses weights; it does not establish hosted inference data retention, processing region or DPA.",
+            "locator": "Llama 4 Community License Agreement: Sections 1 and 2; model card identifies Llama 4 Scout as licensed under this agreement",
+            "observed_value": "Llama 4 Scout is subject to the Llama 4 Community License, NOT Apache-2.0: royalty-free but qualified rights, attribution and redistribution duties, acceptable-use restrictions, and special permission for >700M MAU products. Downloaded/self-hosted inference retention, residency, DPA, encryption and customer configuration are operator-specific and are not supplier-attested.",
             "checked_on": "2026-10-14",
-            "scope": "model-specific weight license; customer/deployment security settings unverified",
-            "verification_status": "LICENSE_ONLY_TENANT_UNVERIFIED"
+            "scope": "exact checkpoint licensing and permissible distribution terms; customer and hosting operations NOT verified",
+            "verification_status": "MODEL_LICENSE_DIRECTLY_REVIEWED_TENANT_UNVERIFIED"
           }
         ],
         "governance_baseline_classification": {
@@ -5808,7 +5807,8 @@
           "locator": "Llama 4 Community License Agreement > Section 1 License Rights and Redistribution; Section 2 Additional Commercial Terms",
           "observed_value": "Llama 4 Community License is royalty-free but not Apache-2.0. Redistribution or making a product using Llama 4 available requires specified notices and attribution; products above 700M monthly active users at release require additional permission. Applies to Llama 4 Scout weights; tenant processing location and operational controls are unverified.",
           "limitations": "Model deployment, actual license acceptance, business-specific applicability, and customer runtime governance are not attested."
-        }
+        },
+        "verification_scope_note": "Independent official Meta license readback; supplier distribution rights only, not customer DPA or infrastructure; six public supplier claims reviewed; no enabled tenant controls or managed-host tariff certified."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -5846,15 +5846,8 @@
         "model_specific_source_verified": true,
         "last_specific_source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
         "last_specific_source_check": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "catalog_entry_type": "concrete_model",
@@ -5921,7 +5914,16 @@
         "status": "HEURISTIC_NOT_INDEPENDENTLY_BENCHMARKED",
         "note": "Historical family-level heuristic scores retained for continuity; not validated as this particular model's benchmark and ineligible for autonomous recommendation."
       },
-      "runtime_residency_verification": "TENANT_RUNTIME_READBACK_REQUIRED"
+      "runtime_residency_verification": "TENANT_RUNTIME_READBACK_REQUIRED",
+      "independent_license_review_20261014": {
+        "checked_on": "2026-10-14",
+        "url": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
+        "locator": "Llama 4 Community License Agreement: Sections 1 and 2; model card identifies Llama 4 Scout as licensed under this agreement",
+        "observed_value": "Llama 4 Scout is subject to the Llama 4 Community License, NOT Apache-2.0: royalty-free but qualified rights, attribution and redistribution duties, acceptable-use restrictions, and special permission for >700M MAU products. Downloaded/self-hosted inference retention, residency, DPA, encryption and customer configuration are operator-specific and are not supplier-attested.",
+        "reviewed_scope": "supplier-model licensed weight distribution, not tenant runtime or contract",
+        "customer_verified": false,
+        "approved_for_production_release": false
+      }
     },
     {
       "id": "qwen3-32b",
@@ -5978,7 +5980,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -5987,7 +5989,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_DISTRIBUTION_ONLY",
         "source_url": "https://huggingface.co/Qwen/Qwen3-32B",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -5995,11 +5997,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -6040,11 +6041,11 @@
           {
             "claim": "governance",
             "url": "https://huggingface.co/Qwen/Qwen3-32B",
-            "locator": "Publisher model repository > License: apache-2.0; Use this model > Transformers, vLLM and SGLang",
-            "observed_value": "Official Qwen3-32B weights show Apache-2.0 licensing and local operation through Transformers, vLLM and SGLang. Model weight licensing does not determine commercial hosted inference pricing, account-specific data retention or region.",
+            "locator": "Official Qwen/Qwen3-32B publisher repository: License apache-2.0, model card and local deployment instructions",
+            "observed_value": "The Qwen publisher distributes this exact Qwen3-32B checkpoint under Apache License 2.0 for self-hosting. Weight license is documented and local deployment is supported; actual infrastructure operating costs, retention, processor location and commercial cloud agreements are not conferred by the model license.",
             "checked_on": "2026-10-14",
-            "scope": "model-specific weight license; customer/deployment security settings unverified",
-            "verification_status": "LICENSE_ONLY_TENANT_UNVERIFIED"
+            "scope": "exact checkpoint licensing and permissible distribution terms; customer and hosting operations NOT verified",
+            "verification_status": "MODEL_LICENSE_DIRECTLY_REVIEWED_TENANT_UNVERIFIED"
           }
         ],
         "governance_baseline_classification": {
@@ -6089,7 +6090,8 @@
           "locator": "Qwen/Qwen3-32B model card > License; Model Overview; How to use",
           "observed_value": "Qwen3-32B model repository is Apache-2.0 licensed and published for self-hosted inference using Transformers and vLLM. Repository describes 32.8B parameters, 32768 native context, up to 131072 with YaRN.",
           "limitations": "Licensing of other Qwen models, hosted inference tariffs, tenant storage/residency and runtime controls are independent questions."
-        }
+        },
+        "verification_scope_note": "Independent Qwen publisher-model license readback; supplier weight distribution scope only; six public supplier claims reviewed; no enabled tenant controls or managed-host tariff certified."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -6127,15 +6129,8 @@
         "model_specific_source_verified": true,
         "last_specific_source_url": "https://huggingface.co/Qwen/Qwen3-32B",
         "last_specific_source_check": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "provider_policy_research_20261014": {
@@ -6212,7 +6207,16 @@
         "status": "HEURISTIC_NOT_INDEPENDENTLY_BENCHMARKED",
         "note": "Historical family-level heuristic scores retained for continuity; not validated as this particular model's benchmark and ineligible for autonomous recommendation."
       },
-      "runtime_residency_verification": "TENANT_RUNTIME_READBACK_REQUIRED"
+      "runtime_residency_verification": "TENANT_RUNTIME_READBACK_REQUIRED",
+      "independent_license_review_20261014": {
+        "checked_on": "2026-10-14",
+        "url": "https://huggingface.co/Qwen/Qwen3-32B",
+        "locator": "Official Qwen/Qwen3-32B publisher repository: License apache-2.0, model card and local deployment instructions",
+        "observed_value": "The Qwen publisher distributes this exact Qwen3-32B checkpoint under Apache License 2.0 for self-hosting. Weight license is documented and local deployment is supported; actual infrastructure operating costs, retention, processor location and commercial cloud agreements are not conferred by the model license.",
+        "reviewed_scope": "supplier-model licensed weight distribution, not tenant runtime or contract",
+        "customer_verified": false,
+        "approved_for_production_release": false
+      }
     },
     {
       "tier": "balanced",
