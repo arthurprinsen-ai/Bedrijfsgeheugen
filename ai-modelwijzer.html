@@ -376,6 +376,8 @@ function fullSupplierEvidence(m){
  return required.every(claim=>e.verified_claims.includes(claim)&&e.claim_evidence.some(r=>r.claim===claim&&r.checked_on===e.checked_on&&typeof r.url==='string'&&r.url.startsWith('https://')&&typeof r.locator==='string'&&r.locator.trim()&&typeof r.observed_value==='string'&&r.observed_value.trim()));
 }
 function eligible(m){
+ // EOL models and non-runnable family placeholders must never be auto-recommended.
+ if(m.status==='eol'||m.auto_recommendation_eligible===false||m.record_kind==='model_family_placeholder')return false;
  // Public model and provider claims cannot attest customer-specific enabled controls.
  // A private, authenticated tenant acceptance API is required before any restricted recommendation.
  if($('euOnly').checked||$('zdr').checked||$('customerControl').checked)return false;
