@@ -5494,7 +5494,15 @@
           "license_observation": "The published Llama 4 Scout/Maverick distributions use the Llama 4 Community License Agreement; terms differ from Apache 2.0."
         },
         "model_specific_license_source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct-Original",
-        "customer_governance_required": true
+        "customer_governance_required": true,
+        "licensing_evidence": {
+          "status": "OFFICIAL_MODEL_LICENSE_OBSERVED_NOT_TENANT_VERIFIED",
+          "checked_on": "2026-10-14",
+          "url": "https://dev.meta.ai/llama/llama4/license",
+          "locator": "Llama 4 Community License Agreement > Section 1 License Rights and Redistribution; Section 2 Additional Commercial Terms",
+          "observed_value": "Llama 4 Community License is royalty-free but not Apache-2.0. Redistribution or making a product using Llama 4 available requires specified notices and attribution; products above 700M monthly active users at release require additional permission. Applies to Llama 4 Scout weights; tenant processing location and operational controls are unverified.",
+          "limitations": "Model deployment, actual license acceptance, business-specific applicability, and customer runtime governance are not attested."
+        }
       },
       "supplier_audit": {
         "assessment": "TENANT_GOVERNANCE_UNVERIFIED",
@@ -5757,7 +5765,15 @@
           "license_observation": "Qwen3-32B weights are published under Apache-2.0; other Qwen family members require their own license and API-price checks."
         },
         "model_specific_license_source": "https://huggingface.co/Qwen/Qwen3-32B",
-        "customer_governance_required": true
+        "customer_governance_required": true,
+        "licensing_evidence": {
+          "status": "OFFICIAL_MODEL_LICENSE_OBSERVED_NOT_TENANT_VERIFIED",
+          "checked_on": "2026-10-14",
+          "url": "https://huggingface.co/Qwen/Qwen3-32B",
+          "locator": "Qwen/Qwen3-32B model card > License; Model Overview; How to use",
+          "observed_value": "Qwen3-32B model repository is Apache-2.0 licensed and published for self-hosted inference using Transformers and vLLM. Repository describes 32.8B parameters, 32768 native context, up to 131072 with YaRN.",
+          "limitations": "Licensing of other Qwen models, hosted inference tariffs, tenant storage/residency and runtime controls are independent questions."
+        }
       },
       "supplier_audit": {
         "assessment": "TENANT_GOVERNANCE_UNVERIFIED",
