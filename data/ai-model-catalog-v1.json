@@ -15891,13 +15891,13 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "verified_claims": [
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "model_id",
           "status",
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -15931,6 +15931,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
+            "locator": "Using Amazon Nova embeddings > Generating embeddings > Synchronous embedding for text; modelId amazon.nova-2-multimodal-embeddings-v1:0",
+            "observed_value": "Amazon Nova 2 Multimodal Embeddings has official Amazon Bedrock Runtime deployment using invoke_model(modelId='amazon.nova-2-multimodal-embeddings-v1:0') for synchronous inference, with async embeddings also documented. AWS account model enablement, region and customer access require authenticated validation.",
+            "checked_on": "2026-10-14",
+            "scope": "Amazon Bedrock official model-specific API invocation instructions; no customer access or regional entitlement attested",
+            "verification_status": "SUPPLIER_API_DOCUMENTED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -15970,6 +15979,12 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "aws_official_deployment_research_20261014": {
+        "source": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
+        "model_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+        "checked_on": "2026-10-14",
+        "tenant_verified": false
       }
     },
     {
