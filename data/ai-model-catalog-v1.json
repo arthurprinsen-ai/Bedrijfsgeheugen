@@ -1235,8 +1235,7 @@
           "pricing",
           "status",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "tenant data-retention configuration",
@@ -4161,8 +4160,7 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "contract-specific residency",
@@ -4350,8 +4348,7 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "contract-specific residency",
@@ -5372,10 +5369,7 @@
         "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://www.llama.com/",
         "checked_on": "2026-10-14",
-        "verified_claims": [
-          "capabilities",
-          "deployment"
-        ],
+        "verified_claims": [],
         "not_verified": [
           "model_id",
           "status",
@@ -5384,20 +5378,7 @@
           "deployment",
           "governance"
         ],
-        "claim_evidence": [
-          {
-            "claim": "capabilities",
-            "url": "https://ai.meta.com/llama/get-started/",
-            "locator": "Llama 4 Scout/Maverick weights available from Meta or partners; generic catalog identifier is a family, not callable endpoint",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://ai.meta.com/llama/get-started/",
-            "locator": "Llama 4 Scout/Maverick weights available from Meta or partners; generic catalog identifier is a family, not callable endpoint",
-            "checked_on": "2026-10-14"
-          }
-        ],
+        "claim_evidence": [],
         "identity_warning": {
           "status": "FAMILY_PLACEHOLDER_NOT_API_MODEL_ID",
           "explanation": "This catalog entry represents multiple distinct model variants and cannot receive model-specific full verification until a concrete model is selected.",
@@ -5580,9 +5561,7 @@
         "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://qwenlm.github.io/",
         "checked_on": "2026-10-14",
-        "verified_claims": [
-          "capabilities"
-        ],
+        "verified_claims": [],
         "not_verified": [
           "model_id",
           "status",
@@ -5591,14 +5570,7 @@
           "deployment",
           "governance"
         ],
-        "claim_evidence": [
-          {
-            "claim": "capabilities",
-            "url": "https://qwenlm.github.io/",
-            "locator": "Official Qwen project describes Qwen model family, not individual API endpoint",
-            "checked_on": "2026-10-14"
-          }
-        ],
+        "claim_evidence": [],
         "identity_warning": {
           "status": "FAMILY_PLACEHOLDER_NOT_API_MODEL_ID",
           "explanation": "This catalog entry represents multiple distinct model variants and cannot receive model-specific full verification until a concrete model is selected.",
@@ -19353,8 +19325,7 @@
           "status",
           "capabilities",
           "deployment",
-          "governance",
-          "pricing"
+          "governance"
         ],
         "not_verified": [
           "customer-specific governance",
@@ -19565,8 +19536,7 @@
           "status",
           "capabilities",
           "deployment",
-          "governance",
-          "pricing"
+          "governance"
         ],
         "not_verified": [
           "customer-specific governance",
@@ -19776,8 +19746,7 @@
           "status",
           "capabilities",
           "deployment",
-          "governance",
-          "pricing"
+          "governance"
         ],
         "not_verified": [
           "customer-specific governance",
@@ -19986,8 +19955,7 @@
           "status",
           "capabilities",
           "deployment",
-          "governance",
-          "pricing"
+          "governance"
         ],
         "not_verified": [
           "customer-specific governance",
@@ -20197,8 +20165,7 @@
           "status",
           "capabilities",
           "deployment",
-          "governance",
-          "pricing"
+          "governance"
         ],
         "not_verified": [
           "customer-specific governance",
@@ -20408,8 +20375,7 @@
           "model_id",
           "status",
           "deployment",
-          "governance",
-          "pricing"
+          "governance"
         ],
         "not_verified": [
           "customer-specific governance",
@@ -20618,8 +20584,7 @@
           "model_id",
           "capabilities",
           "deployment",
-          "governance",
-          "pricing"
+          "governance"
         ],
         "not_verified": [
           "status",
