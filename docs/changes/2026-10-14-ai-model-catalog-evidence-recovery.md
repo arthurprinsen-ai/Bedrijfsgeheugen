@@ -256,3 +256,21 @@ GitHub's path-level fetch may return only metadata for the large (~1.1 MB) catal
 Official Cohere sources: [Command A](https://docs.cohere.com/docs/command-a) confirms `command-a-03-2025`, 256K context, image input and USD 2.50/10.00 per million input/output tokens; [Command A+](https://docs.cohere.com/docs/command-a-plus) confirms `command-a-plus-05-2026`, 128K context and image input. The provider API ID is now recorded separately from the catalog-friendly alias using existing `provider_api_id` convention. No token-based rate is invented for A+.
 
 Regression: `tests/brain-ai-model-catalog-evidence-recovery.test.mjs` asserts canonical IDs, pricing, contexts and fail-closed supplier recommendation gates. **No customer contract, enabled Cohere account settings, region or production acceptance is attested by these public documents.** Protected CI and exact production readback still required.
+
+
+## Eight Anthropic exact-model model-owner reviews (2026-10-14)
+
+Eight official Claude Platform exact model pages were inspected for API model ID, dated lifecycle, published token price and context/output ceilings. These are public supplier-page facts, not tenant account credentials, retention setting proof or signed commercial terms.
+
+| Catalog model | Official model-specific source | Supplier lifecycle | USD input/output per million tokens | Context / max output |
+| --- | --- | --- | --- | --- |
+| `claude-opus-4-6` | https://platform.claude.com/docs/en/models/opus-4-6/overview | legacy | $5/$25 | 1M /128K |
+| `claude-opus-4-7` | https://platform.claude.com/docs/en/models/opus-4-7/overview | legacy | $5/$25 | 1M /128K |
+| `claude-opus-5` | https://platform.claude.com/docs/en/models/opus-5/overview | legacy | $5/$25 | 1M /128K |
+| `claude-opus-5-5` | https://platform.claude.com/docs/en/models/opus-5-5/overview | latest | $4/$20 | 1M /128K |
+| `claude-sonnet-4-5-20250929` | https://platform.claude.com/docs/en/models/sonnet-4-5/overview | deprecated, scheduled retirement 2026-11-30 | $3/$15 | 200K /64K |
+| `claude-sonnet-4-6` | https://platform.claude.com/docs/en/models/sonnet-4-6/overview | legacy | $3/$15 | 1M /128K |
+| `claude-sonnet-5` | https://platform.claude.com/docs/en/models/sonnet-5/overview | legacy | $2/$10 | 1M /128K |
+| `claude-sonnet-5-5` | https://platform.claude.com/docs/en/models/sonnet-5-5/overview | latest | $2/$10 | 1M /128K |
+
+*Important:* Anthropic's first-party Claude API, AWS Bedrock, Google Cloud and other platform-specific routes can have different processing conditions. A model page saying an endpoint exists is not evidence that a particular tenant is allowed to use it, or that a signed DPA, enabled ZDR, customer region or partner-specific price is in place. Claude Sonnet 4.5's scheduled 2026-11-30 retirement is not an observed shutdown on 2026-10-14. All eight records remain public-source reviews only and `release_eligible=false`; the separate supplier-freshness, customer-contract, Required CI, CodeQL, protected merge and deployed readback are not waived.
