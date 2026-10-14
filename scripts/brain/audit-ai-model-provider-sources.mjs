@@ -63,7 +63,7 @@ async function worker(){
       const bytes=Buffer.byteLength(body,'utf8');
       const readable=response.ok&&bytes<=maxSourceBytes;
       const mentions=readable?Object.fromEntries(matching.map(m=>[
-        m.id,exactModelToken(body,m.id)
+        m.id,exactModelToken(body,m.provider_model_id||m.id)
       ])):{};
       verdict.set(url,{state:!response.ok?'SOURCE_HTTP_ERROR':!readable?
         'SOURCE_TOO_LARGE_FOR_PROBE':'SOURCE_REACHABLE_NOT_CLAIM_VERIFIED',
@@ -78,7 +78,9 @@ async function worker(){
 }
 await Promise.all(Array.from({length:concurrency},()=>worker()));
 const receipts=catalog.models.map(m=>({
-  model_id:m.id,provider:m.provider,source:m.source,source_probe:verdict.get(m.source),
+  model_id:m.id,provider_model_id:m.provider_model_id||null,
+  checked_identifier:m.provider_model_id||m.id,
+  provider:m.provider,source:m.source,source_probe:verdict.get(m.source),
   last_claim_verification:m.verified_at,
   model_id_mentioned_in_document:verdict.get(m.source)?.model_id_mentions?.[m.id]===true,
   provider_doc_identity_mention_only:true,
