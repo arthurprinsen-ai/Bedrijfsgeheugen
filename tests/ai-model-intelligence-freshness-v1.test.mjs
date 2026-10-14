@@ -79,3 +79,15 @@ test('deprecated Google Flash aliases cannot appear eligible for new routing',()
    'RESTRICTED_EXISTING_USERS'
  );
 });
+
+
+test('provider deprecation notices prevent recommending stale Mistral catalog entries',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ for(const id of ['mistral-ocr-4.0','zai-glm-5.2','leanstral-1.5']){
+  const m=c.models.find(x=>x.id===id);
+  assert.ok(m,id);
+  assert.equal(m.status,'deprecated',id);
+  assert.equal(m.selection_eligible,false,id);
+  assert.equal(m.claim_evidence.lifecycle.status,'PROVIDER_DOC_CONFIRMED',id);
+ }
+});
