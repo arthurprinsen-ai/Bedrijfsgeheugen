@@ -46,7 +46,12 @@ test('source reachability and mention are not misreported as full model or tenan
  const mentions=evidence.receipts.filter(r=>r.identity_claim_verified).length;
  assert.equal(evidence.model_id_mentions,evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_MODEL_ID_MENTION').length);
  assert.equal(evidence.provider_api_id_mentions,evidence.receipts.filter(r=>r.status==='OFFICIAL_PAGE_API_ID_MENTION').length);
- assert.equal(evidence.model_id_not_explicit,catalog.models.length-mentions);
+ const familyReferences=evidence.receipts.filter(r=>r.status==='PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID').length;
+ const unresolved=evidence.receipts.filter(r=>!r.identity_claim_verified
+   && r.status!=='PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID').length;
+ assert.equal(evidence.model_id_not_explicit,unresolved,'Do not count intentional families as unidentified models');
+ assert.equal(evidence.non_deployable_family_references,familyReferences);
+ assert.equal(mentions+familyReferences+unresolved,catalog.models.length);
  assert.equal(evidence.whole_model_verifications_added,0);
  assert.ok(catalog.models.every(m=>!m.claim_evidence?.tenant_governance
    ||['UNVERIFIED_REQUIRES_CUSTOMER_READBACK','SELF_HOST_DEPLOYMENT_SPECIFIC'].includes(m.claim_evidence.tenant_governance.status)));
