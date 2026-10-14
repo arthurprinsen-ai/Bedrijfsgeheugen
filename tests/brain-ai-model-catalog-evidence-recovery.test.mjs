@@ -74,3 +74,11 @@ test('public advisor cannot recommend catalog-full models without independent au
    assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false,m.id);
  }
 });
+
+test('advisor excludes incomplete pricing and generic supplier policy as complete evidence',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED/);
+ assert.match(html,/NOT model-specific/);
+ assert.match(html,/HISTORICAL\|PARTIAL\|EXAMPLE\|UNKNOWN\|BASIS_ONLY/);
+ assert.match(html,/automatic_recommendation_eligible!==true/);
+});
