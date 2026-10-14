@@ -167,3 +167,9 @@ test('contract vault rejects expired agreements even if executed and signed',()=
  assert.match(source,/Date\.parse\(receipt\.valid_until/);
  assert.match(source,/SIGNED_CONTRACT_NOT_AUTHENTICATED/);
 });
+
+test('pinned integration endpoints reject embedded URL credentials and fragments',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/target\.username \|\| target\.password \|\| target\.hash/);
+ assert.match(source,/url\.username\|\|url\.password\|\|url\.hash/);
+});
