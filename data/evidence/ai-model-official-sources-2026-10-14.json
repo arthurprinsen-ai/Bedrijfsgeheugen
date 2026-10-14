@@ -8,7 +8,7 @@
   "source_failures": [],
   "models_checked": 110,
   "model_id_mentions": 82,
-  "model_id_not_explicit": 2,
+  "model_id_not_explicit": 0,
   "unavailable_sources": 0,
   "whole_model_verifications_added": 0,
   "governance_note": "Supplier model ID matches are identity evidence only. Two family placeholders are not deployable models. Do not infer customer contracts, residency, pricing, retention or API entitlement and do not advance verified_at.",
