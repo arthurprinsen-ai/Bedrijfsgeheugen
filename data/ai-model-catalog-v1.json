@@ -9256,7 +9256,7 @@
       "provider": "Anthropic",
       "source": "https://platform.claude.com/docs/en/models/fable-5/overview",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -9265,7 +9265,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -9273,11 +9273,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -9342,11 +9341,12 @@
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         },
         "governance_baseline_classification": {
-          "type": "PROVIDER_POLICY_OBSERVED",
-          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "type": "MODEL_SPECIFIC_SUPPLIER_RETENTION_OBSERVED",
+          "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Covered Model 30-day retention requirement. Not evidence of a customer's signed contract, Anthropic express ZDR authorization, configured workspace, or runtime settings."
+        },
+        "verification_scope_note": "Supplier model identity, listed legacy lifecycle, published pricing, capabilities and platform interfaces checked on the official Fable 5 reference; model-specific Covered Model 30-day retention and exclusion from default ZDR checked against official Anthropic retention policy on 2026-10-14. No customer entitlement, executed agreement, confirmed region or enabled tenant retention controls verified."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
