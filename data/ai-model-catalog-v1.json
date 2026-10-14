@@ -4789,8 +4789,8 @@
     {
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.75,
+      "output_usd_m": 3.75,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -4837,18 +4837,48 @@
       },
       "id": "gemini-3.7-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models",
+      "source": "https://ai.google.dev/gemini-api/docs/pricing",
       "verification_evidence": {
-        "claim_scope": "unverified",
-        "verification_required": [
-          "model_id",
-          "status",
-          "pricing",
+        "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "pricing_standard_paid_through_2026_12_31",
+          "pricing_standard_paid_from_2027_01_01"
+        ],
+        "not_verified": [
+          "model_id API entitlement",
+          "status and lifecycle",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "pricing for other tiers"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "claim_scope": "partial",
+        "claim_evidence": [
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.7 Flash, Standard, Paid Tier table; dated prices until Dec 31 2026 and beginning Jan 1 2027",
+            "observed_value": "USD 0.75 input / USD 3.75 output per 1M tokens through 2026-12-31; thereafter USD 1.50 / USD 7.50",
+            "checked_on": "2026-10-14"
+          }
+        ]
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "tier": "paid",
+        "processing_mode": "Standard",
+        "valid_through": "2026-12-31",
+        "input_usd_m": 0.75,
+        "output_usd_m": 3.75,
+        "after_2027_01_01": {
+          "input_usd_m": 1.5,
+          "output_usd_m": 7.5
+        },
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "checked_at": "2026-10-14",
+        "caveat": "Prices are date- and tier-specific; no blanket pricing claim for other modes or locations."
       }
     },
     {
