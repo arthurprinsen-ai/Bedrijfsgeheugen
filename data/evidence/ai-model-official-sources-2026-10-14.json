@@ -4,10 +4,10 @@
   "scope": "110 model ID checks against 41 catalog-supplied official URLs",
   "source_type": "supplier-hosted-documentation",
   "source_urls_checked": 70,
-  "source_urls_retrieved": 67,
+  "source_urls_retrieved": 70,
   "source_failures": [],
   "models_checked": 110,
-  "model_id_mentions": 81,
+  "model_id_mentions": 83,
   "model_id_not_explicit": 25,
   "unavailable_sources": 0,
   "whole_model_verifications_added": 0,
@@ -535,19 +535,19 @@
       "provider": "Cohere",
       "source_url": "https://docs.cohere.com/docs/rerank",
       "checked_at": "2026-10-14",
-      "status": "SOURCE_FETCH_FAILED",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_API_ID_MENTION",
+      "source_text_chars": 19835,
+      "evidence_excerpt": "e](http://docs.cohere.com/docs/reranking-best-practices). Latest ModelDescriptionModalityEndpoints`rerank-v4.0-pro`A multilingual model that allows for re-ranking English and non-english documents and semi-structured data (JSON). This is better",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUT",
+      "source_error": null,
       "model_id_mentioned_in_document": false,
       "provider_api_id": "rerank-v4.0-pro",
-      "provider_api_id_mentioned_in_document": false
+      "provider_api_id_mentioned_in_document": true
     },
     {
       "model_id": "llama-open-weight",
@@ -1350,38 +1350,38 @@
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/codestral-embed-25-05",
       "checked_at": "2026-10-14",
-      "status": "SOURCE_FETCH_FAILED",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 5505,
+      "evidence_excerpt": "mage?url=%2Fassets%2Fsprites%2Fcat_idle.gif&w=640&q=75) May 28, 2025[Blog](https://mistral.ai/news/codestral-embed) GAPremierv25.05 # Codestral Embed Our state-of-the-art semantic for extracting representation of code extracts codestral-emb",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUT",
-      "model_id_mentioned_in_document": false,
+      "source_error": null,
+      "model_id_mentioned_in_document": true,
       "provider_api_id": "codestral-embed-2505",
-      "provider_api_id_mentioned_in_document": false
+      "provider_api_id_mentioned_in_document": true
     },
     {
       "model_id": "mistral-embed",
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/mistral-embed-23-12",
       "checked_at": "2026-10-14",
-      "status": "SOURCE_FETCH_FAILED",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 5498,
+      "evidence_excerpt": "el-selection-guide?models=mistral-embed-23-12)[Legal](https://legal.mistral.ai/ai-governance/models/mistral-embed) ![Cat](http://docs.mistral.ai/_next/image?url=%2Fassets%2Fsprites%2Fcat_idle.gif&w=640&q=75) December 11, 2023[Blog](https://m",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUT",
-      "model_id_mentioned_in_document": false,
+      "source_error": null,
+      "model_id_mentioned_in_document": true,
       "provider_api_id": "mistral-embed-2312",
-      "provider_api_id_mentioned_in_document": false
+      "provider_api_id_mentioned_in_document": true
     },
     {
       "model_id": "shieldstral-1",
@@ -2314,10 +2314,10 @@
       "error": null
     },
     "https://docs.cohere.com/docs/rerank": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUT"
+      "text_length": 19835,
+      "error": null
     },
     "https://platform.claude.com/docs/en/claude_api_primer": {
       "state": "FETCHED",
@@ -2326,23 +2326,23 @@
       "error": null
     },
     "https://docs.mistral.ai/models/codestral-embed-25-05": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUT"
+      "text_length": 5505,
+      "error": null
     },
     "https://docs.mistral.ai/models/mistral-embed-23-12": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUT"
+      "text_length": 5498,
+      "error": null
     }
   },
-  "model_source_fetch_failed": 3,
+  "model_source_fetch_failed": 0,
   "not_yet_checked": 0,
   "audited_catalog_blob_sha": "b08cf5fc5a4807ca9a93d9cee6fd36bc76e8ffee",
   "supplemental_source_urls_checked": 4,
   "total_unique_source_documents_checked": 70,
   "counting_note": "source_urls_checked counts unique catalog-supplied URLs, supplemental sources counted separately; unavailable_sources counts documented non-FETCHED URL results, not unverified model claims; no whole-model approval implied.",
-  "provider_api_id_mentions": 1
+  "provider_api_id_mentions": 2
 }
