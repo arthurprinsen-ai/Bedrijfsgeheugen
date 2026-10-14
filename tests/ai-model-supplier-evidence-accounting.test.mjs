@@ -86,3 +86,27 @@ test('supplier ledger reconciliation is deterministic, scoped and fail-closed',(
  assert.equal(JSON.stringify(model.verification_evidence),originalEvidence,
   'Supplier claims, observations and evidence dates must be left untouched');
 });
+
+test('review-only ledger drift is repaired without new supplier approvals',()=>{
+ const catalog=structuredClone(JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8')));
+ const model=catalog.models.find(m=>m.verification_evidence?.claim_scope==='full');
+ assert.ok(model);
+ const before=JSON.stringify(model.verification_evidence);
+ const audit=model.supplier_audit;
+ audit.review_required_claims=['stale'];
+ audit.pending_independent_claim_reviews=999;
+ audit.automatic_recommendation_eligible=true;
+ audit.independent_verification_required=false;
+ assert.ok(reconcileSupplierAudit(catalog).changed_model_ids.includes(model.id));
+ assert.ok(reconcileSupplierAudit(catalog,{apply:true}).changed_model_ids.includes(model.id));
+ const e=model.verification_evidence;
+ const expected=['model_id','status','pricing','capabilities','deployment','governance'].filter(claim=>
+  !(audit.claim_evidence_classification[claim]==='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED'&&
+    e.claim_scope==='full'&&e.source_url===model.source&&e.checked_on===model.verified_at&&
+    e.verified_claims?.includes(claim)&&!e.not_verified?.includes(claim)));
+ assert.deepEqual(audit.review_required_claims,expected);
+ assert.equal(audit.pending_independent_claim_reviews,expected.length);
+ assert.equal(audit.independent_verification_required,true);
+ assert.equal(audit.automatic_recommendation_eligible,false);
+ assert.equal(JSON.stringify(model.verification_evidence),before);
+});
