@@ -20379,7 +20379,8 @@
         "retrieval"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "AWS public card lists in-region use in us-east-1 and us-gov-west-1 (not an EU region); account-level and live endpoint access remain unverified."
       ],
       "scores": {
         "reasoning": 1,
@@ -20604,7 +20605,21 @@
         "other_modalities_verified": false,
         "customer_billing_verified": false
       },
-      "provider_api_id": "amazon.nova-2-multimodal-embeddings-v1:0"
+      "provider_api_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+      "public_bedrock_endpoint_review_20261014": {
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+        "checked_on": "2026-10-14",
+        "provider_api_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+        "endpoint": "bedrock-runtime",
+        "inference_api": "StartAsyncInvoke",
+        "regions_listed_on_public_model_card": [
+          "us-east-1",
+          "us-gov-west-1"
+        ],
+        "geo_cross_region_supported": false,
+        "global_cross_region_supported": false,
+        "source_scope": "Official public model card only; not account-specific access, invoice or tenant residency proof"
+      }
     },
     {
       "tier": "specialist",
