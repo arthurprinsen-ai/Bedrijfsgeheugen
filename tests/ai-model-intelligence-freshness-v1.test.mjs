@@ -59,3 +59,23 @@ test('official price evidence is tier-explicit and cannot refresh whole-model ve
  assert.equal(google.output_usd_m,3.75);
  assert.equal(google.pricing_tier,'introductory_2026');
 });
+
+
+test('deprecated Google Flash aliases cannot appear eligible for new routing',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ for(const [id,replacement] of [
+   ['gemini-3.5-flash','gemini-3.6-flash'],
+   ['gemini-3.7-flash','gemini-3.8-flash']
+ ]){
+   const m=c.models.find(x=>x.id===id);
+   assert.ok(m,id);
+   assert.equal(m.status,'deprecated',id);
+   assert.equal(m.selection_eligible,false,id);
+   assert.equal(m.effective_model_id,replacement,id);
+   assert.equal(m.claim_evidence.lifecycle.state,'DEPRECATED_AUTO_ROUTED',id);
+ }
+ assert.equal(
+   c.models.find(x=>x.id==='gemini-2.5-flash-lite').new_project_access,
+   'RESTRICTED_EXISTING_USERS'
+ );
+});
