@@ -4,11 +4,11 @@
   "scope": "110 model ID checks against 41 catalog-supplied official URLs",
   "source_type": "supplier-hosted-documentation",
   "source_urls_checked": 64,
-  "source_urls_retrieved": 63,
+  "source_urls_retrieved": 64,
   "source_failures": [],
   "models_checked": 110,
   "model_id_mentions": 73,
-  "model_id_not_explicit": 27,
+  "model_id_not_explicit": 35,
   "unavailable_sources": 110,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
@@ -1542,8 +1542,8 @@
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
       "checked_at": "2026-10-14",
-      "status": "SOURCE_FETCH_FAILED",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 14668,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1551,15 +1551,15 @@
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUTH006\",\"detail\":\"The "
+      "source_error": null
     },
     {
       "model_id": "amazon-nova-premier",
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 15275,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 9023,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1574,45 +1574,48 @@
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 29479,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "amazon-nova-lite",
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 26382,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "amazon-nova-micro",
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 21837,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "amazon-nova-sonic",
@@ -1635,15 +1638,16 @@
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 14037,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "amazon-nova-canvas",
@@ -1682,30 +1686,32 @@
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 20263,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "amazon-titan-image-generator-g1-v2",
       "provider": "Amazon",
       "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 0,
+      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "source_text_chars": 8908,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
-      "full_model_verification_granted": false
+      "full_model_verification_granted": false,
+      "source_error": null
     },
     {
       "model_id": "amazon-titan-multimodal-embeddings-g1",
@@ -2065,10 +2071,10 @@
       "error": null
     },
     "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 429: {\"code\":\"AUTH006\",\"detail\":\"The "
+      "text_length": 14668,
+      "error": null
     },
     "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html": {
       "state": "FETCHED",
@@ -2239,7 +2245,7 @@
       "error": null
     }
   },
-  "model_source_fetch_failed": 1,
-  "not_yet_checked": 9,
+  "model_source_fetch_failed": 0,
+  "not_yet_checked": 2,
   "audited_catalog_blob_sha": "fc3ec44202e2245d98e32046740f03d0e124ed0f"
 }
