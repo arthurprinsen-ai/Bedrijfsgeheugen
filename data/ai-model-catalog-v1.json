@@ -4787,7 +4787,9 @@
         "image editing"
       ],
       "limitations": [
-        "not for general text workflows"
+        "not for general text workflows",
+        "Audio and video unsupported",
+        "No function calling, structured outputs, fine-tuning or streaming"
       ],
       "scores": {
         "reasoning": 2,
@@ -4804,10 +4806,10 @@
       "self_host": false,
       "jurisdiction": "US",
       "deployment": [
-        "OpenAI API"
+        "OpenAI API image generation/editing"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -4836,20 +4838,42 @@
         "source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2",
+            "locator": "Snapshots and aliases",
+            "observed_value": "gpt-image-2; snapshot gpt-image-2-2026-04-21",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2",
+            "locator": "Model heading > Default",
+            "observed_value": "Documented as Default on official OpenAI API model page; tenant access not tested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2",
+            "locator": "Model description; Modalities; Features",
+            "observed_value": "Image generation and editing; text input only, image input/output; audio and video unsupported; no function calling, structured outputs or fine-tuning",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-image-2",
+            "locator": "Endpoints > Image generation and Image edit",
+            "observed_value": "v1/images/generations and v1/images/edits listed; account-specific access not verified",
             "checked_on": "2026-10-14"
           }
         ],
@@ -4873,14 +4897,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 2,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4891,7 +4911,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
+        "last_specific_source_check": "2026-10-14"
       }
     },
     {
