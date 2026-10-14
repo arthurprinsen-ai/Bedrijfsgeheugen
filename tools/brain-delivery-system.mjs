@@ -9,6 +9,8 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'tests/ai-model-official-source-evidence.test.mjs': 'backend',
+  'data/evidence/ai-model-official-sources-2026-10-14.json': 'backend',
   'data/evidence/ai-model-official-sources-2026-10-14.json': 'backend',
   'netlify/functions/powerhouse-external-database-watch.mjs': 'backend',
   'scripts/sql/rollback_powerhouse_scheduler_isolation.sql': 'backend',
