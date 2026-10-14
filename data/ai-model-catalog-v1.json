@@ -4461,6 +4461,15 @@
             "checked_on": "2026-10-14",
             "scope": "API_PLATFORM_TERMS_BASELINE_ONLY",
             "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://api-docs.deepseek.com/api/create-response/",
+            "locator": "POST /responses supports deepseek-flash and deepseek-v4-pro; stateless server no conversation saved",
+            "observed_value": "The official DeepSeek POST /responses supports deepseek-flash, runs statelessly without storing response/conversation history, and requires the client to resend previous messages. This exact endpoint property does not attest logging, general data retention, training opt-out, legal rights, processing geography, account entitlement, customer DPA, or security on other endpoints.",
+            "checked_on": "2026-10-14",
+            "scope": "endpoint-only supplier fact, not platform-wide/tenant retention guarantee",
+            "verification_status": "STATELESS_RESPONSES_ENDPOINT_PUBLIC_SOURCE_ONLY"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -4587,6 +4596,16 @@
         "checked_on": "2026-10-14",
         "customer_verified": false,
         "model_retention_verified": false
+      },
+      "deepseek_responses_endpoint_scope_20261014": {
+        "source_url": "https://api-docs.deepseek.com/api/create-response/",
+        "checked_on": "2026-10-14",
+        "model_id": "deepseek-flash",
+        "endpoint_store_false": true,
+        "model_wide_zero_retention_proven": false,
+        "customer_contract_verified": false,
+        "tenant_entitlement_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -4702,6 +4721,15 @@
             "checked_on": "2026-10-14",
             "scope": "API_PLATFORM_TERMS_BASELINE_ONLY",
             "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://api-docs.deepseek.com/api/create-response/",
+            "locator": "POST /responses supports deepseek-flash and deepseek-v4-pro; stateless server no conversation saved",
+            "observed_value": "The official DeepSeek POST /responses supports deepseek-v4-pro, runs statelessly without storing response/conversation history, and requires the client to resend previous messages. This exact endpoint property does not attest logging, general data retention, training opt-out, legal rights, processing geography, account entitlement, customer DPA, or security on other endpoints.",
+            "checked_on": "2026-10-14",
+            "scope": "endpoint-only supplier fact, not platform-wide/tenant retention guarantee",
+            "verification_status": "STATELESS_RESPONSES_ENDPOINT_PUBLIC_SOURCE_ONLY"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -4828,6 +4856,16 @@
         "checked_on": "2026-10-14",
         "customer_verified": false,
         "model_retention_verified": false
+      },
+      "deepseek_responses_endpoint_scope_20261014": {
+        "source_url": "https://api-docs.deepseek.com/api/create-response/",
+        "checked_on": "2026-10-14",
+        "model_id": "deepseek-v4-pro",
+        "endpoint_store_false": true,
+        "model_wide_zero_retention_proven": false,
+        "customer_contract_verified": false,
+        "tenant_entitlement_verified": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
