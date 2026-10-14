@@ -109,3 +109,15 @@ test('missed slots are detected independently and enqueued once with bounded bac
   assert.match(missed,/cron\.schedule\('powerhouse-ops-independent-slot-reconciler'/);
   assert.doesNotMatch(missed,/send_dm|send_email|composio|gmail\.send/i);
 });
+
+const acceptance=readFileSync('scripts/sql/powerhouse_runtime_recovery_acceptance.sql','utf8');
+test('runtime acceptance is read-only, fail-closed and does not claim provider delivery',()=>{
+  assert.match(acceptance,/INFRASTRUCTURE_READBACK_NOT_ACCEPTED/);
+  assert.match(acceptance,/isolated_active FROM current_stats\)=16/);
+  assert.match(acceptance,/old_mux_active FROM current_stats\)=0/);
+  assert.match(acceptance,/cron\.job_run_details/);
+  assert.match(acceptance,/timeout_runs_90m/);
+  assert.match(acceptance,/recovery_dead_letter/);
+  assert.match(acceptance,/powerhouse_refresh_revenue_attribution_incremental_v1/);
+  assert.doesNotMatch(acceptance,/\b(?:UPDATE|INSERT|DELETE|DROP|TRUNCATE|ALTER|CREATE TABLE)\s+/i);
+});
