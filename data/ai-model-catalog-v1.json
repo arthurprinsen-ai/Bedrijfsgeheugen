@@ -2931,7 +2931,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://docs.cohere.com/v2/docs/command-a",
@@ -2940,38 +2940,57 @@
         "verified_claims": [
           "pricing",
           "capabilities",
-          "public_documented_governance_variants"
+          "public_documented_governance_variants",
+          "model_id",
+          "status",
+          "deployment"
         ],
         "not_verified": [
-          "model_id alias mapping",
-          "status and availability for individual account",
-          "deployment contract",
-          "governance",
-          "customer-specific governance contract and residency"
+          "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/v2/docs/command-a",
+            "locator": "API Endpoints > Model ID",
+            "observed_value": "command-a-03-2025 (catalog alias command-a requires canonical ID mapping)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/v2/docs/command-a",
+            "locator": "API Endpoints and Model documentation",
+            "observed_value": "Documented Command A API model; customer access not probed",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "pricing",
             "url": "https://docs.cohere.com/v2/docs/command-a",
-            "locator": "Pricing: input and output tokens",
-            "observed_value": "$2.5 input / $10 output per 1M tokens",
+            "locator": "Pricing > Input / Output",
+            "observed_value": "USD $2.50 input and $10 output per million tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://docs.cohere.com/v2/docs/command-a",
-            "locator": "Specifications: Context Window; Capabilities listing",
-            "observed_value": "256000 tokens; multilingual safety modes, citations, tools, structured outputs, reasoning, image inputs",
+            "locator": "Specifications and Capabilities",
+            "observed_value": "256K context, 8K max output, multilingual, image inputs, tools, reasoning and structured outputs",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "model_id",
+            "claim": "deployment",
             "url": "https://docs.cohere.com/v2/docs/command-a",
-            "locator": "API Endpoints, Model ID",
-            "observed_value": "command-a-03-2025 (catalog alias command-a must not be assumed to be callable)",
+            "locator": "API Endpoints / model detail",
+            "observed_value": "Cohere Command A API model; customer tenant access untested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "identity_warning": {
+          "status": "CATALOG_ALIAS_DIFFERS_FROM_API_ID",
+          "official_id": "command-a-03-2025",
+          "checked_on": "2026-10-14"
+        }
       },
       "governance_evidence": {
         "checked_on": "2026-10-14",
@@ -5405,7 +5424,7 @@
         "Microsoft Foundry"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -5431,14 +5450,13 @@
           "output_usd_m",
           "context_k",
           "capabilities_text_images_to_text",
-          "deployment_platforms"
+          "deployment_platforms",
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "governance",
-          "customer-specific entitlement",
-          "data residency",
-          "contract-specific pricing",
-          "performance scores"
+          "governance"
         ],
         "claim_scope": "partial",
         "evidence_note": "Official provider page describes active legacy status; first-party standard pricing $3/$15 per 1M tokens; 1M context; platforms Claude API, Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; platform terms and governance not fully verified.",
@@ -5449,7 +5467,45 @@
           "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
-        }
+        },
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
+            "locator": "Specifications > Model IDs",
+            "observed_value": "claude-sonnet-4-6",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
+            "locator": "Availability > Status and Retirement",
+            "observed_value": "Active (legacy), retired no sooner than February 17, 2027",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
+            "locator": "Specifications > Pricing",
+            "observed_value": "USD $3 input, $15 output per million tokens; batch 50% off; caching additional rates",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "1M context, 128K output, adaptive thinking, text/image input, text output",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
+            "locator": "Specifications > Platforms and Model IDs",
+            "observed_value": "Anthropic Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS",
+            "checked_on": "2026-10-14"
+          }
+        ],
+        "evidence_status": "PARTIALLY_VERIFIED"
       }
     },
     {
@@ -9037,7 +9093,7 @@
         "private deployment where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -9068,30 +9124,47 @@
         "verified_claims": [
           "model_id",
           "status",
-          "capabilities"
+          "capabilities",
+          "pricing",
+          "deployment"
         ],
         "not_verified": [
-          "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://docs.cohere.com/docs/models",
-            "locator": "Models table: Live, reasoning, 256k input 32k output",
+            "url": "https://docs.cohere.com/docs/command-a-reasoning",
+            "locator": "API Endpoints > Model ID",
+            "observed_value": "command-a-reasoning-08-2025",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://docs.cohere.com/docs/models",
-            "locator": "Models table: Live, reasoning, 256k input 32k output",
+            "url": "https://docs.cohere.com/docs/command-a-reasoning",
+            "locator": "Pricing > trial and production key",
+            "observed_value": "Documented API model; production Model Vault requires dedicated arrangements",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.cohere.com/docs/command-a-reasoning",
+            "locator": "Pricing paragraph",
+            "observed_value": "Free within rate limits for trial and production API keys; private Model Vault requires separate terms",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://docs.cohere.com/docs/models",
-            "locator": "Models table: Live, reasoning, 256k input 32k output",
+            "url": "https://docs.cohere.com/docs/command-a-reasoning",
+            "locator": "Specifications > Context and Output / Capabilities",
+            "observed_value": "256K context, 32K max output, reasoning, multilingual, tool use, citations and structured outputs",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/docs/command-a-reasoning",
+            "locator": "API Endpoints > Chat V2 / Chat V1",
+            "observed_value": "Chat V2 and Chat V1; production via Cohere Model Vault where applicable",
             "checked_on": "2026-10-14"
           }
         ]
