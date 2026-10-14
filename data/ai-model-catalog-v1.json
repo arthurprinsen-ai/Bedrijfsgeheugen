@@ -4754,7 +4754,7 @@
       },
       "eu_processing": null,
       "eu_storage": null,
-      "open_weights": false,
+      "open_weights": true,
       "self_host": true,
       "jurisdiction": "Canada",
       "deployment": [
@@ -4845,13 +4845,21 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Generative models > Command A+ > L hourly rate / XL hourly rate",
+            "observed_value": "Standard Vault per-instance hourly: Command A+ L USD 17.50, XL USD 32.50. Separate from rate-limited free Chat API usage. Customer entitlement, terms, and final pricing are unverified.",
+            "checked_on": "2026-10-14",
+            "scope": "Official Cohere Standard Vault instance pricing only, NOT pay-as-you-go API token pricing or an executed customer tariff."
           }
         ],
         "identity_warning": {
-          "status": "UNVERIFIED_ALIAS",
+          "status": "CATALOG_ALIAS_DIFFERS_FROM_API_ID",
           "official_id": "command-a-plus-05-2026",
           "source": "https://docs.cohere.com/docs/command-a-plus",
-          "explanation": "Generic catalog label has not been proven to be a valid API model ID",
+          "explanation": "Catalog ID command-a-plus is a friendly alias, not a callable API ID. Use api_model_id for Cohere calls.",
           "checked_on": "2026-10-14"
         },
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -4975,7 +4983,9 @@
         "customer_verified": false,
         "supplier_full_verification": false,
         "automatic_recommendation_eligible": false
-      }
+      },
+      "api_model_id": "command-a-plus-05-2026",
+      "max_output_tokens": 64000
     },
     {
       "id": "command-a",
@@ -5200,7 +5210,8 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 8000,
-      "provider_api_id": "command-a-03-2025"
+      "provider_api_id": "command-a-03-2025",
+      "api_model_id": "command-a-03-2025"
     },
     {
       "id": "embed-4",
@@ -17179,8 +17190,8 @@
       },
       "eu_processing": null,
       "eu_storage": null,
-      "open_weights": false,
-      "self_host": false,
+      "open_weights": true,
+      "self_host": true,
       "jurisdiction": "Canada",
       "deployment": [
         "Cohere API",
@@ -17201,7 +17212,7 @@
       },
       "id": "command-a-plus-05-2026",
       "provider": "Cohere",
-      "source": "https://docs.cohere.com/v1/changelog",
+      "source": "https://docs.cohere.com/docs/command-a-plus",
       "verification_evidence": {
         "claim_scope": "full",
         "verification_required": [
@@ -17214,7 +17225,7 @@
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.cohere.com/v1/changelog",
+        "source_url": "https://docs.cohere.com/docs/command-a-plus",
         "verified_claims": [
           "model_id",
           "status",
@@ -17275,6 +17286,14 @@
             "observed_value": "Standard Vault list includes Command A, A+ and A Reasoning instance pricing, subject to vault provisioning and performance tier, not a direct API price guarantee.",
             "checked_on": "2026-10-14",
             "scope": "official supported deployment model family evidence"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Generative models > Command A+ > L hourly rate / XL hourly rate",
+            "observed_value": "Standard Vault per-instance hourly: Command A+ L USD 17.50, XL USD 32.50. Separate from rate-limited free Chat API usage. Customer entitlement, terms, and final pricing are unverified.",
+            "checked_on": "2026-10-14",
+            "scope": "Official Cohere Standard Vault instance pricing only, NOT pay-as-you-go API token pricing or an executed customer tariff."
           }
         ],
         "provider_policy_evidence": {
@@ -17291,6 +17310,12 @@
           "source_url": "https://cohere.com/enterprise-data-commitments",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
+        },
+        "identity_warning": {
+          "status": "CANONICAL_API_ID_CONFIRMED",
+          "official_id": "command-a-plus-05-2026",
+          "source": "https://docs.cohere.com/docs/command-a-plus",
+          "checked_on": "2026-10-14"
         }
       },
       "supplier_audit": {
@@ -17305,7 +17330,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://docs.cohere.com/v1/changelog",
+        "source_reference": "https://docs.cohere.com/docs/command-a-plus",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -17329,7 +17354,9 @@
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
-      "provider_api_id": "command-a-plus-05-2026"
+      "provider_api_id": "command-a-plus-05-2026",
+      "api_model_id": "command-a-plus-05-2026",
+      "max_output_tokens": 64000
     },
     {
       "tier": "specialist",
