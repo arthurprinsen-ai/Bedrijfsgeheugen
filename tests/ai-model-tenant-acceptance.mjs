@@ -116,7 +116,10 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
       receipt.signature_valid!==true||receipt.approved!==true||
       receipt.approved_by!==r.approved_by||
       receipt.agreement_status!=='executed'||
-      !isRecent(receipt.verified_at))
+      !isRecent(receipt.verified_at)||
+      !receipt.valid_until||
+      !Number.isFinite(Date.parse(receipt.valid_until))||
+      Date.parse(receipt.valid_until+( /^\d{4}-\d{2}-\d{2}$/.test(receipt.valid_until)?'T23:59:59.999Z':''))<referenceDate.getTime())
     throw new Error('SIGNED_CONTRACT_NOT_AUTHENTICATED');
   }catch(error){errors.push(p+':'+String(error.message??error));}
  }
