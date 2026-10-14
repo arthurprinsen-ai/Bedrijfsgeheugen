@@ -55,7 +55,7 @@ function chart(d){
 export function renderForecastPanel(state,route){
   const top=String(route||'today').split('/')[0],data=datasets(state);
   const ordered=[...(relevant[top]||[]),'custom'];
-  const visible=data.filter(x=>ordered.includes(x.metric));
+  const visible=data.filter(x=>ordered.includes(x.metric) && x.verified);
   const chosen=visible.find(x=>x.id===selected)||visible[0];
   const heading=top==='today'?'Jouw onderneming vooruit':'Voorspellingen in deze context';
   if(!chosen)return '<section class="forecast-panel card" aria-label="Voorspellende intelligentie"><div class="forecast-head"><div><span class="forecast-eyebrow">POWERHOUSE · PREDICTIVE INTELLIGENCE</span><h2>'+heading+'</h2><p>Er zijn nog geen onderbouwde prognoses gekoppeld voor deze pagina. Verbind historische metingen, modeluitkomsten, bron en peildatum om scenario’s te tonen.</p></div><span class="forecast-status">Nog geen geverifieerde voorspelling</span></div><div class="forecast-empty">Geen grafiek met fictieve bedrijfsgetallen. Bekijk beschikbare bronnen en modelvalidatie bij de intelligence- en beheerfuncties.</div></section>';
