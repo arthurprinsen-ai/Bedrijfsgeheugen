@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {customerClaimStatus,customerReady} from '../platform/api/customer-ai-governance-evidence.mjs';
+import {customerClaimStatus,customerReady} from './ai-model-customer-governance-evidence.mjs';
 const date=new Date('2026-10-14T12:00:00Z');
 const base={tenantId:'customer-a',provider:'OpenAI',modelId:'gpt-6-astra',asOf:date};
 const common={tenant_id:'customer-a',provider:'OpenAI',model_id:'gpt-6-astra',
