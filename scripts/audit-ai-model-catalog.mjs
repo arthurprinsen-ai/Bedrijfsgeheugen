@@ -6,6 +6,9 @@ const catalog = JSON.parse(await fs.readFile('data/ai-model-catalog-v1.json', 'u
 const now = new Date();
 const maxAgeDays = 14;
 const sources = [...new Set(catalog.models.map(m => m.source).filter(Boolean))];
+const ids = catalog.models.map(m => m.id);
+const duplicateIds = ids.filter((id, index) => ids.indexOf(id) !== index);
+const missingSources = catalog.models.filter(m => !m.source || !/^https:\\/\\//.test(m.source)).map(m => m.id);
 async function probe(url) {
   try {
     const response = await fetch(url, { method: 'GET', signal: AbortSignal.timeout(12000), headers: { 'user-agent': 'Bedrijfsgeheugen-model-catalog-audit/1.0' }, redirect: 'follow' });
@@ -37,8 +40,8 @@ const models = catalog.models.map(m => {
 const report = {
   generated_at: now.toISOString(), catalog_version: catalog.version,
   important: 'HTTP reachability cannot verify prices, lifecycle, model IDs, deployment, capabilities or governance; no verified_at timestamps are changed.',
-  counts: { models: models.length, sources: sources.length, stale: models.filter(m => m.classification === 'STALE_CLAIMS_UNVERIFIED').length, unreachable_sources: [...sourceChecks.values()].filter(x => !x.reachable).length },
-  source_checks: [...sourceChecks.values()], models
+  counts: { models: models.length, sources: sources.length, stale: models.filter(m => m.classification === 'STALE_CLAIMS_UNVERIFIED').length, unreachable_sources: [...sourceChecks.values()].filter(x => !x.reachable).length, duplicate_ids: duplicateIds.length, missing_official_urls: missingSources.length },
+  duplicate_model_ids: [...new Set(duplicateIds)], missing_source_models: missingSources, source_checks: [...sourceChecks.values()], models
 };
 const json = JSON.stringify(report, null, 2) + '\n';
 if (process.argv[2]) await fs.writeFile(process.argv[2], json);
