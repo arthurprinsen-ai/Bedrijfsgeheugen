@@ -20,7 +20,7 @@ export function customerClaimStatus({tenantId,provider,modelId,claim,receipts=[]
     nonEmpty(r.valid_until) && r.evidence_kind===requirement &&
     Number.isFinite(Date.parse(r.checked_on)) && Number.isFinite(Date.parse(r.valid_until)) &&
     Date.parse(r.checked_on)<=asOf.getTime() &&
-    Date.parse(r.valid_until+( /^\\d{4}-\\d{2}-\\d{2}$/.test(r.valid_until)?'T23:59:59.999Z':''))>=asOf.getTime() &&
+    Date.parse(r.valid_until+( /^\d{4}-\d{2}-\d{2}$/.test(r.valid_until)?'T23:59:59.999Z':''))>=asOf.getTime() &&
     (claim!=='tenant_data_residency'||(nonEmpty(r.region) && r.runtime_region_confirmed===true)) &&
     (!['tenant_zdr','customer_cmk','private_networking_enabled'].includes(claim)||
       (r.control_enabled===true && nonEmpty(r.configuration_reference))));
