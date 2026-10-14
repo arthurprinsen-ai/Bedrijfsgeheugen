@@ -1521,16 +1521,17 @@
       "source_type": "official-provider"
     },
     {
-      "id": "llama-open-weight",
+      "id": "llama-4-scout-17b-16e-instruct",
       "provider": "Meta",
       "tier": "open-weight",
-      "status": "provider-dependent",
+      "status": "active",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 10000,
       "modalities": [
-        "text"
+        "text",
+        "vision"
       ],
       "strengths": [
         "self-hosting",
@@ -1546,44 +1547,52 @@
         "vision": 5,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "US",
       "deployment": [
-        "self-host",
-        "EU cloud",
-        "on-prem"
+        "downloadable weights",
+        "self-hosted",
+        "third-party-hosted if separately contracted"
       ],
-      "source": "https://www.llama.com/",
-      "limitations": [],
+      "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "limitations": [
+        "Self-hosting pricing and customer governance depend on actual deployment, entitlement and contract."
+      ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
-        "subprocessors": "verify current provider list",
-        "dpa": "verify current product/contract",
-        "cmk": "verify current product/contract",
-        "private_networking": "verify current product/contract"
+        "storage_residency": "operator/deployment dependent, not attested",
+        "inference_residency": "operator/deployment dependent, not attested",
+        "training_on_customer_data": "operator/contract dependent, not verified",
+        "retention": "operator/contract dependent, not verified",
+        "zero_data_retention": "not verified",
+        "subprocessors": "selected host/contract dependent",
+        "dpa": "customer/operator contract required",
+        "cmk": "selected host dependent",
+        "private_networking": "selected host dependent"
       },
-      "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "verified_at": "2026-10-14",
+      "source_type": "official-provider",
+      "canonical_model_id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "license": "Llama 4 Community License",
+      "verification_state": "PARTIAL",
+      "auto_recommendation_eligible": false,
+      "record_kind": "individual_model",
+      "legacy_catalog_id": "llama-open-weight",
+      "source_check_scope": "Official model and public license; customer contracts/configuration/prices not verified."
     },
     {
-      "id": "qwen-open-weight",
+      "id": "qwen3-32b",
       "provider": "Alibaba/Qwen",
       "tier": "open-weight",
-      "status": "provider-dependent",
+      "status": "active",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32.768,
       "modalities": [
-        "text",
-        "vision"
+        "text"
       ],
       "strengths": [
         "open-weight deployment",
@@ -1599,30 +1608,40 @@
         "vision": 8,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "China",
       "deployment": [
-        "self-host",
-        "cloud providers"
+        "downloadable weights",
+        "self-hosted",
+        "third-party-hosted if separately contracted"
       ],
-      "source": "https://qwenlm.github.io/",
-      "limitations": [],
+      "source": "https://huggingface.co/Qwen/Qwen3-32B",
+      "limitations": [
+        "Self-hosting pricing and customer governance depend on actual deployment, entitlement and contract."
+      ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
-        "subprocessors": "verify current provider list",
-        "dpa": "verify current product/contract",
-        "cmk": "verify current product/contract",
-        "private_networking": "verify current product/contract"
+        "storage_residency": "operator/deployment dependent, not attested",
+        "inference_residency": "operator/deployment dependent, not attested",
+        "training_on_customer_data": "operator/contract dependent, not verified",
+        "retention": "operator/contract dependent, not verified",
+        "zero_data_retention": "not verified",
+        "subprocessors": "selected host/contract dependent",
+        "dpa": "customer/operator contract required",
+        "cmk": "selected host dependent",
+        "private_networking": "selected host dependent"
       },
-      "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "verified_at": "2026-10-14",
+      "source_type": "official-provider",
+      "canonical_model_id": "Qwen/Qwen3-32B",
+      "license": "Apache-2.0",
+      "verification_state": "PARTIAL",
+      "auto_recommendation_eligible": false,
+      "record_kind": "individual_model",
+      "legacy_catalog_id": "qwen-open-weight",
+      "source_check_scope": "Official model and public license; customer contracts/configuration/prices not verified."
     },
     {
       "tier": "balanced",
