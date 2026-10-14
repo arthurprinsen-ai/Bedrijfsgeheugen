@@ -18912,7 +18912,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 1000,
       "modalities": [
         "text",
         "audio"
@@ -19098,7 +19098,30 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_aws_model_card_crosscheck_20261014": {
+          "checked_on": "2026-10-14",
+          "model_specific_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+          "canonical_bedrock_model_id": "amazon.nova-2-sonic-v1:0",
+          "public_lifecycle_observation": "Active (public card, 2026-10-14); EOL no sooner than 2026-12-02",
+          "public_in_region_supported": [
+            "us-east-1",
+            "us-west-2",
+            "eu-north-1",
+            "ap-northeast-1"
+          ],
+          "public_geo_cross_region_supported": false,
+          "public_global_cross_region_supported": false,
+          "published_api_transport": "InvokeModelWithBidirectionalStream",
+          "published_context_k": 1000,
+          "published_max_output_tokens": 64000,
+          "customer_region_and_model_entitlement_verified": false,
+          "effective_processing_or_storage_region_verified": false,
+          "current_account_rate_verified": false,
+          "independent_six_claim_supplier_approval": false,
+          "automatic_recommendation_eligible": false,
+          "scope": "Official AWS public model card only. Region publication is not authentication or customer runtime/configuration evidence; neither pricing nor tenant governance may be approved."
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19114,7 +19137,9 @@
         "source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet",
         "checked_on": "2026-10-14",
         "live_rate_verified": false
-      }
+      },
+      "provider_api_id": "amazon.nova-2-sonic-v1:0",
+      "max_output_tokens": 64000
     },
     {
       "tier": "frontier",
@@ -19981,7 +20006,34 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_aws_model_card_crosscheck_20261014": {
+          "checked_on": "2026-10-14",
+          "model_specific_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+          "canonical_bedrock_model_id": "amazon.nova-micro-v1:0",
+          "public_lifecycle_observation": "Active (public card, 2026-10-14); no current EOL date published",
+          "public_in_region_supported": [
+            "us-east-1",
+            "us-gov-west-1",
+            "eu-west-2",
+            "ap-southeast-2"
+          ],
+          "public_geo_cross_region_supported": true,
+          "public_global_cross_region_supported": false,
+          "published_geo_inference_ids": [
+            "eu.amazon.nova-micro-v1:0",
+            "us.amazon.nova-micro-v1:0"
+          ],
+          "published_api_transport": "InvokeModel and Converse",
+          "published_context_k": 128,
+          "published_max_output_tokens": 5000,
+          "customer_region_and_model_entitlement_verified": false,
+          "effective_processing_or_storage_region_verified": false,
+          "current_account_rate_verified": false,
+          "independent_six_claim_supplier_approval": false,
+          "automatic_recommendation_eligible": false,
+          "scope": "Official AWS public model card only. Region publication is not authentication or customer runtime/configuration evidence; neither pricing nor tenant governance may be approved."
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19998,7 +20050,9 @@
         "checked_on": "2026-10-14",
         "scope": "historical baseline; not guaranteed live price",
         "customer_region_verified": false
-      }
+      },
+      "provider_api_id": "amazon.nova-micro-v1:0",
+      "max_output_tokens": 5000
     },
     {
       "tier": "specialist",
@@ -20402,7 +20456,26 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_aws_model_card_crosscheck_20261014": {
+          "checked_on": "2026-10-14",
+          "model_specific_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+          "canonical_bedrock_model_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+          "public_lifecycle_observation": "Active (public card, 2026-10-14); EOL no sooner than 2026-10-28",
+          "public_in_region_supported": [
+            "us-east-1",
+            "us-gov-west-1"
+          ],
+          "public_geo_cross_region_supported": false,
+          "public_global_cross_region_supported": false,
+          "published_api_transport": "StartAsyncInvoke (official model-card example)",
+          "customer_region_and_model_entitlement_verified": false,
+          "effective_processing_or_storage_region_verified": false,
+          "current_account_rate_verified": false,
+          "independent_six_claim_supplier_approval": false,
+          "automatic_recommendation_eligible": false,
+          "scope": "Official AWS public model card only. Region publication is not authentication or customer runtime/configuration evidence; neither pricing nor tenant governance may be approved."
+        }
       },
       "aws_official_deployment_research_20261014": {
         "source": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
@@ -20425,7 +20498,8 @@
         "checked_on": "2026-10-14",
         "other_modalities_verified": false,
         "customer_billing_verified": false
-      }
+      },
+      "provider_api_id": "amazon.nova-2-multimodal-embeddings-v1:0"
     },
     {
       "tier": "specialist",
