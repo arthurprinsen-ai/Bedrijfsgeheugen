@@ -91,3 +91,26 @@ test('provider deprecation notices prevent recommending stale Mistral catalog en
   assert.equal(m.claim_evidence.lifecycle.status,'PROVIDER_DOC_CONFIRMED',id);
  }
 });
+
+
+test('Bedrock catalog keeps provider API IDs separate from internal labels and blocks EOL models',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const amazon=c.models.filter(x=>x.provider==='Amazon');
+ assert.equal(amazon.length,13);
+ for(const m of amazon){
+  assert.match(m.provider_model_id,/^amazon\.[a-z0-9-]+/);
+  assert.match(m.source,/^https:\/\/docs\.aws\.amazon\.com\//);
+  assert.equal(m.claim_evidence.model_identity.provider_model_id,m.provider_model_id);
+ }
+ for(const [id,date] of [
+   ['amazon-nova-sonic','2026-09-14'],
+   ['amazon-nova-canvas','2026-09-30'],
+   ['amazon-nova-reel','2026-09-30']
+ ]){
+  const m=c.models.find(x=>x.id===id);
+  assert.equal(m.status,'retired');
+  assert.equal(m.selection_eligible,false);
+  assert.equal(m.eol_date,date);
+  assert.equal(m.claim_evidence.lifecycle.state,'EOL_REMOVED_IN_LISTED_REGIONS');
+ }
+});
