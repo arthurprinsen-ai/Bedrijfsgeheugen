@@ -173,3 +173,13 @@ test('Google Gemini 3.1 Flash Image October 6 deprecation date matches official 
  assert.equal(m.source_date_correction_20261014?.supplier_announcement_date,'2026-10-06');
  assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false);
 });
+
+test('Nova Premier official API ID remains separate from authenticated lifecycle clearance',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const m=c.models.find(x=>x.id==='amazon-nova-premier');
+ assert.equal(m.provider_api_id,'amazon.nova-premier-v1:0');
+ assert.equal(m.status,'eol');
+ assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ assert.notEqual(m.verification_evidence.claim_scope,'full');
+ assert.ok(m.verification_evidence.claim_evidence.some(r=>r.claim==='model_id'&&r.observed_value==='amazon.nova-premier-v1:0'));
+});
