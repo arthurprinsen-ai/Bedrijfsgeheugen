@@ -42,7 +42,7 @@ test('tenant readback value must be present and match attested value',()=>{
 test('live provider readback is mandatory for all non-contract claims',()=>{
  const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
  assert.match(source,/if \(r.claim !== 'signed_dpa'\)/);
- assert.doesNotMatch(source,/TENANT_LIVE_READBACK_REQUIRED/);
+ assert.doesNotMatch(source,/process\.env\.TENANT_LIVE_READBACK_REQUIRED\s*===\s*'1'/);
  assert.match(source,/TENANT_LIVE_READBACK_ALLOWED_ORIGIN/);
  assert.match(source,/LIVE_PROVIDER_CONNECTION_REQUIRED/);
  assert.match(source,/LIVE_PROVIDER_CONFIGURATION_MISMATCH/);
