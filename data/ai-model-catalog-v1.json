@@ -9374,6 +9374,30 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+            "locator": "Model code",
+            "observed_value": "gemini-3.7-flash",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific official document; tenant permission unverified"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+            "locator": "Supported data types; Token limits; Capabilities",
+            "observed_value": "Text, image, video, audio and PDF input; text output; 1,048,576 input and 65,536 output token limits, tools and thinking; deprecated alias",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific official document; tenant permission unverified"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+            "locator": "Deprecated model caution; Consumption options",
+            "observed_value": "API model alias gemini-3.7-flash automatically routes to gemini-3.8-flash; prefer successor in new deployments",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific official document; tenant permission unverified"
           }
         ],
         "provider_policy_evidence": {
@@ -9412,12 +9436,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 4,
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -9951,8 +9972,8 @@
     {
       "tier": "specialist",
       "status": "deprecated",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.5,
+      "output_usd_m": 60,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -10093,11 +10114,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10109,6 +10128,16 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "pricing_modalities": {
+        "text_input": 0.5,
+        "image_input": 0.5,
+        "text_output": 3,
+        "image_output": 60,
+        "unit": "USD per 1M tokens",
+        "mode": "Standard paid",
+        "checked_on": "2026-10-14",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing"
       }
     },
     {
