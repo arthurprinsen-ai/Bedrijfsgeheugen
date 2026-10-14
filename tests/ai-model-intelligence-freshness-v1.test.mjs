@@ -12,6 +12,8 @@ test('supplier claim flags never contradict the evidence ledger',()=>{
   for(const claim of required){
    if(e.verified_claims?.includes(claim)&&e.not_verified?.includes(claim))
     problems.push(m.id+':CONTRADICTORY_CLAIM:'+claim);
+   if(e.verified_claims?.includes(claim)&&classifySupplierClaim(e,claim)==='PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF')
+    problems.push(m.id+':PROVIDER_BASELINE_FALSE_MODEL_APPROVAL:'+claim);
    if(e.verified_claims?.includes(claim)&&!e.claim_evidence?.some(x=>x.claim===claim&&
       typeof x.observed_value==='string'&&x.observed_value.trim()))
     problems.push(m.id+':UNSUPPORTED_VERIFIED_CLAIM:'+claim);
