@@ -17,3 +17,12 @@ test('AI model catalog recovery is evidence-scoped and avoids false verification
  assert.ok(astra.verification_evidence?.not_verified?.includes('governance'));
  assert.ok(c.models.some(m=>m.verified_at==='2026-09-30'),'Do not restamp unverified models');
 });
+
+test('catalog audit requires byte-equivalent semantic production readback when release URL is set',()=>{
+ const audit=fs.readFileSync('tests/ai-model-catalog-evidence-audit.mjs','utf8');
+ assert.match(audit,/MODEL_CATALOG_PRODUCTION_URL/);
+ assert.match(audit,/CATALOG_CONTENT_MISMATCH/);
+ assert.match(audit,/production_readback\.status = 'MATCH'/);
+ assert.match(audit,/createHash\('sha256'\)/);
+ assert.match(audit,/process\.exitCode = 2/);
+});
