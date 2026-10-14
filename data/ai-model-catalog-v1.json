@@ -2323,6 +2323,13 @@
             "locator": "Features / Weights",
             "observed_value": "Apache 2.0 open weights for local deployment; chat and batch API endpoints documented",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+            "locator": "Model identifier",
+            "observed_value": "ministral-8b-2512",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -2337,10 +2344,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -3818,15 +3824,30 @@
         ],
         "claim_evidence": [
           {
-            "claim": "capabilities",
+            "claim": "pricing",
             "url": "https://cohere.com/pricing",
             "locator": "Model Vault: Rerank 4 Pro, medium $5/hr $3250/mo; large $10/hr $6500/mo; instance rates (not API token price)",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "pricing",
-            "url": "https://cohere.com/pricing",
-            "locator": "Model Vault: Rerank 4 Pro, medium $5/hr $3250/mo; large $10/hr $6500/mo; instance rates (not API token price)",
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/v2/docs/rerank",
+            "locator": "Latest Model table",
+            "observed_value": "Provider API model ID rerank-v4.0-pro",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/v2/docs/rerank",
+            "locator": "Latest Model table",
+            "observed_value": "Multilingual text and semi-structured JSON reranking; 32k context",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/v2/docs/rerank",
+            "locator": "Latest Model > Endpoints",
+            "observed_value": "Cohere Rerank API endpoint; actual account authorization not checked",
             "checked_on": "2026-10-14"
           }
         ]
@@ -3843,14 +3864,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://cohere.com/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -11345,8 +11363,23 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://docs.cohere.com/v1/changelog",
-            "locator": "Apr 4 2026 retirement notice recommends this ID as replacement",
+            "url": "https://docs.cohere.com/changelog/embed-v3-is-multimodal",
+            "locator": "API Changes > example request",
+            "observed_value": "model parameter embed-multilingual-v3.0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/changelog/embed-v3-is-multimodal",
+            "locator": "API Changes and Restrictions",
+            "observed_value": "Text and image embeddings; image formats PNG JPEG WebP GIF; one image/request and 5 MB maximum",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/changelog/embed-v3-is-multimodal",
+            "locator": "API Changes > cURL example",
+            "observed_value": "Cohere POST https://api.cohere.ai/v1/embed with input_type=image",
             "checked_on": "2026-10-14"
           }
         ]
@@ -11362,14 +11395,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://docs.cohere.com/v1/changelog",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
