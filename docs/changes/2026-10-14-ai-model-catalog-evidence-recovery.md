@@ -215,3 +215,20 @@ Checked directly against official model-owner pages on 2026-10-14. The following
 | `amazon-titan-image-generator-g1-v2` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html | Official AWS card shows model EOL date 2026-06-30 while still labelling lifecycle Legacy. That is a real provider-document conflict; preserve `CONFLICT` and avoid recommendations until modelLifecycle is checked for the user's AWS account/region. |
 
 **Evidence boundary:** all 10 are public model-source reviews only, copied to scoped Supabase `catalog_record.independent_model_source_review_20261014` and verified with a database readback. Alias differences are **not** automatically promoted to equivalent API IDs. The existing 110-model supplier and tenant acceptance gates remain enforced.
+
+
+## Falcon exact-model public source verification (2026-10-14)
+
+Exact official Technology Innovation Institute-owned Hugging Face model repositories reviewed individually on 2026-10-14. This inspection establishes repository identity, public weights, stated weight-license category and example local inference paths, **not** a commercial hosted inference tariff or customer legal/runtime acceptance.
+
+| Catalog model | Official model owner URL | Family/type | Repository weight license |
+| --- | --- | --- | --- |
+| `falcon-h1-0.5b-instruct` | https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct | 0.5B | Falcon-LLM |
+| `falcon-h1-1.5b-instruct` | https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct | 1.5B | Falcon-LLM |
+| `falcon-h1-3b-instruct` | https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct | 3B | Falcon-LLM |
+| `falcon-h1-7b-instruct` | https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct | 7B | Falcon-LLM |
+| `falcon-h1-34b-instruct` | https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct | 34B | Falcon-LLM |
+| `falcon-h1r-7b` | https://huggingface.co/tiiuae/Falcon-H1R-7B | 7B reasoning | Falcon-LLM |
+| `falcon-ocr` | https://huggingface.co/tiiuae/Falcon-OCR | OCR vision-language | Apache-2.0 |
+
+The Falcon-H1/H1R model cards document Transformers, vLLM and related local/self-hosting methods; this does **not** imply a TII-provided paid API. Pricing per hosted token is therefore **unverified**, not zero: hosting GPU/network/storage and any commercial-license costs depend on the operator. The Falcon-H1 License requires independent license interpretation, while Falcon-OCR's Apache-2.0 weight license is distinct. No customer hosting region, license acceptance, executed DPA, ZDR or applied processing control has been inspected. These seven public model-source checks remain `release_eligible=false`; supplier and protected production validation remain mandatory.
