@@ -13040,10 +13040,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -13094,6 +13094,15 @@
             "locator": "Versions; Consumption options",
             "observed_value": "Gemini API stable gemini-3-pro-image; Batch API supported, Flex and Priority unsupported",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3 Pro Image / Standard / Paid",
+            "observed_value": "USD 2.00 per 1M text/image input tokens, USD 12.00 per 1M text/thinking output tokens, USD 120.00 per 1M image output tokens; about USD 0.134 per 1K/2K image or 0.24 per 4K image.",
+            "checked_on": "2026-10-14",
+            "scope": "Exact Google Standard paid API published tariff only; excludes customer billing, account entitlement, other service tiers and actual region",
+            "verification_type": "independent_exact_official_model_pricing_table"
           }
         ],
         "provider_policy_evidence": {
@@ -13168,6 +13177,18 @@
         "details": "Standard paid: USD 2 / 1M input text/image tokens; USD 12 / 1M output text/thinking tokens and USD 120 / 1M image output tokens; approximately USD 0.134 per 1K/2K image.",
         "caution": "Image and audio output per 1M modality-specific tokens; not interchangeable with text token price",
         "customer_billing_not_verified": true
+      },
+      "official_paid_standard_pricing_review_20261014": {
+        "official_source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_locator": "Gemini 3 Pro Image / Standard / Paid",
+        "observed_tariff": "USD 2.00 per 1M text/image input tokens, USD 12.00 per 1M text/thinking output tokens, USD 120.00 per 1M image output tokens; about USD 0.134 per 1K/2K image or 0.24 per 4K image.",
+        "reviewed_on": "2026-10-14",
+        "only_published_standard_paid_price_verified": true,
+        "customer_invoice_verified": false,
+        "tenant_entitlement_verified": false,
+        "governance_verified": false,
+        "production_approved": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -13435,10 +13456,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -13510,6 +13531,15 @@
             "locator": "Versions, Consumption options",
             "observed_value": "Gemini Live API preview gemini-3.5-live-translate-preview; Batch/Flex/Priority unsupported",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.5 Live Translate / Standard / Paid",
+            "observed_value": "USD 3.50 per 1M audio input tokens (about USD 0.0053/minute), USD 21.00 per 1M audio output tokens (about USD 0.0315/minute).",
+            "checked_on": "2026-10-14",
+            "scope": "Exact Google Standard paid API published tariff only; excludes customer billing, account entitlement, other service tiers and actual region",
+            "verification_type": "independent_exact_official_model_pricing_table"
           }
         ],
         "provider_policy_evidence": {
@@ -13584,6 +13614,18 @@
         "details": "Paid USD 3.50 per 1M audio input tokens and USD 21.00 per 1M audio output tokens; estimated total USD 0.0368/min at published token rates.",
         "note": "Root input/output rates represent stated primary audio or video modality when applicable; modality-specific receipt and provider bill are authoritative",
         "customer_billing_not_verified": true
+      },
+      "official_paid_standard_pricing_review_20261014": {
+        "official_source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_locator": "Gemini 3.5 Live Translate / Standard / Paid",
+        "observed_tariff": "USD 3.50 per 1M audio input tokens (about USD 0.0053/minute), USD 21.00 per 1M audio output tokens (about USD 0.0315/minute).",
+        "reviewed_on": "2026-10-14",
+        "only_published_standard_paid_price_verified": true,
+        "customer_invoice_verified": false,
+        "tenant_entitlement_verified": false,
+        "governance_verified": false,
+        "production_approved": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -14071,10 +14113,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -14125,6 +14167,15 @@
             "locator": "REST example and Interactions API",
             "observed_value": "Gemini Interactions API model gemini-omni-1.1-flash, available for video generation and editing",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini Omni Flash / Standard / Paid",
+            "observed_value": "USD 1.50 per 1M multimodal input tokens, USD 9.00 per 1M text output tokens, USD 17.50 per 1M video output tokens (5,792 tokens/sec at 720p).",
+            "checked_on": "2026-10-14",
+            "scope": "Exact Google Standard paid API published tariff only; excludes customer billing, account entitlement, other service tiers and actual region",
+            "verification_type": "independent_exact_official_model_pricing_table"
           }
         ],
         "provider_policy_evidence": {
@@ -14199,6 +14250,18 @@
         "details": "Paid USD 1.50 / 1M multimodal input tokens; text output USD 9.00 / 1M; video output USD 17.50 / 1M video tokens, approx USD 0.10 per second at 720p; no assumption of text/image output pricing equivalence.",
         "note": "Root input/output rates represent stated primary audio or video modality when applicable; modality-specific receipt and provider bill are authoritative",
         "customer_billing_not_verified": true
+      },
+      "official_paid_standard_pricing_review_20261014": {
+        "official_source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_locator": "Gemini Omni Flash / Standard / Paid",
+        "observed_tariff": "USD 1.50 per 1M multimodal input tokens, USD 9.00 per 1M text output tokens, USD 17.50 per 1M video output tokens (5,792 tokens/sec at 720p).",
+        "reviewed_on": "2026-10-14",
+        "only_published_standard_paid_price_verified": true,
+        "customer_invoice_verified": false,
+        "tenant_entitlement_verified": false,
+        "governance_verified": false,
+        "production_approved": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
@@ -14269,10 +14332,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -14323,6 +14386,15 @@
             "locator": "Versions and endpoints",
             "observed_value": "Gemini Interactions API gemini-3.5-transcribe for files, gemini-3.5-transcribe-live for Live sessions; Batch unsupported",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.5 Transcribe / Standard / Paid",
+            "observed_value": "USD 2.00 per 1M audio input tokens (about USD 0.003/minute), USD 12.00 per 1M text output tokens (about USD 0.002/minute).",
+            "checked_on": "2026-10-14",
+            "scope": "Exact Google Standard paid API published tariff only; excludes customer billing, account entitlement, other service tiers and actual region",
+            "verification_type": "independent_exact_official_model_pricing_table"
           }
         ],
         "provider_policy_evidence": {
@@ -14397,6 +14469,18 @@
         "details": "Paid USD 2.00 / 1M audio input tokens (approx USD 0.003 per minute) and USD 12.00 / 1M text output tokens (approx USD 0.002 per minute); blended estimate USD 0.005/min.",
         "note": "Root input/output rates represent stated primary audio or video modality when applicable; modality-specific receipt and provider bill are authoritative",
         "customer_billing_not_verified": true
+      },
+      "official_paid_standard_pricing_review_20261014": {
+        "official_source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_locator": "Gemini 3.5 Transcribe / Standard / Paid",
+        "observed_tariff": "USD 2.00 per 1M audio input tokens (about USD 0.003/minute), USD 12.00 per 1M text output tokens (about USD 0.002/minute).",
+        "reviewed_on": "2026-10-14",
+        "only_published_standard_paid_price_verified": true,
+        "customer_invoice_verified": false,
+        "tenant_entitlement_verified": false,
+        "governance_verified": false,
+        "production_approved": false,
+        "automatic_recommendation_eligible": false
       }
     },
     {
