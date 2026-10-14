@@ -108,12 +108,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -122,7 +121,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -182,8 +181,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Provider policy is distinct from tenant-specific agreement and authenticated runtime readback; both remain separate mandatory customer acceptance tasks."
+        },
+        "verification_scope_note": "Official model page and OpenAI API data-control policy independently inspected on 2026-10-14: model ID/status/pricing/capabilities/documented endpoints, plus supplier-level API privacy/retention/ZDR eligibility baseline. This DOES NOT verify customer tenant access, executed DPA, regional configuration, granted ZDR, private networking or actual runtime storage."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -303,12 +303,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -317,7 +316,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -377,8 +376,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Provider policy is distinct from tenant-specific agreement and authenticated runtime readback; both remain separate mandatory customer acceptance tasks."
+        },
+        "verification_scope_note": "Official model page and OpenAI API data-control policy independently inspected on 2026-10-14: model ID/status/pricing/capabilities/documented endpoints, plus supplier-level API privacy/retention/ZDR eligibility baseline. This DOES NOT verify customer tenant access, executed DPA, regional configuration, granted ZDR, private networking or actual runtime storage."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -481,12 +481,11 @@
           "context_k",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -495,7 +494,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -555,8 +554,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Provider policy is distinct from tenant-specific agreement and authenticated runtime readback; both remain separate mandatory customer acceptance tasks."
+        },
+        "verification_scope_note": "Official model page and OpenAI API data-control policy independently inspected on 2026-10-14: model ID/status/pricing/capabilities/documented endpoints, plus supplier-level API privacy/retention/ZDR eligibility baseline. This DOES NOT verify customer tenant access, executed DPA, regional configuration, granted ZDR, private networking or actual runtime storage."
       },
       "pricing_basis": {
         "currency": "USD",
@@ -662,7 +662,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -671,7 +671,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -679,11 +679,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -743,8 +742,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Provider policy is distinct from tenant-specific agreement and authenticated runtime readback; both remain separate mandatory customer acceptance tasks."
+        },
+        "verification_scope_note": "Official model page and OpenAI API data-control policy independently inspected on 2026-10-14: model ID/status/pricing/capabilities/documented endpoints, plus supplier-level API privacy/retention/ZDR eligibility baseline. This DOES NOT verify customer tenant access, executed DPA, regional configuration, granted ZDR, private networking or actual runtime storage."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -5975,7 +5975,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -5984,7 +5984,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -5996,11 +5996,10 @@
           "input_usd_m",
           "output_usd_m",
           "cached_input_usd_m",
-          "context_k"
-        ],
-        "not_verified": [
+          "context_k",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -6060,8 +6059,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Provider policy is distinct from tenant-specific agreement and authenticated runtime readback; both remain separate mandatory customer acceptance tasks."
+        },
+        "verification_scope_note": "Official model page and OpenAI API data-control policy independently inspected on 2026-10-14: model ID/status/pricing/capabilities/documented endpoints, plus supplier-level API privacy/retention/ZDR eligibility baseline. This DOES NOT verify customer tenant access, executed DPA, regional configuration, granted ZDR, private networking or actual runtime storage."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
