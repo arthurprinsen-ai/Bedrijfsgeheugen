@@ -1906,7 +1906,7 @@
       "id": "llama-open-weight",
       "provider": "Meta",
       "tier": "open-weight",
-      "status": "provider-dependent",
+      "status": "family_reference",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -1938,8 +1938,10 @@
         "EU cloud",
         "on-prem"
       ],
-      "source": "https://www.llama.com/",
-      "limitations": [],
+      "source": "https://huggingface.co/meta-llama",
+      "limitations": [
+        "Family placeholder only, not a routable model; choose a specific version and verify its official model card before deployment."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -1952,13 +1954,31 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "record_kind": "model_family",
+      "selection_eligible": false,
+      "provider_model_id": null,
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "family_presence": {
+          "source": "https://huggingface.co/meta-llama",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_PUBLISHER_MODEL_HUB",
+          "publisher_repo": "meta-llama"
+        },
+        "model_identity": {
+          "status": "NOT_A_SINGLE_DEPLOYABLE_MODEL_ID"
+        },
+        "provider_contracts": {
+          "status": "DEPLOYMENT_SPECIFIC"
+        }
+      }
     },
     {
       "id": "qwen-open-weight",
       "provider": "Alibaba/Qwen",
       "tier": "open-weight",
-      "status": "provider-dependent",
+      "status": "family_reference",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -1990,8 +2010,10 @@
         "self-host",
         "cloud providers"
       ],
-      "source": "https://qwenlm.github.io/",
-      "limitations": [],
+      "source": "https://huggingface.co/Qwen",
+      "limitations": [
+        "Family placeholder only, not a routable model; choose a specific version and verify its official model card before deployment."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -2004,7 +2026,25 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "record_kind": "model_family",
+      "selection_eligible": false,
+      "provider_model_id": null,
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "family_presence": {
+          "source": "https://huggingface.co/Qwen",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_PUBLISHER_MODEL_HUB",
+          "publisher_repo": "Qwen"
+        },
+        "model_identity": {
+          "status": "NOT_A_SINGLE_DEPLOYABLE_MODEL_ID"
+        },
+        "provider_contracts": {
+          "status": "DEPLOYMENT_SPECIFIC"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -6825,10 +6865,12 @@
         "on-prem"
       ],
       "unit_price": "self-host / hosting-provider cost",
-      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
       "limitations": [
         "managed API pricing and residency depend on the chosen hosting path",
-        "verify license terms for the intended commercial deployment"
+        "verify license terms for the intended commercial deployment",
+        "Falcon-H1R-7B uses Falcon-LLM License, not permissive Apache/MIT; evaluate commercial terms.",
+        "Official model card reports no live Hugging Face Inference Provider; plan self-host or authorized deployment."
       ],
       "governance": {
         "storage_residency": "customer-controlled when self-hosted",
@@ -6842,7 +6884,29 @@
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "provider_model_id": "tiiuae/Falcon-H1R-7B",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_MODEL_CARD_CONFIRMED",
+          "provider_model_id": "tiiuae/Falcon-H1R-7B"
+        },
+        "license": {
+          "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value": "Falcon-LLM License; verify suitability for commercial deployment"
+        },
+        "tenant_governance": {
+          "status": "SELF_HOST_DEPLOYMENT_SPECIFIC"
+        },
+        "provider_contracts": {
+          "status": "HOSTING_PROVIDER_DEPENDENT"
+        }
+      }
     },
     {
       "id": "falcon-ocr",
