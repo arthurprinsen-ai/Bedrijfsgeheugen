@@ -2,9 +2,9 @@ import {resolveIdentityTenant} from '../read-models/portal-server-state.mjs';
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const numeric=x=>typeof x==='number'&&Number.isFinite(x);
 // Canonical monthly or daily financial periods; reject gaps disguised as invalid dates,
- // out-of-order points, duplicates and silently discarded null observations.
+// out-of-order points, duplicates and silently discarded null observations.
 const period=date=>{
- if(typeof date!=='string'|| !/^\\d{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12]\\d|3[01]))?$/.test(date))return false;
+ if(typeof date!=='string'|| !/^[0-9]{4}-(0[1-9]|1[0-2])(-(0[1-9]|[12][0-9]|3[01]))?$/.test(date))return false;
  if(date.length===7)return true;
  const parsed=new Date(date+'T00:00:00Z');
  return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===date;
