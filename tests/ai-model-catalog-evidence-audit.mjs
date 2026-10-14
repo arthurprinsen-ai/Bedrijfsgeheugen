@@ -23,6 +23,17 @@ function hasFullEvidence(m) {
       x.checked_on === e.checked_on);
     if (!receipt) return false;
   }
+  const tenantClaims=['dpa','signed_dpa','contract','tenant_data_residency','tenant_zdr','customer_cmk','private_networking_enabled'];
+  for (const claim of tenantClaims) {
+    if (!e.verified_claims.includes(claim)) continue;
+    const approved = e.tenant_evidence?.some(r =>
+      r.claim===claim && r.scope==='customer_specific' &&
+      typeof r.tenant_id==='string' && r.tenant_id.trim() &&
+      typeof r.approved_by==='string' && r.approved_by.trim() &&
+      typeof r.evidence_reference==='string' && r.evidence_reference.trim() &&
+      r.checked_on===e.checked_on);
+    if (!approved) return false;
+  }
   const age=(now-new Date(e.checked_on+'T00:00:00Z'))/86400000;
   return Number.isFinite(age) && age >= 0 && age <= maxAgeDays;
 }
