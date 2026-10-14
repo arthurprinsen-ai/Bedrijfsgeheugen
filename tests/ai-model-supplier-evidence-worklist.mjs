@@ -16,7 +16,11 @@ export function classifySupplierClaim(evidence, claim) {
   r.checked_on===evidence.checked_on;
  const generic=r=>String(r.scope??'').includes('NOT model-specific')||
   r.verification_status==='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED';
- const modelScoped=receipts.find(r=>complete(r)&&!generic(r));
+ // Historical prices, examples, unverified API tariffs and modality fragments are
+ // useful context but must not certify a complete, current model-specific price.
+ const partialPricing=r=>claim==='pricing'&&
+  /UNVERIFIED|NOT_LIVE|HISTORICAL|PARTIAL|EXAMPLE/.test(String(r.verification_status??'').toUpperCase());
+ const modelScoped=receipts.find(r=>complete(r)&&!generic(r)&&!partialPricing(r));
  if(modelScoped) return 'MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED';
  if(receipts.some(r=>complete(r)&&generic(r))) return 'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF';
  return 'NO_USABLE_MODEL_SOURCE_RECEIPT';
