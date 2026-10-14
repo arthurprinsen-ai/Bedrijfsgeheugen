@@ -1721,7 +1721,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1730,7 +1730,39 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.x.ai/developers/models",
+        "verified_claims": [
+          "model_id",
+          "status",
+          "pricing"
+        ],
+        "not_verified": [
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.x.ai/developers/models",
+            "checked_on": "2026-10-14",
+            "locator": "grok-4.7"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.x.ai/developers/models",
+            "checked_on": "2026-10-14",
+            "locator": "grok-4.7"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.x.ai/developers/models",
+            "checked_on": "2026-10-14",
+            "locator": "grok-4.7"
+          }
+        ]
       }
     },
     {
@@ -7854,7 +7886,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7863,7 +7895,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "checked_on": "2026-10-14",
+        "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+            "checked_on": "2026-10-14",
+            "locator": "falcon-h1-0.5b-instruct"
+          }
+        ]
       }
     },
     {
@@ -7922,7 +7974,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7931,7 +7983,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "checked_on": "2026-10-14",
+        "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+            "checked_on": "2026-10-14",
+            "locator": "falcon-h1-1.5b-instruct"
+          }
+        ]
       }
     },
     {
@@ -7991,7 +8063,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8000,7 +8072,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "checked_on": "2026-10-14",
+        "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+            "checked_on": "2026-10-14",
+            "locator": "falcon-h1-3b-instruct"
+          }
+        ]
       }
     },
     {
@@ -8060,7 +8152,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8069,7 +8161,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "checked_on": "2026-10-14",
+        "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+            "checked_on": "2026-10-14",
+            "locator": "falcon-h1-7b-instruct"
+          }
+        ]
       }
     },
     {
@@ -8129,7 +8241,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -8138,7 +8250,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "checked_on": "2026-10-14",
+        "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+            "checked_on": "2026-10-14",
+            "locator": "falcon-h1-34b-instruct"
+          }
+        ]
       }
     },
     {
