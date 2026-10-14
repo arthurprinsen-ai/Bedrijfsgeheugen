@@ -2742,7 +2742,7 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing",
+      "source": "https://docs.cohere.com/docs/models",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -2768,29 +2768,45 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://cohere.com/pricing",
+        "source_url": "https://docs.cohere.com/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "capabilities",
-          "pricing"
+          "pricing",
+          "model_id",
+          "deployment"
         ],
         "not_verified": [
-          "model_id",
           "status",
-          "deployment",
+          "pricing",
           "governance"
         ],
         "claim_evidence": [
           {
-            "claim": "capabilities",
+            "claim": "pricing",
             "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
             "locator": "Embed 4 small $4/hr $2500/mo and medium $5/hr $3250/mo Standard Vault; separate API token billing not established",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "pricing",
-            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
-            "locator": "Embed 4 small $4/hr $2500/mo and medium $5/hr $3250/mo Standard Vault; separate API token billing not established",
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/docs/models",
+            "locator": "Embed table > Model Name",
+            "observed_value": "Provider model identifier embed-v4.0, catalog display name embed-4",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/docs/models",
+            "locator": "Embed table > embed-v4.0",
+            "observed_value": "Text, images and mixed text/image PDFs; 128k context; embeddings sizes 256, 512, 1024, 1536",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/docs/models",
+            "locator": "Using Embed Models on Different Platforms > embed-v4.0",
+            "observed_value": "Bedrock coming soon; SageMaker deployment-specific ID; Azure cohere-embed-v-4-plan; Oracle OCI coming soon, availability varies by customer",
             "checked_on": "2026-10-14"
           }
         ]
@@ -4235,7 +4251,7 @@
       },
       "id": "text-embedding-3-small",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -4247,31 +4263,45 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "pricing"
+          "pricing",
+          "status",
+          "capabilities"
         ],
         "not_verified": [
-          "status",
-          "capabilities",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Quick comparison",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+            "locator": "Model heading and snapshots",
             "observed_value": "text-embedding-3-small",
             "checked_on": "2026-10-14"
           },
           {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+            "locator": "Model header label",
+            "observed_value": "Default; model page lists available alias text-embedding-3-small",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Quick comparison > Cost",
-            "observed_value": "USD $0.02 per 1M input tokens",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+            "locator": "Embeddings pricing > per 1M tokens",
+            "observed_value": "$0.02 USD per million input tokens; other API pricing modalities not applicable",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+            "locator": "Modalities > text/image/audio/video",
+            "observed_value": "Text embeddings; image/audio/video not supported",
             "checked_on": "2026-10-14"
           }
         ],
@@ -4552,7 +4582,7 @@
       },
       "id": "gpt-oss-20b",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -4564,31 +4594,45 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "capabilities"
+          "capabilities",
+          "status",
+          "deployment"
         ],
         "not_verified": [
-          "status",
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
-            "locator": "Model header",
+            "locator": "Model heading",
             "observed_value": "gpt-oss-20b",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
+            "locator": "Model header label",
+            "observed_value": "Default; open-weight model listed in official model reference",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
-            "locator": "Model type",
-            "observed_value": "Open-weight reasoning model",
+            "locator": "Model description and Key features",
+            "observed_value": "Open-weight 21B-parameter reasoning model, 3.6B active parameters, 131072 context, Apache 2.0 license, fine-tuning and function calling",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
+            "locator": "Model description > download",
+            "observed_value": "Weights downloadable from Hugging Face for local/specialized deployment; tenant runtime, region and controls not verified",
             "checked_on": "2026-10-14"
           }
         ],
