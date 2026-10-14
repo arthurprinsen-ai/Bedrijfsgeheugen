@@ -3,6 +3,27 @@
 -- Activate only after source-contract/production acceptance; transaction is atomic.
 -- No global cron suspension; cron 171 is replaced at the end of this transaction.
 BEGIN;
+-- Abort the entire migration if cron job 171 changed since diagnosis.
+-- In particular, never unschedule an unrelated production job.
+DO $guard$
+DECLARE
+  v_name text;
+  v_command text;
+  v_active boolean;
+  v_schedule text;
+BEGIN
+  SELECT jobname,command,active,schedule INTO v_name,v_command,v_active,v_schedule
+  FROM cron.job WHERE jobid=171;
+  IF NOT FOUND
+     OR v_name IS DISTINCT FROM 'powerhouse-runtime-scheduler-mux-v1'
+     OR v_command IS DISTINCT FROM 'select public.powerhouse_runtime_scheduler_mux_v3(now());'
+     OR v_active IS DISTINCT FROM true
+     OR v_schedule IS DISTINCT FROM '1,3,4,6,8,9,11,13,14,16,18,19,21,23,24,26,28,29,31,33,34,36,38,39,41,43,44,46,48,49,51,53,54,56,58,59 * * * *'
+  THEN
+    RAISE EXCEPTION 'SCHEDULER_171_DRIFT_ABORT';
+  END IF;
+END
+$guard$;
 CREATE OR REPLACE FUNCTION public.powerhouse_runtime_scheduler_extras_v4(p_now timestamptz DEFAULT now())
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path = public, pg_catalog
 AS $fn$
