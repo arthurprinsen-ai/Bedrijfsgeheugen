@@ -1088,7 +1088,7 @@
       "status": "active",
       "input_usd_m": 2,
       "output_usd_m": 10,
-      "cached_input_usd_m": null,
+      "cached_input_usd_m": 0.2,
       "context_k": 1000,
       "modalities": [
         "text",
@@ -1119,9 +1119,10 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "source": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
       "limitations": [
-        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-06-30; prefer current-generation model where possible"
       ],
       "governance": {
         "storage_residency": "unknown",
@@ -1134,22 +1135,20 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "pricing"
+          "pricing",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "model status and lifecycle",
-          "capabilities",
-          "context window",
-          "deployment and region eligibility",
-          "governance",
-          "rate applicability across providers and processing modes"
+          "governance"
         ],
         "claim_scope": "partial",
         "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ.",
@@ -1165,39 +1164,40 @@
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Model IDs > Claude API",
-            "observed_value": "claude-sonnet-5",
+            "locator": "Specifications > Model IDs",
+            "observed_value": "claude-sonnet-5 (Claude API pinned model ID)",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Availability > Status and retirement",
-            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "locator": "Availability > Status / Released / Retirement",
+            "observed_value": "Active (legacy), released 2026-06-30, retirement not sooner than 2027-06-30",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Pricing > Input / Output",
-            "observed_value": "Claude first-party standard token pricing USD 2 per 1M input and USD 10 per 1M output tokens. Partner-platform prices can differ.",
+            "locator": "Specifications > Pricing / Input, Output, Cache read",
+            "observed_value": "USD 2 input, 10 output, 0.2 cache read per 1M tokens; Batch API 50% discount",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Capabilities",
-            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "locator": "Specifications > Context, Max output, Thinking, Input → output",
+            "observed_value": "1M context, 128K standard max output; text and image input to text output; adaptive thinking",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
-            "locator": "Specifications > Model IDs; Availability > Platforms",
-            "observed_value": "Claude API model claude-sonnet-5; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "locator": "Specifications > Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "evidence_status": "PARTIALLY_VERIFIED"
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1226,7 +1226,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "source_reference": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -1236,8 +1236,11 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview"
+      },
+      "max_output_tokens": 128000
     },
     {
       "id": "claude-opus-5",
@@ -7520,8 +7523,8 @@
       "status": "active",
       "input_usd_m": 10,
       "output_usd_m": 50,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "cached_input_usd_m": 1,
+      "context_k": 1000,
       "modalities": [
         "text",
         "vision"
@@ -7533,7 +7536,8 @@
       ],
       "limitations": [
         "verify current pricing before cost-sensitive deployment",
-        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-06-09; prefer current-generation model where possible"
       ],
       "scores": {
         "reasoning": 9,
@@ -7556,7 +7560,7 @@
         "Microsoft Foundry"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7570,7 +7574,7 @@
       },
       "id": "claude-fable-5",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+      "source": "https://platform.claude.com/docs/en/models/fable-5/overview",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -7582,16 +7586,16 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_url": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
@@ -7608,36 +7612,36 @@
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
-            "locator": "Specifications > Model IDs > Claude API",
-            "observed_value": "claude-fable-5",
+            "locator": "Specifications > Model IDs",
+            "observed_value": "claude-fable-5 (Claude API pinned model ID)",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
             "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
-            "locator": "Availability > Status and retirement",
-            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "locator": "Availability > Status / Released / Retirement",
+            "observed_value": "Active (legacy), released 2026-06-09, retirement not sooner than 2027-06-09",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
             "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
-            "locator": "Specifications > Pricing > Input / Output",
-            "observed_value": "Claude first-party standard token pricing USD 10 per 1M input and USD 50 per 1M output tokens. Partner-platform prices can differ.",
+            "locator": "Specifications > Pricing / Input, Output, Cache read",
+            "observed_value": "USD 10 input, 50 output, 1 cache read per 1M tokens; Batch API 50% discount",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
-            "locator": "Specifications > Capabilities",
-            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive always on thinking",
+            "locator": "Specifications > Context, Max output, Thinking, Input → output",
+            "observed_value": "1M context, 128K standard max output; text and image input to text output; adaptive always on thinking",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
-            "locator": "Specifications > Model IDs; Availability > Platforms",
-            "observed_value": "Claude API model claude-fable-5; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "locator": "Specifications > Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -7660,9 +7664,11 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
-        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -7672,16 +7678,19 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/fable-5/overview"
+      },
+      "max_output_tokens": 128000
     },
     {
       "tier": "frontier",
       "status": "active",
       "input_usd_m": 5,
       "output_usd_m": 25,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "cached_input_usd_m": 0.5,
+      "context_k": 1000,
       "modalities": [
         "text",
         "vision"
@@ -7693,7 +7702,8 @@
       ],
       "limitations": [
         "older than Opus 5; evaluate migration path",
-        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-05-28; prefer current-generation model where possible"
       ],
       "scores": {
         "reasoning": 9,
@@ -7716,7 +7726,7 @@
         "Microsoft Foundry"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7730,7 +7740,7 @@
       },
       "id": "claude-opus-4-8",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+      "source": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -7743,15 +7753,15 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
@@ -7768,36 +7778,36 @@
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
-            "locator": "Specifications > Model IDs > Claude API",
-            "observed_value": "claude-opus-4-8",
+            "locator": "Specifications > Model IDs",
+            "observed_value": "claude-opus-4-8 (Claude API pinned model ID)",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
             "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
-            "locator": "Availability > Status and retirement",
-            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "locator": "Availability > Status / Released / Retirement",
+            "observed_value": "Active (legacy), released 2026-05-28, retirement not sooner than 2027-05-28",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
             "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
-            "locator": "Specifications > Pricing > Input / Output",
-            "observed_value": "Claude first-party standard token pricing USD 5 per 1M input and USD 25 per 1M output tokens. Partner-platform prices can differ.",
+            "locator": "Specifications > Pricing / Input, Output, Cache read",
+            "observed_value": "USD 5 input, 25 output, 0.5 cache read per 1M tokens; Batch API 50% discount",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
-            "locator": "Specifications > Capabilities",
-            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "locator": "Specifications > Context, Max output, Thinking, Input → output",
+            "observed_value": "1M context, 128K standard max output; text and image input to text output; adaptive thinking",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
-            "locator": "Specifications > Model IDs; Availability > Platforms",
-            "observed_value": "Claude API model claude-opus-4-8; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "locator": "Specifications > Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -7820,9 +7830,11 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
-        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -7832,16 +7844,19 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview"
+      },
+      "max_output_tokens": 128000
     },
     {
       "tier": "frontier",
       "status": "active",
       "input_usd_m": 5,
       "output_usd_m": 25,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "cached_input_usd_m": 0.5,
+      "context_k": 1000,
       "modalities": [
         "text",
         "vision"
@@ -7852,7 +7867,8 @@
       ],
       "limitations": [
         "older lifecycle generation",
-        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-04-16; prefer current-generation model where possible"
       ],
       "scores": {
         "reasoning": 9,
@@ -7875,7 +7891,7 @@
         "Microsoft Foundry"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7889,7 +7905,7 @@
       },
       "id": "claude-opus-4-7",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+      "source": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -7902,15 +7918,15 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
@@ -7927,36 +7943,36 @@
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
-            "locator": "Specifications > Model IDs > Claude API",
-            "observed_value": "claude-opus-4-7",
+            "locator": "Specifications > Model IDs",
+            "observed_value": "claude-opus-4-7 (Claude API pinned model ID)",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
             "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
-            "locator": "Availability > Status and retirement",
-            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "locator": "Availability > Status / Released / Retirement",
+            "observed_value": "Active (legacy), released 2026-04-16, retirement not sooner than 2027-04-16",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
             "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
-            "locator": "Specifications > Pricing > Input / Output",
-            "observed_value": "Claude first-party standard token pricing USD 5 per 1M input and USD 25 per 1M output tokens. Partner-platform prices can differ.",
+            "locator": "Specifications > Pricing / Input, Output, Cache read",
+            "observed_value": "USD 5 input, 25 output, 0.5 cache read per 1M tokens; Batch API 50% discount",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
-            "locator": "Specifications > Capabilities",
-            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "locator": "Specifications > Context, Max output, Thinking, Input → output",
+            "observed_value": "1M context, 128K standard max output; text and image input to text output; adaptive thinking",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
-            "locator": "Specifications > Model IDs; Availability > Platforms",
-            "observed_value": "Claude API model claude-opus-4-7; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "locator": "Specifications > Platforms",
+            "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -7979,9 +7995,11 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
-        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -7991,16 +8009,19 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-7/overview"
+      },
+      "max_output_tokens": 128000
     },
     {
       "tier": "frontier",
       "status": "active",
       "input_usd_m": 5,
       "output_usd_m": 25,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "cached_input_usd_m": 0.5,
+      "context_k": 1000,
       "modalities": [
         "text",
         "vision"
@@ -8011,7 +8032,8 @@
       ],
       "limitations": [
         "older lifecycle generation",
-        "Provider labels this model Active (legacy); verify a current replacement before new deployments."
+        "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-02-05; prefer current-generation model where possible"
       ],
       "scores": {
         "reasoning": 9,
@@ -8034,7 +8056,7 @@
         "Microsoft Foundry"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8048,7 +8070,7 @@
       },
       "id": "claude-opus-4-6",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+      "source": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -8061,15 +8083,15 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
@@ -8086,36 +8108,36 @@
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
-            "locator": "Specifications > Model IDs > Claude API",
-            "observed_value": "claude-opus-4-6",
+            "locator": "Specifications > Model IDs",
+            "observed_value": "claude-opus-4-6 (Claude API pinned model ID)",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
             "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
-            "locator": "Availability > Status and retirement",
-            "observed_value": "Active (legacy); supported as legacy model, but a newer version is recommended; tenant access untested",
+            "locator": "Availability > Status / Released / Retirement",
+            "observed_value": "Active (legacy), released 2026-02-05, retirement not sooner than 2027-02-05",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
             "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
-            "locator": "Specifications > Pricing > Input / Output",
-            "observed_value": "Claude first-party standard token pricing USD 5 per 1M input and USD 25 per 1M output tokens. Partner-platform prices can differ.",
+            "locator": "Specifications > Pricing / Input, Output, Cache read",
+            "observed_value": "USD 5 input, 25 output, 0.5 cache read per 1M tokens; Batch API 50% discount",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
-            "locator": "Specifications > Capabilities",
-            "observed_value": "Context window 1M tokens; output up to 128K tokens; text and image input → text output; adaptive thinking",
+            "locator": "Specifications > Context, Max output, Thinking, Input → output",
+            "observed_value": "1M context, 128K standard max output; text and image input to text output; adaptive (manual extended thinking deprecated) thinking",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
-            "locator": "Specifications > Model IDs; Availability > Platforms",
-            "observed_value": "Claude API model claude-opus-4-6; documented Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS options, with platform-specific model identifiers. Tenant permissions untested.",
+            "locator": "Specifications > Platforms",
+            "observed_value": "Claude API, legacy Amazon Bedrock InvokeModel, Google Cloud, Microsoft Foundry, Claude Platform on AWS; tenant privileges untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8138,9 +8160,11 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
-        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -8150,8 +8174,11 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-6/overview"
+      },
+      "max_output_tokens": 128000
     },
     {
       "tier": "balanced",
