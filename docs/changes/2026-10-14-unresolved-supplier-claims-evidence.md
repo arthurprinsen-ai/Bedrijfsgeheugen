@@ -1,6 +1,6 @@
 # Supplier claim verification: independently checked blockers — 2026-10-14
 
-**This is a verification backlog, not a completion declaration.** Production table: `public.ai_model_supplier_verification_v1` in Supabase project `adhjwmvyoixzjtmiroln`. Latest readback in this work session: 110 catalog rows, 660 required claim slots, 645 slots with at least some evidence, 15 slots without evidence. Automated verification statuses still exclusively PARTIAL/CONFLICT. Evidence presence alone does **not** approve a claim.
+**This is a verification backlog, not a completion declaration.** Production table: `public.ai_model_supplier_verification_v1` in Supabase project `adhjwmvyoixzjtmiroln`. Latest readback in this work session: 110 catalog rows, 660 required claim slots, 647 slots with at least some evidence, 13 slots without evidence. Automated verification statuses still exclusively PARTIAL/CONFLICT. Evidence presence alone does **not** approve a claim.
 
 ## Missing claims from readback
 
@@ -8,8 +8,6 @@
 |---|---|
 | qwen-open-weight | model_id, status, pricing, deployment, governance |
 | llama-open-weight | model_id, status, pricing, governance |
-| amazon-nova-2-sonic | pricing |
-| amazon-nova-multimodal-embeddings | pricing |
 | amazon-nova-sonic | pricing |
 | amazon-titan-image-generator-g1-v2 | pricing |
 | amazon-titan-multimodal-embeddings-g1 | pricing |
@@ -18,7 +16,7 @@
 ## Correct way to close, without artificial approvals
 
 1. **Generic `llama-open-weight` and `qwen-open-weight` are model families, not deployable immutable model IDs.** Do not treat the family label as an API model ID. Resolve and separate exact published versions, licensing, host, actual endpoint and per-region processing. Self-hosted inference usually has hardware/energy/storage costs rather than a universal provider token tariff. Cost is **unknown until deployment and usage are specified**, not zero. The family placeholders remain blocking.
-2. **AWS Nova 2 Sonic, Nova Sonic, Nova Multimodal Embeddings, Titan Image Generator and Titan Multimodal Embeddings:** use the official Bedrock pricing schedule with exact AWS region, on-demand vs batch/flex/priority tier and meter (tokens, audio, image, embedding units, or other). The official model cards link to Bedrock pricing but do not themselves certify a unit rate. A price from a different modality cannot be reused. Do not fill pricing evidence solely with generic supplier documentation.
+2. **AWS Nova Sonic, Titan Image Generator and Titan Multimodal Embeddings:** use the official Bedrock pricing schedule with exact AWS region, on-demand vs batch/flex/priority tier and meter (tokens, audio, image, embedding units, or other). The official model cards link to Bedrock pricing but do not themselves certify a unit rate. A price from a different modality cannot be reused. Do not fill pricing evidence solely with generic supplier documentation.
 3. **Cohere embed-multilingual-v3.0:** resolve Cohere-hosted pricing versus AWS Bedrock reseller pricing, the meter (tokens/queries), contract and location. Do not transplant Cohere Rerank rates or AWS provisioned-throughput figures to embeddings.
 4. **Customer governance:** general public supplier conditions may be cited as published policy. They cannot satisfy customer-specific DPA, configured residency, enabled zero-data-retention, approved subprocessors or tenant-entitlement proof without authorized customer and provider readbacks.
 5. **Freshness:** `data/ai-model-catalog-v1.json` remains stamped 2026-09-30. The 14-day test is correctly failing. Do not refresh its date simply because one source was visited. Complete independent claim verification, reconcile catalog fields, then commit and rerun required checks.
