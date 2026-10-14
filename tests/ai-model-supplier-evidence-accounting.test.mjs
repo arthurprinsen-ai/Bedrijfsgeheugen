@@ -250,3 +250,22 @@ test('Google legacy preview Standard Paid prices are modality-scoped not blanket
   assert.equal(model.supplier_audit.independent_verification_required,true);
  }
 });
+
+test('self-host-only Shieldstral cannot inherit Mistral managed API governance',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const model=catalog.models.find(m=>m.id==='shieldstral-1');
+ assert.ok(model);
+ assert.deepEqual(model.deployment,['self-host']);
+ assert.equal(model.status,'preview');
+ const evidence=model.supplier_audit?.self_host_governance_boundary_review_20261014;
+ assert.ok(evidence);
+ assert.equal(evidence.provider_api_available,false);
+ assert.equal(evidence.customer_deployment_attested,false);
+ assert.equal(evidence.managed_saas_region_or_zdr_applicable,false);
+ assert.equal(evidence.independent_customer_governance_accepted,false);
+ assert.equal(evidence.automatic_recommendation_eligible,false);
+ assert.ok(evidence.official_self_host_cookbook.startsWith('https://docs.mistral.ai/'));
+ assert.match(model.governance.zero_data_retention,/NOT an entitlement/);
+ assert.doesNotMatch(JSON.stringify(model.governance),/api\.eu\.mistral\.ai|approved paid-plan organization ZDR/i);
+ assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+});
