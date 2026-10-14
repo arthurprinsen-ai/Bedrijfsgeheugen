@@ -8,6 +8,18 @@ test('unauthenticated request never touches canonical data',async()=>{
  const r=await h(new Request('https://example.test/api/portal-forecasts'));
  assert.equal(r.status,401);assert.equal(calls,0);
 });
+test('identity provider failure blocks financial forecasts without reading tenant data',async()=>{
+ let accessed=0;
+ const h=createPortalForecastHandler({
+  getUser:async()=>{throw new Error('identity provider temporarily unavailable')},
+  getCanonical:async()=>{accessed++}
+ });
+ const response=await h(new Request('https://example.test/api/portal-forecasts'));
+ assert.equal(response.status,503);
+ assert.deepEqual(await response.json(),{error:'FORECAST_IDENTITY_UNAVAILABLE'});
+ assert.equal(accessed,0,'Never query financial data when identity is unavailable');
+});
+
 test('authenticated forecast route scopes lookups to identity tenant',async()=>{
  let seen='';const h=createPortalForecastHandler({getUser:async()=>({id:'user42',app_metadata:{tenantId:'tenant42'}}),getCanonical:async tenant=>{seen=tenant;return{forecasts:[valid]}}});
  const r=await h(new Request('https://example.test/api/portal-forecasts'));
