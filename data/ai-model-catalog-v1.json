@@ -4174,7 +4174,8 @@
           "tenant entitlement",
           "ZDR retention and training controls by account",
           "executed customer DPA",
-          "governance"
+          "governance",
+          "status"
         ],
         "claim_evidence": [
           {
@@ -4362,7 +4363,8 @@
           "tenant entitlement",
           "ZDR retention and training controls by account",
           "executed customer DPA",
-          "governance"
+          "governance",
+          "status"
         ],
         "claim_evidence": [
           {
@@ -4556,7 +4558,9 @@
           "tenant-specific availability",
           "governance and residency",
           "production terms",
-          "customer-specific governance contract and residency"
+          "customer-specific governance contract and residency",
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -10802,7 +10806,8 @@
           "model_id API entitlement",
           "status and lifecycle",
           "governance",
-          "pricing for other tiers"
+          "pricing for other tiers",
+          "pricing"
         ],
         "claim_scope": "partial",
         "claim_evidence": [
@@ -14417,7 +14422,9 @@
           "capabilities",
           "deployment"
         ],
-        "not_verified": [],
+        "not_verified": [
+          "governance"
+        ],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14596,7 +14603,9 @@
           "capabilities",
           "deployment"
         ],
-        "not_verified": [],
+        "not_verified": [
+          "governance"
+        ],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14958,7 +14967,10 @@
           "capabilities",
           "deployment"
         ],
-        "not_verified": [],
+        "not_verified": [
+          "pricing",
+          "governance"
+        ],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -15332,7 +15344,10 @@
           "capabilities",
           "deployment"
         ],
-        "not_verified": [],
+        "not_verified": [
+          "pricing",
+          "governance"
+        ],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -15520,7 +15535,9 @@
           "capabilities",
           "deployment"
         ],
-        "not_verified": [],
+        "not_verified": [
+          "governance"
+        ],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -15701,7 +15718,9 @@
           "capabilities",
           "deployment"
         ],
-        "not_verified": [],
+        "not_verified": [
+          "governance"
+        ],
         "claim_evidence": [
           {
             "claim": "governance",
