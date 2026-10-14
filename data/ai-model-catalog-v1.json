@@ -349,7 +349,7 @@
       "input_usd_m": 4,
       "output_usd_m": 20,
       "cached_input_usd_m": 0.4,
-      "context_k": 400,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -376,7 +376,7 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -390,7 +390,44 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_tier": "standard_short_context",
+      "pricing_source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+      "pricing_source_verified_at": "2026-10-14",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_terms_note": "Published $4/$0.40/$20 per million standard text tokens; requests over 272K input tokens have a higher tariff; promotional price stated through at least 2026-11-21.",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "gpt-5.6",
+          "provider_name": "GPT-5.6 Sol"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1050000
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "standard",
+          "unit": "USD per 1M text tokens",
+          "input": 4,
+          "cached_input": 0.4,
+          "output": 20,
+          "pricing_caveat": ">272K input tokens incurs higher rates"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "claude-opus-5-5",
@@ -5453,7 +5490,39 @@
       },
       "id": "grok-imagine-video",
       "provider": "xAI",
-      "source": "https://docs.x.ai/developers/models"
+      "source": "https://docs.x.ai/developers/models/grok-imagine-video",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.x.ai/developers/models/grok-imagine-video",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "video_resolution_us_east_reference",
+      "unit_price": "USD per generated video second",
+      "pricing_variants": {
+        "resolution_480p_usd_per_sec": 0.05,
+        "resolution_720p_usd_per_sec": 0.07,
+        "notes": "Regional price and video input charges may vary; separate from text tokens."
+      },
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.x.ai/developers/models/grok-imagine-video",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "grok-imagine-video"
+        },
+        "video_pricing": {
+          "source": "https://docs.x.ai/developers/models/grok-imagine-video",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "resolution_480p_usd_per_sec": 0.05,
+          "resolution_720p_usd_per_sec": 0.07,
+          "region": "us-east-1 reference"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "frontier",
