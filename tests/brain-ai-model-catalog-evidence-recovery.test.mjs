@@ -19,7 +19,7 @@ test('AI model catalog recovery is evidence-scoped and avoids false verification
   String(r.scope??'').includes('NOT model-specific'));
  if(providerOnly){
   assert.notEqual(astra.verification_evidence?.claim_scope,'full','Provider policy alone cannot certify full model governance');
-  assert.equal(astra.supplier_audit?.claim_evidence_classification?.governance,'PROVIDER_POLICY_ONLY');
+  assert.equal(astra.supplier_audit?.claim_evidence_classification?.governance,'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF');
  }
  assert.ok(c.models.some(m=>m.verified_at==='2026-09-30'),'Do not restamp unverified models');
 });
@@ -46,15 +46,13 @@ test('model advisor rejects EOL and family placeholders even when active-only fi
 test('supplier source classifications remain fail-closed across all model records',async()=>{
  const { classifySupplierClaim, REQUIRED_SUPPLIER_CLAIMS }=await import('./ai-model-supplier-evidence-worklist.mjs');
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
- const types={MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED:'MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED',
- PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF:'PROVIDER_POLICY_ONLY',
- NO_USABLE_MODEL_SOURCE_RECEIPT:'MISSING_OR_INCOMPLETE'};
+ 
  let count=0;
  for(const m of c.models){
   const pending=[];
   for(const claim of REQUIRED_SUPPLIER_CLAIMS){
    const observed=classifySupplierClaim(m.verification_evidence,claim);
-   assert.equal(m.supplier_audit?.claim_evidence_classification?.[claim],types[observed],m.id+'/'+claim);
+   assert.equal(m.supplier_audit?.claim_evidence_classification?.[claim],observed,m.id+'/'+claim);
    if(observed!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED')pending.push(claim);
    count++;
   }
