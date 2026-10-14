@@ -7692,12 +7692,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -7716,20 +7716,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
-            "locator": "Model summary > Modalities",
-            "observed_value": "Streaming speech-to-speech translation; audio input/output and text output; priced by audio duration",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
-            "locator": "Endpoints > Realtime translation",
-            "observed_value": "Dedicated realtime translation endpoint v1/realtime/translations; tenant access untested",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
             "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
@@ -7744,6 +7730,20 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
             "locator": "Model heading > Default, Snapshots, Rate limits",
             "observed_value": "Default listed speech-to-speech translation API model, with rate limits; account entitlement untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+            "locator": "Modalities and Features",
+            "observed_value": "Streaming speech-to-speech translation, audio input/output, text output, no function calling, 16K context",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+            "locator": "Endpoints > Realtime translation",
+            "observed_value": "Dedicated /v1/realtime/translations API for gpt-realtime-translate; account not probed",
             "checked_on": "2026-10-14"
           }
         ],
@@ -7873,12 +7873,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -7897,20 +7897,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
-            "locator": "Model summary; Modalities; Features",
-            "observed_value": "Low-latency streaming audio transcription, audio input and text output, image and video unsupported",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
-            "locator": "Endpoints > Realtime transcription",
-            "observed_value": "Realtime transcription sessions endpoint v1/realtime/transcription_sessions; entitlement untested",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
             "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
@@ -7925,6 +7911,20 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
             "locator": "Model heading > Default, Snapshots, Rate limits",
             "observed_value": "Default listed low-latency live transcription model; customer endpoint access not probed",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+            "locator": "Model description and Modalities",
+            "observed_value": "Low-latency streaming live speech transcription; audio input, text output, configurable latency and keyword hints",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+            "locator": "Endpoints > Realtime transcription",
+            "observed_value": "/v1/realtime/transcription_sessions and Live session interfaces documented; credentials untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8053,12 +8053,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -8077,20 +8077,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
-            "locator": "Modalities; Features",
-            "observed_value": "Streaming audio-input speech-to-text with text output; images/video and function calling unsupported",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
-            "locator": "Endpoints > Realtime transcription",
-            "observed_value": "v1/realtime/transcription_sessions documented; account access not tested",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
             "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
@@ -8105,6 +8091,20 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
             "locator": "Model heading > Default, Snapshots, Rate limits",
             "observed_value": "Default listed streaming speech-to-text API model; customer endpoint access not probed",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
+            "locator": "Model description and Modalities",
+            "observed_value": "Streaming audio-to-text transcription, text output, 16K context; function calling unsupported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
+            "locator": "Endpoints > Realtime transcription",
+            "observed_value": "/v1/realtime/transcription_sessions, gpt-realtime-whisper; customer authorization untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8235,12 +8235,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -8256,20 +8256,6 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
             "locator": "Pricing > Text tokens / Audio tokens, per 1M",
             "observed_value": "Text input USD 2.50 output USD 10; audio input USD 32 output USD 64 per 1M tokens",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
-            "locator": "Modalities and Features",
-            "observed_value": "Text and audio input/output, image and video unsupported; streaming and function calling supported",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://developers.openai.com/api/docs/guides/audio-chat-completions",
-            "locator": "Audio in Chat Completions > model example",
-            "observed_value": "Chat Completions API model gpt-audio-1.5 with text/audio modalities; account authorization not tested",
             "checked_on": "2026-10-14"
           },
           {
@@ -8296,6 +8282,20 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
             "locator": "Model heading > Default, Snapshots, Rate limits",
             "observed_value": "Default listed audio input/output API model; tier-dependent rate limits and customer access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Model description and Modalities",
+            "observed_value": "Audio and text input/output; 128K context; streaming and function calling supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Model description and Endpoints > Chat Completions",
+            "observed_value": "/v1/chat/completions with gpt-audio-1.5; account access not tested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8775,7 +8775,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8807,10 +8807,10 @@
           "model_id",
           "pricing",
           "capabilities",
-          "status"
+          "status",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -8843,13 +8843,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "deployment",
-            "url": "https://developers.openai.com/api/docs/guides/moderation",
-            "locator": "Classify standalone inputs > curl moderation example",
-            "observed_value": "POST https://api.openai.com/v1/moderations with model omni-moderation-latest; actual account authorization not tested",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
             "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
@@ -8867,6 +8860,13 @@
             "checked_on": "2026-10-14",
             "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/guides/moderation",
+            "locator": "Classify standalone inputs; API request example",
+            "observed_value": "POST /v1/moderations model omni-moderation-latest, text/image inputs; client authorization untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -18490,7 +18490,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -18520,12 +18520,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -18542,20 +18542,6 @@
             "locator": "Legacy and end-of-life (EOL) models > Amazon > Nova Premier",
             "checked_on": "2026-10-14",
             "observed_value": "AWS Bedrock legacy lifecycle table lists Nova Premier (amazon.nova-premier-v1:0) EOL 2026-09-14 for US regions. Official Nova Premier model card also has a conflicting 'EOL no sooner than 2026-10-31' field; treat as documented supplier discrepancy, not accepted account access."
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Input modalities, Output modalities, Context Window",
-            "observed_value": "Text, image and video input; text output; 1M context window",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Model ID / Amazon Bedrock",
-            "observed_value": "Amazon Bedrock model ID amazon.nova-premier-v1:0; tenant entitlement and region not independently checked",
-            "checked_on": "2026-10-14"
           },
           {
             "claim": "governance",
@@ -18575,6 +18561,20 @@
             "checked_on": "2026-10-14",
             "scope": "AWS historical published comparison; not current 2026 Bedrock rate nor tenant invoice",
             "verification_status": "HISTORICAL_PROVIDER_REFERENCE_CURRENT_PRICE_UNVERIFIED"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+            "locator": "Model Details > Context and modalities",
+            "observed_value": "1M context tokens, 25K max output, text/image/video input, text output and reasoning",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+            "locator": "APIs supported; Amazon Bedrock Runtime",
+            "observed_value": "Bedrock Runtime Converse / InvokeModel, historical interfaces; AWS model card lists EOL 2026-09-14, not safe to route without authenticated lifecycle",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -19371,7 +19371,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -19401,12 +19401,12 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -19422,20 +19422,6 @@
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
             "locator": "Models that have reached EOL > Nova Sonic",
             "observed_value": "EOL on 2026-09-14 in listed regions; new invocations fail",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Nova Sonic",
-            "observed_value": "Speech input and speech/text/transcription output, bidirectional streaming; EOL model; do not deploy",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Bidirectional Stream API Support",
-            "observed_value": "Amazon Bedrock bidirectional stream API; EOL model; do not deploy",
             "checked_on": "2026-10-14"
           },
           {
@@ -19456,6 +19442,20 @@
             "checked_on": "2026-10-14",
             "scope": "AWS historical published comparison; not current 2026 Bedrock rate nor tenant invoice",
             "verification_status": "HISTORICAL_PROVIDER_REFERENCE_CURRENT_PRICE_UNVERIFIED"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-sonic.html",
+            "locator": "Model Details and Supported APIs",
+            "observed_value": "Real-time speech-to-speech audio input/output with text capabilities and multilingual support",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-sonic.html",
+            "locator": "Programmatic Access > Model ID and API",
+            "observed_value": "amazon.nova-sonic-v1:0, Bedrock Runtime InvokeModelWithBidirectionalStream; listed EOL 2026-09-14 in regions, not routable in retired regions",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
