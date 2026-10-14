@@ -4136,7 +4136,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "US and EU data residency documented",
         "inference_residency": "US/EU options documented; fast mode excludes EU residency",
@@ -4165,20 +4165,53 @@
         "source_url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
           "deployment",
+          "input_usd_m",
+          "output_usd_m",
+          "cached_input_usd_m",
+          "context_k"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+            "locator": "Heading and Snapshots",
+            "observed_value": "GPT-6.1 Sol (gpt-6.1-sol)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+            "locator": "Official model listing",
+            "observed_value": "Documented API model; tenant access not verified",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+            "locator": "Pricing > Text tokens",
+            "observed_value": "Standard per 1M tokens: input USD 2.00, cached input USD 0.10, output USD 10.00; long-context surcharges apply",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+            "locator": "Context window; Modalities; Features",
+            "observed_value": "1,050,000 token context; text in/out, image in; function calling and structured outputs",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+            "locator": "Endpoints and model notes",
+            "observed_value": "Responses API supported for tool calling; Chat Completions supported without tool calling; customer access not tested",
             "checked_on": "2026-10-14"
           }
         ],
