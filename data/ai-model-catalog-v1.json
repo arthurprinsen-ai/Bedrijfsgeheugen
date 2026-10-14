@@ -4131,7 +4131,9 @@
         "on-prem"
       ],
       "source": "https://www.llama.com/",
-      "limitations": [],
+      "limitations": [
+        "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -4213,6 +4215,26 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "family_evidence": {
+        "scope": "model_family_reference_only",
+        "note": "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required.",
+        "examples": [
+          {
+            "id": "Llama 4 Scout",
+            "capability": "text and image input, text output, 10M context",
+            "url": "https://dev.meta.ai/llama/docs/model-cards-and-prompt-formats/llama4"
+          },
+          {
+            "id": "Llama 4 Maverick",
+            "capability": "text and image input, text output, 1M context",
+            "url": "https://dev.meta.ai/llama/docs/model-cards-and-prompt-formats/llama4"
+          }
+        ],
+        "license": "Llama 4 Community License; not an unrestricted Apache/MIT license",
+        "license_url": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
+        "checked_on": "2026-10-14",
+        "individual_model_claims_verified": false
       }
     },
     {
@@ -4252,7 +4274,9 @@
         "cloud providers"
       ],
       "source": "https://qwenlm.github.io/",
-      "limitations": [],
+      "limitations": [
+        "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -4328,6 +4352,21 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "family_evidence": {
+        "scope": "model_family_reference_only",
+        "note": "This is a family-level catalog row, not an individually deployable model ID. Explicit model selection is required.",
+        "examples": [
+          {
+            "id": "Qwen/Qwen3-8B",
+            "capability": "text generation; Transformers local deployment; Apache-2.0 license",
+            "url": "https://huggingface.co/Qwen/Qwen3-8B"
+          }
+        ],
+        "license": "Qwen3-8B example is Apache-2.0; do not generalize its license to every Qwen model",
+        "license_url": "https://huggingface.co/Qwen/Qwen3-8B",
+        "checked_on": "2026-10-14",
+        "individual_model_claims_verified": false
       }
     },
     {
