@@ -3593,7 +3593,7 @@
       "deployment": [
         "Mistral API"
       ],
-      "source": "https://docs.mistral.ai/inference/pricing",
+      "source": "https://docs.mistral.ai/models/codestral-25-08",
       "limitations": [
         "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
         "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route.",
@@ -3623,7 +3623,7 @@
           "governance"
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
-        "source_url": "https://docs.mistral.ai/inference/pricing",
+        "source_url": "https://docs.mistral.ai/models/codestral-25-08",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "capabilities",
@@ -3714,7 +3714,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://docs.mistral.ai/inference/pricing",
+        "source_reference": "https://docs.mistral.ai/models/codestral-25-08",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -3736,7 +3736,9 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://docs.mistral.ai/models/codestral-25-08",
+        "last_specific_source_check": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3746,7 +3748,8 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "provider_api_id": "codestral-2508"
     },
     {
       "id": "mistral-ocr-4-1",
@@ -16213,6 +16216,15 @@
             "locator": "Model card > Features, API or model weights",
             "observed_value": "Apache 2.0 model weights documented for customer-operated open-weight deployments; runtime availability not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.mistral.ai/models/shieldstral-1-0",
+            "locator": "Public Preview badge; Weights > Apache 2.0; documented model card omits Mistral-hosted API endpoints",
+            "observed_value": "Shieldstral 1.0 is public-preview 3.8B-parameter open weights distributed under Apache 2.0 with 32K context. The official model card presents weights but no Mistral-hosted serverless API endpoint or ZDR eligibility for this specific model. For any customer-operated deployment, retention, subprocessors, processing region, access controls, compute charges and agreement eligibility depend on the operator. Neither customer deployment nor applicable commercial hosting price is verified.",
+            "checked_on": "2026-10-14",
+            "scope": "official open-weight licensing and non-attested hosted/API governance; customer deployment and contract unverified",
+            "verification_status": "SUPPLIER_OPEN_WEIGHT_LICENSING_ONLY_NO_TENANT_GOVERNANCE"
           }
         ],
         "provider_policy_evidence": {
@@ -16236,7 +16248,8 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
-        }
+        },
+        "verification_scope_note": "Open-weight Apache 2.0 preview source verified; no Mistral-hosted inference or zero-retention customer evidence established. Pricing and customer data controls still require actual serving route and provider contract. Never mark these complete from open-weights licensing alone."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -16284,7 +16297,8 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_preview_not_production_eligible": true
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -16666,7 +16680,9 @@
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
         },
-        "verification_scope_note": "Leanstral 1.5 Labs/ZDR negative policy independently checked from Mistral model page, official ZDR exclusions, and current commercial terms. Still PARTIAL due retirement and lack of a currently usable customer-specific price or entitlement. Do not recommend."
+        "verification_scope_note": "Retired experimental Labs model. Official Mistral changelog establishes September 30, 2026 retirement; no current API price or entitlement is valid. Historical Labs free pricing is not a current customer-facing price. Labs privacy/ZDR exclusion and archived functionality can be catalogued, but this model is not deployable.",
+        "lifecycle_official_source": "https://docs.mistral.ai/resources/changelogs",
+        "retired_on": "2026-09-30"
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -16692,7 +16708,7 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
+        "last_specific_source_url": "https://docs.mistral.ai/resources/changelogs",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -16707,7 +16723,8 @@
         "review_required_claims": [
           "pricing"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "retired_model_forbid_runtime_recommendation": true
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
