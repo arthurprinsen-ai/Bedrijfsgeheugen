@@ -270,3 +270,28 @@ test('Cohere pricing distinguishes direct token API from dedicated hosted instan
   assert.equal(m.input_usd_m,null,'Hosted hourly price cannot be represented as direct token price');
  }
 });
+
+
+test('DeepSeek peak/off-peak tiers and Grok long-context premiums are explicit',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const get=id=>{const m=c.models.find(x=>x.id===id);assert.ok(m,id);return m;};
+ for(const [id,prices,offpeak,version] of [
+  ['deepseek-flash',[0.3,0.006,1.2],[0.15,0.003,0.6],'DeepSeek-V4.1-Flash'],
+  ['deepseek-v4-pro',[1.32,0.044,3.96],[0.66,0.022,1.98],'DeepSeek-V4-Pro-0813']
+ ]){
+  const m=get(id);
+  assert.equal(m.provider_model_id,id);
+  assert.equal(m.model_version,version);
+  assert.equal(m.context_k,1000);
+  assert.deepEqual([m.input_usd_m,m.cached_input_usd_m,m.output_usd_m],prices);
+  assert.deepEqual(Object.values(m.pricing_variants.off_peak),offpeak);
+  assert.equal(m.pricing_tier,'peak_hours_utc_weekdays');
+  assert.equal(m.claim_evidence.pricing.status,'PROVIDER_DOC_CONFIRMED');
+  assert.equal(m.claim_evidence.provider_contracts.status,'UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT');
+ }
+ const grok=get('grok-4.6');
+ assert.equal(grok.context_k,500);
+ assert.equal(grok.pricing_variants.threshold_tokens,200000);
+ assert.equal(grok.pricing_variants.us_regional_multiplier,1.1);
+ assert.deepEqual(Object.values(grok.pricing_variants.global_long_context),[4,1,12]);
+});
