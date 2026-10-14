@@ -36,7 +36,17 @@ test('110-model worklist categories exactly partition six claims per model',()=>
   r.evidence_classification.provider_baseline_only+r.evidence_classification.missing_or_incomplete_receipts);
  assert.equal(r.existing_complete_receipts+r.missing_claim_specific_receipts,r.total_claims);
  assert.equal(r.pending_claim_reviews,r.worklist.length);
- assert.equal(r.ready_for_full_supplier_acceptance,r.pending_claim_reviews===0);
+ assert.equal(r.structurally_complete_models>=r.independently_accepted_models,true);
+ assert.equal(r.fully_verified_models,r.independently_accepted_models);
+ assert.equal(r.pending_independent_model_reviews,r.models-r.independently_accepted_models);
+ const independentlyApproved=c.models.filter(m=>m.supplier_audit?.independent_verification_required===false&&
+   m.supplier_audit?.automatic_recommendation_eligible===true&&m.verification_evidence?.claim_scope==='full');
+ assert.equal(r.independently_accepted_models,independentlyApproved.length);
+ assert.equal(r.ready_for_full_supplier_acceptance,
+   r.pending_claim_reviews===0&&r.pending_independent_model_reviews===0);
+ // A complete supplier receipt does not automatically confer independent acceptance.
+ assert.ok(c.models.some(m=>m.verification_evidence?.claim_scope==='full'&&
+   m.supplier_audit?.independent_verification_required===true));
  for(const row of r.worklist)
   assert.ok(['MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED','PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',
    'NO_USABLE_MODEL_SOURCE_RECEIPT'].includes(row.evidence_classification));
