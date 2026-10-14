@@ -48,3 +48,20 @@ test('live provider readback is mandatory for all non-contract claims',()=>{
  assert.match(source,/LIVE_PROVIDER_CONFIGURATION_MISMATCH/);
  assert.match(source,/redirect:'error'/);
 });
+
+test('tenant acceptance cannot pass with a single signed claim or omitted customer-model scope',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tenant-scope-'));
+ try {
+  const filepath=path.join(dir,'incomplete.json');
+  fs.writeFileSync(filepath,JSON.stringify({
+   scopes:[{tenant_id:'customer-a',provider:'OpenAI',model_id:'gpt-6-astra'}],
+   attestations:[{tenant_id:'customer-a',provider:'OpenAI',model_id:'gpt-6-astra',claim:'signed_dpa'}]
+  }));
+  const r=spawnSync(process.execPath,['tests/ai-model-tenant-acceptance.mjs',filepath],{encoding:'utf8'});
+  assert.equal(r.status,2);
+  assert.match(r.stdout,/MISSING_OR_DUPLICATE_CLAIM:tenant_data_residency/);
+  assert.match(r.stdout,/MISSING_OR_DUPLICATE_CLAIM:tenant_zdr/);
+  assert.match(r.stdout,/MISSING_OR_DUPLICATE_CLAIM:customer_cmk/);
+  assert.match(r.stdout,/MISSING_OR_DUPLICATE_CLAIM:private_networking_enabled/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
