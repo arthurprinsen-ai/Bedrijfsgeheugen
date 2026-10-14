@@ -142,14 +142,18 @@ Deno.serve(async(req:Request)=>{
   // This gateway is service-token protected; a browser never receives a database key.
   if(action==='financial_forecasts'){
     const {data:rows,error}=await client.from('portal_financial_forecasts_v1')
-      .select('tenant_id,forecast_id,metric,title,unit,source_name,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest')
+      .select('tenant_id,forecast_id,metric,title,unit,source_name,source_evidence_ref,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest')
       .eq('tenant_id',tenantId)
       .eq('verification_status','passed')
       .order('verified_at',{ascending:false}).limit(30);
     if(error)return json({error:'FINANCIAL_FORECAST_READ_FAILED'},503);
     const forecasts=(rows||[]).filter(row=>
       row.tenant_id===tenantId && row.verification_status==='passed' &&
-      row.verified_at && row.verified_by && row.backtest?.status==='passed' &&
+      row.verified_at && row.verified_by && row.source_evidence_ref?.trim() &&
+      row.backtest?.status==='passed' && Number.isInteger(row.backtest?.holdout_count) &&
+      row.backtest.holdout_count>=3 && row.backtest.holdout_count<=120 &&
+      typeof row.backtest.mae==='number' && Number.isFinite(row.backtest.mae) && row.backtest.mae>=0 &&
+      typeof row.backtest.baseline_mae==='number' && Number.isFinite(row.backtest.baseline_mae) && row.backtest.baseline_mae>=0 &&
       Array.isArray(row.historical_points) && row.historical_points.length>=3 &&
       Array.isArray(row.forecast_points) && row.forecast_points.length>0
     ).map(row=>({
