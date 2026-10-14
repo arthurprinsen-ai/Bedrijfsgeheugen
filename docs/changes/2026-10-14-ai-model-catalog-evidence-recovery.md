@@ -436,3 +436,7 @@ The one unresolved `CONFLICT` is `amazon-nova-premier`: official AWS [model card
 ### Official Google image-model deprecation date source correction
 
 The [official Google changelog](https://ai.google.dev/gemini-api/docs/changelog) announces deprecation of `gemini-3.1-flash-image` on **2026-10-06**, recommends `gemini-nano-banana-2.1`, and lists no shutdown date. The catalog mistakenly cited October 8 (the date of separate Gemini 3.5/3.7 Flash deprecations). This correction repairs source locators/observed dates, preserves the existing supplier-only scope, does not certify tenant settings, and adds a regression test. Independent protected CI, merge and production readback remain mandatory.
+
+## Nova Premier official API-ID preservation — 2026-10-14
+
+Official [AWS Bedrock model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html) documents `amazon.nova-premier-v1:0` for `bedrock-runtime`. Added the ID as `provider_api_id` in the 110-record GitHub catalog and used a conditional Supabase write with database readback. The separate AWS EOL/Legacy policy inconsistency remains `CONFLICT` and production-ineligible. The actual customer and regional lifecycle still requires authorized AWS `GetFoundationModel` modelLifecycle evidence. Public source content must never be treated as authenticated AWS account availability or production release approval.
