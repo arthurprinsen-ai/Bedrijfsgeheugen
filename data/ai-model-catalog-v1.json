@@ -4979,14 +4979,15 @@
       ],
       "source": "https://docs.cohere.com/v2/docs/command-a",
       "limitations": [
-        "Canonical API identifier is command-a-03-2025; confirm compatibility before routing using catalog alias command-a."
+        "Canonical API identifier is command-a-03-2025; confirm compatibility before routing using catalog alias command-a.",
+        "Standard Vault ZDR availability does not attest direct shared API retention, or a specific customer's purchased/enabled vault or legal agreement."
       ],
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "Depends on deployment, controls and terms; hosted de-identified use may occur in limited permitted circumstances",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "Available for qualifying Model Vault configurations when enabled; NOT universal",
+        "storage_residency": "Cohere Standard Model Vault offers single-tenant isolated deployment, region options depending on selected instance; effective customer region not tested",
+        "inference_residency": "Dedicated Standard Vault or private/VPC deployment options, no particular customer region attested",
+        "training_on_customer_data": "Private standalone deployment with ZDR removes retained inference content when configured; ordinary shared API training controls separately need confirmation",
+        "retention": "Standard Vault with ZDR enabled does not persist prompt/response content beyond inference; normal shared API data retention not established by this evidence",
+        "zero_data_retention": "Cohere Standard Vault supports ZDR when enabled for standalone deployment; optional, not confirmed for tenant. Encrypted Vault beta has restricted model availability and must not be assumed available.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -4997,18 +4998,17 @@
       "verification_evidence": {
         "source_url": "https://docs.cohere.com/v2/docs/command-a",
         "checked_on": "2026-10-14",
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verified_claims": [
           "pricing",
           "capabilities",
           "public_documented_governance_variants",
           "model_id",
           "status",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -5047,16 +5047,22 @@
           },
           {
             "claim": "governance",
-            "url": "https://cohere.com/enterprise-data-commitments",
-            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
-            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "url": "https://docs.cohere.com/docs/model-vault/standard",
+            "locator": "Standard Vault Overview > Architecture and deployment; Zero Data Retention (ZDR) when enabled",
+            "observed_value": "Cohere Model Vault supports command-a family in dedicated Standard Vault deployments (model availability and commercial terms subject to provisioning). Standard Vault is single-tenant; ZDR when explicitly enabled prevents retaining prompts and responses. Encrypted Vault is a different product with narrower model support; no customer tenant, price contract, active ZDR or regional entitlement attested.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "supplier supported private deployment option and its conditional retention controls, not live tenant verification"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing > Generative models > Command A / A+ / Reasoning availability",
+            "observed_value": "Standard Vault list includes Command A, A+ and A Reasoning instance pricing, subject to vault provisioning and performance tier, not a direct API price guarantee.",
+            "checked_on": "2026-10-14",
+            "scope": "official supported deployment model family evidence"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "identity_warning": {
           "status": "CATALOG_ALIAS_DIFFERS_FROM_API_ID",
           "official_id": "command-a-03-2025",
@@ -17084,7 +17090,8 @@
         "private deployment"
       ],
       "limitations": [
-        "verify exact price/deployment contract"
+        "verify exact price/deployment contract",
+        "Standard Vault ZDR availability does not attest direct shared API retention, or a specific customer's purchased/enabled vault or legal agreement."
       ],
       "scores": {
         "reasoning": 8,
@@ -17107,11 +17114,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Cohere Standard Model Vault offers single-tenant isolated deployment, region options depending on selected instance; effective customer region not tested",
+        "inference_residency": "Dedicated Standard Vault or private/VPC deployment options, no particular customer region attested",
+        "training_on_customer_data": "Private standalone deployment with ZDR removes retained inference content when configured; ordinary shared API training controls separately need confirmation",
+        "retention": "Standard Vault with ZDR enabled does not persist prompt/response content beyond inference; normal shared API data retention not established by this evidence",
+        "zero_data_retention": "Cohere Standard Vault supports ZDR when enabled for standalone deployment; optional, not confirmed for tenant. Encrypted Vault beta has restricted model availability and must not be assumed available.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -17121,7 +17128,7 @@
       "provider": "Cohere",
       "source": "https://docs.cohere.com/v1/changelog",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -17130,7 +17137,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "checked_on": "2026-10-14",
         "source_url": "https://docs.cohere.com/v1/changelog",
         "verified_claims": [
@@ -17138,11 +17145,10 @@
           "status",
           "capabilities",
           "pricing",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -17181,13 +17187,19 @@
           },
           {
             "claim": "governance",
-            "url": "https://cohere.com/enterprise-data-commitments",
-            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
-            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "url": "https://docs.cohere.com/docs/model-vault/standard",
+            "locator": "Standard Vault Overview > Architecture and deployment; Zero Data Retention (ZDR) when enabled",
+            "observed_value": "Cohere Model Vault supports command-a-plus-05-2026 family in dedicated Standard Vault deployments (model availability and commercial terms subject to provisioning). Standard Vault is single-tenant; ZDR when explicitly enabled prevents retaining prompts and responses. Encrypted Vault is a different product with narrower model support; no customer tenant, price contract, active ZDR or regional entitlement attested.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "supplier supported private deployment option and its conditional retention controls, not live tenant verification"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing > Generative models > Command A / A+ / Reasoning availability",
+            "observed_value": "Standard Vault list includes Command A, A+ and A Reasoning instance pricing, subject to vault provisioning and performance tier, not a direct API price guarantee.",
+            "checked_on": "2026-10-14",
+            "scope": "official supported deployment model family evidence"
           }
         ],
         "provider_policy_evidence": {
@@ -17267,7 +17279,8 @@
         "RAG"
       ],
       "limitations": [
-        "older generation; verify current lifecycle"
+        "older generation; verify current lifecycle",
+        "Standard Vault ZDR availability does not attest direct shared API retention, or a specific customer's purchased/enabled vault or legal agreement."
       ],
       "scores": {
         "reasoning": 8,
@@ -17290,11 +17303,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Cohere Standard Model Vault offers single-tenant isolated deployment, region options depending on selected instance; effective customer region not tested",
+        "inference_residency": "Dedicated Standard Vault or private/VPC deployment options, no particular customer region attested",
+        "training_on_customer_data": "Private standalone deployment with ZDR removes retained inference content when configured; ordinary shared API training controls separately need confirmation",
+        "retention": "Standard Vault with ZDR enabled does not persist prompt/response content beyond inference; normal shared API data retention not established by this evidence",
+        "zero_data_retention": "Cohere Standard Vault supports ZDR when enabled for standalone deployment; optional, not confirmed for tenant. Encrypted Vault beta has restricted model availability and must not be assumed available.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -17304,7 +17317,7 @@
       "provider": "Cohere",
       "source": "https://docs.cohere.com/v1/changelog",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -17313,7 +17326,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.cohere.com/v1/changelog",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -17321,11 +17334,10 @@
           "status",
           "capabilities",
           "pricing",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -17364,13 +17376,19 @@
           },
           {
             "claim": "governance",
-            "url": "https://cohere.com/enterprise-data-commitments",
-            "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
-            "observed_value": "Cohere SaaS paying commercial customers can disable training on prompts/outputs using data controls; logged prompts and generations are normally deleted after 30 days subject to contractual, legal, misuse or training opt-in exceptions. Cohere does not receive prompts/generations from private or third-party cloud deployments. This does not attest customer settings, contract or runtime.",
+            "url": "https://docs.cohere.com/docs/model-vault/standard",
+            "locator": "Standard Vault Overview > Architecture and deployment; Zero Data Retention (ZDR) when enabled",
+            "observed_value": "Cohere Model Vault supports command-a-reasoning-08-2025 family in dedicated Standard Vault deployments (model availability and commercial terms subject to provisioning). Standard Vault is single-tenant; ZDR when explicitly enabled prevents retaining prompts and responses. Encrypted Vault is a different product with narrower model support; no customer tenant, price contract, active ZDR or regional entitlement attested.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "supplier supported private deployment option and its conditional retention controls, not live tenant verification"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing > Generative models > Command A / A+ / Reasoning availability",
+            "observed_value": "Standard Vault list includes Command A, A+ and A Reasoning instance pricing, subject to vault provisioning and performance tier, not a direct API price guarantee.",
+            "checked_on": "2026-10-14",
+            "scope": "official supported deployment model family evidence"
           }
         ],
         "provider_policy_evidence": {
