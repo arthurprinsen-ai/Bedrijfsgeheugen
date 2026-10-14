@@ -18749,7 +18749,7 @@
         "vision": 8,
         "agents": 7
       },
-      "eu_processing": null,
+      "eu_processing": true,
       "eu_storage": null,
       "open_weights": false,
       "self_host": false,
@@ -18844,6 +18844,14 @@
             "scope": "AWS 2026 published model-specific standard-tier example, not independently confirmed live regional/tenant rate.",
             "checked_on": "2026-10-14",
             "verification_status": "PUBLISHED_AWS_PRICE_EXAMPLE_NOT_LIVE_TENANT_ATTESTATION"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+            "locator": "Programmatic Access > EU geo inference ID; Geo: EU > Source Region / Destination Regions",
+            "observed_value": "EU geo inference ID eu.amazon.nova-2-lite-v1:0, with published EU destination regions Frankfurt, Stockholm, Milan, Spain, Ireland and Paris; no customer account eligibility attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Public supplier model-specific EU route; tenant configuration unverified"
           }
         ],
         "provider_policy_evidence": {
@@ -18947,6 +18955,24 @@
         "regional_lifecycle_verified": false,
         "regional_pricing_verified": false,
         "automatic_recommendation_eligible": false
+      },
+      "public_eu_inference_review_20261014": {
+        "source_url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+        "checked_on": "2026-10-14",
+        "model_id": "amazon.nova-2-lite-v1:0",
+        "eu_geo_inference_id": "eu.amazon.nova-2-lite-v1:0",
+        "documented_destination_regions": [
+          "eu-central-1",
+          "eu-north-1",
+          "eu-south-1",
+          "eu-south-2",
+          "eu-west-1",
+          "eu-west-3"
+        ],
+        "source_scope": "Published EU geo-inference option only; actual customer route, access, data handling and storage not verified",
+        "customer_enabled": false,
+        "customer_region_verified": false,
+        "eu_storage_verified": false
       }
     },
     {
