@@ -14254,7 +14254,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -14263,7 +14263,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -14271,11 +14271,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14321,6 +14320,15 @@
             "locator": "Features > Chat Completions, Agents, Batching",
             "observed_value": "Chat Completions, Agents & Conversations, Batching, document QnA and downloadable open weights; specific tenant endpoints not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "Supported API endpoints > /v1/chat/completions; Applies across models except Labs; ZDR opt-in and exclusions",
+            "observed_value": "Official Mistral Medium 3.5 v26.04 model card classifies this model GA (not Labs) and lists /v1/chat/completions. Official Mistral paid-plan ZDR policy includes eligible stateless /v1/chat/completions across models other than Labs, subject to organization approval. Agents, Conversations, Batch files and other stateful paths are expressly excluded; training opt-out is a separate customer setting. This confirms the published model-to-endpoint policy applicability only, not that this customer has an approved paid plan, ZDR enabled, EU route or signed data-processing terms.",
+            "checked_on": "2026-10-14",
+            "scope": "public model-specific endpoint-policy applicability; no customer tenant, DPA, region, ZDR approval or downstream storage claim",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -14336,7 +14344,8 @@
           "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independent supplier-public six-claim verification (model card, documented price/features/endpoints, official commercial terms and endpoint-specific ZDR policy). This validates published supplier model/endpoint governance eligibility, NOT customer contract, account rights, approved ZDR, actual region, training preference, hosted storage, invoice or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -14375,7 +14384,7 @@
         "duplicate_model_alias": true,
         "canonical_model_id": "mistral-medium-3-5",
         "model_variant_selection_required": false,
-        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+        "last_specific_source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
         "last_specific_source_check": "2026-10-14",
         "pending_independent_claim_reviews": 6,
         "review_required_claims": [
