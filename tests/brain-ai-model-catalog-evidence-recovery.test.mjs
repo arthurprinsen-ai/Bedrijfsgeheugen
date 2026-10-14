@@ -143,3 +143,13 @@ test('Cohere remaining official API mappings remain fail-closed',()=>{
  assert.equal(r.max_output_tokens,32000);
  assert.ok(r.modalities.includes('image'));
 });
+
+test('supplier identity audit artifact has an explicit, narrowly scoped delivery lane',()=>{
+ const policy=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+ const artifact='data/ai-model-supplier-identity-content-audit-20261014.json';
+ const website=policy.lanes.find(lane=>lane.id==='website');
+ assert.ok(website,'Expected explicit website lane');
+ assert.ok(website.paths.includes(artifact),'Audit file must be classified before protected CI');
+ assert.ok(!website.paths.includes('data/ai-model-supplier-'),'No broad supplier wildcard classification');
+ assert.ok(fs.existsSync(artifact),'Audited supplier identity report must exist');
+});
