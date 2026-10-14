@@ -5383,10 +5383,10 @@
         "verified_claims": [
           "capabilities",
           "model_id",
-          "deployment"
+          "deployment",
+          "status"
         ],
         "not_verified": [
-          "status",
           "governance",
           "API per-token/per-search production pricing",
           "actual tenant purchase/commitment",
@@ -5424,13 +5424,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "status",
-            "url": "https://docs.cohere.com/changelog/embed-multimodal-v4",
-            "locator": "Announcing Embed Multimodal v4 > Availability",
-            "observed_value": "Embed v4 published as available on Cohere Platform, AWS SageMaker and Azure AI Foundry; tenant access not validated",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://cohere.com/enterprise-data-commitments",
             "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention",
@@ -5439,6 +5432,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/docs/cohere-embed",
+            "locator": "Latest Model table > embed-v4.0",
+            "observed_value": "embed-v4.0 listed as a supported embedding model on Cohere Platform; later v5 models also listed; tenant access not authenticated",
+            "checked_on": "2026-10-14"
           }
         ],
         "identity_warning": {
@@ -7662,7 +7662,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7691,10 +7691,10 @@
         "source_url": "https://developers.openai.com/api/docs/models/all",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "status",
           "pricing",
           "capabilities",
           "deployment",
@@ -7706,13 +7706,6 @@
             "url": "https://developers.openai.com/api/docs/models/all",
             "locator": "Realtime & audio > GPT-Realtime-Translate",
             "observed_value": "gpt-realtime-translate",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio models",
-            "observed_value": "Listed as streaming speech-to-speech translation model",
             "checked_on": "2026-10-14"
           },
           {
@@ -7745,6 +7738,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+            "locator": "Model heading > Default, Snapshots, Rate limits",
+            "observed_value": "Default listed speech-to-speech translation API model, with rate limits; account entitlement untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -7843,7 +7843,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7872,10 +7872,10 @@
         "source_url": "https://developers.openai.com/api/docs/models/all",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "status",
           "pricing",
           "capabilities",
           "deployment",
@@ -7887,13 +7887,6 @@
             "url": "https://developers.openai.com/api/docs/models/all",
             "locator": "Realtime & audio > GPT-Live-Transcribe",
             "observed_value": "gpt-live-transcribe",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio models",
-            "observed_value": "Listed as low-latency live transcription",
             "checked_on": "2026-10-14"
           },
           {
@@ -7926,6 +7919,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+            "locator": "Model heading > Default, Snapshots, Rate limits",
+            "observed_value": "Default listed low-latency live transcription model; customer endpoint access not probed",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -8023,7 +8023,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8052,10 +8052,10 @@
         "source_url": "https://developers.openai.com/api/docs/models/all",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "status",
           "pricing",
           "capabilities",
           "deployment",
@@ -8067,13 +8067,6 @@
             "url": "https://developers.openai.com/api/docs/models/all",
             "locator": "Realtime & audio > GPT-Realtime-Whisper",
             "observed_value": "gpt-realtime-whisper",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio models",
-            "observed_value": "Listed as streaming speech-to-text model",
             "checked_on": "2026-10-14"
           },
           {
@@ -8106,6 +8099,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
+            "locator": "Model heading > Default, Snapshots, Rate limits",
+            "observed_value": "Default listed streaming speech-to-text API model; customer endpoint access not probed",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -8205,7 +8205,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8234,10 +8234,10 @@
         "source_url": "https://developers.openai.com/api/docs/models/all",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "status",
           "pricing",
           "capabilities",
           "deployment",
@@ -8249,13 +8249,6 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
             "locator": "Model heading",
             "observed_value": "gpt-audio-1.5",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
-            "locator": "Model page > Default and rate limits",
-            "observed_value": "Published API model, with tier-dependent rate limits; tenant entitlement not tested",
             "checked_on": "2026-10-14"
           },
           {
@@ -8297,6 +8290,13 @@
             "checked_on": "2026-10-14",
             "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Model heading > Default, Snapshots, Rate limits",
+            "observed_value": "Default listed audio input/output API model; tier-dependent rate limits and customer access untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
