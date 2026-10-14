@@ -9974,7 +9974,7 @@
         "Mistral API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -9999,24 +9999,53 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/mistral-embed-23-12",
+            "locator": "Mistral Embed model page > Model ID",
+            "observed_value": "mistral-embed-2312; catalog label mistral-embed",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/mistral-embed-23-12",
+            "locator": "Model title > GA Premier v23.12",
+            "observed_value": "Generally available model version 23.12",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/mistral-embed-23-12",
+            "locator": "Price /M Tokens",
+            "observed_value": "USD 0.10 per million input tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/mistral-embed-23-12",
+            "locator": "Modalities and Context",
+            "observed_value": "Text embedding model with 8K context",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/mistral-embed-23-12",
+            "locator": "Features > Embeddings and Batching",
+            "observed_value": "Embeddings /v1/embeddings and Batching /v1/batch APIs documented",
             "checked_on": "2026-10-14"
           }
         ]
@@ -11752,7 +11781,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -11781,35 +11810,42 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
-            "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html",
-            "locator": "Model specifications > Input modalities / Output modalities / Context Window",
-            "observed_value": "Text, image and video input; text output; 300K context",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Model ID",
+            "url": "https://docs.aws.amazon.com/us_en/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+            "locator": "Programmatic Access > bedrock-runtime Model ID",
             "observed_value": "amazon.nova-pro-v1:0",
             "checked_on": "2026-10-14"
           },
           {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/us_en/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+            "locator": "Model Details > Lifecycle",
+            "observed_value": "Active; launch date Dec 05 2024; model card describes EOL no sooner than Dec 2025",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/us_en/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+            "locator": "Model Details > Context / Modalities",
+            "observed_value": "300K context, 5K maximum output; text/image/video input, text output",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Model ID / Amazon Bedrock",
-            "observed_value": "Amazon Bedrock model ID amazon.nova-pro-v1:0; tenant entitlement and region not independently checked",
+            "url": "https://docs.aws.amazon.com/us_en/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+            "locator": "Programmatic Access > Model ID and Geo Inference ID",
+            "observed_value": "Bedrock runtime amazon.nova-pro-v1:0; EU geo inference eu.amazon.nova-pro-v1:0; authenticated access untested",
             "checked_on": "2026-10-14"
           }
         ],
