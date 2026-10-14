@@ -377,3 +377,24 @@ test('Falcon exact model-card inference receipts cannot authorize hosted API or 
   assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
  }
 });
+
+
+test('four Google supplier audits cannot inherit acceptance from public pricing and terms',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const ids=['gemini-3-flash-preview','gemini-3.1-flash-tts-preview',
+  'gemini-3.5-live-translate-preview','gemini-omni-1.1-flash'];
+ for(const id of ids){
+  const m=catalog.models.find(row=>row.id===id);
+  assert.ok(m,id+': expected model record');
+  const e=m.verification_evidence||{}, audit=m.supplier_audit||{};
+  const independentAccepted=audit.independent_verification_required===false&&
+   audit.pending_independent_claim_reviews===0;
+  if(!independentAccepted){
+   assert.equal(e.claim_scope,'partial',id+': public tariffs are not full supplier acceptance');
+   assert.ok(e.not_verified?.includes('governance'),id+': retain independent governance review');
+   assert.equal(audit.automatic_recommendation_eligible,false,id+': do not recommend pending models');
+  }
+  if(audit.automatic_recommendation_eligible===true)
+   assert.equal(independentAccepted,true,id+': supplier release requires independent acceptance');
+ }
+});
