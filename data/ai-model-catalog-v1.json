@@ -1020,7 +1020,7 @@
       "status": "active",
       "input_usd_m": 2,
       "output_usd_m": 10,
-      "cached_input_usd_m": 0.2,
+      "cached_input_usd_m": 0.1,
       "context_k": 1000,
       "modalities": [
         "text",
@@ -1053,8 +1053,11 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://platform.claude.com/docs/en/models/overview",
-      "limitations": [],
+      "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+      "limitations": [
+        "Batch API maximum output of 300K tokens is beta; standard maximum output is 128K",
+        "Prompt-cache read costs USD 0.10/MTok; 5-minute and 1-hour cache writes cost more"
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "no EU processing in this listed path",
@@ -1069,7 +1072,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "source_url": "https://platform.claude.com/docs/en/models/overview",
+        "source_url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -1111,15 +1114,15 @@
           {
             "claim": "pricing",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
-            "locator": "Specifications > Pricing",
-            "observed_value": "USD 2 input / 10 output per million tokens; excludes cache, batch, regional charges",
+            "locator": "Specifications > Pricing > Input, Output, Cache read, Batch API",
+            "observed_value": "Claude API input USD 2/MTok, output USD 10/MTok, cache read USD 0.10/MTok, 5-minute cache write USD 2.50/MTok, 1-hour cache write USD 4/MTok; Batch API 50% input/output discount",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
-            "locator": "Specifications > Capabilities",
-            "observed_value": "1M token context; text and image inputs; text output; 128K max output; adaptive thinking",
+            "locator": "Specifications > Capabilities > Context window; Max output; Max output (Batch API, beta)",
+            "observed_value": "1M context; standard maximum 128K output tokens; beta Batch API maximum 300K; text/image inputs to text output; adaptive thinking",
             "checked_on": "2026-10-14"
           },
           {
@@ -1183,7 +1186,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://platform.claude.com/docs/en/models/overview",
+        "source_reference": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -1202,8 +1205,12 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
-      }
+        "evidence_accounting_date": "2026-10-14",
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "max_output_tokens": 128000,
+      "max_output_batch_tokens": 300000
     },
     {
       "id": "claude-sonnet-5",
@@ -8975,7 +8982,8 @@
       "limitations": [
         "older than Opus 5; evaluate migration path",
         "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
-        "Active legacy model. Anthropic states retirement will be no earlier than 2027-05-28; prefer current-generation model where possible"
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-05-28; prefer current-generation model where possible",
+        "300K Batch API maximum output is a beta capability distinct from 128K standard max output"
       ],
       "scores": {
         "reasoning": 9,
@@ -9071,8 +9079,8 @@
           {
             "claim": "capabilities",
             "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
-            "locator": "Specifications > Context, Max output, Thinking, Input → output",
-            "observed_value": "1M context, 128K standard max output; text and image input to text output; adaptive thinking",
+            "locator": "Specifications > Capabilities > Max output; Max output (Batch API, beta)",
+            "observed_value": "1M context; 128K standard output; 300K beta Batch API max output; text/image inputs to text output; adaptive thinking",
             "checked_on": "2026-10-14"
           },
           {
@@ -9136,7 +9144,8 @@
         },
         "evidence_accounting_date": "2026-10-14"
       },
-      "max_output_tokens": 128000
+      "max_output_tokens": 128000,
+      "max_output_batch_tokens": 300000
     },
     {
       "tier": "frontier",
