@@ -10088,8 +10088,8 @@
     {
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 2,
+      "output_usd_m": 120,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -10161,18 +10161,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
             "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
@@ -10181,6 +10169,46 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+            "locator": "Model code",
+            "observed_value": "gemini-3-pro-image",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+            "locator": "Versions > Stable",
+            "observed_value": "Stable model gemini-3-pro-image; account entitlement not independently tested",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+            "locator": "Supported data types; Token limits; Capabilities",
+            "observed_value": "Image and text input and output; image generation and Google Search grounding supported; 65,536 input and 32,768 output token limits",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-pro-image",
+            "locator": "Model code; Consumption options",
+            "observed_value": "Gemini API model gemini-3-pro-image; Batch supported; Flex and Priority not supported; tenant access untested",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3 Pro Image > Standard > Paid Tier",
+            "observed_value": "Standard paid: USD 2 / 1M input text/image tokens; USD 12 / 1M output text/thinking tokens and USD 120 / 1M image output tokens; approximately USD 0.134 per 1K/2K image.",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
           }
         ],
         "provider_policy_evidence": {
@@ -10203,14 +10231,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10222,13 +10245,23 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "processing_mode": "Standard paid",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "checked_at": "2026-10-14",
+        "details": "Standard paid: USD 2 / 1M input text/image tokens; USD 12 / 1M output text/thinking tokens and USD 120 / 1M image output tokens; approximately USD 0.134 per 1K/2K image.",
+        "caution": "Image and audio output per 1M modality-specific tokens; not interchangeable with text token price",
+        "customer_billing_not_verified": true
       }
     },
     {
       "tier": "preview",
       "status": "preview",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.5,
+      "output_usd_m": 3,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -10300,18 +10333,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
             "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
@@ -10320,6 +10341,46 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview",
+            "locator": "Model code",
+            "observed_value": "gemini-3-flash-preview",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview",
+            "locator": "Versions > Preview",
+            "observed_value": "Preview model gemini-3-flash-preview; account access not tested",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview",
+            "locator": "Supported data types; Token limits; Capabilities",
+            "observed_value": "Text, image, video, audio and PDF input; text output; 1,048,576 input and 65,536 output token limits; function calling and thinking",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview",
+            "locator": "Model code; Consumption options",
+            "observed_value": "Gemini API preview model gemini-3-flash-preview; Batch, Flex and Priority supported; entitlement untested",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3 Flash Preview > Standard > Paid Tier",
+            "observed_value": "Standard paid: input USD 0.50 / 1M text/image/video tokens or USD 1.00 / 1M audio input tokens; output USD 3.00 / 1M tokens; batch and cache differ.",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
           }
         ],
         "provider_policy_evidence": {
@@ -10342,14 +10403,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10361,6 +10417,16 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "processing_mode": "Standard paid",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "checked_at": "2026-10-14",
+        "details": "Standard paid: input USD 0.50 / 1M text/image/video tokens or USD 1.00 / 1M audio input tokens; output USD 3.00 / 1M tokens; batch and cache differ.",
+        "caution": "Image and audio output per 1M modality-specific tokens; not interchangeable with text token price",
+        "customer_billing_not_verified": true
       }
     },
     {
@@ -10644,8 +10710,8 @@
     {
       "tier": "preview",
       "status": "preview",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 1,
+      "output_usd_m": 20,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -10717,18 +10783,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://ai.google.dev/gemini-api/terms",
             "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
@@ -10737,6 +10791,46 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview.md",
+            "locator": "Model code",
+            "observed_value": "gemini-3.1-flash-tts-preview",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview.md",
+            "locator": "Model note; Versions",
+            "observed_value": "Legacy preview; official page recommends migration to Gemini 3.8 Flash TTS or Gemini 3.8 Flash-Lite TTS; account entitlement untested",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview.md",
+            "locator": "Supported data types; Token limits; Capabilities",
+            "observed_value": "Text input, audio output; controllable low-latency speech with expressive audio tags; 8,192 input and 16,384 output token limits",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview.md",
+            "locator": "Model code; Consumption options",
+            "observed_value": "Gemini API TTS preview model gemini-3.1-flash-tts-preview; Batch supported, Flex and Priority not supported",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.1 Flash TTS Preview > Standard > Paid Tier",
+            "observed_value": "Standard paid: USD 1.00 / 1M text input tokens and USD 20.00 / 1M audio output tokens.",
+            "checked_on": "2026-10-14",
+            "scope": "official model or exact model pricing table; no tenant account attestation"
           }
         ],
         "provider_policy_evidence": {
@@ -10759,14 +10853,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10778,6 +10867,16 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "per 1M tokens",
+        "processing_mode": "Standard paid",
+        "source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "checked_at": "2026-10-14",
+        "details": "Standard paid: USD 1.00 / 1M text input tokens and USD 20.00 / 1M audio output tokens.",
+        "caution": "Image and audio output per 1M modality-specific tokens; not interchangeable with text token price",
+        "customer_billing_not_verified": true
       }
     },
     {
