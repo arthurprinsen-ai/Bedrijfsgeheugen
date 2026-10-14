@@ -41,3 +41,7 @@ The private tenant acceptance script now supports `TENANT_LIVE_READBACK_REQUIRED
 
 ## Mandatory runtime controls (hardening)
 All non-contract tenant security claims now require the pinned HTTPS provider readback, without an opt-out. Missing gateway credentials or a missing verified tenant response block tenant acceptance. This does not create a provider adapter or establish authenticated evidence; release remains blocked until those integrations are live and independently confirmed.
+
+## Connection readiness
+
+Run `node tests/ai-model-tenant-connection-readiness.mjs` on the protected runner. Supply the configured contract-verification endpoint, allowed HTTPS origin, authorization token, provider-readback endpoint, allowed HTTPS origin, authorization token, and trusted attestation public key from access-controlled runner configuration. Do not commit credentials or contracts. A configured connection is not proof of contract authenticity or provider settings. Run tenant acceptance on independently verified restricted evidence after the gateways are authorized; release remains blocked until supplier verification and production checks pass.
