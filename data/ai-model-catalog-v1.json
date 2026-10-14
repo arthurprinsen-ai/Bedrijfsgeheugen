@@ -13378,7 +13378,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -13387,7 +13387,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -13395,11 +13395,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -13448,6 +13447,18 @@
             "locator": "Consumption options and Versions",
             "observed_value": "Gemini API preview gemini-3-flash-preview; Batch, Flex, Priority inference listed",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging for abuse monitoring; Grounding, stateful APIs, caching and File API exceptions",
+            "observed_value": "Google's exact gemini-3-flash-preview pricing row documents Paid Tier \"Used to improve our products: No\" and Free Tier \"Yes\". Google's Gemini Developer API ZDR guide confirms Paid Service prompts/responses are not used for product improvement, but abuse-monitoring retains prompts/responses for limited periods. It expressly directs guaranteed zero-data-retention or enterprise DPA workloads to Vertex AI. Grounding and stateful features have additional storage terms; the gemini-3-flash-preview preview/legacy lifecycle and exact capability constraints remain model-card-specific. Actual tenant billing-enabled status, geographic processing, data-processing agreement, disabled logging/features and entitlement are not checked.",
+            "checked_on": "2026-10-14",
+            "scope": "independently reviewed official model-specific billing/data-use row + Gemini Developer API data policy; supplier-public claim only, NOT effective customer retention, DPA, region or project setting",
+            "verification_status": "MODEL_SPECIFIC_PAID_FREE_DATA_USE_AND_API_RETENTION_PUBLIC_POLICY_VERIFIED_TENANT_UNVERIFIED",
+            "corroborating_model_pricing_url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "corroborating_model_page_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview",
+            "commercial_terms_url": "https://ai.google.dev/gemini-api/terms"
           }
         ],
         "provider_policy_evidence": {
@@ -13463,10 +13474,11 @@
           "source_url": "https://ai.google.dev/gemini-api/terms",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independent public six-claim review on 2026-10-14 of the exact model card, exact model pricing/data-use row, Gemini Developer API terms and retention/ZDR feature exceptions. Does not attest customer billing plan, storage, region, endpoint credentials, signed DPA, customer entitlement or any zero-retention configuration."
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "SUPPLIER_PUBLIC_SIX_CLAIMS_RECEIPTS_PRESENT_CUSTOMER_GOVERNANCE_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -13475,10 +13487,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13496,7 +13506,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SPECIFIC_PROVIDER_DATA_USE_AND_API_RETENTION_PUBLIC_POLICY_VERIFIED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -13511,7 +13521,9 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/zdr"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -14042,7 +14054,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -14051,7 +14063,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -14059,11 +14071,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14112,6 +14123,18 @@
             "locator": "Versions and migration notice",
             "observed_value": "Legacy preview gemini-3.1-flash-tts-preview; Google recommends Gemini 3.8 Flash TTS or Flash-Lite TTS; Batch supported",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging for abuse monitoring; Grounding, stateful APIs, caching and File API exceptions",
+            "observed_value": "Google's exact gemini-3.1-flash-tts-preview pricing row documents Paid Tier \"Used to improve our products: No\" and Free Tier \"Yes\". Google's Gemini Developer API ZDR guide confirms Paid Service prompts/responses are not used for product improvement, but abuse-monitoring retains prompts/responses for limited periods. It expressly directs guaranteed zero-data-retention or enterprise DPA workloads to Vertex AI. Grounding and stateful features have additional storage terms; the gemini-3.1-flash-tts-preview preview/legacy lifecycle and exact capability constraints remain model-card-specific. Actual tenant billing-enabled status, geographic processing, data-processing agreement, disabled logging/features and entitlement are not checked.",
+            "checked_on": "2026-10-14",
+            "scope": "independently reviewed official model-specific billing/data-use row + Gemini Developer API data policy; supplier-public claim only, NOT effective customer retention, DPA, region or project setting",
+            "verification_status": "MODEL_SPECIFIC_PAID_FREE_DATA_USE_AND_API_RETENTION_PUBLIC_POLICY_VERIFIED_TENANT_UNVERIFIED",
+            "corroborating_model_pricing_url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "corroborating_model_page_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview",
+            "commercial_terms_url": "https://ai.google.dev/gemini-api/terms"
           }
         ],
         "provider_policy_evidence": {
@@ -14130,10 +14153,11 @@
         },
         "verification_notes": [
           "Official Google page describes a legacy preview and recommends a newer production model; not suitable as an unqualified default recommendation."
-        ]
+        ],
+        "verification_scope_note": "Independent public six-claim review on 2026-10-14 of the exact model card, exact model pricing/data-use row, Gemini Developer API terms and retention/ZDR feature exceptions. Does not attest customer billing plan, storage, region, endpoint credentials, signed DPA, customer entitlement or any zero-retention configuration."
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "SUPPLIER_PUBLIC_SIX_CLAIMS_RECEIPTS_PRESENT_CUSTOMER_GOVERNANCE_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -14142,10 +14166,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -14163,7 +14185,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SPECIFIC_PROVIDER_DATA_USE_AND_API_RETENTION_PUBLIC_POLICY_VERIFIED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -14178,7 +14200,9 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/zdr"
       },
       "pricing_basis": {
         "currency": "USD",
