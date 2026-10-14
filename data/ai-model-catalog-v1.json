@@ -16547,10 +16547,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
-          "governance",
           "pricing"
         ],
         "claim_evidence": [
@@ -16569,7 +16569,8 @@
             "url": "https://docs.mistral.ai/inference/pricing",
             "locator": "Labs > Leanstral 1.5 > Input, Cached input, Output",
             "observed_value": "Mistral Labs Leanstral 1.5: Free for input, cached input and output at the currently listed Labs API rate; terms and availability may change.",
-            "checked_on": "2026-10-14"
+            "checked_on": "2026-10-14",
+            "scope": "Historical published Labs Free tariff; retired model is not currently deployable; no promise of free current access or infrastructure."
           },
           {
             "claim": "model_id",
@@ -16598,6 +16599,15 @@
             "locator": "Model card > Features, API or model weights",
             "observed_value": "Documented Chat Completions, function calling, agent conversations, structured outputs; model retired, not eligible for new production deployments",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
+            "locator": "Sections 4.2 Training and 4.3 Labs/Preview; official Leanstral 1.5 model card identifies labs-leanstral-1-5; Mistral ZDR guide excludes Labs models",
+            "observed_value": "Leanstral 1.5 is explicitly a Labs model (labs-leanstral-1-5) and was retired by Mistral after its 2026-09-29 deprecation. Mistral's commercial terms allow Labs/Preview inputs and outputs to be used for training, and state that other-product opt-out choices, including ZDR, do not apply to Labs. Mistral's stateless API ZDR guide likewise excludes Labs. This is a model-specific negative public policy finding, not proof of historical customer consent, signed terms, account settings or a currently operational endpoint.",
+            "checked_on": "2026-10-14",
+            "scope": "model-scoped negative official supplier governance; Labs/Preview excluded from ZDR; customer contract, actual provider setting and runtime never attested",
+            "verification_status": "MODEL_LABS_EXCLUSION_OFFICIAL_POLICY_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "lifecycle_warning": {
@@ -16628,7 +16638,8 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
-        }
+        },
+        "verification_scope_note": "Leanstral 1.5 Labs/ZDR negative policy independently checked from Mistral model page, official ZDR exclusions, and current commercial terms. Still PARTIAL due retirement and lack of a currently usable customer-specific price or entitlement. Do not recommend."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -16640,10 +16651,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16663,18 +16672,13 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
-        "pending_independent_claim_reviews": 6,
+        "pending_independent_claim_reviews": 1,
         "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
+          "pricing"
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
@@ -16700,7 +16704,10 @@
         "customer_verified": false,
         "supplier_full_verification": false,
         "automatic_recommendation_eligible": false
-      }
+      },
+      "provider_api_id": "labs-leanstral-1-5",
+      "provider_api_id_source": "https://docs.mistral.ai/models/leanstral-1-5",
+      "provider_api_id_scope": "Historical Labs identifier. Retired API model, not a usable customer entitlement."
     },
     {
       "tier": "open-weight",
