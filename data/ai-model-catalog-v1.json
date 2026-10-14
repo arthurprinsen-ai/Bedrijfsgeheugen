@@ -18493,6 +18493,19 @@
           "source": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
           "official_metered_price_confirmed": false,
           "hosting_costs_unverified": true
+        },
+        "model_license_evidence": {
+          "claim": "official_weight_license_and_deployment_policy",
+          "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "locator": "Official TII model card > License; model card > Use this model / inference",
+          "observed_value": "Falcon-LLM License; self-hosted text inference documented",
+          "checked_on": "2026-10-14",
+          "scope": "model-specific distribution/license metadata, not a deployed service assurance",
+          "unverified": [
+            "hosted service pricing",
+            "deployment-specific retention and residency",
+            "commercial operational terms where applicable"
+          ]
         }
       },
       "supplier_audit": {
@@ -18884,6 +18897,19 @@
           "source": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
           "official_metered_price_confirmed": false,
           "hosting_costs_unverified": true
+        },
+        "model_license_evidence": {
+          "claim": "official_weight_license_and_deployment_policy",
+          "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "locator": "Official TII model card > License; model card > Use this model / inference",
+          "observed_value": "Falcon-LLM License; local Transformers/vLLM deployment documented",
+          "checked_on": "2026-10-14",
+          "scope": "model-specific distribution/license metadata, not a deployed service assurance",
+          "unverified": [
+            "hosted service pricing",
+            "deployment-specific retention and residency",
+            "commercial operational terms where applicable"
+          ]
         }
       },
       "supplier_audit": {
@@ -19682,6 +19708,19 @@
           "source": "https://huggingface.co/tiiuae/Falcon-OCR",
           "official_metered_price_confirmed": false,
           "hosting_costs_unverified": true
+        },
+        "model_license_evidence": {
+          "claim": "official_weight_license_and_deployment_policy",
+          "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+          "locator": "Official TII model card > License; model card > Use this model / inference",
+          "observed_value": "Apache 2.0; image-to-text model, downloadable weights and self-hosted inference",
+          "checked_on": "2026-10-14",
+          "scope": "model-specific distribution/license metadata, not a deployed service assurance",
+          "unverified": [
+            "hosted service pricing",
+            "deployment-specific retention and residency",
+            "commercial operational terms where applicable"
+          ]
         }
       },
       "supplier_audit": {
