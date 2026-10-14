@@ -42,7 +42,7 @@ export function verifiedForecasts(projection,tenantId,{now=new Date()}={}){
  id:String(f.id||f.metric||'forecast').slice(0,80),metric:String(f.metric||'custom').slice(0,30),
  title:String(f.title||'Prognose').slice(0,120),unit:String(f.unit||'').slice(0,20),
  source:f.source.slice(0,160),model:f.model.slice(0,120),updatedAt:f.updatedAt,
- verified:true,history:f.history,forecast:f.forecast,
+ verified:true,tenantId:f.tenantId,validation:{status:'passed',tenantBound:true,tenantId:f.validation.tenantId,verifiedAt:f.validation.verifiedAt},history:f.history,forecast:f.forecast,
  ...(f.low?{low:f.low}:{}),...(f.high?{high:f.high}:{})
  }));
 }
