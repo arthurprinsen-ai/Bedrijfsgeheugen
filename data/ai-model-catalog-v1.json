@@ -882,11 +882,12 @@
           "context_k",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
         "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing",
         "verification_required": [
@@ -897,7 +898,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -1075,11 +1076,12 @@
           "pricing",
           "status",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
         "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing",
         "verification_required": [
@@ -1090,7 +1092,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -9012,7 +9014,7 @@
       "provider": "Anthropic",
       "source": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -9021,7 +9023,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
         "verified_claims": [
@@ -9029,10 +9031,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
