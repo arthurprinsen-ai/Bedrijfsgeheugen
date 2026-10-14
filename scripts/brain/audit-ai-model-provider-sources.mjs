@@ -63,7 +63,14 @@ async function worker(){
       // Some official providers redirect legacy documentation routes. The
       // final destination must remain on that provider's explicit allowlist.
       const finalUrl=new URL(response.url);
-      if(!matching.every(m=>providers[m.provider]?.includes(finalUrl.hostname))){
+      if(!matching.every(m=>{
+        if(!providers[m.provider]?.includes(finalUrl.hostname))return false;
+        if(finalUrl.hostname==='huggingface.co'){
+          const publisherPaths={'Meta':'/meta-llama/','Alibaba/Qwen':'/Qwen/','TII/Falcon':'/tiiuae/'};
+          return Boolean(publisherPaths[m.provider]&&finalUrl.pathname.startsWith(publisherPaths[m.provider]));
+        }
+        return true;
+      })){
         await response.body?.cancel();
         verdict.set(url,{state:'UNTRUSTED_SOURCE_REDIRECT',http_status:response.status,
           final_host:finalUrl.hostname});
