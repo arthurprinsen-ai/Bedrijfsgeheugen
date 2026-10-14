@@ -84,3 +84,12 @@ test('supplier verification ledger explicitly accounts for every required claim'
  }
  assert.deepEqual(omissions,[]);
 });
+
+// Global API or nationality of a supplier is not evidence of regional processing or storage.
+test('Mistral model list does not promise unconditional EU processing or storage',()=>{
+ const models=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8')).models;
+ for(const m of models.filter(x=>x.provider==='Mistral AI')){
+  assert.notEqual(m.eu_processing,true,`${m.id}: EU inference needs validated regional model availability and runtime route`);
+  assert.notEqual(m.eu_storage,true,`${m.id}: EU inference endpoint does not prove control-plane storage region`);
+ }
+});
