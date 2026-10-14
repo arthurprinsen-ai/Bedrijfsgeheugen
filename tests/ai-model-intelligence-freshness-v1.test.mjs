@@ -114,3 +114,40 @@ test('Bedrock catalog keeps provider API IDs separate from internal labels and b
   assert.equal(m.claim_evidence.lifecycle.state,'EOL_REMOVED_IN_LISTED_REGIONS');
  }
 });
+
+
+test('Mistral models use verified hosted API IDs and no duplicate aliases for new selections',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const verified={
+  'mistral-medium-3-5':'mistral-medium-3-5',
+  'mistral-large-3':'mistral-large-2512',
+  'mistral-small-4':'mistral-small-2603',
+  'ministral-3-8b':'ministral-8b-2512',
+  'mistral-ocr-3':'mistral-ocr-2512',
+  'voxtral-tts':'voxtral-mini-tts-2603',
+  'voxtral-mini-transcribe-2':'voxtral-mini-2602',
+  'voxtral-mini-transcribe-realtime':'voxtral-mini-transcribe-realtime-2602',
+  'voxtral-small':'voxtral-small-2507',
+  'mistral-moderation-2':'mistral-moderation-2603',
+  'zai-glm-5.3':'zai-glm-5-3',
+  'zai-glm-5.2':'zai-glm-5-2',
+  'leanstral-1.5':'labs-leanstral-1-5',
+  'mistral-ocr-4.0':'mistral-ocr-4-0'
+ };
+ for(const [id,api] of Object.entries(verified)){
+  const m=c.models.find(x=>x.id===id);
+  assert.ok(m,id);
+  assert.equal(m.provider_model_id,api,id);
+  assert.match(m.source,/^https:\/\/docs\.mistral\.ai\/models\//);
+  assert.equal(m.claim_evidence.model_identity.provider_model_id,api);
+  assert.equal(m.claim_evidence.provider_contracts.status,'UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT');
+ }
+ const alias=c.models.find(x=>x.id==='mistral-medium-3.5');
+ assert.equal(alias.selection_eligible,false);
+ assert.equal(alias.duplicate_of,'mistral-medium-3-5');
+ const shield=c.models.find(x=>x.id==='shieldstral-1');
+ assert.equal(shield.selection_eligible,false);
+ assert.equal(shield.provider_model_id,null);
+ const glm=c.models.find(x=>x.id==='zai-glm-5.3');
+ assert.deepEqual([glm.input_usd_m,glm.cached_input_usd_m,glm.output_usd_m],[1.4,0.14,4.4]);
+});
