@@ -2189,6 +2189,15 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "last_specific_source_check": "2026-10-14"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -2352,6 +2361,15 @@
           "retention",
           "tenant_governance"
         ]
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -2502,6 +2520,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -2651,6 +2678,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -2800,6 +2836,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -2953,6 +2998,15 @@
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "source_check_scope": "Official model page confirms API ID, context and token prices; governance remains unverified"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -3100,6 +3154,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -3250,6 +3313,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -4815,6 +4887,15 @@
         "license_url": "https://huggingface.co/Qwen/Qwen3-8B",
         "checked_on": "2026-10-14",
         "individual_model_claims_verified": false
+      },
+      "provider_policy_research_20261014": {
+        "claim": "alibaba_model_studio_provider_retention_policy",
+        "url": "https://www.alibabacloud.com/help/en/model-studio/data-retention-policy",
+        "locator": "Data Retention Policy > 1. Standard Data Retention Policy and ZDR Option; 2. ZDR Scope of Application; 4.2 Calling non-ZDR Models; 5.2 No Use for Training",
+        "observed_value": "Alibaba Cloud Model Studio normally retains inference prompts and responses for no longer than 30 days with stated exceptions. Enterprise International Site workspaces can enable ZDR for supported regions, models and calls; unsupported models in a ZDR workspace continue under the standard policy. Without separate consent customer inputs/outputs are not used to train foundation models.",
+        "limitations": "Applies only when a Qwen model is served through Alibaba Cloud Model Studio; not to independently self-hosted open-weight models or other vendors. Workspace, model version, route, region and ZDR controls remain UNVERIFIED.",
+        "checked_on": "2026-10-14",
+        "scope": "conditionally applicable hosting-provider policy, NOT a model-specific or customer attestation"
       }
     },
     {
@@ -10954,6 +11035,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -11107,6 +11197,15 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-4-0",
         "last_specific_source_check": "2026-10-14"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -11254,6 +11353,15 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-3-25-12",
         "last_specific_source_check": "2026-10-14"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -11400,6 +11508,15 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
         "last_specific_source_check": "2026-10-14"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -11547,6 +11664,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -11696,6 +11822,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -11822,6 +11957,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -11961,6 +12105,15 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/codestral-embed-25-05"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -12110,6 +12263,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -12236,6 +12398,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -12386,6 +12557,15 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -12519,6 +12699,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -12644,6 +12833,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
@@ -12775,6 +12973,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "provider_policy_research_20261014": {
+        "claim": "provider_data_retention_policy",
+        "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+        "locator": "Zero data retention > What zero data retention covers / What zero data retention does not cover / Check whether ZDR is active",
+        "observed_value": "Paid organizations can request zero data retention for supported stateless endpoints (chat completions, FIM, embeddings, moderation, classification, OCR, speech and transcription). ZDR is not universal: Labs models, stateful Agents, Batch, Conversations, Files, Libraries and Chat are excluded. Customer ZDR activation must be checked in admin privacy settings.",
+        "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
+        "checked_on": "2026-10-14",
+        "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
       }
     },
     {
