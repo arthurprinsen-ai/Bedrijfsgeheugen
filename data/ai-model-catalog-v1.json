@@ -4765,7 +4765,9 @@
           "model_id",
           "status",
           "pricing",
-          "governance"
+          "governance",
+          "capabilities",
+          "deployment"
         ],
         "claim_evidence": [
           {
@@ -4780,7 +4782,15 @@
             "locator": "Llama 4 Scout/Maverick weights available from Meta or partners; generic catalog identifier is a family, not callable endpoint",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "identity_warning": {
+          "status": "NOT_A_MODEL_ID",
+          "checked_on": "2026-10-14",
+          "explanation": "This catalog ID denotes a model family, not an exact runnable model or vendor API identifier; official candidate is illustrative, not evidence for the placeholder.",
+          "example_verified_model_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+          "model_card_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+          "example_license": "llama4"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -4832,7 +4842,8 @@
         "license_url": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
         "checked_on": "2026-10-14",
         "individual_model_claims_verified": false
-      }
+      },
+      "catalog_entry_type": "model_family_placeholder"
     },
     {
       "id": "qwen-open-weight",
@@ -4908,7 +4919,8 @@
           "status",
           "pricing",
           "deployment",
-          "governance"
+          "governance",
+          "capabilities"
         ],
         "claim_evidence": [
           {
@@ -4917,7 +4929,15 @@
             "locator": "Official Qwen project describes Qwen model family, not individual API endpoint",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "identity_warning": {
+          "status": "NOT_A_MODEL_ID",
+          "checked_on": "2026-10-14",
+          "explanation": "This catalog ID denotes a model family, not an exact runnable model or vendor API identifier; official candidate is illustrative, not evidence for the placeholder.",
+          "example_verified_model_id": "Qwen/Qwen3-235B-A22B",
+          "model_card_url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
+          "example_license": "apache-2.0"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -4973,7 +4993,8 @@
         "limitations": "Applies only when a Qwen model is served through Alibaba Cloud Model Studio; not to independently self-hosted open-weight models or other vendors. Workspace, model version, route, region and ZDR controls remain UNVERIFIED.",
         "checked_on": "2026-10-14",
         "scope": "conditionally applicable hosting-provider policy, NOT a model-specific or customer attestation"
-      }
+      },
+      "catalog_entry_type": "model_family_placeholder"
     },
     {
       "tier": "balanced",
