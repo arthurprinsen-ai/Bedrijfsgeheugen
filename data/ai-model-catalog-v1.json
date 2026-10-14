@@ -2466,14 +2466,15 @@
       "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "limitations": [
         "Open weights are available under a Modified MIT license; review license terms before deployment",
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -2554,11 +2555,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -2671,14 +2671,15 @@
       ],
       "source": "https://docs.mistral.ai/models/mistral-large-3-25-12",
       "limitations": [
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -2759,11 +2760,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -2887,14 +2887,15 @@
       ],
       "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
       "limitations": [
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -2975,11 +2976,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -3089,14 +3089,15 @@
       ],
       "source": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
       "limitations": [
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -3177,11 +3178,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -3291,14 +3291,15 @@
       ],
       "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
       "limitations": [
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -3379,11 +3380,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -3494,14 +3494,15 @@
       ],
       "source": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
       "limitations": [
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -3582,11 +3583,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -3697,14 +3697,15 @@
       ],
       "source": "https://docs.mistral.ai/inference/pricing",
       "limitations": [
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -3785,11 +3786,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -3900,14 +3900,15 @@
       ],
       "source": "https://docs.mistral.ai/models/ocr-4-1",
       "limitations": [
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -3988,11 +3989,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -14022,7 +14022,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "Catalog alias; use canonical mistral-medium-3-5 for API calls. Not a separate independently counted model."
+        "Catalog alias; use canonical mistral-medium-3-5 for API calls. Not a separate independently counted model.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 9,
@@ -14044,11 +14045,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -14130,11 +14131,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -14237,7 +14237,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "Deprecated September 29, 2026; OCR 4.1 recommended for new integrations"
+        "Deprecated September 29, 2026; OCR 4.1 recommended for new integrations",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 3,
@@ -14259,11 +14260,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -14352,11 +14353,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -14440,7 +14440,8 @@
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
         "OCR 4 is newer; OCR 3 retained for existing production integrations",
-        "Pricing measured per 1,000 pages, not text tokens"
+        "Pricing measured per 1,000 pages, not text tokens",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 3,
@@ -14462,11 +14463,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -14548,11 +14549,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -14635,7 +14635,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "Pricing measured per million characters, not per million tokens"
+        "Pricing measured per million characters, not per million tokens",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 3,
@@ -14657,11 +14658,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -14743,11 +14744,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -14827,7 +14827,8 @@
         "speech transcription"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 3,
@@ -14849,11 +14850,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -14935,11 +14936,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -15019,7 +15019,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 3,
@@ -15042,11 +15043,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "controlled by deployment when self-hosted",
-        "inference_residency": "controlled by deployment when self-hosted",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -15128,11 +15129,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -15222,7 +15222,8 @@
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
         "Audio input billed per minute, separately from input/output token pricing",
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 6,
@@ -15245,11 +15246,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "controlled by deployment when self-hosted",
-        "inference_residency": "controlled by deployment when self-hosted",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -15331,11 +15332,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -15427,7 +15427,8 @@
         "code retrieval"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 2,
@@ -15449,11 +15450,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -15535,11 +15536,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -15622,7 +15622,8 @@
         "semantic retrieval"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 2,
@@ -15644,11 +15645,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -15730,11 +15731,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -15816,7 +15816,8 @@
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
         "Public-preview open-weight model, no Mistral hosted inference endpoint; compute costs depend on deployment",
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 3,
@@ -15838,11 +15839,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "controlled by deployment when self-hosted",
-        "inference_residency": "controlled by deployment when self-hosted",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -15926,11 +15927,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -16028,7 +16028,8 @@
         "jailbreak detection"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 4,
@@ -16050,11 +16051,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -16136,11 +16137,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -16224,7 +16224,8 @@
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
         "Retired 2026-09-30: not eligible for new API deployments or recommendations",
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 8,
@@ -16247,11 +16248,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "controlled by deployment when self-hosted",
-        "inference_residency": "controlled by deployment when self-hosted",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -16340,11 +16341,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -16436,7 +16436,8 @@
       ],
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 8,
@@ -16459,11 +16460,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "controlled by deployment when self-hosted",
-        "inference_residency": "controlled by deployment when self-hosted",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -16545,11 +16546,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
@@ -16644,7 +16644,8 @@
       "limitations": [
         "verify exact hosted-vs-self-host license and pricing for chosen deployment",
         "Deprecated 2026-09-29, scheduled retirement 2026-10-31; prefer zai-glm-5-3",
-        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage."
+        "EU processing/storage is conditional on the eligible model, explicit EU regional endpoint and customer deployment; global Mistral API does not commit to EU inference and regional inference does not establish EU control-plane storage.",
+        "Mistral regional inference and ZDR depend on supported model, API endpoint, account approval and actually selected route."
       ],
       "scores": {
         "reasoning": 8,
@@ -16667,11 +16668,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "controlled by deployment when self-hosted",
-        "inference_residency": "controlled by deployment when self-hosted",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Regional inference does not itself guarantee regional storage of logs, documents or feature state; source and tenant configuration must be verified",
+        "inference_residency": "api.eu.mistral.ai supports regional processing for eligible requests; global api.mistral.ai has no processing-region guarantee; model/endpoint eligibility and actual route must be confirmed",
+        "training_on_customer_data": "Training opt-out is distinct from ZDR; plan/product specific preferences must be independently established",
+        "retention": "API and feature-specific; approved ZDR removes eligible stateless chat input/output retention beyond response generation, not all API state",
+        "zero_data_retention": "Paid-plan organization ZDR requires approval and covers eligible stateless /v1/chat/completions; excludes Agents, Batch, Conversations, Libraries, /v1/files, Vibe Work and Chat; never inferred enabled",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -16760,11 +16761,10 @@
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
           "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
-          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
-          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
-          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "observed_value": "ZDR on paid plans requires approval for stateless Chat Completions, not Agents, Files, Conversations, Batch, Libraries or product chat. Training opt-out is separate.",
+          "limitations": "Regional inference: https://docs.mistral.ai/inference/regional-inference; model route and customer configuration have not been authenticated.",
           "checked_on": "2026-10-14",
-          "scope": "provider policy baseline; tenant and model applicability conditional"
+          "scope": "official Mistral API-level policy only; not model-specific ZDR approval"
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
