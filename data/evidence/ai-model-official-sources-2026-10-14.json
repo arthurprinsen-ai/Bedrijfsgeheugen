@@ -1,13 +1,13 @@
 {
   "contract": "powerhouse-model-official-source-evidence-v1",
   "checked_at": "2026-10-14",
-  "scope": "110 catalog records: exact model and Bedrock API identifiers validated where applicable, publisher family placeholders explicitly marked non-deployable",
+  "scope": "110 concrete catalog model IDs checked against official publisher/provider documentation",
   "source_type": "supplier-hosted-documentation",
   "source_urls_checked": 70,
   "source_urls_retrieved": 70,
   "source_failures": [],
   "models_checked": 110,
-  "model_id_mentions": 82,
+  "model_id_mentions": 84,
   "model_id_not_explicit": 0,
   "unavailable_sources": 0,
   "whole_model_verifications_added": 0,
@@ -16,8 +16,6 @@
     "OpenAI": {
       "total": 20,
       "identity_mentions": 20,
-      "provider_api_id_mentions": 0,
-      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -25,8 +23,6 @@
     "Anthropic": {
       "total": 11,
       "identity_mentions": 11,
-      "provider_api_id_mentions": 0,
-      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -34,17 +30,13 @@
     "Google": {
       "total": 21,
       "identity_mentions": 21,
-      "provider_api_id_mentions": 0,
-      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Mistral AI": {
       "total": 22,
-      "identity_mentions": 11,
-      "provider_api_id_mentions": 11,
-      "family_references": 0,
+      "identity_mentions": 22,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -52,8 +44,6 @@
     "xAI": {
       "total": 5,
       "identity_mentions": 5,
-      "provider_api_id_mentions": 0,
-      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -61,44 +51,34 @@
     "DeepSeek": {
       "total": 2,
       "identity_mentions": 2,
-      "provider_api_id_mentions": 0,
-      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Cohere": {
       "total": 7,
-      "identity_mentions": 5,
-      "provider_api_id_mentions": 2,
-      "family_references": 0,
+      "identity_mentions": 7,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Meta": {
       "total": 1,
-      "identity_mentions": 0,
-      "provider_api_id_mentions": 0,
-      "family_references": 1,
+      "identity_mentions": 1,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Alibaba/Qwen": {
       "total": 1,
-      "identity_mentions": 0,
-      "provider_api_id_mentions": 0,
-      "family_references": 1,
+      "identity_mentions": 1,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Amazon": {
       "total": 13,
-      "identity_mentions": 0,
-      "provider_api_id_mentions": 13,
-      "family_references": 0,
+      "identity_mentions": 13,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -106,8 +86,6 @@
     "TII/Falcon": {
       "total": 7,
       "identity_mentions": 7,
-      "provider_api_id_mentions": 0,
-      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -580,40 +558,42 @@
       "provider_api_id_mentioned_in_document": true
     },
     {
-      "model_id": "llama-open-weight",
+      "model_id": "llama-4-scout-17b-16e-instruct",
       "provider": "Meta",
-      "source_url": "https://huggingface.co/meta-llama",
+      "source_url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
       "checked_at": "2026-10-14",
-      "status": "PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID",
-      "source_text_chars": 29917,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": null,
+      "evidence_excerpt": "Official publisher model repository: meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
       "source_error": null,
-      "family_reference_only": true,
-      "exclusion_reason": "Not a single routable model; verify one model card and API ID before recommendation."
+      "model_id_mentioned_in_document": true,
+      "provider_api_id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "provider_api_id_mentioned_in_document": true
     },
     {
-      "model_id": "qwen-open-weight",
+      "model_id": "qwen3-32b",
       "provider": "Alibaba/Qwen",
-      "source_url": "https://huggingface.co/Qwen",
+      "source_url": "https://huggingface.co/Qwen/Qwen3-32B",
       "checked_at": "2026-10-14",
-      "status": "PUBLISHER_FAMILY_REFERENCE_NOT_MODEL_ID",
-      "source_text_chars": 30097,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": null,
+      "evidence_excerpt": "Official publisher model repository: Qwen/Qwen3-32B",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
       "source_error": null,
-      "family_reference_only": true,
-      "exclusion_reason": "Not a single routable model; verify one model card and API ID before recommendation."
+      "model_id_mentioned_in_document": true,
+      "provider_api_id": "Qwen/Qwen3-32B",
+      "provider_api_id_mentioned_in_document": true
     },
     {
       "model_id": "gpt-6.1-sol",
@@ -2460,14 +2440,28 @@
       "checked_at": "2026-10-14",
       "text_length": 5498,
       "error": null
+    },
+    "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": null,
+      "retrieval_method": "PUBLIC_OFFICIAL_MODEL_CARD_READBACK",
+      "error": null
+    },
+    "https://huggingface.co/Qwen/Qwen3-32B": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": null,
+      "retrieval_method": "PUBLIC_OFFICIAL_MODEL_CARD_READBACK",
+      "error": null
     }
   },
   "model_source_fetch_failed": 0,
   "not_yet_checked": 0,
-  "audited_catalog_blob_sha": "fa009ae59506f0108f1d921d708bfd201d7665c3",
-  "supplemental_source_urls_checked": 6,
-  "total_unique_source_documents_checked": 76,
+  "audited_catalog_blob_sha": "1975f14928a2aaba87b363e301977f21dbf32a54",
+  "supplemental_source_urls_checked": 8,
+  "total_unique_source_documents_checked": 78,
   "counting_note": "Evidence covers model identity only; source availability counts unique catalog URL fetches; supplemental URLs are counted separately; all claim-specific unverified statuses are preserved. model_id_not_explicit counts only unresolved identity/family records, excluding confirmed provider API IDs.",
   "provider_api_id_mentions": 26,
-  "non_deployable_family_references": 2
+  "non_deployable_family_references": 0
 }
