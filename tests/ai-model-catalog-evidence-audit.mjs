@@ -20,7 +20,7 @@ function hasFullEvidence(m) {
       typeof x.url === 'string' && x.url.startsWith('https://') &&
       typeof x.locator === 'string' && x.locator.trim().length > 0 &&
       typeof x.observed_value === 'string' && x.observed_value.trim().length > 0 &&
-      x.checked_on === e.checked_on);
+      x.checked_on === e.checked_on && !String(x.scope??'').includes('NOT model-specific') && x.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
     if (!receipt) return false;
   }
   // A supplier-verified catalog may not certify customer-specific contracts or controls.
@@ -65,7 +65,7 @@ const models = catalog.models.map(m => {
   const stale = ageDays === null || ageDays > maxAgeDays || ageDays < 0;
   const fullyVerified=hasFullEvidence(m);
   const receipts = m.verification_evidence?.claim_evidence ?? [];
-  const missingClaims = requiredClaims.filter(claim => !receipts.some(x => x.claim === claim && typeof x.url === 'string' && x.url.startsWith('https://') && typeof x.locator === 'string' && x.locator.trim() && typeof x.observed_value === 'string' && x.observed_value.trim() && x.checked_on === m.verification_evidence?.checked_on));
+  const missingClaims = requiredClaims.filter(claim => !receipts.some(x => x.claim === claim && typeof x.url === 'string' && x.url.startsWith('https://') && typeof x.locator === 'string' && x.locator.trim() && typeof x.observed_value === 'string' && x.observed_value.trim() && x.checked_on === m.verification_evidence?.checked_on && !String(x.scope??'').includes('NOT model-specific') && x.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'));
   return {
     id: m.id, provider: m.provider, declared_status: m.status,
     last_claim_verification_at: m.verified_at ?? null,
