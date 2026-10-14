@@ -24,6 +24,46 @@ BEGIN
   END IF;
 END
 $guard$;
+-- Fail closed before changing any cron schedules if the previously deployed
+-- functions expected by the cutover are not present. The migration is atomic.
+DO $deps$
+DECLARE
+  v_missing text[];
+  v_name text;
+BEGIN
+  SELECT array_agg(required_name) INTO v_missing
+  FROM (VALUES
+    ('powerhouse_runtime_mux_task_v1'),
+    ('powerhouse_execution_resilience_watchdog_v1'),
+    ('powerhouse_reconciliation_worker_v2'),
+    ('powerhouse_public_rls_guard_scan'),
+    ('powerhouse_reconcile_daily_sales_action_set_v1'),
+    ('powerhouse_content_closed_loop_tick_v1'),
+    ('powerhouse_data_spine_watchdog_v1'),
+    ('powerhouse_terminal_autonomous_reconcile_v1'),
+    ('powerhouse_refresh_loop_assurance_v1'),
+    ('powerhouse_email_execution_watchdog_v1'),
+    ('powerhouse_one_brain_reconcile_v1'),
+    ('powerhouse_refresh_revenue_attribution_snapshot_v1'),
+    ('powerhouse_linkedin_oauth_resume_reconcile_v1'),
+    ('powerhouse_refresh_regression_stage_evidence_v1'),
+    ('powerhouse_refresh_seo_assurance_v1'),
+    ('powerhouse_refresh_freshness_contradiction_cache_v1'),
+    ('powerhouse_prediction_learning_audit_v2'),
+    ('powerhouse_backfill_internal_research_economics_v1'),
+    ('powerhouse_backfill_social_learning_applications_v1'),
+    ('powerhouse_infinity_operating_loop_v1'),
+    ('bg_roep_functie')
+  ) AS required(required_name)
+  WHERE NOT EXISTS (
+    SELECT 1 FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace
+    WHERE n.nspname='public' AND p.proname=required.required_name
+  );
+  IF array_length(v_missing,1)>0 THEN
+    RAISE EXCEPTION 'SCHEDULER_CUTOVER_DEPENDENCIES_MISSING: %',array_to_string(v_missing,',');
+  END IF;
+END
+$deps$;
 CREATE OR REPLACE FUNCTION public.powerhouse_runtime_scheduler_extras_v4(p_now timestamptz DEFAULT now())
 RETURNS jsonb LANGUAGE plpgsql SECURITY INVOKER SET search_path = public, pg_catalog
 AS $fn$
