@@ -32,6 +32,11 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
  } catch { errors.push(p+':INVALID_SIGNING_KEY_OR_SIGNATURE'); }
  if(!r.readback?.source||!isRecent(r.readback?.observed_at)||!r.readback?.identity||
     r.readback.identity!==r.tenant_id) errors.push(p+':LIVE_READBACK_UNPROVEN');
+ // A signed statement cannot assert a control independently of its readback value.
+ // Preserve value-type distinctions and reject omitted readback values.
+ if (!r.readback || !Object.hasOwn(r.readback,'observed_value') ||
+     JSON.stringify(r.readback.observed_value)!==JSON.stringify(r.observed_value))
+   errors.push(p+':READBACK_VALUE_MISMATCH');
  if(r.claim==='signed_dpa' && r.readback?.source!=='approved_contract_repository') errors.push(p+':SIGNED_DPA_NOT_IN_APPROVED_VAULT');
  if(r.claim!=='signed_dpa' && r.readback?.source!=='authenticated_provider_api') errors.push(p+':PROVIDER_API_READBACK_REQUIRED');
 }
