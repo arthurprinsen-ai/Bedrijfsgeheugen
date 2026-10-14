@@ -4468,7 +4468,16 @@
           "explanation": "Generic catalog label has not been proven to be a valid API model ID",
           "checked_on": "2026-10-14"
         },
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cohere.com/enterprise-data-commitments",
+          "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention; FAQ",
+          "observed_value": "For paying enterprise Cohere SaaS customers, logged prompts and generations are generally deleted after 30 days, subject to legal, contractual, abuse and agreed training exceptions. Model-training opt-out is an account setting. Approved ZDR prevents prompt/generation logging while usage metadata may continue. Cohere states it does not receive customer prompts or generations for private/third-party partner deployments.",
+          "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
+          "checked_on": "2026-10-14",
+          "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        }
       },
       "pricing_basis": {
         "source": "https://docs.cohere.com/docs/command-a-plus",
@@ -4672,6 +4681,15 @@
           "status": "CATALOG_ALIAS_DIFFERS_FROM_API_ID",
           "official_id": "command-a-03-2025",
           "checked_on": "2026-10-14"
+        },
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cohere.com/enterprise-data-commitments",
+          "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention; FAQ",
+          "observed_value": "For paying enterprise Cohere SaaS customers, logged prompts and generations are generally deleted after 30 days, subject to legal, contractual, abuse and agreed training exceptions. Model-training opt-out is an account setting. Approved ZDR prevents prompt/generation logging while usage metadata may continue. Cohere states it does not receive customer prompts or generations for private/third-party partner deployments.",
+          "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
+          "checked_on": "2026-10-14",
+          "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
         }
       },
       "governance_evidence": {
@@ -4883,6 +4901,15 @@
           "status": "CATALOG_ALIAS_DIFFERS_FROM_API_ID",
           "official_id": "embed-v4.0",
           "checked_on": "2026-10-14"
+        },
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cohere.com/enterprise-data-commitments",
+          "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention; FAQ",
+          "observed_value": "For paying enterprise Cohere SaaS customers, logged prompts and generations are generally deleted after 30 days, subject to legal, contractual, abuse and agreed training exceptions. Model-training opt-out is an account setting. Approved ZDR prevents prompt/generation logging while usage metadata may continue. Cohere states it does not receive customer prompts or generations for private/third-party partner deployments.",
+          "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
+          "checked_on": "2026-10-14",
+          "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
         }
       },
       "pricing_basis": "Cohere Standard Vault instance-based, small $4/hour or $2500/month; medium $5/hour or $3250/month. Do not present as API per-token price.",
@@ -5056,7 +5083,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cohere.com/enterprise-data-commitments",
+          "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention; FAQ",
+          "observed_value": "For paying enterprise Cohere SaaS customers, logged prompts and generations are generally deleted after 30 days, subject to legal, contractual, abuse and agreed training exceptions. Model-training opt-out is an account setting. Approved ZDR prevents prompt/generation logging while usage metadata may continue. Cohere states it does not receive customer prompts or generations for private/third-party partner deployments.",
+          "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
+          "checked_on": "2026-10-14",
+          "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        }
       },
       "pricing_basis": "Model Vault pricing is per-instance: medium $5/hour or $3250/month; large $10/hour or $6500/month; does not establish pay-as-you-go API price.",
       "supplier_audit": {
@@ -15590,7 +15626,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cohere.com/enterprise-data-commitments",
+          "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention; FAQ",
+          "observed_value": "For paying enterprise Cohere SaaS customers, logged prompts and generations are generally deleted after 30 days, subject to legal, contractual, abuse and agreed training exceptions. Model-training opt-out is an account setting. Approved ZDR prevents prompt/generation logging while usage metadata may continue. Cohere states it does not receive customer prompts or generations for private/third-party partner deployments.",
+          "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
+          "checked_on": "2026-10-14",
+          "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -15748,7 +15793,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cohere.com/enterprise-data-commitments",
+          "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention; FAQ",
+          "observed_value": "For paying enterprise Cohere SaaS customers, logged prompts and generations are generally deleted after 30 days, subject to legal, contractual, abuse and agreed training exceptions. Model-training opt-out is an account setting. Approved ZDR prevents prompt/generation logging while usage metadata may continue. Cohere states it does not receive customer prompts or generations for private/third-party partner deployments.",
+          "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
+          "checked_on": "2026-10-14",
+          "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -15899,7 +15953,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cohere.com/enterprise-data-commitments",
+          "locator": "Enterprise Data Commitments > Control Your Data; Opt Out from Data Use in Training; Data Handling and Retention; FAQ",
+          "observed_value": "For paying enterprise Cohere SaaS customers, logged prompts and generations are generally deleted after 30 days, subject to legal, contractual, abuse and agreed training exceptions. Model-training opt-out is an account setting. Approved ZDR prevents prompt/generation logging while usage metadata may continue. Cohere states it does not receive customer prompts or generations for private/third-party partner deployments.",
+          "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
+          "checked_on": "2026-10-14",
+          "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
