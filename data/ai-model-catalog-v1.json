@@ -998,10 +998,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -1019,7 +1017,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
@@ -1206,10 +1204,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -1227,7 +1223,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
@@ -1615,10 +1611,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -1636,7 +1630,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -2380,10 +2374,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -2403,7 +2395,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -2577,10 +2569,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -2600,7 +2590,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -2785,10 +2775,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/mistral-large-3-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -2808,7 +2796,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -3005,10 +2993,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -3026,7 +3012,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -3211,10 +3197,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -3232,7 +3216,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -3417,10 +3401,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -3438,7 +3420,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -3624,10 +3606,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -3648,7 +3628,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -9871,10 +9851,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -9894,7 +9872,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -10061,10 +10039,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10084,7 +10060,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -10249,10 +10225,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10270,7 +10244,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -10440,10 +10414,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10461,7 +10433,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -10624,10 +10596,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -10645,7 +10615,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
@@ -11763,10 +11733,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -11784,7 +11752,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -15371,10 +15339,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/voxtral-small-25-07",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -15394,7 +15360,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
