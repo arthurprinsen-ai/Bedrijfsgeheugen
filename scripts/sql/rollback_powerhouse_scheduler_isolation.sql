@@ -50,6 +50,7 @@ BEGIN
    THEN RAISE EXCEPTION 'ROLLBACK_OWNER_DRIFT:%',v_name; END IF;
    IF v_name='powerhouse-ops-independent-slot-reconciler' AND
       v_command NOT LIKE 'select powerhouse_ops.reconcile_missed_operational_slots_v1(%'
+      AND v_command NOT LIKE 'select powerhouse_ops.reconcile_missed_operational_slots_cursor_v1(%'
    THEN RAISE EXCEPTION 'ROLLBACK_OWNER_DRIFT:%',v_name; END IF;
    IF v_name='powerhouse-operational-retry-worker' AND
       v_command NOT LIKE 'select powerhouse_ops.replay_operational_failures_v1(%'
