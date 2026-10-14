@@ -4976,7 +4976,26 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_public_source_crosscheck": {
+          "date": "2026-10-14",
+          "result": "ALIAS_CROSSCHECKED_WITH_CANONICAL_SOURCE",
+          "scope": "Product alias, not a separately callable API model ID",
+          "canonical_api_id": "command-a-plus-05-2026",
+          "evidence": [
+            {
+              "claim": "model identity",
+              "url": "https://docs.cohere.com/v1/docs/command-a-plus",
+              "section": "API Endpoints > Model ID",
+              "verdict": "ALIAS_NOT_CANONICAL_API_ID"
+            }
+          ],
+          "remaining_unverified": [
+            "no separate model identity",
+            "customer-account deployment and governance controls"
+          ],
+          "approval_unchanged": true
+        }
       },
       "provider_api_id": "command-a-plus-05-2026",
       "catalog_alias": "command-a-plus",
@@ -5215,7 +5234,48 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_public_source_crosscheck": {
+          "date": "2026-10-14",
+          "result": "PUBLIC_SUPPLIER_FACTS_CROSSCHECKED_NOT_TENANT_ATTESTED",
+          "scope": "Independent comparison with current official Cohere model documentation; not a customer-account probe, signed DPA or automatic recommendation approval",
+          "canonical_api_id": "command-a-03-2025",
+          "context_tokens": 256000,
+          "max_output_tokens": 8000,
+          "input_usd_per_million": 2.5,
+          "output_usd_per_million": 10,
+          "public_model_status": "Listed by Cohere in its current model documentation; per-account runtime access not tested",
+          "capabilities": [
+            "multilingual",
+            "safety_modes",
+            "citations",
+            "tool_use",
+            "structured_outputs",
+            "reasoning",
+            "image_inputs"
+          ],
+          "evidence": [
+            {
+              "claim": "model_id,pricing,capabilities,status,API deployment",
+              "url": "https://docs.cohere.com/v2/docs/command-a",
+              "section": "Model ID / Pricing / Specifications / Capabilities",
+              "verdict": "MATCH_OFFICIAL_SOURCE"
+            },
+            {
+              "claim": "governance baseline only",
+              "url": "https://cohere.com/enterprise-data-commitments",
+              "section": "Enterprise Data Commitments / Retention / Private Deployment",
+              "verdict": "PROVIDER_POLICY_ONLY_NOT_TENANT_PROOF"
+            }
+          ],
+          "remaining_unverified": [
+            "Cohere customer-account access",
+            "executed DPA and contractual terms",
+            "enabled retention/ZDR/training settings",
+            "customer processing/storage region"
+          ],
+          "approval_unchanged": true
+        }
       },
       "max_output_tokens": 8000,
       "provider_api_id": "command-a-03-2025",
@@ -17445,7 +17505,59 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "independent_public_source_crosscheck": {
+          "date": "2026-10-14",
+          "result": "PUBLIC_SUPPLIER_FACTS_CROSSCHECKED_NOT_TENANT_ATTESTED",
+          "scope": "Independent comparison with current official Cohere model and Standard Vault documentation; no customer-account or contractual entitlement verified",
+          "canonical_api_id": "command-a-plus-05-2026",
+          "context_tokens": 128000,
+          "max_output_tokens": 64000,
+          "input_usd_per_million": null,
+          "output_usd_per_million": null,
+          "public_api_pricing": "Free for trial and production keys until rate limits; not evidence of an unlimited free production plan",
+          "standard_vault_hourly_usd": {
+            "L": 17.5,
+            "XL": 32.5
+          },
+          "public_model_status": "Listed in current Cohere docs and API endpoints; individual account access untested",
+          "capabilities": [
+            "reasoning",
+            "multilingual",
+            "image_inputs",
+            "safety_modes",
+            "citations",
+            "tool_use",
+            "structured_outputs"
+          ],
+          "evidence": [
+            {
+              "claim": "model_id,pricing,capabilities,status,model deployment",
+              "url": "https://docs.cohere.com/v1/docs/command-a-plus",
+              "section": "Model ID / Pricing / Specifications / Distribution and Technical Integration",
+              "verdict": "MATCH_OFFICIAL_SOURCE"
+            },
+            {
+              "claim": "Standard Vault published instance pricing",
+              "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+              "section": "Generative models > Command A+",
+              "verdict": "MATCH_OFFICIAL_SOURCE_NOT_CUSTOMER_QUOTE"
+            },
+            {
+              "claim": "governance baseline only",
+              "url": "https://cohere.com/enterprise-data-commitments",
+              "section": "Enterprise Data Commitments / Retention / Private Deployment",
+              "verdict": "PROVIDER_POLICY_ONLY_NOT_TENANT_PROOF"
+            }
+          ],
+          "remaining_unverified": [
+            "production entitlement and rate limits for specific account",
+            "contracted Model Vault price",
+            "executed DPA and customer terms",
+            "enabled ZDR/training and region controls"
+          ],
+          "approval_unchanged": true
+        }
       },
       "provider_api_id": "command-a-plus-05-2026",
       "api_model_id": "command-a-plus-05-2026",
