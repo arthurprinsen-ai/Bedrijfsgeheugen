@@ -1667,7 +1667,7 @@
       "status": "active",
       "input_usd_m": 0.1,
       "output_usd_m": 0.4,
-      "cached_input_usd_m": null,
+      "cached_input_usd_m": 0.01,
       "context_k": 1048.576,
       "modalities": [
         "text",
@@ -1733,10 +1733,10 @@
         "verified_claims": [
           "model_id",
           "status",
-          "capabilities"
+          "capabilities",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "deployment",
           "governance"
         ],
@@ -1761,6 +1761,13 @@
             "locator": "Supported data types; Token limits; Capabilities",
             "observed_value": "Text,image,video,audio,PDF inputs; text output; 1,048,576 input and 65,536 output tokens; caching, function calling, structured outputs and code execution supported",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 2.5 Flash-Lite > Standard > Paid Tier per 1M tokens",
+            "observed_value": "USD 0.10 input (text/image/video), USD 0.30 audio input, USD 0.40 output, USD 0.01 cached text/image/video input; batch rates differ",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -1783,11 +1790,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
