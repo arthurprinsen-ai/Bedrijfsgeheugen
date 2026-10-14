@@ -34,3 +34,15 @@ test('cross-tenant forecasts and assertions are rejected, even if marked verifie
  assert.deepEqual(verifiedForecasts(records,'tenant42'),[]);
  assert.deepEqual(verifiedForecasts({forecasts:[valid]},''),[]);
 });
+
+test('forecast dates require a recent observed timestamp and reject future assertions',()=>{
+ const now=new Date('2026-10-14T20:00:00Z');
+ assert.equal(verifiedForecasts({forecasts:[valid]},'tenant42',{now}).length,1);
+ assert.deepEqual(verifiedForecasts({forecasts:[{...valid,updatedAt:'2026-09-01T00:00:00Z'}]},'tenant42',{now}),[]);
+ assert.deepEqual(verifiedForecasts({forecasts:[{...valid,updatedAt:'2026-10-16T00:00:00Z'}]},'tenant42',{now}),[]);
+ assert.deepEqual(verifiedForecasts({forecasts:[{...valid,updatedAt:'invalid-date'}]},'tenant42',{now}),[]);
+});
+test('canonical projection tenant metadata must match authenticated identity',()=>{
+ assert.deepEqual(verifiedForecasts({tenantId:'tenant43',forecasts:[valid]},'tenant42',{now:new Date('2026-10-14T20:00:00Z')}),[]);
+ assert.deepEqual(verifiedForecasts({payload:{tenant_id:'tenant43',forecasts:[valid]}},'tenant42',{now:new Date('2026-10-14T20:00:00Z')}),[]);
+});
