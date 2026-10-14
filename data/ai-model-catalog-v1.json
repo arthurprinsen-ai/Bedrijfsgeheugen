@@ -1596,7 +1596,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1608,24 +1608,53 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+            "locator": "Official API model ID",
+            "observed_value": "mistral-small-2603; catalog display label mistral-small-4 not established as API alias",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+            "locator": "Model lifecycle",
+            "observed_value": "GA version 26.03; March 16, 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+            "locator": "Pricing USD per M tokens",
+            "observed_value": "Input $0.15 / 1M tokens; output $0.60 / 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+            "locator": "Model description and context",
+            "observed_value": "256K context, hybrid instruct/reasoning/coding, 119B total parameters with 6.5B active",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/mistral-small-4-0-26-03",
+            "locator": "Feature endpoints",
+            "observed_value": "Chat Completions, Agents, Conversations and Batch APIs",
             "checked_on": "2026-10-14"
           }
         ]
@@ -1680,7 +1709,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1692,24 +1721,53 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+            "locator": "Official API model ID",
+            "observed_value": "ministral-14b-2512; catalog alias ministral-3-14b not confirmed",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+            "locator": "Model lifecycle",
+            "observed_value": "GA v25.12",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+            "locator": "USD / 1M tokens",
+            "observed_value": "Input $0.20, output $0.20",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+            "locator": "Model specs",
+            "observed_value": "256K context, 14B model, text and vision family",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+            "locator": "Features / APIs",
+            "observed_value": "Local open weights Apache 2.0; Chat Completions, Conversation and Batch API",
             "checked_on": "2026-10-14"
           }
         ]
@@ -1931,7 +1989,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1947,20 +2005,49 @@
         "source_url": "https://docs.mistral.ai/inference/pricing",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
           "pricing",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/codestral-25-08",
+            "locator": "Official version API ID",
+            "observed_value": "codestral-2508; catalog alias codestral not independently proven",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/codestral-25-08",
+            "locator": "Model card",
+            "observed_value": "GA v25.08; historical versions codestral-2405 and codestral-2501 retired",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/codestral-25-08",
+            "locator": "Price USD/1M tokens",
+            "observed_value": "Input $0.30; output $0.90",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "Code models: Codestral code completion",
+            "url": "https://docs.mistral.ai/models/codestral-25-08",
+            "locator": "Context and features",
+            "observed_value": "128K context; code completion and fill-in-the-middle",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/codestral-25-08",
+            "locator": "Features / endpoints",
+            "observed_value": "Chat Completions, structured outputs, function calling, batching and FIM documented",
             "checked_on": "2026-10-14"
           }
         ]
@@ -2016,7 +2103,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -2028,24 +2115,53 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models/ocr-4-1",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/ocr-4-1",
+            "locator": "Official model ID",
+            "observed_value": "mistral-ocr-4-1",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/ocr-4-1",
+            "locator": "Model card > lifecycle",
+            "observed_value": "GA v4.1; released July 16, 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/ocr-4-1",
+            "locator": "Price USD per 1000 pages",
+            "observed_value": "$4 per 1000 pages; $5 per 1000 annotated pages",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/ocr-4-1",
+            "locator": "Model description",
+            "observed_value": "Paragraph bounding boxes, structural labels and confidence scores",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/ocr-4-1",
+            "locator": "Endpoints",
+            "observed_value": "/v1/ocr, /v1/batch",
             "checked_on": "2026-10-14"
           }
         ]
@@ -7246,7 +7362,7 @@
     },
     {
       "tier": "specialist",
-      "status": "deprecated",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -7325,7 +7441,14 @@
             "locator": "Deprecated & retired models table",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "lifecycle_warning": {
+          "status": "RETIRED",
+          "retirement_date": "2026-09-30",
+          "source": "https://docs.mistral.ai/resources/changelogs",
+          "replacement": "mistral-ocr-4-1",
+          "checked_on": "2026-10-14"
+        }
       }
     },
     {
