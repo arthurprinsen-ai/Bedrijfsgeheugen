@@ -13213,7 +13213,8 @@
         "enterprise workflows"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Catalog alias; use canonical mistral-medium-3-5 for API calls. Not a separate independently counted model."
       ],
       "scores": {
         "reasoning": 9,
@@ -13367,7 +13368,10 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "duplicate_model_alias": true,
+        "canonical_model_id": "mistral-medium-3-5",
+        "model_variant_selection_required": false
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13377,6 +13381,23 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
+      },
+      "record_kind": "catalog_alias",
+      "canonical_model_id": "mistral-medium-3-5",
+      "alias_of": "mistral-medium-3-5",
+      "auto_recommendation_eligible": false,
+      "model_identity_resolution_20261014": {
+        "catalog_alias": "mistral-medium-3.5",
+        "canonical_api_id": "mistral-medium-3-5",
+        "source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+        "locator": "Model heading and canonical API model name beneath title",
+        "observed_value": "Mistral Medium 3.5 is named as product title; documented API model ID is mistral-medium-3-5. The dot-separated catalog entry is a friendly alias of the same model, not a distinct model offering.",
+        "checked_on": "2026-10-14",
+        "source_scope": "independently observed official Mistral product-page model identity",
+        "model_count_not_independent": true,
+        "customer_entitlement_verified": false,
+        "automatic_recommendation_eligible": false,
+        "release_supplier_attestation": false
       }
     },
     {
