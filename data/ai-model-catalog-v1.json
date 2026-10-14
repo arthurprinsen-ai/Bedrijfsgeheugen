@@ -2431,7 +2431,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -2459,8 +2459,10 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
-      "limitations": [],
+      "source": "https://docs.cohere.com/docs/command-a-plus",
+      "limitations": [
+        "Catalog alias command-a-plus is not the canonical API identifier command-a-plus-05-2026; tenant entitlement and Model Vault terms must be confirmed."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -2475,42 +2477,58 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
-        "verification_required": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+        "source_url": "https://docs.cohere.com/docs/command-a-plus",
         "checked_on": "2026-10-14",
+        "claim_scope": "partial",
         "verified_claims": [
           "model_id",
-          "capabilities"
+          "capabilities",
+          "deployment",
+          "pricing_conditions"
         ],
         "not_verified": [
-          "status",
-          "pricing",
-          "deployment",
-          "governance"
+          "contractual Model Vault pricing",
+          "tenant-specific availability",
+          "governance and residency",
+          "production terms"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
-            "locator": "Listed generative model Command A+, input/output token billing",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "API Endpoints > Model ID",
+            "observed_value": "command-a-plus-05-2026",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
-            "locator": "Listed generative model Command A+, input/output token billing",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Specifications and Capabilities",
+            "observed_value": "128000 context tokens; reasoning; multilingual; image input; tool use; structured output",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Pricing paragraph",
+            "observed_value": "Free for trial and production keys up to rate limits; Model Vault production separately",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Distribution and Technical Integration",
+            "observed_value": "Cohere deployments per terms; Apache 2.0 open source deployment on Hugging Face",
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "pricing_basis": {
+        "source": "https://docs.cohere.com/docs/command-a-plus",
+        "checked_on": "2026-10-14",
+        "rate_model": "free under trial/production API rate limits; Model Vault commercial terms separately negotiated",
+        "standard_input_usd_m": null,
+        "standard_output_usd_m": null
       }
     },
     {
