@@ -7784,7 +7784,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -7793,7 +7793,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -7801,11 +7801,10 @@
           "pricing",
           "capabilities",
           "status",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -7865,8 +7864,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Embeddings endpoint ZDR eligible in published policy; actual customer eligibility, approval, settings, contracts and data residency remain unverified."
+        },
+        "verification_scope_note": "All six supplier-level claims reviewed against official API model reference, embeddings endpoint and OpenAI data controls on 2026-10-14. Governance means documented supplier API-wide baseline (no training by default, abuse monitoring may retain data, embeddings endpoint ZDR eligibility); it is NOT proof of any tenant's signed DPA, residency, approvals, enabled ZDR or runtime settings."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -7956,7 +7956,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -7965,7 +7965,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -7973,11 +7973,10 @@
           "pricing",
           "status",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -8037,8 +8036,9 @@
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "Embeddings endpoint ZDR eligible in published policy; actual customer eligibility, approval, settings, contracts and data residency remain unverified."
+        },
+        "verification_scope_note": "All six supplier-level claims reviewed against official API model reference, embeddings endpoint and OpenAI data controls on 2026-10-14. Governance means documented supplier API-wide baseline (no training by default, abuse monitoring may retain data, embeddings endpoint ZDR eligibility); it is NOT proof of any tenant's signed DPA, residency, approvals, enabled ZDR or runtime settings."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
