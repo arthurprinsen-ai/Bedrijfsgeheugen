@@ -21984,7 +21984,31 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_license_source_review_20261014": {
+          "checked_on": "2026-10-14",
+          "verification_type": "OFFICIAL_TII_MODEL_REPOSITORY_PUBLIC_LICENSE_AND_SELF_HOST_REVIEW",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-0.5B-Instruct",
+          "source_locator": "Model card > License; use this model > local Transformers/vLLM instructions",
+          "observed_license_label": "falcon-llm-license",
+          "observed_distribution": "Downloadable model repository and local/self-host inference instructions",
+          "verified_public_claims": [
+            "repository identity",
+            "published license label",
+            "self-host distribution capability"
+          ],
+          "not_verified": [
+            "commercial eligibility or interpretation of full license terms",
+            "current hosted API token rate and deployment costs",
+            "actual account entitlements, availability and regions",
+            "customer-specific privacy, data retention, contracts and technical settings"
+          ],
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22236,7 +22260,31 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_license_source_review_20261014": {
+          "checked_on": "2026-10-14",
+          "verification_type": "OFFICIAL_TII_MODEL_REPOSITORY_PUBLIC_LICENSE_AND_SELF_HOST_REVIEW",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-1.5B-Instruct",
+          "source_locator": "Model card > License; use this model > local Transformers/vLLM instructions",
+          "observed_license_label": "falcon-llm-license",
+          "observed_distribution": "Downloadable model repository and local/self-host inference instructions",
+          "verified_public_claims": [
+            "repository identity",
+            "published license label",
+            "self-host distribution capability"
+          ],
+          "not_verified": [
+            "commercial eligibility or interpretation of full license terms",
+            "current hosted API token rate and deployment costs",
+            "actual account entitlements, availability and regions",
+            "customer-specific privacy, data retention, contracts and technical settings"
+          ],
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22488,7 +22536,31 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_license_source_review_20261014": {
+          "checked_on": "2026-10-14",
+          "verification_type": "OFFICIAL_TII_MODEL_REPOSITORY_PUBLIC_LICENSE_AND_SELF_HOST_REVIEW",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-3B-Instruct",
+          "source_locator": "Model card > License; use this model > local Transformers/vLLM instructions",
+          "observed_license_label": "falcon-llm-license",
+          "observed_distribution": "Downloadable model repository and local/self-host inference instructions",
+          "verified_public_claims": [
+            "repository identity",
+            "published license label",
+            "self-host distribution capability"
+          ],
+          "not_verified": [
+            "commercial eligibility or interpretation of full license terms",
+            "current hosted API token rate and deployment costs",
+            "actual account entitlements, availability and regions",
+            "customer-specific privacy, data retention, contracts and technical settings"
+          ],
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22741,7 +22813,31 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_license_source_review_20261014": {
+          "checked_on": "2026-10-14",
+          "verification_type": "OFFICIAL_TII_MODEL_REPOSITORY_PUBLIC_LICENSE_AND_SELF_HOST_REVIEW",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-7B-Instruct",
+          "source_locator": "Model card > License; use this model > local Transformers/vLLM instructions",
+          "observed_license_label": "falcon-llm-license",
+          "observed_distribution": "Downloadable model repository and local/self-host inference instructions",
+          "verified_public_claims": [
+            "repository identity",
+            "published license label",
+            "self-host distribution capability"
+          ],
+          "not_verified": [
+            "commercial eligibility or interpretation of full license terms",
+            "current hosted API token rate and deployment costs",
+            "actual account entitlements, availability and regions",
+            "customer-specific privacy, data retention, contracts and technical settings"
+          ],
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -22994,7 +23090,31 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_license_source_review_20261014": {
+          "checked_on": "2026-10-14",
+          "verification_type": "OFFICIAL_TII_MODEL_REPOSITORY_PUBLIC_LICENSE_AND_SELF_HOST_REVIEW",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "canonical_repository": "tiiuae/Falcon-H1-34B-Instruct",
+          "source_locator": "Model card > License; use this model > local Transformers/vLLM instructions",
+          "observed_license_label": "falcon-llm-license",
+          "observed_distribution": "Downloadable model repository and local/self-host inference instructions",
+          "verified_public_claims": [
+            "repository identity",
+            "published license label",
+            "self-host distribution capability"
+          ],
+          "not_verified": [
+            "commercial eligibility or interpretation of full license terms",
+            "current hosted API token rate and deployment costs",
+            "actual account entitlements, availability and regions",
+            "customer-specific privacy, data retention, contracts and technical settings"
+          ],
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -23247,7 +23367,31 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_license_source_review_20261014": {
+          "checked_on": "2026-10-14",
+          "verification_type": "OFFICIAL_TII_MODEL_REPOSITORY_PUBLIC_LICENSE_AND_SELF_HOST_REVIEW",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "canonical_repository": "tiiuae/Falcon-H1R-7B",
+          "source_locator": "Model card > License; use this model > local Transformers/vLLM instructions",
+          "observed_license_label": "falcon-llm-license",
+          "observed_distribution": "Downloadable model repository and local/self-host inference instructions",
+          "verified_public_claims": [
+            "repository identity",
+            "published license label",
+            "self-host distribution capability"
+          ],
+          "not_verified": [
+            "commercial eligibility or interpretation of full license terms",
+            "current hosted API token rate and deployment costs",
+            "actual account entitlements, availability and regions",
+            "customer-specific privacy, data retention, contracts and technical settings"
+          ],
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -23500,7 +23644,31 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "last_specific_source_url": "https://huggingface.co/tiiuae/Falcon-OCR",
         "last_specific_source_check": "2026-10-14",
-        "pricing_scope": "SELF_HOSTED_OPEN_WEIGHTS_VENDOR_API_TARIFF_NOT_PUBLISHED"
+        "pricing_scope": "SELF_HOSTED_OPEN_WEIGHTS_VENDOR_API_TARIFF_NOT_PUBLISHED",
+        "public_license_source_review_20261014": {
+          "checked_on": "2026-10-14",
+          "verification_type": "OFFICIAL_TII_MODEL_REPOSITORY_PUBLIC_LICENSE_AND_SELF_HOST_REVIEW",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-OCR",
+          "canonical_repository": "tiiuae/Falcon-OCR",
+          "source_locator": "Model card > License; use this model > local Transformers/vLLM instructions",
+          "observed_license_label": "apache-2.0",
+          "observed_distribution": "Downloadable model repository and local/self-host inference instructions",
+          "verified_public_claims": [
+            "repository identity",
+            "published license label",
+            "self-host distribution capability"
+          ],
+          "not_verified": [
+            "commercial eligibility or interpretation of full license terms",
+            "current hosted API token rate and deployment costs",
+            "actual account entitlements, availability and regions",
+            "customer-specific privacy, data retention, contracts and technical settings"
+          ],
+          "customer_runtime_attested": false,
+          "commercial_tariff_attested": false,
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "falcon_license_research_20261014": {
         "license_tag": "apache-2.0",
