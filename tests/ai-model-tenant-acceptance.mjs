@@ -22,7 +22,7 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
  // Signed immutable digest: approved payload is separately stored in secure evidence vault.
  const payload={tenant_id:r.tenant_id,provider:r.provider,model_id:r.model_id,claim:r.claim,
   evidence_reference:r.evidence_reference,approved_by:r.approved_by,checked_at:r.checked_at,
-  observed_value:r.observed_value,expected_value:r.expected_value};
+  observed_value:r.observed_value,expected_value:r.expected_value,readback:r.readback};
  if(r.observed_value===undefined||r.expected_value===undefined||r.observed_value!==r.expected_value) errors.push(p+':CONFIGURATION_READBACK_MISMATCH');
  if(!r.signature) {errors.push(p+':MISSING_SIGNATURE');continue;}
  try {
