@@ -75,12 +75,24 @@ const models = catalog.models.map(m => {
     missing_claim_receipt_count: missingClaims.length
   };
 });
+const claimGapCounts = Object.fromEntries(requiredClaims.map(claim => [
+  claim, models.filter(m => m.missing_verified_claims.includes(claim)).length
+]));
+const providerGaps = Object.entries(Object.groupBy(models, m => m.provider))
+  .map(([provider, entries]) => ({
+    provider, models: entries.length,
+    fully_verified: entries.filter(m => m.eligible_for_automatic_freshness_attestation).length,
+    missing_claims: Object.fromEntries(requiredClaims.map(claim => [
+      claim, entries.filter(m => m.missing_verified_claims.includes(claim)).length
+    ]))
+  }));
 const report = {
   generated_at: now.toISOString(), catalog_version: catalog.version,
   important: 'HTTP reachability cannot verify prices, lifecycle, model IDs, deployment, capabilities or governance; no verified_at timestamps are changed.',
   counts: { models: models.length, sources: sources.length, stale: models.filter(m => m.classification === 'STALE_CLAIMS_UNVERIFIED').length, fully_verified: models.filter(m => m.eligible_for_automatic_freshness_attestation).length, not_fully_verified: models.filter(m => !m.eligible_for_automatic_freshness_attestation).length, unreachable_sources: [...sourceChecks.values()].filter(x => !x.reachable).length, duplicate_ids: duplicateIds.length, missing_official_urls: missingSources.length },
   supplier_claim_backlog: Object.entries(models.reduce((groups, m) => { (groups[m.provider] ??= []).push(m); return groups; }, {})).map(([provider, entries]) => ({ provider, models: entries.length, fully_verified: entries.filter(x => x.eligible_for_automatic_freshness_attestation).length, missing_receipts: entries.reduce((sum, x) => sum + x.missing_claim_receipt_count, 0), missing_by_claim: Object.fromEntries(requiredClaims.map(claim => [claim, entries.filter(x => x.missing_claim_receipts.includes(claim)).length])) })),
   total_missing_claim_receipts: models.reduce((sum, x) => sum + x.missing_claim_receipt_count, 0),
+  missing_claim_counts: claimGapCounts, provider_gaps: providerGaps,
   duplicate_model_ids: [...new Set(duplicateIds)], missing_source_models: missingSources, source_checks: [...sourceChecks.values()], models
 };
 // Production readback is explicit and immutable: compare semantic catalog JSON, not HTTP 200.
