@@ -41,3 +41,10 @@ test('110-model worklist categories exactly partition six claims per model',()=>
   assert.ok(['MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED','PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',
    'NO_USABLE_MODEL_SOURCE_RECEIPT'].includes(row.evidence_classification));
 });
+
+test('public model advisor must never promote provider-only policy to full model governance',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ const source=html.slice(html.indexOf('function fullSupplierEvidence(m)'),html.indexOf('function eligible(m)'));
+ assert.match(source,/PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED/);
+ assert.match(source,/NOT model-specific/);
+});
