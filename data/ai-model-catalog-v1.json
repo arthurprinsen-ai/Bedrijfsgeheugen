@@ -6791,14 +6791,15 @@
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
       "id": "amazon-titan-multimodal-embeddings-g1",
       "provider": "Amazon",
-      "provider_model_id": "amazon.titan-embed-image-v1:0",
+      "provider_model_id": "amazon.titan-embed-image-v1",
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
         "model_identity": {
           "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
           "checked_at": "2026-10-14",
-          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
-          "provider_model_id": "amazon.titan-embed-image-v1:0"
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "amazon.titan-embed-image-v1",
+          "note": "Official Bedrock model card lists the API model ID without a :0 suffix."
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
