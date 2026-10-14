@@ -4962,7 +4962,20 @@
         ],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
-      "provider_api_id": "command-a-plus-05-2026"
+      "provider_api_id": "command-a-plus-05-2026",
+      "catalog_alias": "command-a-plus",
+      "alias_of": "command-a-plus-05-2026",
+      "canonical_model_id": "command-a-plus-05-2026",
+      "independent_api_identity_review_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.cohere.com/docs/command-a-plus",
+        "locator": "Specifications > API Endpoints > Model ID",
+        "observed_value": "Cohere Command A+ is served as command-a-plus-05-2026 on Cohere API; generic product name is not a distinct API model ID",
+        "review_scope": "public provider API model identity; no customer-specific access or full supplier-claim attestation",
+        "customer_verified": false,
+        "supplier_full_verification": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "id": "command-a",
@@ -16319,7 +16332,20 @@
       "max_output_tokens": 128000,
       "model_developer": "Z.ai",
       "serving_provider": "Mistral AI",
-      "model_origin_note": "Third-party Z.ai open-weight model served without Mistral modifications; enterprise tenant deployment settings unverified"
+      "model_origin_note": "Third-party Z.ai open-weight model served without Mistral modifications; enterprise tenant deployment settings unverified",
+      "catalog_alias": "zai-glm-5.3",
+      "alias_of": "zai-glm-5-3",
+      "canonical_model_id": "zai-glm-5-3",
+      "independent_api_identity_review_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
+        "locator": "Model page: Z.ai GLM 5.3 > published API model ID",
+        "observed_value": "Mistral-hosted third-party Z.ai GLM 5.3; official API model ID zai-glm-5-3; GA model",
+        "review_scope": "public provider API model identity; no customer-specific access or full supplier-claim attestation",
+        "customer_verified": false,
+        "supplier_full_verification": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "tier": "open-weight",
@@ -16535,7 +16561,20 @@
       "max_output_tokens": 128000,
       "model_developer": "Z.ai",
       "serving_provider": "Mistral AI",
-      "model_origin_note": "Third-party Z.ai open-weight model served without Mistral modifications; enterprise tenant deployment settings unverified"
+      "model_origin_note": "Third-party Z.ai open-weight model served without Mistral modifications; enterprise tenant deployment settings unverified",
+      "catalog_alias": "zai-glm-5.2",
+      "alias_of": "zai-glm-5-2",
+      "canonical_model_id": "zai-glm-5-2",
+      "independent_api_identity_review_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
+        "locator": "Model page: Z.ai GLM 5.2 > published API model ID and deprecation",
+        "observed_value": "Mistral-hosted third-party Z.ai GLM 5.2; official API model ID zai-glm-5-2; deprecated 2026-09-29, replacement zai-glm-5-3",
+        "review_scope": "public provider API model identity; no customer-specific access or full supplier-claim attestation",
+        "customer_verified": false,
+        "supplier_full_verification": false,
+        "automatic_recommendation_eligible": false
+      }
     },
     {
       "tier": "specialist",
