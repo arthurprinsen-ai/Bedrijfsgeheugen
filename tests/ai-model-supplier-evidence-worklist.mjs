@@ -70,8 +70,9 @@ export function reconcileSupplierAudit(catalog,{apply=false}={}) {
     audit.claim_evidence_classification=classifications;
     audit.missing_claim_receipts=missing;
     audit.missing_receipt_count=missing.length;
-    if(missing.length>0||audit.independent_verification_required!==false)
-     audit.automatic_recommendation_eligible=false;
+    // Reconciled receipts require a fresh independent decision, never approval by repair.
+    audit.independent_verification_required=true;
+    audit.automatic_recommendation_eligible=false;
    }
   }
  }
