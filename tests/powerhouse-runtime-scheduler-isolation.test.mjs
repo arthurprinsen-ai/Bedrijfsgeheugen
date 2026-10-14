@@ -56,3 +56,15 @@ test('revenue attribution uses bounded staging and scoped atomic publication',()
   assert.match(rolling,/cron\.schedule\('powerhouse-runtime-isolated-revenue-attribution-snapshot'/);
   assert.doesNotMatch(rolling,/TRUNCATE TABLE|DELETE FROM public\.powerhouse_revenue_attribution_snapshot_v1\s*;/i);
 });
+
+const recovery=readFileSync('supabase/migrations/20261014135500_operational_recovery_queue.sql','utf8');
+test('recovery queue is private, bounded, idempotent and does not replay provider sends',()=>{
+  assert.match(recovery,/CREATE SCHEMA IF NOT EXISTS powerhouse_ops/);
+  assert.match(recovery,/UNIQUE\(task_name,slot_at\)/);
+  assert.match(recovery,/FOR UPDATE SKIP LOCKED/);
+  assert.match(recovery,/attempts\+1>=5/);
+  assert.match(recovery,/dead_letter/);
+  assert.match(recovery,/ON CONFLICT\(task_name,slot_at\) DO NOTHING/);
+  assert.match(recovery,/cron\.schedule\('powerhouse-operational-retry-worker'/);
+  assert.doesNotMatch(recovery,/composio\.execute|gmail\.send|send_email|send_dm|send_linkedin/i);
+});
