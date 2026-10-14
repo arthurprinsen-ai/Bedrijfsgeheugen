@@ -232,3 +232,19 @@ Exact official Technology Innovation Institute-owned Hugging Face model reposito
 | `falcon-ocr` | https://huggingface.co/tiiuae/Falcon-OCR | OCR vision-language | Apache-2.0 |
 
 The Falcon-H1/H1R model cards document Transformers, vLLM and related local/self-hosting methods; this does **not** imply a TII-provided paid API. Pricing per hosted token is therefore **unverified**, not zero: hosting GPU/network/storage and any commercial-license costs depend on the operator. The Falcon-H1 License requires independent license interpretation, while Falcon-OCR's Apache-2.0 weight license is distinct. No customer hosting region, license acceptance, executed DPA, ZDR or applied processing control has been inspected. These seven public model-source checks remain `release_eligible=false`; supplier and protected production validation remain mandatory.
+
+
+## Mistral six model-owner page review: IDs, pricing and deployment (2026-10-14)
+
+Six exact Mistral model-owner pages were read. The catalog's friendly display IDs are not automatically callable provider API aliases; the concrete model IDs below are sourced from their respective supplier pages.
+
+| Catalog ID | Official supplier source | Actual supplier API ID | Published USD rate | Source-backed notes |
+| --- | --- | --- | --- | --- |
+| `ministral-3-14b` | https://docs.mistral.ai/models/ministral-3-14b-25-12 | `ministral-14b-2512` | $0.20 input / $0.20 output per 1M tokens | 256K; Apache-2.0; local deployment and Mistral chat/batch |
+| `ministral-3-8b` | https://docs.mistral.ai/models/ministral-3-8b-25-12 | `ministral-8b-2512` | $0.15 input / $0.15 output per 1M tokens | 256K; Apache-2.0; text and vision; local and chat/batch |
+| `ministral-3-3b` | https://docs.mistral.ai/models/ministral-3-3b-25-12 | `ministral-3b-2512` | $0.10 input / $0.10 output per 1M tokens | 256K; Apache-2.0; local and chat/batch |
+| `mistral-large-3` | https://docs.mistral.ai/models/mistral-large-3-25-12 | `mistral-large-2512` | $0.50 input / $1.50 output per 1M tokens | 256K; 41B active/675B total MoE; chat, batch and agents |
+| `mistral-small-4` | https://docs.mistral.ai/models/mistral-small-4-0-26-03 | `mistral-small-2603` | $0.15 input / $0.60 output per 1M tokens | 256K; Apache-2.0; 119B total/6.5B active; hybrid coding and reasoning |
+| `mistral-ocr-3` | https://docs.mistral.ai/models/ocr-3-25-12 | `mistral-ocr-2512` | $2 per 1,000 pages / $3 per 1,000 annotated pages | Available for existing integrations; /v1/ocr and /v1/batch; OCR 4 newer |
+
+All prices are the provider's published standard product rates and **not** evidence of negotiated customer charges, region, quota, account access, signed contract, specific endpoint data-retention or residency. Open-weight license scope and local deployment are distinct from paid hosted inference. Six public-source reviews only; full supplier certification, tenant governance, Required/CodeQL, protected merge and production parity remain blocked until separately proven.
