@@ -11049,7 +11049,7 @@
         "Mistral API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -11063,7 +11063,7 @@
       },
       "id": "codestral-embed",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/codestral-embed-25-05",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -11074,16 +11074,17 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://docs.mistral.ai/models",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models/codestral-embed-25-05",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "status",
+          "model_id",
+          "capabilities"
         ],
         "not_verified": [
-          "model_id",
+          "status",
           "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
@@ -11092,6 +11093,20 @@
             "claim": "status",
             "url": "https://docs.mistral.ai/models",
             "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+            "locator": "Model heading and URL",
+            "observed_value": "Codestral Embed, version 25.05",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+            "locator": "Model description",
+            "observed_value": "Semantic embeddings of source-code extracts",
             "checked_on": "2026-10-14"
           }
         ]
@@ -11107,15 +11122,13 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
           "status",
           "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 4,
+        "source_reference": "https://docs.mistral.ai/models/codestral-embed-25-05",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -11125,7 +11138,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/codestral-embed-25-05"
       }
     },
     {
@@ -11389,7 +11404,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -11418,7 +11433,7 @@
         "Mistral API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -11432,7 +11447,7 @@
       },
       "id": "mistral-moderation-2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/mistral-moderation-26-03",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -11443,24 +11458,53 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
-        "source_url": "https://docs.mistral.ai/models",
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "model_id",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+            "locator": "Heading/version",
+            "observed_value": "Mistral Moderation 2, version 26.03",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+            "locator": "GA badge and date",
+            "observed_value": "Generally available, March 1 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+            "locator": "Price",
+            "observed_value": "Free",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+            "locator": "Description and features",
+            "observed_value": "128K context, jailbreak detection, multilingual and multi-turn moderation",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+            "locator": "Features",
+            "observed_value": "Moderations and Batching listed; customer-specific API access not verified",
             "checked_on": "2026-10-14"
           }
         ]
@@ -11476,15 +11520,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/models",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models/mistral-moderation-26-03",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -11494,7 +11533,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03"
       }
     },
     {
