@@ -25,7 +25,12 @@ export function classifySupplierClaim(evidence, claim) {
    status==='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'||
    (claim==='governance'&&/^(verified supplier-wide|verified supplier-level)/.test(scope))||
    (claim==='governance'&&status==='OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED'&&
-    !/Model-specific data retention requirements|Covered Model/i.test(locator));
+    !/Model-specific data retention requirements|Covered Model/i.test(locator))||
+   // An API-wide policy is baseline evidence unless it explicitly names a covered
+   // model's different retention obligation; a separate exact model page is scoped.
+   (claim==='governance'&&status==='OFFICIAL_SUPPLIER_POLICY_CONFIRMED_TENANT_UNVERIFIED'&&
+    String(r.url??'').includes('api-and-data-retention')&&
+    !/is a Covered Model requiring/i.test(String(r.observed_value??'')));
  };
  // Historical prices, examples, unverified API tariffs and modality fragments are
  // useful context but must not certify a complete, current model-specific price.
