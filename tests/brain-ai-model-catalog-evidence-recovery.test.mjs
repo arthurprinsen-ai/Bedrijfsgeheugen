@@ -310,7 +310,14 @@ test('Mistral canonical API IDs and negative Labs governance remain non-recommen
  const labs=byId.get('leanstral-1.5');
  assert.equal(labs.status,'retired');
  assert.equal(labs.provider_api_id,'labs-leanstral-1-5');
- assert.ok(labs.verification_evidence.not_verified.includes('pricing'),'Retired Labs model must not be sold as currently free/deployable');
+ assert.ok(labs.verification_evidence.claim_evidence.some(r=>
+  r.claim==='pricing'&&
+  r.url==='https://docs.mistral.ai/resources/changelogs'&&
+  r.verification_status==='RETIRED_NO_CURRENT_PROVIDER_TARIFF_SUPPLIER_CONFIRMED'&&
+  /no currently deployable|no current/i.test(r.observed_value||'')
+ ),'Retired Labs product must have source-scoped evidence that no live supplier API tariff exists');
+ assert.equal(labs.input_usd_m,null,'Retired model must never fabricate a current paid/free token rate');
+ assert.equal(labs.output_usd_m,null,'Retired model must never advertise an available zero-cost API output rate');
  assert.ok(labs.verification_evidence.claim_evidence.some(r=>r.claim==='governance'&&r.verification_status==='MODEL_LABS_EXCLUSION_OFFICIAL_POLICY_VERIFIED_TENANT_UNVERIFIED'));
  assert.equal(labs.supplier_audit.automatic_recommendation_eligible,false);
 });
