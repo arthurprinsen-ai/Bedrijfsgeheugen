@@ -183,3 +183,33 @@ test('Nova Premier official API ID remains separate from authenticated lifecycle
  assert.notEqual(m.verification_evidence.claim_scope,'full');
  assert.ok(m.verification_evidence.claim_evidence.some(r=>r.claim==='model_id'&&r.observed_value==='amazon.nova-premier-v1:0'));
 });
+
+
+test('110 catalog records with explicit aliases must not be presented as 110 independent model offerings',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ assert.equal(catalog.models.length,110);
+ const offerings=new Map();
+ for(const m of catalog.models){
+  const canonical=m.provider_api_id||m.canonical_model_id||m.id;
+  const key=JSON.stringify([m.provider,canonical]);
+  const group=offerings.get(key)||[];
+  group.push(m);
+  offerings.set(key,group);
+ }
+ const duplicated=[...offerings.values()].filter(group=>group.length>1);
+ const observed=duplicated.map(group=>group.map(m=>m.id).sort().join('|')).sort();
+ assert.deepEqual(observed,[
+  'command-a-plus-05-2026|command-a-plus',
+  'mistral-medium-3-5|mistral-medium-3.5'
+ ],'Unexpected canonical provider/API identity collision must be reviewed, not silently double-counted');
+ assert.equal(offerings.size,108,'110 catalog records include two explicit aliases, not 110 distinct model offerings');
+ for(const group of duplicated){
+  const canonical=group.find(m=>m.id===(m.provider_api_id||m.canonical_model_id));
+  assert.ok(canonical,'A duplicate group must contain its canonical API model record');
+  for(const alias of group.filter(m=>m!==canonical)){
+   assert.equal(alias.alias_of||alias.canonical_model_id,canonical.id);
+   assert.equal(alias.supplier_audit?.automatic_recommendation_eligible,false,
+    'Aliases may never become a second automatic customer recommendation');
+  }
+ }
+});
