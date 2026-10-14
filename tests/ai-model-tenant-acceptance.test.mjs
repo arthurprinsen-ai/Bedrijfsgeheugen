@@ -159,3 +159,11 @@ test('structured configuration values compare by content instead of object ident
  const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
  assert.match(source,/JSON\.stringify\(r\.observed_value\)!==JSON\.stringify\(r\.expected_value\)/);
 });
+
+test('contract vault rejects expired agreements even if executed and signed',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/receipt\.agreement_status!=='executed'/);
+ assert.match(source,/receipt\.valid_until/);
+ assert.match(source,/Date\.parse\(receipt\.valid_until/);
+ assert.match(source,/SIGNED_CONTRACT_NOT_AUTHENTICATED/);
+});
