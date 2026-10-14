@@ -16859,10 +16859,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/zai-glm-5-3",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -16882,19 +16880,12 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "origin_host_distinction_review_20261014": {
           "reviewed_on": "2026-10-14",
@@ -16938,6 +16929,14 @@
           "tenant_region_and_governance_verified": false,
           "full_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "derived_accounting_reconciliation_20261014": {
+          "reason": "Mistral-hosted model-specific API endpoint policy receipt was appended after old provider-baseline classification had been materialized",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "checked_on": "2026-10-14",
+          "scope": "Existing supplier-public receipt bookkeeping only, no new attestation, tenant validation or independent release approval",
+          "customer_zdr_approval_verified": false,
+          "production_eligible": false
         }
       },
       "provider_policy_research_20261014": {
@@ -17154,10 +17153,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://docs.mistral.ai/models/zai-glm-5-2",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17177,19 +17174,12 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "origin_host_distinction_review_20261014": {
           "reviewed_on": "2026-10-14",
@@ -17230,6 +17220,14 @@
           "tenant_region_and_governance_verified": false,
           "full_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "derived_accounting_reconciliation_20261014": {
+          "reason": "Mistral-hosted model-specific API endpoint policy receipt was appended after old provider-baseline classification had been materialized",
+          "source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "checked_on": "2026-10-14",
+          "scope": "Existing supplier-public receipt bookkeeping only, no new attestation, tenant validation or independent release approval",
+          "customer_zdr_approval_verified": false,
+          "production_eligible": false
         }
       },
       "provider_policy_research_20261014": {
