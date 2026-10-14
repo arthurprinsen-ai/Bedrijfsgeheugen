@@ -1415,8 +1415,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -1427,7 +1429,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Model-specific ZDR eligibility documented. Tenant agreement and live enabled configuration remain unverified.",
+        "review_note": "Provider API data-handling policy applies generally; the supplied receipt does not prove this model's specific retention contract or customer runtime. Preserve partial verification.",
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "claim_evidence_classification": {
@@ -1436,7 +1438,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
