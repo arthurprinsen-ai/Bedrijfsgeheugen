@@ -110,3 +110,41 @@ test('review-only ledger drift is repaired without new supplier approvals',()=>{
  assert.equal(audit.automatic_recommendation_eligible,false);
  assert.equal(JSON.stringify(model.verification_evidence),before);
 });
+
+
+test('official AWS model identifiers and Falcon source pricing never imply customer entitlement',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const ids=new Map([
+  ['amazon-nova-2-lite','amazon.nova-2-lite-v1:0'],
+  ['amazon-nova-lite','amazon.nova-lite-v1:0'],
+  ['amazon-nova-pro','amazon.nova-pro-v1:0'],
+  ['amazon-nova-canvas','amazon.nova-canvas-v1:0'],
+  ['amazon-nova-reel','amazon.nova-reel-v1:0'],
+  ['amazon-nova-sonic','amazon.nova-sonic-v1:0'],
+  ['amazon-titan-text-embeddings-v2','amazon.titan-embed-text-v2:0'],
+  ['amazon-titan-multimodal-embeddings-g1','amazon.titan-embed-image-v1'],
+  ['amazon-titan-image-generator-g1-v2','amazon.titan-image-generator-v2:0']
+ ]);
+ for(const [id,officialApiId] of ids){
+  const m=catalog.models.find(row=>row.id===id);
+  assert.ok(m,'Expected documented Bedrock model '+id);
+  assert.equal(m.provider_api_id,officialApiId);
+  const provenance=m.bedrock_identity_evidence_20261014;
+  assert.equal(provenance.official_model_id,officialApiId);
+  assert.ok(provenance.official_model_page.startsWith('https://docs.aws.amazon.com/'));
+  assert.equal(provenance.automatic_recommendation_eligible,false,
+   'A public model ID cannot authorize customer account usage');
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ }
+ for(const m of catalog.models.filter(row=>row.provider==='TII/Falcon')){
+  const evidence=m.supplier_pricing_research;
+  assert.equal(evidence.url,m.source,'Pricing investigation must cite the same model');
+  assert.equal(evidence.verification_status,'UNVERIFIED_NUMERIC_HOSTED_API_PRICE');
+  assert.equal(evidence.not_a_claim_receipt,true);
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+  if(m.id==='falcon-ocr'){
+   assert.match(evidence.finding,/Apache-2\\.0/);
+   assert.match(evidence.finding,/not Falcon-LLM License/);
+  }
+ }
+});
