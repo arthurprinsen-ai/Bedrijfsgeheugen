@@ -45,3 +45,19 @@ All non-contract tenant security claims now require the pinned HTTPS provider re
 ## Connection readiness
 
 Run `node tests/ai-model-tenant-connection-readiness.mjs` on the protected runner. Supply the configured contract-verification endpoint, allowed HTTPS origin, authorization token, provider-readback endpoint, allowed HTTPS origin, authorization token, and trusted attestation public key from access-controlled runner configuration. Do not commit credentials or contracts. A configured connection is not proof of contract authenticity or provider settings. Run tenant acceptance on independently verified restricted evidence after the gateways are authorized; release remains blocked until supplier verification and production checks pass.
+
+## Protected production connection configuration
+
+Configure the following keys in the protected deployment/CI secret manager, not in GitHub source code:
+
+| Key | Purpose |
+| --- | --- |
+| `TENANT_CONTRACT_VERIFY_ENDPOINT` | HTTPS contract-vault verification endpoint |
+| `TENANT_CONTRACT_VERIFY_ALLOWED_ORIGIN` | Pinned HTTPS contract-vault origin |
+| `TENANT_CONTRACT_VERIFY_TOKEN` | Restricted contract-verification credential |
+| `TENANT_LIVE_READBACK_ENDPOINT` | HTTPS provider-configuration gateway endpoint |
+| `TENANT_LIVE_READBACK_ALLOWED_ORIGIN` | Pinned HTTPS provider-gateway origin |
+| `TENANT_LIVE_READBACK_TOKEN` | Restricted provider readback credential |
+| `TENANT_ATTESTATION_VERIFY_PUBLIC_KEY_PEM` | Trusted verification public key |
+
+Assign production-only scopes and least-privilege access, with rotation and revocation support. Never invent endpoint values or set placeholder credentials. The endpoints must correspond to real independently administered services. Test connection readiness using `node tests/ai-model-tenant-connection-readiness.mjs`, then run `node tests/ai-model-tenant-acceptance.mjs /secure/attestations.json` with genuine restricted evidence and provider readbacks. The readiness result alone is not customer verification. Required CI, CodeQL, supplier claims and exact production catalog readback remain release prerequisites.
