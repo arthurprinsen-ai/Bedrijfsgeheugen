@@ -3,12 +3,12 @@
   "checked_at": "2026-10-14",
   "scope": "110 model ID checks against 41 catalog-supplied official URLs",
   "source_type": "supplier-hosted-documentation",
-  "source_urls_checked": 56,
-  "source_urls_retrieved": 53,
+  "source_urls_checked": 59,
+  "source_urls_retrieved": 58,
   "source_failures": [],
   "models_checked": 110,
-  "model_id_mentions": 68,
-  "model_id_not_explicit": 26,
+  "model_id_mentions": 71,
+  "model_id_not_explicit": 22,
   "unavailable_sources": 110,
   "whole_model_verifications_added": 0,
   "governance_note": "An ID mention in a provider website is not proof of model availability, pricing, context, DPA, data residency, tenant options, or all model-level claims. Do not copy checked_at into catalog verified_at.",
@@ -262,16 +262,16 @@
       "provider": "Google",
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
       "checked_at": "2026-10-14",
-      "status": "SOURCE_FETCH_FAILED",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 86893,
+      "evidence_excerpt": "mini-api/terms) [No](http://ai.google.dev/gemini-api/terms) ## Gemini 2.5 Flash-Lite [*`gemini-2.5-flash-lite`*](http://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite) [Try it in Google AI Studio](https://aistudio.google.",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text"
+      "source_error": null
     },
     {
       "model_id": "mistral-medium-3-5",
@@ -532,10 +532,10 @@
     {
       "model_id": "llama-open-weight",
       "provider": "Meta",
-      "source_url": "https://www.llama.com/",
+      "source_url": "https://huggingface.co/meta-llama",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 13648,
+      "source_text_chars": 29917,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -548,10 +548,10 @@
     {
       "model_id": "qwen-open-weight",
       "provider": "Alibaba/Qwen",
-      "source_url": "https://qwenlm.github.io/",
+      "source_url": "https://huggingface.co/Qwen",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 4661,
+      "source_text_chars": 30097,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -998,16 +998,16 @@
       "provider": "Google",
       "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
       "checked_at": "2026-10-14",
-      "status": "SOURCE_FETCH_FAILED",
-      "source_text_chars": 0,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 16575,
+      "evidence_excerpt": "docs) Send feedback # Gemini 3.7 Flash **Caution:** **Deprecated:** Gemini 3.7 Flash (`gemini-3.7-flash`) is deprecated and has been replaced by [Gemini 3.8 Flash (`gemini-3.8-flash`)](http://ai.google.dev/gemini-api/docs/latest",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text"
+      "source_error": null
     },
     {
       "model_id": "gemini-3.6-flash",
@@ -1039,7 +1039,7 @@
       "customer_dpa_verified": false,
       "customer_runtime_residency_verified": false,
       "full_model_verification_granted": false,
-      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text"
+      "source_error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 400: {\"code\":\"REQS001\",\"detail\":\"Requ"
     },
     {
       "model_id": "gemini-3.5-flash-lite",
@@ -1220,10 +1220,10 @@
     {
       "model_id": "mistral-ocr-4.0",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/ocr-4-0",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
+      "source_text_chars": 5840,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1284,10 +1284,10 @@
     {
       "model_id": "voxtral-mini-transcribe-realtime",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
       "checked_at": "2026-10-14",
       "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
-      "source_text_chars": 21130,
+      "source_text_chars": 5806,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
       "price_claim_verified": false,
@@ -1302,10 +1302,10 @@
       "provider": "Mistral AI",
       "source_url": "https://docs.mistral.ai/models/voxtral-small-25-07",
       "checked_at": "2026-10-14",
-      "status": "PROBE_NOT_RUN",
-      "source_text_chars": 21130,
-      "evidence_excerpt": null,
-      "identity_claim_verified": false,
+      "status": "OFFICIAL_PAGE_MODEL_ID_MENTION",
+      "source_text_chars": 6324,
+      "evidence_excerpt": "on-guide?models=voxtral-small-25-07)[Legal](https://legal.mistral.ai/ai-governance/models/voxtral-small) ![Cat](http://docs.mistral.ai/_next/image?url=%2Fassets%2Fsprites%2Fcat_idle.gif&w=640&q=75) July 15, 2025[Blog](https://",
+      "identity_claim_verified": true,
       "price_claim_verified": false,
       "context_claim_verified": false,
       "customer_dpa_verified": false,
@@ -1380,9 +1380,9 @@
     {
       "model_id": "leanstral-1.5",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/leanstral-1-5",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 21130,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1396,9 +1396,9 @@
     {
       "model_id": "zai-glm-5.3",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 21130,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1412,9 +1412,9 @@
     {
       "model_id": "zai-glm-5.2",
       "provider": "Mistral AI",
-      "source_url": "https://docs.mistral.ai/models",
+      "source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 21130,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1803,9 +1803,9 @@
     {
       "model_id": "falcon-h1r-7b",
       "provider": "TII/Falcon",
-      "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "source_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
       "checked_at": "2026-10-14",
-      "status": "OFFICIAL_PAGE_NO_EXACT_MODEL_ID",
+      "status": "PROBE_NOT_RUN",
       "source_text_chars": 14577,
       "evidence_excerpt": null,
       "identity_claim_verified": false,
@@ -1895,10 +1895,10 @@
       "error": null
     },
     "https://ai.google.dev/gemini-api/docs/pricing": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text"
+      "text_length": 86893,
+      "error": null
     },
     "https://docs.mistral.ai/inference/pricing": {
       "state": "FETCHED",
@@ -2027,16 +2027,16 @@
       "error": null
     },
     "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash": {
-      "state": "FETCH_FAILED",
+      "state": "FETCHED",
       "checked_at": "2026-10-14",
-      "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text"
+      "text_length": 16575,
+      "error": null
     },
     "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash": {
       "state": "FETCH_FAILED",
       "checked_at": "2026-10-14",
       "text_length": 0,
-      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text"
+      "error": "INVALID_ARGUMENT: Error code: INVALID_ARGUMENT; Error: RuntimeException: Error calling MCP tool: [TextContent(type='text', text='Zenrows error 400: {\"code\":\"REQS001\",\"detail\":\"Requ"
     },
     "https://docs.x.ai/developers/release-notes": {
       "state": "FETCHED",
@@ -2175,8 +2175,39 @@
       "checked_at": "2026-10-14",
       "text_length": 5842,
       "error": null
+    },
+    "https://huggingface.co/meta-llama": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 29917,
+      "error": null
+    },
+    "https://huggingface.co/Qwen": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 30097,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/ocr-4-0": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5840,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 5806,
+      "error": null
+    },
+    "https://docs.mistral.ai/models/voxtral-small-25-07": {
+      "state": "FETCHED",
+      "checked_at": "2026-10-14",
+      "text_length": 6324,
+      "error": null
     }
   },
-  "model_source_fetch_failed": 3,
-  "not_yet_checked": 13
+  "model_source_fetch_failed": 1,
+  "not_yet_checked": 16,
+  "audited_catalog_blob_sha": "fc3ec44202e2245d98e32046740f03d0e124ed0f"
 }
