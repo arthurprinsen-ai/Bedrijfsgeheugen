@@ -56,7 +56,7 @@ function missingClaimReceipts(m) {
       r.claim === claim && typeof r.url === 'string' && r.url.startsWith('https://') &&
       typeof r.locator === 'string' && r.locator.trim().length > 0 &&
       typeof r.observed_value === 'string' && r.observed_value.trim().length > 0 &&
-      r.checked_on === e.checked_on);
+      r.checked_on === e.checked_on && !String(r.scope??'').includes('NOT model-specific') && r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
   });
 }
 const models = catalog.models.map(m => {
