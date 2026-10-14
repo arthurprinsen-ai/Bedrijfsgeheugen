@@ -10,7 +10,7 @@ export function verifiedForecasts(projection,tenantId,{now=new Date()}={}){
  if(declaredTenant&&declaredTenant!==tenantId)return [];
  const fresh=updatedAt=>{const observed=Date.parse(updatedAt);const age=reference-observed;
   return Number.isFinite(age)&&age>=0&&age<=30*86400000;};
- const source=projection?.payload?.data||projection?.payload||projection?.data||{};
+ const source=projection?.payload?.data||projection?.payload||projection?.data||projection||{};
  const forecasts=Array.isArray(source?.forecasts)?source.forecasts:[];
  return forecasts.filter(f=>f&&f.verified===true&&f.validation?.status==='passed'&&f.validation?.tenantBound===true&&typeof f.validation?.verifiedAt==='string'&&fresh(f.validation.verifiedAt)&&f.tenantId===tenantId&&f.validation?.tenantId===tenantId&&
  typeof f.source==='string'&&f.source.trim()&&typeof f.model==='string'&&f.model.trim()&&
