@@ -3635,6 +3635,15 @@
             "locator": "BASE URL",
             "observed_value": "https://api.deepseek.com",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "Models & Pricing > Model Details, deepseek-flash / note (1)",
+            "observed_value": "Official DeepSeek Models & Pricing lists deepseek-flash as the API model name serving DeepSeek-V4.1-Flash; retired deepseek-v4-flash identifiers remain as redirects. Customer entitlement or production uptime untested.",
+            "checked_on": "2026-10-14",
+            "scope": "specific API model name and published availability only; NOT tenant entitlement or runtime",
+            "verification_status": "MODEL_SOURCE_OBSERVED_TENANT_UNVERIFIED"
           }
         ]
       },
@@ -3775,6 +3784,15 @@
             "locator": "BASE URL",
             "observed_value": "https://api.deepseek.com",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing-details-cny/",
+            "locator": "Your First API Call > note (2): API services continued after September 14, 2026",
+            "observed_value": "Official DeepSeek API documentation states the deepseek-v4-pro model remains available for API services after September 14, 2026, under unchanged billing; later changes may be announced. Customer entitlement or production uptime untested.",
+            "checked_on": "2026-10-14",
+            "scope": "specific API model name and published availability only; NOT tenant entitlement or runtime",
+            "verification_status": "MODEL_SOURCE_OBSERVED_TENANT_UNVERIFIED"
           }
         ]
       },
