@@ -30,3 +30,13 @@ test('zero retention and security controls must be enabled and evidenced',()=>{
 test('whole customer approval remains blocked without all receipts',()=>{
  assert.equal(customerReady({...base,receipts:[]}).ready,false);
 });
+
+test('approval remains valid through the whole expiry calendar day',()=>{
+ const receipt={...common,claim:'signed_dpa',evidence_kind:'signed_agreement',valid_until:'2026-10-14'};
+ assert.equal(customerClaimStatus({...base,claim:'signed_dpa',receipts:[receipt],asOf:new Date('2026-10-14T23:30:00Z')}).status,'VERIFIED');
+ assert.equal(customerClaimStatus({...base,claim:'signed_dpa',receipts:[receipt],asOf:new Date('2026-10-15T00:00:00Z')}).status,'UNVERIFIED');
+});
+test('missing or malformed evidence receipts fail closed',()=>{
+ assert.equal(customerClaimStatus({...base,claim:'contract',receipts:null}).status,'UNVERIFIED');
+ assert.equal(customerClaimStatus({...base,claim:'contract',receipts:{claim:'contract'}}).status,'UNVERIFIED');
+});
