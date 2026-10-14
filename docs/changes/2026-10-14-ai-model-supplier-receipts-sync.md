@@ -14,7 +14,7 @@ Historical receipts are never treated as newly independently verified evidence. 
 
 ## Tests and security
 
-`node --test tests/ai-model-supplier-receipts-migration.test.mjs` checks that the SQL has private SECURITY INVOKER scope, restricted execution, both receipt sources, malformed JSON rejection, and absence of supplier/customer/release promotion in the trigger body. These are structural tests, not an executed Postgres migration.
+`node --test tests/brain-ai-model-supplier-receipts-migration.test.mjs` checks that the SQL has private SECURITY INVOKER scope, restricted execution, both receipt sources, malformed JSON rejection, and absence of supplier/customer/release promotion in the trigger body. These are structural tests, not an executed Postgres migration.
 
 Before merging: test INSERT, UPDATE, malformed inputs and repeated updates on a **nonproduction** Postgres database with representative duplicate receipt cases, review the impact of preserving old receipts, run required CI and CodeQL, and inspect RLS and migration permissions. There is no authorization to bypass protected merge.
 
