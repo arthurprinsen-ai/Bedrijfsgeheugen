@@ -301,6 +301,18 @@ jobs:
           path: .artifacts/ai-model-provider-source-audit.json
           if-no-files-found: warn
           retention-days: 30
+      - name: Audit all 110 model claim and customer-governance gaps
+        if: steps.integration.outputs.full_shared_suite == 'true'
+        timeout-minutes: 3
+        run: node scripts/brain/audit-ai-model-claim-coverage.mjs
+      - name: Retain immutable model claim gap receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-model-claim-gaps-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .artifacts/ai-model-claim-coverage.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
