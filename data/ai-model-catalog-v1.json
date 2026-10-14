@@ -6162,7 +6162,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 131.072,
       "modalities": [
         "text"
       ],
@@ -6173,7 +6173,8 @@
       ],
       "limitations": [
         "infrastructure burden",
-        "no managed vision/audio in self-hosted base"
+        "no managed vision/audio in self-hosted base",
+        "No standard per-token price for self-hosting; costs depend on hardware and operator"
       ],
       "scores": {
         "reasoning": 8,
@@ -6191,10 +6192,11 @@
       "jurisdiction": "deployment-controlled",
       "deployment": [
         "self-host",
-        "customer cloud"
+        "customer cloud",
+        "Downloadable open weights / self-host"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by chosen deployment",
         "inference_residency": "controlled by chosen deployment",
@@ -6208,7 +6210,7 @@
       },
       "id": "gpt-oss-120b",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -6220,16 +6222,16 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "capabilities"
+          "capabilities",
+          "status",
+          "deployment"
         ],
         "not_verified": [
-          "status",
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -6245,6 +6247,20 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
             "locator": "Model type",
             "observed_value": "Open-weight reasoning model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
+            "locator": "Model header > Default",
+            "observed_value": "Listed Default in official gpt-oss-120b model reference; no tenant availability attestation",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
+            "locator": "Download and Key features",
+            "observed_value": "Weights downloadable via Hugging Face; Apache 2.0 license; self-hosting feasible on one H100-class GPU; authenticated provider deployment untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -6268,13 +6284,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 4,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "missing_receipt_count": 2,
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -6284,8 +6298,11 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "max_output_tokens": 131072
     },
     {
       "tier": "open-weight",
