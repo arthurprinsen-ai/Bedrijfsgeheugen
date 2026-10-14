@@ -1205,7 +1205,8 @@
         "not_verified": [
           "tenant data-retention configuration",
           "model-specific retention eligibility",
-          "customer DPA"
+          "customer DPA",
+          "governance"
         ],
         "claim_scope": "partial",
         "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ.",
@@ -1261,11 +1262,11 @@
           {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
-            "locator": "How Anthropic approaches data retention; Zero data retention > What ZDR covers / does not cover; Model-specific data retention requirements",
-            "observed_value": "Commercial Claude API requests are not used for model training without express permission. ZDR is a separate organization-level arrangement and endpoint/feature dependent. Anthropic identifies Fable 5 and Mythos 5 as Covered Models requiring 30-day retention. This public policy does NOT independently establish Sonnet 5 tenant ZDR eligibility, actual organization settings, specific third-party cloud processor rules or deployed geographic controls.",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific data retention requirements",
+            "observed_value": "Anthropic Claude API baseline: retained content is not used for model training without express permission; default API data handling and eligibility depend on feature. ZDR is approved per organization and is not automatically active. Covered Models have special 30-day retention rules; no Sonnet 5 tenant setting, geographical route, or storage arrangement is attested.",
             "checked_on": "2026-10-14",
-            "scope": "Anthropic provider/API data-handling rules only; model-specific eligibility and customer workspace configuration require independent authenticated readback",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_NOT_CUSTOMER_ATTESTATION"
+            "scope": "CLAUDE_API_PROVIDER_POLICY_NOT_CUSTOMER_CONFIG",
+            "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED"
@@ -4035,7 +4036,8 @@
           "contract-specific residency",
           "tenant entitlement",
           "ZDR retention and training controls by account",
-          "executed customer DPA"
+          "executed customer DPA",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -4078,13 +4080,14 @@
           {
             "claim": "governance",
             "url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
-            "locator": "Requirements and Restrictions 3.2–3.4; Inputs and Outputs 4.2; Personal Data 5.5",
-            "observed_value": "DeepSeek developer API terms assign the downstream operator responsibility for lawful personal-data processing, disclosure and security. The API terms do not establish model-specific zero-data-retention, no-training guarantees, EU inference region, a signed customer DPA or authenticated retention settings.",
+            "locator": "Introduction (Open Platform API scope); Requirements 3.3-3.4; section 5.5 on downstream end-user data",
+            "observed_value": "Official DeepSeek Open Platform API terms make downstream application developers responsible for end-user data notices, lawful basis, and protective controls. DeepSeek consumer privacy policy explicitly does not cover end-user data collected by downstream API applications. No API-specific zero-retention, training exclusion, EU residency or customer-processing contract is established.",
             "checked_on": "2026-10-14",
-            "scope": "Official DeepSeek Open Platform developer terms only; model-specific data controls, licensing and customer runtime configuration remain unverified",
-            "verification_status": "PROVIDER_TERMS_SCOPE_ONLY_CUSTOMER_UNVERIFIED"
+            "scope": "API_PLATFORM_TERMS_BASELINE_ONLY",
+            "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
           }
-        ]
+        ],
+        "evidence_status": "PARTIALLY_VERIFIED"
       },
       "pricing_basis": {
         "source": "https://api-docs.deepseek.com/quick_start/pricing/",
@@ -4209,7 +4212,8 @@
           "contract-specific residency",
           "tenant entitlement",
           "ZDR retention and training controls by account",
-          "executed customer DPA"
+          "executed customer DPA",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -4252,13 +4256,14 @@
           {
             "claim": "governance",
             "url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
-            "locator": "Requirements and Restrictions 3.2–3.4; Inputs and Outputs 4.2; Personal Data 5.5",
-            "observed_value": "DeepSeek developer API terms assign the downstream operator responsibility for lawful personal-data processing, disclosure and security. The API terms do not establish model-specific zero-data-retention, no-training guarantees, EU inference region, a signed customer DPA or authenticated retention settings.",
+            "locator": "Introduction (Open Platform API scope); Requirements 3.3-3.4; section 5.5 on downstream end-user data",
+            "observed_value": "Official DeepSeek Open Platform API terms make downstream application developers responsible for end-user data notices, lawful basis, and protective controls. DeepSeek consumer privacy policy explicitly does not cover end-user data collected by downstream API applications. No API-specific zero-retention, training exclusion, EU residency or customer-processing contract is established.",
             "checked_on": "2026-10-14",
-            "scope": "Official DeepSeek Open Platform developer terms only; model-specific data controls, licensing and customer runtime configuration remain unverified",
-            "verification_status": "PROVIDER_TERMS_SCOPE_ONLY_CUSTOMER_UNVERIFIED"
+            "scope": "API_PLATFORM_TERMS_BASELINE_ONLY",
+            "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
           }
-        ]
+        ],
+        "evidence_status": "PARTIALLY_VERIFIED"
       },
       "pricing_basis": {
         "source": "https://api-docs.deepseek.com/quick_start/pricing/",
