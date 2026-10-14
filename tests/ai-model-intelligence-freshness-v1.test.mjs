@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { customerClaimStatus, customerClaimRequirements } from '../platform/api/customer-ai-governance-evidence.mjs';
+import { customerClaimStatus, customerClaimRequirements } from './ai-model-customer-governance-evidence.mjs';
 
 test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
