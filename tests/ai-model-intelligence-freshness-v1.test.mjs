@@ -28,3 +28,34 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
  assert.ok(c.models.some(m=>(m.modalities||[]).includes('video')));
  assert.ok(c.models.some(m=>m.self_host===true));
 });
+
+test('official price evidence is tier-explicit and cannot refresh whole-model verification by itself',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const prices={
+  'gpt-6-astra':[10,1,50],
+  'gpt-6-sol':[2,0.2,10],
+  'gpt-6-luna':[0.1,0.01,0.5],
+  'gpt-6.1-sol':[2,0.1,10]
+ };
+ for(const [id,[input,cached,output]] of Object.entries(prices)){
+  const m=c.models.find(x=>x.id===id);
+  assert.ok(m,id);
+  assert.equal(m.pricing_tier,'standard_short_context');
+  assert.equal(m.input_usd_m,input,id);
+  assert.equal(m.cached_input_usd_m,cached,id);
+  assert.equal(m.output_usd_m,output,id);
+  assert.equal(m.claim_evidence?.pricing_short_context?.status,'PROVIDER_DOC_CONFIRMED');
+  assert.equal(m.claim_evidence?.provider_contracts?.status,'UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT');
+  assert.notEqual(m.verified_at,m.pricing_source_verified_at,'Price evidence must not silently approve complete model');
+ }
+ for(const [id,cache] of [['claude-opus-5-5',0.2],['claude-sonnet-5-5',0.1]]){
+  const m=c.models.find(x=>x.id===id);
+  assert.equal(m.cached_input_usd_m,cache,id);
+  assert.equal(m.pricing_tier,'claude_api_direct');
+ }
+ const google=c.models.find(x=>x.id==='gemini-3.8-flash');
+ assert.equal(google.context_tokens,1048576);
+ assert.equal(google.input_usd_m,0.75);
+ assert.equal(google.output_usd_m,3.75);
+ assert.equal(google.pricing_tier,'introductory_2026');
+});
