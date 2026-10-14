@@ -14,8 +14,19 @@ export function classifySupplierClaim(evidence, claim) {
   typeof r.locator==='string'&&Boolean(r.locator.trim())&&
   typeof r.observed_value==='string'&&Boolean(r.observed_value.trim())&&
   r.checked_on===evidence.checked_on;
- const generic=r=>String(r.scope??'').includes('NOT model-specific')||
-  r.verification_status==='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED';
+ // A supplier-wide retention/security policy is not a model-specific governance receipt.
+ // Some providers label baseline policies OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED;
+ // only a statement naming the model's own retention eligibility is model-scoped.
+ const generic=r=>{
+  const scope=String(r.scope??'');
+  const status=String(r.verification_status??'');
+  const locator=String(r.locator??'');
+  return scope.includes('NOT model-specific')||
+   status==='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'||
+   (claim==='governance'&&/^(verified supplier-wide|verified supplier-level)/.test(scope))||
+   (claim==='governance'&&status==='OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED'&&
+    !/Model-specific data retention requirements|Covered Model/i.test(locator));
+ };
  // Historical prices, examples, unverified API tariffs and modality fragments are
  // useful context but must not certify a complete, current model-specific price.
  const partialPricing=r=>claim==='pricing'&&
