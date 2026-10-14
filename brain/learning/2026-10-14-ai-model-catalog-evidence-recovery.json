@@ -23,5 +23,12 @@
     "historical_replay": [
       "tests/brain-ai-model-catalog-evidence-recovery.test.mjs"
     ]
+  },
+  "fingerprint": "powerhouse|ai-model-catalog|stale-claims|provider-evidence|20261014",
+  "root_cause": "Catalog verification timestamps exceeded the 14-day gate; claims and lifecycle data had not been revalidated; missing evidence is not equivalent to a valid attestation.",
+  "prevention": "Keep verified_at unchanged for unverified claims; require provider evidence per field; reject unclassified or expired records.",
+  "evidence": {
+    "regression_test": "tests/brain-ai-model-catalog-evidence-recovery.test.mjs",
+    "ci_status": "Requires protected GitHub gates; no successful production readback claimed."
   }
 }
