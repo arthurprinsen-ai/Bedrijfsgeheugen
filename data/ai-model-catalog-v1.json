@@ -2210,16 +2210,17 @@
       "pricing_source_verified_at": "2026-10-14"
     },
     {
-      "id": "llama-open-weight",
+      "id": "llama-4-scout-17b-16e-instruct",
       "provider": "Meta",
       "tier": "open-weight",
-      "status": "family_reference",
+      "status": "active",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 10000,
       "modalities": [
-        "text"
+        "text",
+        "vision"
       ],
       "strengths": [
         "self-hosting",
@@ -2235,64 +2236,86 @@
         "vision": 5,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "US",
       "deployment": [
-        "self-host",
-        "EU cloud",
-        "on-prem"
+        "downloadable weights",
+        "self-hosted",
+        "third-party hosted subject to customer agreement"
       ],
-      "source": "https://huggingface.co/meta-llama",
+      "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
       "limitations": [
-        "Family placeholder only, not a routable model; choose a specific version and verify its official model card before deployment."
+        "Llama 4 Community License requires review; download may require license acceptance.",
+        "10M published context is not a guarantee of deployed hardware limits.",
+        "Self-host/hosting costs, residency, retention and contracts require an actual deployment."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
-        "subprocessors": "verify current provider list",
-        "dpa": "verify current product/contract",
-        "cmk": "verify current product/contract",
-        "private_networking": "verify current product/contract"
+        "storage_residency": "operator/deployment-specific, not verified",
+        "inference_residency": "operator/deployment-specific, not verified",
+        "training_on_customer_data": "operator/deployment-dependent",
+        "retention": "operator/deployment-dependent",
+        "zero_data_retention": "operator/deployment-dependent",
+        "subprocessors": "operator/deployment-dependent",
+        "dpa": "customer/operator contract required, not verified",
+        "cmk": "operator/deployment-dependent",
+        "private_networking": "operator/deployment-dependent"
       },
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
-      "record_kind": "model_family",
+      "record_kind": "individual_model",
       "selection_eligible": false,
-      "provider_model_id": null,
+      "provider_model_id": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
-        "family_presence": {
-          "source": "https://huggingface.co/meta-llama",
-          "checked_at": "2026-10-14",
-          "status": "OFFICIAL_PUBLISHER_MODEL_HUB",
-          "publisher_repo": "meta-llama"
-        },
         "model_identity": {
-          "status": "NOT_A_SINGLE_DEPLOYABLE_MODEL_ID"
+          "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "provider_model_id": "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+        },
+        "context_window": {
+          "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "native_context_tokens": 10000000,
+          "extended_context_tokens": null
+        },
+        "license": {
+          "source": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct",
+          "checked_at": "2026-10-14",
+          "status": "PUBLISHED_LICENSE_IDENTIFIED_NOT_CUSTOMER_ACCEPTANCE",
+          "license": "Llama 4 Community License"
+        },
+        "pricing": {
+          "status": "NO_UNIVERSAL_HOSTING_TOKEN_TARIFF"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
         },
         "provider_contracts": {
-          "status": "DEPLOYMENT_SPECIFIC"
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
-      }
+      },
+      "legacy_catalog_aliases": [
+        "llama-open-weight"
+      ],
+      "license": "Llama 4 Community License",
+      "unit_price": "self-host / selected hosting-provider cost"
     },
     {
-      "id": "qwen-open-weight",
+      "id": "qwen3-32b",
       "provider": "Alibaba/Qwen",
       "tier": "open-weight",
-      "status": "family_reference",
+      "status": "active",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32.768,
       "modalities": [
-        "text",
-        "vision"
+        "text"
       ],
       "strengths": [
         "open-weight deployment",
@@ -2308,50 +2331,74 @@
         "vision": 8,
         "agents": 7
       },
-      "eu_processing": true,
-      "eu_storage": true,
+      "eu_processing": null,
+      "eu_storage": null,
       "open_weights": true,
       "self_host": true,
       "jurisdiction": "China",
       "deployment": [
-        "self-host",
-        "cloud providers"
+        "downloadable weights",
+        "self-hosted",
+        "third-party hosted subject to customer agreement"
       ],
-      "source": "https://huggingface.co/Qwen",
+      "source": "https://huggingface.co/Qwen/Qwen3-32B",
       "limitations": [
-        "Family placeholder only, not a routable model; choose a specific version and verify its official model card before deployment."
+        "131,072-token context requires optional YaRN configuration; native context is 32,768 tokens.",
+        "Self-host/hosting costs, residency, retention and contracts require an actual deployment."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
-        "subprocessors": "verify current provider list",
-        "dpa": "verify current product/contract",
-        "cmk": "verify current product/contract",
-        "private_networking": "verify current product/contract"
+        "storage_residency": "operator/deployment-specific, not verified",
+        "inference_residency": "operator/deployment-specific, not verified",
+        "training_on_customer_data": "operator/deployment-dependent",
+        "retention": "operator/deployment-dependent",
+        "zero_data_retention": "operator/deployment-dependent",
+        "subprocessors": "operator/deployment-dependent",
+        "dpa": "customer/operator contract required, not verified",
+        "cmk": "operator/deployment-dependent",
+        "private_networking": "operator/deployment-dependent"
       },
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
-      "record_kind": "model_family",
+      "record_kind": "individual_model",
       "selection_eligible": false,
-      "provider_model_id": null,
+      "provider_model_id": "Qwen/Qwen3-32B",
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
-        "family_presence": {
-          "source": "https://huggingface.co/Qwen",
-          "checked_at": "2026-10-14",
-          "status": "OFFICIAL_PUBLISHER_MODEL_HUB",
-          "publisher_repo": "Qwen"
-        },
         "model_identity": {
-          "status": "NOT_A_SINGLE_DEPLOYABLE_MODEL_ID"
+          "source": "https://huggingface.co/Qwen/Qwen3-32B",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "provider_model_id": "Qwen/Qwen3-32B"
+        },
+        "context_window": {
+          "source": "https://huggingface.co/Qwen/Qwen3-32B",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_MODEL_CARD_CONFIRMED",
+          "native_context_tokens": 32768,
+          "extended_context_tokens": 131072
+        },
+        "license": {
+          "source": "https://huggingface.co/Qwen/Qwen3-32B",
+          "checked_at": "2026-10-14",
+          "status": "PUBLISHED_LICENSE_IDENTIFIED_NOT_CUSTOMER_ACCEPTANCE",
+          "license": "Apache-2.0"
+        },
+        "pricing": {
+          "status": "NO_UNIVERSAL_HOSTING_TOKEN_TARIFF"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
         },
         "provider_contracts": {
-          "status": "DEPLOYMENT_SPECIFIC"
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
-      }
+      },
+      "legacy_catalog_aliases": [
+        "qwen-open-weight"
+      ],
+      "extended_context_k": 131.072,
+      "license": "Apache-2.0",
+      "unit_price": "self-host / selected hosting-provider cost"
     },
     {
       "tier": "balanced",
