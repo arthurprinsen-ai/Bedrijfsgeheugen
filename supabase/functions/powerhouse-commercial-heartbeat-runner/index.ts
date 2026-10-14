@@ -81,9 +81,6 @@ async function runHeartbeat(){
       "select public.powerhouse_commercial_heartbeat_v1(now()) as heartbeat"
     );
 
-    const sovereigntyRows=await tx.unsafe(
-      "select public.powerhouse_refresh_data_sovereignty_v1() as data_sovereignty"
-    );
     const readbackRows=await tx.unsafe(
       "select occurred_at,dedupe_key,state,data_quality,confidence from public.powerhouse_runtime_events where event_type='commercial_heartbeat' and occurred_at >= transaction_timestamp()-interval '2 minutes' order by occurred_at desc limit 1"
     );
@@ -103,11 +100,27 @@ async function runHeartbeat(){
       started_at:startedAt,
       completed_at:new Date().toISOString(),
       heartbeat:heartbeatRows?.[0]?.heartbeat??null,
-      data_sovereignty:sovereigntyRows?.[0]?.data_sovereignty??null,
       receipt,
       durable_readback_verified:true
     };
   });
+}
+
+// Data-sovereignty refresh is independent of the commercial heartbeat receipt.
+// The database currently sees intermittent connection and statement timeouts;
+// a slow sovereignty scan must neither extend nor roll back heartbeat work.
+async function refreshSovereigntyIndependent(){
+  try{
+    return await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '10000ms'");
+      await tx.unsafe("set local lock_timeout = '1500ms'");
+      const result=await tx.unsafe("select public.powerhouse_refresh_data_sovereignty_v1() as data_sovereignty");
+      return {state:"SUCCEEDED",data_sovereignty:result?.[0]?.data_sovereignty??null};
+    });
+  }catch(error){
+    console.error("SOVEREIGNTY_REFRESH_INDEPENDENT_FAILURE",error instanceof Error?error.message:String(error));
+    return {state:"RETRYABLE_ERROR",data_sovereignty:null};
+  }
 }
 
 // The EXISTING five-minute commercial Heartbeat owns these distinct lanes.
@@ -262,9 +275,12 @@ Deno.serve(async(req:Request)=>{
     reviewContactAuthority(),
     runOutboundLanes()
   ]);
+  const [heartbeatResult,sovereigntyResult]=await Promise.allSettled([runHeartbeat(),refreshSovereigntyIndependent()]);
   try{
-    const result=await runHeartbeat();
-    return json({...result,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
+    if(heartbeatResult.status!=="fulfilled")throw heartbeatResult.reason;
+    const result=heartbeatResult.value;
+    const sovereignty=sovereigntyResult.status==="fulfilled"?sovereigntyResult.value:{state:"RETRYABLE_ERROR",data_sovereignty:null};
+    return json({...result,data_sovereignty:sovereignty,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
   }catch(error){
     console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
     return json({
