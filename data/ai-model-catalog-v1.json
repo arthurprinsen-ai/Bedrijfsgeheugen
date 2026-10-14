@@ -1964,8 +1964,10 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/inference/pricing",
-      "limitations": [],
+      "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+      "limitations": [
+        "Open weights are available under a Modified MIT license; review license terms before deployment"
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -1977,7 +1979,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1990,35 +1992,52 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.mistral.ai/inference/pricing",
+        "source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
           "status",
-          "capabilities"
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "Generalist models: Mistral Medium 3.5 v26.04, multimodal coding and agentic",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Heading and model ID",
+            "observed_value": "mistral-medium-3-5",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "Generalist models: Mistral Medium 3.5 v26.04, multimodal coding and agentic",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Release/date and GA badge",
+            "observed_value": "GA v26.04, released April 28 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Price per million tokens",
+            "observed_value": "USD 1.50 input and USD 7.50 output per million tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "Generalist models: Mistral Medium 3.5 v26.04, multimodal coding and agentic",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Description and context",
+            "observed_value": "256k context, multimodal agentic and coding model, open weights with Modified MIT license",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Features > API endpoints; Weights",
+            "observed_value": "Chat completions, conversations, batch and agent endpoints listed; downloadable weights; tenant deployment not attested",
             "checked_on": "2026-10-14"
           }
         ]
@@ -2034,15 +2053,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://docs.mistral.ai/inference/pricing",
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -2052,7 +2066,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+        "last_specific_source_check": "2026-10-14"
       }
     },
     {
