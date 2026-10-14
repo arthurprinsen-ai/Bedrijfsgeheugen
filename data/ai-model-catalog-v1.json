@@ -1570,8 +1570,8 @@
       "status": "preview",
       "input_usd_m": 0.25,
       "output_usd_m": 1.5,
-      "cached_input_usd_m": null,
-      "context_k": 1000,
+      "cached_input_usd_m": 0.025,
+      "context_k": 1048.576,
       "modalities": [
         "text",
         "vision",
@@ -1602,7 +1602,7 @@
         "Gemini API",
         "Vertex AI"
       ],
-      "source": "https://ai.google.dev/gemini-api/docs/gemini-3",
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -1615,7 +1615,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1628,23 +1628,52 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://ai.google.dev/gemini-api/docs/gemini-3",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
-          "pricing",
           "capabilities",
           "deployment",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "All Gemini 3 models endpoints",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+            "locator": "Model code",
+            "observed_value": "gemini-3.1-flash-lite",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+            "locator": "Versions > Stable",
+            "observed_value": "Stable: gemini-3.1-flash-lite",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+            "locator": "Supported data types, token limits and capabilities",
+            "observed_value": "Text/image/video/audio/PDF input; text output; 1048576 input and 65536 output tokens; functions, caching, code execution, search grounding supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+            "locator": "Consumption options",
+            "observed_value": "Batch API, Flex inference, Priority inference supported; tenant and location not attested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.1 Flash-Lite > Standard > Paid Tier",
+            "observed_value": "USD 0.25 input per 1M text/image/video tokens, USD 0.50 audio input, USD 1.50 output, USD 0.025 cached text/image/video and USD 0.05 cached audio",
             "checked_on": "2026-10-14"
           }
         ],
@@ -1668,15 +1697,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://ai.google.dev/gemini-api/docs/gemini-3",
+        "missing_receipt_count": 1,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -1686,8 +1710,11 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
+        "last_specific_source_check": "2026-10-14"
+      },
+      "max_output_tokens": 65536
     },
     {
       "id": "gemini-2.5-flash-lite",
