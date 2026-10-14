@@ -274,3 +274,17 @@ Eight official Claude Platform exact model pages were inspected for API model ID
 | `claude-sonnet-5-5` | https://platform.claude.com/docs/en/models/sonnet-5-5/overview | latest | $2/$10 | 1M /128K |
 
 *Important:* Anthropic's first-party Claude API, AWS Bedrock, Google Cloud and other platform-specific routes can have different processing conditions. A model page saying an endpoint exists is not evidence that a particular tenant is allowed to use it, or that a signed DPA, enabled ZDR, customer region or partner-specific price is in place. Claude Sonnet 4.5's scheduled 2026-11-30 retirement is not an observed shutdown on 2026-10-14. All eight records remain public-source reviews only and `release_eligible=false`; the separate supplier-freshness, customer-contract, Required CI, CodeQL, protected merge and deployed readback are not waived.
+
+
+## Four further Mistral OCR and Voxtral public model reviews (2026-10-14)
+
+Four official Mistral per-model pages were read, with **model ID, modality-specific pricing units, lifecycle and weight licenses kept separate**. In particular, the Voxtral TTS supplier page explicitly advertises **CC BY-NC 4.0**, which cannot be assumed to authorize commercial self-hosting. This public-model source check is **not a customer license approval**.
+
+| Catalog model | Official model page | Official API code | Public supplier model facts |
+| --- | --- | --- | --- |
+| `mistral-ocr-4.0` | https://docs.mistral.ai/models/ocr-4-0 | `mistral-ocr-4-0` | Deprecated 2026-09-29, replaced by OCR 4.1; /v1/ocr, structured annotations and batch |
+| `voxtral-mini-transcribe-realtime` | https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02 | `voxtral-mini-transcribe-realtime-2602` | GA, Apache-2.0, live transcription /v1/audio/transcriptions, published $0.006/min |
+| `voxtral-tts` | https://docs.mistral.ai/models/voxtral-tts-26-03 | `voxtral-mini-tts-2603` | GA, **CC BY-NC 4.0** weight license (noncommercial), 9 languages, zero-shot voice cloning; $0 input/$16 output per million characters; /v1/audio/speech |
+| `voxtral-small` | https://docs.mistral.ai/models/voxtral-small-25-07 | `voxtral-small-2507` | GA, Apache-2.0, audio input, 32K context, audio $0.004/min, text $0.10 input/$0.40 output per million tokens |
+
+Every entry retains `release_eligible=false`; tenant account access, executed commercial licensing, actual bill, regional processing and retention remain unverified. Model family names are not automatically valid API identifiers. Existing supplier freshness / governance / CI / protected merge controls remain untouched.
