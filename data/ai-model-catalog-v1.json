@@ -16615,12 +16615,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment",
-          "pricing"
+          "deployment"
         ],
         "not_verified": [
           "governance",
-          "current region/service-tier billing price"
+          "current region/service-tier billing price",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -16664,12 +16664,11 @@
           {
             "claim": "pricing",
             "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
-            "locator": "Amazon Nova models pricing table > amazon nova pro > price per 1,000 input and output tokens",
-            "observed_value": "AWS published reference rates for amazon-nova-pro: USD 0.800 per 1 million input tokens and USD 3.20 per 1 million output tokens in its Nova on-demand comparison. Verify actual current region/service-tier/contract prices from AWS Bedrock pricing or Price List API before using these figures in a customer quote.",
+            "locator": "Understanding Amazon Bedrock pricing > Amazon Nova models, US East (Ohio), rates as of 2025-05-21",
+            "observed_value": "AWS published May 2025 rates: USD 0.80/M input and USD 3.20/M output tokens in US East Ohio. Historical reference only; October 2026 rates unverified.",
             "checked_on": "2026-10-14",
-            "scope": "Official AWS published indicative standard on-demand reference, not live region-specific price/contract readback; AWS Builder September 2026 public reference cross-check",
-            "verification_status": "HISTORICAL_OFFICIAL_RATE_REFERENCE_CURRENT_REGION_PRICE_UNVERIFIED",
-            "supporting_source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet"
+            "scope": "HISTORIC_VENDOR_RATE_NOT_CURRENT_PRICE",
+            "verification_status": "CURRENT_PRICING_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -16680,6 +16679,12 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_disclosure": {
+          "type": "historical_vendor_rate",
+          "as_of": "2025-05-21",
+          "current_rate_verified": false,
+          "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/"
         }
       },
       "supplier_audit": {
@@ -16805,12 +16810,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment",
-          "pricing"
+          "deployment"
         ],
         "not_verified": [
           "governance",
-          "current region/service-tier billing price"
+          "current region/service-tier billing price",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -16854,12 +16859,11 @@
           {
             "claim": "pricing",
             "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
-            "locator": "Amazon Nova models pricing table > amazon nova lite > price per 1,000 input and output tokens",
-            "observed_value": "AWS published reference rates for amazon-nova-lite: USD 0.060 per 1 million input tokens and USD 0.24 per 1 million output tokens in its Nova on-demand comparison. Verify actual current region/service-tier/contract prices from AWS Bedrock pricing or Price List API before using these figures in a customer quote.",
+            "locator": "Understanding Amazon Bedrock pricing > Amazon Nova models, US East (Ohio), rates as of 2025-05-21",
+            "observed_value": "AWS published May 2025 rates: USD 0.06/M input and USD 0.24/M output tokens in US East Ohio. Historical reference only; current region/service-tier rates unverified.",
             "checked_on": "2026-10-14",
-            "scope": "Official AWS published indicative standard on-demand reference, not live region-specific price/contract readback; AWS Builder September 2026 public reference cross-check",
-            "verification_status": "HISTORICAL_OFFICIAL_RATE_REFERENCE_CURRENT_REGION_PRICE_UNVERIFIED",
-            "supporting_source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet"
+            "scope": "HISTORIC_VENDOR_RATE_NOT_CURRENT_PRICE",
+            "verification_status": "CURRENT_PRICING_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -16870,6 +16874,12 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_disclosure": {
+          "type": "historical_vendor_rate",
+          "as_of": "2025-05-21",
+          "current_rate_verified": false,
+          "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/"
         }
       },
       "supplier_audit": {
@@ -16996,12 +17006,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment",
-          "pricing"
+          "deployment"
         ],
         "not_verified": [
           "governance",
-          "current region/service-tier billing price"
+          "current region/service-tier billing price",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -17045,12 +17055,11 @@
           {
             "claim": "pricing",
             "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
-            "locator": "Amazon Nova models pricing table > amazon nova micro > price per 1,000 input and output tokens",
-            "observed_value": "AWS published reference rates for amazon-nova-micro: USD 0.035 per 1 million input tokens and USD 0.14 per 1 million output tokens in its Nova on-demand comparison. Verify actual current region/service-tier/contract prices from AWS Bedrock pricing or Price List API before using these figures in a customer quote.",
+            "locator": "Understanding Amazon Bedrock pricing > Amazon Nova models, US East (Ohio), rates as of 2025-05-21",
+            "observed_value": "AWS published May 2025 rates: USD 0.035/M input tokens and USD 0.14/M output tokens in US East Ohio. Historical reference only; October 2026 service-tier and region rates not verified.",
             "checked_on": "2026-10-14",
-            "scope": "Official AWS published indicative standard on-demand reference, not live region-specific price/contract readback; AWS Builder September 2026 public reference cross-check",
-            "verification_status": "HISTORICAL_OFFICIAL_RATE_REFERENCE_CURRENT_REGION_PRICE_UNVERIFIED",
-            "supporting_source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet"
+            "scope": "HISTORIC_VENDOR_RATE_NOT_CURRENT_PRICE",
+            "verification_status": "CURRENT_PRICING_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17061,6 +17070,12 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_disclosure": {
+          "type": "historical_vendor_rate",
+          "as_of": "2025-05-21",
+          "current_rate_verified": false,
+          "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/"
         }
       },
       "supplier_audit": {
@@ -17925,11 +17940,11 @@
           {
             "claim": "pricing",
             "url": "https://aws.amazon.com/blogs/machine-learning/get-started-with-amazon-titan-text-embeddings-v2-a-new-state-of-the-art-embeddings-model-on-amazon-bedrock/",
-            "locator": "V1 versus V2 feature table > Price per million tokens",
-            "observed_value": "Original AWS model launch publication lists Titan Text Embeddings V2 at USD 0.02 per million input tokens (USD 0.00002 per thousand). Historical reference only; unchanged 2026 price, AWS region and tenant billing unverified.",
-            "scope": "Official model-specific historical reference, not current AWS regional price attestation.",
+            "locator": "Comparison table Amazon Titan Text Embeddings V1/V2, publication 2024-05-02",
+            "observed_value": "AWS published a 2024 Titan Text Embeddings V2 reference price of USD 0.02 per million input tokens. This is not confirmation of the current October 2026 regional rate.",
             "checked_on": "2026-10-14",
-            "verification_status": "PUBLISHED_AWS_PRICE_EXAMPLE_NOT_LIVE_TENANT_ATTESTATION"
+            "scope": "HISTORIC_VENDOR_RATE_NOT_CURRENT_PRICE",
+            "verification_status": "CURRENT_PRICING_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17940,6 +17955,12 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_disclosure": {
+          "type": "historical_vendor_rate",
+          "as_of": "2024-05-02",
+          "current_rate_verified": false,
+          "url": "https://aws.amazon.com/blogs/machine-learning/get-started-with-amazon-titan-text-embeddings-v2-a-new-state-of-the-art-embeddings-model-on-amazon-bedrock/"
         }
       },
       "supplier_audit": {
