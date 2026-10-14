@@ -13506,7 +13506,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SPECIFIC_PROVIDER_DATA_USE_AND_API_RETENTION_PUBLIC_POLICY_VERIFIED"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
@@ -14185,7 +14185,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
-          "governance": "MODEL_SPECIFIC_PROVIDER_DATA_USE_AND_API_RETENTION_PUBLIC_POLICY_VERIFIED"
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 6,
