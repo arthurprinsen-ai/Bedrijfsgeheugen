@@ -4087,7 +4087,16 @@
             "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+          "locator": "Open Platform Terms > Requirements and Restrictions 3.2–3.4; Inputs and Outputs 4.2; Personal Data 5.5; Fee 6.2",
+          "observed_value": "API platform terms require the downstream developer to establish its personal-data processing basis, explain use to end users, and implement appropriate technical and organizational measures. The terms do not themselves attest no-training, zero-retention, EU processing, customer DPA, or model-level runtime security settings.",
+          "limitations": "Contract-specific and model-specific data processing or retention guarantees must be verified separately. This is a terms-of-service baseline, not a verified tenant configuration.",
+          "checked_on": "2026-10-14",
+          "scope": "official API developer terms; account and model controls unverified"
+        }
       },
       "pricing_basis": {
         "source": "https://api-docs.deepseek.com/quick_start/pricing/",
@@ -4263,7 +4272,16 @@
             "verification_status": "PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
+          "locator": "Open Platform Terms > Requirements and Restrictions 3.2–3.4; Inputs and Outputs 4.2; Personal Data 5.5; Fee 6.2",
+          "observed_value": "API platform terms require the downstream developer to establish its personal-data processing basis, explain use to end users, and implement appropriate technical and organizational measures. The terms do not themselves attest no-training, zero-retention, EU processing, customer DPA, or model-level runtime security settings.",
+          "limitations": "Contract-specific and model-specific data processing or retention guarantees must be verified separately. This is a terms-of-service baseline, not a verified tenant configuration.",
+          "checked_on": "2026-10-14",
+          "scope": "official API developer terms; account and model controls unverified"
+        }
       },
       "pricing_basis": {
         "source": "https://api-docs.deepseek.com/quick_start/pricing/",
