@@ -19415,7 +19415,24 @@
       },
       "auto_recommendation_eligible": false,
       "deployment_readiness": "not_eligible_eol",
-      "provider_api_id": "amazon.nova-premier-v1:0"
+      "provider_api_id": "amazon.nova-premier-v1:0",
+      "supplier_lifecycle_scope_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "evidence_type": "OFFICIAL_AWS_LISTED_REGION_END_OF_LIFE_NOT_TENANT_READBACK",
+        "regional_scope_note": "Only explicitly listed AWS Regions covered; lifecycle state may differ elsewhere. Use authenticated ListFoundationModels / GetFoundationModel before routing or deployment.",
+        "tenant_entitlement_verified": false,
+        "automatic_recommendation_eligible": false,
+        "model_api_id": "amazon.nova-premier-v1:0",
+        "model_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+        "conflicting_model_card_values": {
+          "eol_no_sooner_than": "2026-10-31",
+          "model_eol_date": "2026-09-14",
+          "lifecycle_label": "Legacy"
+        },
+        "lifecycle": "OFFICIAL_MODEL_CARD_DATE_CONFLICT_NO_ACCOUNT_READBACK",
+        "resolution": "Do not mark verified active or use for new deployment without authenticated modelLifecycle readback by region and provider clarification."
+      }
     },
     {
       "tier": "balanced",
@@ -20358,6 +20375,22 @@
         "regional_lifecycle_verified": false,
         "regional_pricing_verified": false,
         "automatic_recommendation_eligible": false
+      },
+      "supplier_lifecycle_scope_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "evidence_type": "OFFICIAL_AWS_LISTED_REGION_END_OF_LIFE_NOT_TENANT_READBACK",
+        "regional_scope_note": "Only explicitly listed AWS Regions covered; lifecycle state may differ elsewhere. Use authenticated ListFoundationModels / GetFoundationModel before routing or deployment.",
+        "tenant_entitlement_verified": false,
+        "automatic_recommendation_eligible": false,
+        "model_api_id": "amazon.nova-sonic-v1:0",
+        "eol_date": "2026-09-14",
+        "affected_regions": [
+          "ap-northeast-1",
+          "eu-north-1",
+          "us-east-1"
+        ],
+        "lifecycle": "EOL_IN_AWS_LISTED_REGIONS"
       }
     },
     {
@@ -20852,6 +20885,22 @@
         "regional_lifecycle_verified": false,
         "regional_pricing_verified": false,
         "automatic_recommendation_eligible": false
+      },
+      "supplier_lifecycle_scope_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "evidence_type": "OFFICIAL_AWS_LISTED_REGION_END_OF_LIFE_NOT_TENANT_READBACK",
+        "regional_scope_note": "Only explicitly listed AWS Regions covered; lifecycle state may differ elsewhere. Use authenticated ListFoundationModels / GetFoundationModel before routing or deployment.",
+        "tenant_entitlement_verified": false,
+        "automatic_recommendation_eligible": false,
+        "model_api_id": "amazon.nova-canvas-v1:0",
+        "eol_date": "2026-09-30",
+        "affected_regions": [
+          "ap-northeast-1",
+          "eu-west-1",
+          "us-east-1"
+        ],
+        "lifecycle": "EOL_IN_AWS_LISTED_REGIONS"
       }
     },
     {
@@ -21084,6 +21133,29 @@
         "regional_lifecycle_verified": false,
         "regional_pricing_verified": false,
         "automatic_recommendation_eligible": false
+      },
+      "supplier_lifecycle_scope_20261014": {
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "evidence_type": "OFFICIAL_AWS_LISTED_REGION_END_OF_LIFE_NOT_TENANT_READBACK",
+        "regional_scope_note": "Only explicitly listed AWS Regions covered; lifecycle state may differ elsewhere. Use authenticated ListFoundationModels / GetFoundationModel before routing or deployment.",
+        "tenant_entitlement_verified": false,
+        "automatic_recommendation_eligible": false,
+        "model_api_id": "amazon.nova-reel-v1:0",
+        "eol_date": "2026-09-30",
+        "affected_regions": [
+          "ap-northeast-1",
+          "eu-west-1",
+          "us-east-1"
+        ],
+        "also_other_version": {
+          "model_api_id": "amazon.nova-reel-v1:1",
+          "eol_date": "2026-09-30",
+          "affected_regions": [
+            "us-east-1"
+          ]
+        },
+        "lifecycle": "EOL_IN_AWS_LISTED_REGIONS"
       }
     },
     {
