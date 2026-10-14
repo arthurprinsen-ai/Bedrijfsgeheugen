@@ -18730,7 +18730,8 @@
         "not_a_claim_receipt": true
       },
       "auto_recommendation_eligible": false,
-      "deployment_readiness": "not_eligible_eol"
+      "deployment_readiness": "not_eligible_eol",
+      "provider_api_id": "amazon.nova-premier-v1:0"
     },
     {
       "tier": "balanced",
