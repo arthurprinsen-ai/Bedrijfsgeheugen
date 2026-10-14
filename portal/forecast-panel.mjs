@@ -31,6 +31,7 @@ function chart(d){
   const past=d.history.slice(-6),future=d.future.slice(0,horizon);
   const joined=[...past,...future],values=joined.map(x=>x.value);
   if(d.low.length&&d.high.length){values.push(...d.low.slice(0,horizon).map(x=>x.value),...d.high.slice(0,horizon).map(x=>x.value))}
+  if(adjustment!==0) values.push(...future.map(p=>p.value*(1+adjustment/100)));
   const min=Math.min(...values),max=Math.max(...values),span=Math.max(1,max-min);
   const x=i=>36+i* (640/Math.max(1,joined.length-1));
   const y=v=>178-(v-min)/span*145;
@@ -42,7 +43,7 @@ function chart(d){
     [...[{value:base},...d.high.slice(0,horizon)].map((v,i)=>[x(past.length-1+i),y(v.value)]),
       ...[{value:base},...d.low.slice(0,horizon)].map((v,i)=>[x(past.length-1+i),y(v.value)]).reverse()]
       .map(p=>p.join(',')).join(' ')+'" fill="#bfd1fc" opacity=".35"/>':'';
-  const simulated=adjustment!==0?'<polyline points="'+line([{value:base},...future],past.length-1,multiplier)+'" fill="none" stroke="#a65de2" stroke-width="2.5" stroke-dasharray="6 4"/>':'';
+  const simulated=adjustment!==0?'<polyline points="'+line([{value:base},...future.map(p=>({value:p.value*multiplier}))],past.length-1)+'" fill="none" stroke="#a65de2" stroke-width="2.5" stroke-dasharray="6 4"/>':'';
   return '<svg viewBox="0 0 720 205" role="img" aria-label="Historische waarden en prognose voor '+clean(d.title)+'">'+
     '<line x1="36" y1="178" x2="684" y2="178" stroke="#ccd3e3"/>'+
     band+'<polyline points="'+line(past)+'" fill="none" stroke="#1557ff" stroke-width="3"/>'+
