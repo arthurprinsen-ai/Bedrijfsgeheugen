@@ -8386,7 +8386,7 @@
         "Microsoft Foundry"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -8416,27 +8416,15 @@
         "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "verified_claims": [
           "model_id",
-          "status"
-        ],
-        "not_verified": [
+          "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table and deprecation notice: deprecated Sep 30 2026, retirement Nov 30 2026",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
-            "locator": "Model status table and deprecation notice: deprecated Sep 30 2026, retirement Nov 30 2026",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
@@ -8446,6 +8434,46 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-5/overview",
+            "locator": "Specifications > Model IDs > Claude API",
+            "observed_value": "claude-sonnet-4-5-20250929 pinned API ID; alias claude-sonnet-4-5",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier model documentation; tenant entitlement not verified"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-5/overview",
+            "locator": "Model status and deprecation notice",
+            "observed_value": "Deprecated and functioning; scheduled Claude API retirement 2026-11-30; recommended successor claude-sonnet-5-5",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier model documentation; tenant entitlement not verified"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-5/overview",
+            "locator": "Specifications > Pricing",
+            "observed_value": "USD per million tokens: standard input $3, output $15, cache read $0.30, batch 50% discount",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier model documentation; tenant entitlement not verified"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-5/overview",
+            "locator": "Specifications > Capabilities",
+            "observed_value": "200K context, 64K output, extended thinking, text and image input; text output",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier model documentation; tenant entitlement not verified"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://platform.claude.com/docs/en/models/sonnet-4-5/overview",
+            "locator": "Specifications > Platforms and Model IDs",
+            "observed_value": "Claude API; Bedrock InvokeModel anthropic.claude-sonnet-4-5-20250929-v1:0; Google Cloud claude-sonnet-4-5@20250929; Foundry and AWS Claude Platform",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier model documentation; tenant entitlement not verified"
           }
         ],
         "provider_policy_evidence": {
@@ -9319,7 +9347,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -9339,13 +9367,15 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "pricing_standard_paid_through_2026_12_31",
-          "pricing_standard_paid_from_2027_01_01"
+          "pricing_standard_paid_from_2027_01_01",
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "model_id API entitlement",
           "status and lifecycle",
-          "capabilities",
-          "deployment",
           "governance",
           "pricing for other tiers"
         ],
@@ -9356,13 +9386,6 @@
             "url": "https://ai.google.dev/gemini-api/docs/pricing",
             "locator": "Gemini 3.7 Flash, Standard, Paid Tier table; dated prices until Dec 31 2026 and beginning Jan 1 2027",
             "observed_value": "USD 0.75 input / USD 3.75 output per 1M tokens through 2026-12-31; thereafter USD 1.50 / USD 7.50",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://ai.google.dev/gemini-api/docs/deprecations/",
-            "locator": "Gemini 3 models > gemini-3.7-flash",
-            "observed_value": "Deprecated 2026-10-08; API requests automatically routed to gemini-3.8-flash; replace model ID for new deployments",
             "checked_on": "2026-10-14"
           },
           {
@@ -9378,26 +9401,34 @@
           {
             "claim": "model_id",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
-            "locator": "Model code",
+            "locator": "gemini-3.7-flash > Model code",
             "observed_value": "gemini-3.7-flash",
             "checked_on": "2026-10-14",
-            "scope": "model-specific official document; tenant permission unverified"
+            "scope": "official supplier model documentation; tenant entitlement not verified"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+            "locator": "Deprecation warning and Versions",
+            "observed_value": "Deprecated; requests automatically routed to gemini-3.8-flash; should migrate model ID",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier model documentation; tenant entitlement not verified"
           },
           {
             "claim": "capabilities",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
-            "locator": "Supported data types; Token limits; Capabilities",
-            "observed_value": "Text, image, video, audio and PDF input; text output; 1,048,576 input and 65,536 output token limits, tools and thinking; deprecated alias",
+            "locator": "Supported data types, token limits and capabilities",
+            "observed_value": "Text/image/video/audio/PDF input; text output; 1,048,576 input and 65,536 output tokens; tool calling, caching, reasoning and grounding supported",
             "checked_on": "2026-10-14",
-            "scope": "model-specific official document; tenant permission unverified"
+            "scope": "official supplier model documentation; tenant entitlement not verified"
           },
           {
             "claim": "deployment",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
-            "locator": "Deprecated model caution; Consumption options",
-            "observed_value": "API model alias gemini-3.7-flash automatically routes to gemini-3.8-flash; prefer successor in new deployments",
+            "locator": "Versions and Consumption options",
+            "observed_value": "Deprecated Gemini API model ID gemini-3.7-flash transparently routes to gemini-3.8-flash; Batch/Flex/Priority supported on documented interface; account access not tested",
             "checked_on": "2026-10-14",
-            "scope": "model-specific official document; tenant permission unverified"
+            "scope": "official supplier model documentation; tenant entitlement not verified"
           }
         ],
         "provider_policy_evidence": {
@@ -9407,7 +9438,8 @@
           "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
-        }
+        },
+        "evidence_status": "PARTIALLY_VERIFIED"
       },
       "pricing_basis": {
         "currency": "USD",
