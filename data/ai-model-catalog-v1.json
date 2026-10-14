@@ -5263,7 +5263,7 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://docs.cohere.com/docs/models",
+      "source": "https://docs.cohere.com/docs/cohere-embed",
       "limitations": [
         "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
       ],
@@ -5430,7 +5430,8 @@
         "price_type": "managed_single_tenant_per_instance",
         "public_api_pricing": "UNVERIFIED",
         "customer_subscription": "UNVERIFIED"
-      }
+      },
+      "provider_api_id": "embed-v4.0"
     },
     {
       "id": "rerank-4-pro",
@@ -17448,9 +17449,10 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
-        "text"
+        "text",
+        "image"
       ],
       "strengths": [
         "enterprise reasoning",
@@ -17493,7 +17495,7 @@
       },
       "id": "command-a-reasoning-08-2025",
       "provider": "Cohere",
-      "source": "https://docs.cohere.com/v1/changelog",
+      "source": "https://docs.cohere.com/docs/command-a-reasoning",
       "verification_evidence": {
         "claim_scope": "full",
         "verification_required": [
@@ -17620,7 +17622,9 @@
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
-      }
+      },
+      "provider_api_id": "command-a-reasoning-08-2025",
+      "max_output_tokens": 32000
     },
     {
       "tier": "specialist",
@@ -17822,7 +17826,8 @@
         "last_specific_source_url": "https://docs.cohere.com/docs/cohere-embed",
         "last_specific_source_check": "2026-10-14"
       },
-      "embedding_dimensions": 1024
+      "embedding_dimensions": 1024,
+      "provider_api_id": "embed-multilingual-v3.0"
     },
     {
       "tier": "economy",

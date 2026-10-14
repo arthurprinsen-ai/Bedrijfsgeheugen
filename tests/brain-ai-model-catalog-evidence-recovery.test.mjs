@@ -118,3 +118,28 @@ test('advisor does not recommend aliases with a separate canonical API model rec
  assert.ok(aliases.some(m=>m.id==='command-a-plus'),'The Cohere friendly label must not count as a distinct API model');
  for(const m of aliases)assert.notEqual(m.supplier_audit?.automatic_recommendation_eligible,true);
 });
+
+test('Cohere remaining official API mappings remain fail-closed',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ assert.equal(catalog.models.length,110);
+ const byId=new Map(catalog.models.map(m=>[m.id,m]));
+ const expected={
+  'command-a':'command-a-03-2025',
+  'command-a-plus':'command-a-plus-05-2026',
+  'command-a-plus-05-2026':'command-a-plus-05-2026',
+  'command-a-reasoning-08-2025':'command-a-reasoning-08-2025',
+  'embed-4':'embed-v4.0',
+  'embed-multilingual-v3.0':'embed-multilingual-v3.0',
+  'rerank-4-pro':'rerank-v4.0-pro'
+ };
+ for(const [id,api] of Object.entries(expected)){
+  const m=byId.get(id);
+  assert.equal(m.provider_api_id,api,id);
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false,id);
+  assert.ok(m.verification_evidence.claim_evidence.some(e=>e.claim==='model_id'&&e.observed_value.includes(api)),id);
+ }
+ const r=byId.get('command-a-reasoning-08-2025');
+ assert.equal(r.context_k,256);
+ assert.equal(r.max_output_tokens,32000);
+ assert.ok(r.modalities.includes('image'));
+});
