@@ -1822,7 +1822,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1834,24 +1834,46 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "model_id",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+            "locator": "Model card > GA v25.12",
+            "observed_value": "Generally available December 2025",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+            "locator": "Price /M Tokens",
+            "observed_value": "$0.15 input/output per million tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+            "locator": "Model description and context",
+            "observed_value": "Text and vision capable 256K context model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
+            "locator": "Features / Weights",
+            "observed_value": "Apache 2.0 open weights for local deployment; chat and batch API endpoints documented",
             "checked_on": "2026-10-14"
           }
         ]
@@ -1907,7 +1929,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -1919,24 +1941,46 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "model_id",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+            "locator": "Model card > GA v25.12",
+            "observed_value": "Generally available December 2025",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+            "locator": "Price /M Tokens",
+            "observed_value": "$0.10 input/output per million tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+            "locator": "Model description and context",
+            "observed_value": "Text and vision capable 256K context model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+            "locator": "Features / Weights",
+            "observed_value": "Apache 2.0 open weights for local deployment; chat and batch API endpoints documented",
             "checked_on": "2026-10-14"
           }
         ]
@@ -7653,7 +7697,7 @@
         "Mistral API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7678,24 +7722,46 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "model_id",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+            "locator": "Model lifecycle",
+            "observed_value": "GA, v26.02",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+            "locator": "Price USD per minute",
+            "observed_value": "$0.003 per minute",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+            "locator": "Model description",
+            "observed_value": "Audio-input transcription-only model, supports timestamps",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+            "locator": "Transcription endpoints",
+            "observed_value": "/v1/audio/transcriptions",
             "checked_on": "2026-10-14"
           }
         ]
@@ -7737,7 +7803,7 @@
         "self-host/customer cloud"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by deployment when self-hosted",
         "inference_residency": "controlled by deployment when self-hosted",
@@ -7762,24 +7828,46 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://docs.mistral.ai/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status"
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
           "model_id",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "status",
-            "url": "https://docs.mistral.ai/models",
-            "locator": "All models listing, available model family (not exact endpoint eligibility)",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+            "locator": "Model lifecycle",
+            "observed_value": "GA, v26.02",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+            "locator": "Price USD per minute",
+            "observed_value": "$0.006 per minute",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+            "locator": "Model description",
+            "observed_value": "Realtime audio transcription only",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+            "locator": "Transcription endpoints and weights",
+            "observed_value": "/v1/audio/transcriptions; open Apache 2.0 weights available",
             "checked_on": "2026-10-14"
           }
         ]
@@ -8207,7 +8295,7 @@
     },
     {
       "tier": "open-weight",
-      "status": "deprecated",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -8287,7 +8375,14 @@
             "locator": "Deprecated & retired models table",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "lifecycle_warning": {
+          "status": "RETIRED",
+          "retirement_date": "2026-09-30",
+          "replacement": "none stated",
+          "source": "https://docs.mistral.ai/resources/changelogs",
+          "checked_on": "2026-10-14"
+        }
       }
     },
     {
@@ -8454,7 +8549,14 @@
             "locator": "Deprecated & retired models table",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "lifecycle_warning": {
+          "status": "DEPRECATED",
+          "retirement_date": "2026-10-31",
+          "replacement": "zai-glm-5-3",
+          "source": "https://docs.mistral.ai/resources/changelogs",
+          "checked_on": "2026-10-14"
+        }
       }
     },
     {
