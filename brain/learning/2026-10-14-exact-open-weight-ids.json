@@ -1,0 +1,27 @@
+{
+  "fingerprint": "ai-model-catalog|open-weight-family-aliases|20261014",
+  "compiler": {
+    "failure_class": "FAMILY_PLACEHOLDER_NOT_DEPLOYABLE_MODEL_ID"
+  },
+  "root_cause": "The catalog represented Meta Llama and Alibaba Qwen as generic families, making supplier model-id verification and runtime selection ambiguous.",
+  "prevention_rule": "Record only an exact official model repository/ID for selectable open-weight checkpoints; retain unknown prices, tenant hosting and governance as unresolved, and do not treat official weights as proof of deployed customer configurations.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-exact-open-weight-ids.test.mjs"
+    ]
+  },
+  "evidence": {
+    "verified": [
+      "Meta model card confirms meta-llama/Llama-4-Scout-17B-16E-Instruct",
+      "Qwen model card confirms Qwen/Qwen3-32B",
+      "110 catalog entries retained in GitHub candidate",
+      "Production Supabase supplier evidence includes exact model identities"
+    ],
+    "not_verified": [
+      "All 110 source verification dates refreshed independently",
+      "Customer tenant residency/DPA/ZDR",
+      "Actual self-hosting operating costs",
+      "Protected merge and production deploy"
+    ]
+  }
+}
