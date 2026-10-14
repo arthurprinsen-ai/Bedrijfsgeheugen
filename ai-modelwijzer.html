@@ -77,7 +77,7 @@
 <div class="eyebrow">AI Modelwijzer · actueel modelregister</div>
 <h1>AI-modellen vergelijken: welk model past bij wat je wilt bereiken?</h1>
 <p>Niet alleen OpenAI versus Claude. Vergelijk modellen op taak, kwaliteit, snelheid, context, maandkosten, privacy, hosting, open weights, dataresidentie, inferentielocatie en data-soevereiniteit — met de officiële bron per model.</p>
-<div class="facts"><span class="fact"><b id="modelCount">—</b> modelrecords in register</span><span class="fact"><b id="providerCount">—</b> providers</span><span class="fact">Prijs + lifecycle + governance</span><span class="fact">Laatst gecontroleerd: <b>30 september 2026</b></span></div>
+<div class="facts"><span class="fact"><b id="modelCount">—</b> modelrecords in register</span><span class="fact"><b id="providerCount">—</b> providers</span><span class="fact">Prijs + lifecycle + governance</span><span class="fact">Laatste bronregistratie: <b id="catalogEvidenceDate">—</b> <small>(niet alle claims geverifieerd)</small></span></div>
 </div></section>
 
 <section class="wrap">
@@ -449,6 +449,9 @@ async function init(){
  catch{try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'reload'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
  try{const g=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-provider-governance-v1.json',{cache:'no-store'});providerGovernance=await g.json();}catch{providerGovernance={providers:[]};}
  $('modelCount').textContent=catalog.models.length;$('providerCount').textContent=new Set(catalog.models.map(m=>m.provider)).size;
+ const dates=catalog.models.map(m=>m.verification_evidence?.checked_on).filter(x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x));
+ const latest=dates.sort().at(-1);
+ $('catalogEvidenceDate').textContent=latest?new Intl.DateTimeFormat('nl-NL',{day:'numeric',month:'long',year:'numeric',timeZone:'UTC'}).format(new Date(latest+'T12:00:00Z')):'onbekend';
  const providers=[...new Set(catalog.models.map(m=>m.provider))].sort();$('providerFilter').innerHTML='<option value="">Alle providers</option>'+providers.map(p=>`<option>${p}</option>`).join('');
  renderModels();renderProviderGovernance();simpleProfile();
 }
