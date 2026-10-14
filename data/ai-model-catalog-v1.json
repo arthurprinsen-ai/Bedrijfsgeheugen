@@ -18201,14 +18201,15 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "verified_claims": [
-          "capabilities"
+          "capabilities",
+          "pricing"
         ],
         "not_verified": [
           "model_id",
           "status",
-          "pricing",
           "deployment",
-          "governance"
+          "governance",
+          "current customer region-specific rate"
         ],
         "claim_evidence": [
           {
@@ -18248,6 +18249,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/blogs/machine-learning/transform-retail-with-aws-generative-ai-services/",
+            "locator": "Cost breakdown > Amazon Bedrock – Nova Canvas: 1,500 virtual try-on images @ $0.04 per image",
+            "observed_value": "AWS published April 2026 retail workflow cost example uses USD 0.04 per standard Nova Canvas image (1,500 images at USD 60). Quality/resolution, region, production tiers and currently effective charges can differ. This is an example cost, not a verified customer-specific tariff.",
+            "checked_on": "2026-10-14",
+            "scope": "Official AWS published example with its indicated workload/region; not a current live Bedrock Price List quote or customer contract attestation",
+            "verification_status": "PUBLISHED_EXAMPLE_NOT_LIVE_BILL"
           }
         ],
         "provider_policy_evidence": {
@@ -18318,7 +18328,14 @@
         "not_a_claim_receipt": true
       },
       "auto_recommendation_eligible": false,
-      "deployment_readiness": "not_eligible_eol"
+      "deployment_readiness": "not_eligible_eol",
+      "aws_published_cost_example_20261014": {
+        "url": "https://aws.amazon.com/blogs/machine-learning/transform-retail-with-aws-generative-ai-services/",
+        "checked_on": "2026-10-14",
+        "reference_cost_usd": 0.04,
+        "reference_unit": "standard image",
+        "customer_billing_verified": false
+      }
     },
     {
       "tier": "specialist",
@@ -18386,14 +18403,15 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "verified_claims": [
-          "capabilities"
+          "capabilities",
+          "pricing"
         ],
         "not_verified": [
           "model_id",
           "status",
-          "pricing",
           "deployment",
-          "governance"
+          "governance",
+          "current customer region-specific rate"
         ],
         "claim_evidence": [
           {
@@ -18433,6 +18451,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/jp/cdp/ai-movie-creation/",
+            "locator": "Amazon Nova Reel 6-second video-generation cost table > $0.08 per generated video second, Tokyo region example",
+            "observed_value": "AWS published Nova Reel video-generation reference of USD 0.08 per generated second for 720p 24fps in the Japan/Tokyo example. This is a geographically and historically scoped example, not a verified global or current customer tariff.",
+            "checked_on": "2026-10-14",
+            "scope": "Official AWS published example with its indicated workload/region; not a current live Bedrock Price List quote or customer contract attestation",
+            "verification_status": "PUBLISHED_EXAMPLE_NOT_LIVE_BILL"
           }
         ],
         "provider_policy_evidence": {
@@ -18503,7 +18530,14 @@
         "not_a_claim_receipt": true
       },
       "auto_recommendation_eligible": false,
-      "deployment_readiness": "not_eligible_eol"
+      "deployment_readiness": "not_eligible_eol",
+      "aws_published_cost_example_20261014": {
+        "url": "https://aws.amazon.com/jp/cdp/ai-movie-creation/",
+        "checked_on": "2026-10-14",
+        "reference_cost_usd": 0.08,
+        "reference_unit": "generated second",
+        "customer_billing_verified": false
+      }
     },
     {
       "tier": "specialist",
