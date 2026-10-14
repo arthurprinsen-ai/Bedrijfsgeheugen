@@ -837,7 +837,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://platform.claude.com/docs/en/models/overview",
@@ -850,12 +850,11 @@
           "context_k",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
         "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing",
         "verification_required": [
@@ -866,7 +865,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -906,8 +905,8 @@
           {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
-            "observed_value": "For Claude API (where Anthropic is data processor), retained commercial content is not used for model training without express permission. ZDR is organization- and feature-conditional. Claude Fable 5 is a Covered Model requiring 30-day retention absent express authorization; this is not proof that a tenant is enabled or eligible.",
+            "locator": "API and data retention > How Anthropic approaches data retention; Zero data retention; What ZDR does not cover; Model-specific data retention requirements",
+            "observed_value": "Anthropic commercial API content is not used for model training without express permission. API feature/model eligibility for Zero Data Retention varies and ZDR requires explicit organization enablement; covered Claude Fable/Mythos model variants have additional 30-day retention restrictions. Amazon Bedrock and Google Cloud have separate processor/control terms. Nothing here attests tenant-specific ZDR, region, signed agreements or enabled controls.",
             "checked_on": "2026-10-14",
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
@@ -924,10 +923,11 @@
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
-          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "No executed customer DPA, region, ZDR enablement, CMEK, private connectivity or hosting-provider readback proven."
+        },
+        "verification_scope_note": "Six supplier-level claims checked against official Anthropic model reference and API/data retention documentation on 2026-10-14. Coverage is supplier information only; contractual authorizations, partner-cloud processor settings and tenant-specific runtime configuration remain unverified."
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1043,12 +1043,11 @@
           "pricing",
           "status",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
         "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing",
         "verification_required": [
@@ -1059,7 +1058,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -1099,8 +1098,8 @@
           {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
-            "observed_value": "For Claude API (where Anthropic is data processor), retained commercial content is not used for model training without express permission. ZDR is organization- and feature-conditional. Claude Fable 5 is a Covered Model requiring 30-day retention absent express authorization; this is not proof that a tenant is enabled or eligible.",
+            "locator": "API and data retention > How Anthropic approaches data retention; Zero data retention; What ZDR does not cover; Model-specific data retention requirements",
+            "observed_value": "Anthropic commercial API content is not used for model training without express permission. API feature/model eligibility for Zero Data Retention varies and ZDR requires explicit organization enablement; covered Claude Fable/Mythos model variants have additional 30-day retention restrictions. Amazon Bedrock and Google Cloud have separate processor/control terms. Nothing here attests tenant-specific ZDR, region, signed agreements or enabled controls.",
             "checked_on": "2026-10-14",
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
@@ -1117,10 +1116,11 @@
         },
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
-          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "No executed customer DPA, region, ZDR enablement, CMEK, private connectivity or hosting-provider readback proven."
+        },
+        "verification_scope_note": "Six supplier-level claims checked against official Anthropic model reference and API/data retention documentation on 2026-10-14. Coverage is supplier information only; contractual authorizations, partner-cloud processor settings and tenant-specific runtime configuration remain unverified."
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1431,12 +1431,11 @@
           "pricing",
           "status",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ.",
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
@@ -1485,21 +1484,22 @@
           {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
-            "observed_value": "For Claude API (where Anthropic is data processor), retained commercial content is not used for model training without express permission. ZDR is organization- and feature-conditional. Claude Fable 5 is a Covered Model requiring 30-day retention absent express authorization; this is not proof that a tenant is enabled or eligible.",
+            "locator": "API and data retention > How Anthropic approaches data retention; Zero data retention; What ZDR does not cover; Model-specific data retention requirements",
+            "observed_value": "Anthropic commercial API content is not used for model training without express permission. API feature/model eligibility for Zero Data Retention varies and ZDR requires explicit organization enablement; covered Claude Fable/Mythos model variants have additional 30-day retention restrictions. Amazon Bedrock and Google Cloud have separate processor/control terms. Nothing here attests tenant-specific ZDR, region, signed agreements or enabled controls.",
             "checked_on": "2026-10-14",
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
-          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "No executed customer DPA, region, ZDR enablement, CMEK, private connectivity or hosting-provider readback proven."
+        },
+        "verification_scope_note": "Six supplier-level claims checked against official Anthropic model reference and API/data retention documentation on 2026-10-14. Coverage is supplier information only; contractual authorizations, partner-cloud processor settings and tenant-specific runtime configuration remain unverified."
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1617,12 +1617,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
-        "claim_scope": "partial",
+        "not_verified": [],
+        "claim_scope": "full",
         "evidence_note": "Official model documentation lists Claude API alias claude-haiku-4-5, canonical snapshot claude-haiku-4-5-20251001, 200K context, $1 input/$5 output per million tokens; remains legacy, so does not imply current preferred or unrestricted availability.",
         "official_lifecycle_source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "provider_policy_evidence": {
@@ -1672,21 +1671,22 @@
           {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
-            "observed_value": "For Claude API (where Anthropic is data processor), retained commercial content is not used for model training without express permission. ZDR is organization- and feature-conditional. Claude Fable 5 is a Covered Model requiring 30-day retention absent express authorization; this is not proof that a tenant is enabled or eligible.",
+            "locator": "API and data retention > How Anthropic approaches data retention; Zero data retention; What ZDR does not cover; Model-specific data retention requirements",
+            "observed_value": "Anthropic commercial API content is not used for model training without express permission. API feature/model eligibility for Zero Data Retention varies and ZDR requires explicit organization enablement; covered Claude Fable/Mythos model variants have additional 30-day retention restrictions. Amazon Bedrock and Google Cloud have separate processor/control terms. Nothing here attests tenant-specific ZDR, region, signed agreements or enabled controls.",
             "checked_on": "2026-10-14",
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
-          "source_url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
           "reviewed_on": "2026-10-14",
-          "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+          "limits": "No executed customer DPA, region, ZDR enablement, CMEK, private connectivity or hosting-provider readback proven."
+        },
+        "verification_scope_note": "Six supplier-level claims checked against official Anthropic model reference and API/data retention documentation on 2026-10-14. Coverage is supplier information only; contractual authorizations, partner-cloud processor settings and tenant-specific runtime configuration remain unverified."
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
