@@ -3507,7 +3507,8 @@
           "capabilities",
           "deployment",
           "pricing_conditions",
-          "public_documented_governance_variants"
+          "public_documented_governance_variants",
+          "status"
         ],
         "not_verified": [
           "contractual Model Vault pricing",
@@ -3544,6 +3545,13 @@
             "locator": "Distribution and Technical Integration",
             "observed_value": "Cohere deployments per terms; Apache 2.0 open source deployment on Hugging Face",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Model page > Production and API Endpoints",
+            "observed_value": "Public model documentation lists Command A+ and production via Cohere Model Vault; availability under customer contract not verified",
+            "checked_on": "2026-10-14"
           }
         ],
         "identity_warning": {
@@ -3552,7 +3560,8 @@
           "source": "https://docs.cohere.com/docs/command-a-plus",
           "explanation": "Generic catalog label has not been proven to be a valid API model ID",
           "checked_on": "2026-10-14"
-        }
+        },
+        "evidence_status": "PARTIALLY_VERIFIED"
       },
       "pricing_basis": {
         "source": "https://docs.cohere.com/docs/command-a-plus",
@@ -3611,10 +3620,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.cohere.com/docs/command-a-plus",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
