@@ -11773,7 +11773,7 @@
     },
     {
       "tier": "specialist",
-      "status": "deprecated",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -11840,10 +11840,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -11852,13 +11852,6 @@
             "url": "https://docs.mistral.ai/models/ocr-4-0",
             "locator": "Model ID under title",
             "observed_value": "mistral-ocr-4-0",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://docs.mistral.ai/models/ocr-4-0",
-            "locator": "Deprecated banner",
-            "observed_value": "Deprecated 2026-09-29; replacement OCR 4.1",
             "checked_on": "2026-10-14"
           },
           {
@@ -11884,6 +11877,20 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/resources/changelogs",
+            "locator": "September 29 deprecation notice",
+            "observed_value": "mistral-ocr-4-0 deprecated Sept 29 and retired Sept 30, 2026. Replacement mistral-ocr-4-1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/resources/changelogs",
+            "locator": "September 29 deprecation > same price as OCR 4.1",
+            "observed_value": "Mistral states retired OCR 4.0 was replaced by OCR 4.1 at the same price; published OCR 4.1 rate USD 4 per 1,000 pages. This is historical/replacement pricing, not currently orderable OCR 4.0.",
+            "checked_on": "2026-10-14"
           }
         ],
         "lifecycle_warning": {
@@ -11905,10 +11912,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/ocr-4-0",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -12003,10 +12009,10 @@
           "model_id",
           "status",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -12047,6 +12053,13 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/ocr-3-25-12",
+            "locator": "Features > OCR and Batching",
+            "observed_value": "Mistral OCR service via OCR API and Batch, documented GA v25.12 for existing integrations; customer endpoint access untested",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -12061,10 +12074,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/ocr-3-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -12158,20 +12170,13 @@
           "model_id",
           "status",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "model_id",
-            "url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
-            "locator": "Model heading and version",
-            "observed_value": "Voxtral TTS v26.03",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "status",
             "url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
@@ -12202,6 +12207,20 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
+            "locator": "Model card > API model identifier",
+            "observed_value": "voxtral-mini-tts-2603; display name Voxtral TTS",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/studio/audio/text_to_speech/speech",
+            "locator": "Speech Generation > SDK / basic and streaming",
+            "observed_value": "Mistral Speech Generation API v1/audio/speech; model voxtral-mini-tts-2603; basic and streaming; customer API entitlement not authenticated",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -12216,10 +12235,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/voxtral-tts-26-03",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
