@@ -84,3 +84,40 @@ test('contract vault receipt requires executed agreement and matching independen
  assert.match(source,/receipt\.agreement_status!=='executed'/);
  assert.match(source,/receipt\.approved_by!==r\.approved_by/);
 });
+
+test('matching disabled control is still rejected as not enabled',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tenant-disabled-'));
+ try {
+  const filepath=path.join(dir,'disabled.json');
+  fs.writeFileSync(filepath,JSON.stringify({
+   scopes:[{tenant_id:'test-tenant',provider:'OpenAI',model_id:'test-model'}],
+   attestations:[{
+    tenant_id:'test-tenant',provider:'OpenAI',model_id:'test-model',claim:'tenant_zdr',
+    checked_at:new Date().toISOString(),observed_value:false,expected_value:false,
+    approved_by:'security',evidence_reference:'restricted:config',signature:'invalid',
+    readback:{source:'authenticated_provider_api',identity:'test-tenant',observed_value:false,observed_at:new Date().toISOString()}
+   }]
+  }));
+  const r=spawnSync(process.execPath,['tests/ai-model-tenant-acceptance.mjs',filepath],{encoding:'utf8'});
+  assert.equal(r.status,2);
+  assert.match(r.stdout,/SECURITY_CONTROL_NOT_ENABLED/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
+test('residency cannot be attested by matching unspecified values',()=>{
+ const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tenant-residency-'));
+ try {
+  const filepath=path.join(dir,'residency.json');
+  fs.writeFileSync(filepath,JSON.stringify({
+   scopes:[{tenant_id:'test-tenant',provider:'OpenAI',model_id:'test-model'}],
+   attestations:[{
+    tenant_id:'test-tenant',provider:'OpenAI',model_id:'test-model',claim:'tenant_data_residency',
+    checked_at:new Date().toISOString(),observed_value:null,expected_value:null,
+    approved_by:'security',evidence_reference:'restricted:region',signature:'invalid',
+    readback:{source:'authenticated_provider_api',identity:'test-tenant',observed_value:null,observed_at:new Date().toISOString()}
+   }]
+  }));
+  const r=spawnSync(process.execPath,['tests/ai-model-tenant-acceptance.mjs',filepath],{encoding:'utf8'});
+  assert.equal(r.status,2);
+  assert.match(r.stdout,/RESIDENCY_LOCATION_UNVERIFIED/);
+ }finally{fs.rmSync(dir,{recursive:true,force:true});}
+});
