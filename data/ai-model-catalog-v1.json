@@ -7740,8 +7740,8 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio > GPT-Realtime-Translate",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+            "locator": "Official model detail page > model title and snapshot alias",
             "observed_value": "gpt-realtime-translate",
             "checked_on": "2026-10-14"
           },
@@ -7937,8 +7937,8 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio > GPT-Live-Transcribe",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+            "locator": "Official model detail page > model title and snapshot alias",
             "observed_value": "gpt-live-transcribe",
             "checked_on": "2026-10-14"
           },
@@ -8133,8 +8133,8 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio > GPT-Realtime-Whisper",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
+            "locator": "Official model detail page > model title and snapshot alias",
             "observed_value": "gpt-realtime-whisper",
             "checked_on": "2026-10-14"
           },
