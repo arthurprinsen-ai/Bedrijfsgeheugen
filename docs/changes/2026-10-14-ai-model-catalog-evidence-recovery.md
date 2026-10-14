@@ -462,3 +462,10 @@ An independent review of official public AWS references found a material source 
 - Definitive disposition requires authorized Bedrock `GetFoundationModel`/`ListFoundationModels` `modelLifecycle` readback for the intended AWS account/region, with retained response provenance, and then an independent supplier acceptance decision.
 
 Source-scoped observations must not be copied into tenant agreements, runtime eligibility, or validated financial measurement fields.
+
+
+## Nova Multimodal Embeddings – Bedrock Knowledge Bases audio scope (2026-10-14)
+
+The official [Amazon Bedrock Nova Multimodal Embeddings model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html) confirms `amazon.nova-2-multimodal-embeddings-v1:0` accepts audio inputs, while [AWS Knowledge Bases multimodal selection guidance](https://docs.aws.amazon.com/bedrock/latest/userguide/kb-multimodal-choose-approach.html) says speech content is not effectively searchable with Nova multimodal embeddings in the Knowledge Bases processing path and recommends Bedrock Data Automation for searchable transcripts. These statements describe different scopes, not a global audio-input contradiction.
+
+A guarded UPDATE of the existing Supabase model row added a scoped limitation and supplier-source observation under `catalog_record.supplier_audit.bedrock_kb_audio_scope_review_20261014`; separate SELECT readback showed the new content and `verification_status=PARTIAL`, with customer runtime and full supplier verification still false. The attempted write to the 1.2 MB GitHub catalog was blocked by connector safety controls, so GitHub JSON parity for this exact correction is **not yet proven**. This change note is not a substitute for a catalog write or release acceptance. Required/CodeQL, protected merge and production readback remain mandatory.
