@@ -897,13 +897,15 @@
         "Microsoft Foundry"
       ],
       "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
-      "limitations": [],
+      "limitations": [
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -977,13 +979,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > Zero data retention; Feature eligibility; How Anthropic approaches data retention",
-            "observed_value": "Commercial Claude API input/output data are ordinarily deleted from Anthropic backend within 30 days, with exceptions for stateful features, legal obligations, safety and customer agreements. ZDR is a separately approved organization- and feature-conditional arrangement, and Covered Models require retention under their special policy. Amazon Bedrock and Google Cloud are separate processors; no tenant DPA, authorization, runtime controls or residency have been verified.",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
             "checked_on": "2026-10-14",
-            "scope": "documented Anthropic direct API supplier data policy baseline; tenant agreements, runtime settings, third-party deployments not verified",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -1110,14 +1111,15 @@
       "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
       "limitations": [
         "Batch API maximum output of 300K tokens is beta; standard maximum output is 128K",
-        "Prompt-cache read costs USD 0.10/MTok; 5-minute and 1-hour cache writes cost more"
+        "Prompt-cache read costs USD 0.10/MTok; 5-minute and 1-hour cache writes cost more",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -1188,13 +1190,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > Zero data retention; Feature eligibility; How Anthropic approaches data retention",
-            "observed_value": "Commercial Claude API input/output data are ordinarily deleted from Anthropic backend within 30 days, with exceptions for stateful features, legal obligations, safety and customer agreements. ZDR is a separately approved organization- and feature-conditional arrangement, and Covered Models require retention under their special policy. Amazon Bedrock and Google Cloud are separate processors; no tenant DPA, authorization, runtime controls or residency have been verified.",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
             "checked_on": "2026-10-14",
-            "scope": "documented Anthropic direct API supplier data policy baseline; tenant agreements, runtime settings, third-party deployments not verified",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -1317,14 +1318,15 @@
       "source": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
       "limitations": [
         "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
-        "Active legacy model. Anthropic states retirement will be no earlier than 2027-06-30; prefer current-generation model where possible"
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-06-30; prefer current-generation model where possible",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -1401,12 +1403,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/docs/about-claude/models/whats-new-sonnet-5",
-            "locator": "What's new in Claude Sonnet 5 > New model > Zero Data Retention",
-            "observed_value": "Claude Sonnet 5 is documented as eligible for Zero Data Retention for organizations with ZDR agreements. This does not prove a customer's signed agreement or actual enabled configuration.",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
             "checked_on": "2026-10-14",
-            "scope": "model-specific control eligibility, not tenant proof",
-            "verification_status": "MODEL_CONTROL_ELIGIBILITY_DOCUMENTED_TENANT_UNVERIFIED"
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -1524,13 +1526,15 @@
         "Microsoft Foundry"
       ],
       "source": "https://platform.claude.com/docs/en/about-claude/pricing",
-      "limitations": [],
+      "limitations": [
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -1599,13 +1603,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > How Anthropic approaches data retention; Zero data retention; What ZDR does not cover; Model-specific data retention requirements",
-            "observed_value": "Anthropic commercial API content is not used for model training without express permission. API feature/model eligibility for Zero Data Retention varies and ZDR requires explicit organization enablement; covered Claude Fable/Mythos model variants have additional 30-day retention restrictions. Amazon Bedrock and Google Cloud have separate processor/control terms. Nothing here attests tenant-specific ZDR, region, signed agreements or enabled controls.",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -1717,13 +1720,15 @@
         "Google Cloud"
       ],
       "source": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
-      "limitations": [],
+      "limitations": [
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -1797,13 +1802,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > Zero data retention; Feature eligibility; How Anthropic approaches data retention",
-            "observed_value": "Anthropic's direct commercial Claude API defaults to retention and data-use rules in the commercial policy: inputs/outputs are generally deleted from Anthropic backends within 30 days, with Files API, contract, safety, and legal exceptions. Organization-approved ZDR applies only to eligible APIs/features and excludes designated Covered Models; cloud-provider deployments (for example Bedrock and Google Cloud) have separate controls. No signed DPA, tenant entitlement, approved ZDR, runtime region or customer configuration is asserted.",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
             "checked_on": "2026-10-14",
-            "scope": "Anthropic direct API supplier-policy baseline only; cloud hosting and all customer/tenant controls independently unverified",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -9373,7 +9377,8 @@
       "limitations": [
         "verify current pricing before cost-sensitive deployment",
         "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
-        "Active legacy model. Anthropic states retirement will be no earlier than 2027-06-09; prefer current-generation model where possible"
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-06-09; prefer current-generation model where possible",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "scores": {
         "reasoning": 9,
@@ -9400,9 +9405,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Covered Model: mandatory 30-day retention for Claude Fable 5 on Claude API",
+        "zero_data_retention": "Not eligible for ZDR: Covered Model mandatory 30-day retention",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -9435,16 +9440,6 @@
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
-            "observed_value": "Claude Fable 5 is a Covered Model under Anthropic's Claude API data policy. It requires 30-day retention and is not ZDR-eligible without express authorization. Customer, provider routing, retention enablement and residency remain unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/fable-5/overview",
@@ -9483,11 +9478,11 @@
           {
             "claim": "governance",
             "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
-            "locator": "Model-specific data retention requirements > Claude Fable 5",
-            "observed_value": "Claude Fable 5 is a Covered Model requiring 30-day data retention and is not eligible for Zero Data Retention in the standard arrangement; express provider authorization may modify eligibility. Authenticated workspace configuration and platform-specific retention are not proven.",
+            "locator": "Model-specific data retention requirements > Claude Fable 5 and Claude Mythos 5",
+            "observed_value": "Claude Fable 5 is a Covered Model requiring 30-day retention of prompts and outputs on the Claude API; Anthropic explicitly excludes Covered Models from Zero Data Retention. Customer platform/account configuration not read.",
             "checked_on": "2026-10-14",
-            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
-            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -9572,7 +9567,8 @@
         "older than Opus 5; evaluate migration path",
         "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
         "Active legacy model. Anthropic states retirement will be no earlier than 2027-05-28; prefer current-generation model where possible",
-        "300K Batch API maximum output is a beta capability distinct from 128K standard max output"
+        "300K Batch API maximum output is a beta capability distinct from 128K standard max output",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "scores": {
         "reasoning": 9,
@@ -9599,9 +9595,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -9634,16 +9630,6 @@
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > Zero data retention; Feature eligibility; How Anthropic approaches data retention",
-            "observed_value": "Commercial Claude API input/output data are ordinarily deleted from Anthropic backend within 30 days, with exceptions for stateful features, legal obligations, safety and customer agreements. ZDR is a separately approved organization- and feature-conditional arrangement, and Covered Models require retention under their special policy. Amazon Bedrock and Google Cloud are separate processors; no tenant DPA, authorization, runtime controls or residency have been verified.",
-            "checked_on": "2026-10-14",
-            "scope": "documented Anthropic direct API supplier data policy baseline; tenant agreements, runtime settings, third-party deployments not verified",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
@@ -9678,6 +9664,15 @@
             "locator": "Specifications > Platforms",
             "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -9764,7 +9759,8 @@
       "limitations": [
         "older lifecycle generation",
         "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
-        "Active legacy model. Anthropic states retirement will be no earlier than 2027-04-16; prefer current-generation model where possible"
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-04-16; prefer current-generation model where possible",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "scores": {
         "reasoning": 9,
@@ -9791,9 +9787,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -9826,16 +9822,6 @@
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > Zero data retention; Feature eligibility; How Anthropic approaches data retention",
-            "observed_value": "Anthropic's direct commercial Claude API defaults to retention and data-use rules in the commercial policy: inputs/outputs are generally deleted from Anthropic backends within 30 days, with Files API, contract, safety, and legal exceptions. Organization-approved ZDR applies only to eligible APIs/features and excludes designated Covered Models; cloud-provider deployments (for example Bedrock and Google Cloud) have separate controls. No signed DPA, tenant entitlement, approved ZDR, runtime region or customer configuration is asserted.",
-            "checked_on": "2026-10-14",
-            "scope": "Anthropic direct API supplier-policy baseline only; cloud hosting and all customer/tenant controls independently unverified",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
@@ -9870,6 +9856,15 @@
             "locator": "Specifications > Platforms",
             "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -9955,7 +9950,8 @@
       "limitations": [
         "older lifecycle generation",
         "Provider labels this model Active (legacy); verify a current replacement before new deployments.",
-        "Active legacy model. Anthropic states retirement will be no earlier than 2027-02-05; prefer current-generation model where possible"
+        "Active legacy model. Anthropic states retirement will be no earlier than 2027-02-05; prefer current-generation model where possible",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "scores": {
         "reasoning": 9,
@@ -9982,9 +9978,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -10017,16 +10013,6 @@
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > Zero data retention; Feature eligibility; How Anthropic approaches data retention",
-            "observed_value": "Anthropic's direct commercial Claude API defaults to retention and data-use rules in the commercial policy: inputs/outputs are generally deleted from Anthropic backends within 30 days, with Files API, contract, safety, and legal exceptions. Organization-approved ZDR applies only to eligible APIs/features and excludes designated Covered Models; cloud-provider deployments (for example Bedrock and Google Cloud) have separate controls. No signed DPA, tenant entitlement, approved ZDR, runtime region or customer configuration is asserted.",
-            "checked_on": "2026-10-14",
-            "scope": "Anthropic direct API supplier-policy baseline only; cloud hosting and all customer/tenant controls independently unverified",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
@@ -10061,6 +10047,15 @@
             "locator": "Specifications > Platforms",
             "observed_value": "Claude API, legacy Amazon Bedrock InvokeModel, Google Cloud, Microsoft Foundry, Claude Platform on AWS; tenant privileges untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -10145,7 +10140,8 @@
         "agents"
       ],
       "limitations": [
-        "older than Sonnet 5"
+        "older than Sonnet 5",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "scores": {
         "reasoning": 8,
@@ -10172,9 +10168,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -10250,13 +10246,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > Zero data retention; Feature eligibility; How Anthropic approaches data retention",
-            "observed_value": "Anthropic's direct commercial Claude API defaults to retention and data-use rules in the commercial policy: inputs/outputs are generally deleted from Anthropic backends within 30 days, with Files API, contract, safety, and legal exceptions. Organization-approved ZDR applies only to eligible APIs/features and excludes designated Covered Models; cloud-provider deployments (for example Bedrock and Google Cloud) have separate controls. No signed DPA, tenant entitlement, approved ZDR, runtime region or customer configuration is asserted.",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
             "checked_on": "2026-10-14",
-            "scope": "Anthropic direct API supplier-policy baseline only; cloud hosting and all customer/tenant controls independently unverified",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
@@ -10332,7 +10327,8 @@
       ],
       "limitations": [
         "retirement window is nearer than newer Sonnet versions",
-        "Deprecated on 2026-09-30, retirement scheduled for 2026-11-30 on Claude-operated platforms. Migrate to claude-sonnet-5-5; partner platforms may differ."
+        "Deprecated on 2026-09-30, retirement scheduled for 2026-11-30 on Claude-operated platforms. Migrate to claude-sonnet-5-5; partner platforms may differ.",
+        "Anthropic API governance is distinct from Bedrock/Google Cloud processing and from actual tenant settings; do not assume customer ZDR."
       ],
       "scores": {
         "reasoning": 8,
@@ -10359,9 +10355,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Commercial Claude API data not used for training without express customer permission; customer contract or cloud partner handling unverified",
+        "retention": "Claude direct API: prompts and outputs not retained by default absent feature storage need; feature-specific state/TTL applies",
+        "zero_data_retention": "ZDR eligibility depends on model, feature and approved customer arrangement; not attested for any tenant",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -10394,16 +10390,6 @@
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
-            "locator": "API and data retention > How Anthropic approaches data retention; Model-specific data retention requirements",
-            "observed_value": "For Claude API (where Anthropic is data processor), retained commercial content is not used for model training without express permission. ZDR is organization- and feature-conditional. Claude Fable 5 is a Covered Model requiring 30-day retention absent express authorization; this is not proof that a tenant is enabled or eligible.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://platform.claude.com/docs/en/models/sonnet-4-5/overview",
@@ -10443,6 +10429,15 @@
             "observed_value": "Claude API; Bedrock InvokeModel anthropic.claude-sonnet-4-5-20250929-v1:0; Google Cloud claude-sonnet-4-5@20250929; Foundry and AWS Claude Platform",
             "checked_on": "2026-10-14",
             "scope": "official supplier model documentation; tenant entitlement not verified"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "How Anthropic approaches data retention; Zero data retention; Model-specific requirements",
+            "observed_value": "On the direct commercial Claude API, conversation prompts/outputs are not retained by default when a feature does not need stored state; content required for stateful features has documented feature-specific retention. Anthropic does not train on retained commercial inputs/outputs without express permission. Zero Data Retention is conditional on eligible features and an approved account arrangement. Bedrock and Google Cloud operate under separate cloud-processor retention controls; tenant settings were not inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "official Claude direct API processing policy; customer and cloud deployment settings unverified",
+            "verification_status": "OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
