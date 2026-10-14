@@ -9,7 +9,7 @@ const rows=catalog.models.map(m=>{
   r.claim===claim && typeof r.url==='string' && r.url.startsWith('https://') &&
   typeof r.locator==='string' && !!r.locator.trim() &&
   typeof r.observed_value==='string' && !!r.observed_value.trim() &&
-  r.checked_on===e.checked_on));
+  r.checked_on===e.checked_on && !String(r.scope??'').includes('NOT model-specific') && r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'));
  return {model_id:m.id,provider:m.provider,full_verified:e.claim_scope==='full'&&missing.length===0,missing_claims:missing};
 });
 const summary={models:rows.length,fully_evidenced:rows.filter(r=>r.full_verified).length,
