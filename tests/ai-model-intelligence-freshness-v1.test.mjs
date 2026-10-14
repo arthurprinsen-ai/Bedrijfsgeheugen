@@ -153,14 +153,28 @@ test('Mistral models use verified hosted API IDs and no duplicate aliases for ne
 });
 
 
-test('publisher families are not mistaken for deployable model IDs; Falcon has a specific licensed card',()=>{
+test('Meta and Qwen use concrete licensed model cards, not unroutable family placeholders',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
- for(const id of ['llama-open-weight','qwen-open-weight']){
+ const expected={
+   'llama-4-scout-17b-16e-instruct': ['meta-llama/Llama-4-Scout-17B-16E-Instruct','Llama 4 Community License'],
+   'qwen3-32b': ['Qwen/Qwen3-32B','Apache-2.0']
+ };
+ for(const [id,[providerId,license]] of Object.entries(expected)){
   const m=c.models.find(x=>x.id===id);
-  assert.equal(m.record_kind,'model_family');
-  assert.equal(m.selection_eligible,false);
-  assert.equal(m.claim_evidence.model_identity.status,'NOT_A_SINGLE_DEPLOYABLE_MODEL_ID');
+  assert.ok(m,id);
+  assert.equal(m.record_kind,'individual_model');
+  assert.equal(m.provider_model_id,providerId);
+  assert.equal(m.license,license);
+  assert.equal(m.selection_eligible,false,'No automatic routing without tenant and contract readback');
+  assert.equal(m.eu_processing,null);
+  assert.equal(m.eu_storage,null);
+  assert.equal(m.claim_evidence.provider_contracts.status,'UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT');
+  assert.equal(m.claim_evidence.tenant_governance.status,'UNVERIFIED_REQUIRES_CUSTOMER_READBACK');
  }
+ assert.equal(c.models.filter(m=>m.record_kind==='model_family').length,0);
+ assert.equal(c.models.find(m=>m.id==='qwen3-32b').context_k,32.768);
+ assert.equal(c.models.find(m=>m.id==='qwen3-32b').extended_context_k,131.072);
+ assert.equal(c.models.find(m=>m.id==='llama-4-scout-17b-16e-instruct').context_k,10000);
  const falcon=c.models.find(x=>x.id==='falcon-h1r-7b');
  assert.equal(falcon.provider_model_id,'tiiuae/Falcon-H1R-7B');
  assert.equal(falcon.claim_evidence.license.value.startsWith('Falcon-LLM License'),true);
