@@ -3944,6 +3944,13 @@
             "observed_value": "Cohere Embed endpoint; authenticated tenant availability not tested",
             "url": "https://docs.cohere.com/docs/cohere-embed",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/changelog/embed-multimodal-v4",
+            "locator": "Announcing Embed Multimodal v4 > Availability",
+            "observed_value": "Embed v4 published as available on Cohere Platform, AWS SageMaker and Azure AI Foundry; tenant access not validated",
+            "checked_on": "2026-10-14"
           }
         ],
         "identity_warning": {
@@ -3964,11 +3971,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.cohere.com/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4084,6 +4090,13 @@
             "locator": "Latest Model > Endpoints",
             "observed_value": "Cohere Rerank API endpoint; actual account authorization not checked",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "locator": "Standard Vault Pricing > Rerank 4 Pro",
+            "observed_value": "Listed for Standard Vault Medium and Large tiers; this is Vault availability, not proof of public API entitlement",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -4099,11 +4112,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://cohere.com/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -12162,6 +12174,13 @@
             "locator": "API Changes > cURL example",
             "observed_value": "Cohere POST https://api.cohere.ai/v1/embed with input_type=image",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/changelog/2026-04-04-embed-v2-aya-8b-retirement",
+            "locator": "Retirement notice > recommended replacements",
+            "observed_value": "embed-multilingual-v3.0 explicitly recommended as active alternative for retired Embed v2; tenant access not validated",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -12176,11 +12195,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.cohere.com/v1/changelog",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
