@@ -8863,7 +8863,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -8947,7 +8956,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9040,7 +9058,16 @@
             "locator": "Bedrock legacy lifecycle table: EOL September 14 2026",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9126,7 +9153,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9212,7 +9248,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9297,7 +9342,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9388,7 +9442,16 @@
             "locator": "Bedrock legacy lifecycle table: EOL September 14 2026",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9474,7 +9537,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9559,7 +9631,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9644,7 +9725,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9728,7 +9818,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9813,7 +9912,16 @@
             "locator": "AWS Titan Image Generator family card; exact endpoint and regional availability not verified",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
@@ -9898,7 +10006,16 @@
             "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+          "locator": "Data retention > retention modes; model allowed_modes; account/project configuration",
+          "observed_value": "Bedrock retention is selected by account/project and model allowed_modes; default, none, aws_review and legacy provider_data_share differ; provider content sharing is not supported under this mechanism. Model and effective project mode require an authenticated provider readback.",
+          "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline only; model and customer-specific controls unverified"
+        }
       }
     },
     {
