@@ -6783,6 +6783,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/live/sessions; Endpoint limitations > /v1/live/sessions",
+            "observed_value": "For GPT-Live 1 on /v1/live/sessions, session storage is disabled by default; optional stored recordings persist for 30 days. ZDR-eligible with endpoint limitations; US and EU data residency documented, delegated models/tools have separate controls. No customer ZDR or regional deployment confirmed.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6810,10 +6819,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -6956,6 +6963,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/realtime; Endpoint limitations > /v1/realtime",
+            "observed_value": "For GPT-Realtime-2.1 on /v1/realtime, documented application-state retention is None and abuse-monitoring logs are generally retained 30 days unless approved controls apply. Realtime tracing is not currently EU data-residency compliant; tenant configuration is not authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6983,10 +6999,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7129,6 +7143,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/realtime; Endpoint limitations > /v1/realtime",
+            "observed_value": "For GPT-Realtime-2.1 Mini on /v1/realtime, documented application-state retention is None and abuse-monitoring logs are generally retained 30 days unless approved controls apply. Realtime tracing is not currently EU data-residency compliant; tenant configuration is not authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -7156,10 +7179,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8331,6 +8352,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/moderations",
+            "observed_value": "The /v1/moderations endpoint is documented with no application-state retention and no abuse-monitoring retention; ZDR eligible. Applies to use of omni-moderation-latest at this endpoint; tenant eligibility and any separate upstream/downstream storage are not attested.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8358,10 +8388,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/guides/moderation",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8873,6 +8901,15 @@
             "locator": "Specifications > Platforms",
             "observed_value": "Claude API, Amazon Bedrock, Google Cloud, Microsoft Foundry and Claude Platform on AWS; region and tenant access untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+            "locator": "Model-specific data retention requirements > Claude Fable 5",
+            "observed_value": "Claude Fable 5 is a Covered Model requiring 30-day data retention and is not eligible for Zero Data Retention in the standard arrangement; express provider authorization may modify eligibility. Authenticated workspace configuration and platform-specific retention are not proven.",
+            "checked_on": "2026-10-14",
+            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8900,10 +8937,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/fable-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
