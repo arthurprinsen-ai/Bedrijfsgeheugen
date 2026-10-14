@@ -1883,7 +1883,8 @@
       ],
       "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
       "limitations": [
-        "Standard pricing >200K input tokens: USD 4 input and USD 18 output per million (versus USD 2/USD 12 at <=200K)"
+        "Standard pricing >200K input tokens: USD 4 input and USD 18 output per million (versus USD 2/USD 12 at <=200K)",
+        "Paid API training rules do not prove tenant billing, actual state retention, EU residency or preview entitlements."
       ],
       "governance": {
         "storage_residency": "EU option documented",
@@ -1899,7 +1900,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -1908,7 +1909,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -1916,11 +1917,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -1959,13 +1959,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms > Use Restrictions; Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Google Gemini API Additional Terms (effective 2026-03-23): Paid Services do not use prompts or responses to improve products and process them under a data processing addendum; limited abuse/security logging and international transient storage may apply. Unpaid Services outside stated EEA/Swiss/UK exception may use prompts and responses to improve products. For API clients in EEA, Switzerland or UK, Paid Services are required. Actual project billing status, data region, legal documents and runtime controls are not verified.",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Gemini Pro Preview > Versions and capability; ZDR > Paid training restriction, monitoring, Search/Maps grounding, Interactions API",
+            "observed_value": "Official Gemini 3.1 Pro Preview model supports stateless GenerateContent, Batch and tool-enabled inference. For paid Gemini Developer API use, requests are not used for product improvement, yet abuse-monitoring logs and tool-specific state persist; Search/Maps grounding logs for 30 days, cached content and Files API stored separately. Preview lifecycle and account entitlement not guaranteed.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "verified conditional Google Developer API supplier policy; not customer execution proof"
           }
         ],
         "provider_policy_evidence": {
@@ -2037,7 +2035,7 @@
       "id": "gemini-3.1-flash-lite",
       "provider": "Google",
       "tier": "economy",
-      "status": "preview",
+      "status": "active",
       "input_usd_m": 0.25,
       "output_usd_m": 1.5,
       "cached_input_usd_m": 0.025,
@@ -2073,7 +2071,10 @@
         "Vertex AI"
       ],
       "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
-      "limitations": [],
+      "limitations": [
+        "Paid API training rules do not prove tenant billing, actual state retention, EU residency or preview entitlements.",
+        "Earliest announced model shutdown 2027-05-07; migrate to Gemini 3.5 Flash-Lite."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -2088,7 +2089,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -2097,7 +2098,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -2105,11 +2106,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -2148,13 +2148,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms > Use Restrictions; Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Google Gemini API Additional Terms (effective 2026-03-23): Paid Services do not use prompts or responses to improve products and process them under a data processing addendum; limited abuse/security logging and international transient storage may apply. Unpaid Services outside stated EEA/Swiss/UK exception may use prompts and responses to improve products. For API clients in EEA, Switzerland or UK, Paid Services are required. Actual project billing status, data region, legal documents and runtime controls are not verified.",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Gemini 3.1 Flash-Lite > Stable version; Deprecations > earliest 2027-05-07; ZDR > Paid training and feature retention",
+            "observed_value": "Stable Gemini 3.1 Flash-Lite model; Google schedules its earliest shutdown on May 7, 2027 and recommends Gemini 3.5 Flash-Lite. Paid Gemini API excludes request content from product-improvement training but retains abuse-monitoring data; Interactions store=true, grounding and Files/caching have separate retention. No tenant paid-tier, residency or ZDR guarantee tested.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "verified conditional Google Developer API supplier policy; not customer execution proof"
           }
         ],
         "provider_policy_evidence": {
@@ -13186,7 +13184,9 @@
         "realtime voice/video agents"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Paid API training rules do not prove tenant billing, actual state retention, EU residency or preview entitlements.",
+        "Legacy Live Preview; recommended upgrade Gemini 3.8 Live."
       ],
       "scores": {
         "reasoning": 7,
@@ -13223,7 +13223,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -13232,7 +13232,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -13240,22 +13240,11 @@
           "status",
           "deployment",
           "pricing",
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-live-preview",
@@ -13307,6 +13296,14 @@
             "locator": "Model page / Versions and migration guidance",
             "observed_value": "Legacy Live API preview gemini-3.1-flash-live-preview; Google recommends newer Gemini 3.8 Live",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Gemini Live Preview > Versions/Legacy; ZDR > Live API SessionResumptionConfig; Training restriction",
+            "observed_value": "Official legacy Live Preview model remains in listed model directory but Google recommends Gemini 3.8 Live. Paid API requests do not improve Google products absent consent; Live API sessionResumption stores text, audio and video state for up to 24h when configured, and paid API abuse logs are a separate caveat. Preview availability and tenant data controls not verified.",
+            "checked_on": "2026-10-14",
+            "scope": "verified conditional Google Developer API supplier policy; not customer execution proof"
           }
         ],
         "provider_policy_evidence": {
