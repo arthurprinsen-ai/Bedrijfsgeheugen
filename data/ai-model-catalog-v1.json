@@ -3811,8 +3811,12 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://docs.cohere.com/v2/docs/command-a",
+        "last_specific_source_check": "2026-10-14",
+        "source_check_scope": "Official Command A page confirms 256K context, 8K output, API options and USD token price; customer governance unverified"
+      },
+      "max_output_tokens": 8000
     },
     {
       "id": "embed-4",
@@ -6289,7 +6293,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 131.072,
       "modalities": [
         "text"
       ],
@@ -6298,7 +6302,8 @@
         "edge/private inference"
       ],
       "limitations": [
-        "lower quality ceiling than larger frontier models"
+        "lower quality ceiling than larger frontier models",
+        "Open-weight deployment costs depend on runtime and hardware; no universal OpenAI-hosted token price verified"
       ],
       "scores": {
         "reasoning": 6,
@@ -6421,8 +6426,12 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
+        "last_specific_source_check": "2026-10-14",
+        "source_check_scope": "Official model page confirms 131072 context and max output, Apache 2.0 license and downloadable weights; pricing and tenant governance unverified"
+      },
+      "max_output_tokens": 131072
     },
     {
       "tier": "frontier",
