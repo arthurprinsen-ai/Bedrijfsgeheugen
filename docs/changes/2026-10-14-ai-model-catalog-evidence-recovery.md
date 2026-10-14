@@ -288,3 +288,20 @@ Four official Mistral per-model pages were read, with **model ID, modality-speci
 | `voxtral-small` | https://docs.mistral.ai/models/voxtral-small-25-07 | `voxtral-small-2507` | GA, Apache-2.0, audio input, 32K context, audio $0.004/min, text $0.10 input/$0.40 output per million tokens |
 
 Every entry retains `release_eligible=false`; tenant account access, executed commercial licensing, actual bill, regional processing and retention remain unverified. Model family names are not automatically valid API identifiers. Existing supplier freshness / governance / CI / protected merge controls remain untouched.
+
+
+## Seven Google Gemini exact-model pages: lifecycle and capabilities (2026-10-14)
+
+Official per-model developer documentation inspected, with exact model ID, API state (Stable/Preview/Deprecated), supported modalities and token limits. Model-page publication does not establish the account's API entitlement, EEA/UK terms, model billing tier or an enabled data-retention control.
+
+| Catalog model | Official Google model URL | Model-specific supplier observation |
+| --- | --- | --- |
+| `gemini-2.5-flash-lite` | https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite | Stable but access restricted to existing active users, not deprecated; 1,048,576 input/65,536 output; multimodal in/text out |
+| `gemini-3.1-pro-preview` | https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview | Preview, 1,048,576 input/65,536 output, multimodal in/text out and function calling |
+| `gemini-3.1-flash-lite` | https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite | Stable, 1,048,576 input/65,536 output, multimodal in/text out, Batch/Flex/Priority supported |
+| `gemini-3.8-flash` | https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash | Stable, 1,048,576 input/65,536 output, multimodal in/text out, preview computer-use capability |
+| `gemini-3.7-flash` | https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash | Deprecated; API routes automatically to gemini-3.8-flash, not an active unmodified backend |
+| `gemini-3-flash-preview` | https://ai.google.dev/gemini-api/docs/models/gemini-3-flash-preview | Preview model code, multimodal in/text out, 1,048,576 input/65,536 output |
+| `gemini-3.5-flash` | https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash | Deprecated; automatically routed to gemini-3.6-flash |
+
+Important distinctions: `gemini-2.5-flash-lite` remains listed as **not deprecated**, yet API access for newly created accounts is restricted; `gemini-3.7-flash` is deprecated and aliases 3.8 Flash; `gemini-3.5-flash` is deprecated and aliases 3.6 Flash. Do not certify these as independent active backends. All seven public model-page reviews are `release_eligible=false`, and pricing/tenant governance remain separately unverified until provider- and customer-specific checks are complete.
