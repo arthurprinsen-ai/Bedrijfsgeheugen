@@ -16265,11 +16265,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "customer-specific governance",
+          "commercial license terms and fees"
         ],
         "claim_evidence": [
           {
@@ -16299,6 +16301,15 @@
             "locator": "Usage > Transformers / vLLM / llama.cpp",
             "observed_value": "Self-hosting via Transformers, vLLM or llama.cpp as documented; hosted API not assumed",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+            "locator": "Official TII model card > License; Use this model > Transformers and self-hosting guidance",
+            "observed_value": "Official TII Falcon-H1/H1R model card lists falcon-llm-license, NOT Apache-2.0. Weights are distributed for self-hosting via Transformers/vLLM. Commercial licensing rights and any applicable fees require review of the actual license terms; tenancy, DPA, data retention and region are not provider-attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
+            "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
         ],
         "verification_notes": [
@@ -16331,6 +16342,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "falcon_license_research_20261014": {
+        "license_tag": "falcon-llm-license",
+        "source": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+        "checked_on": "2026-10-14",
+        "self_hosting_documented": true,
+        "commercial_terms_verified": false,
+        "provider_api_pricing_verified": false,
+        "tenant_controls_verified": false
       }
     },
     {
@@ -16405,11 +16425,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "customer-specific governance",
+          "commercial license terms and fees"
         ],
         "claim_evidence": [
           {
@@ -16439,6 +16461,15 @@
             "locator": "Model card > Use this model > Transformers",
             "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+            "locator": "Official TII model card > License; Use this model > Transformers and self-hosting guidance",
+            "observed_value": "Official TII Falcon-H1/H1R model card lists falcon-llm-license, NOT Apache-2.0. Weights are distributed for self-hosting via Transformers/vLLM. Commercial licensing rights and any applicable fees require review of the actual license terms; tenancy, DPA, data retention and region are not provider-attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
+            "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
         ]
       },
@@ -16468,6 +16499,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "falcon_license_research_20261014": {
+        "license_tag": "falcon-llm-license",
+        "source": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+        "checked_on": "2026-10-14",
+        "self_hosting_documented": true,
+        "commercial_terms_verified": false,
+        "provider_api_pricing_verified": false,
+        "tenant_controls_verified": false
       }
     },
     {
@@ -16543,11 +16583,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "customer-specific governance",
+          "commercial license terms and fees"
         ],
         "claim_evidence": [
           {
@@ -16577,6 +16619,15 @@
             "locator": "Model card > Use this model > Transformers",
             "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+            "locator": "Official TII model card > License; Use this model > Transformers and self-hosting guidance",
+            "observed_value": "Official TII Falcon-H1/H1R model card lists falcon-llm-license, NOT Apache-2.0. Weights are distributed for self-hosting via Transformers/vLLM. Commercial licensing rights and any applicable fees require review of the actual license terms; tenancy, DPA, data retention and region are not provider-attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
+            "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
         ]
       },
@@ -16606,6 +16657,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "falcon_license_research_20261014": {
+        "license_tag": "falcon-llm-license",
+        "source": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+        "checked_on": "2026-10-14",
+        "self_hosting_documented": true,
+        "commercial_terms_verified": false,
+        "provider_api_pricing_verified": false,
+        "tenant_controls_verified": false
       }
     },
     {
@@ -16681,11 +16741,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "customer-specific governance",
+          "commercial license terms and fees"
         ],
         "claim_evidence": [
           {
@@ -16715,6 +16777,15 @@
             "locator": "Model card > Use this model > Transformers",
             "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+            "locator": "Official TII model card > License; Use this model > Transformers and self-hosting guidance",
+            "observed_value": "Official TII Falcon-H1/H1R model card lists falcon-llm-license, NOT Apache-2.0. Weights are distributed for self-hosting via Transformers/vLLM. Commercial licensing rights and any applicable fees require review of the actual license terms; tenancy, DPA, data retention and region are not provider-attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
+            "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
         ]
       },
@@ -16744,6 +16815,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "falcon_license_research_20261014": {
+        "license_tag": "falcon-llm-license",
+        "source": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "checked_on": "2026-10-14",
+        "self_hosting_documented": true,
+        "commercial_terms_verified": false,
+        "provider_api_pricing_verified": false,
+        "tenant_controls_verified": false
       }
     },
     {
@@ -16819,11 +16899,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "customer-specific governance",
+          "commercial license terms and fees"
         ],
         "claim_evidence": [
           {
@@ -16853,6 +16935,15 @@
             "locator": "Model card > Use this model > Transformers",
             "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+            "locator": "Official TII model card > License; Use this model > Transformers and self-hosting guidance",
+            "observed_value": "Official TII Falcon-H1/H1R model card lists falcon-llm-license, NOT Apache-2.0. Weights are distributed for self-hosting via Transformers/vLLM. Commercial licensing rights and any applicable fees require review of the actual license terms; tenancy, DPA, data retention and region are not provider-attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
+            "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
         ]
       },
@@ -16882,6 +16973,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "falcon_license_research_20261014": {
+        "license_tag": "falcon-llm-license",
+        "source": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+        "checked_on": "2026-10-14",
+        "self_hosting_documented": true,
+        "commercial_terms_verified": false,
+        "provider_api_pricing_verified": false,
+        "tenant_controls_verified": false
       }
     },
     {
@@ -16957,11 +17057,13 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "customer-specific governance",
+          "commercial license terms and fees"
         ],
         "claim_evidence": [
           {
@@ -16991,6 +17093,15 @@
             "locator": "Model card > Use this model > Transformers",
             "observed_value": "Self-hosting through open model weights and Transformers; API hosting/provider terms not validated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+            "locator": "Official TII model card > License; Use this model > Transformers and self-hosting guidance",
+            "observed_value": "Official TII Falcon-H1/H1R model card lists falcon-llm-license, NOT Apache-2.0. Weights are distributed for self-hosting via Transformers/vLLM. Commercial licensing rights and any applicable fees require review of the actual license terms; tenancy, DPA, data retention and region are not provider-attested.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
+            "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
         ]
       },
@@ -17020,6 +17131,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "falcon_license_research_20261014": {
+        "license_tag": "falcon-llm-license",
+        "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+        "checked_on": "2026-10-14",
+        "self_hosting_documented": true,
+        "commercial_terms_verified": false,
+        "provider_api_pricing_verified": false,
+        "tenant_controls_verified": false
       }
     },
     {
@@ -17094,12 +17214,14 @@
         "verified_claims": [
           "model_id",
           "capabilities",
-          "deployment"
+          "deployment",
+          "governance"
         ],
         "not_verified": [
           "status",
           "pricing",
-          "governance"
+          "customer-specific governance",
+          "commercial license terms and fees"
         ],
         "claim_evidence": [
           {
@@ -17129,6 +17251,15 @@
             "locator": "Model card > Quickstart; vLLM Server",
             "observed_value": "Self-host using Transformers trust_remote_code or vLLM/Docker serving, including localhost endpoints; no managed-service availability proven",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Official TII model card > License; Use this model > Transformers and self-hosting guidance",
+            "observed_value": "Official TII Falcon-OCR model card lists Apache-2.0 license and downloadable weights. Self-hosted inference runs under the operator's infrastructure and its retention/region settings; license tag alone does not attest an enterprise DPA, ZDR, hosting contract, encryption or third-party services.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
+            "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
         ]
       },
@@ -17158,6 +17289,15 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+      },
+      "falcon_license_research_20261014": {
+        "license_tag": "apache-2.0",
+        "source": "https://huggingface.co/tiiuae/Falcon-OCR",
+        "checked_on": "2026-10-14",
+        "self_hosting_documented": true,
+        "commercial_terms_verified": false,
+        "provider_api_pricing_verified": false,
+        "tenant_controls_verified": false
       }
     }
   ],
