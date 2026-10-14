@@ -7370,7 +7370,27 @@
         "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_minute_tariff_review_20261014": {
+          "checked_on": "2026-10-14",
+          "model_source_url": "https://developers.openai.com/api/docs/models/gpt-live-1",
+          "provider_api_id_observed": "gpt-live-1",
+          "usd_per_minute": 0.05,
+          "customer_contract_verified": false,
+          "customer_runtime_verified": false,
+          "model_public_price_verified": true,
+          "automatic_recommendation_eligible": false
+        }
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "audio_minute",
+        "usd_per_minute": 0.05,
+        "billing_resolution": "second",
+        "provider_model_url": "https://developers.openai.com/api/docs/models/gpt-live-1",
+        "checked_on": "2026-10-14",
+        "additional_costs_or_conditions": "Backend Responses model and tools are billed separately",
+        "scope": "Public model-specific supplier tariff only; customer contract, account access, region and enabled controls not attested"
       }
     },
     {
@@ -15222,7 +15242,17 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_minute_tariff_review_20261014": {
+          "checked_on": "2026-10-14",
+          "model_source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+          "provider_api_id_observed": "voxtral-mini-2602",
+          "usd_per_minute": 0.003,
+          "customer_contract_verified": false,
+          "customer_runtime_verified": false,
+          "model_public_price_verified": true,
+          "automatic_recommendation_eligible": false
+        }
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15232,6 +15262,16 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "audio_minute",
+        "usd_per_minute": 0.003,
+        "billing_resolution": "provider duration accounting",
+        "provider_model_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+        "checked_on": "2026-10-14",
+        "additional_costs_or_conditions": "Other processing modes, contract entitlements, and tenant settings require separate verification",
+        "scope": "Public model-specific supplier tariff only; customer contract, account access, region and enabled controls not attested"
       }
     },
     {
@@ -15412,7 +15452,17 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "public_minute_tariff_review_20261014": {
+          "checked_on": "2026-10-14",
+          "model_source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+          "provider_api_id_observed": "voxtral-mini-transcribe-realtime-2602",
+          "usd_per_minute": 0.006,
+          "customer_contract_verified": false,
+          "customer_runtime_verified": false,
+          "model_public_price_verified": true,
+          "automatic_recommendation_eligible": false
+        }
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15422,6 +15472,16 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "unit": "audio_minute",
+        "usd_per_minute": 0.006,
+        "billing_resolution": "provider duration accounting",
+        "provider_model_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+        "checked_on": "2026-10-14",
+        "additional_costs_or_conditions": "Customer-region routing, transcription mode and account entitlement untested",
+        "scope": "Public model-specific supplier tariff only; customer contract, account access, region and enabled controls not attested"
       }
     },
     {
