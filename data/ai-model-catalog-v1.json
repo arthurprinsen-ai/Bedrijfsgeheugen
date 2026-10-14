@@ -4275,7 +4275,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
@@ -4285,15 +4285,15 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "status"
         ],
         "not_verified": [
           "contract-specific residency",
           "tenant entitlement",
           "ZDR retention and training controls by account",
           "executed customer DPA",
-          "governance",
-          "status"
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -4464,7 +4464,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
@@ -4474,15 +4474,15 @@
           "model_id",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "status"
         ],
         "not_verified": [
           "contract-specific residency",
           "tenant entitlement",
           "ZDR retention and training controls by account",
           "executed customer DPA",
-          "governance",
-          "status"
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -19805,13 +19805,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "customer-specific governance",
           "commercial license terms and fees",
-          "pricing"
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -20014,13 +20014,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "customer-specific governance",
           "commercial license terms and fees",
-          "pricing"
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -20222,13 +20222,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "customer-specific governance",
           "commercial license terms and fees",
-          "pricing"
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -20429,13 +20429,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "customer-specific governance",
           "commercial license terms and fees",
-          "pricing"
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -20637,13 +20637,13 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "customer-specific governance",
           "commercial license terms and fees",
-          "pricing"
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
@@ -20845,13 +20845,13 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment",
-          "governance"
+          "deployment"
         ],
         "not_verified": [
           "customer-specific governance",
           "commercial license terms and fees",
-          "pricing"
+          "pricing",
+          "governance"
         ],
         "claim_evidence": [
           {
