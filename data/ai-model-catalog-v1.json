@@ -50,7 +50,7 @@
       "input_usd_m": 5,
       "output_usd_m": 25,
       "cached_input_usd_m": 0.5,
-      "context_k": 1000,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -95,7 +95,32 @@
       "source_type": "official-provider",
       "pricing_source_verified_at": "2026-10-14",
       "pricing_source": "https://developers.openai.com/api/docs/pricing?tab=suite",
-      "pricing_tier": "standard_short_context"
+      "pricing_tier": "standard_short_context",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "gpt-6-sol",
@@ -105,7 +130,7 @@
       "input_usd_m": 1,
       "output_usd_m": 5,
       "cached_input_usd_m": 0.1,
-      "context_k": 1000,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -151,7 +176,32 @@
       "source_type": "official-provider",
       "pricing_source_verified_at": "2026-10-14",
       "pricing_source": "https://developers.openai.com/api/docs/pricing?tab=suite",
-      "pricing_tier": "standard_short_context"
+      "pricing_tier": "standard_short_context",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "gpt-6-luna",
@@ -161,7 +211,7 @@
       "input_usd_m": 0.05,
       "output_usd_m": 0.25,
       "cached_input_usd_m": 0.005,
-      "context_k": 1000,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -207,7 +257,32 @@
       "source_type": "official-provider",
       "pricing_source_verified_at": "2026-10-14",
       "pricing_source": "https://developers.openai.com/api/docs/pricing?tab=suite",
-      "pricing_tier": "standard_short_context"
+      "pricing_tier": "standard_short_context",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "gpt-5.6-sol",
@@ -1686,7 +1761,32 @@
       },
       "id": "gpt-6.1-sol",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+          "checked_at": "2026-10-14",
+          "value_tokens": 1050000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing_short_context": {
+          "source": "https://developers.openai.com/api/docs/pricing",
+          "checked_at": "2026-10-14",
+          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
