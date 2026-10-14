@@ -7152,8 +7152,8 @@
       "governance": {
         "storage_residency": "controlled by chosen deployment",
         "inference_residency": "controlled by chosen deployment",
-        "training_on_customer_data": "deployment-controlled",
-        "retention": "verify current product/contract",
+        "training_on_customer_data": "self-host deployment-controlled; OpenAI does not receive inference data",
+        "retention": "deployment-controlled; self-hosted inference, hosting-provider verification required",
         "zero_data_retention": "verify current product/contract",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
@@ -7180,12 +7180,11 @@
           "model_id",
           "capabilities",
           "status",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -7217,22 +7216,28 @@
           },
           {
             "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
+            "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+            "locator": "Privacy and safety > Privacy and data; Availability and licensing",
+            "observed_value": "For self-hosted gpt-oss-120b and gpt-oss-20b, OpenAI does not receive or process inference input or output unless it is explicitly shared with OpenAI or handled by a managed hosting partner. Model weights use Apache 2.0 subject to the gpt-oss usage policy. Retention, subprocessors, encryption and residency are controlled by the selected infrastructure or hosting partner, not attested for any customer here.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "supplier's open-weight distribution/data-processing baseline; customer cloud controls and provider agreements unverified"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+            "locator": "FAQ > Are these models free? / Can I access these models through the OpenAI API or ChatGPT?",
+            "observed_value": "gpt-oss weights are free to download and use under Apache 2.0 and the gpt-oss usage policy. OpenAI does not serve these models through its API, so OpenAI API token pricing is not applicable; GPU, storage and third-party inference hosting charges depend on the chosen deployment.",
+            "checked_on": "2026-10-14",
+            "scope": "specific open-weight model price model; external hosting rates and tenant operating costs unverified"
           }
         ],
         "provider_policy_evidence": {
-          "claim": "provider_data_handling_policy",
-          "url": "https://developers.openai.com/api/docs/guides/your-data",
-          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
-          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "claim": "open_weight_supplier_data_handling_baseline",
+          "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
           "checked_on": "2026-10-14",
-          "scope": "provider baseline; not a model deployment or customer contract attestation"
+          "observed_value": "For self-hosted gpt-oss-120b and gpt-oss-20b, OpenAI does not receive or process inference input or output unless it is explicitly shared with OpenAI or handled by a managed hosting partner. Model weights use Apache 2.0 subject to the gpt-oss usage policy. Retention, subprocessors, encryption and residency are controlled by the selected infrastructure or hosting partner, not attested for any customer here.",
+          "limitations": "Only applies to direct self-hosted gpt-oss usage; separate hosting-provider data-use and regional terms require independent review.",
+          "scope": "model-specific open-weight distribution, not customer hosting attestation"
         }
       },
       "supplier_audit": {
@@ -7264,7 +7269,14 @@
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "last_specific_source_check": "2026-10-14"
       },
-      "max_output_tokens": 131072
+      "max_output_tokens": 131072,
+      "pricing_deployment_research_20261014": {
+        "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+        "checked_on": "2026-10-14",
+        "pricing_model": "NO_OPENAI_API_TOKEN_PRICING_WEIGHTS_FREE",
+        "host_cost": "UNVERIFIED_DEPENDS_ON_CHOSEN_HOSTING",
+        "customer_runtime_verified": false
+      }
     },
     {
       "tier": "open-weight",
@@ -7307,8 +7319,8 @@
       "governance": {
         "storage_residency": "controlled by chosen deployment",
         "inference_residency": "controlled by chosen deployment",
-        "training_on_customer_data": "deployment-controlled",
-        "retention": "verify current product/contract",
+        "training_on_customer_data": "self-host deployment-controlled; OpenAI does not receive inference data",
+        "retention": "deployment-controlled; self-hosted inference, hosting-provider verification required",
         "zero_data_retention": "verify current product/contract",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
@@ -7335,12 +7347,11 @@
           "model_id",
           "capabilities",
           "status",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -7372,22 +7383,28 @@
           },
           {
             "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
+            "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+            "locator": "Privacy and safety > Privacy and data; Availability and licensing",
+            "observed_value": "For self-hosted gpt-oss-120b and gpt-oss-20b, OpenAI does not receive or process inference input or output unless it is explicitly shared with OpenAI or handled by a managed hosting partner. Model weights use Apache 2.0 subject to the gpt-oss usage policy. Retention, subprocessors, encryption and residency are controlled by the selected infrastructure or hosting partner, not attested for any customer here.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "supplier's open-weight distribution/data-processing baseline; customer cloud controls and provider agreements unverified"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+            "locator": "FAQ > Are these models free? / Can I access these models through the OpenAI API or ChatGPT?",
+            "observed_value": "gpt-oss weights are free to download and use under Apache 2.0 and the gpt-oss usage policy. OpenAI does not serve these models through its API, so OpenAI API token pricing is not applicable; GPU, storage and third-party inference hosting charges depend on the chosen deployment.",
+            "checked_on": "2026-10-14",
+            "scope": "specific open-weight model price model; external hosting rates and tenant operating costs unverified"
           }
         ],
         "provider_policy_evidence": {
-          "claim": "provider_data_handling_policy",
-          "url": "https://developers.openai.com/api/docs/guides/your-data",
-          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
-          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "claim": "open_weight_supplier_data_handling_baseline",
+          "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
           "checked_on": "2026-10-14",
-          "scope": "provider baseline; not a model deployment or customer contract attestation"
+          "observed_value": "For self-hosted gpt-oss-120b and gpt-oss-20b, OpenAI does not receive or process inference input or output unless it is explicitly shared with OpenAI or handled by a managed hosting partner. Model weights use Apache 2.0 subject to the gpt-oss usage policy. Retention, subprocessors, encryption and residency are controlled by the selected infrastructure or hosting partner, not attested for any customer here.",
+          "limitations": "Only applies to direct self-hosted gpt-oss usage; separate hosting-provider data-use and regional terms require independent review.",
+          "scope": "model-specific open-weight distribution, not customer hosting attestation"
         }
       },
       "supplier_audit": {
@@ -7420,7 +7437,14 @@
         "last_specific_source_check": "2026-10-14",
         "source_check_scope": "Official model page confirms 131072 context and max output, Apache 2.0 license and downloadable weights; pricing and tenant governance unverified"
       },
-      "max_output_tokens": 131072
+      "max_output_tokens": 131072,
+      "pricing_deployment_research_20261014": {
+        "url": "https://help.openai.com/en/articles/11870455-openai-open-weight-models-gpt-oss",
+        "checked_on": "2026-10-14",
+        "pricing_model": "NO_OPENAI_API_TOKEN_PRICING_WEIGHTS_FREE",
+        "host_cost": "UNVERIFIED_DEPENDS_ON_CHOSEN_HOSTING",
+        "customer_runtime_verified": false
+      }
     },
     {
       "tier": "frontier",
