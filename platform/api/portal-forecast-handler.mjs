@@ -2,10 +2,11 @@ import {resolveIdentityTenant} from '../read-models/portal-server-state.mjs';
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 const numeric=x=>typeof x==='number'&&Number.isFinite(x);
 const dates=items=>Array.isArray(items)&&items.length>0&&items.length<=120&&items.every(x=>x&&typeof x.date==='string'&&x.date.length<=32&&numeric(x.value));
-export function verifiedForecasts(projection){
+export function verifiedForecasts(projection,tenantId){
+ if(typeof tenantId!=='string'||!tenantId.trim())return [];
  const source=projection?.payload?.data||projection?.payload||projection?.data||{};
  const forecasts=Array.isArray(source?.forecasts)?source.forecasts:[];
- return forecasts.filter(f=>f&&f.verified===true&&f.validation?.status==='passed'&&f.validation?.tenantBound===true&&
+ return forecasts.filter(f=>f&&f.verified===true&&f.validation?.status==='passed'&&f.validation?.tenantBound===true&&f.tenantId===tenantId&&f.validation?.tenantId===tenantId&&
  typeof f.source==='string'&&f.source.trim()&&typeof f.model==='string'&&f.model.trim()&&
  typeof f.updatedAt==='string'&&!Number.isNaN(Date.parse(f.updatedAt))&&
  dates(f.history)&&dates(f.forecast)&&
@@ -29,7 +30,7 @@ export function createPortalForecastHandler({getUser,getCanonical}={}){
  try{
   const projection=await getCanonical(tenantId);
   if(!projection)return json({forecasts:[],status:'NO_CANONICAL_FORECASTS'});
-  return json({forecasts:verifiedForecasts(projection),status:'OK'});
+  return json({forecasts:verifiedForecasts(projection,tenantId),status:'OK'});
  }catch{return json({error:'FORECAST_SOURCE_UNAVAILABLE'},503)}
  };
 }
