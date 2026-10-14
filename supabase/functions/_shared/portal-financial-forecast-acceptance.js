@@ -21,7 +21,7 @@ const bounds=row=>{
  return forecast.every((f,i)=>low[i].date===f.date&&high[i].date===f.date
    &&low[i].value<=f.value&&f.value<=high[i].value);
 };
-export function eligibleFinancialForecast(row,expectedTenant){
+export function eligibleFinancialForecast(row,expectedTenant,now=Date.now()){
  if(!row||!text(expectedTenant)||row.tenant_id!==expectedTenant||row.verification_status!=='passed')return false;
  const review=row.independent_review||{},backtest=row.backtest||{};
  if(!text(row.verified_by)||!text(row.source_evidence_ref)||!text(row.source_name)||!text(row.model_version))return false;
@@ -29,7 +29,12 @@ export function eligibleFinancialForecast(row,expectedTenant){
    ||review.approved_by!==row.verified_by||!text(review.approval_evidence_ref)
    ||!text(review.backtest_evidence_ref)||review.financial_source_evidence_ref!==row.source_evidence_ref)return false;
  const verified=Date.parse(row.verified_at),source=Date.parse(row.source_updated_at);
- if(!Number.isFinite(verified)||!Number.isFinite(source)||source>verified)return false;
+ // A previously approved row must not outlive its source or review.
+ // `now` is injectable for deterministic tests; production always uses the current clock.
+ const maxAgeMs=30*24*60*60*1000;
+ if(!Number.isFinite(now)||!Number.isFinite(verified)||!Number.isFinite(source)
+   ||source>verified||verified>now||source>now
+   ||now-source>maxAgeMs||now-verified>maxAgeMs)return false;
  if(backtest.status!=='passed'||!text(backtest.method)||!Number.isInteger(backtest.holdout_count)
    ||backtest.holdout_count<3||backtest.holdout_count>120
    ||!finite(backtest.mae)||backtest.mae<0
