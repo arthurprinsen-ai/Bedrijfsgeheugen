@@ -18770,7 +18770,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
       "id": "amazon-nova-2-lite",
       "provider": "Amazon",
       "verification_evidence": {
@@ -18785,7 +18785,7 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
         "verified_claims": [
           "capabilities",
           "status",
@@ -18895,7 +18895,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -18927,7 +18927,16 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "exact_model_card_source_20261014": {
+          "checked_on": "2026-10-14",
+          "exact_model_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+          "official_bedrock_model_id": "amazon.nova-2-lite-v1:0",
+          "review_scope": "Published AWS individual model identity/status/endpoint; current regional tier prices, retention configuration and customer account entitlement not attested",
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19024,7 +19033,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
       "id": "amazon-nova-2-sonic",
       "provider": "Amazon",
       "verification_evidence": {
@@ -19039,7 +19048,7 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
         "verified_claims": [
           "capabilities",
           "model_id",
@@ -19138,7 +19147,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -19193,7 +19202,16 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "exact_model_card_source_20261014": {
+          "checked_on": "2026-10-14",
+          "exact_model_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+          "official_bedrock_model_id": "amazon.nova-2-sonic-v1:0",
+          "review_scope": "Published AWS individual model identity/status/endpoint; current regional tier prices, retention configuration and customer account entitlement not attested",
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -19510,7 +19528,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
       "id": "amazon-nova-pro",
       "provider": "Amazon",
       "verification_evidence": {
@@ -19525,7 +19543,7 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
         "verified_claims": [
           "capabilities",
           "model_id",
@@ -19630,7 +19648,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -19662,7 +19680,16 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "exact_model_card_source_20261014": {
+          "checked_on": "2026-10-14",
+          "exact_model_card_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+          "official_bedrock_model_id": "amazon.nova-pro-v1:0",
+          "review_scope": "Published AWS individual model identity/status/endpoint; current regional tier prices, retention configuration and customer account entitlement not attested",
+          "independent_six_claim_supplier_approval": false,
+          "customer_runtime_attested": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
