@@ -127,7 +127,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -230,7 +238,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -319,7 +335,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -416,7 +440,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -537,7 +569,15 @@
             "observed_value": "Anthropic API claude-opus-5-5; Bedrock anthropic.claude-opus-5-5; Google Cloud claude-opus-5-5; Microsoft Foundry claude-opus-5-5. Region and customer entitlement not confirmed.",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -671,7 +711,15 @@
             "observed_value": "Anthropic API claude-sonnet-5-5; Bedrock anthropic.claude-sonnet-5-5; Google Cloud claude-sonnet-5-5; Microsoft Foundry claude-sonnet-5-5. Region and customer entitlement not confirmed.",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -756,7 +804,15 @@
           "rate applicability across providers and processing modes"
         ],
         "claim_scope": "partial",
-        "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ."
+        "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ.",
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -841,7 +897,15 @@
           "rate applicability across providers and processing modes"
         ],
         "claim_scope": "partial",
-        "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ."
+        "evidence_note": "The official provider pricing page identifies the named model and published standard token prices; this is pricing evidence only. Batch, fast, residency and third-party platform prices may differ.",
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -932,7 +996,15 @@
         ],
         "claim_scope": "partial",
         "evidence_note": "Official model documentation lists Claude API alias claude-haiku-4-5, canonical snapshot claude-haiku-4-5-20251001, 200K context, $1 input/$5 output per million tokens; remains legacy, so does not imply current preferred or unrestricted availability.",
-        "official_lifecycle_source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+        "official_lifecycle_source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_evidence": {
         "source_url": "https://platform.claude.com/docs/en/about-claude/pricing",
@@ -1032,7 +1104,15 @@
             "locator": "All Gemini 3 models endpoints",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -1119,7 +1199,15 @@
             "locator": "All Gemini 3 models endpoints",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -1213,7 +1301,15 @@
             "locator": "Gemini 2.5 Flash-Lite: non-deprecated, but access limited to prior active users",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -2951,7 +3047,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3036,7 +3140,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3121,7 +3233,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3205,7 +3325,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3290,7 +3418,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3375,7 +3511,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3460,7 +3604,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3542,7 +3694,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3625,7 +3785,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3707,7 +3875,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3791,7 +3967,15 @@
             "locator": "Official all-models listing; human-facing name matched to catalog identifier",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3890,7 +4074,15 @@
             "observed_value": "Text embeddings; image/audio/video not supported",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -3982,7 +4174,15 @@
             "observed_value": "USD $0.02 per 1M input tokens",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4089,7 +4289,15 @@
             "observed_value": "Text and image classification; audio and video not supported",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4183,7 +4391,15 @@
             "observed_value": "Open-weight reasoning model",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4275,7 +4491,15 @@
             "observed_value": "Open-weight reasoning model",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://developers.openai.com/api/docs/guides/your-data",
+          "observed_value": "API inputs and outputs are not used to train models by default unless explicitly opted in; default abuse-monitoring logs may include customer content and are generally retained for up to 30 days, subject to exceptions.",
+          "limitations": "Endpoint, organization, storage region, and feature-specific retention eligibility must be verified independently.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4369,7 +4593,15 @@
             "locator": "Claude Fable 5 API name active; retirement not sooner than June 9 2027",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4463,7 +4695,15 @@
             "locator": "Model status table: active",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4556,7 +4796,15 @@
             "locator": "Model status table: active",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4649,7 +4897,15 @@
             "locator": "Model status table: active",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4728,7 +4984,15 @@
           "performance scores"
         ],
         "claim_scope": "partial",
-        "evidence_note": "Official provider page describes active legacy status; first-party standard pricing $3/$15 per 1M tokens; 1M context; platforms Claude API, Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; platform terms and governance not fully verified."
+        "evidence_note": "Official provider page describes active legacy status; first-party standard pricing $3/$15 per 1M tokens; 1M context; platforms Claude API, Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; platform terms and governance not fully verified.",
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4823,7 +5087,15 @@
             "locator": "Model status table and deprecation notice: deprecated Sep 30 2026, retirement Nov 30 2026",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://platform.claude.com/docs/en/build-with-claude/api-and-data-retention",
+          "observed_value": "Claude API commercial prompts and outputs are not used to train models without express permission; retention and zero-data-retention eligibility depend on feature, organization agreement and deployment platform.",
+          "limitations": "AWS Bedrock and Google Cloud may have different processor and retention rules; customer ZDR enablement cannot be inferred from this policy.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -4915,7 +5187,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5005,7 +5285,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5095,7 +5383,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5186,7 +5482,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5277,7 +5581,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5356,7 +5668,15 @@
             "observed_value": "USD 0.75 input / USD 3.75 output per 1M tokens through 2026-12-31; thereafter USD 1.50 / USD 7.50",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -5463,7 +5783,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5561,7 +5889,15 @@
             "locator": "Deprecated model code and model capabilities",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5651,7 +5987,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5742,7 +6086,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5832,7 +6184,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -5922,7 +6282,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -6012,7 +6380,15 @@
             "locator": "Gemini 3 Preview and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -6101,7 +6477,15 @@
             "locator": "Gemini 3 Preview and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -6192,7 +6576,15 @@
             "locator": "Gemini 3 Preview and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -6282,7 +6674,15 @@
             "locator": "Gemini 3 Preview and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -6374,7 +6774,15 @@
             "locator": "Gemini 3 Preview and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
@@ -6464,7 +6872,15 @@
             "locator": "Gemini 3 Stable and All Gemini 3 models tables",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://ai.google.dev/gemini-api/terms",
+          "observed_value": "For Gemini API Paid Services, Google does not use submitted prompts and responses to improve products; abuse monitoring can retain prompt and response data temporarily and processing may take place internationally.",
+          "limitations": "Paid-service status, billing, customer location, feature logging, Gemini API versus Vertex AI, and residency must be established for the specific customer.",
+          "checked_on": "2026-10-14",
+          "scope": "provider baseline; not a model deployment or customer contract attestation"
+        }
       }
     },
     {
