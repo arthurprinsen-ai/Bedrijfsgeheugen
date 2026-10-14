@@ -20200,7 +20200,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 8.192,
       "modalities": [
         "text"
       ],
@@ -20242,7 +20242,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
       "id": "amazon-titan-text-embeddings-v2",
       "provider": "Amazon",
       "verification_evidence": {
@@ -20257,7 +20257,7 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
         "verified_claims": [
           "capabilities",
           "model_id",
@@ -20267,7 +20267,9 @@
         "not_verified": [
           "pricing",
           "governance",
-          "current regional and tenant pricing"
+          "current regional and tenant pricing",
+          "current tenant region-specific pricing",
+          "customer deployment and governance"
         ],
         "claim_evidence": [
           {
@@ -20304,17 +20306,17 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
-            "locator": "Model Details > Model lifecycle",
-            "observed_value": "Active model on official AWS card; tenant access not checked",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "deployment",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
             "locator": "Programmatic Access > model and endpoint",
             "observed_value": "bedrock-runtime amazon.titan-embed-text-v2:0",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+            "locator": "Model Details > Model lifecycle; Programmatic Access",
+            "observed_value": "Active Amazon Bedrock model; 8192 input tokens, configurable 1024/512/256 output dimensions; model ID amazon.titan-embed-text-v2:0",
             "checked_on": "2026-10-14"
           }
         ],
@@ -20362,7 +20364,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -20372,7 +20374,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "AWS exact model card checked; current numerical regional pricing and tenant-specific permissions/settings not attested",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -20391,7 +20393,9 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+        "last_specific_source_check": "2026-10-14"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -20406,7 +20410,12 @@
         "checked_on": "2026-10-14",
         "observed_price": "Original AWS model launch publication lists Titan Text Embeddings V2 at USD 0.02 per million input tokens (USD 0.00002 per thousand). Historical reference only; unchanged 2026 price, AWS region and tenant billing unverified.",
         "current_tenant_price_verified": false
-      }
+      },
+      "embedding_dimensions": [
+        1024,
+        512,
+        256
+      ]
     },
     {
       "tier": "specialist",
@@ -20458,7 +20467,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
       "id": "amazon-titan-image-generator-g1-v2",
       "provider": "Amazon",
       "verification_evidence": {
@@ -20472,7 +20481,7 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "capabilities",
@@ -20482,7 +20491,9 @@
         "not_verified": [
           "pricing",
           "deployment",
-          "governance"
+          "governance",
+          "current tenant region-specific pricing",
+          "customer deployment and governance"
         ],
         "claim_evidence": [
           {
@@ -20528,8 +20539,8 @@
           {
             "claim": "status",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
-            "locator": "Model Details > lifecycle and EOL",
-            "observed_value": "Legacy label and June 30 2026 EOL date in model card; after stated date, do not route without authenticated status",
+            "locator": "Model Details > Model lifecycle; Programmatic Access",
+            "observed_value": "AWS model card states model end-of-life June 30 2026; Bedrock runtime model ID amazon.titan-image-generator-v2:0; region and tenant invocation must not be assumed",
             "checked_on": "2026-10-14"
           }
         ],
@@ -20574,7 +20585,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -20584,7 +20595,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "AWS exact model card checked; current numerical regional pricing and tenant-specific permissions/settings not attested",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -20605,7 +20616,9 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+        "last_specific_source_check": "2026-10-14"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -20668,7 +20681,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
       "id": "amazon-titan-multimodal-embeddings-g1",
       "provider": "Amazon",
       "verification_evidence": {
@@ -20683,7 +20696,7 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
         "verified_claims": [
           "capabilities",
           "model_id",
@@ -20692,7 +20705,9 @@
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "governance",
+          "current tenant region-specific pricing",
+          "customer deployment and governance"
         ],
         "claim_evidence": [
           {
@@ -20729,17 +20744,17 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
-            "locator": "Model Details > Model lifecycle",
-            "observed_value": "Active model card; tenant access not checked",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "deployment",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
             "locator": "Programmatic Access > model and endpoint",
             "observed_value": "bedrock-runtime amazon.titan-embed-image-v1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+            "locator": "Model Details > Model lifecycle; Programmatic Access",
+            "observed_value": "Active AWS model card with bedrock-runtime model ID amazon.titan-embed-image-v1; separate docs list text and image embeddings with 256/384/1024 dimensions",
             "checked_on": "2026-10-14"
           }
         ],
@@ -20781,7 +20796,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -20791,7 +20806,7 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "review_note": "AWS exact model card checked; current numerical regional pricing and tenant-specific permissions/settings not attested",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -20812,7 +20827,9 @@
           "deployment",
           "governance"
         ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+        "last_specific_source_check": "2026-10-14"
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -20821,7 +20838,12 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
-      }
+      },
+      "embedding_dimensions": [
+        256,
+        384,
+        1024
+      ]
     },
     {
       "id": "falcon-h1-0.5b-instruct",
