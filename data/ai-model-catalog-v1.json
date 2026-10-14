@@ -10611,7 +10611,7 @@
     {
       "tier": "preview",
       "status": "preview",
-      "input_usd_m": 0.75,
+      "input_usd_m": 3,
       "output_usd_m": 12,
       "cached_input_usd_m": null,
       "context_k": null,
@@ -10777,8 +10777,19 @@
         "source": "https://ai.google.dev/gemini-api/docs/pricing",
         "checked_at": "2026-10-14",
         "details": "Shared paid Standard table: USD 0.75/1M text input, USD 3.00/1M audio input, USD 1.00/1M image/video input, USD 4.50/1M text output and USD 12.00/1M audio output; also published per-minute equivalents.",
-        "note": "Root input/output rates represent stated primary audio or video modality when applicable; modality-specific receipt and provider bill are authoritative",
+        "note": "Root prices represent AUDIO input/output; modality-specific rates in pricing_modalities supersede root prices for text, image and video. Tenant billing not verified.",
         "customer_billing_not_verified": true
+      },
+      "pricing_modalities": {
+        "unit": "USD per 1M tokens",
+        "mode": "Standard paid",
+        "text_input": 0.75,
+        "audio_input": 3,
+        "image_video_input": 1,
+        "text_output": 4.5,
+        "audio_output": 12,
+        "pricing_source": "https://ai.google.dev/gemini-api/docs/pricing",
+        "checked_on": "2026-10-14"
       }
     },
     {
