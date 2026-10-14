@@ -375,3 +375,19 @@ Three Cohere official product/model guides independently inspected. API model id
 | `embed-multilingual-v3.0` | https://docs.cohere.com/docs/cohere-embed | Embed Multilingual v3.0 is a distinct embedding-family ID; model documentation lists multilingual text embeddings; no reliable per-model current dollar rate inferred from an older Vault instance price |
 
 No claim of customer-governance enablement, provider account credentials, agreed Model Vault billing, region, or full source acceptance has been made. Review metadata remains `release_eligible=false`; incomplete tariff fields remain explicitly unverified rather than filled by guesses.
+
+
+## Six remaining Gemini model-specific developer page reviews (2026-10-14)
+
+Six Google-owned exact model documentation pages were inspected for model codes, documented audio/video output modality, and API scope. In particular, the canonical Gemini Omni Flash page is `/models/gemini-omni-flash`, but its **API code is `gemini-omni-1.1-flash`**; a nonexistent URL made directly from the model ID is not proof of an absent model. Google's Gemini Omni 1.1 is for video generation/editing via Interactions and **not** a generic text completion.
+
+| Catalog model | Official Google page | Specific public model fact |
+| --- | --- | --- |
+| `gemini-3.6-flash` | https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash | Stable 1,048,576 input/65,536 output token multimodal text-generation model, model code exact |
+| `gemini-3.8-flash-lite-tts` | https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts | High-throughput TTS, 101 languages, suggested migration from Gemini 3.1 Flash TTS preview; schema WAV default differs from old PCM |
+| `gemini-3.8-flash-tts` | https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-tts | Higher-fidelity TTS, 130 languages, different usage/cost basis from Flash-Lite TTS |
+| `gemini-3.8-live` | https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live | Native live multimodal conversation model; not the ordinary Flash text endpoint |
+| `gemini-3.8-live-extended-thinking` | https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking | Realtime Live Extended Thinking variant; reasoning and multimodal session applicability depends on endpoint |
+| `gemini-omni-1.1-flash` | https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash | Stable Gemini Omni Flash 1.1 video generation/editing and extension with native audio; official model code gemini-omni-1.1-flash (page URL is not model code), Interactions API |
+
+Published model availability, preview or stable labels do not prove account activation, regional entitlement or customer retention controls. Distinct audio/video usage tariffs are not inferable from ordinary Gemini text-token pricing. No customer data or contract was accessed; each `independent_model_source_review_20261014` is `release_eligible=false`.
