@@ -16615,11 +16615,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
-          "governance"
+          "governance",
+          "current region/service-tier billing price"
         ],
         "claim_evidence": [
           {
@@ -16659,6 +16660,16 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
+            "locator": "Amazon Nova models pricing table > amazon nova pro > price per 1,000 input and output tokens",
+            "observed_value": "AWS published reference rates for amazon-nova-pro: USD 0.800 per 1 million input tokens and USD 3.20 per 1 million output tokens in its Nova on-demand comparison. Verify actual current region/service-tier/contract prices from AWS Bedrock pricing or Price List API before using these figures in a customer quote.",
+            "checked_on": "2026-10-14",
+            "scope": "Official AWS published indicative standard on-demand reference, not live region-specific price/contract readback; AWS Builder September 2026 public reference cross-check",
+            "verification_status": "HISTORICAL_OFFICIAL_RATE_REFERENCE_CURRENT_REGION_PRICE_UNVERIFIED",
+            "supporting_source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet"
           }
         ],
         "provider_policy_evidence": {
@@ -16714,6 +16725,14 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "aws_reference_price_20261014": {
+        "input_usd_per_million": 0.8,
+        "output_usd_per_million": 3.2,
+        "reference_source": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
+        "checked_on": "2026-10-14",
+        "scope": "historical baseline; not guaranteed live price",
+        "customer_region_verified": false
       }
     },
     {
@@ -16786,11 +16805,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
-          "governance"
+          "governance",
+          "current region/service-tier billing price"
         ],
         "claim_evidence": [
           {
@@ -16830,6 +16850,16 @@
             "locator": "Programmatic Access > Model ID and geo inference IDs",
             "observed_value": "AWS Bedrock InvokeModel and Converse APIs, bedrock-runtime; geo IDs in US/EU/APAC; actual AWS region and tenant entitlement untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
+            "locator": "Amazon Nova models pricing table > amazon nova lite > price per 1,000 input and output tokens",
+            "observed_value": "AWS published reference rates for amazon-nova-lite: USD 0.060 per 1 million input tokens and USD 0.24 per 1 million output tokens in its Nova on-demand comparison. Verify actual current region/service-tier/contract prices from AWS Bedrock pricing or Price List API before using these figures in a customer quote.",
+            "checked_on": "2026-10-14",
+            "scope": "Official AWS published indicative standard on-demand reference, not live region-specific price/contract readback; AWS Builder September 2026 public reference cross-check",
+            "verification_status": "HISTORICAL_OFFICIAL_RATE_REFERENCE_CURRENT_REGION_PRICE_UNVERIFIED",
+            "supporting_source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet"
           }
         ],
         "provider_policy_evidence": {
@@ -16887,6 +16917,14 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "aws_reference_price_20261014": {
+        "input_usd_per_million": 0.06,
+        "output_usd_per_million": 0.24,
+        "reference_source": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
+        "checked_on": "2026-10-14",
+        "scope": "historical baseline; not guaranteed live price",
+        "customer_region_verified": false
       }
     },
     {
@@ -16958,11 +16996,12 @@
           "capabilities",
           "model_id",
           "status",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
-          "governance"
+          "governance",
+          "current region/service-tier billing price"
         ],
         "claim_evidence": [
           {
@@ -17002,6 +17041,16 @@
             "locator": "Programmatic Access and supported APIs",
             "observed_value": "AWS Bedrock InvokeModel/Converse in bedrock-runtime, geo inference US/EU; tenant and region availability not authenticated",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
+            "locator": "Amazon Nova models pricing table > amazon nova micro > price per 1,000 input and output tokens",
+            "observed_value": "AWS published reference rates for amazon-nova-micro: USD 0.035 per 1 million input tokens and USD 0.14 per 1 million output tokens in its Nova on-demand comparison. Verify actual current region/service-tier/contract prices from AWS Bedrock pricing or Price List API before using these figures in a customer quote.",
+            "checked_on": "2026-10-14",
+            "scope": "Official AWS published indicative standard on-demand reference, not live region-specific price/contract readback; AWS Builder September 2026 public reference cross-check",
+            "verification_status": "HISTORICAL_OFFICIAL_RATE_REFERENCE_CURRENT_REGION_PRICE_UNVERIFIED",
+            "supporting_source": "https://builder.aws.com/content/3JMGosWc2bn6FL0I2tlUWLOq2ZQ/know-your-models-amazon-bedrock-cheat-sheet"
           }
         ],
         "provider_policy_evidence": {
@@ -17059,6 +17108,14 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "aws_reference_price_20261014": {
+        "input_usd_per_million": 0.035,
+        "output_usd_per_million": 0.14,
+        "reference_source": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/",
+        "checked_on": "2026-10-14",
+        "scope": "historical baseline; not guaranteed live price",
+        "customer_region_verified": false
       }
     },
     {
