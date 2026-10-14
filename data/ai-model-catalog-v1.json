@@ -5536,6 +5536,20 @@
             "locator": "Realtime and audio generation models > gpt-realtime-2.1-mini",
             "observed_value": "Audio input USD 10, cached 0.30, output USD 20 per 1M tokens; text input USD 0.60, output USD 2.40",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
+            "locator": "Modalities > Text/Image/Audio/Video",
+            "observed_value": "Text input/output; image input; audio input/output; video unsupported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
+            "locator": "Endpoints > Realtime",
+            "observed_value": "Realtime endpoint v1/realtime listed, actual account permission untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -5558,11 +5572,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5669,6 +5681,20 @@
             "locator": "Transcription models > gpt-realtime-translate",
             "observed_value": "Estimated USD 0.034 per minute",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+            "locator": "Model summary > Modalities",
+            "observed_value": "Streaming speech-to-speech translation; audio input/output and text output; priced by audio duration",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+            "locator": "Endpoints > Realtime translation",
+            "observed_value": "Dedicated realtime translation endpoint v1/realtime/translations; tenant access untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -5691,11 +5717,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5803,6 +5827,20 @@
             "locator": "Transcription models > gpt-live-transcribe",
             "observed_value": "Estimated USD 0.017 per minute",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+            "locator": "Model summary; Modalities; Features",
+            "observed_value": "Low-latency streaming audio transcription, audio input and text output, image and video unsupported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+            "locator": "Endpoints > Realtime transcription",
+            "observed_value": "Realtime transcription sessions endpoint v1/realtime/transcription_sessions; entitlement untested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -5825,11 +5863,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
