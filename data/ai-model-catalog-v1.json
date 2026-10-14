@@ -47,9 +47,9 @@
       "provider": "OpenAI",
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": 5,
-      "output_usd_m": 25,
-      "cached_input_usd_m": 0.5,
+      "input_usd_m": 10,
+      "output_usd_m": 50,
+      "cached_input_usd_m": 1,
       "context_k": 1050,
       "modalities": [
         "text",
@@ -94,7 +94,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "pricing_source_verified_at": "2026-10-14",
-      "pricing_source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
       "pricing_tier": "standard_short_context",
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
@@ -112,7 +112,13 @@
         "pricing_short_context": {
           "source": "https://developers.openai.com/api/docs/pricing",
           "checked_at": "2026-10-14",
-          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 10,
+          "cached_input": 1,
+          "output": 50
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
@@ -120,6 +126,19 @@
         "provider_contracts": {
           "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
+      },
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 10,
+          "cached_input_usd_m": 1,
+          "output_usd_m": 50
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 5,
+          "cached_input_usd_m": 0.5,
+          "output_usd_m": 25
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
       }
     },
     {
@@ -127,9 +146,9 @@
       "provider": "OpenAI",
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": 1,
-      "output_usd_m": 5,
-      "cached_input_usd_m": 0.1,
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.2,
       "context_k": 1050,
       "modalities": [
         "text",
@@ -175,7 +194,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "pricing_source_verified_at": "2026-10-14",
-      "pricing_source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
       "pricing_tier": "standard_short_context",
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
@@ -193,7 +212,13 @@
         "pricing_short_context": {
           "source": "https://developers.openai.com/api/docs/pricing",
           "checked_at": "2026-10-14",
-          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 2,
+          "cached_input": 0.2,
+          "output": 10
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
@@ -201,6 +226,19 @@
         "provider_contracts": {
           "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
+      },
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 2,
+          "cached_input_usd_m": 0.2,
+          "output_usd_m": 10
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 1,
+          "cached_input_usd_m": 0.1,
+          "output_usd_m": 5
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
       }
     },
     {
@@ -208,9 +246,9 @@
       "provider": "OpenAI",
       "tier": "economy",
       "status": "active",
-      "input_usd_m": 0.05,
-      "output_usd_m": 0.25,
-      "cached_input_usd_m": 0.005,
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.5,
+      "cached_input_usd_m": 0.01,
       "context_k": 1050,
       "modalities": [
         "text",
@@ -256,7 +294,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "pricing_source_verified_at": "2026-10-14",
-      "pricing_source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
       "pricing_tier": "standard_short_context",
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
@@ -274,7 +312,13 @@
         "pricing_short_context": {
           "source": "https://developers.openai.com/api/docs/pricing",
           "checked_at": "2026-10-14",
-          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 0.1,
+          "cached_input": 0.01,
+          "output": 0.5
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
@@ -282,6 +326,19 @@
         "provider_contracts": {
           "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
+      },
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 0.1,
+          "cached_input_usd_m": 0.01,
+          "output_usd_m": 0.5
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 0.05,
+          "cached_input_usd_m": 0.005,
+          "output_usd_m": 0.25
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
       }
     },
     {
@@ -374,7 +431,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude/opus",
+      "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -388,7 +445,39 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_tier": "claude_api_direct",
+      "pricing_source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+      "pricing_source_verified_at": "2026-10-14",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1000000
+        },
+        "pricing": {
+          "source": "https://platform.claude.com/docs/en/models/opus-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 4,
+          "cache_read": 0.2,
+          "output": 20,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "claude-sonnet-5-5",
@@ -397,7 +486,7 @@
       "status": "active",
       "input_usd_m": 2,
       "output_usd_m": 10,
-      "cached_input_usd_m": 0.2,
+      "cached_input_usd_m": 0.1,
       "context_k": 1000,
       "modalities": [
         "text",
@@ -430,7 +519,7 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude-sonnet-5-5",
+      "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -444,7 +533,39 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "pricing_tier": "claude_api_direct",
+      "pricing_source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+      "pricing_source_verified_at": "2026-10-14",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1000000
+        },
+        "pricing": {
+          "source": "https://platform.claude.com/docs/en/models/sonnet-5-5/overview",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 2,
+          "cache_read": 0.1,
+          "output": 10,
+          "unit": "USD per 1 million tokens"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "claude-sonnet-5",
@@ -1227,7 +1348,7 @@
       "deployment": [
         "xAI API"
       ],
-      "source": "https://docs.x.ai/developers/models",
+      "source": "https://docs.x.ai/developers/models/grok-4.7",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -1241,7 +1362,40 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.x.ai/developers/models/grok-4.7",
+      "pricing_tier": "us_east_base_under_200k",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.x.ai/developers/models/grok-4.7",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://docs.x.ai/developers/models/grok-4.7",
+          "checked_at": "2026-10-14",
+          "value_tokens": 500000,
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "pricing": {
+          "source": "https://docs.x.ai/developers/models/grok-4.7",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 2,
+          "cached_input": 0.5,
+          "output": 6,
+          "unit": "USD per 1 million tokens",
+          "note": "Tier and region dependent; higher context may cost more."
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "grok-4.6",
@@ -1778,7 +1932,13 @@
         "pricing_short_context": {
           "source": "https://developers.openai.com/api/docs/pricing",
           "checked_at": "2026-10-14",
-          "status": "REQUIRES_TIER_AND_MODE_CHECK"
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "processing_tier": "Standard",
+          "context_band": "short",
+          "unit": "USD per 1 million tokens",
+          "input": 2,
+          "cached_input": 0.1,
+          "output": 10
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
@@ -1786,6 +1946,22 @@
         "provider_contracts": {
           "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
+      },
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_source": "https://developers.openai.com/api/docs/pricing",
+      "pricing_tier": "standard_short_context",
+      "pricing_variants": {
+        "standard_short_context": {
+          "input_usd_m": 2,
+          "cached_input_usd_m": 0.1,
+          "output_usd_m": 10
+        },
+        "batch_flex_short_context": {
+          "input_usd_m": 1,
+          "cached_input_usd_m": 0.05,
+          "output_usd_m": 5
+        },
+        "notes": "Regional processing and longer context may cost extra; pricing depends on service tier and region."
       }
     },
     {
@@ -2908,10 +3084,10 @@
     {
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.75,
+      "output_usd_m": 3.75,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 1049,
       "modalities": [
         "text",
         "vision"
@@ -2957,7 +3133,40 @@
       },
       "id": "gemini-3.8-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models"
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
+      "model_source_verified_at": "2026-10-14",
+      "context_tokens": 1048576,
+      "pricing_source": "https://ai.google.dev/gemini-api/docs/latest-model",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "introductory_2026",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://ai.google.dev/gemini-api/docs/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED"
+        },
+        "context_window": {
+          "source": "https://ai.google.dev/gemini-api/docs/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 1048576
+        },
+        "pricing": {
+          "source": "https://ai.google.dev/gemini-api/docs/latest-model",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 0.75,
+          "output": 3.75,
+          "unit": "USD per 1 million tokens",
+          "note": "Introductory pricing through the end of 2026; check conditions before quoting."
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
