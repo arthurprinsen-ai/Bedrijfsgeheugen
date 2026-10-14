@@ -22,6 +22,8 @@ export function classifySupplierClaim(evidence, claim) {
   const status=String(r.verification_status??'');
   const locator=String(r.locator??'');
   return scope.includes('NOT model-specific')||
+   // A stateless Responses endpoint is API behavior, not model-wide governance evidence.
+   (claim==='governance'&&scope.includes('endpoint-only supplier fact'))||
    status==='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'||
    // DeepSeek API platform terms apply to the service, not either exact model.
    (claim==='governance'&&(
