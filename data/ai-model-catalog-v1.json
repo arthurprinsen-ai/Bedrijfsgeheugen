@@ -4167,7 +4167,7 @@
     },
     {
       "tier": "specialist",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4181,7 +4181,8 @@
         "document structure"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral lists this model under deprecated/retired; use mistral-ocr-4-1 for new workloads where appropriate."
       ],
       "scores": {
         "reasoning": 3,
@@ -4215,7 +4216,18 @@
       },
       "id": "mistral-ocr-4.0",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models",
+      "selection_eligible": false,
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://docs.mistral.ai/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_OR_RETIRED",
+          "suggested_alternative": "mistral-ocr-4-1"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -4685,7 +4697,7 @@
     },
     {
       "tier": "open-weight",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4699,7 +4711,8 @@
         "formal verification"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral lists this model under deprecated/retired; verify availability before any new deployment."
       ],
       "scores": {
         "reasoning": 8,
@@ -4734,7 +4747,18 @@
       },
       "id": "leanstral-1.5",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models",
+      "selection_eligible": false,
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://docs.mistral.ai/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_OR_RETIRED",
+          "suggested_alternative": null
+        }
+      }
     },
     {
       "tier": "open-weight",
@@ -4790,7 +4814,7 @@
     },
     {
       "tier": "open-weight",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4802,7 +4826,8 @@
         "long-context open-weight text"
       ],
       "limitations": [
-        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment",
+        "Mistral lists this model under deprecated/retired; use zai-glm-5.3 for new workloads where appropriate."
       ],
       "scores": {
         "reasoning": 8,
@@ -4837,7 +4862,18 @@
       },
       "id": "zai-glm-5.2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models",
+      "selection_eligible": false,
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://docs.mistral.ai/models",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_OR_RETIRED",
+          "suggested_alternative": "zai-glm-5.3"
+        }
+      }
     },
     {
       "tier": "specialist",
