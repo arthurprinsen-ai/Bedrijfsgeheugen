@@ -73,3 +73,8 @@ test('signed DPA requires independent authenticated contract vault check',()=>{
  assert.match(source,/SIGNED_CONTRACT_NOT_AUTHENTICATED/);
  assert.match(source,/receipt\.signature_valid!==true/);
 });
+
+test('contract vault proof is bound to the exact model identity',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/receipt\.model_id!==r\.model_id/);
+});
