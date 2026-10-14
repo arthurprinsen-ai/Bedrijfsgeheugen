@@ -87,3 +87,20 @@ test('uncertainty bands must align by period and enclose forecast point',()=>{
   {...acceptable,high:[point('2026-11',100)]}
  ])assert.deepEqual(verifiedForecasts({forecasts:[f]},'tenant42',{now}),[]);
 });
+
+test('review attestation survives the authenticated API boundary and enables the chart',async()=>{
+ const {renderForecastPanel}=await import('../portal/forecast-panel.mjs');
+ const h=createPortalForecastHandler({
+  getUser:async()=>({id:'user42',app_metadata:{tenantId:'tenant42'}}),
+  getCanonical:async()=>({tenantId:'tenant42',forecasts:[valid]})
+ });
+ const response=await h(new Request('https://example.test/api/portal-forecasts'));
+ assert.equal(response.status,200);
+ const data=await response.json();
+ assert.equal(data.forecasts.length,1);
+ const selected=data.forecasts[0];
+ assert.equal(selected.tenantId,'tenant42');
+ assert.deepEqual(selected.validation,{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'});
+ assert.match(renderForecastPanel({forecasts:data.forecasts},'today'),/<svg /);
+ assert.doesNotMatch(renderForecastPanel({forecasts:[{...selected,validation:undefined}]},'today'),/<svg /);
+});
