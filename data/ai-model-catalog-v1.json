@@ -13360,10 +13360,10 @@
     {
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "input_usd_m": 1.5,
+      "output_usd_m": 7.5,
+      "cached_input_usd_m": 0.15,
+      "context_k": 256,
       "modalities": [
         "text",
         "vision"
@@ -13388,8 +13388,8 @@
       },
       "eu_processing": null,
       "eu_storage": null,
-      "open_weights": false,
-      "self_host": false,
+      "open_weights": true,
+      "self_host": true,
       "jurisdiction": "EU/France",
       "deployment": [
         "Mistral API"
@@ -13409,7 +13409,7 @@
       },
       "id": "mistral-medium-3.5",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -13421,11 +13421,11 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "status",
           "model_id",
+          "status",
           "pricing",
           "capabilities",
           "deployment"
@@ -13435,41 +13435,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "locator": "Header / API ID",
-            "observed_value": "mistral-medium-3-5; catalog name mistral-medium-3.5 is not necessarily the API model ID",
-            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "locator": "Price /M Tokens",
-            "observed_value": "USD 1.50 per million input tokens, USD 7.50 per million output tokens",
-            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "locator": "Features, Context",
-            "observed_value": "256K context; multimodal model; function calling, structured outputs and document QnA",
-            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "locator": "Features endpoints",
-            "observed_value": "Chat Completions, Conversations, Batch and Agents interfaces listed",
-            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "locator": "Model heading",
-            "observed_value": "GA; version 26.04",
-            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://legal.mistral.ai/terms/commercial-terms-of-service/",
             "locator": "Commercial Terms of Service, effective 25 September 2026 > 4.2 Training; 4.3 Labs or Preview Models",
@@ -13478,6 +13443,41 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Model heading; version badge",
+            "observed_value": "Mistral Medium 3.5 v26.04",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Release date and GA badge",
+            "observed_value": "GA release April 28, 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Price > tokens (per 1M)",
+            "observed_value": "Standard input USD 1.50 and output USD 7.50 per million tokens; cached input USD 0.15 confirmed by official Mistral pricing table",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Description and Context",
+            "observed_value": "256K context; multimodal frontier agent/coding model; open weights under Modified MIT license",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+            "locator": "Features > Chat Completions, Agents, Batching",
+            "observed_value": "Chat Completions, Agents & Conversations, Batching, document QnA and downloadable open weights; specific tenant endpoints not tested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -13510,7 +13510,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -13532,7 +13532,9 @@
         "evidence_accounting_date": "2026-10-14",
         "duplicate_model_alias": true,
         "canonical_model_id": "mistral-medium-3-5",
-        "model_variant_selection_required": false
+        "model_variant_selection_required": false,
+        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+        "last_specific_source_check": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
