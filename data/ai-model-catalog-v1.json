@@ -1624,11 +1624,12 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "evidence_note": "Official model documentation lists Claude API alias claude-haiku-4-5, canonical snapshot claude-haiku-4-5-20251001, 200K context, $1 input/$5 output per million tokens; remains legacy, so does not imply current preferred or unrestricted availability.",
         "official_lifecycle_source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "provider_policy_evidence": {
@@ -1686,7 +1687,7 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
@@ -1801,7 +1802,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1810,7 +1811,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -1818,10 +1819,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -1979,7 +1981,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1988,7 +1990,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -1996,10 +1998,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing",
+          "pricing"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -2160,7 +2163,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2169,7 +2172,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "verified_claims": [
@@ -2177,10 +2180,11 @@
           "status",
           "capabilities",
           "pricing",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -5503,12 +5507,12 @@
         },
         "review_note": "Six supplier/public license facts documented, but tenant-specific runtime, contract, region and governance controls are not attested.",
         "claim_evidence_classification": {
-          "model_id": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "status": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "pricing": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "capabilities": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "deployment": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "governance": "PUBLIC_LICENSE_ONLY_CUSTOMER_UNVERIFIED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "model_variant_selection_required": false,
@@ -5765,12 +5769,12 @@
         },
         "review_note": "Concrete Qwen3-32B public model details evidenced. Qwen3-8B is a separate archived alternative, not the catalog model. Customer deployment/contract controls still unverified.",
         "claim_evidence_classification": {
-          "model_id": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "status": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "pricing": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "capabilities": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "deployment": "OFFICIAL_MODEL_SOURCE_RECORDED",
-          "governance": "PUBLIC_LICENSE_ONLY_CUSTOMER_UNVERIFIED"
+          "model_id": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
         "model_variant_selection_required": false,
@@ -6731,7 +6735,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6911,7 +6915,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7091,7 +7095,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -8300,7 +8304,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -8851,7 +8855,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -9095,7 +9099,7 @@
       "provider": "Anthropic",
       "source": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -9104,7 +9108,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
         "verified_claims": [
@@ -9112,10 +9116,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -9275,7 +9280,7 @@
       "provider": "Anthropic",
       "source": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
       "verification_evidence": {
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -9284,7 +9289,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
         "verified_claims": [
@@ -9292,10 +9297,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -9467,11 +9473,12 @@
           "deployment_platforms",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
-        "not_verified": [],
-        "claim_scope": "full",
+        "claim_scope": "partial",
         "evidence_note": "Official provider page describes active legacy status; first-party standard pricing $3/$15 per 1M tokens; 1M context; platforms Claude API, Bedrock, Google Cloud, Microsoft Foundry, Claude Platform on AWS; platform terms and governance not fully verified.",
         "provider_policy_evidence": {
           "claim": "provider_data_handling_policy",
@@ -9528,7 +9535,7 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
         ],
-        "evidence_status": "FULLY_VERIFIED",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "governance_baseline_classification": {
           "type": "PROVIDER_POLICY_OBSERVED",
           "source_url": "https://platform.claude.com/docs/en/manage-claude/api-and-data-retention",
@@ -14388,8 +14395,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/voxtral-small-25-07",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -14570,8 +14579,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/codestral-embed-25-05",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -14938,8 +14949,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/shieldstral-1-0",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -15321,8 +15334,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -15505,8 +15520,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/zai-glm-5-3",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -15696,8 +15713,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/zai-glm-5-2",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
