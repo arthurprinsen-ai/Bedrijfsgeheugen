@@ -10650,7 +10650,8 @@
         "low-latency voice agents"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Supplier documentation does not evidence customer-paid tier, tenant settings, region, DPA, or complete ZDR enforcement."
       ],
       "scores": {
         "reasoning": 8,
@@ -10675,9 +10676,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Paid Gemini Developer API excludes submitted requests from product-improvement training; free tier and tenant billing not verified",
+        "retention": "Paid Developer API prompts/replies are not used to improve Google products; abuse logging remains. Gemini 3.8 Live is a stateful Live API model: configured SessionResumptionConfig stores conversation text/audio/video for up to 24h, and must be avoided for ZDR; not equivalent to a zero-retention guarantee for the API or tenant.",
+        "zero_data_retention": "Live resumption stores conversation state up to 24h when enabled; cannot claim unconditional ZDR",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -10687,7 +10688,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -10696,7 +10697,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "checked_on": "2026-10-14",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live",
         "verified_claims": [
@@ -10704,11 +10705,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -10723,16 +10723,6 @@
             "locator": "Gemini 3 > Stable models",
             "observed_value": "Listed as stable in official Google Gemini model directory",
             "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
             "claim": "capabilities",
@@ -10757,6 +10747,14 @@
             "observed_value": "Standard Paid per 1M tokens: text input $0.75; audio input $3.00; image/video input $1.00; text output $4.50; audio output $12.00; voice session history may be re-billed",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Gemini Developer API > Live API > SessionResumptionConfig; Training restriction and prompt logging",
+            "observed_value": "Paid Developer API prompts/replies are not used to improve Google products; abuse logging remains. Gemini 3.8 Live is a stateful Live API model: configured SessionResumptionConfig stores conversation text/audio/video for up to 24h, and must be avoided for ZDR; not equivalent to a zero-retention guarantee for the API or tenant.",
+            "checked_on": "2026-10-14",
+            "scope": "official Gemini Developer API model- and endpoint-specific policy; customer settings and guarantees excluded"
           }
         ],
         "provider_policy_evidence": {
@@ -10843,7 +10841,8 @@
         "verify exact endpoint pricing and regional processing for production",
         "Extended Thinking only supports non-blocking asynchronous tool declarations; synchronous blocking tool calls fail",
         "Client lifecycle must use interaction_status IDLE/IN_PROGRESS rather than interpreting turnComplete as idle",
-        "Batch API and caching are unsupported; proactive audio cannot be disabled"
+        "Batch API and caching are unsupported; proactive audio cannot be disabled",
+        "Supplier documentation does not evidence customer-paid tier, tenant settings, region, DPA, or complete ZDR enforcement."
       ],
       "scores": {
         "reasoning": 9,
@@ -10868,9 +10867,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Paid Gemini Developer API excludes submitted requests from product-improvement training; free tier and tenant billing not verified",
+        "retention": "Paid Gemini API prompts/replies not used for product improvement, abuse-monitoring exceptions apply. Live session state is retained up to 24h when SessionResumptionConfig generates a handle, including streamed audio/video; disable session resumption for reduced retention. No customer ZDR or regional environment verified.",
+        "zero_data_retention": "Live resumption stores conversation state up to 24h when enabled; cannot claim unconditional ZDR",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -10880,7 +10879,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -10889,7 +10888,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-live-extended-thinking",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -10897,11 +10896,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -10916,16 +10914,6 @@
             "locator": "Gemini 3 > Stable models",
             "observed_value": "Listed as stable in official Google Gemini model directory",
             "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
             "claim": "capabilities",
@@ -10950,6 +10938,14 @@
             "observed_value": "Standard Paid per 1M tokens: text input $0.75; audio input $3.00; image/video input $1.00; text output $4.50; audio output $12.00; voice session history may be re-billed",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Gemini Developer API > Live API > SessionResumptionConfig; Training restriction",
+            "observed_value": "Paid Gemini API prompts/replies not used for product improvement, abuse-monitoring exceptions apply. Live session state is retained up to 24h when SessionResumptionConfig generates a handle, including streamed audio/video; disable session resumption for reduced retention. No customer ZDR or regional environment verified.",
+            "checked_on": "2026-10-14",
+            "scope": "official Gemini Developer API model- and endpoint-specific policy; customer settings and guarantees excluded"
           }
         ],
         "provider_policy_evidence": {
@@ -11032,7 +11028,8 @@
         "voice replication"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Supplier documentation does not evidence customer-paid tier, tenant settings, region, DPA, or complete ZDR enforcement."
       ],
       "scores": {
         "reasoning": 3,
@@ -11057,9 +11054,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Paid Gemini Developer API excludes submitted requests from product-improvement training; free tier and tenant billing not verified",
+        "retention": "Gemini 3.8 Flash TTS paid Gemini API requests are excluded from product-improvement training, but subject to abuse logging; TTS voice replication and design may create persistent voice assets requiring separate deletion. Interactions API store=true can persist state. No blanket ZDR for voice assets or customer account attested.",
+        "zero_data_retention": "Text/speech API retention and persistent voice assets require independent controls; ZDR not unconditional",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -11069,7 +11066,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -11078,7 +11075,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -11086,11 +11083,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -11105,16 +11101,6 @@
             "locator": "Gemini 3 > Stable models",
             "observed_value": "Listed as stable in official Google Gemini model directory",
             "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
             "claim": "capabilities",
@@ -11139,6 +11125,22 @@
             "observed_value": "Through 2026-12-31 per 1M tokens: $0.50 text input, $9.00 audio output; 2027-01-01 onward $1.00 input, $18.00 output",
             "checked_on": "2026-10-14",
             "scope": "official model-specific API or pricing documentation; authenticated customer entitlement untested"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-tts",
+            "locator": "Gemini Developer API > Training restriction; Interactions API; TTS model > Voice replication and persistence",
+            "observed_value": "Gemini 3.8 Flash TTS paid Gemini API requests are excluded from product-improvement training, but subject to abuse logging; TTS voice replication and design may create persistent voice assets requiring separate deletion. Interactions API store=true can persist state. No blanket ZDR for voice assets or customer account attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official Gemini Developer API model- and endpoint-specific policy; customer settings and guarantees excluded"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging; Interactions API",
+            "observed_value": "Paid Gemini Developer API is excluded from training without opt-in; abuse logs and API state remain conditionally retained. Customer tenant and contract not verified.",
+            "checked_on": "2026-10-14",
+            "scope": "official API-level baseline for TTS model"
           }
         ],
         "provider_policy_evidence": {
@@ -11218,7 +11220,8 @@
         "voice agent cascades"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Supplier documentation does not evidence customer-paid tier, tenant settings, region, DPA, or complete ZDR enforcement."
       ],
       "scores": {
         "reasoning": 2,
@@ -11243,9 +11246,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Paid Gemini Developer API excludes submitted requests from product-improvement training; free tier and tenant billing not verified",
+        "retention": "Gemini 3.8 Flash-Lite TTS is a text-to-audio Gemini Developer API model. Paid API does not use requests to improve products, yet abuse-monitoring logs remain. Voice replication supports persistent stored voices by default and optional stateless keys, so voice-asset lifecycle must be controlled separately. No customer ZDR or residency verified.",
+        "zero_data_retention": "Text/speech API retention and persistent voice assets require independent controls; ZDR not unconditional",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -11255,7 +11258,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -11264,7 +11267,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -11272,11 +11275,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -11291,16 +11293,6 @@
             "locator": "Gemini 3 models > gemini-3.8-flash-lite-tts",
             "observed_value": "Released 2026-09-22; no announced shutdown date; account access untested",
             "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
             "claim": "capabilities",
@@ -11322,6 +11314,22 @@
             "locator": "Gemini 3.8 Flash-Lite TTS > Standard paid tier",
             "observed_value": "Through 2026-12-31, USD/1M text input 0.50 and audio output 6.00; from 2027-01-01 input 1.00 and output 12.00",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts",
+            "locator": "Training restriction / abuse logging; Gemini 3.8 Flash-Lite TTS > Voice replication stored voices by default",
+            "observed_value": "Gemini 3.8 Flash-Lite TTS is a text-to-audio Gemini Developer API model. Paid API does not use requests to improve products, yet abuse-monitoring logs remain. Voice replication supports persistent stored voices by default and optional stateless keys, so voice-asset lifecycle must be controlled separately. No customer ZDR or residency verified.",
+            "checked_on": "2026-10-14",
+            "scope": "official Gemini Developer API model- and endpoint-specific policy; customer settings and guarantees excluded"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging; Interactions API",
+            "observed_value": "Paid Gemini Developer API is excluded from training without opt-in; abuse logs and API state remain conditionally retained. Customer tenant and contract not verified.",
+            "checked_on": "2026-10-14",
+            "scope": "official API-level baseline for TTS model"
           }
         ],
         "provider_policy_evidence": {
@@ -11991,7 +11999,8 @@
         "high-throughput low-cost tasks"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Supplier documentation does not evidence customer-paid tier, tenant settings, region, DPA, or complete ZDR enforcement."
       ],
       "scores": {
         "reasoning": 6,
@@ -12016,9 +12025,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "Paid Gemini Developer API excludes submitted requests from product-improvement training; free tier and tenant billing not verified",
+        "retention": "Text generation via Gemini Developer API. Paid services do not use prompts or replies to improve Google products, but retain limited abuse-monitoring logs. Search/Maps grounding retains content 30 days; Interactions store=true persists state, caching and Files have separate retention. Free-tier and project details not attested.",
+        "zero_data_retention": "Developer API logging/stateful exceptions; no unconditional guaranteed ZDR",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -12028,7 +12037,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -12037,7 +12046,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -12045,22 +12054,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite",
@@ -12097,6 +12095,14 @@
             "locator": "New models > Pricing",
             "observed_value": "Gemini 3.5 Flash-Lite: USD 0.30 input, USD 2.50 output per 1M tokens; service tiers may differ",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Gemini Developer API > Training restriction; Prompt logging; Interactions API; File API; Explicit Context Caching",
+            "observed_value": "Text generation via Gemini Developer API. Paid services do not use prompts or replies to improve Google products, but retain limited abuse-monitoring logs. Search/Maps grounding retains content 30 days; Interactions store=true persists state, caching and Files have separate retention. Free-tier and project details not attested.",
+            "checked_on": "2026-10-14",
+            "scope": "official Gemini Developer API model- and endpoint-specific policy; customer settings and guarantees excluded"
           }
         ],
         "provider_policy_evidence": {
