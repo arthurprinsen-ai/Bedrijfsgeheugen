@@ -60,16 +60,27 @@ export function reconcileSupplierAudit(catalog,{apply=false}={}) {
   const missing=REQUIRED_SUPPLIER_CLAIMS.filter(
    claim=>classifications[claim]!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED'
   );
+  const evidence=model.verification_evidence||{};
+  const reviews=REQUIRED_SUPPLIER_CLAIMS.filter(claim=>
+   !(classifications[claim]==='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED'&&
+     evidence.claim_scope==='full'&&evidence.source_url===model.source&&
+     evidence.checked_on===model.verified_at&&
+     evidence.verified_claims?.includes(claim)&&!evidence.not_verified?.includes(claim))
+  );
   const previous=audit.claim_evidence_classification||{};
   const changed=REQUIRED_SUPPLIER_CLAIMS.some(claim=>previous[claim]!==classifications[claim])||
    JSON.stringify(audit.missing_claim_receipts)!==JSON.stringify(missing)||
-   audit.missing_receipt_count!==missing.length;
+   audit.missing_receipt_count!==missing.length||
+   JSON.stringify(audit.review_required_claims)!==JSON.stringify(reviews)||
+   audit.pending_independent_claim_reviews!==reviews.length;
   if(changed) {
    changed_model_ids.push(model.id);
    if(apply) {
     audit.claim_evidence_classification=classifications;
     audit.missing_claim_receipts=missing;
     audit.missing_receipt_count=missing.length;
+    audit.review_required_claims=reviews;
+    audit.pending_independent_claim_reviews=reviews.length;
     // Reconciled receipts require a fresh independent decision, never approval by repair.
     audit.independent_verification_required=true;
     audit.automatic_recommendation_eligible=false;
