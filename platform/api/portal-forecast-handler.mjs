@@ -50,7 +50,9 @@ export function createPortalForecastHandler({getUser,getCanonical}={}){
  if(typeof getUser!=='function'||typeof getCanonical!=='function')throw new TypeError('identity and canonical store required');
  return async request=>{
  if(request.method!=='GET')return new Response('Method Not Allowed',{status:405,headers:{allow:'GET'}});
- const user=await getUser();
+ let user;
+ try{user=await getUser()}
+ catch{return json({error:'FORECAST_IDENTITY_UNAVAILABLE'},503)}
  if(!user?.id)return json({error:'UNAUTHORIZED'},401);
  const tenantId=resolveIdentityTenant(user);
  if(!tenantId)return json({error:'FORBIDDEN'},403);
