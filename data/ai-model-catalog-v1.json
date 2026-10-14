@@ -14454,10 +14454,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -14497,6 +14497,13 @@
             "url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
             "locator": "Model card > Features, lifecycle",
             "observed_value": "Labs Chat Completions, function calling, agents, structured output documented historically; API model retired Sept 30 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://docs.mistral.ai/inference/pricing",
+            "locator": "Labs > Leanstral 1.5 > Input, Cached input, Output",
+            "observed_value": "Mistral Labs Leanstral 1.5: Free for input, cached input and output at the currently listed Labs API rate; terms and availability may change.",
             "checked_on": "2026-10-14"
           }
         ],
@@ -18231,10 +18238,10 @@
           "status",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "customer-specific governance",
           "commercial license terms and fees"
         ],
@@ -18275,6 +18282,13 @@
             "checked_on": "2026-10-14",
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
+            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
+            "checked_on": "2026-10-14"
           }
         ],
         "verification_notes": [
@@ -18407,10 +18421,10 @@
           "status",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "customer-specific governance",
           "commercial license terms and fees"
         ],
@@ -18451,6 +18465,13 @@
             "checked_on": "2026-10-14",
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
+            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
+            "checked_on": "2026-10-14"
           }
         ],
         "model_license_evidence": {
@@ -18595,10 +18616,10 @@
           "status",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "customer-specific governance",
           "commercial license terms and fees"
         ],
@@ -18639,6 +18660,13 @@
             "checked_on": "2026-10-14",
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
+            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
+            "checked_on": "2026-10-14"
           }
         ]
       },
@@ -18769,10 +18797,10 @@
           "status",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "customer-specific governance",
           "commercial license terms and fees"
         ],
@@ -18813,6 +18841,13 @@
             "checked_on": "2026-10-14",
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
+            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
+            "checked_on": "2026-10-14"
           }
         ],
         "model_license_evidence": {
@@ -18957,10 +18992,10 @@
           "status",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "customer-specific governance",
           "commercial license terms and fees"
         ],
@@ -19001,6 +19036,13 @@
             "checked_on": "2026-10-14",
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
+            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
+            "checked_on": "2026-10-14"
           }
         ],
         "model_license_evidence": {
@@ -19145,10 +19187,10 @@
           "model_id",
           "status",
           "deployment",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "customer-specific governance",
           "commercial license terms and fees"
         ],
@@ -19189,6 +19231,13 @@
             "checked_on": "2026-10-14",
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
+            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
+            "checked_on": "2026-10-14"
           }
         ],
         "model_license_evidence": {
@@ -19313,7 +19362,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -19332,11 +19381,11 @@
           "model_id",
           "capabilities",
           "deployment",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "not_verified": [
           "status",
-          "pricing",
           "customer-specific governance",
           "commercial license terms and fees"
         ],
@@ -19377,6 +19426,13 @@
             "checked_on": "2026-10-14",
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
+            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
+            "checked_on": "2026-10-14"
           }
         ]
       },
