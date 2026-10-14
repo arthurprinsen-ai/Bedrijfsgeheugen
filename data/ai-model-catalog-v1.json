@@ -7972,15 +7972,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "model_region_public_observation_20261014": {
           "url": "https://developers.openai.com/api/docs/guides/your-data",
@@ -8219,15 +8212,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "model_region_public_observation_20261014": {
           "url": "https://developers.openai.com/api/docs/guides/your-data",
@@ -8464,15 +8450,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "model_region_public_observation_20261014": {
           "url": "https://developers.openai.com/api/docs/guides/your-data",
@@ -16343,15 +16322,8 @@
         },
         "evidence_accounting_date": "2026-10-14",
         "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "public_preview_not_production_eligible": true
       },
@@ -16782,10 +16754,8 @@
         },
         "evidence_accounting_date": "2026-10-14",
         "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted",
-        "pending_independent_claim_reviews": 1,
-        "review_required_claims": [
-          "pricing"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "retired_model_forbid_runtime_recommendation": true
       },
@@ -17583,15 +17553,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
@@ -17786,15 +17749,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
@@ -17989,15 +17945,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
