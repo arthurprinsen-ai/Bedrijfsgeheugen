@@ -7,30 +7,13 @@
   "prevention_rule": "Require explicit history and forecast arrays, source model date, no fabricated values, expose what-if shifts as sensitivity only, restrict metric to relevant page.",
   "evaluation": {
     "historical_replay": [
-      {
-        "case": "No forecasts in portal state",
-        "outcome": "Explicit absence message, never fabricated SVG chart"
-      },
-      {
-        "case": "Complete revenue forecast",
-        "outcome": "Render source-labeled series and selectable horizon"
-      },
-      {
-        "case": "Risk-only forecast on Today",
-        "outcome": "No unrelated prediction shown"
-      }
+      "tests/portal-contextual-forecast.test.mjs"
     ],
     "shadow": [
-      {
-        "status": "not run",
-        "reason": "No authenticated tenant dataset exposed in connector"
-      }
+      "Not run: authenticated tenant prediction feed not yet validated"
     ],
     "canary": [
-      {
-        "status": "not run",
-        "reason": "Production release not approved"
-      }
+      "Not run: production release not yet approved"
     ]
   },
   "evidence": {
