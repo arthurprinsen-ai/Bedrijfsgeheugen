@@ -878,7 +878,9 @@
         "Vertex AI"
       ],
       "source": "https://ai.google.dev/gemini-api/docs/pricing",
-      "limitations": [],
+      "limitations": [
+        "Google limits Gemini 2.5 API models to users with prior usage; new projects should choose Gemini 3.5 Flash-Lite or Gemini 3.8 Flash."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -891,7 +893,17 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "new_project_access": "RESTRICTED_EXISTING_USERS",
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "access_policy": {
+          "source": "https://ai.google.dev/gemini-api/docs/models.md",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value": "RESTRICTED_EXISTING_USERS"
+        }
+      }
     },
     {
       "id": "mistral-medium-3-5",
@@ -3380,7 +3392,7 @@
     },
     {
       "tier": "balanced",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -3394,7 +3406,8 @@
         "agentic workflows"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Deprecated: API alias automatically routes to gemini-3.8-flash; avoid choosing this model for new workloads."
       ],
       "scores": {
         "reasoning": 8,
@@ -3429,7 +3442,26 @@
       },
       "id": "gemini-3.7-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models"
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+      "selection_eligible": false,
+      "effective_model_id": "gemini-3.8-flash",
+      "model_source_verified_at": "2026-10-14",
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_AUTO_ROUTED",
+          "effective_model_id": "gemini-3.8-flash"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -3486,7 +3518,7 @@
     },
     {
       "tier": "balanced",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -3500,7 +3532,8 @@
         "high-scale workflows"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Deprecated: API alias automatically routes to gemini-3.6-flash; avoid choosing this model for new workloads."
       ],
       "scores": {
         "reasoning": 8,
@@ -3535,7 +3568,26 @@
       },
       "id": "gemini-3.5-flash",
       "provider": "Google",
-      "source": "https://ai.google.dev/gemini-api/docs/models"
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+      "selection_eligible": false,
+      "effective_model_id": "gemini-3.6-flash",
+      "model_source_verified_at": "2026-10-14",
+      "lifecycle_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "lifecycle": {
+          "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "DEPRECATED_AUTO_ROUTED",
+          "effective_model_id": "gemini-3.6-flash"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "economy",
