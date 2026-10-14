@@ -38,3 +38,12 @@ test('tenant readback value must be present and match attested value',()=>{
  assert.match(source,/READBACK_VALUE_MISMATCH/);
  assert.match(source,/Object\.hasOwn\(r\.readback,'observed_value'\)/);
 });
+
+test('live provider readback is explicitly opt-in and fail-closed',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/TENANT_LIVE_READBACK_REQUIRED/);
+ assert.match(source,/TENANT_LIVE_READBACK_ALLOWED_ORIGIN/);
+ assert.match(source,/LIVE_PROVIDER_CONNECTION_REQUIRED/);
+ assert.match(source,/LIVE_PROVIDER_CONFIGURATION_MISMATCH/);
+ assert.match(source,/redirect:'error'/);
+});
