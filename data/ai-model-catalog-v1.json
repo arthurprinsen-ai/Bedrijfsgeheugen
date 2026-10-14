@@ -219,10 +219,10 @@
       "provider": "OpenAI",
       "tier": "balanced",
       "status": "unverified",
-      "input_usd_m": 1,
-      "output_usd_m": 5,
-      "cached_input_usd_m": 0.1,
-      "context_k": 1000,
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.2,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -251,7 +251,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
       "limitations": [
         "Official OpenAI model directory now lists gpt-6.1-sol; legacy gpt-6-sol availability and price are not reverified. Do not route automatically based on this entry.",
         "OpenAI model directory identifies GPT-6.1 Sol as latest Sol offering; compare legacy model compatibility against provider before selection.",
@@ -268,20 +268,19 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "source_url": "https://developers.openai.com/api/docs/pricing?tab=suite",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "latest listed Sol model is gpt-6.1-sol",
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
-          "deployment",
+          "deployment"
+        ],
+        "not_verified": [
           "governance"
         ],
         "claim_scope": "partial",
@@ -297,8 +296,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+            "locator": "Model heading",
+            "observed_value": "GPT-6 Sol",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+            "locator": "Model header",
+            "observed_value": "Default model; GPT-6.1 Sol is newer",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+            "locator": "Pricing > Text tokens",
+            "observed_value": "USD 2 input, USD 0.20 cached input, USD 10 output per million; longer-context and regional premiums apply",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+            "locator": "Context; Modalities; Features",
+            "observed_value": "1050000 context, 128000 maximum output; text and vision inputs; structured outputs and tools",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+            "locator": "Endpoints; EU residency",
+            "observed_value": "Responses and Chat Completions documented; EU residency available under specified processing modes, tenant untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -322,15 +350,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://developers.openai.com/api/docs/pricing?tab=suite",
+        "missing_receipt_count": 1,
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-6-sol",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -341,7 +364,8 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
-      }
+      },
+      "max_output_tokens": 128000
     },
     {
       "id": "gpt-6-luna",
