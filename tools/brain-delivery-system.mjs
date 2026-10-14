@@ -9,6 +9,7 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'tests/powerhouse-runtime-scheduler-isolation.test.mjs': 'backend',
   'AGENTS.md': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
   'tools/delivery/predictive-controller.mjs': 'automation',
