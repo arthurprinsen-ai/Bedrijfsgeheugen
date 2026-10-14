@@ -8,7 +8,8 @@
     "Audit of source reachability and stale model claims",
     "Blob-SHA GitHub readback for large catalog files, explicit Cohere alias-to-official provider_api_id mapping, and preserved non-approval gates",
     "Complete all seven Cohere provider_api_id mappings, correct Command A Reasoning 256K input/32K output and image input from official model page; do not grant supplier or tenant approval.",
-    "Verified October 6 Google image deprecation announcement date and repaired two inaccurate October 8 source citations"
+    "Verified October 6 Google image deprecation announcement date and repaired two inaccurate October 8 source citations",
+    "AWS Nova Premier API identity and lifecycle evidence are separate controls"
   ],
   "limitations": [
     "Other model claims not yet vendor-verified",
@@ -68,5 +69,14 @@
     "url": "https://ai.google.dev/gemini-api/docs/changelog",
     "tenant_verification": false,
     "existing_scope_retained": "full"
+  },
+  "nova_premier_api_identity_readback": {
+    "canonical_api_id": "amazon.nova-premier-v1:0",
+    "official_source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+    "customer_entitlement_proven": false,
+    "lifecycle_conflict_cleared": false,
+    "automatic_recommendation_eligible": false,
+    "github_commit": "90688ea2bd10699655fd487ee5f40c452c6a3607",
+    "database_readback": true
   }
 }
