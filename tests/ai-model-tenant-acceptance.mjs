@@ -39,7 +39,7 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
    errors.push(p+':READBACK_VALUE_MISMATCH');
  // Optionally perform the actual provider readback through a pinned HTTPS endpoint.
  // This is deliberately fail-closed; no endpoint, token or matching tenant => no approval.
- if (process.env.TENANT_LIVE_READBACK_REQUIRED === '1' && r.claim !== 'signed_dpa') {
+ if (r.claim !== 'signed_dpa') {
    const endpoint=process.env.TENANT_LIVE_READBACK_ENDPOINT;
    const token=process.env.TENANT_LIVE_READBACK_TOKEN;
    const allowedOrigin=process.env.TENANT_LIVE_READBACK_ALLOWED_ORIGIN;
