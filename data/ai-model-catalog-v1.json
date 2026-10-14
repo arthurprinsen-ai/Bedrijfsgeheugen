@@ -2422,10 +2422,10 @@
       "provider": "Cohere",
       "tier": "enterprise",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 2.5,
+      "output_usd_m": 10,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text"
       ],
@@ -2453,8 +2453,10 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
-      "limitations": [],
+      "source": "https://docs.cohere.com/v2/docs/command-a",
+      "limitations": [
+        "Canonical API identifier is command-a-03-2025; confirm compatibility before routing using catalog alias command-a."
+      ],
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -2469,39 +2471,39 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
-        "verification_required": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+        "source_url": "https://docs.cohere.com/v2/docs/command-a",
         "checked_on": "2026-10-14",
+        "claim_scope": "partial",
         "verified_claims": [
-          "model_id",
+          "pricing",
           "capabilities"
         ],
         "not_verified": [
-          "status",
-          "pricing",
-          "deployment",
+          "model_id alias mapping",
+          "status and availability for individual account",
+          "deployment contract",
           "governance"
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
-            "locator": "Listed generative model Command A, input/output token billing",
+            "claim": "pricing",
+            "url": "https://docs.cohere.com/v2/docs/command-a",
+            "locator": "Pricing: input and output tokens",
+            "observed_value": "$2.5 input / $10 output per 1M tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
-            "locator": "Listed generative model Command A, input/output token billing",
+            "url": "https://docs.cohere.com/v2/docs/command-a",
+            "locator": "Specifications: Context Window; Capabilities listing",
+            "observed_value": "256000 tokens; multilingual safety modes, citations, tools, structured outputs, reasoning, image inputs",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/v2/docs/command-a",
+            "locator": "API Endpoints, Model ID",
+            "observed_value": "command-a-03-2025 (catalog alias command-a must not be assumed to be callable)",
             "checked_on": "2026-10-14"
           }
         ]
