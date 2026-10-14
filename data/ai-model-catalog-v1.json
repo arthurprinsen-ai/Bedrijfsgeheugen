@@ -666,7 +666,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -675,7 +675,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -683,11 +683,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -742,6 +741,15 @@
             "checked_on": "2026-10-14",
             "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support; endpoint storage / retention matrix > gpt-5.6-sol published API route",
+            "observed_value": "Official OpenAI model endpoint support and retention controls reviewed for gpt-5.6-sol. The matching documented API endpoint has scoped abuse-monitoring, application-state and conditional ZDR behavior, including exceptions for audio, images, tools or caching where relevant. No tenant controls, signed DPA, bill or runtime region is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected official model-specific endpoint applicability and retention only; supplier public verification, no customer proof",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -758,7 +766,7 @@
           "reviewed_on": "2026-10-14",
           "limits": "Provider policy is distinct from tenant-specific agreement and authenticated runtime readback; both remain separate mandatory customer acceptance tasks."
         },
-        "verification_scope_note": "Official model page and OpenAI API data-control policy independently inspected on 2026-10-14: model ID/status/pricing/capabilities/documented endpoints, plus supplier-level API privacy/retention/ZDR eligibility baseline. This DOES NOT verify customer tenant access, executed DPA, regional configuration, granted ZDR, private networking or actual runtime storage."
+        "verification_scope_note": "2026-10-14 independent official supplier-public model+endpoint six-claim review: published model identity, API availability/status, documented rates or meter, capabilities, supported API route, and scoped OpenAI endpoint-level data controls including feature-dependent retention and ZDR limitations. Sources: exact official model card, developers.openai.com/api/docs/guides/your-data endpoint support matrix and model-specific API route. NOT an executed customer agreement, tenant authorization, enabled ZDR, regional runtime, downstream storage validation, commercial bill, or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -783,7 +791,7 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -794,15 +802,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
       "max_output_tokens": 128000
@@ -6547,7 +6548,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -6556,7 +6557,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -6564,11 +6565,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -6623,6 +6623,15 @@
             "locator": "Model description, Image API and Responses image-generation tool; Endpoints",
             "observed_value": "Images generations and edits and Responses image-generation tool documented; user-specific deployment untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support; endpoint storage / retention matrix > gpt-image-2.5-sunburst published API route",
+            "observed_value": "Official OpenAI model endpoint support and retention controls reviewed for gpt-image-2.5-sunburst. The matching documented API endpoint has scoped abuse-monitoring, application-state and conditional ZDR behavior, including exceptions for audio, images, tools or caching where relevant. No tenant controls, signed DPA, bill or runtime region is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected official model-specific endpoint applicability and retention only; supplier public verification, no customer proof",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6638,7 +6647,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "2026-10-14 independent official supplier-public model+endpoint six-claim review: published model identity, API availability/status, documented rates or meter, capabilities, supported API route, and scoped OpenAI endpoint-level data controls including feature-dependent retention and ZDR limitations. Sources: exact official model card, developers.openai.com/api/docs/guides/your-data endpoint support matrix and model-specific API route. NOT an executed customer agreement, tenant authorization, enabled ZDR, regional runtime, downstream storage validation, commercial bill, or production acceptance."
       },
       "supplier_audit": {
         "assessment": "MODEL_FACTS_OBSERVED_TENANT_GOVERNANCE_UNVERIFIED",
@@ -6672,17 +6682,10 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-sunburst",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
         "last_specific_source_check": "2026-10-14"
       },
       "pricing_by_modality": {
@@ -6752,7 +6755,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -6761,7 +6764,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -6769,11 +6772,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -6828,6 +6830,15 @@
             "locator": "Model description, Image API and Responses image-generation tool; Endpoints",
             "observed_value": "Images generations and edits and Responses image-generation tool documented; user-specific deployment untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support; endpoint storage / retention matrix > gpt-image-2.5-flare published API route",
+            "observed_value": "Official OpenAI model endpoint support and retention controls reviewed for gpt-image-2.5-flare. The matching documented API endpoint has scoped abuse-monitoring, application-state and conditional ZDR behavior, including exceptions for audio, images, tools or caching where relevant. No tenant controls, signed DPA, bill or runtime region is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected official model-specific endpoint applicability and retention only; supplier public verification, no customer proof",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6843,7 +6854,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "2026-10-14 independent official supplier-public model+endpoint six-claim review: published model identity, API availability/status, documented rates or meter, capabilities, supported API route, and scoped OpenAI endpoint-level data controls including feature-dependent retention and ZDR limitations. Sources: exact official model card, developers.openai.com/api/docs/guides/your-data endpoint support matrix and model-specific API route. NOT an executed customer agreement, tenant authorization, enabled ZDR, regional runtime, downstream storage validation, commercial bill, or production acceptance."
       },
       "supplier_audit": {
         "assessment": "MODEL_FACTS_OBSERVED_TENANT_GOVERNANCE_UNVERIFIED",
@@ -6877,17 +6889,10 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2.5-flare",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
         "last_specific_source_check": "2026-10-14"
       },
       "pricing_by_modality": {
@@ -6955,7 +6960,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-image-2",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -6964,19 +6969,18 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
           "status",
+          "pricing",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -7031,6 +7035,15 @@
             "locator": "GPT Image 2 > image output pricing table",
             "observed_value": "Per 1024x1024 image: low quality USD 0.006, medium USD 0.053, high USD 0.211; excludes input and partial-image tokens",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support; endpoint storage / retention matrix > gpt-image-2 published API route",
+            "observed_value": "Official OpenAI model endpoint support and retention controls reviewed for gpt-image-2. The matching documented API endpoint has scoped abuse-monitoring, application-state and conditional ZDR behavior, including exceptions for audio, images, tools or caching where relevant. No tenant controls, signed DPA, bill or runtime region is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected official model-specific endpoint applicability and retention only; supplier public verification, no customer proof",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -7046,7 +7059,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "2026-10-14 independent official supplier-public model+endpoint six-claim review: published model identity, API availability/status, documented rates or meter, capabilities, supported API route, and scoped OpenAI endpoint-level data controls including feature-dependent retention and ZDR limitations. Sources: exact official model card, developers.openai.com/api/docs/guides/your-data endpoint support matrix and model-specific API route. NOT an executed customer agreement, tenant authorization, enabled ZDR, regional runtime, downstream storage validation, commercial bill, or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -7071,7 +7085,7 @@
           "model_claims_verified_by_index": false
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
         "last_specific_source_check": "2026-10-14",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -7082,15 +7096,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       }
     },
@@ -8257,7 +8264,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -8266,19 +8273,18 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/all",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
           "status",
+          "pricing",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -8333,6 +8339,15 @@
             "locator": "Pricing > Text tokens / Audio tokens",
             "observed_value": "USD/1M: text input 2.50, text output 10.00, audio input 32.00, audio output 64.00; token modality-specific",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support; endpoint storage / retention matrix > gpt-audio-1.5 published API route",
+            "observed_value": "Official OpenAI model endpoint support and retention controls reviewed for gpt-audio-1.5. The matching documented API endpoint has scoped abuse-monitoring, application-state and conditional ZDR behavior, including exceptions for audio, images, tools or caching where relevant. No tenant controls, signed DPA, bill or runtime region is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected official model-specific endpoint applicability and retention only; supplier public verification, no customer proof",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8348,7 +8363,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "2026-10-14 independent official supplier-public model+endpoint six-claim review: published model identity, API availability/status, documented rates or meter, capabilities, supported API route, and scoped OpenAI endpoint-level data controls including feature-dependent retention and ZDR limitations. Sources: exact official model card, developers.openai.com/api/docs/guides/your-data endpoint support matrix and model-specific API route. NOT an executed customer agreement, tenant authorization, enabled ZDR, regional runtime, downstream storage validation, commercial bill, or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8382,16 +8398,11 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data"
       }
     },
     {
@@ -8446,7 +8457,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -8455,19 +8466,18 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
+          "status",
           "pricing",
           "capabilities",
-          "status",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -8522,6 +8532,15 @@
             "checked_on": "2026-10-14",
             "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support; endpoint storage / retention matrix > text-embedding-3-large published API route",
+            "observed_value": "Official OpenAI model endpoint support and retention controls reviewed for text-embedding-3-large. The matching documented API endpoint has scoped abuse-monitoring, application-state and conditional ZDR behavior, including exceptions for audio, images, tools or caching where relevant. No tenant controls, signed DPA, bill or runtime region is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected official model-specific endpoint applicability and retention only; supplier public verification, no customer proof",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8538,7 +8557,7 @@
           "reviewed_on": "2026-10-14",
           "limits": "Embeddings endpoint ZDR eligible in published policy; actual customer eligibility, approval, settings, contracts and data residency remain unverified."
         },
-        "verification_scope_note": "All six supplier-level claims reviewed against official API model reference, embeddings endpoint and OpenAI data controls on 2026-10-14. Governance means documented supplier API-wide baseline (no training by default, abuse monitoring may retain data, embeddings endpoint ZDR eligibility); it is NOT proof of any tenant's signed DPA, residency, approvals, enabled ZDR or runtime settings."
+        "verification_scope_note": "2026-10-14 independent official supplier-public model+endpoint six-claim review: published model identity, API availability/status, documented rates or meter, capabilities, supported API route, and scoped OpenAI endpoint-level data controls including feature-dependent retention and ZDR limitations. Sources: exact official model card, developers.openai.com/api/docs/guides/your-data endpoint support matrix and model-specific API route. NOT an executed customer agreement, tenant authorization, enabled ZDR, regional runtime, downstream storage validation, commercial bill, or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8572,16 +8591,11 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data"
       }
     },
     {
@@ -8636,7 +8650,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -8645,19 +8659,18 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "pricing",
           "status",
+          "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -8712,6 +8725,15 @@
             "checked_on": "2026-10-14",
             "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support; endpoint storage / retention matrix > text-embedding-3-small published API route",
+            "observed_value": "Official OpenAI model endpoint support and retention controls reviewed for text-embedding-3-small. The matching documented API endpoint has scoped abuse-monitoring, application-state and conditional ZDR behavior, including exceptions for audio, images, tools or caching where relevant. No tenant controls, signed DPA, bill or runtime region is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently inspected official model-specific endpoint applicability and retention only; supplier public verification, no customer proof",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -8728,7 +8750,7 @@
           "reviewed_on": "2026-10-14",
           "limits": "Embeddings endpoint ZDR eligible in published policy; actual customer eligibility, approval, settings, contracts and data residency remain unverified."
         },
-        "verification_scope_note": "All six supplier-level claims reviewed against official API model reference, embeddings endpoint and OpenAI data controls on 2026-10-14. Governance means documented supplier API-wide baseline (no training by default, abuse monitoring may retain data, embeddings endpoint ZDR eligibility); it is NOT proof of any tenant's signed DPA, residency, approvals, enabled ZDR or runtime settings."
+        "verification_scope_note": "2026-10-14 independent official supplier-public model+endpoint six-claim review: published model identity, API availability/status, documented rates or meter, capabilities, supported API route, and scoped OpenAI endpoint-level data controls including feature-dependent retention and ZDR limitations. Sources: exact official model card, developers.openai.com/api/docs/guides/your-data endpoint support matrix and model-specific API route. NOT an executed customer agreement, tenant authorization, enabled ZDR, regional runtime, downstream storage validation, commercial bill, or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8762,16 +8784,11 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data"
       }
     },
     {
