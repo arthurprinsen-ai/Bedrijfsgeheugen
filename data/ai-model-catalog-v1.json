@@ -7713,7 +7713,7 @@
       },
       "id": "gpt-realtime-translate",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -7725,7 +7725,7 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -7820,7 +7820,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -7856,7 +7856,9 @@
           "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
           "customer_region_verified": false,
           "full_governance_verified": false
-        }
+        },
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate"
       }
     },
     {
@@ -7908,7 +7910,7 @@
       },
       "id": "gpt-live-transcribe",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -7920,7 +7922,7 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -8015,7 +8017,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -8051,7 +8053,9 @@
           "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
           "customer_region_verified": false,
           "full_governance_verified": false
-        }
+        },
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe"
       }
     },
     {
@@ -8102,7 +8106,7 @@
       },
       "id": "gpt-realtime-whisper",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
       "verification_evidence": {
         "claim_scope": "partial",
         "verification_required": [
@@ -8114,7 +8118,7 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -8209,7 +8213,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -8245,7 +8249,9 @@
           "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
           "customer_region_verified": false,
           "full_governance_verified": false
-        }
+        },
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper"
       }
     },
     {
