@@ -1127,7 +1127,9 @@
         "Vertex AI"
       ],
       "source": "https://ai.google.dev/gemini-api/docs/pricing",
-      "limitations": [],
+      "limitations": [
+        "Supplier restricts Gemini 2.5 access to customers with prior active usage; do not recommend for new projects without entitlement check."
+      ],
       "governance": {
         "storage_residency": "EU option documented",
         "inference_residency": "EU option documented",
@@ -1142,7 +1144,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -1151,7 +1153,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 2.5 Flash-Lite: non-deprecated, but access limited to prior active users",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 2.5 Flash-Lite: non-deprecated, but access limited to prior active users",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3906,7 +3934,7 @@
       "provider": "Anthropic",
       "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3915,7 +3943,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table: active",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table: active",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3973,7 +4027,7 @@
       "provider": "Anthropic",
       "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3982,7 +4036,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table: active",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table: active",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4040,7 +4120,7 @@
       "provider": "Anthropic",
       "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4049,7 +4129,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table: active",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table: active",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4133,7 +4239,7 @@
     },
     {
       "tier": "balanced",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4148,7 +4254,8 @@
         "agents"
       ],
       "limitations": [
-        "retirement window is nearer than newer Sonnet versions"
+        "retirement window is nearer than newer Sonnet versions",
+        "Deprecated on 2026-09-30, retirement scheduled for 2026-11-30 on Claude-operated platforms. Migrate to claude-sonnet-5-5; partner platforms may differ."
       ],
       "scores": {
         "reasoning": 8,
@@ -4187,7 +4294,7 @@
       "provider": "Anthropic",
       "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4196,7 +4303,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table and deprecation notice: deprecated Sep 30 2026, retirement Nov 30 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/about-claude/model-deprecations",
+            "locator": "Model status table and deprecation notice: deprecated Sep 30 2026, retirement Nov 30 2026",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7193,7 +7326,7 @@
       "provider": "Cohere",
       "source": "https://docs.cohere.com/v1/changelog",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7202,7 +7335,39 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.cohere.com/v1/changelog",
+        "verified_claims": [
+          "model_id",
+          "status",
+          "capabilities"
+        ],
+        "not_verified": [
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/v1/changelog",
+            "locator": "Model Name and Availability; 128k input, 64k output, API and private deployment option",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.cohere.com/v1/changelog",
+            "locator": "Model Name and Availability; 128k input, 64k output, API and private deployment option",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/v1/changelog",
+            "locator": "Model Name and Availability; 128k input, 64k output, API and private deployment option",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7321,7 +7486,7 @@
       "provider": "Cohere",
       "source": "https://docs.cohere.com/v1/changelog",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7330,7 +7495,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "checked_on": "2026-10-14",
+        "source_url": "https://docs.cohere.com/v1/changelog",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/v1/changelog",
+            "locator": "Apr 4 2026 retirement notice recommends this ID as replacement",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
