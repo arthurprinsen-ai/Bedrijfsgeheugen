@@ -126,6 +126,8 @@ const outsideWatch=readFileSync('netlify/functions/powerhouse-external-database-
 test('independent Netlify watch persists outage evidence and never replays provider actions',()=>{
   assert.match(outsideWatch,/schedule: '\*\/5 \* \* \* \*'/);
   assert.match(outsideWatch,/getStore\(/);
+  assert.match(outsideWatch,/region:'eu-central-1'/);
+  assert.match(outsideWatch,/process\.env\.CONTEXT!=='production'/);
   assert.match(outsideWatch,/store\.setJSON\(key/);
   assert.match(outsideWatch,/REST_READBACK_RECOVERED/);
   assert.match(outsideWatch,/db_cron_execution_proven:false/);
