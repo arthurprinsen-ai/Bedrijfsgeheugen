@@ -365,11 +365,18 @@ test('DeepSeek stateless Responses endpoint is API behavior, not model-wide rete
  for(const id of ['deepseek-flash','deepseek-v4-pro']){
   const model=catalog.models.find(m=>m.id===id);
   assert.ok(model,id);
-  const evidence=model.verification_evidence;
-  const endpoints=(evidence.claim_evidence||[]).filter(r=>r.claim==='governance'&&r.scope==='endpoint-only supplier fact, not platform-wide/tenant retention guarantee');
-  assert.ok(endpoints.length>0,'Official stateless API receipt must not be treated as tenant entitlement');
-  assert.equal(classifySupplierClaim(evidence,'governance'),'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
-  assert.equal(model.supplier_audit.claim_evidence_classification.governance,'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
-  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false,id);
+  const checkedOn='2026-10-14';
+  const mock={checked_on:checkedOn,claim_evidence:[{
+   claim:'governance',
+   url:'https://api-docs.deepseek.com/api/create-response/',
+   locator:'Responses API > Statless request, no server conversation storage',
+   observed_value:'Responses API is stateless; store is false. The endpoint accepts '+id+' but does not establish model-wide data retention or customer contracts.',
+   checked_on:checkedOn,
+   scope:'endpoint-only supplier fact, not platform-wide/tenant retention guarantee'
+  }]};
+  assert.equal(classifySupplierClaim(mock,'governance'),'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
+  assert.equal(classifySupplierClaim(model.verification_evidence,'governance'),'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
+  assert.equal(model.supplier_audit?.claim_evidence_classification?.governance,'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
+  assert.equal(model.supplier_audit?.automatic_recommendation_eligible,false,id);
  }
 });
