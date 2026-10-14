@@ -2265,13 +2265,6 @@
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
-            "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
-            "locator": "Official API model ID",
-            "observed_value": "ministral-14b-2512; catalog alias ministral-3-14b not confirmed",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "status",
             "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
             "locator": "Model lifecycle",
@@ -2297,6 +2290,13 @@
             "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
             "locator": "Features / APIs",
             "observed_value": "Local open weights Apache 2.0; Chat Completions, Conversation and Batch API",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "model_id",
+            "url": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+            "locator": "Model card > API identifier",
+            "observed_value": "ministral-14b-2512; catalog identifier ministral-3-14b is a friendly alias",
             "checked_on": "2026-10-14"
           }
         ]
@@ -2364,7 +2364,7 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -2390,16 +2390,16 @@
           "governance"
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "status",
           "pricing",
           "capabilities",
-          "deployment"
+          "deployment",
+          "model_id"
         ],
         "not_verified": [
-          "model_id",
           "governance"
         ],
         "claim_evidence": [
@@ -2434,8 +2434,8 @@
           {
             "claim": "model_id",
             "url": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
-            "locator": "Model identifier",
-            "observed_value": "ministral-8b-2512",
+            "locator": "Model card > API identifier",
+            "observed_value": "ministral-8b-2512; catalog identifier ministral-3-8b is a friendly alias",
             "checked_on": "2026-10-14"
           }
         ]
@@ -2454,7 +2454,7 @@
           "governance"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference": "https://docs.mistral.ai/models/ministral-3-8b-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
