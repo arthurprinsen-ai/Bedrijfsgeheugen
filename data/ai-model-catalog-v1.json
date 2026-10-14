@@ -6390,7 +6390,8 @@
         "retrieval"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "Official Bedrock model card lists in-region deployment in us-east-1 and us-gov-west-1; do not infer EU processing without another authorized endpoint readback."
       ],
       "scores": {
         "reasoning": 1,
@@ -6432,7 +6433,8 @@
           "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
           "checked_at": "2026-10-14",
           "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
-          "provider_model_id": "amazon.nova-2-multimodal-embeddings-v1:0"
+          "provider_model_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
@@ -6657,10 +6659,11 @@
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
         "model_identity": {
-          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-embedding-models.html",
           "checked_at": "2026-10-14",
           "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
-          "provider_model_id": "amazon.titan-embed-text-v2:0"
+          "provider_model_id": "amazon.titan-embed-text-v2:0",
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
@@ -6726,10 +6729,11 @@
       "model_source_verified_at": "2026-10-14",
       "claim_evidence": {
         "model_identity": {
-          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/titan-image-models.html",
           "checked_at": "2026-10-14",
           "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
-          "provider_model_id": "amazon.titan-image-generator-v2:0"
+          "provider_model_id": "amazon.titan-image-generator-v2:0",
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
@@ -6756,7 +6760,8 @@
         "recommendations"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "Published InvokeModel ID is amazon.titan-embed-image-v1; fine-tuning/model variants may use suffixes."
       ],
       "scores": {
         "reasoning": 1,
@@ -6797,9 +6802,9 @@
         "model_identity": {
           "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
           "checked_at": "2026-10-14",
-          "status": "PROVIDER_DOC_CONFIRMED",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
           "provider_model_id": "amazon.titan-embed-image-v1",
-          "note": "Official Bedrock model card lists the API model ID without a :0 suffix."
+          "scope": "published model identity; availability, entitlement, DPA and customer data residency not checked"
         },
         "tenant_governance": {
           "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
