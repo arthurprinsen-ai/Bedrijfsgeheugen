@@ -173,3 +173,10 @@ test('pinned integration endpoints reject embedded URL credentials and fragments
  assert.match(source,/target\.username \|\| target\.password \|\| target\.hash/);
  assert.match(source,/url\.username\|\|url\.password\|\|url\.hash/);
 });
+
+test('live provider proof matches restricted evidence and authenticated receipt',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/live\.evidence_reference!==r\.evidence_reference/);
+ assert.match(source,/live\.authenticated!==true/);
+ assert.match(source,/live\.readback_id\.trim\(\)/);
+});
