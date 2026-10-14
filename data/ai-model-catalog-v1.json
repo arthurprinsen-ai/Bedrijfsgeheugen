@@ -2137,52 +2137,68 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
-        "verification_required": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "evidence_status": "PARTIALLY_VERIFIED",
-        "checked_on": "2026-10-14",
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "checked_on": "2026-10-14",
+        "claim_scope": "partial",
         "verified_claims": [
           "model_id",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
-          "deployment",
-          "governance"
+          "governance",
+          "contract-specific residency",
+          "tenant entitlement"
         ],
         "claim_evidence": [
           {
-            "claim": "pricing",
+            "claim": "model_id",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "locator": "MODEL VERSION",
+            "observed_value": "deepseek-flash = DeepSeek-V4.1-Flash",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "model_id",
+            "claim": "pricing",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model details > MODEL",
-            "observed_value": "deepseek-flash; underlying model DeepSeek-V4.1-Flash",
+            "locator": "PRICING peak/off-peak rows",
+            "observed_value": "{\"input_cache_miss\":0.3,\"input_cache_hit\":0.006,\"output\":1.2} / {\"input_cache_miss\":0.15,\"input_cache_hit\":0.003,\"output\":0.6}",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model details > CONTEXT LENGTH and FEATURES",
-            "observed_value": "1M token context; JSON output supported; tool calls supported",
+            "locator": "FEATURES table",
+            "observed_value": "Vision supported; JSON, tools, Responses API supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "BASE URL",
+            "observed_value": "https://api.deepseek.com",
             "checked_on": "2026-10-14"
           }
         ]
       },
-      "pricing_basis": "Peak-rate USD / million tokens; off-peak inputs and outputs cost 50% less per official supplier pricing timetable; cache hits separately charged."
+      "pricing_basis": {
+        "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "checked_on": "2026-10-14",
+        "currency": "USD",
+        "unit": "per million tokens",
+        "peak": {
+          "input_cache_miss": 0.3,
+          "input_cache_hit": 0.006,
+          "output": 1.2
+        },
+        "off_peak": {
+          "input_cache_miss": 0.15,
+          "input_cache_hit": 0.003,
+          "output": 0.6
+        },
+        "peak_hours_utc": "Monday–Friday 01:00–04:00 and 06:00–10:00, excluding Chinese public holidays"
+      }
     },
     {
       "id": "deepseek-v4-pro",
@@ -2234,52 +2250,68 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
-        "verification_required": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
-        "evidence_status": "PARTIALLY_VERIFIED",
-        "checked_on": "2026-10-14",
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "checked_on": "2026-10-14",
+        "claim_scope": "partial",
         "verified_claims": [
           "model_id",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "status",
-          "deployment",
-          "governance"
+          "governance",
+          "contract-specific residency",
+          "tenant entitlement"
         ],
         "claim_evidence": [
           {
-            "claim": "pricing",
+            "claim": "model_id",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "locator": "MODEL VERSION",
+            "observed_value": "deepseek-v4-pro = DeepSeek-V4-Pro-0813",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "model_id",
+            "claim": "pricing",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model details > MODEL",
-            "observed_value": "deepseek-v4-pro; underlying model DeepSeek-V4-Pro-0813",
+            "locator": "PRICING peak/off-peak rows",
+            "observed_value": "{\"input_cache_miss\":1.32,\"input_cache_hit\":0.044,\"output\":3.96} / {\"input_cache_miss\":0.66,\"input_cache_hit\":0.022,\"output\":1.98}",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model details > CONTEXT LENGTH and FEATURES",
-            "observed_value": "1M token context; JSON output supported; tool calls supported",
+            "locator": "FEATURES table",
+            "observed_value": "Vision not supported; JSON, tools, Responses API supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "BASE URL",
+            "observed_value": "https://api.deepseek.com",
             "checked_on": "2026-10-14"
           }
         ]
       },
-      "pricing_basis": "Peak-rate USD / million tokens; off-peak inputs and outputs cost 50% less per official supplier pricing timetable; cache hits separately charged."
+      "pricing_basis": {
+        "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "checked_on": "2026-10-14",
+        "currency": "USD",
+        "unit": "per million tokens",
+        "peak": {
+          "input_cache_miss": 1.32,
+          "input_cache_hit": 0.044,
+          "output": 3.96
+        },
+        "off_peak": {
+          "input_cache_miss": 0.66,
+          "input_cache_hit": 0.022,
+          "output": 1.98
+        },
+        "peak_hours_utc": "Monday–Friday 01:00–04:00 and 06:00–10:00, excluding Chinese public holidays"
+      }
     },
     {
       "id": "command-a-plus",
