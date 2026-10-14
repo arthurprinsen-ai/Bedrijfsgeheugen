@@ -5309,7 +5309,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -5339,25 +5339,41 @@
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "verified_claims": [
           "model_id",
-          "status"
+          "status",
+          "pricing",
+          "capabilities"
         ],
         "not_verified": [
-          "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "url": "https://ai.google.dev/gemini-api/docs/whats-new-gemini-3.8",
+            "locator": "New model > Model ID",
+            "observed_value": "gemini-3.8-flash",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://ai.google.dev/gemini-api/docs/models",
-            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "url": "https://ai.google.dev/gemini-api/docs/latest-model",
+            "locator": "New model > production availability",
+            "observed_value": "Generally available in Gemini API documentation; account access not tested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Flash > Standard > Paid Tier per 1M tokens",
+            "observed_value": "Through 2026-12-31: input USD 0.75, output USD 3.75; 2027-01-01 onward: input USD 1.50, output USD 7.50",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://ai.google.dev/gemini-api/docs/whats-new-gemini-3.8",
+            "locator": "New model > context and thinking levels",
+            "observed_value": "1M context, 64K maximum output, configurable thinking levels low/medium/high, built-in tools",
             "checked_on": "2026-10-14"
           }
         ],
