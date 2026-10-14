@@ -21665,6 +21665,20 @@
           "source_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
           "reviewed_on": "2026-10-14",
           "limits": "Deployed security, data location and hosting costs depend on operator"
+        },
+        "falcon_license_scope_warning_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_card_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "model_card_license_label": "falcon-llm-license",
+          "linked_license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "observed_document_title": "Falcon 2 11B TII License Version 1.0 (May 2024)",
+          "discrepancy": "The official Falcon-H1/H1R model cards name Falcon-LLM License and link to a public terms page whose visible document expressly describes Falcon 2 11B. Do not presume the displayed legacy text establishes binding commercial rights, royalty thresholds, or rates for Falcon-H1/H1R weights.",
+          "commercial_license_scope_verified": false,
+          "customer_usage_rights_verified": false,
+          "license_specific_terms_required": true,
+          "independent_verification_required": true,
+          "price_is_not_zero": "Official weight distribution has no quoted managed TII pay-per-token service price; operator inference, infrastructure and license obligations remain separate.",
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_audit": {
@@ -21900,6 +21914,20 @@
           "source_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
           "reviewed_on": "2026-10-14",
           "limits": "Deployed security, data location and hosting costs depend on operator"
+        },
+        "falcon_license_scope_warning_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_card_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "model_card_license_label": "falcon-llm-license",
+          "linked_license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "observed_document_title": "Falcon 2 11B TII License Version 1.0 (May 2024)",
+          "discrepancy": "The official Falcon-H1/H1R model cards name Falcon-LLM License and link to a public terms page whose visible document expressly describes Falcon 2 11B. Do not presume the displayed legacy text establishes binding commercial rights, royalty thresholds, or rates for Falcon-H1/H1R weights.",
+          "commercial_license_scope_verified": false,
+          "customer_usage_rights_verified": false,
+          "license_specific_terms_required": true,
+          "independent_verification_required": true,
+          "price_is_not_zero": "Official weight distribution has no quoted managed TII pay-per-token service price; operator inference, infrastructure and license obligations remain separate.",
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_audit": {
@@ -22135,6 +22163,20 @@
           "source_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
           "reviewed_on": "2026-10-14",
           "limits": "Deployed security, data location and hosting costs depend on operator"
+        },
+        "falcon_license_scope_warning_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_card_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "model_card_license_label": "falcon-llm-license",
+          "linked_license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "observed_document_title": "Falcon 2 11B TII License Version 1.0 (May 2024)",
+          "discrepancy": "The official Falcon-H1/H1R model cards name Falcon-LLM License and link to a public terms page whose visible document expressly describes Falcon 2 11B. Do not presume the displayed legacy text establishes binding commercial rights, royalty thresholds, or rates for Falcon-H1/H1R weights.",
+          "commercial_license_scope_verified": false,
+          "customer_usage_rights_verified": false,
+          "license_specific_terms_required": true,
+          "independent_verification_required": true,
+          "price_is_not_zero": "Official weight distribution has no quoted managed TII pay-per-token service price; operator inference, infrastructure and license obligations remain separate.",
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_audit": {
@@ -22371,6 +22413,20 @@
           "source_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
           "reviewed_on": "2026-10-14",
           "limits": "Deployed security, data location and hosting costs depend on operator"
+        },
+        "falcon_license_scope_warning_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_card_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "model_card_license_label": "falcon-llm-license",
+          "linked_license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "observed_document_title": "Falcon 2 11B TII License Version 1.0 (May 2024)",
+          "discrepancy": "The official Falcon-H1/H1R model cards name Falcon-LLM License and link to a public terms page whose visible document expressly describes Falcon 2 11B. Do not presume the displayed legacy text establishes binding commercial rights, royalty thresholds, or rates for Falcon-H1/H1R weights.",
+          "commercial_license_scope_verified": false,
+          "customer_usage_rights_verified": false,
+          "license_specific_terms_required": true,
+          "independent_verification_required": true,
+          "price_is_not_zero": "Official weight distribution has no quoted managed TII pay-per-token service price; operator inference, infrastructure and license obligations remain separate.",
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_audit": {
@@ -22607,6 +22663,20 @@
           "source_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
           "reviewed_on": "2026-10-14",
           "limits": "Deployed security, data location and hosting costs depend on operator"
+        },
+        "falcon_license_scope_warning_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_card_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "model_card_license_label": "falcon-llm-license",
+          "linked_license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "observed_document_title": "Falcon 2 11B TII License Version 1.0 (May 2024)",
+          "discrepancy": "The official Falcon-H1/H1R model cards name Falcon-LLM License and link to a public terms page whose visible document expressly describes Falcon 2 11B. Do not presume the displayed legacy text establishes binding commercial rights, royalty thresholds, or rates for Falcon-H1/H1R weights.",
+          "commercial_license_scope_verified": false,
+          "customer_usage_rights_verified": false,
+          "license_specific_terms_required": true,
+          "independent_verification_required": true,
+          "price_is_not_zero": "Official weight distribution has no quoted managed TII pay-per-token service price; operator inference, infrastructure and license obligations remain separate.",
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_audit": {
@@ -22843,6 +22913,20 @@
           "source_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
           "reviewed_on": "2026-10-14",
           "limits": "Deployed security, data location and hosting costs depend on operator"
+        },
+        "falcon_license_scope_warning_20261014": {
+          "reviewed_on": "2026-10-14",
+          "model_card_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "model_card_license_label": "falcon-llm-license",
+          "linked_license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "observed_document_title": "Falcon 2 11B TII License Version 1.0 (May 2024)",
+          "discrepancy": "The official Falcon-H1/H1R model cards name Falcon-LLM License and link to a public terms page whose visible document expressly describes Falcon 2 11B. Do not presume the displayed legacy text establishes binding commercial rights, royalty thresholds, or rates for Falcon-H1/H1R weights.",
+          "commercial_license_scope_verified": false,
+          "customer_usage_rights_verified": false,
+          "license_specific_terms_required": true,
+          "independent_verification_required": true,
+          "price_is_not_zero": "Official weight distribution has no quoted managed TII pay-per-token service price; operator inference, infrastructure and license obligations remain separate.",
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_audit": {
