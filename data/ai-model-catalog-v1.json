@@ -5386,6 +5386,20 @@
             "locator": "Realtime and audio generation models > gpt-realtime-2.1",
             "observed_value": "Audio input USD 32, cached 0.40, output USD 64 per 1M tokens; text input USD 4, output USD 24",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
+            "locator": "Model overview > Modalities / Features",
+            "observed_value": "Speech-to-speech with reasoning, tool calls, text and audio input/output, image input; video unsupported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/guides/realtime-conversations",
+            "locator": "Realtime conversations > WebRTC / WebSocket",
+            "observed_value": "Realtime API model gpt-realtime-2.1 using WebRTC or WebSocket; account authorization not tested",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -5408,11 +5422,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -6039,8 +6051,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Model heading",
+            "observed_value": "gpt-audio-1.5",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Model page > Default and rate limits",
+            "observed_value": "Published API model, with tier-dependent rate limits; tenant entitlement not tested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Pricing > Text tokens / Audio tokens, per 1M",
+            "observed_value": "Text input USD 2.50 output USD 10; audio input USD 32 output USD 64 per 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Modalities and Features",
+            "observed_value": "Text and audio input/output, image and video unsupported; streaming and function calling supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/docs/guides/audio-chat-completions",
+            "locator": "Audio in Chat Completions > model example",
+            "observed_value": "Chat Completions API model gpt-audio-1.5 with text/audio modalities; account authorization not tested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -6064,14 +6105,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
