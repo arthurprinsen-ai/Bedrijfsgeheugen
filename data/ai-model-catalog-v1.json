@@ -5263,9 +5263,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
       "id": "amazon-nova-2-lite",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-2-lite-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-2-lite-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -5315,9 +5331,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
       "id": "amazon-nova-2-sonic",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-2-sonic-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-2-sonic-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "frontier",
@@ -5369,9 +5401,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "source": "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html",
       "id": "amazon-nova-premier",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-premier-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/nova/latest/userguide/additional-resources.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-premier-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -5423,9 +5471,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
       "id": "amazon-nova-pro",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-pro-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-pro-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "economy",
@@ -5477,9 +5541,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
       "id": "amazon-nova-lite",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-lite-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-lite-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "economy",
@@ -5530,13 +5610,29 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
       "id": "amazon-nova-micro",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-micro-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-micro-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5550,7 +5646,8 @@
         "realtime multilingual voice"
       ],
       "limitations": [
-        "legacy lifecycle in Bedrock; prefer current Sonic generation where applicable"
+        "legacy lifecycle in Bedrock; prefer current Sonic generation where applicable",
+        "AWS Bedrock lists the model as EOL (2026-09-14); requests fail in the listed regions. Do not offer for new deployments."
       ],
       "scores": {
         "reasoning": 5,
@@ -5584,7 +5681,33 @@
       },
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
       "id": "amazon-nova-sonic",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-sonic-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-sonic-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "EOL_REMOVED_IN_LISTED_REGIONS",
+          "eol_date": "2026-09-14"
+        }
+      },
+      "selection_eligible": false,
+      "eol_date": "2026-09-14",
+      "lifecycle_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -5636,13 +5759,29 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
       "id": "amazon-nova-multimodal-embeddings",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-2-multimodal-embeddings-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-2-multimodal-embeddings-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5657,7 +5796,8 @@
         "watermarking"
       ],
       "limitations": [
-        "legacy lifecycle in listed Bedrock version; verify current image-generation successor"
+        "legacy lifecycle in listed Bedrock version; verify current image-generation successor",
+        "AWS Bedrock lists the model as EOL (2026-09-30); requests fail in the listed regions. Do not offer for new deployments."
       ],
       "scores": {
         "reasoning": 2,
@@ -5691,11 +5831,37 @@
       },
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
       "id": "amazon-nova-canvas",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-canvas-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-canvas-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "EOL_REMOVED_IN_LISTED_REGIONS",
+          "eol_date": "2026-09-30"
+        }
+      },
+      "selection_eligible": false,
+      "eol_date": "2026-09-30",
+      "lifecycle_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "retired",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5710,7 +5876,8 @@
         "camera motion controls"
       ],
       "limitations": [
-        "legacy lifecycle in listed Bedrock version; verify current video-generation successor"
+        "legacy lifecycle in listed Bedrock version; verify current video-generation successor",
+        "AWS Bedrock lists the model as EOL (2026-09-30); requests fail in the listed regions. Do not offer for new deployments."
       ],
       "scores": {
         "reasoning": 2,
@@ -5744,7 +5911,33 @@
       },
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
       "id": "amazon-nova-reel",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.nova-reel-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.nova-reel-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "state": "EOL_REMOVED_IN_LISTED_REGIONS",
+          "eol_date": "2026-09-30"
+        }
+      },
+      "selection_eligible": false,
+      "eol_date": "2026-09-30",
+      "lifecycle_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -5794,9 +5987,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
       "id": "amazon-titan-text-embeddings-v2",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.titan-embed-text-v2:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.titan-embed-text-v2:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -5847,9 +6056,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
       "id": "amazon-titan-image-generator-g1-v2",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.titan-image-generator-v2:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.titan-image-generator-v2:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "tier": "specialist",
@@ -5900,9 +6125,25 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
       "id": "amazon-titan-multimodal-embeddings-g1",
-      "provider": "Amazon"
+      "provider": "Amazon",
+      "provider_model_id": "amazon.titan-embed-image-v1:0",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+          "checked_at": "2026-10-14",
+          "status": "OFFICIAL_BEDROCK_MODEL_ID_LISTED",
+          "provider_model_id": "amazon.titan-embed-image-v1:0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      }
     },
     {
       "id": "falcon-h1-0.5b-instruct",
