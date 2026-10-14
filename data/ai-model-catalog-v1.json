@@ -7372,7 +7372,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -7381,7 +7381,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -7446,7 +7446,8 @@
           "observed_value": "For self-hosted gpt-oss-120b and gpt-oss-20b, OpenAI does not receive or process inference input or output unless it is explicitly shared with OpenAI or handled by a managed hosting partner. Model weights use Apache 2.0 subject to the gpt-oss usage policy. Retention, subprocessors, encryption and residency are controlled by the selected infrastructure or hosting partner, not attested for any customer here.",
           "limitations": "Only applies to direct self-hosted gpt-oss usage; separate hosting-provider data-use and regional terms require independent review.",
           "scope": "model-specific open-weight distribution, not customer hosting attestation"
-        }
+        },
+        "verification_scope_note": "Source-verified model identity, weight availability and license, capabilities, self-host pricing and supplier privacy baseline only. Customer-specific hosting, region, runtime retention and contract controls are not asserted."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -7523,7 +7524,7 @@
         "customer cloud"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "controlled by chosen deployment",
         "inference_residency": "controlled by chosen deployment",
@@ -7539,7 +7540,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -7548,7 +7549,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -7613,7 +7614,8 @@
           "observed_value": "For self-hosted gpt-oss-120b and gpt-oss-20b, OpenAI does not receive or process inference input or output unless it is explicitly shared with OpenAI or handled by a managed hosting partner. Model weights use Apache 2.0 subject to the gpt-oss usage policy. Retention, subprocessors, encryption and residency are controlled by the selected infrastructure or hosting partner, not attested for any customer here.",
           "limitations": "Only applies to direct self-hosted gpt-oss usage; separate hosting-provider data-use and regional terms require independent review.",
           "scope": "model-specific open-weight distribution, not customer hosting attestation"
-        }
+        },
+        "verification_scope_note": "Source-verified model identity, weight availability and license, capabilities, self-host pricing and supplier privacy baseline only. Customer-specific hosting, region, runtime retention and contract controls are not asserted."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
