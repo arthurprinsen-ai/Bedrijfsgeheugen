@@ -16571,7 +16571,9 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
-      }
+      },
+      "auto_recommendation_eligible": false,
+      "deployment_readiness": "not_eligible_eol"
     },
     {
       "tier": "balanced",
@@ -17357,7 +17359,9 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
-      }
+      },
+      "auto_recommendation_eligible": false,
+      "deployment_readiness": "not_eligible_eol"
     },
     {
       "tier": "specialist",
@@ -17721,7 +17725,9 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
-      }
+      },
+      "auto_recommendation_eligible": false,
+      "deployment_readiness": "not_eligible_eol"
     },
     {
       "tier": "specialist",
@@ -17898,7 +17904,9 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
-      }
+      },
+      "auto_recommendation_eligible": false,
+      "deployment_readiness": "not_eligible_eol"
     },
     {
       "tier": "specialist",
@@ -18099,7 +18107,7 @@
     },
     {
       "tier": "specialist",
-      "status": "legacy",
+      "status": "eol",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -18228,7 +18236,8 @@
           "checked_on": "2026-10-14",
           "scope": "Amazon Bedrock model pricing",
           "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
-        }
+        },
+        "lifecycle_note": "AWS lists EOL date 2026-06-30 for Titan Image Generator G1 v2, despite model card also showing legacy lifecycle label. EOL date takes precedence for October 2026 planning."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -18273,7 +18282,9 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
-      }
+      },
+      "auto_recommendation_eligible": false,
+      "deployment_readiness": "not_eligible_eol"
     },
     {
       "tier": "specialist",
