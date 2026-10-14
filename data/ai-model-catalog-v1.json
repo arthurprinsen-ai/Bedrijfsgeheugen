@@ -14753,19 +14753,29 @@
           {
             "claim": "model_id",
             "url": "https://huggingface.co/tiiuae/Falcon-OCR",
-            "locator": "Supplier model card: 270M OCR VLM, plain text/LaTeX/HTML, local vLLM Docker deployment",
+            "locator": "Model card > tiiuae / Falcon-OCR",
+            "observed_value": "tiiuae/Falcon-OCR",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Model card > Files and versions; Model updates",
+            "observed_value": "Official downloadable model card and model files published; hosted endpoint availability untested",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://huggingface.co/tiiuae/Falcon-OCR",
-            "locator": "Supplier model card: 270M OCR VLM, plain text/LaTeX/HTML, local vLLM Docker deployment",
+            "locator": "Model card > Falcon OCR; API",
+            "observed_value": "270M parameter document OCR vision-language model; image to plain text, LaTeX formulas and HTML tables",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://huggingface.co/tiiuae/Falcon-OCR",
-            "locator": "Supplier model card: 270M OCR VLM, plain text/LaTeX/HTML, local vLLM Docker deployment",
+            "locator": "Model card > Quickstart; vLLM Server",
+            "observed_value": "Self-host using Transformers trust_remote_code or vLLM/Docker serving, including localhost endpoints; no managed-service availability proven",
             "checked_on": "2026-10-14"
           }
         ]
@@ -14781,14 +14791,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
           "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 2,
         "source_reference": "https://huggingface.co/tiiuae/Falcon-OCR",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
