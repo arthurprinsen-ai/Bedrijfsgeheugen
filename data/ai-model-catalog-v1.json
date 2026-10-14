@@ -4763,8 +4763,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
+            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
+            "locator": "Body Parameters > model",
+            "observed_value": "gpt-image-2.5-sunburst",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Image models > GPT-Image-2.5 Sunburst",
+            "observed_value": "Listed as model for image generation and editing",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Image generation models > Standard > Sunburst",
+            "observed_value": "Image input USD 8 / 1M tokens, cached USD 2, output USD 30; text input USD 5 / 1M tokens; standard mode",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Image > GPT-Image-2.5 Sunburst",
+            "observed_value": "Image generation and editing",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
+            "locator": "POST /images/generations > model",
+            "observed_value": "Image generations endpoint accepts gpt-image-2.5-sunburst; account access not tested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -4788,14 +4817,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4887,8 +4911,37 @@
         "claim_evidence": [
           {
             "claim": "model_id",
+            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
+            "locator": "Body Parameters > model",
+            "observed_value": "gpt-image-2.5-flare",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Image models > GPT-Image-2.5 Flare",
+            "observed_value": "Listed as image generation model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Image generation models > Standard > Flare",
+            "observed_value": "Image input USD 8 / 1M tokens, cached USD 2, output USD 30; text input USD 5 / 1M tokens; standard mode",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Image > GPT-Image-2.5 Flare",
+            "observed_value": "Fast, high-quality image generation",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/reference/resources/images/methods/generate",
+            "locator": "POST /images/generations > model",
+            "observed_value": "Image generations endpoint accepts gpt-image-2.5-flare; account access not tested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -4912,14 +4965,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5037,6 +5085,13 @@
             "locator": "Endpoints > Image generation and Image edit",
             "observed_value": "v1/images/generations and v1/images/edits listed; account-specific access not verified",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Image generation models > All models > GPT Image 2",
+            "observed_value": "Image input USD 4 / 1M tokens, cached USD 1, output USD 15; text input USD 2.50 / 1M tokens; table context applies",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -5059,10 +5114,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5157,7 +5211,29 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Realtime & audio > GPT-Live 1",
+            "observed_value": "GPT-Live 1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Realtime & audio models",
+            "observed_value": "Listed as current voice conversations model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Multimodal models > GPT-Live sessions",
+            "observed_value": "USD 0.05 per minute, other backend model and tool charges separate",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Realtime & audio > GPT-Live 1",
+            "observed_value": "Natural expressive voice conversations, interruption handling",
             "checked_on": "2026-10-14"
           }
         ],
@@ -5181,14 +5257,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 2,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5281,7 +5353,22 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Realtime & audio > GPT-Realtime-2.1",
+            "observed_value": "gpt-realtime-2.1",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Realtime & audio models",
+            "observed_value": "Listed in current model directory",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Realtime and audio generation models > gpt-realtime-2.1",
+            "observed_value": "Audio input USD 32, cached 0.40, output USD 64 per 1M tokens; text input USD 4, output USD 24",
             "checked_on": "2026-10-14"
           }
         ],
@@ -5305,14 +5392,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5405,7 +5489,22 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Realtime & audio > GPT-Realtime-2.1 Mini",
+            "observed_value": "gpt-realtime-2.1-mini",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Realtime & audio models",
+            "observed_value": "Listed in current model directory",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Realtime and audio generation models > gpt-realtime-2.1-mini",
+            "observed_value": "Audio input USD 10, cached 0.30, output USD 20 per 1M tokens; text input USD 0.60, output USD 2.40",
             "checked_on": "2026-10-14"
           }
         ],
@@ -5429,14 +5528,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5526,7 +5622,22 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Realtime & audio > GPT-Realtime-Translate",
+            "observed_value": "gpt-realtime-translate",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Realtime & audio models",
+            "observed_value": "Listed as streaming speech-to-speech translation model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Transcription models > gpt-realtime-translate",
+            "observed_value": "Estimated USD 0.034 per minute",
             "checked_on": "2026-10-14"
           }
         ],
@@ -5550,14 +5661,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5648,7 +5756,22 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Realtime & audio > GPT-Live-Transcribe",
+            "observed_value": "gpt-live-transcribe",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Realtime & audio models",
+            "observed_value": "Listed as low-latency live transcription",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Transcription models > gpt-live-transcribe",
+            "observed_value": "Estimated USD 0.017 per minute",
             "checked_on": "2026-10-14"
           }
         ],
@@ -5672,14 +5795,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -5769,7 +5889,22 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "locator": "Realtime & audio > GPT-Realtime-Whisper",
+            "observed_value": "gpt-realtime-whisper",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Realtime & audio models",
+            "observed_value": "Listed as streaming speech-to-text model",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/pricing",
+            "locator": "Transcription models > gpt-realtime-whisper",
+            "observed_value": "Estimated USD 0.017 per minute",
             "checked_on": "2026-10-14"
           }
         ],
@@ -5793,14 +5928,11 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 3,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
