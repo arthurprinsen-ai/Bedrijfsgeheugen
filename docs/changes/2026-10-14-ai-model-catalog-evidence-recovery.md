@@ -391,3 +391,19 @@ Six Google-owned exact model documentation pages were inspected for model codes,
 | `gemini-omni-1.1-flash` | https://ai.google.dev/gemini-api/docs/models/gemini-omni-flash | Stable Gemini Omni Flash 1.1 video generation/editing and extension with native audio; official model code gemini-omni-1.1-flash (page URL is not model code), Interactions API |
 
 Published model availability, preview or stable labels do not prove account activation, regional entitlement or customer retention controls. Distinct audio/video usage tariffs are not inferable from ordinary Gemini text-token pricing. No customer data or contract was accessed; each `independent_model_source_review_20261014` is `release_eligible=false`.
+
+
+## Final six supplier-model source checks: Mistral and xAI (2026-10-14)
+
+The remaining six supplier-specific model owner pages have been individually inspected for exact API ID, specialized inference endpoint and published modality-specific price. **The catalog's friendly alias may not be identical to the supplier API code**. A public price is not a guaranteed tenant bill, and a free moderation listing cannot be translated to unbounded entitlement.
+
+| Model | Official supplier source | Documented public supplier fact |
+| --- | --- | --- |
+| `codestral-embed` | https://docs.mistral.ai/models/codestral-embed-25-05 | GA model code codestral-embed-2505, 8K context, $0.15 per million embedding input tokens and /v1/embeddings; public guide may document codestral-embed alias |
+| `mistral-embed` | https://docs.mistral.ai/models/mistral-embed-23-12 | Mistral Embed model code mistral-embed-2312, 8K context, $0.10 per million input tokens, /v1/embeddings |
+| `mistral-medium-3-5` | https://docs.mistral.ai/models/mistral-medium-3-5-26-04 | GA v26.04 canonical model code mistral-medium-3-5, Modified MIT weights, 256K context, $1.50 input / $7.50 output per million |
+| `mistral-moderation-2` | https://docs.mistral.ai/models/mistral-moderation-26-03 | GA v26.03 canonical code mistral-moderation-2603, 128K context, supplier labels moderation API Free; not unlimited commercial service entitlement |
+| `voxtral-mini-transcribe-2` | https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02 | GA v26.02 canonical API model code voxtral-mini-2602, transcription-only $0.003/min /v1/audio/transcriptions |
+| `grok-imagine-image-2.0` | https://docs.x.ai/developers/models/grok-imagine-image-2.0 | xAI image generation model $0.04 base image (1K Low), additional input image $0.01; 1.5K, 2K and higher quality higher charges; US regions shown |
+
+These six public source observations are stored with `classification=INDEPENDENT_PUBLIC_MODEL_PAGE_REVIEW_ONLY`, `customer_verified=false` and `release_eligible=false`. Do not treat a complete public-source review matrix as full independent acceptance of all six claims per model. Protected Required, CodeQL, supplier-claim integrity, AWS runtime/region, customer contract and exact production readback remain separate mandatory gates.
