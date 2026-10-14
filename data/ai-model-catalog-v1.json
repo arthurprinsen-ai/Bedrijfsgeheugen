@@ -4359,7 +4359,7 @@
       },
       "id": "mistral-ocr-4.0",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/ocr-4-0",
       "selection_eligible": false,
       "lifecycle_source_verified_at": "2026-10-14",
       "claim_evidence": {
@@ -4369,8 +4369,22 @@
           "status": "PROVIDER_DOC_CONFIRMED",
           "state": "DEPRECATED_OR_RETIRED",
           "suggested_alternative": "mistral-ocr-4-1"
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/ocr-4-0",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-ocr-4-0"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
-      }
+      },
+      "provider_model_id": "mistral-ocr-4-0",
+      "model_source_verified_at": "2026-10-14"
     },
     {
       "tier": "specialist",
@@ -4660,7 +4674,24 @@
       },
       "id": "voxtral-mini-transcribe-realtime",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+      "provider_model_id": "voxtral-mini-transcribe-realtime-2602",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "voxtral-mini-transcribe-realtime-2602"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        }
+      },
+      "unit_price": "$0.006 per minute of live transcription"
     },
     {
       "tier": "open-weight",
@@ -5045,7 +5076,7 @@
       },
       "id": "leanstral-1.5",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/leanstral-1-5",
       "selection_eligible": false,
       "lifecycle_source_verified_at": "2026-10-14",
       "claim_evidence": {
@@ -5055,16 +5086,31 @@
           "status": "PROVIDER_DOC_CONFIRMED",
           "state": "DEPRECATED_OR_RETIRED",
           "suggested_alternative": null
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/leanstral-1-5",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "labs-leanstral-1-5"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
-      }
+      },
+      "provider_model_id": "labs-leanstral-1-5",
+      "model_source_verified_at": "2026-10-14",
+      "deprecated_at": "2026-09-29"
     },
     {
       "tier": "open-weight",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
-      "cached_input_usd_m": null,
-      "context_k": null,
+      "input_usd_m": 1.4,
+      "output_usd_m": 4.4,
+      "cached_input_usd_m": 0.14,
+      "context_k": 1000,
       "modalities": [
         "text"
       ],
@@ -5108,7 +5154,34 @@
       },
       "id": "zai-glm-5.3",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/zai-glm-5-3",
+      "provider_model_id": "zai-glm-5-3",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/zai-glm-5-3",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "zai-glm-5-3"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "pricing": {
+          "source": "https://docs.mistral.ai/models/zai-glm-5-3",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "input": 1.4,
+          "cached_input": 0.14,
+          "output": 4.4,
+          "unit": "USD per 1 million tokens"
+        }
+      },
+      "pricing_source": "https://docs.mistral.ai/models/zai-glm-5-3",
+      "pricing_source_verified_at": "2026-10-14"
     },
     {
       "tier": "open-weight",
@@ -5160,7 +5233,7 @@
       },
       "id": "zai-glm-5.2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/zai-glm-5-2",
       "selection_eligible": false,
       "lifecycle_source_verified_at": "2026-10-14",
       "claim_evidence": {
@@ -5170,8 +5243,24 @@
           "status": "PROVIDER_DOC_CONFIRMED",
           "state": "DEPRECATED_OR_RETIRED",
           "suggested_alternative": "zai-glm-5.3"
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/zai-glm-5-2",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "zai-glm-5-2"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
         }
-      }
+      },
+      "provider_model_id": "zai-glm-5-2",
+      "model_source_verified_at": "2026-10-14",
+      "deprecated_at": "2026-09-29",
+      "effective_model_id": "zai-glm-5.3"
     },
     {
       "tier": "specialist",
