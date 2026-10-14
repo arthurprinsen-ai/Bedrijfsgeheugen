@@ -6977,10 +6977,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -7013,13 +7013,6 @@
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Image generation models > All models > GPT Image 2",
-            "observed_value": "Image input USD 4 / 1M tokens, cached USD 1, output USD 15; text input USD 2.50 / 1M tokens; table context applies",
-            "checked_on": "2026-10-14"
-          },
-          {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
             "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
@@ -7037,6 +7030,13 @@
             "checked_on": "2026-10-14",
             "scope": "model route and endpoint policy only; customer contract and tenant settings unverified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/guides/image-generation",
+            "locator": "GPT Image 2 > image output pricing table",
+            "observed_value": "Per 1024x1024 image: low quality USD 0.006, medium USD 0.053, high USD 0.211; excludes input and partial-image tokens",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -7694,10 +7694,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -7706,13 +7706,6 @@
             "url": "https://developers.openai.com/api/docs/models/all",
             "locator": "Realtime & audio > GPT-Realtime-Translate",
             "observed_value": "gpt-realtime-translate",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Transcription models > gpt-realtime-translate",
-            "observed_value": "Estimated USD 0.034 per minute",
             "checked_on": "2026-10-14"
           },
           {
@@ -7744,6 +7737,13 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
             "locator": "Endpoints > Realtime translation",
             "observed_value": "Dedicated /v1/realtime/translations API for gpt-realtime-translate; account not probed",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+            "locator": "Realtime audio duration > Per minute",
+            "observed_value": "USD 0.034 per minute of translated audio (duration-based, not per-million text tokens)",
             "checked_on": "2026-10-14"
           }
         ],
@@ -7875,10 +7875,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -7887,13 +7887,6 @@
             "url": "https://developers.openai.com/api/docs/models/all",
             "locator": "Realtime & audio > GPT-Live-Transcribe",
             "observed_value": "gpt-live-transcribe",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Transcription models > gpt-live-transcribe",
-            "observed_value": "Estimated USD 0.017 per minute",
             "checked_on": "2026-10-14"
           },
           {
@@ -7925,6 +7918,13 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
             "locator": "Endpoints > Realtime transcription",
             "observed_value": "/v1/realtime/transcription_sessions and Live session interfaces documented; credentials untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+            "locator": "Realtime audio duration > Per minute",
+            "observed_value": "USD 0.017 per minute of audio transcription (duration-based)",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8055,10 +8055,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -8067,13 +8067,6 @@
             "url": "https://developers.openai.com/api/docs/models/all",
             "locator": "Realtime & audio > GPT-Realtime-Whisper",
             "observed_value": "gpt-realtime-whisper",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Transcription models > gpt-realtime-whisper",
-            "observed_value": "Estimated USD 0.017 per minute",
             "checked_on": "2026-10-14"
           },
           {
@@ -8105,6 +8098,13 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
             "locator": "Endpoints > Realtime transcription",
             "observed_value": "/v1/realtime/transcription_sessions, gpt-realtime-whisper; customer authorization untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
+            "locator": "Realtime audio duration > Per minute",
+            "observed_value": "USD 0.017 per minute of audio transcription (duration-based)",
             "checked_on": "2026-10-14"
           }
         ],
@@ -8172,8 +8172,8 @@
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 2.5,
+      "output_usd_m": 10,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -8237,10 +8237,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -8249,13 +8249,6 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
             "locator": "Model heading",
             "observed_value": "gpt-audio-1.5",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
-            "locator": "Pricing > Text tokens / Audio tokens, per 1M",
-            "observed_value": "Text input USD 2.50 output USD 10; audio input USD 32 output USD 64 per 1M tokens",
             "checked_on": "2026-10-14"
           },
           {
@@ -8296,6 +8289,13 @@
             "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
             "locator": "Model description and Endpoints > Chat Completions",
             "observed_value": "/v1/chat/completions with gpt-audio-1.5; account access not tested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/gpt-audio-1.5",
+            "locator": "Pricing > Text tokens / Audio tokens",
+            "observed_value": "USD/1M: text input 2.50, text output 10.00, audio input 32.00, audio output 64.00; token modality-specific",
             "checked_on": "2026-10-14"
           }
         ],
@@ -11253,8 +11253,8 @@
     {
       "tier": "economy",
       "status": "active",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 0.5,
+      "output_usd_m": 6,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -11319,10 +11319,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -11338,13 +11338,6 @@
             "url": "https://ai.google.dev/gemini-api/docs/deprecations/",
             "locator": "Gemini 3 models > gemini-3.8-flash-lite-tts",
             "observed_value": "Released 2026-09-22; no announced shutdown date; account access untested",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "Gemini 3.8 Flash-Lite TTS > Standard Paid Tier",
-            "observed_value": "Through 2026-12-31: text input USD 0.50 per 1M tokens; audio output USD 6.00 per 1M tokens; from 2027-01-01 USD 1.00 and USD 12.00 respectively",
             "checked_on": "2026-10-14"
           },
           {
@@ -11369,6 +11362,13 @@
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash-lite-tts",
             "locator": "Consumption options; Versions",
             "observed_value": "Gemini API gemini-3.8-flash-lite-tts, Batch/Flex/Priority supported; client authorization untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/pricing",
+            "locator": "Gemini 3.8 Flash-Lite TTS > Standard paid tier",
+            "observed_value": "Through 2026-12-31, USD/1M text input 0.50 and audio output 6.00; from 2027-01-01 input 1.00 and output 12.00",
             "checked_on": "2026-10-14"
           }
         ],
@@ -11637,8 +11637,8 @@
     {
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": 0.75,
-      "output_usd_m": 3.75,
+      "input_usd_m": 1.5,
+      "output_usd_m": 7.5,
       "cached_input_usd_m": null,
       "context_k": null,
       "modalities": [
@@ -11703,10 +11703,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -11737,14 +11737,6 @@
             "scope": "model-specific official documentation; not tenant configuration evidence"
           },
           {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "gemini-3.6-flash > Standard > Paid Tier, per 1M tokens",
-            "observed_value": "Standard paid: USD 0.75 per 1M input tokens and USD 3.75 per 1M output tokens through 2026-12-31; from 2027-01-01 USD 1.50 and USD 7.50 respectively.",
-            "checked_on": "2026-10-14",
-            "scope": "model-specific official documentation; not tenant configuration evidence"
-          },
-          {
             "claim": "capabilities",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash",
             "locator": "Capabilities; token limits",
@@ -11756,6 +11748,13 @@
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash",
             "locator": "Consumption options",
             "observed_value": "Gemini API Stable gemini-3.6-flash; Batch, Flex, Priority inference supported; tenant access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/generate-content/whats-new-gemini-3.6",
+            "locator": "New models > Pricing",
+            "observed_value": "Gemini 3.6 Flash: USD 1.50 input, USD 7.50 output per 1M tokens; service tiers may differ",
             "checked_on": "2026-10-14"
           }
         ],
@@ -12097,10 +12096,10 @@
           "model_id",
           "status",
           "capabilities",
-          "deployment"
+          "deployment",
+          "pricing"
         ],
         "not_verified": [
-          "pricing",
           "governance"
         ],
         "claim_evidence": [
@@ -12131,14 +12130,6 @@
             "scope": "model-specific official documentation; not tenant configuration evidence"
           },
           {
-            "claim": "pricing",
-            "url": "https://ai.google.dev/gemini-api/docs/pricing",
-            "locator": "gemini-3.5-flash-lite > Standard > Paid Tier, per 1M tokens",
-            "observed_value": "Standard paid: USD 0.30 input and USD 2.50 output per 1M tokens; text/image/video/audio inputs; Batch prices differ.",
-            "checked_on": "2026-10-14",
-            "scope": "model-specific official documentation; not tenant configuration evidence"
-          },
-          {
             "claim": "capabilities",
             "url": "https://ai.google.dev/gemini-api/docs/generate-content/whats-new-gemini-3.6",
             "locator": "New models > shared limits",
@@ -12150,6 +12141,13 @@
             "url": "https://ai.google.dev/gemini-api/docs/generate-content/whats-new-gemini-3.6",
             "locator": "New models > model ID",
             "observed_value": "gemini-3.5-flash-lite available for production via Gemini Generate Content API; customer access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://ai.google.dev/gemini-api/docs/generate-content/whats-new-gemini-3.6",
+            "locator": "New models > Pricing",
+            "observed_value": "Gemini 3.5 Flash-Lite: USD 0.30 input, USD 2.50 output per 1M tokens; service tiers may differ",
             "checked_on": "2026-10-14"
           }
         ],
