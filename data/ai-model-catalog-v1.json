@@ -2466,9 +2466,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
+        "training_on_customer_data": "Depends on deployment, controls and terms; hosted de-identified use may occur in limited permitted circumstances",
         "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "zero_data_retention": "Available for qualifying Model Vault configurations when enabled; NOT universal",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -2484,13 +2484,15 @@
           "model_id",
           "capabilities",
           "deployment",
-          "pricing_conditions"
+          "pricing_conditions",
+          "public_documented_governance_variants"
         ],
         "not_verified": [
           "contractual Model Vault pricing",
           "tenant-specific availability",
           "governance and residency",
-          "production terms"
+          "production terms",
+          "customer-specific governance contract and residency"
         ],
         "claim_evidence": [
           {
@@ -2529,6 +2531,45 @@
         "rate_model": "free under trial/production API rate limits; Model Vault commercial terms separately negotiated",
         "standard_input_usd_m": null,
         "standard_output_usd_m": null
+      },
+      "governance_evidence": {
+        "checked_on": "2026-10-14",
+        "scope": "provider_documentation_only_not_tenant_contract",
+        "deployment_modes": {
+          "cohere_platform": "Data logically segmented; published model data statement says limited de-identified hosted data use may occur where customer controls and terms allow",
+          "partner_private_or_cloud": "Provider FAQ says customer inputs not shared with Cohere",
+          "model_vault_standard": "Single-tenant and optional zero data retention depending on configured product",
+          "model_vault_encrypted": "ZDR and confidential-computing claims apply only to eligible encrypted vault deployment"
+        },
+        "contract_requirements": [
+          "Confirm signed DPA and subprocessors",
+          "Confirm customer's deployment and data residency region",
+          "Confirm training opt-out, retention and ZDR agreement",
+          "Confirm commercial rate card and product entitlements"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/cohere-faqs",
+            "locator": "Legal, Security, Data Privacy",
+            "observed_value": "Platform logical data segmentation; partner private/cloud deployment data not shared with Cohere",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Model Data and Training",
+            "observed_value": "Limited de-identified hosted usage may contribute to training where controls and terms permit",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/model-vault/standard",
+            "locator": "Architecture and Zero Data Retention",
+            "observed_value": "Single-tenant; ZDR applies when enabled",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2574,9 +2615,9 @@
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
+        "training_on_customer_data": "Depends on deployment, controls and terms; hosted de-identified use may occur in limited permitted circumstances",
         "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "zero_data_retention": "Available for qualifying Model Vault configurations when enabled; NOT universal",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -2590,13 +2631,15 @@
         "claim_scope": "partial",
         "verified_claims": [
           "pricing",
-          "capabilities"
+          "capabilities",
+          "public_documented_governance_variants"
         ],
         "not_verified": [
           "model_id alias mapping",
           "status and availability for individual account",
           "deployment contract",
-          "governance"
+          "governance",
+          "customer-specific governance contract and residency"
         ],
         "claim_evidence": [
           {
@@ -2618,6 +2661,45 @@
             "url": "https://docs.cohere.com/v2/docs/command-a",
             "locator": "API Endpoints, Model ID",
             "observed_value": "command-a-03-2025 (catalog alias command-a must not be assumed to be callable)",
+            "checked_on": "2026-10-14"
+          }
+        ]
+      },
+      "governance_evidence": {
+        "checked_on": "2026-10-14",
+        "scope": "provider_documentation_only_not_tenant_contract",
+        "deployment_modes": {
+          "cohere_platform": "Data logically segmented; published model data statement says limited de-identified hosted data use may occur where customer controls and terms allow",
+          "partner_private_or_cloud": "Provider FAQ says customer inputs not shared with Cohere",
+          "model_vault_standard": "Single-tenant and optional zero data retention depending on configured product",
+          "model_vault_encrypted": "ZDR and confidential-computing claims apply only to eligible encrypted vault deployment"
+        },
+        "contract_requirements": [
+          "Confirm signed DPA and subprocessors",
+          "Confirm customer's deployment and data residency region",
+          "Confirm training opt-out, retention and ZDR agreement",
+          "Confirm commercial rate card and product entitlements"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/cohere-faqs",
+            "locator": "Legal, Security, Data Privacy",
+            "observed_value": "Platform logical data segmentation; partner private/cloud deployment data not shared with Cohere",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/command-a-plus",
+            "locator": "Model Data and Training",
+            "observed_value": "Limited de-identified hosted usage may contribute to training where controls and terms permit",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.cohere.com/docs/model-vault/standard",
+            "locator": "Architecture and Zero Data Retention",
+            "observed_value": "Single-tenant; ZDR applies when enabled",
             "checked_on": "2026-10-14"
           }
         ]
