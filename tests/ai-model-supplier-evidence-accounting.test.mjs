@@ -170,3 +170,17 @@ test('Falcon license source crosschecks remain public-only and non-promoting',()
   assert.ok(receipt.not_verified.some(x=>x.includes('deployment costs')));
  }
 });
+
+test('DeepSeek API platform terms are not model-specific governance proof',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ for(const id of ['deepseek-flash','deepseek-v4-pro']){
+  const model=catalog.models.find(m=>m.id===id);
+  assert.ok(model);
+  const receipts=model.verification_evidence.claim_evidence.filter(r=>r.claim==='governance');
+  assert.ok(receipts.some(r=>r.scope==='API_PLATFORM_TERMS_BASELINE_ONLY'));
+  assert.equal(classifySupplierClaim(model.verification_evidence,'governance'),
+   'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF');
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+  assert.equal(model.supplier_audit.independent_verification_required,true);
+ }
+});
