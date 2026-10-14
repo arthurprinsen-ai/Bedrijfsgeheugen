@@ -8866,7 +8866,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -8895,20 +8895,42 @@
         "checked_on": "2026-10-14",
         "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+            "locator": "Nova 2 Lite > Model Details",
+            "observed_value": "Amazon Nova 2 Lite model card; exact Bedrock inference model ID requires separate check",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Active; launch Dec 02 2025; EOL no sooner than Dec 02 2026",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
-            "locator": "Listed Amazon model family and its task description; does not attest endpoint, region or pricing",
+            "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+            "locator": "Model Details > Input Modalities / Output Modalities / Context window",
+            "observed_value": "Multimodal text, image and video inputs; 1M token context and 64K max output; API capability options subject to model card",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+            "locator": "Model card > APIs supported / Endpoints supported",
+            "observed_value": "Amazon Bedrock supported interfaces; region and account entitlements require independent check",
             "checked_on": "2026-10-14"
           }
         ],
@@ -10119,7 +10141,7 @@
         "cmk": "customer-controlled / hosting-provider dependent",
         "private_networking": "customer-controlled / hosting-provider dependent"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
         "claim_scope": "partial",
@@ -10131,25 +10153,54 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION",
+        "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
         "source_url": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
+        "not_verified": [
+          "pricing"
+        ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
-            "checked_on": "2026-10-14",
-            "locator": "falcon-h1-0.5b-instruct"
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+            "locator": "Model repository title",
+            "observed_value": "tiiuae/Falcon-H1-0.5B-Instruct",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+            "locator": "Official TII model repository",
+            "observed_value": "Model weights and model card published on Hugging Face; hosted inference availability unspecified",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+            "locator": "Model Details / Model Description",
+            "observed_value": "0.5B parameter instruct text generation model, hybrid Transformer-Mamba architecture",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+            "locator": "Usage > Transformers / vLLM / llama.cpp",
+            "observed_value": "Self-hosting via Transformers, vLLM or llama.cpp as documented; hosted API not assumed",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+            "locator": "Model Details > License",
+            "observed_value": "Falcon-LLM License; no claim of Apache 2.0, EU residency, or zero-retention service",
+            "checked_on": "2026-10-14"
           }
         ]
       }
