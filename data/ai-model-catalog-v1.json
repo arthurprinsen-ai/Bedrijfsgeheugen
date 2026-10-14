@@ -104,13 +104,13 @@
           "context_k"
         ],
         "not_verified": [
-          "governance",
+          "status",
+          "pricing",
+          "capabilities",
           "deployment",
-          "status lifecycle beyond documentation",
-          "scores",
-          "region eligibility"
+          "governance"
         ],
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -119,7 +119,15 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       },
       "pricing_basis": {
         "currency": "USD",
@@ -192,17 +200,20 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "source_url": "https://developers.openai.com/api/docs/models",
+        "source_url": "https://developers.openai.com/api/docs/pricing?tab=suite",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "latest listed Sol model is gpt-6.1-sol"
+          "latest listed Sol model is gpt-6.1-sol",
+          "model_id"
         ],
         "not_verified": [
-          "legacy model availability",
+          "status",
           "pricing",
+          "capabilities",
+          "deployment",
           "governance"
         ],
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -211,7 +222,15 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -267,7 +286,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "source_url": "https://developers.openai.com/api/docs/models",
+        "source_url": "https://developers.openai.com/api/docs/pricing",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
@@ -277,12 +296,13 @@
           "cached_input_usd_m"
         ],
         "not_verified": [
-          "cached_input_usd_m",
-          "governance",
+          "status",
+          "pricing",
+          "capabilities",
           "deployment",
-          "scores"
+          "governance"
         ],
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -291,7 +311,15 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       },
       "pricing_basis": {
         "currency": "USD",
@@ -359,7 +387,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -368,7 +396,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/pricing?tab=suite",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -433,17 +481,15 @@
           "status",
           "input_usd_m",
           "output_usd_m",
-          "context_k"
+          "context_k",
+          "pricing"
         ],
         "not_verified": [
-          "pricing modifiers and specific deployment billing",
-          "capabilities beyond official overview",
-          "deployment eligibility",
-          "governance and data-processing terms",
-          "custom contractual pricing",
-          "all model scores"
+          "capabilities",
+          "deployment",
+          "governance"
         ],
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
         "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing",
         "verification_required": [
@@ -454,7 +500,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -517,10 +583,10 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "pricing"
+          "pricing",
+          "status"
         ],
         "not_verified": [
-          "status",
           "capabilities",
           "deployment",
           "governance"
@@ -536,7 +602,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://platform.claude.com/docs/en/models/overview",
+            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -814,7 +900,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -823,7 +909,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/gemini-3",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "All Gemini 3 models endpoints",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -881,7 +987,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -890,7 +996,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/gemini-3",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "All Gemini 3 models endpoints",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -1664,16 +1790,31 @@
         "checked_on": "2026-10-14",
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "pricing"
         ],
         "not_verified": [
           "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "checked_on": "2026-10-14"
+          }
         ]
-      }
+      },
+      "pricing_basis": "Peak-rate USD / million tokens; off-peak inputs and outputs cost 50% less per official supplier pricing timetable; cache hits separately charged."
     },
     {
       "id": "deepseek-v4-pro",
@@ -1738,16 +1879,31 @@
         "checked_on": "2026-10-14",
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "pricing"
         ],
         "not_verified": [
           "status",
-          "pricing",
           "capabilities",
           "deployment",
           "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "checked_on": "2026-10-14"
+          }
         ]
-      }
+      },
+      "pricing_basis": "Peak-rate USD / million tokens; off-peak inputs and outputs cost 50% less per official supplier pricing timetable; cache hits separately charged."
     },
     {
       "id": "command-a-plus",
@@ -2190,7 +2346,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2199,7 +2355,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2255,7 +2431,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2264,7 +2440,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2320,7 +2516,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2329,7 +2525,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2384,7 +2600,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-image-2",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2393,7 +2609,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2449,7 +2685,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2458,7 +2694,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2514,7 +2770,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2523,7 +2779,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2579,7 +2855,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2588,7 +2864,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2641,7 +2937,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2650,7 +2946,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2704,7 +3020,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2713,7 +3029,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2766,7 +3102,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2775,7 +3111,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2830,7 +3186,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2839,7 +3195,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3023,7 +3399,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/guides/moderation",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3032,7 +3408,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/guides/moderation",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/all",
+            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3638,14 +4034,28 @@
         "checked_on": "2026-10-14",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
         ]
       }
     },
@@ -3714,14 +4124,28 @@
         "checked_on": "2026-10-14",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
         ]
       }
     },
@@ -3777,7 +4201,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3786,7 +4210,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3842,7 +4292,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3851,7 +4301,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3907,7 +4383,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3916,7 +4392,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4037,7 +4539,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4046,7 +4548,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4166,7 +4694,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4175,7 +4703,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4231,7 +4785,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4240,7 +4794,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4295,7 +4875,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4304,7 +4884,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4359,7 +4965,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4368,7 +4974,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4423,7 +5055,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4432,7 +5064,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4486,7 +5144,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4495,7 +5153,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4551,7 +5235,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4560,7 +5244,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4615,7 +5325,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4624,7 +5334,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4681,7 +5417,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4690,7 +5426,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Preview and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4745,7 +5507,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4754,7 +5516,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://ai.google.dev/gemini-api/docs/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "status"
+        ],
+        "not_verified": [
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/models",
+            "locator": "Gemini 3 Stable and All Gemini 3 models tables",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -4824,7 +5612,7 @@
     },
     {
       "tier": "specialist",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -4874,7 +5662,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -4883,7 +5671,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "Deprecated & retired models table",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -5462,7 +6270,7 @@
     },
     {
       "tier": "open-weight",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5513,7 +6321,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -5522,7 +6330,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "Deprecated & retired models table",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -5591,7 +6419,7 @@
     },
     {
       "tier": "open-weight",
-      "status": "active",
+      "status": "deprecated",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -5640,7 +6468,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -5649,7 +6477,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.mistral.ai/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "status"
+        ],
+        "not_verified": [
+          "model_id",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "status",
+            "url": "https://docs.mistral.ai/models",
+            "locator": "Deprecated & retired models table",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
