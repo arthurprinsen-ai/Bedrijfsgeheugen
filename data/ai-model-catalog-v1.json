@@ -11970,7 +11970,8 @@
       ],
       "limitations": [
         "verify exact endpoint pricing and regional processing for production",
-        "Deprecated in official Google release notes; do not select for new deployments."
+        "Deprecated in official Google release notes; do not select for new deployments.",
+        "Deprecated October 8 2026; migrate to gemini-nano-banana-2.1 as advised. Paid API training restriction does not imply no abuse logs, image grounding storage, or configured tenant ZDR."
       ],
       "scores": {
         "reasoning": 3,
@@ -12007,7 +12008,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -12016,7 +12017,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -12024,11 +12025,10 @@
           "status",
           "deployment",
           "pricing",
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -12043,16 +12043,6 @@
             "locator": "October 8 2026 > deprecation announcement",
             "observed_value": "Deprecated; no shutdown date announced; recommended successor gemini-nano-banana-2.1",
             "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
             "claim": "deployment",
@@ -12076,6 +12066,22 @@
             "locator": "Supported data types / token limits / capabilities",
             "observed_value": "Text/image/video/PDF input, image/text output; input 131072 tokens, output 32768; image generation supported",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging; Grounding with Google Search; Interactions API; File API Storage",
+            "observed_value": "For paid Gemini Developer API, image/text prompts and outputs are excluded from product-improvement training but subject to limited abuse logs. Image Search grounding may retain requests and generated outputs for 30 days; Files API and Interactions state have separate storage controls. Does not establish blanket ZDR, region or tenant payment tier. Model deprecated Oct 8 2026 but endpoint has no announced shutdown date.",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier image-generation API policy; no customer ZDR or regional attestation"
+          },
+          {
+            "claim": "status",
+            "url": "https://ai.google.dev/gemini-api/docs/changelog",
+            "locator": "October 8, 2026 > deprecation announcement for gemini-3.1-flash-image",
+            "observed_value": "Deprecated 2026-10-08, no shutdown date announced; recommended replacement gemini-nano-banana-2.1; API endpoint may still be callable",
+            "checked_on": "2026-10-14",
+            "scope": "official lifecycle notice"
           }
         ],
         "provider_policy_evidence": {
