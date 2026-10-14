@@ -111,6 +111,20 @@
           "region eligibility"
         ],
         "claim_scope": "partial"
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "units": "per 1M tokens",
+        "processing_mode": "Standard",
+        "context_band": "short context",
+        "other_processing_modes_and_long_context": "Different prices apply; consult provider",
+        "source": "https://developers.openai.com/api/docs/pricing",
+        "checked_at": "2026-10-14",
+        "verified_fields": [
+          "input_usd_m",
+          "output_usd_m",
+          "cached_input_usd_m"
+        ]
       }
     },
     {
@@ -152,7 +166,8 @@
       ],
       "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
       "limitations": [
-        "Official OpenAI model directory now lists gpt-6.1-sol; legacy gpt-6-sol availability and price are not reverified. Do not route automatically based on this entry."
+        "Official OpenAI model directory now lists gpt-6.1-sol; legacy gpt-6-sol availability and price are not reverified. Do not route automatically based on this entry.",
+        "OpenAI model directory identifies GPT-6.1 Sol as latest Sol offering; compare legacy model compatibility against provider before selection."
       ],
       "governance": {
         "storage_residency": "EU option documented",
@@ -249,6 +264,20 @@
           "scores"
         ],
         "claim_scope": "partial"
+      },
+      "pricing_basis": {
+        "currency": "USD",
+        "units": "per 1M tokens",
+        "processing_mode": "Standard",
+        "context_band": "short context",
+        "other_processing_modes_and_long_context": "Different prices apply; consult provider",
+        "source": "https://developers.openai.com/api/docs/pricing",
+        "checked_at": "2026-10-14",
+        "verified_fields": [
+          "input_usd_m",
+          "output_usd_m",
+          "cached_input_usd_m"
+        ]
       }
     },
     {
