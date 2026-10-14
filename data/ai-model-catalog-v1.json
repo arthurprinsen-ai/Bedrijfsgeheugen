@@ -15382,7 +15382,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 300,
       "modalities": [
         "text",
         "vision",
@@ -15414,7 +15414,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "EU regions documented among supported Bedrock regions; exact profile must be selected",
@@ -15426,7 +15426,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
       "id": "amazon-nova-lite",
       "provider": "Amazon",
       "verification_evidence": {
@@ -15441,15 +15441,15 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -15458,20 +15458,6 @@
             "url": "https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html",
             "locator": "Model specifications > Input modalities / Output modalities / Context Window",
             "observed_value": "Text, image and video input; text output; 300K context",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Model ID",
-            "observed_value": "amazon.nova-lite-v1:0",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Model ID / Amazon Bedrock",
-            "observed_value": "Amazon Bedrock model ID amazon.nova-lite-v1:0; tenant entitlement and region not independently checked",
             "checked_on": "2026-10-14"
           },
           {
@@ -15485,10 +15471,24 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+            "locator": "Programmatic Access > bedrock-runtime model ID",
+            "observed_value": "amazon.nova-lite-v1:0",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
             "locator": "Model Details > Model lifecycle",
-            "observed_value": "Official AWS model card lists Amazon Nova Lite as Active, model amazon.nova-lite-v1:0. Account and regional eligibility untested.",
+            "observed_value": "Active according to AWS Bedrock model card; lifecycle can be region-specific",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+            "locator": "Programmatic Access > Model ID and geo inference IDs",
+            "observed_value": "AWS Bedrock InvokeModel and Converse APIs, bedrock-runtime; geo IDs in US/EU/APAC; actual AWS region and tenant entitlement untested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -15517,7 +15517,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -15527,7 +15527,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html"
       }
     },
     {
@@ -15536,7 +15538,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "modalities": [
         "text"
       ],
@@ -15567,7 +15569,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -15579,7 +15581,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
       "id": "amazon-nova-micro",
       "provider": "Amazon",
       "verification_evidence": {
@@ -15594,15 +15596,15 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
         "verified_claims": [
-          "capabilities"
-        ],
-        "not_verified": [
+          "capabilities",
           "model_id",
           "status",
+          "deployment"
+        ],
+        "not_verified": [
           "pricing",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -15611,20 +15613,6 @@
             "url": "https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html",
             "locator": "Model specifications > Input modalities / Output modalities / Context Window",
             "observed_value": "Text input; text output; 128K context",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Model ID",
-            "observed_value": "amazon.nova-micro-v1:0",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/nova/latest/userguide/",
-            "locator": "Model specifications > Model ID / Amazon Bedrock",
-            "observed_value": "Amazon Bedrock model ID amazon.nova-micro-v1:0; tenant entitlement and region not independently checked",
             "checked_on": "2026-10-14"
           },
           {
@@ -15638,10 +15626,24 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+            "locator": "Programmatic Access > Model ID",
+            "observed_value": "amazon.nova-micro-v1:0",
+            "checked_on": "2026-10-14"
+          },
+          {
             "claim": "status",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
             "locator": "Model Details > Model lifecycle",
-            "observed_value": "Official AWS model card lists Amazon Nova Micro as Active, model amazon.nova-micro-v1:0. Account and regional eligibility untested.",
+            "observed_value": "Active according to AWS Bedrock model card; lifecycle can vary by region",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+            "locator": "Programmatic Access and supported APIs",
+            "observed_value": "AWS Bedrock InvokeModel/Converse in bedrock-runtime, geo inference US/EU; tenant and region availability not authenticated",
             "checked_on": "2026-10-14"
           }
         ],
@@ -15670,7 +15672,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -15680,7 +15682,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html"
       }
     },
     {
@@ -15874,7 +15878,7 @@
         "Amazon Bedrock"
       ],
       "source_type": "official-cloud-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
         "inference_residency": "AWS region/deployment dependent",
@@ -15886,7 +15890,7 @@
         "cmk": "service/configuration dependent",
         "private_networking": "AWS networking options dependent"
       },
-      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
       "id": "amazon-nova-multimodal-embeddings",
       "provider": "Amazon",
       "verification_evidence": {
@@ -15901,39 +15905,18 @@
         ],
         "evidence_status": "PARTIALLY_VERIFIED",
         "checked_on": "2026-10-14",
-        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
         "verified_claims": [
           "capabilities",
-          "deployment"
+          "deployment",
+          "model_id",
+          "status"
         ],
         "not_verified": [
-          "model_id",
-          "status",
           "pricing",
           "governance"
         ],
         "claim_evidence": [
-          {
-            "claim": "status",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
-            "locator": "Model Details > Model lifecycle",
-            "observed_value": "Active; EOL not specified",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "capabilities",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
-            "locator": "Model Details > Description",
-            "observed_value": "Generates embeddings from text, images, and video for retrieval",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "model_id",
-            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/guardrails-supported.html",
-            "locator": "Models that do not support Bedrock Guardrails > Amazon Nova Multimodal Embeddings",
-            "observed_value": "amazon.nova-2-multimodal-embeddings-v1:0",
-            "checked_on": "2026-10-14"
-          },
           {
             "claim": "governance",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
@@ -15945,19 +15928,31 @@
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
-            "claim": "deployment",
-            "url": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
-            "locator": "Using Amazon Nova embeddings > Generating embeddings > Synchronous embedding for text; modelId amazon.nova-2-multimodal-embeddings-v1:0",
-            "observed_value": "Amazon Nova 2 Multimodal Embeddings has official Amazon Bedrock Runtime deployment using invoke_model(modelId='amazon.nova-2-multimodal-embeddings-v1:0') for synchronous inference, with async embeddings also documented. AWS account model enablement, region and customer access require authenticated validation.",
-            "checked_on": "2026-10-14",
-            "scope": "Amazon Bedrock official model-specific API invocation instructions; no customer access or regional entitlement attested",
-            "verification_status": "SUPPLIER_API_DOCUMENTED_TENANT_UNVERIFIED"
+            "claim": "model_id",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+            "locator": "Programmatic Access > Model ID",
+            "observed_value": "amazon.nova-2-multimodal-embeddings-v1:0; catalog label amazon-nova-multimodal-embeddings is a descriptive alias",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "Active; launched October 28, 2025; EOL not before October 28, 2026",
+            "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
-            "locator": "Programmatic Access > bedrock-runtime; Sample Code > StartAsyncInvoke",
-            "observed_value": "Amazon Bedrock model amazon.nova-2-multimodal-embeddings-v1:0 uses asynchronous bedrock-runtime StartAsyncInvoke, not standard InvokeModel. Region / tenant entitlement untested.",
+            "locator": "Programmatic Access > bedrock-runtime; APIs supported",
+            "observed_value": "AWS Bedrock bedrock-runtime; InvokeModel and StartAsyncInvoke documented; no Geo/Global inference ID listed; tenant access untested",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+            "locator": "Model Details > Modalities",
+            "observed_value": "Multimodal embeddings: text, image and video converted into vectors for search/retrieval; async inference supported",
             "checked_on": "2026-10-14"
           }
         ],
@@ -15986,7 +15981,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -15996,7 +15991,9 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "last_specific_source_check": "2026-10-14",
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html"
       },
       "aws_official_deployment_research_20261014": {
         "source": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
