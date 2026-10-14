@@ -380,6 +380,8 @@ function fullSupplierEvidence(m){
 function eligible(m){
  // EOL models and non-runnable family placeholders must never be auto-recommended.
  if(m.status==='eol'||m.auto_recommendation_eligible===false||m.record_kind==='model_family_placeholder')return false;
+ // Canonical API entry takes precedence over its user-friendly catalog alias; never recommend the same underlying model twice.
+ if(m.provider_api_id&&catalog.models.some(other=>other!==m&&other.provider===m.provider&&other.id===m.provider_api_id&&other.provider_api_id===m.provider_api_id))return false;
  // Public model and provider claims cannot attest customer-specific enabled controls.
  // A private, authenticated tenant acceptance API is required before any restricted recommendation.
  if($('euOnly').checked||$('zdr').checked||$('customerControl').checked)return false;
