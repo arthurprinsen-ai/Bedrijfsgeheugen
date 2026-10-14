@@ -184,3 +184,19 @@ test('DeepSeek API platform terms are not model-specific governance proof',()=>{
   assert.equal(model.supplier_audit.independent_verification_required,true);
  }
 });
+
+test('Nova Premier public-list omission cannot attest AWS account/region lifecycle',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const m=c.models.find(model=>model.id==='amazon-nova-premier');
+ assert.ok(m);
+ const check=m.supplier_audit?.current_public_table_recheck_20261014;
+ assert.ok(check,'The independent AWS public lifecycle table recheck must be retained');
+ assert.equal(check.source_url,'https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html');
+ assert.equal(check.account_region_modelLifecycle_readback,false);
+ assert.equal(check.model_card_discrepancy_retained,true);
+ assert.equal(check.release_eligible,false);
+ assert.equal(check.independent_supplier_full_verification,false);
+ assert.ok(Array.isArray(m.supplier_source_conflicts)&&m.supplier_source_conflicts.length>0);
+ assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ assert.notEqual(m.verification_evidence?.claim_scope,'full');
+});
