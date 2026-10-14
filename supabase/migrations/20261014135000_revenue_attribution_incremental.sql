@@ -22,6 +22,7 @@ BEGIN
     WHERE conversion_at >= p_since;
   INSERT INTO public.powerhouse_revenue_attribution_snapshot_v1 (outcome_id,touch_type,touch_id,touch_at,conversion_at,channel,campaign_key,content_key,opportunity_key,person_key,company_key,revenue_eur,attribution_weight,attributed_revenue_eur,is_first_touch,is_conversion_touch,attribution_model,attribution_confidence,evidence,refreshed_at)
   SELECT outcome_id,touch_type,touch_id,touch_at,conversion_at,channel,campaign_key,content_key,opportunity_key,person_key,company_key,revenue_eur,attribution_weight,attributed_revenue_eur,is_first_touch,is_conversion_touch,attribution_model,attribution_confidence,evidence,v_now FROM pg_temp.revenue_delta_stage
+  WHERE true -- disambiguate INSERT SELECT from the following ON CONFLICT clause
   ON CONFLICT(outcome_id,touch_type,touch_id) DO UPDATE SET
     touch_at=excluded.touch_at,
     conversion_at=excluded.conversion_at,
