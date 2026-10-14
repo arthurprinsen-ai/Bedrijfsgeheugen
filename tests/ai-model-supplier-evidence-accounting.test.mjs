@@ -72,7 +72,7 @@ test('supplier ledger reconciliation is deterministic, scoped and fail-closed',(
  model.supplier_audit.missing_claim_receipts=['bogus-drift'];
  model.supplier_audit.missing_receipt_count=99;
  model.supplier_audit.automatic_recommendation_eligible=true;
- model.supplier_audit.independent_verification_required=true;
+ model.supplier_audit.independent_verification_required=false;
  const check=reconcileSupplierAudit(catalog);
  assert.ok(check.changed_models>=1);
  assert.equal(check.applied,false);
