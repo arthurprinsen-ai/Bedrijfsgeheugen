@@ -179,13 +179,32 @@
           "output_usd_m",
           "cached_input_usd_m"
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-6-astra",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
       "id": "gpt-6-sol",
       "provider": "OpenAI",
       "tier": "balanced",
-      "status": "active",
+      "status": "unverified",
       "input_usd_m": 1,
       "output_usd_m": 5,
       "cached_input_usd_m": 0.1,
@@ -221,7 +240,8 @@
       "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
       "limitations": [
         "Official OpenAI model directory now lists gpt-6.1-sol; legacy gpt-6-sol availability and price are not reverified. Do not route automatically based on this entry.",
-        "OpenAI model directory identifies GPT-6.1 Sol as latest Sol offering; compare legacy model compatibility against provider before selection."
+        "OpenAI model directory identifies GPT-6.1 Sol as latest Sol offering; compare legacy model compatibility against provider before selection.",
+        "Catalog status is unverified; previous active flag was not independently supported by current official model listing."
       ],
       "governance": {
         "storage_residency": "EU option documented",
@@ -276,6 +296,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/pricing?tab=suite",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -387,6 +431,30 @@
           "output_usd_m",
           "cached_input_usd_m"
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -478,6 +546,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/pricing?tab=suite",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -622,6 +714,25 @@
         "fast_output_usd": 40,
         "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
         "claim_scope": "pricing_only"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/overview",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -762,6 +873,25 @@
         "batch_output_usd": 5,
         "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
         "claim_scope": "pricing_only"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/overview",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -855,6 +985,30 @@
         "batch_output_usd": 5,
         "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
         "claim_scope": "pricing_only"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -986,6 +1140,25 @@
         "fast_output_usd": 50,
         "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
         "claim_scope": "pricing_only"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1120,6 +1293,25 @@
         "batch_output_usd": 2.5,
         "conditions": "First-party base prices. Cloud partner endpoints, US inference residency, caching writes and other usage modes may change costs; see supplier pricing page.",
         "claim_scope": "pricing_only"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1215,6 +1407,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/gemini-3",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1310,6 +1526,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/gemini-3",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1412,6 +1652,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1510,6 +1774,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/inference/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1617,6 +1905,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1731,6 +2039,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1844,6 +2171,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -1950,6 +2296,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -2057,6 +2423,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -2168,6 +2554,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/inference/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -2282,6 +2687,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models/ocr-4-1",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -2394,6 +2818,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.x.ai/developers/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -2495,7 +2938,31 @@
           }
         ]
       },
-      "pricing_basis": "USD/1M tokens standard under 200k: input 2, cached 0.5, output 6; >=200k: input 4, cached 1, output 12; US regional endpoint 1.1x, priority 2x."
+      "pricing_basis": "USD/1M tokens standard under 200k: input 2, cached 0.5, output 6; >=200k: input 4, cached 1, output 12; US regional endpoint 1.1x, priority 2x.",
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.x.ai/developers/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
+      }
     },
     {
       "id": "deepseek-flash",
@@ -2609,6 +3076,26 @@
           "output": 0.6
         },
         "peak_hours_utc": "Monday–Friday 01:00–04:00 and 06:00–10:00, excluding Chinese public holidays"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "status",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -2722,6 +3209,26 @@
           "output": 1.98
         },
         "peak_hours_utc": "Monday–Friday 01:00–04:00 and 06:00–10:00, excluding Chinese public holidays"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "status",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -2878,6 +3385,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "status",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.cohere.com/docs/command-a-plus",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3030,6 +3557,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.cohere.com/v2/docs/command-a",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3143,7 +3689,28 @@
           "checked_on": "2026-10-14"
         }
       },
-      "pricing_basis": "Cohere Standard Vault instance-based, small $4/hour or $2500/month; medium $5/hour or $3250/month. Do not present as API per-token price."
+      "pricing_basis": "Cohere Standard Vault instance-based, small $4/hour or $2500/month; medium $5/hour or $3250/month. Do not present as API per-token price.",
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "status",
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 3,
+        "source_reference": "https://docs.cohere.com/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
+      }
     },
     {
       "id": "rerank-4-pro",
@@ -3235,7 +3802,31 @@
           }
         ]
       },
-      "pricing_basis": "Model Vault pricing is per-instance: medium $5/hour or $3250/month; large $10/hour or $6500/month; does not establish pay-as-you-go API price."
+      "pricing_basis": "Model Vault pricing is per-instance: medium $5/hour or $3250/month; large $10/hour or $6500/month; does not establish pay-as-you-go API price.",
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://cohere.com/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
+      }
     },
     {
       "id": "llama-open-weight",
@@ -3325,6 +3916,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://www.llama.com/",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3409,6 +4024,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://qwenlm.github.io/",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3504,6 +4143,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3597,6 +4260,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3690,6 +4377,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3782,6 +4493,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-image-2",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3875,6 +4610,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -3968,6 +4727,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4061,6 +4844,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4151,6 +4958,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4242,6 +5073,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4332,6 +5187,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4424,6 +5303,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4545,6 +5448,25 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4666,6 +5588,25 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4781,6 +5722,26 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://developers.openai.com/api/docs/guides/moderation",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4883,6 +5844,28 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 4,
+        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -4997,6 +5980,26 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5099,6 +6102,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5201,6 +6228,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5302,6 +6353,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5403,6 +6478,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5527,6 +6626,25 @@
           }
         ],
         "evidence_status": "PARTIALLY_VERIFIED"
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5630,6 +6748,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5753,6 +6895,25 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5851,6 +7012,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -5949,6 +7134,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6048,6 +7257,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6147,6 +7380,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6250,6 +7507,29 @@
         "source": "https://ai.google.dev/gemini-api/docs/pricing",
         "checked_at": "2026-10-14",
         "caveat": "Prices are date- and tier-specific; no blanket pricing claim for other modes or locations."
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 5,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/pricing",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6349,6 +7629,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6455,6 +7759,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6553,6 +7881,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6652,6 +8004,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6750,6 +8126,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6848,6 +8248,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -6946,6 +8370,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7043,6 +8491,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7142,6 +8614,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7240,6 +8736,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7340,6 +8860,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7438,6 +8982,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline; not a model deployment or customer contract attestation"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://ai.google.dev/gemini-api/docs/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7552,6 +9120,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7643,6 +9230,30 @@
           "replacement": "mistral-ocr-4-1",
           "checked_on": "2026-10-14"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7727,6 +9338,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7811,6 +9446,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -7915,6 +9574,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8021,6 +9700,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8106,6 +9805,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8189,6 +9912,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8273,6 +10020,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8358,6 +10129,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8441,6 +10236,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8533,6 +10352,30 @@
           "source": "https://docs.mistral.ai/resources/changelogs",
           "checked_on": "2026-10-14"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8617,6 +10460,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8707,6 +10574,30 @@
           "source": "https://docs.mistral.ai/resources/changelogs",
           "checked_on": "2026-10-14"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8789,6 +10680,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.x.ai/developers/release-notes",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8879,6 +10794,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.x.ai/developers/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -8963,6 +10902,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.x.ai/developers/models",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9076,6 +11039,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.cohere.com/v1/changelog",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9189,6 +11171,25 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
+        "source_reference": "https://docs.cohere.com/v1/changelog",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9273,6 +11274,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.cohere.com/v1/changelog",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9394,6 +11419,26 @@
         "verification_notes": [
           "Exact Bedrock inference ID not confirmed by the model card"
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9509,6 +11554,26 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9611,6 +11676,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9706,6 +11795,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9801,6 +11914,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9895,6 +12032,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -9995,6 +12156,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10090,6 +12275,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10184,6 +12393,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10278,6 +12511,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10371,6 +12628,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10465,6 +12746,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10559,6 +12864,30 @@
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
         }
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10672,6 +13001,26 @@
         "verification_notes": [
           "License only, not full security and governance assessment"
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10782,6 +13131,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -10893,6 +13262,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -11004,6 +13393,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -11115,6 +13524,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -11226,6 +13655,26 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "pricing",
+          "governance"
+        ],
+        "missing_receipt_count": 2,
+        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     },
     {
@@ -11327,6 +13776,30 @@
             "checked_on": "2026-10-14"
           }
         ]
+      },
+      "supplier_audit": {
+        "assessment": "EVIDENCE_INCOMPLETE",
+        "required_claims": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_claim_receipts": [
+          "model_id",
+          "status",
+          "pricing",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "missing_receipt_count": 6,
+        "source_reference": "https://huggingface.co/tiiuae/Falcon-OCR",
+        "source_reference_is_not_proof": true,
+        "automatic_recommendation_eligible": false,
+        "independent_verification_required": true
       }
     }
   ],
