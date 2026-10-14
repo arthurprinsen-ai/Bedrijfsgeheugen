@@ -13,13 +13,14 @@ export function customerClaimStatus({tenantId,provider,modelId,claim,receipts=[]
   const requirement=customerClaimRequirements[claim];
   if(!requirement||!nonEmpty(tenantId)||!nonEmpty(provider)||!nonEmpty(modelId))
     return {status:'UNVERIFIED',reason:'INVALID_SCOPE_OR_CLAIM'};
-  const valid=receipts.filter(r=>r && r.claim===claim && r.tenant_id===tenantId &&
+  const valid=(Array.isArray(receipts)?receipts:[]).filter(r=>r && r.claim===claim && r.tenant_id===tenantId &&
     r.provider===provider && r.model_id===modelId && r.scope==='customer_specific' &&
     r.review_status==='approved' && nonEmpty(r.approved_by) &&
     nonEmpty(r.evidence_reference) && nonEmpty(r.checked_on) &&
     nonEmpty(r.valid_until) && r.evidence_kind===requirement &&
     Number.isFinite(Date.parse(r.checked_on)) && Number.isFinite(Date.parse(r.valid_until)) &&
-    Date.parse(r.checked_on)<=asOf.getTime() && Date.parse(r.valid_until)>=asOf.getTime() &&
+    Date.parse(r.checked_on)<=asOf.getTime() &&
+    Date.parse(r.valid_until+( /^\\d{4}-\\d{2}-\\d{2}$/.test(r.valid_until)?'T23:59:59.999Z':''))>=asOf.getTime() &&
     (claim!=='tenant_data_residency'||(nonEmpty(r.region) && r.runtime_region_confirmed===true)) &&
     (!['tenant_zdr','customer_cmk','private_networking_enabled'].includes(claim)||
       (r.control_enabled===true && nonEmpty(r.configuration_reference))));
