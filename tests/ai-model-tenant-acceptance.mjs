@@ -37,6 +37,15 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
   evidence_reference:r.evidence_reference,approved_by:r.approved_by,checked_at:r.checked_at,
   observed_value:r.observed_value,expected_value:r.expected_value,readback:r.readback};
  if(r.observed_value===undefined||r.expected_value===undefined||r.observed_value!==r.expected_value) errors.push(p+':CONFIGURATION_READBACK_MISMATCH');
+ // A matching disabled control is not proof of an enabled security option.
+ if(['tenant_zdr','customer_cmk','private_networking_enabled'].includes(r.claim) &&
+    (r.expected_value!==true || r.observed_value!==true))
+   errors.push(p+':REQUIRED_SECURITY_CONTROL_NOT_ENABLED');
+ // Residency is a concrete tenant-bound location, not a boolean, vague region, or empty string.
+ if(r.claim==='tenant_data_residency' &&
+    (typeof r.expected_value!=='string' || !/^[a-z]{2}(?:-[a-z0-9]+)+$/i.test(r.expected_value) ||
+     r.observed_value!==r.expected_value))
+   errors.push(p+':TENANT_RESIDENCY_REGION_UNVERIFIED');
  // A matching readback of 'disabled' is not evidence that a requested security control is enabled.
  if(['tenant_zdr','customer_cmk','private_networking_enabled'].includes(r.claim) &&
     (r.expected_value!==true || r.observed_value!==true))
