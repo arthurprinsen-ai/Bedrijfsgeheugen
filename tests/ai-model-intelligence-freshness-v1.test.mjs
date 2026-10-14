@@ -32,7 +32,7 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
       typeof x.url==='string' && x.url.startsWith('https://') &&
       typeof x.locator==='string' && x.locator.trim() &&
       typeof x.observed_value==='string' && x.observed_value.trim() &&
-      x.checked_on===e.checked_on && !String(r.scope??'').includes('NOT model-specific') && r.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
+      x.checked_on===e.checked_on && !String(x.scope??'').includes('NOT model-specific') && x.verification_status!=='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED');
     if(!receipt) issues.push('missing claim-specific evidence '+claim);
    }
   }
