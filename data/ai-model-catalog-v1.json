@@ -1713,7 +1713,7 @@
       "deployment": [
         "DeepSeek API"
       ],
-      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "source": "https://api-docs.deepseek.com/news/news260813/",
       "limitations": [],
       "governance": {
         "storage_residency": "EU storage not documented for this path",
@@ -1727,7 +1727,22 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://api-docs.deepseek.com/news/news260813/",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_ANNOUNCEMENT_CONFIRMED_API_ID_UNVERIFIED",
+          "provider_model_id": null
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "id": "command-a-plus",
@@ -1841,7 +1856,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 128,
       "unit_price": "Model Vault from $4/hour",
       "modalities": [
         "embedding"
@@ -1870,7 +1885,7 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing",
+      "source": "https://docs.cohere.com/v2/docs/cohere-embed",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -1884,7 +1899,29 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "embed-v4.0",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/v2/docs/cohere-embed",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "embed-v4.0"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/v2/docs/cohere-embed",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 128000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "id": "rerank-4-pro",
@@ -1894,7 +1931,7 @@
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 32,
       "unit_price": "Model Vault from $5/hour",
       "modalities": [
         "rerank"
@@ -1923,7 +1960,7 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing",
+      "source": "https://docs.cohere.com/docs/rerank",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -1937,7 +1974,29 @@
         "private_networking": "verify current product/contract"
       },
       "verified_at": "2026-09-30",
-      "source_type": "official-provider"
+      "source_type": "official-provider",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "rerank-v4.0-pro",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.cohere.com/docs/rerank",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "rerank-v4.0-pro"
+        },
+        "context_window": {
+          "source": "https://docs.cohere.com/docs/rerank",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 32000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "id": "llama-open-weight",
@@ -3022,7 +3081,23 @@
       },
       "id": "claude-fable-5",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-fable-5",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-fable-5"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "frontier",
@@ -3133,7 +3208,23 @@
       },
       "id": "claude-opus-4-7",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-opus-4-7",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-opus-4-7"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "frontier",
@@ -3188,7 +3279,23 @@
       },
       "id": "claude-opus-4-6",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-opus-4-6",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-opus-4-6"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -3244,7 +3351,23 @@
       },
       "id": "claude-sonnet-4-6",
       "provider": "Anthropic",
-      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+      "source": "https://platform.claude.com/docs/en/claude_api_primer",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "claude-sonnet-4-6",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://platform.claude.com/docs/en/claude_api_primer",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "claude-sonnet-4-6"
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "balanced",
@@ -4324,10 +4447,10 @@
     {
       "tier": "frontier",
       "status": "duplicate_alias",
-      "input_usd_m": null,
-      "output_usd_m": null,
+      "input_usd_m": 1.5,
+      "output_usd_m": 7.5,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 256,
       "modalities": [
         "text",
         "vision"
@@ -4382,8 +4505,30 @@
           "checked_at": "2026-10-14",
           "status": "PROVIDER_DOC_CONFIRMED",
           "canonical_catalog_id": "mistral-medium-3-5"
+        },
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-medium-3-5"
+        },
+        "context_window": {
+          "source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 256000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
         }
-      }
+      },
+      "model_source_verified_at": "2026-10-14",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "provider_direct_reference"
     },
     {
       "tier": "specialist",
@@ -4852,10 +4997,10 @@
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
+      "input_usd_m": 0.15,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 8,
       "modalities": [
         "code"
       ],
@@ -4898,15 +5043,40 @@
       },
       "id": "codestral-embed",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "codestral-embed-2505",
+      "pricing_source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "provider_direct_reference",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "codestral-embed-2505"
+        },
+        "context_window": {
+          "source": "https://docs.mistral.ai/models/codestral-embed-25-05",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 8000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
+      "input_usd_m": 0.1,
       "output_usd_m": null,
       "cached_input_usd_m": null,
-      "context_k": null,
+      "context_k": 8,
       "modalities": [
         "text",
         "code"
@@ -4950,7 +5120,32 @@
       },
       "id": "mistral-embed",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+      "model_source_verified_at": "2026-10-14",
+      "provider_model_id": "mistral-embed-2312",
+      "pricing_source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+      "pricing_source_verified_at": "2026-10-14",
+      "pricing_tier": "provider_direct_reference",
+      "claim_evidence": {
+        "model_identity": {
+          "source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "provider_model_id": "mistral-embed-2312"
+        },
+        "context_window": {
+          "source": "https://docs.mistral.ai/models/mistral-embed-23-12",
+          "checked_at": "2026-10-14",
+          "status": "PROVIDER_DOC_CONFIRMED",
+          "value_tokens": 8000
+        },
+        "provider_contracts": {
+          "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "tenant_governance": {
+          "status": "UNVERIFIED_REQUIRES_CUSTOMER_READBACK"
+        }
+      }
     },
     {
       "tier": "open-weight",
