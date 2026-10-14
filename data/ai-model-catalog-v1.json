@@ -6757,7 +6757,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -6771,9 +6771,9 @@
       },
       "id": "gpt-live-1",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-live-1",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -6782,72 +6782,61 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "evidence_status": "SUPPLIER_CLAIMS_DOCUMENTED_CUSTOMER_CONTROLS_UNVERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-live-1",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio > GPT-Live 1",
-            "observed_value": "GPT-Live 1",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-1",
+            "locator": "Model heading; Snapshots",
+            "observed_value": "gpt-live-1 (GPT-Live 1)",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio models",
-            "observed_value": "Listed as current voice conversations model",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-1",
+            "locator": "Model heading > Default",
+            "observed_value": "Default; published provider model (customer entitlement not read back)",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Multimodal models > GPT-Live sessions",
-            "observed_value": "USD 0.05 per minute, other backend model and tool charges separate",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-1",
+            "locator": "Pricing > Voice sessions; billing",
+            "observed_value": "USD $0.05 per minute billed by second; backend model calls and tools billed separately",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio > GPT-Live 1",
-            "observed_value": "Natural expressive voice conversations, interruption handling",
+            "url": "https://developers.openai.com/api/docs/models/gpt-live-1",
+            "locator": "Modalities and Features",
+            "observed_value": "Full-duplex audio input/output and text input/output; streaming and function calling supported; image/video unsupported",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://developers.openai.com/api/docs/models/gpt-live-1",
             "locator": "Endpoints > Live; Snapshots",
-            "observed_value": "v1/live/sessions with model gpt-live-1 documented; tenant access not tested",
+            "observed_value": "OpenAI API /v1/live/sessions model gpt-live-1; account authorization not independently tested",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/live/sessions",
+            "observed_value": "Session storage disabled by default; saved sessions expire after 30 days; ZDR-eligible with endpoint limitations; US/EU data-residency documented; delegated tools and customer settings require separate verification",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Storage requirements and retention controls per endpoint > /v1/live/sessions; Endpoint limitations > /v1/live/sessions",
-            "observed_value": "For GPT-Live 1 on /v1/live/sessions, session storage is disabled by default; optional stored recordings persist for 30 days. ZDR-eligible with endpoint limitations; US and EU data residency documented, delegated models/tools have separate controls. No customer ZDR or regional deployment confirmed.",
-            "checked_on": "2026-10-14",
-            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "scope": "documented model-specific API endpoint behavior; tenant contract, ZDR and region not verified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
@@ -6864,10 +6853,11 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "tenant_acceptance": "UNVERIFIED_AUTHENTICATED_READBACK_REQUIRED"
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "DOCUMENTED_SUPPLIER_CLAIMS_TENANT_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -6878,7 +6868,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-live-1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -6897,7 +6887,10 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-live-1",
+        "last_specific_source_check": "2026-10-14",
+        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup"
       }
     },
     {
@@ -6937,7 +6930,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -6951,9 +6944,9 @@
       },
       "id": "gpt-realtime-2.1",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -6962,72 +6955,61 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "evidence_status": "SUPPLIER_CLAIMS_DOCUMENTED_CUSTOMER_CONTROLS_UNVERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio > GPT-Realtime-2.1",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
+            "locator": "Model heading",
             "observed_value": "gpt-realtime-2.1",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio models",
-            "observed_value": "Listed in current model directory",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
+            "locator": "Model heading > Default",
+            "observed_value": "Listed as Default; customer endpoint entitlements not read back",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Realtime and audio generation models > gpt-realtime-2.1",
-            "observed_value": "Audio input USD 32, cached 0.40, output USD 64 per 1M tokens; text input USD 4, output USD 24",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
+            "locator": "Pricing > Text/Audio/Image tokens per 1M",
+            "observed_value": "Text USD 4 input, USD 0.40 cached input, USD 24 output; audio USD 32 input, USD 0.40 cached input, USD 64 output; image input USD 5",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
-            "locator": "Model overview > Modalities / Features",
-            "observed_value": "Speech-to-speech with reasoning, tool calls, text and audio input/output, image input; video unsupported",
+            "locator": "Context, Modalities, Features",
+            "observed_value": "128000 context, 32000 max output; text/audio input and output, image input; video unsupported; function calling supported",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
-            "url": "https://developers.openai.com/api/docs/guides/realtime-conversations",
-            "locator": "Realtime conversations > WebRTC / WebSocket",
-            "observed_value": "Realtime API model gpt-realtime-2.1 using WebRTC or WebSocket; account authorization not tested",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
+            "locator": "Endpoints > Realtime",
+            "observed_value": "Provider API /v1/realtime documented; customer account authorization not tested",
             "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           },
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
             "locator": "Storage requirements and retention controls per endpoint > /v1/realtime; Endpoint limitations > /v1/realtime",
-            "observed_value": "For GPT-Realtime-2.1 on /v1/realtime, documented application-state retention is None and abuse-monitoring logs are generally retained 30 days unless approved controls apply. Realtime tracing is not currently EU data-residency compliant; tenant configuration is not authenticated.",
+            "observed_value": "Realtime endpoint documents no application-state retention; default abuse-monitoring may retain content up to 30 days; tracing is not EU data-residency compliant; tenant ZDR and regional configuration unverified",
             "checked_on": "2026-10-14",
-            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "scope": "documented model-specific API endpoint behavior; tenant contract, ZDR and region not verified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
@@ -7044,10 +7026,11 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "tenant_acceptance": "UNVERIFIED_AUTHENTICATED_READBACK_REQUIRED"
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "DOCUMENTED_SUPPLIER_CLAIMS_TENANT_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -7058,7 +7041,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -7077,7 +7060,10 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1",
+        "last_specific_source_check": "2026-10-14",
+        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup"
       }
     },
     {
@@ -7117,7 +7103,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -7131,9 +7117,9 @@
       },
       "id": "gpt-realtime-2.1-mini",
       "provider": "OpenAI",
-      "source": "https://developers.openai.com/api/docs/models/all",
+      "source": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -7142,72 +7128,61 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
-        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "evidence_status": "SUPPLIER_CLAIMS_DOCUMENTED_CUSTOMER_CONTROLS_UNVERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
-        ],
-        "not_verified": [
+          "model_id",
           "status",
           "pricing",
           "capabilities",
           "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio > GPT-Realtime-2.1 Mini",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
+            "locator": "Model heading",
             "observed_value": "gpt-realtime-2.1-mini",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Realtime & audio models",
-            "observed_value": "Listed in current model directory",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
+            "locator": "Model heading > Default",
+            "observed_value": "Listed as Default; customer entitlement not read back",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
-            "url": "https://developers.openai.com/api/docs/pricing",
-            "locator": "Realtime and audio generation models > gpt-realtime-2.1-mini",
-            "observed_value": "Audio input USD 10, cached 0.30, output USD 20 per 1M tokens; text input USD 0.60, output USD 2.40",
+            "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
+            "locator": "Pricing > Text/Audio/Image tokens per 1M",
+            "observed_value": "Text USD 0.60 input, USD 0.06 cached input, USD 2.40 output; audio USD 10 input, USD 0.30 cached input, USD 20 output; image input USD 0.80",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
-            "locator": "Modalities > Text/Image/Audio/Video",
-            "observed_value": "Text input/output; image input; audio input/output; video unsupported",
+            "locator": "Context, Modalities, Features",
+            "observed_value": "128000 context, 32000 max output; text/audio input and output, image input; video unsupported; supports WebRTC, WebSockets, SIP",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "deployment",
             "url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
             "locator": "Endpoints > Realtime",
-            "observed_value": "Realtime endpoint v1/realtime listed, actual account permission untested",
+            "observed_value": "Provider API /v1/realtime documented; customer account authorization not tested",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "governance",
             "url": "https://developers.openai.com/api/docs/guides/your-data",
-            "locator": "Data controls in the OpenAI platform > Your data is your data; Data retention controls for abuse monitoring",
-            "observed_value": "For the OpenAI API, customer content is not used to train OpenAI models by default unless the customer opts in. Abuse-monitoring logs may contain content and are generally retained up to 30 days. Zero Data Retention is conditional on approval, endpoint eligibility and enabled settings; no tenant setting or EU region is attested.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
-          {
-            "claim": "governance",
-            "url": "https://developers.openai.com/api/docs/guides/your-data",
             "locator": "Storage requirements and retention controls per endpoint > /v1/realtime; Endpoint limitations > /v1/realtime",
-            "observed_value": "For GPT-Realtime-2.1 Mini on /v1/realtime, documented application-state retention is None and abuse-monitoring logs are generally retained 30 days unless approved controls apply. Realtime tracing is not currently EU data-residency compliant; tenant configuration is not authenticated.",
+            "observed_value": "Realtime endpoint documents no application-state retention; default abuse-monitoring may retain content up to 30 days; tracing is not EU data-residency compliant; tenant ZDR and regional configuration unverified",
             "checked_on": "2026-10-14",
-            "scope": "model-specific documented provider endpoint or exception; customer contract and live controls unverified",
+            "scope": "documented model-specific API endpoint behavior; tenant contract, ZDR and region not verified",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
@@ -7224,10 +7199,11 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "tenant_acceptance": "UNVERIFIED_AUTHENTICATED_READBACK_REQUIRED"
       },
       "supplier_audit": {
-        "assessment": "EVIDENCE_INCOMPLETE",
+        "assessment": "DOCUMENTED_SUPPLIER_CLAIMS_TENANT_UNVERIFIED",
         "required_claims": [
           "model_id",
           "status",
@@ -7238,7 +7214,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://developers.openai.com/api/docs/models/all",
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -7257,7 +7233,10 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-2.1-mini",
+        "last_specific_source_check": "2026-10-14",
+        "source_check_scope": "Official model-specific API and endpoint data controls; no authenticated customer setup"
       }
     },
     {
