@@ -42,6 +42,44 @@ export function classifySupplierClaim(evidence, claim) {
  return 'NO_USABLE_MODEL_SOURCE_RECEIPT';
 }
 
+
+/**
+ * Recompute materialized evidence classifications from existing receipts only.
+ * This never creates receipts, timestamps, independent approvals or customer evidence.
+ * Use --check to detect drift and --reconcile for an explicit, fail-closed repair.
+ */
+export function reconcileSupplierAudit(catalog,{apply=false}={}) {
+ if(!Array.isArray(catalog?.models)) throw new Error('INVALID_MODEL_CATALOG');
+ const changed_model_ids=[];
+ for(const model of catalog.models) {
+  const audit=model.supplier_audit;
+  if(!audit||typeof audit!=='object') throw new Error('SUPPLIER_AUDIT_MISSING:'+model.id);
+  const classifications=Object.fromEntries(
+   REQUIRED_SUPPLIER_CLAIMS.map(claim=>[claim,classifySupplierClaim(model.verification_evidence,claim)])
+  );
+  const missing=REQUIRED_SUPPLIER_CLAIMS.filter(
+   claim=>classifications[claim]!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED'
+  );
+  const previous=audit.claim_evidence_classification||{};
+  const changed=REQUIRED_SUPPLIER_CLAIMS.some(claim=>previous[claim]!==classifications[claim])||
+   JSON.stringify(audit.missing_claim_receipts)!==JSON.stringify(missing)||
+   audit.missing_receipt_count!==missing.length;
+  if(changed) {
+   changed_model_ids.push(model.id);
+   if(apply) {
+    audit.claim_evidence_classification=classifications;
+    audit.missing_claim_receipts=missing;
+    audit.missing_receipt_count=missing.length;
+    if(missing.length>0||audit.independent_verification_required!==false)
+     audit.automatic_recommendation_eligible=false;
+   }
+  }
+ }
+ return {models:catalog.models.length,changed_models:changed_model_ids.length,
+  changed_model_ids,applied:apply,
+  assurance:'Only derived supplier-audit accounting was reconciled. No claim was verified or approved.'};
+}
+
 export function supplierEvidenceWorklist(catalog) {
  if(!Array.isArray(catalog?.models)) throw new Error('INVALID_MODEL_CATALOG');
  const rows=[];
@@ -106,8 +144,21 @@ export function supplierEvidenceWorklist(catalog) {
 }
 
 if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href) {
- const catalog=JSON.parse(await fs.readFile('data/ai-model-catalog-v1.json','utf8'));
- const output=JSON.stringify(supplierEvidenceWorklist(catalog),null,2)+'\n';
- if(process.argv[2]) await fs.writeFile(process.argv[2],output);
- else process.stdout.write(output);
+ const catalogPath='data/ai-model-catalog-v1.json';
+ const catalog=JSON.parse(await fs.readFile(catalogPath,'utf8'));
+ if(process.argv[2]==='--check'||process.argv[2]==='--reconcile') {
+  const apply=process.argv[2]==='--reconcile';
+  const report=reconcileSupplierAudit(catalog,{apply});
+  if(apply&&report.changed_models) {
+   const temporary=catalogPath+'.reconcile-'+process.pid+'.tmp';
+   await fs.writeFile(temporary,JSON.stringify(catalog,null,2)+'\n','utf8');
+   await fs.rename(temporary,catalogPath);
+  }
+  process.stdout.write(JSON.stringify(report,null,2)+'\n');
+  if(!apply&&report.changed_models) process.exitCode=2;
+ } else {
+  const output=JSON.stringify(supplierEvidenceWorklist(catalog),null,2)+'\n';
+  if(process.argv[2]) await fs.writeFile(process.argv[2],output);
+  else process.stdout.write(output);
+ }
 }
