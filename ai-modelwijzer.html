@@ -316,11 +316,11 @@ function monthlyCost(m){
 }
 function governanceBadges(m){
  const b=[];
- b.push(m.eu_processing===true?'<span class="badge good">EU-inferentie optie</span>':m.eu_processing===false?'<span class="badge risk">Geen EU-inferentie in dit pad</span>':'<span class="badge warn">EU-inferentie onbekend</span>');
+ b.push(m.eu_processing===true?'<span class="badge good">EU-inferentie mogelijk; klantregio niet bevestigd</span>':m.eu_processing===false?'<span class="badge risk">Geen EU-inferentie in dit pad</span>':'<span class="badge warn">EU-inferentie onbekend</span>');
  if(m.self_host)b.push('<span class="badge good">Self-host mogelijk</span>');
  if(m.open_weights)b.push('<span class="badge good">Open weights</span>');
- if(supportsZdr(m))b.push('<span class="badge good">ZDR-pad beschikbaar</span>');
- if(customerControlled(m))b.push('<span class="badge good">Customer-controlled pad</span>');
+ if(supportsZdr(m))b.push('<span class="badge good">ZDR mogelijk; niet aantoonbaar ingeschakeld</span>');
+ if(customerControlled(m))b.push('<span class="badge good">Customer-controlled mogelijk; niet gevalideerd</span>');
  b.push('<span class="badge">'+m.jurisdiction+'</span>');
  return b.join('');
 }
@@ -339,7 +339,7 @@ function bestGovernancePath(m){
 }
 function governancePathHtml(m){
  const g=bestGovernancePath(m);
- if(!g)return '<div class="badge warn">Deployment-governance: nog niet afzonderlijk geverifieerd</div>';
+ if(!g)return '<div class="badge warn">Deployment-governance: geen klantgebonden contract/configuratie bevestigd</div>';
  const val=x=>x==null?'onbekend':String(x);
  return '<div class="why"><strong>Deploymentpad:</strong> '+g.label+
    '<br><strong>Opslag:</strong> '+val(g.storage_residency)+
@@ -348,7 +348,7 @@ function governancePathHtml(m){
    '<br><strong>Retentie:</strong> '+val(g.default_content_retention)+
    '<br><strong>ZDR:</strong> '+val(g.zero_data_retention)+
    '<br><strong>Soevereiniteit:</strong> '+val(g.sovereignty_level)+
-   ' · <a href="'+g.source+'" target="_blank" rel="noopener">governancebron ↗</a></div>';
+   ' · <a href="'+g.source+'" target="_blank" rel="noopener">leveranciersbeleid ↗</a><br><strong>Klantspecifieke afspraken en actieve instellingen:</strong> niet geverifieerd</div>';
 }
 function renderProviderGovernance(){
  const holder=$('providerGovernanceGrid'); if(!holder)return;
