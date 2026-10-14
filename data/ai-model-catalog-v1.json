@@ -2,7 +2,7 @@
   "version": "ai-model-catalog-v2",
   "verified_at": "2026-09-30",
   "currency": "USD",
-  "scope_note": "Decision catalog covering frontier, economy, open-weight and specialist models across text, image, audio, realtime, OCR, embeddings, moderation and video. Unknown governance fields remain UNKNOWN. Catalog is refreshed from official-provider sources and is designed for continuous expansion rather than a fixed shortlist.",
+  "scope_note": "Decision catalog covering frontier, economy, open-weight and specialist models across text, image, audio, realtime, OCR, embeddings, moderation and video. Unknown governance fields remain UNKNOWN. Catalog is refreshed from official-provider sources and is designed for continuous expansion rather than a fixed shortlist. WARNING: Catalog-wide verification remains stale until all model claims are independently validated; a verified price is not a verification of lifecycle, deployment or governance.",
   "governance_dimensions": [
     "provider_jurisdiction",
     "storage_residency",
@@ -91,7 +91,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-10-14",
+      "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
         "source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
@@ -109,7 +109,8 @@
           "status lifecycle beyond documentation",
           "scores",
           "region eligibility"
-        ]
+        ],
+        "claim_scope": "partial"
       }
     },
     {
@@ -186,7 +187,7 @@
       "status": "active",
       "input_usd_m": 0.1,
       "output_usd_m": 0.5,
-      "cached_input_usd_m": 0.005,
+      "cached_input_usd_m": 0.01,
       "context_k": 1050,
       "modalities": [
         "text",
@@ -216,7 +217,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/models",
+      "source": "https://developers.openai.com/api/docs/pricing",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -238,14 +239,16 @@
           "model_id",
           "input_usd_m",
           "output_usd_m",
-          "context_k"
+          "context_k",
+          "cached_input_usd_m"
         ],
         "not_verified": [
           "cached_input_usd_m",
           "governance",
           "deployment",
           "scores"
-        ]
+        ],
+        "claim_scope": "partial"
       }
     },
     {
