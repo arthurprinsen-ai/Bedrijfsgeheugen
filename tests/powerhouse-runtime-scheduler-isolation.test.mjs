@@ -45,3 +45,14 @@ test('migration swaps original multiplexed cron within one transaction',()=>{
   assert.ok(sql.indexOf('cron.unschedule(171)') > sql.indexOf('powerhouse-runtime-isolated-prediction-learning-audit'));
   assert.doesNotMatch(sql,/SET statement_timeout = 0/i);
 });
+
+const rolling=readFileSync('supabase/migrations/20261014135000_revenue_attribution_incremental.sql','utf8');
+test('revenue attribution uses bounded staging and scoped atomic publication',()=>{
+  assert.match(rolling,/CREATE TEMP TABLE revenue_delta_stage ON COMMIT DROP AS/);
+  assert.match(rolling,/WHERE conversion_at >= p_since/);
+  assert.match(rolling,/WHERE s\.conversion_at >= p_since AND NOT EXISTS/);
+  assert.match(rolling,/ON CONFLICT\(outcome_id,touch_type,touch_id\) DO UPDATE/);
+  assert.match(rolling,/IS DISTINCT FROM/);
+  assert.match(rolling,/cron\.schedule\('powerhouse-runtime-isolated-revenue-attribution-snapshot'/);
+  assert.doesNotMatch(rolling,/TRUNCATE TABLE|DELETE FROM public\.powerhouse_revenue_attribution_snapshot_v1\s*;/i);
+});
