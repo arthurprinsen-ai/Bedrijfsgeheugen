@@ -46,10 +46,19 @@ async function worker(){
     const allowed=matching.every(m=>providers[m.provider]?.includes(new URL(url).hostname));
     if(!allowed){verdict.set(url,{state:'UNTRUSTED_SOURCE_DOMAIN',http_status:null});continue;}
     try{
-      const response=await fetch(url,{method:'GET',redirect:'error',signal:AbortSignal.timeout(9000),
+      const response=await fetch(url,{method:'GET',redirect:'follow',signal:AbortSignal.timeout(9000),
         headers:{'user-agent':'POWERHOUSE-catalog-source-audit/1.0'}});
       // A provider page mentioning a model ID is evidence of a mention only,
       // not of model availability, prices, governance, residency or a DPA.
+      // Some official providers redirect legacy documentation routes. The
+      // final destination must remain on that provider's explicit allowlist.
+      const finalUrl=new URL(response.url);
+      if(!matching.every(m=>providers[m.provider]?.includes(finalUrl.hostname))){
+        await response.body?.cancel();
+        verdict.set(url,{state:'UNTRUSTED_SOURCE_REDIRECT',http_status:response.status,
+          final_host:finalUrl.hostname});
+        continue;
+      }
       const body=await response.text();
       const bytes=Buffer.byteLength(body,'utf8');
       const readable=response.ok&&bytes<=maxSourceBytes;
@@ -58,7 +67,7 @@ async function worker(){
       ])):{};
       verdict.set(url,{state:!response.ok?'SOURCE_HTTP_ERROR':!readable?
         'SOURCE_TOO_LARGE_FOR_PROBE':'SOURCE_REACHABLE_NOT_CLAIM_VERIFIED',
-        http_status:response.status,body_bytes:bytes,
+        http_status:response.status,final_url:response.url,body_bytes:bytes,
         body_sha256:readable?createHash('sha256').update(body).digest('hex'):null,
         model_id_mentions:mentions});
     }catch(e){
