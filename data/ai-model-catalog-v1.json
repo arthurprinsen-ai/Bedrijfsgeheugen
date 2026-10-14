@@ -197,7 +197,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-6-astra",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -319,7 +326,14 @@
         "source_reference": "https://developers.openai.com/api/docs/pricing?tab=suite",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -472,18 +486,20 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
-        "source_reference": "https://developers.openai.com/api/docs/pricing",
+        "missing_receipt_count": 1,
+        "source_reference": "https://developers.openai.com/api/docs/models/gpt-6-luna",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -598,7 +614,14 @@
         "source_reference": "https://developers.openai.com/api/docs/pricing?tab=suite",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -761,7 +784,14 @@
         "source_reference": "https://platform.claude.com/docs/en/models/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -920,7 +950,14 @@
         "source_reference": "https://platform.claude.com/docs/en/models/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1037,7 +1074,14 @@
         "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1187,7 +1231,14 @@
         "source_reference": "https://platform.claude.com/docs/en/about-claude/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1340,7 +1391,14 @@
         "source_reference": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1459,7 +1517,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/gemini-3",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1578,7 +1643,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/gemini-3",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1704,7 +1776,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1826,7 +1905,14 @@
         "source_reference": "https://docs.mistral.ai/inference/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -1953,7 +2039,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2086,7 +2179,14 @@
         "source_reference": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2218,7 +2318,14 @@
         "source_reference": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2350,7 +2457,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2477,7 +2591,14 @@
         "source_reference": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2607,7 +2728,14 @@
         "source_reference": "https://docs.mistral.ai/inference/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2740,7 +2868,14 @@
         "source_reference": "https://docs.mistral.ai/models/ocr-4-1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2871,7 +3006,14 @@
         "source_reference": "https://docs.x.ai/developers/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.x.ai/developers/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -2996,7 +3138,14 @@
         "source_reference": "https://docs.x.ai/developers/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.x.ai/developers/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -3130,7 +3279,14 @@
         "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -3263,7 +3419,14 @@
         "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -3439,7 +3602,14 @@
         "source_reference": "https://docs.cohere.com/docs/command-a-plus",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.cohere.com/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -3610,7 +3780,14 @@
         "source_reference": "https://docs.cohere.com/v2/docs/command-a",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.cohere.com/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -3744,7 +3921,14 @@
         "source_reference": "https://docs.cohere.com/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.cohere.com/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -3872,7 +4056,14 @@
         "source_reference": "https://cohere.com/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.cohere.com/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -3986,7 +4177,14 @@
         "source_reference": "https://www.llama.com/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://dev.meta.ai/llama",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4094,7 +4292,14 @@
         "source_reference": "https://qwenlm.github.io/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://qwen.readthedocs.io/en/v1.5/",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4235,18 +4440,20 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-6.1-sol",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4363,7 +4570,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4480,7 +4694,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4596,7 +4817,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-image-2",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4713,7 +4941,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4830,7 +5065,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -4947,7 +5189,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5061,7 +5310,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5176,7 +5432,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5290,7 +5553,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5406,7 +5676,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5546,7 +5823,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5686,7 +5970,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5827,7 +6118,14 @@
         "source_reference": "https://developers.openai.com/api/docs/guides/moderation",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -5951,7 +6249,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6085,7 +6390,14 @@
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://developers.openai.com/api/docs/models/all",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6211,7 +6523,14 @@
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6337,7 +6656,14 @@
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6462,7 +6788,14 @@
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6587,7 +6920,14 @@
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6730,7 +7070,14 @@
         "source_reference": "https://platform.claude.com/docs/en/models/sonnet-4-6/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6857,7 +7204,14 @@
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://platform.claude.com/docs/en/models/overview",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -6999,7 +7353,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -7127,7 +7488,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -7255,7 +7623,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -7384,7 +7759,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -7507,7 +7889,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -7633,7 +8022,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -7756,7 +8152,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -7886,7 +8289,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8008,7 +8418,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8131,7 +8548,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8253,7 +8677,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8375,7 +8806,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8497,7 +8935,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8618,7 +9063,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8741,7 +9193,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8863,7 +9322,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -8987,7 +9453,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9109,7 +9582,14 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://ai.google.dev/gemini-api/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9242,7 +9722,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9357,7 +9844,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9465,7 +9959,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9573,7 +10074,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9697,7 +10205,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9823,7 +10338,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -9932,7 +10454,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10039,7 +10568,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10165,18 +10701,20 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10285,7 +10823,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10392,7 +10937,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10508,7 +11060,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10616,7 +11175,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10730,7 +11296,14 @@
         "source_reference": "https://docs.mistral.ai/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.mistral.ai/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10836,7 +11409,14 @@
         "source_reference": "https://docs.x.ai/developers/release-notes",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.x.ai/developers/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -10950,7 +11530,14 @@
         "source_reference": "https://docs.x.ai/developers/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.x.ai/developers/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11058,7 +11645,14 @@
         "source_reference": "https://docs.x.ai/developers/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.x.ai/developers/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11190,7 +11784,14 @@
         "source_reference": "https://docs.cohere.com/v1/changelog",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.cohere.com/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11322,7 +11923,14 @@
         "source_reference": "https://docs.cohere.com/v1/changelog",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.cohere.com/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11442,7 +12050,14 @@
         "source_reference": "https://docs.cohere.com/v1/changelog",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.cohere.com/docs/models",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11583,7 +12198,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11718,7 +12340,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11856,7 +12485,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -11986,15 +12622,21 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12125,7 +12767,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12255,7 +12904,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12379,7 +13035,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12498,7 +13161,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12616,7 +13286,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12734,7 +13411,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12851,7 +13535,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -12969,7 +13660,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13087,7 +13785,14 @@
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13220,7 +13925,14 @@
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13350,7 +14062,14 @@
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13481,7 +14200,14 @@
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13612,7 +14338,14 @@
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13743,7 +14476,14 @@
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13874,7 +14614,14 @@
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     },
     {
@@ -13999,7 +14746,14 @@
         "source_reference": "https://huggingface.co/tiiuae/Falcon-OCR",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true
+        "independent_verification_required": true,
+        "provider_index_review": {
+          "url": "https://huggingface.co/collections/tiiuae/falcon-h1",
+          "reviewed_on": "2026-10-14",
+          "scope": "Provider overview/index reviewed, not model-specific confirmation",
+          "model_claims_verified_by_index": false
+        },
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
       }
     }
   ],
