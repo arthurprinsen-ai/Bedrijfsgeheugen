@@ -13834,7 +13834,7 @@
     },
     {
       "tier": "specialist",
-      "status": "active",
+      "status": "legacy",
       "input_usd_m": null,
       "output_usd_m": null,
       "cached_input_usd_m": null,
@@ -13849,7 +13849,8 @@
         "watermarking"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "AWS lists lifecycle Legacy and EOL date June 30, 2026. Do not route automatically; current invoke eligibility not established."
       ],
       "scores": {
         "reasoning": 2,
@@ -13928,6 +13929,13 @@
             "locator": "Programmatic Access > Model ID",
             "observed_value": "bedrock-runtime amazon.titan-image-generator-v2:0; regional account entitlement untested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+            "locator": "Model Details > Model lifecycle and EOL date",
+            "observed_value": "AWS lists lifecycle Legacy and EOL date June 30, 2026. Do not route automatically; current invoke eligibility not established.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -13951,11 +13959,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13986,7 +13993,8 @@
         "recommendations"
       ],
       "limitations": [
-        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+        "verify exact regional availability and pricing for chosen Bedrock endpoint",
+        "AWS lists model lifecycle Active; AWS region/account access has not been verified."
       ],
       "scores": {
         "reasoning": 1,
@@ -14065,6 +14073,13 @@
             "locator": "Generate embeddings from an image > CLI",
             "observed_value": "AWS bedrock-runtime invoke-model with amazon.titan-embed-image-v1",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+            "locator": "Model Details > Model lifecycle",
+            "observed_value": "AWS lists model lifecycle Active; AWS region/account access has not been verified.",
+            "checked_on": "2026-10-14"
           }
         ],
         "provider_policy_evidence": {
@@ -14088,11 +14103,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
