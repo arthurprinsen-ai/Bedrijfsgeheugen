@@ -23,6 +23,10 @@ export function classifySupplierClaim(evidence, claim) {
   const locator=String(r.locator??'');
   return scope.includes('NOT model-specific')||
    status==='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'||
+   // DeepSeek API platform terms apply to the service, not either exact model.
+   (claim==='governance'&&(
+    scope==='API_PLATFORM_TERMS_BASELINE_ONLY'||
+    status==='PROVIDER_POLICY_DOCUMENTED_CUSTOMER_DEPLOYMENT_UNVERIFIED'))||
    (claim==='governance'&&/^(verified supplier-wide|verified supplier-level)/.test(scope))||
    (claim==='governance'&&status==='OFFICIAL_POLICY_OBSERVED_TENANT_UNVERIFIED'&&
     !/Model-specific data retention requirements|Covered Model/i.test(locator))||
