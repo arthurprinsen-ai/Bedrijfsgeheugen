@@ -10,6 +10,7 @@ function matches(path, patterns = []) { return patterns.some(pattern => pattern.
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'scripts/brain/audit-ai-model-provider-sources.mjs': 'backend',
+  '.github/workflows/powerhouse-ai-model-source-audit.yml': 'backend',
   'tests/powerhouse-runtime-scheduler-isolation.test.mjs': 'backend',
   'AGENTS.md': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
