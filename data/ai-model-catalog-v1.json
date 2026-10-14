@@ -4462,7 +4462,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -4493,11 +4493,11 @@
         "verified_claims": [
           "model_id",
           "pricing",
-          "capabilities"
+          "capabilities",
+          "status",
+          "deployment"
         ],
         "not_verified": [
-          "status",
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -4520,6 +4520,20 @@
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
             "locator": "Model card > Modalities",
             "observed_value": "Text embeddings; image/audio/video not supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+            "locator": "Model card > Default and Snapshots",
+            "observed_value": "Default model and alias text-embedding-3-large listed in official model card; tenant access not probed",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/reference/resources/embeddings/methods/create",
+            "locator": "Create embeddings > HTTP POST /v1/embeddings and allowed EmbeddingModel IDs",
+            "observed_value": "POST https://api.openai.com/v1/embeddings accepts model text-embedding-3-large with authentication; tenant-specific access not tested",
             "checked_on": "2026-10-14"
           }
         ],
@@ -4569,7 +4583,7 @@
         "OpenAI API"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -4601,10 +4615,10 @@
           "model_id",
           "pricing",
           "status",
-          "capabilities"
+          "capabilities",
+          "deployment"
         ],
         "not_verified": [
-          "deployment",
           "governance"
         ],
         "claim_evidence": [
@@ -4613,13 +4627,6 @@
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
             "locator": "Model heading and snapshots",
             "observed_value": "text-embedding-3-small",
-            "checked_on": "2026-10-14"
-          },
-          {
-            "claim": "status",
-            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
-            "locator": "Model header label",
-            "observed_value": "Default; model page lists available alias text-embedding-3-small",
             "checked_on": "2026-10-14"
           },
           {
@@ -4634,6 +4641,20 @@
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
             "locator": "Modalities > text/image/audio/video",
             "observed_value": "Text embeddings; image/audio/video not supported",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "status",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-small",
+            "locator": "Model card > Default and Snapshots",
+            "observed_value": "Default model and alias text-embedding-3-small listed in official model card; tenant access not probed",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://developers.openai.com/api/reference/resources/embeddings/methods/create",
+            "locator": "Create embeddings > HTTP POST /v1/embeddings and allowed EmbeddingModel IDs",
+            "observed_value": "POST https://api.openai.com/v1/embeddings accepts model text-embedding-3-small with authentication; tenant-specific access not tested",
             "checked_on": "2026-10-14"
           }
         ],
