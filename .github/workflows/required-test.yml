@@ -332,6 +332,7 @@ jobs:
           tests/powerhouse-runtime-scheduler-isolation.test.mjs
           tests/brain-self-improvement-layer-v1.test.mjs
           tests/ai-model-intelligence-freshness-v1.test.mjs
+          tests/ai-model-official-source-evidence.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/cms-website-portal-v1.test.mjs
