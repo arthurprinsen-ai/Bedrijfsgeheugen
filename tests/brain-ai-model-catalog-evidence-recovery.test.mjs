@@ -63,3 +63,14 @@ test('supplier source classifications remain fail-closed across all model record
  }
  assert.equal(count,660);
 });
+
+test('public advisor cannot recommend catalog-full models without independent audit approval',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/m\.supplier_audit\?\.automatic_recommendation_eligible!==true/);
+ assert.match(html,/m\.supplier_audit\?\.independent_verification_required===true/);
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ for(const m of catalog.models.filter(x=>x.verification_evidence?.claim_scope==='full')) {
+  if(m.supplier_audit?.independent_verification_required===true)
+   assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false,m.id);
+ }
+});
