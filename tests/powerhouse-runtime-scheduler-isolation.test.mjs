@@ -121,3 +121,14 @@ test('runtime acceptance is read-only, fail-closed and does not claim provider d
   assert.match(acceptance,/powerhouse_refresh_revenue_attribution_incremental_v1/);
   assert.doesNotMatch(acceptance,/\b(?:UPDATE|INSERT|DELETE|DROP|TRUNCATE|ALTER|CREATE TABLE)\s+/i);
 });
+
+const outsideWatch=readFileSync('netlify/functions/powerhouse-external-database-watch.mjs','utf8');
+test('independent Netlify watch persists outage evidence and never replays provider actions',()=>{
+  assert.match(outsideWatch,/schedule: '\*\/5 \* \* \* \*'/);
+  assert.match(outsideWatch,/getStore\(/);
+  assert.match(outsideWatch,/store\.setJSON\(key/);
+  assert.match(outsideWatch,/REST_READBACK_RECOVERED/);
+  assert.match(outsideWatch,/db_cron_execution_proven:false/);
+  assert.match(outsideWatch,/provider_delivery_verified:false/);
+  assert.doesNotMatch(outsideWatch,/\/(?:functions\/v1|rpc\/)\w*dispatch|send_email|send_dm|publish_post/);
+});
