@@ -37,6 +37,15 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
   evidence_reference:r.evidence_reference,approved_by:r.approved_by,checked_at:r.checked_at,
   observed_value:r.observed_value,expected_value:r.expected_value,readback:r.readback};
  if(r.observed_value===undefined||r.expected_value===undefined||r.observed_value!==r.expected_value) errors.push(p+':CONFIGURATION_READBACK_MISMATCH');
+ // A matching readback of 'disabled' is not evidence that a requested security control is enabled.
+ if(['tenant_zdr','customer_cmk','private_networking_enabled'].includes(r.claim) &&
+    (r.expected_value!==true || r.observed_value!==true))
+   errors.push(p+':SECURITY_CONTROL_NOT_ENABLED');
+ // Residency must be a positive, explicit runtime location rather than a generic boolean.
+ if(r.claim==='tenant_data_residency' &&
+    (typeof r.expected_value!=='string' || !r.expected_value.trim() ||
+     typeof r.observed_value!=='string' || !r.observed_value.trim()))
+   errors.push(p+':RESIDENCY_LOCATION_UNVERIFIED');
  if(!r.signature) {errors.push(p+':MISSING_SIGNATURE');continue;}
  try {
   const publicKey=createPublicKey(keyPem);
