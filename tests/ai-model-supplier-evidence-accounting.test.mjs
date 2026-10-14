@@ -294,3 +294,26 @@ test('three Amazon Nova per-model card identities do not grant runtime entitleme
   assert.equal(model.verification_evidence.claim_scope,'partial');
  }
 });
+
+test('canonical source URLs for Grok audio and moderation remain exact model pages',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const sources={
+  'grok-4.7':'https://docs.x.ai/developers/models/grok-4.7',
+  'gpt-audio-1.5':'https://developers.openai.com/api/docs/models/gpt-audio-1.5',
+  'omni-moderation-latest':'https://developers.openai.com/api/docs/models/omni-moderation-latest'
+ };
+ for(const [id,url] of Object.entries(sources)){
+  const model=catalog.models.find(x=>x.id===id);
+  assert.ok(model);
+  assert.equal(model.source,url);
+  assert.equal(model.verification_evidence.source_url,url);
+  assert.equal(model.supplier_audit.source_reference,url);
+  const check=model.supplier_audit.official_exact_model_card_reconciliation_20261014;
+  assert.equal(check.official_exact_model_card_url,url);
+  assert.equal(check.customer_account_access_attested,false);
+  assert.equal(check.independent_customer_governance_accepted,false);
+  assert.equal(check.pricing_or_contract_revalidated,false);
+  assert.equal(check.automatic_recommendation_eligible,false);
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+ }
+});
