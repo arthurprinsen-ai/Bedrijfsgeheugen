@@ -14,7 +14,7 @@ const isRecent=x=>{const d=new Date(x);return Number.isFinite(+d)&&d<=referenceD
 const keyPem=process.env.TENANT_ATTESTATION_VERIFY_PUBLIC_KEY_PEM;
 if (!keyPem) errors.push('VERIFICATION_PUBLIC_KEY_REQUIRED');
 const rows=input.attestations;
-// TENANT_LIVE_READBACK_REQUIRED: every requested customer/model scope needs all compulsory claims.
+// Every requested customer/model scope needs all compulsory claims; provider runtime checks remain mandatory.
 const requestedScopes=Array.isArray(input.scopes)?input.scopes:[];
 if(!requestedScopes.length) errors.push('NO_EXPLICIT_CUSTOMER_MODEL_SCOPES');
 for(const [i,scope] of requestedScopes.entries()) {
