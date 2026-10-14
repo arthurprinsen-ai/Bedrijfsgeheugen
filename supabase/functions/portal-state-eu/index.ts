@@ -142,7 +142,7 @@ Deno.serve(async(req:Request)=>{
   // This gateway is service-token protected; a browser never receives a database key.
   if(action==='financial_forecasts'){
     const {data:rows,error}=await client.from('portal_financial_forecasts_v1')
-      .select('tenant_id,forecast_id,metric,title,unit,source_name,source_evidence_ref,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest')
+      .select('tenant_id,forecast_id,metric,title,unit,source_name,source_evidence_ref,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest,independent_review')
       .eq('tenant_id',tenantId)
       .eq('verification_status','passed')
       .order('verified_at',{ascending:false}).limit(30);
@@ -152,9 +152,15 @@ Deno.serve(async(req:Request)=>{
       row.verified_at && row.verified_by && row.source_evidence_ref?.trim() &&
       row.backtest?.status==='passed' && Number.isInteger(row.backtest?.holdout_count) &&
       row.backtest.holdout_count>=3 && row.backtest.holdout_count<=120 &&
+      row.independent_review?.approved_by===row.verified_by &&
+      typeof row.independent_review?.prepared_by==='string' && row.independent_review.prepared_by.trim() &&
+      row.independent_review.prepared_by!==row.independent_review.approved_by &&
+      typeof row.independent_review?.approval_evidence_ref==='string' && row.independent_review.approval_evidence_ref.trim() &&
+      typeof row.independent_review?.backtest_evidence_ref==='string' && row.independent_review.backtest_evidence_ref.trim() &&
+      row.independent_review?.financial_source_evidence_ref===row.source_evidence_ref &&
       typeof row.backtest.mae==='number' && Number.isFinite(row.backtest.mae) && row.backtest.mae>=0 &&
       typeof row.backtest.baseline_mae==='number' && Number.isFinite(row.backtest.baseline_mae) && row.backtest.baseline_mae>=0 &&
-      Array.isArray(row.historical_points) && row.historical_points.length>=3 &&
+      Array.isArray(row.historical_points) && row.historical_points.length>=6 && row.backtest.holdout_count<=row.historical_points.length-3 &&
       Array.isArray(row.forecast_points) && row.forecast_points.length>0
     ).map(row=>({
       id:row.forecast_id,tenantId,metric:row.metric,title:row.title,unit:row.unit,
