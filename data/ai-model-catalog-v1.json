@@ -5179,9 +5179,9 @@
           }
         ],
         "identity_warning": {
-          "status": "NOT_A_MODEL_ID",
+          "status": "FAMILY_PLACEHOLDER_NOT_RUNNABLE_ID",
           "checked_on": "2026-10-14",
-          "explanation": "This catalog ID denotes a model family, not an exact runnable model or vendor API identifier; official candidate is illustrative, not evidence for the placeholder.",
+          "explanation": "A supplier model family is not an exact, callable model/version and cannot meet six-claim model-specific acceptance without replacement by an independently verified model ID.",
           "example_verified_model_id": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
           "model_card_url": "https://huggingface.co/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
           "example_license": "llama4"
@@ -5249,7 +5249,10 @@
         "individual_model_claims_verified": false
       },
       "catalog_entry_type": "model_family_placeholder",
-      "catalog_record_type": "model_family"
+      "catalog_record_type": "model_family",
+      "record_kind": "model_family_placeholder",
+      "canonical_runnable_id_verified": false,
+      "auto_recommendation_eligible": false
     },
     {
       "id": "qwen-open-weight",
@@ -5337,9 +5340,9 @@
           }
         ],
         "identity_warning": {
-          "status": "NOT_A_MODEL_ID",
+          "status": "FAMILY_PLACEHOLDER_NOT_RUNNABLE_ID",
           "checked_on": "2026-10-14",
-          "explanation": "This catalog ID denotes a model family, not an exact runnable model or vendor API identifier; official candidate is illustrative, not evidence for the placeholder.",
+          "explanation": "A supplier model family is not an exact, callable model/version and cannot meet six-claim model-specific acceptance without replacement by an independently verified model ID.",
           "example_verified_model_id": "Qwen/Qwen3-235B-A22B",
           "model_card_url": "https://huggingface.co/Qwen/Qwen3-235B-A22B",
           "example_license": "apache-2.0"
@@ -5411,7 +5414,10 @@
         "scope": "conditionally applicable hosting-provider policy, NOT a model-specific or customer attestation"
       },
       "catalog_entry_type": "model_family_placeholder",
-      "catalog_record_type": "model_family"
+      "catalog_record_type": "model_family",
+      "record_kind": "model_family_placeholder",
+      "canonical_runnable_id_verified": false,
+      "auto_recommendation_eligible": false
     },
     {
       "tier": "balanced",
@@ -18243,7 +18249,8 @@
         ],
         "not_verified": [
           "customer-specific governance",
-          "commercial license terms and fees"
+          "commercial license terms and fees",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -18286,14 +18293,23 @@
           {
             "claim": "pricing",
             "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
-            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
-            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
-            "checked_on": "2026-10-14"
+            "locator": "Official Technology Innovation Institute model repository > License; Use this model > self-hosting instructions; no quoted TII pay-per-token API price",
+            "observed_value": "Official downloadable weights licensed under Falcon-LLM License. The official model card does not quote a TII API per-token rate; compute, storage, cloud inference and any commercially applicable license fees depend on deployment. No zero-cost deployment or third-party price is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
+            "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
           }
         ],
         "verification_notes": [
           "License only, not full security and governance assessment"
-        ]
+        ],
+        "pricing_disclosure": {
+          "type": "self_hosted_unpriced",
+          "currency": null,
+          "source": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "official_metered_price_confirmed": false,
+          "hosting_costs_unverified": true
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -18426,7 +18442,8 @@
         ],
         "not_verified": [
           "customer-specific governance",
-          "commercial license terms and fees"
+          "commercial license terms and fees",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -18469,9 +18486,11 @@
           {
             "claim": "pricing",
             "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
-            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
-            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
-            "checked_on": "2026-10-14"
+            "locator": "Official Technology Innovation Institute model repository > License; Use this model > self-hosting instructions; no quoted TII pay-per-token API price",
+            "observed_value": "Official downloadable weights licensed under Falcon-LLM License. The official model card does not quote a TII API per-token rate; compute, storage, cloud inference and any commercially applicable license fees depend on deployment. No zero-cost deployment or third-party price is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
+            "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
           }
         ],
         "model_license_evidence": {
@@ -18487,6 +18506,13 @@
             "hosted inference terms",
             "hosting cost"
           ]
+        },
+        "pricing_disclosure": {
+          "type": "self_hosted_unpriced",
+          "currency": null,
+          "source": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "official_metered_price_confirmed": false,
+          "hosting_costs_unverified": true
         }
       },
       "supplier_audit": {
@@ -18621,7 +18647,8 @@
         ],
         "not_verified": [
           "customer-specific governance",
-          "commercial license terms and fees"
+          "commercial license terms and fees",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -18664,11 +18691,20 @@
           {
             "claim": "pricing",
             "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
-            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
-            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
-            "checked_on": "2026-10-14"
+            "locator": "Official Technology Innovation Institute model repository > License; Use this model > self-hosting instructions; no quoted TII pay-per-token API price",
+            "observed_value": "Official downloadable weights licensed under Falcon-LLM License. The official model card does not quote a TII API per-token rate; compute, storage, cloud inference and any commercially applicable license fees depend on deployment. No zero-cost deployment or third-party price is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
+            "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
           }
-        ]
+        ],
+        "pricing_disclosure": {
+          "type": "self_hosted_unpriced",
+          "currency": null,
+          "source": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "official_metered_price_confirmed": false,
+          "hosting_costs_unverified": true
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -18802,7 +18838,8 @@
         ],
         "not_verified": [
           "customer-specific governance",
-          "commercial license terms and fees"
+          "commercial license terms and fees",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -18845,9 +18882,11 @@
           {
             "claim": "pricing",
             "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
-            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
-            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
-            "checked_on": "2026-10-14"
+            "locator": "Official Technology Innovation Institute model repository > License; Use this model > self-hosting instructions; no quoted TII pay-per-token API price",
+            "observed_value": "Official downloadable weights licensed under Falcon-LLM License. The official model card does not quote a TII API per-token rate; compute, storage, cloud inference and any commercially applicable license fees depend on deployment. No zero-cost deployment or third-party price is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
+            "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
           }
         ],
         "model_license_evidence": {
@@ -18863,6 +18902,13 @@
             "hosted inference terms",
             "hosting cost"
           ]
+        },
+        "pricing_disclosure": {
+          "type": "self_hosted_unpriced",
+          "currency": null,
+          "source": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "official_metered_price_confirmed": false,
+          "hosting_costs_unverified": true
         }
       },
       "supplier_audit": {
@@ -18997,7 +19043,8 @@
         ],
         "not_verified": [
           "customer-specific governance",
-          "commercial license terms and fees"
+          "commercial license terms and fees",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -19040,9 +19087,11 @@
           {
             "claim": "pricing",
             "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
-            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
-            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
-            "checked_on": "2026-10-14"
+            "locator": "Official Technology Innovation Institute model repository > License; Use this model > self-hosting instructions; no quoted TII pay-per-token API price",
+            "observed_value": "Official downloadable weights licensed under Falcon-LLM License. The official model card does not quote a TII API per-token rate; compute, storage, cloud inference and any commercially applicable license fees depend on deployment. No zero-cost deployment or third-party price is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
+            "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
           }
         ],
         "model_license_evidence": {
@@ -19058,6 +19107,13 @@
             "hosted inference terms",
             "hosting cost"
           ]
+        },
+        "pricing_disclosure": {
+          "type": "self_hosted_unpriced",
+          "currency": null,
+          "source": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "official_metered_price_confirmed": false,
+          "hosting_costs_unverified": true
         }
       },
       "supplier_audit": {
@@ -19192,7 +19248,8 @@
         ],
         "not_verified": [
           "customer-specific governance",
-          "commercial license terms and fees"
+          "commercial license terms and fees",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -19235,9 +19292,11 @@
           {
             "claim": "pricing",
             "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
-            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
-            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
-            "checked_on": "2026-10-14"
+            "locator": "Official Technology Innovation Institute model repository > License; Use this model > self-hosting instructions; no quoted TII pay-per-token API price",
+            "observed_value": "Official downloadable weights licensed under Falcon-LLM License. The official model card does not quote a TII API per-token rate; compute, storage, cloud inference and any commercially applicable license fees depend on deployment. No zero-cost deployment or third-party price is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
+            "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
           }
         ],
         "model_license_evidence": {
@@ -19253,6 +19312,13 @@
             "hosted inference terms",
             "hosting cost"
           ]
+        },
+        "pricing_disclosure": {
+          "type": "self_hosted_unpriced",
+          "currency": null,
+          "source": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "official_metered_price_confirmed": false,
+          "hosting_costs_unverified": true
         }
       },
       "supplier_audit": {
@@ -19387,7 +19453,8 @@
         "not_verified": [
           "status",
           "customer-specific governance",
-          "commercial license terms and fees"
+          "commercial license terms and fees",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -19430,11 +19497,20 @@
           {
             "claim": "pricing",
             "url": "https://huggingface.co/tiiuae/Falcon-OCR",
-            "locator": "Inference Providers > model not deployed by any Inference Provider; model card > downloadable weights and self-host deployment examples",
-            "observed_value": "No vendor-managed per-token API price is published on this model page. This is downloadable/self-hosted model weights, not zero-cost inference; infrastructure or third-party hosting costs must be separately quoted.",
-            "checked_on": "2026-10-14"
+            "locator": "Official Technology Innovation Institute model repository > License; Use this model > self-hosting instructions; no quoted TII pay-per-token API price",
+            "observed_value": "Official downloadable weights licensed under Apache-2.0. The official model card does not quote a TII API per-token rate; compute, storage, cloud inference and any commercially applicable license fees depend on deployment. No zero-cost deployment or third-party price is asserted.",
+            "checked_on": "2026-10-14",
+            "scope": "OFFICIAL_MODEL_CARD_PRICING_NOT_PUBLISHED",
+            "verification_status": "VENDOR_HOSTED_TOKEN_RATE_UNVERIFIED"
           }
-        ]
+        ],
+        "pricing_disclosure": {
+          "type": "self_hosted_unpriced",
+          "currency": null,
+          "source": "https://huggingface.co/tiiuae/Falcon-OCR",
+          "official_metered_price_confirmed": false,
+          "hosting_costs_unverified": true
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
