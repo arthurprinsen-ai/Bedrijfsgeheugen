@@ -14411,7 +14411,8 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14592,7 +14593,8 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14858,8 +14860,8 @@
           "deployment"
         ],
         "not_verified": [
-          "pricing",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -14959,7 +14961,8 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15235,8 +15238,8 @@
           "deployment"
         ],
         "not_verified": [
-          "pricing",
-          "governance"
+          "governance",
+          "pricing"
         ],
         "claim_evidence": [
           {
@@ -15341,7 +15344,8 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15524,7 +15528,8 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15714,7 +15719,8 @@
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "governance": "PROVIDER_POLICY_ONLY"
         },
-        "evidence_accounting_date": "2026-10-14"
+        "evidence_accounting_date": "2026-10-14",
+        "claim_scope_reason": "Model-specific supplier facts present; provider-wide governance policy is not a model deployment or customer attestation; pricing not fully established where noted"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
