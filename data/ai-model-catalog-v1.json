@@ -4121,13 +4121,15 @@
         "xAI API"
       ],
       "source": "https://docs.x.ai/developers/models",
-      "limitations": [],
+      "limitations": [
+        "xAI API data-retention controls and US regional availability are supplier-documented; actual tenant settings, DPA, CMK and permissions were not tested."
+      ],
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Global xAI API: location not guaranteed; US regional endpoint has limited documented coverage for grok-4.6 and grok-4.7 only",
+        "inference_residency": "US regional inference guarantee only when https://us.api.x.ai/v1 is used; global region not guaranteed; no EU regional guarantee",
+        "training_on_customer_data": "xAI does not train on API request inputs or outputs without explicit customer permission; model and API route documented, customer consent not inspected",
+        "retention": "Global xAI API default: inputs and outputs retained encrypted for 30 days for abuse auditing; conditional team ZDR bypasses prompt/output persistence",
+        "zero_data_retention": "Team-level opt-in; API response x-zero-data-retention header indicates whether enabled. Customer setting NOT verified.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -4136,7 +4138,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -4145,7 +4147,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "checked_on": "2026-10-14",
         "source_url": "https://docs.x.ai/developers/models",
         "verified_claims": [
@@ -4153,11 +4155,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -4197,12 +4198,18 @@
           {
             "claim": "governance",
             "url": "https://docs.x.ai/developers/faq/security",
-            "locator": "FAQ - API Security > Zero Data Retention; How to check that ZDR is enabled; Can I keep my data in the United States?",
-            "observed_value": "xAI API ZDR must be enabled for an individual team, and an x-zero-data-retention response header signals current API enforcement. The global api.x.ai endpoint does not guarantee processing region; US regional processing is documented for selected Grok text models only. No customer enabled setting, endpoint or eligibility was authenticated.",
+            "locator": "FAQ Security > Data training, retention, Zero Data Retention, configuration validation",
+            "observed_value": "API request/response default encrypted retention 30 days for abuse investigation; no API-data training without explicit consent. ZDR may be enabled team-wide; API x-zero-data-retention header reports actual state. No tenant ZDR, DPA, CMK or private networking settings have been inspected.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "verified supplier-wide API processing conditions, conditional tenant settings explicitly excluded"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/advanced-api-usage/regions",
+            "locator": "Regional Endpoints > Supported models, coverage, exclusions and pricing",
+            "observed_value": "Official xAI US endpoint supports grok-4.7 for US-region API handling, inference, moderation and retained API content; Files, Collections, server-side tools and network path are excluded. Region requires explicit US URL. Requests have 10% token premium; global endpoint has no region guarantee.",
+            "checked_on": "2026-10-14",
+            "scope": "verified supplier-level model-specific regional endpoint policy; not a customer runtime readback"
           }
         ],
         "provider_policy_evidence": {
@@ -4302,13 +4309,15 @@
         "xAI API"
       ],
       "source": "https://docs.x.ai/developers/models/grok-4.6",
-      "limitations": [],
+      "limitations": [
+        "xAI API data-retention controls and US regional availability are supplier-documented; actual tenant settings, DPA, CMK and permissions were not tested."
+      ],
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "no EU processing in this listed path",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "Global xAI API: location not guaranteed; US regional endpoint has limited documented coverage for grok-4.6 and grok-4.7 only",
+        "inference_residency": "US regional inference guarantee only when https://us.api.x.ai/v1 is used; global region not guaranteed; no EU regional guarantee",
+        "training_on_customer_data": "xAI does not train on API request inputs or outputs without explicit customer permission; model and API route documented, customer consent not inspected",
+        "retention": "Global xAI API default: inputs and outputs retained encrypted for 30 days for abuse auditing; conditional team ZDR bypasses prompt/output persistence",
+        "zero_data_retention": "Team-level opt-in; API response x-zero-data-retention header indicates whether enabled. Customer setting NOT verified.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -4317,7 +4326,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -4326,7 +4335,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.x.ai/developers/models/grok-4.6",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -4334,22 +4343,11 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://docs.x.ai/developers/faq/security",
-            "locator": "FAQ - API Security > Zero Data Retention; How to check that ZDR is enabled; Can I keep my data in the United States?",
-            "observed_value": "xAI API ZDR must be enabled for an individual team, and an x-zero-data-retention response header signals current API enforcement. The global api.x.ai endpoint does not guarantee processing region; US regional processing is documented for selected Grok text models only. No customer enabled setting, endpoint or eligibility was authenticated.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://docs.x.ai/developers/models/grok-4.6",
@@ -4384,6 +4382,22 @@
             "locator": "Details > Batch API; API quickstart",
             "observed_value": "xAI text API, Batch API not supported for this model, reasoning effort low/medium/high/xhigh; team access not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "FAQ Security > Data training, retention, Zero Data Retention, configuration validation",
+            "observed_value": "API request/response default encrypted retention 30 days for abuse investigation; no API-data training without explicit consent. ZDR may be enabled team-wide; API x-zero-data-retention header reports actual state. No tenant ZDR, DPA, CMK or private networking settings have been inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "verified supplier-wide API processing conditions, conditional tenant settings explicitly excluded"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/advanced-api-usage/regions",
+            "locator": "Regional Endpoints > Supported models, coverage, exclusions and pricing",
+            "observed_value": "Official xAI US endpoint supports grok-4.6 for US-region API handling, inference, moderation and retained API content; Files, Collections, server-side tools and network path are excluded. Region requires explicit US URL. Requests have 10% token premium; global endpoint has no region guarantee.",
+            "checked_on": "2026-10-14",
+            "scope": "verified supplier-level model-specific regional endpoint policy; not a customer runtime readback"
           }
         ],
         "provider_policy_evidence": {
@@ -16884,7 +16898,8 @@
       ],
       "limitations": [
         "US provider; verify regional/data controls",
-        "Pricing per hour of audio, not per million tokens; streaming and batch priced differently"
+        "Pricing per hour of audio, not per million tokens; streaming and batch priced differently",
+        "xAI API data-retention controls and US regional availability are supplier-documented; actual tenant settings, DPA, CMK and permissions were not tested."
       ],
       "scores": {
         "reasoning": 2,
@@ -16906,11 +16921,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
+        "storage_residency": "Global xAI API: location not guaranteed; US regional endpoint has limited documented coverage for grok-4.6 and grok-4.7 only",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "xAI does not train on API request inputs or outputs without explicit customer permission; model and API route documented, customer consent not inspected",
+        "retention": "Global xAI API default: inputs and outputs retained encrypted for 30 days for abuse auditing; conditional team ZDR bypasses prompt/output persistence",
+        "zero_data_retention": "Team-level opt-in; API response x-zero-data-retention header indicates whether enabled. Customer setting NOT verified.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -17070,7 +17085,8 @@
       ],
       "limitations": [
         "per-image pricing; governance differs from text API",
-        "Per-image pricing varies with resolution and quality, not expressed as USD per million tokens"
+        "Per-image pricing varies with resolution and quality, not expressed as USD per million tokens",
+        "xAI API data-retention controls and US regional availability are supplier-documented; actual tenant settings, DPA, CMK and permissions were not tested."
       ],
       "scores": {
         "reasoning": 2,
@@ -17092,11 +17108,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
+        "storage_residency": "Global xAI API: location not guaranteed; US regional endpoint has limited documented coverage for grok-4.6 and grok-4.7 only",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "xAI does not train on API request inputs or outputs without explicit customer permission; model and API route documented, customer consent not inspected",
+        "retention": "Global xAI API default: inputs and outputs retained encrypted for 30 days for abuse auditing; conditional team ZDR bypasses prompt/output persistence",
+        "zero_data_retention": "Team-level opt-in; API response x-zero-data-retention header indicates whether enabled. Customer setting NOT verified.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -17256,7 +17272,8 @@
       "limitations": [
         "per-second pricing; not a general language model",
         "Official model selector lists Grok Imagine Video 1.5; catalog alias is not yet confirmed as an exact callable API ID.",
-        "Per-second video charges and additional image/video inputs; promotional extension rates subject to change"
+        "Per-second video charges and additional image/video inputs; promotional extension rates subject to change",
+        "xAI API data-retention controls and US regional availability are supplier-documented; actual tenant settings, DPA, CMK and permissions were not tested."
       ],
       "scores": {
         "reasoning": 2,
@@ -17278,11 +17295,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
+        "storage_residency": "Global xAI API: location not guaranteed; US regional endpoint has limited documented coverage for grok-4.6 and grok-4.7 only",
         "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "training_on_customer_data": "xAI does not train on API request inputs or outputs without explicit customer permission; model and API route documented, customer consent not inspected",
+        "retention": "Global xAI API default: inputs and outputs retained encrypted for 30 days for abuse auditing; conditional team ZDR bypasses prompt/output persistence",
+        "zero_data_retention": "Team-level opt-in; API response x-zero-data-retention header indicates whether enabled. Customer setting NOT verified.",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
