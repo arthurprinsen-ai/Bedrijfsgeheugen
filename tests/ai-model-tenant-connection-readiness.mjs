@@ -21,4 +21,5 @@ for(const group of groups){
 }
 console.log(JSON.stringify({status:findings.every(f=>f.status.startsWith('CONFIG_PRESENT'))?
  'CONFIGURED_NOT_VERIFIED':'BLOCKED',connections:findings},null,2));
-if(findings.some(f=>!f.status.startsWith('CONFIG_PRESENT')))process.exitCode=2;
+// Configuration alone must never pass a protected production acceptance gate.
+process.exitCode=2;
