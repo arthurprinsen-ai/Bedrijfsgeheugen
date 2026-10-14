@@ -1,6 +1,6 @@
 // Independent of PostgreSQL pg_cron. No provider messages or outreach are sent here.
 export default async () => {
-  const url = process.env.SUPABASE_URL;
+  const url = process.env.BG_PORTAL_EU_SUPABASE_URL || process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error("RECOVERY_CONFIG_MISSING");
   const endpoint = new URL("/rest/v1/rpc/powerhouse_external_cron_reconcile_v1", url);
