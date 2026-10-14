@@ -5,6 +5,7 @@ const required=Object.freeze(['model_id','status','pricing','capabilities','depl
 export function supplierEvidenceWorklist(catalog){
  if(!Array.isArray(catalog?.models))throw new Error('INVALID_MODEL_CATALOG');
  const rows=[];
+ let missingReceipts=0;
  for(const model of catalog.models){
   const e=model.verification_evidence||{};
   for(const claim of required){
@@ -16,6 +17,7 @@ export function supplierEvidenceWorklist(catalog){
    const fullyDeclared=e.claim_scope==='full'&&e.source_url===model.source&&
      e.checked_on===model.verified_at&&Array.isArray(e.verified_claims)&&e.verified_claims.includes(claim)&&
      !e.not_verified?.includes(claim);
+   if(!receipt)missingReceipts++;
    if(!receipt||!fullyDeclared)rows.push({
     provider:model.provider,model_id:model.id,claim,official_source:model.source,
     status:'REQUIRES_INDEPENDENT_SUPPLIER_VERIFICATION',
@@ -25,7 +27,9 @@ export function supplierEvidenceWorklist(catalog){
   }
  }
  return {catalog_version:catalog.version,models:catalog.models.length,required_claims:required,
-  pending_claim_reviews:rows.length,ready_for_full_supplier_acceptance:rows.length===0,worklist:rows,
+  pending_claim_reviews:rows.length,missing_claim_specific_receipts:missingReceipts,
+  existing_complete_receipts:catalog.models.length*required.length-missingReceipts,
+  ready_for_full_supplier_acceptance:rows.length===0,worklist:rows,
   notice:'This worklist is not supplier evidence. Customer contracts, residency and runtime configuration require separate authorized checks.'};
 }
 if(process.argv[1]&&import.meta.url===new URL('file://'+process.argv[1]).href){
