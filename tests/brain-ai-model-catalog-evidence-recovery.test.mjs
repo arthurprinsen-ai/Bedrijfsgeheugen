@@ -80,3 +80,9 @@ test('advisor excludes incomplete pricing and generic supplier policy as complet
  assert.match(html,/HISTORICAL\|PARTIAL\|EXAMPLE\|UNKNOWN\|BASIS_ONLY/);
  assert.match(html,/automatic_recommendation_eligible!==true/);
 });
+
+test('advisor explains unverified recommendations rather than concealing the audit hold',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/Geen automatisch geverifieerde aanbeveling beschikbaar/);
+ assert.match(html,/De onafhankelijke leveranciersaudit is nog niet volledig afgerond/);
+});
