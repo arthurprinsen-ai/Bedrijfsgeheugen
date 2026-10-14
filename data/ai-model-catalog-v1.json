@@ -244,7 +244,7 @@
       "id": "gpt-6-sol",
       "provider": "OpenAI",
       "tier": "balanced",
-      "status": "unverified",
+      "status": "active",
       "input_usd_m": 2,
       "output_usd_m": 10,
       "cached_input_usd_m": 0.2,
@@ -279,9 +279,8 @@
       ],
       "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
       "limitations": [
-        "Official OpenAI model directory now lists gpt-6.1-sol; legacy gpt-6-sol availability and price are not reverified. Do not route automatically based on this entry.",
+        "Official OpenAI model page currently lists gpt-6-sol as Default with Responses and Chat Completions support; GPT-6.1 Sol is the newer version. This is supplier-public lifecycle evidence, NOT customer API entitlement or automatic routing clearance.",
         "OpenAI model directory identifies GPT-6.1 Sol as latest Sol offering; compare legacy model compatibility against provider before selection.",
-        "Catalog status is unverified; previous active flag was not independently supported by current official model listing.",
         "Supplier regional support is conditional: Fast mode supports EU residency. A tenant setting must be verified independently before customer-specific EU or ZDR claims."
       ],
       "governance": {
@@ -417,7 +416,20 @@
         "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
       },
-      "max_output_tokens": 128000
+      "max_output_tokens": 128000,
+      "supplier_lifecycle_review_20261014": {
+        "model_id": "gpt-6-sol",
+        "documented_status": "active",
+        "supplier_current_model_label": "Default",
+        "newer_model": "gpt-6.1-sol",
+        "official_model_document": "https://developers.openai.com/api/docs/models/gpt-6-sol",
+        "official_changelog": "https://developers.openai.com/api/docs/changelog",
+        "reviewed_on": "2026-10-14",
+        "scope": "Public published supplier model lifecycle and API routing only; account entitlement and live route unverified",
+        "customer_entitlement_verified": false,
+        "automatic_recommendation_eligible": false,
+        "production_release_approved": false
+      }
     },
     {
       "id": "gpt-6-luna",
@@ -16147,6 +16159,21 @@
         "license": "Apache-2.0",
         "supplier_price_source": "https://docs.mistral.ai/models/shieldstral-1-0",
         "checked_on": "2026-10-14"
+      },
+      "supplier_lifecycle_review_20261014": {
+        "model_id": "shieldstral-1",
+        "catalog_maturity": "Public Preview",
+        "supplier_legal_lifecycle": "Active",
+        "released_on": "2026-08-04",
+        "official_model_document": "https://docs.mistral.ai/models/shieldstral-1-0",
+        "official_legal_lifecycle": "https://legal.mistral.ai/ai-governance/models/shieldstral/",
+        "official_self_host_guide": "https://docs.mistral.ai/resources/cookbooks/mistral-moderation-shieldstral_policy_moderation",
+        "documented_distribution": "Open-weight Apache-2.0 self-hosting; no Mistral hosted API endpoint",
+        "interpretation": "Preview is product maturity; Active is not deprecated/retired. Keep catalog status preview, don't infer GA or commercial hosting.",
+        "reviewed_on": "2026-10-14",
+        "customer_entitlement_verified": false,
+        "automatic_recommendation_eligible": false,
+        "production_release_approved": false
       }
     },
     {
