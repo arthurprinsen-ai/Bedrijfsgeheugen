@@ -39,7 +39,7 @@ SELECT
   (SELECT isolated_active FROM current_stats) AS isolated_jobs_active,
   (SELECT extras_active FROM current_stats) AS extras_active,
   (SELECT retry_active FROM current_stats) AS retry_worker_active,
-  (SELECT reconciler_active FROM current_stats) AS external_failure_reconciler_active,
+  (SELECT reconciler_active FROM current_stats) AS missed_slot_reconciler_active,
   (SELECT old_mux_active FROM current_stats) AS obsolete_mux_active,
   (SELECT successful_runs_90m FROM run_status) AS successful_runs_90m,
   (SELECT unsuccessful_runs_90m FROM run_status) AS unsuccessful_runs_90m,
