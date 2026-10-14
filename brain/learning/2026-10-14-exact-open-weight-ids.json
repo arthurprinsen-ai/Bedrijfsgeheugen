@@ -7,8 +7,7 @@
   "prevention_rule": "Record only an exact official model repository/ID for selectable open-weight checkpoints; retain unknown prices, tenant hosting and governance as unresolved, and do not treat official weights as proof of deployed customer configurations.",
   "evaluation": {
     "historical_replay": [
-      "tests/ai-model-intelligence-exact-open-weight-ids.test.mjs",
-      "tests/ai-model-intelligence-freshness-v1.test.mjs"
+      "tests/brain-ai-model-exact-open-weight-ids.test.mjs"
     ]
   },
   "evidence": {
