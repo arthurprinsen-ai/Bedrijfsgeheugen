@@ -65,3 +65,11 @@ test('tenant acceptance cannot pass with a single signed claim or omitted custom
   assert.match(r.stdout,/MISSING_OR_DUPLICATE_CLAIM:private_networking_enabled/);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('signed DPA requires independent authenticated contract vault check',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/TENANT_CONTRACT_VERIFY_ENDPOINT/);
+ assert.match(source,/CONTRACT_VAULT_CONNECTION_REQUIRED/);
+ assert.match(source,/SIGNED_CONTRACT_NOT_AUTHENTICATED/);
+ assert.match(source,/receipt\.signature_valid!==true/);
+});
