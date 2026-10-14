@@ -21,6 +21,19 @@ test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit
    if(e.claim_scope!=='full') issues.push('partial verification');
    if((e.not_verified??[]).length) issues.push('unverified claims');
    if(e.checked_on!==m.verified_at) issues.push('evidence date differs');
+   // Supplier terms are not proof of a tenant's signed agreements or enabled controls.
+   const tenantClaims=['dpa','signed_dpa','contract','tenant_data_residency','tenant_zdr','customer_cmk','private_networking_enabled'];
+   const tenantReceipts=e.tenant_evidence??[];
+   for(const claim of tenantClaims){
+    if(!e.verified_claims?.includes(claim)) continue;
+    const approved=Array.isArray(tenantReceipts)&&tenantReceipts.some(r=>
+      r.claim===claim && r.scope==='customer_specific' &&
+      typeof r.tenant_id==='string' && r.tenant_id.trim() &&
+      typeof r.approved_by==='string' && r.approved_by.trim() &&
+      typeof r.evidence_reference==='string' && r.evidence_reference.trim() &&
+      r.checked_on===e.checked_on);
+    if(!approved) issues.push('missing customer-specific contract/control evidence '+claim);
+   }
    for(const claim of required) {
     if(!e.verified_claims?.includes(claim)) issues.push('unverified '+claim);
     const receipt=e.claim_evidence?.find(x=>x.claim===claim &&
