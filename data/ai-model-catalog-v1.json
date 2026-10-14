@@ -47,10 +47,10 @@
       "provider": "OpenAI",
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": 5,
-      "output_usd_m": 25,
-      "cached_input_usd_m": 0.5,
-      "context_k": 1000,
+      "input_usd_m": 10,
+      "output_usd_m": 50,
+      "cached_input_usd_m": 1,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -78,7 +78,7 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-astra",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -91,7 +91,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider"
     },
     {
@@ -99,10 +99,10 @@
       "provider": "OpenAI",
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": 1,
-      "output_usd_m": 5,
-      "cached_input_usd_m": 0.1,
-      "context_k": 1000,
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.2,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -131,7 +131,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-sol",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -144,7 +144,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider"
     },
     {
@@ -152,10 +152,10 @@
       "provider": "OpenAI",
       "tier": "economy",
       "status": "active",
-      "input_usd_m": 0.05,
-      "output_usd_m": 0.25,
-      "cached_input_usd_m": 0.005,
-      "context_k": 1000,
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.5,
+      "cached_input_usd_m": 0.01,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -184,7 +184,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-luna",
       "limitations": [],
       "governance": {
         "storage_residency": "EU option documented",
@@ -197,7 +197,7 @@
         "cmk": "verify current product/contract",
         "private_networking": "verify current product/contract"
       },
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "source_type": "official-provider"
     },
     {
