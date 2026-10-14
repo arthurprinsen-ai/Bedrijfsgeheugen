@@ -18068,7 +18068,9 @@
         ],
         "not_verified": [
           "pricing",
-          "governance"
+          "governance",
+          "text, image, document and audio modality pricing",
+          "account and region billing"
         ],
         "claim_evidence": [
           {
@@ -18108,6 +18110,15 @@
             "locator": "Model Details > Modalities",
             "observed_value": "Multimodal embeddings: text, image and video converted into vectors for search/retrieval; async inference supported",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://aws.amazon.com/blogs/machine-learning/multimodal-embeddings-at-scale-ai-data-lake-for-media-and-entertainment-workloads/",
+            "locator": "Things to know > Performance and cost considerations > video processing cost",
+            "observed_value": "AWS 2026 media workload reference states Amazon Nova Multimodal Embeddings video batch input is charged at USD $0.00056 per video second. This rate is for the demonstrated asynchronous video batch path only; text/image/audio and other deployment modes are not priced by this source.",
+            "checked_on": "2026-10-14",
+            "scope": "Model-specific official AWS 2026 video-batch pricing example only; NOT a complete multimodal price card or tenant rate attestation",
+            "verification_status": "PARTIAL_PRICE_MODALITY_EVIDENCE_NO_ACCOUNT_ATTESTATION"
           }
         ],
         "provider_policy_evidence": {
@@ -18184,6 +18195,14 @@
         "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
         "verification_status": "UNVERIFIED_NUMERIC_PRICE",
         "not_a_claim_receipt": true
+      },
+      "aws_video_batch_pricing_20261014": {
+        "url": "https://aws.amazon.com/blogs/machine-learning/multimodal-embeddings-at-scale-ai-data-lake-for-media-and-entertainment-workloads/",
+        "rate_usd_per_video_second": 0.00056,
+        "scope": "ASYNC_VIDEO_BATCH_ONLY",
+        "checked_on": "2026-10-14",
+        "other_modalities_verified": false,
+        "customer_billing_verified": false
       }
     },
     {
