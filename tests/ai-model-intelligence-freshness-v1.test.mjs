@@ -241,3 +241,32 @@ test('supplier identity receipts are internally consistent, source-aligned and d
   'Provider totals must reconcile with exactly one category per catalog record');
  assert.equal(evidence.whole_model_verifications_added,0);
 });
+
+
+test('Cohere pricing distinguishes direct token API from dedicated hosted instance rates',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const get=id=>{const m=c.models.find(x=>x.id===id);assert.ok(m,id);return m;};
+ const command=get('command-a');
+ assert.equal(command.provider_model_id,'command-a-03-2025');
+ assert.equal(command.context_k,256);
+ assert.deepEqual([command.input_usd_m,command.output_usd_m],[2.5,10]);
+ assert.equal(command.pricing_tier,'cohere_command_a_direct_token');
+ assert.equal(command.claim_evidence.pricing.status,'PROVIDER_DOC_CONFIRMED');
+ for(const [id,modelId] of [
+  ['command-a-plus-05-2026','command-a-plus-05-2026'],
+  ['command-a-reasoning-08-2025','command-a-reasoning-08-2025']]){
+  const m=get(id);
+  assert.equal(m.provider_model_id,modelId);
+  assert.equal(m.pricing_tier,'cohere_model_vault_dedicated_hourly');
+  assert.match(m.claim_evidence.pricing.unit,/instance-hour/);
+  assert.equal(m.claim_evidence.provider_contracts.status,'UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT');
+ }
+ assert.equal(get('command-a-plus').selection_eligible,false);
+ assert.equal(get('command-a-plus').duplicate_of,'command-a-plus-05-2026');
+ for(const id of ['embed-4','rerank-4-pro']){
+  const m=get(id);
+  assert.equal(m.pricing_tier,'cohere_model_vault_dedicated_hourly');
+  assert.match(m.claim_evidence.pricing.unit,/instance-hour/);
+  assert.equal(m.input_usd_m,null,'Hosted hourly price cannot be represented as direct token price');
+ }
+});
