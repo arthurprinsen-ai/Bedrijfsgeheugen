@@ -109,3 +109,12 @@ test('Cohere aliases resolve to official API IDs without granting supplier or te
  assert.equal(plus.input_usd_m,null);
  assert.equal(plus.output_usd_m,null);
 });
+
+test('advisor does not recommend aliases with a separate canonical API model record',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/m\.provider_api_id&&catalog\.models\.some\(other=>other!==m&&other\.provider===m\.provider&&other\.id===m\.provider_api_id/);
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const aliases=catalog.models.filter(m=>m.provider_api_id&&catalog.models.some(other=>other!==m&&other.provider===m.provider&&other.id===m.provider_api_id&&other.provider_api_id===m.provider_api_id));
+ assert.ok(aliases.some(m=>m.id==='command-a-plus'),'The Cohere friendly label must not count as a distinct API model');
+ for(const m of aliases)assert.notEqual(m.supplier_audit?.automatic_recommendation_eligible,true);
+});
