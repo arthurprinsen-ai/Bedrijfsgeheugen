@@ -241,7 +241,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -427,7 +427,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -627,7 +627,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -811,7 +811,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       },
@@ -6084,7 +6084,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6264,7 +6264,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6444,7 +6444,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -6627,7 +6627,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -7857,7 +7857,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -8037,7 +8037,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
@@ -8217,7 +8217,7 @@
           "pricing": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "capabilities": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
           "deployment": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED",
-          "governance": "PROVIDER_POLICY_ONLY"
+          "governance": "MODEL_SOURCE_RECEIPT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14"
       }
