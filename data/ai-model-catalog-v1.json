@@ -371,6 +371,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
+            "observed_value": "gpt-6-sol on /v1/responses: OpenAI-operated Responses API only: default abuse monitoring up to 30 days, 30-day state when stored/default, approved ZDR forces store=false; separate Bedrock processing terms require their own evidence. Legacy model availability unverified.",
+            "checked_on": "2026-10-14",
+            "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -399,10 +408,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-6-sol",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -746,6 +753,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/responses",
+            "observed_value": "gpt-5.6-sol on /v1/responses: Responses endpoint has default abuse monitoring up to 30 days, may store application state for 30 days, and approved ZDR forces store=false; prompt caching and tool features have exceptions. Tenant account not tested.",
+            "checked_on": "2026-10-14",
+            "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -774,10 +790,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -6195,6 +6209,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/images/generations and /v1/images/edits",
+            "observed_value": "gpt-image-2.5-sunburst on /v1/images/generations and /v1/images/edits: Image API endpoints have no application-state retention, default 30-day abuse-monitoring logs and conditional ZDR eligibility with image/file exceptions; Responses image-generation tool can carry additional rules; tenant approval not established.",
+            "checked_on": "2026-10-14",
+            "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6222,10 +6245,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -6368,6 +6389,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/images/generations and /v1/images/edits",
+            "observed_value": "gpt-image-2.5-flare on /v1/images/generations and /v1/images/edits: Image API endpoints have no application-state retention, default 30-day abuse-monitoring logs and conditional ZDR eligibility with image/file exceptions; Responses image-generation tool can carry additional rules; tenant approval not established.",
+            "checked_on": "2026-10-14",
+            "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -6395,10 +6425,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7774,6 +7802,15 @@
             "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "Storage requirements and retention controls per endpoint > /v1/chat/completions",
+            "observed_value": "gpt-audio-1.5 on /v1/chat/completions: Chat Completions audio output application state may persist for an hour for multi-turn conversations; default abuse monitoring up to 30 days and approved ZDR changes store behavior. Tenant approval and regional settings untested.",
+            "checked_on": "2026-10-14",
+            "scope": "documented model-to-endpoint applicability; no contract or live customer security-control attestation",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -7801,10 +7838,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/all",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
