@@ -18,11 +18,16 @@ test('renders source-backed forecast and what-if controls on Today', () => {
   assert.match(html, /<svg /);
 });
 test('does not expose irrelevant forecast on an unrelated page', () => {
-  const state={forecasts:[{id:'risk',metric:'risk',source:'Register',updatedAt:'2026-10-14',history:[{date:'a',value:1}],forecast:[{date:'b',value:2}]}]};
+  const state={forecasts:[{id:'risk',metric:'risk',source:'Register',verified:true,updatedAt:'2026-10-14',history:[{date:'a',value:1}],forecast:[{date:'b',value:2}]}]};
   assert.match(renderForecastPanel(state,'today'),/Nog geen geverifieerde voorspelling/);
   assert.match(renderForecastPanel(state,'intelligence'),/<svg /);
 });
 test('rejects incomplete forecast point data', () => {
   const state={forecasts:[{metric:'revenue',history:[{date:'a',value:null}],forecast:[{date:'b',value:9}]}]};
+  assert.doesNotMatch(renderForecastPanel(state,'today'),/<svg /);
+});
+
+test('does not plot unverified forecasts even with numeric series', () => {
+  const state={forecasts:[{metric:'revenue',source:'Unverified',updatedAt:'2026-10-14',verified:false,history:[{date:'a',value:100}],forecast:[{date:'b',value:110}]}]};
   assert.doesNotMatch(renderForecastPanel(state,'today'),/<svg /);
 });
