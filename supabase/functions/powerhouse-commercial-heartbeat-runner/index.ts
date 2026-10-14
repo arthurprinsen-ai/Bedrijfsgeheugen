@@ -32,9 +32,9 @@ function poolerUrl(){
 
 function db(){
   if(!sql)sql=postgres(poolerUrl(),{
-    // Four outbound lanes, Brain materialization, contact review and heartbeat
-    // can overlap. Cap at seven clients so one lane cannot monopolize the pool.
-    max:7,
+    // Cap DB sessions during PostgreSQL connection starvation. Concurrent
+    // independent lanes queue locally rather than opening seven DB sessions.
+    max:4,
     prepare:false,
     connect_timeout:4,
     idle_timeout:10,
