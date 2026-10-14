@@ -2202,7 +2202,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -2363,7 +2372,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -2535,7 +2553,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -2693,7 +2720,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -2851,7 +2887,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -3010,7 +3055,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -3169,7 +3223,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -3328,7 +3391,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -3485,7 +3557,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.x.ai/developers/faq/security",
+          "locator": "Does SpaceXSI train on customers API requests?; What is Zero Data Retention?; How to check that ZDR is enabled; Regional endpoints",
+          "observed_value": "API input/output is not used for training without express permission. Default API prompt and response retention is 30 days. ZDR, where available, is team-wide and excludes stateful Responses, Files, Collections, Batch, deferred completions and certain generated media storage. Default api.x.ai does not guarantee processing region.",
+          "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -3632,7 +3713,16 @@
             "observed_value": "xAI text API, Batch API not supported for this model, reasoning effort low/medium/high/xhigh; team access not tested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.x.ai/developers/faq/security",
+          "locator": "Does SpaceXSI train on customers API requests?; What is Zero Data Retention?; How to check that ZDR is enabled; Regional endpoints",
+          "observed_value": "API input/output is not used for training without express permission. Default API prompt and response retention is 30 days. ZDR, where available, is team-wide and excludes stateful Responses, Files, Collections, Batch, deferred completions and certain generated media storage. Default api.x.ai does not guarantee processing region.",
+          "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        }
       },
       "pricing_basis": "USD/1M tokens standard under 200k: input 2, cached 0.5, output 6; >=200k: input 4, cached 1, output 12; US regional endpoint 1.1x, priority 2x.",
       "supplier_audit": {
@@ -11754,7 +11844,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -11920,6 +12019,15 @@
           "source": "https://docs.mistral.ai/resources/changelogs",
           "replacement": "mistral-ocr-4-1",
           "checked_on": "2026-10-14"
+        },
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
         }
       },
       "supplier_audit": {
@@ -12082,7 +12190,16 @@
             "observed_value": "Mistral OCR service via OCR API and Batch, documented GA v25.12 for existing integrations; customer endpoint access untested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -12243,7 +12360,16 @@
             "observed_value": "Mistral Speech Generation API v1/audio/speech; model voxtral-mini-tts-2603; basic and streaming; customer API entitlement not authenticated",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -12401,7 +12527,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -12559,7 +12694,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -12719,7 +12863,16 @@
             "observed_value": "Chat Completions and Conversations APIs, plus Batch API documented; customer-specific authorization not checked",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -12878,7 +13031,16 @@
             "observed_value": "/v1/embeddings and /v1/batch; customer credential access not tested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -13038,7 +13200,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -13201,7 +13372,16 @@
             "scope": "Mistral official open-weights and non-billed self-host pricing model only; NOT a quote of hosting cost or proof of any customer deployment",
             "verification_status": "SELF_HOST_OPEN_WEIGHT_NO_PUBLISHED_API_RATE"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -13369,7 +13549,16 @@
             "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
             "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -13531,6 +13720,15 @@
           "replacement": "none stated",
           "source": "https://docs.mistral.ai/resources/changelogs",
           "checked_on": "2026-10-14"
+        },
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
         }
       },
       "supplier_audit": {
@@ -13693,7 +13891,16 @@
             "observed_value": "Mistral-hosted third-party API, Chat Completions and Batch with tools; tenant access untested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -13861,6 +14068,15 @@
           "replacement": "zai-glm-5-3",
           "source": "https://docs.mistral.ai/resources/changelogs",
           "checked_on": "2026-10-14"
+        },
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+          "locator": "Zero data retention > Supported API endpoints / What zero data retention does not cover / Request zero data retention",
+          "observed_value": "Organization-approved ZDR on paid plans applies to supported stateless API requests (chat, FIM, embeddings, moderation, classification, OCR, speech and transcription). Labs models, Agents, Conversations, Files, Batch files, Libraries, Vibe Work and Chat are excluded. Training opt-out is distinct from ZDR.",
+          "limitations": "An official provider policy only. ZDR is not automatic or proven enabled for this model, product, endpoint or customer; Labs and preview rules require independent review; region and customer contracts are not proven.",
+          "checked_on": "2026-10-14",
+          "scope": "provider policy baseline; tenant and model applicability conditional"
         }
       },
       "supplier_audit": {
@@ -14021,7 +14237,16 @@
             "observed_value": "REST batch and streaming endpoints, advertised us-east-1 cluster; tenant eligibility/region not authenticated",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.x.ai/developers/faq/security",
+          "locator": "Does SpaceXSI train on customers API requests?; What is Zero Data Retention?; How to check that ZDR is enabled; Regional endpoints",
+          "observed_value": "API input/output is not used for training without express permission. Default API prompt and response retention is 30 days. ZDR, where available, is team-wide and excludes stateful Responses, Files, Collections, Batch, deferred completions and certain generated media storage. Default api.x.ai does not guarantee processing region.",
+          "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -14173,7 +14398,16 @@
             "observed_value": "xAI API in us-east-1 and us-west-2; Batch API supported; tenant access not tested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.x.ai/developers/faq/security",
+          "locator": "Does SpaceXSI train on customers API requests?; What is Zero Data Retention?; How to check that ZDR is enabled; Regional endpoints",
+          "observed_value": "API input/output is not used for training without express permission. Default API prompt and response retention is 30 days. ZDR, where available, is team-wide and excludes stateful Responses, Files, Collections, Batch, deferred completions and certain generated media storage. Default api.x.ai does not guarantee processing region.",
+          "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -14325,7 +14559,16 @@
             "observed_value": "xAI Imagine REST API, Batch API available in us-east-1 and us-west-2; customer access not tested",
             "checked_on": "2026-10-14"
           }
-        ]
+        ],
+        "provider_policy_evidence": {
+          "claim": "provider_data_handling_policy",
+          "url": "https://docs.x.ai/developers/faq/security",
+          "locator": "Does SpaceXSI train on customers API requests?; What is Zero Data Retention?; How to check that ZDR is enabled; Regional endpoints",
+          "observed_value": "API input/output is not used for training without express permission. Default API prompt and response retention is 30 days. ZDR, where available, is team-wide and excludes stateful Responses, Files, Collections, Batch, deferred completions and certain generated media storage. Default api.x.ai does not guarantee processing region.",
+          "limitations": "ZDR is not proven enabled for any tenant; the response header x-zero-data-retention can provide account-specific evidence. Regional endpoint capabilities vary by model; no region guarantee inferred. Voice/video model features require separate review.",
+          "checked_on": "2026-10-14",
+          "scope": "provider API baseline, not model-specific configuration or customer assurance"
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
