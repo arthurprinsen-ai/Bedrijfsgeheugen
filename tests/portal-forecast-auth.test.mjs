@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createPortalForecastHandler,verifiedForecasts} from '../platform/api/portal-forecast-handler.mjs';
 const point=(date,value)=>({date,value});
-const valid={id:'revenue',metric:'revenue',source:'Finance ledger',model:'time-series-v1',updatedAt:'2026-10-14T10:00:00Z',verified:true,tenantId:'tenant42',validation:{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'},history:[point('2026-08',90)],forecast:[point('2026-11',110)]};
+const valid={id:'revenue',metric:'revenue',source:'Finance ledger',model:'time-series-v1',updatedAt:'2026-10-14T10:00:00Z',verified:true,tenantId:'tenant42',validation:{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'},history:[point('2026-06',70),point('2026-07',80),point('2026-08',90)],forecast:[point('2026-11',110)]};
 test('unauthenticated request never touches canonical data',async()=>{
  let calls=0;const h=createPortalForecastHandler({getUser:async()=>null,getCanonical:async()=>{calls++}});
  const r=await h(new Request('https://example.test/api/portal-forecasts'));
@@ -62,4 +62,28 @@ test('authenticated tenant with no independently validated finance returns expli
   const r=await h(new Request('https://example.test/api/portal-forecasts'));
   assert.equal(r.status,200);
   assert.deepEqual(await r.json(),{forecasts:[],status:'NO_VALIDATED_FINANCIAL_FORECASTS'});
+});
+
+test('chronology, invalid calendar days and incomplete history cannot be labelled verified',()=>{
+ const now=new Date('2026-10-14T20:00:00Z');
+ const rejected=[
+   {...valid,history:[point('2026-08',90)]},
+   {...valid,history:[point('2026-06',70),point('2026-08',90),point('2026-08',100)]},
+   {...valid,forecast:[point('2026-08',110)]},
+   {...valid,forecast:[point('2026-02-30',110)]},
+   {...valid,history:[point('2026-06-01',70),point('2026-07-01',80),point('2026-08-01',90)]},
+   {...valid,forecast:[point('2026-11',NaN)]}
+ ];
+ for(const f of rejected)assert.deepEqual(verifiedForecasts({forecasts:[f]},'tenant42',{now}),[]);
+});
+test('uncertainty bands must align by period and enclose forecast point',()=>{
+ const now=new Date('2026-10-14T20:00:00Z');
+ const acceptable={...valid,low:[point('2026-11',100)],high:[point('2026-11',125)]};
+ assert.equal(verifiedForecasts({tenantId:'tenant42',forecasts:[acceptable]},'tenant42',{now}).length,1);
+ for(const f of [
+  {...acceptable,high:undefined},
+  {...acceptable,low:[point('2026-10',100)]},
+  {...acceptable,low:[point('2026-11',120)]},
+  {...acceptable,high:[point('2026-11',100)]}
+ ])assert.deepEqual(verifiedForecasts({forecasts:[f]},'tenant42',{now}),[]);
 });
