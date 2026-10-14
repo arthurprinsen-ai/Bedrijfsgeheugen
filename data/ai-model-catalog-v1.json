@@ -21838,7 +21838,7 @@
       "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
-        "inference_residency": "AWS region/deployment dependent",
+        "inference_residency": "Official Titan Image Generator G1 v2 model card lists only US-east-1 and US-west-2 In-Region; no EU in-region/geo/global availability published. Model EOL 2026-06-30 but page still calls it Legacy; authenticated account/region lifecycle readback required.",
         "training_on_customer_data": "verify current Bedrock/Amazon model contract",
         "retention": "verify current Bedrock service terms",
         "zero_data_retention": "verify current service configuration",
@@ -21922,6 +21922,15 @@
             "locator": "Programmatic Access / APIs",
             "observed_value": "Amazon Bedrock Runtime InvokeModel for amazon.titan-image-generator-v2:0; model card EOL date 2026-06-30, do not automatically route",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+            "locator": "Model Details > EOL date and Legacy; Regional Availability > available regions; Programmatic Access > Model ID and cross-region IDs",
+            "observed_value": "AWS Titan Image Generator G1 v2 public model card lists Model EOL June 30 2026 and label Legacy; only us-east-1 and us-west-2 are listed as In-Region inference locations, with no Geo or Global cross-region IDs. No EU/Frankfurt endpoint is listed. Account/region availability remains unauthenticated; a lifecycle mismatch must not be inferred resolved from a public model card.",
+            "checked_on": "2026-10-14",
+            "scope": "Official legacy model card's listed regions and lifecycle, no tenant authorization or current AWS account runtime proof",
+            "verification_status": "OFFICIAL_MODEL_REGION_AND_LEGACY_LIFECYCLE_PUBLIC_ONLY"
           }
         ],
         "provider_policy_evidence": {
@@ -22001,7 +22010,23 @@
         "last_specific_source_check": "2026-10-14",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "aws_eu_regional_availability_review_20261014": {
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+          "checked_on": "2026-10-14",
+          "model_id": "amazon.titan-image-generator-v2:0",
+          "us_east_1_in_region_supported": true,
+          "us_west_2_in_region_supported": true,
+          "frankfurt_in_region_supported": false,
+          "eu_geo_supported": false,
+          "global_supported": false,
+          "documented_model_eol_date": "2026-06-30",
+          "documentation_lifecycle_label": "Legacy",
+          "customer_account_entitlement_verified": false,
+          "tenant_region_config_verified": false,
+          "storage_residency_verified": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
