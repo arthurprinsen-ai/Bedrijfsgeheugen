@@ -1,0 +1,47 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+
+const sql=readFileSync('supabase/migrations/20261014133500_powerhouse_scheduler_isolated_tasks.sql','utf8');
+const slots='1,3,4,6,8,9,11,13,14,16,18,19,21,23,24,26,28,29,31,33,34,36,38,39,41,43,44,46,48,49,51,53,54,56,58,59';
+const expected={
+  'execution-resilience-watchdog':slots,
+  'reconciliation-worker':slots,
+  'public-rls-guard':'1,6,11,16,21,26,31,36,41,46,51,56',
+  'daily-action-set-reconcile':'11,26,41,56',
+  'content-closed-loop':'4,9,14,19,24,29,34,39,44,49,54,59',
+  'data-spine-watchdog':'1,11,21,31,41,51',
+  'terminal-autonomous-reconcile':'3,8,13,18,23,28,33,38,43,48,53,58',
+  'loop-assurance':'14,29,44,59',
+  'email-execution-watchdog':'6,16,26,36,46,56',
+  'one-brain-reconcile':'13,43',
+  'revenue-attribution-snapshot':'4,19,34,49',
+  'linkedin-oauth-resume-reconcile':'18,48',
+  'regression-stage-evidence':'23,53',
+  'seo-assurance':'28,58',
+  'freshness-contradiction-cache':'6,21,36,51',
+  'prediction-learning-audit':'4 6 * * *'
+};
+
+test('all v1 tasks preserve their exact original cron minute slots',()=>{
+  for(const [name,minutes] of Object.entries(expected)){
+    const schedule=minutes.includes(' ') ? minutes : minutes+' * * * *';
+    const fragment=`SELECT cron.schedule('powerhouse-runtime-isolated-${name}', '${schedule}'`;
+    assert.ok(sql.includes(fragment),`missing schedule for ${name}`);
+  }
+});
+test('v2/v3 sources and timezone-sensitive infinity are isolated',()=>{
+  for(const name of ['dataforseo-intelligence','gsc-search','external-intelligence-bounded',
+    'ga4-analytics','economics-backfill','social-learning-backfill','infinity-operating-loop']){
+    assert.ok(sql.includes(name),name);
+  }
+  assert.match(sql,/Europe\/Amsterdam/);
+  assert.match(sql,/cron\.schedule\('powerhouse-runtime-extras-v4'/);
+});
+test('migration swaps original multiplexed cron within one transaction',()=>{
+  assert.match(sql,/BEGIN;/);
+  assert.match(sql,/SELECT cron\.unschedule\(171\);/);
+  assert.match(sql,/COMMIT;/);
+  assert.ok(sql.indexOf('cron.unschedule(171)') > sql.indexOf('powerhouse-runtime-isolated-prediction-learning-audit'));
+  assert.doesNotMatch(sql,/SET statement_timeout = 0/i);
+});
