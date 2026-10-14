@@ -16643,7 +16643,7 @@
       "provider": "Mistral AI",
       "source": "https://docs.mistral.ai/models/zai-glm-5-3",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -16652,7 +16652,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -16660,11 +16660,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -16710,6 +16709,15 @@
             "locator": "Model card > Features, API or model weights",
             "observed_value": "Third-party model hosted by Mistral with Chat Completions and Batching; tenant access not tested",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
+            "locator": "Supported API endpoints > /v1/chat/completions; Supported endpoints across models except Labs; excluded stateful services",
+            "observed_value": "Z.ai GLM 5.3 is listed GA as a third-party open-weights model hosted by Mistral, with /v1/chat/completions supported. Official Mistral policy offers request-approved ZDR for supported stateless Chat Completions on paid plans across non-Labs models. ZDR does not apply to Batch, Agents, Conversations or Files; training preference is separate. Third-party supply chain, subprocessor obligations, tenant agreement, enabled ZDR, model entitlement and actual processing region are not authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "official Mistral-hosted endpoint and published supplier policy only; third-party model, tenant and contract controls remain separately gated",
+            "verification_status": "MODEL_ENDPOINT_POLICY_OFFICIAL_PUBLIC_SOURCE_VERIFIED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -16733,7 +16741,8 @@
           "checked_on": "2026-10-14",
           "scope": "provider API policy, NOT model-region availability or authenticated tenant runtime proof",
           "verification_status": "REGION_ELIGIBILITY_UNVERIFIED"
-        }
+        },
+        "verification_scope_note": "All six supplier-public fields checked against Mistral's model page, pricing and GA status, plus endpoint-specific documented ZDR eligibility, with third-party hosting explicitly acknowledged. NOT proof of Mistral customer agreement, third-party processor terms, region, customer entitlement, activated ZDR, storage or downstream flows."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -16761,7 +16770,7 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
+        "last_specific_source_url": "https://docs.mistral.ai/admin/monitor-comply/zero-data-retention",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
