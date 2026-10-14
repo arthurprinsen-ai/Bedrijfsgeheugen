@@ -2151,25 +2151,33 @@
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
         "verified_claims": [
           "model_id",
-          "pricing"
+          "pricing",
+          "capabilities"
         ],
         "not_verified": [
           "status",
-          "capabilities",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
+            "claim": "pricing",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
             "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "pricing",
+            "claim": "model_id",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "locator": "Model details > MODEL",
+            "observed_value": "deepseek-flash; underlying model DeepSeek-V4.1-Flash",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "Model details > CONTEXT LENGTH and FEATURES",
+            "observed_value": "1M token context; JSON output supported; tool calls supported",
             "checked_on": "2026-10-14"
           }
         ]
@@ -2240,25 +2248,33 @@
         "source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
         "verified_claims": [
           "model_id",
-          "pricing"
+          "pricing",
+          "capabilities"
         ],
         "not_verified": [
           "status",
-          "capabilities",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
-            "claim": "model_id",
+            "claim": "pricing",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
             "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
             "checked_on": "2026-10-14"
           },
           {
-            "claim": "pricing",
+            "claim": "model_id",
             "url": "https://api-docs.deepseek.com/quick_start/pricing/",
-            "locator": "Model Details: model IDs, peak/off-peak pricing and schedule",
+            "locator": "Model details > MODEL",
+            "observed_value": "deepseek-v4-pro; underlying model DeepSeek-V4-Pro-0813",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://api-docs.deepseek.com/quick_start/pricing/",
+            "locator": "Model details > CONTEXT LENGTH and FEATURES",
+            "observed_value": "1M token context; JSON output supported; tool calls supported",
             "checked_on": "2026-10-14"
           }
         ]
@@ -3808,19 +3824,22 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Model specification: 0.13 USD/M input tokens, embeddings for text",
+            "locator": "Model header",
+            "observed_value": "text-embedding-3-large",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Model specification: 0.13 USD/M input tokens, embeddings for text",
+            "locator": "Price > Embeddings per 1M tokens",
+            "observed_value": "USD $0.13 per 1M input tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "capabilities",
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Model specification: 0.13 USD/M input tokens, embeddings for text",
+            "locator": "Model card > Modalities",
+            "observed_value": "Text embeddings; image/audio/video not supported",
             "checked_on": "2026-10-14"
           }
         ]
@@ -3904,13 +3923,15 @@
           {
             "claim": "model_id",
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Model comparison: text-embedding-3-small 0.02 USD/M input tokens",
+            "locator": "Quick comparison",
+            "observed_value": "text-embedding-3-small",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
             "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
-            "locator": "Model comparison: text-embedding-3-small 0.02 USD/M input tokens",
+            "locator": "Quick comparison > Cost",
+            "observed_value": "USD $0.02 per 1M input tokens",
             "checked_on": "2026-10-14"
           }
         ]
@@ -3982,20 +4003,35 @@
         "source_url": "https://developers.openai.com/api/docs/guides/moderation",
         "checked_on": "2026-10-14",
         "verified_claims": [
-          "model_id"
+          "model_id",
+          "pricing",
+          "capabilities"
         ],
         "not_verified": [
           "status",
-          "pricing",
-          "capabilities",
           "deployment",
           "governance"
         ],
         "claim_evidence": [
           {
             "claim": "model_id",
-            "url": "https://developers.openai.com/api/docs/models/all",
-            "locator": "Official all-models listing; human-facing name matched to catalog identifier",
+            "url": "https://developers.openai.com/api/docs/guides/moderation",
+            "locator": "Moderation guide > model code",
+            "observed_value": "omni-moderation-latest",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/guides/moderation",
+            "locator": "Moderation guide > Overview",
+            "observed_value": "The moderation endpoint is free to use",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/guides/moderation",
+            "locator": "Moderation guide > Overview",
+            "observed_value": "Text and image inputs; no audio classification; image files up to 20 MB",
             "checked_on": "2026-10-14"
           }
         ]
