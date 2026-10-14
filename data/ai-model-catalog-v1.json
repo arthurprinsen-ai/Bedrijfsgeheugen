@@ -7795,7 +7795,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -7804,7 +7804,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -7812,11 +7812,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -7871,6 +7870,15 @@
             "checked_on": "2026-10-14",
             "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
             "verification_status": "MODEL_ENDPOINT_REGIONAL_ELIGIBILITY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support > /v1/realtime/translations; Support by region > United States, Europe (EEA + Switzerland); Storage requirements and retention controls per endpoint",
+            "observed_value": "gpt-realtime-translate: supplier lists /v1/realtime/translations with this model and USA and Europe (EEA + Switzerland) as eligible regional storage/processing service options. Model card confirms live speech translation, model card price USD 0.034 per minute. OpenAI API customer content is not used to train by default unless opted in, subject to documented exceptions. The endpoint-specific Zero Data Retention/abuse-monitoring matrix does NOT separately enumerate /v1/realtime/translations, so generic /v1/realtime ZDR eligibility is NOT being extended as proof for this specific route. No actual customer regional endpoint, ZDR approval, abuse-log retention, contractual DPA, storage configuration or tenant entitlement has been inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "Supplier-public model-to-API regional eligibility and documented negative inference about ZDR proof only; tenant and feature-specific retention are explicitly UNVERIFIED",
+            "verification_status": "MODEL_ROUTE_REGIONAL_POLICY_OFFICIAL_SOURCE_VERIFIED_NO_ZDR_TENANT_ASSERTION"
           }
         ],
         "provider_policy_evidence": {
@@ -7886,7 +7894,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Six supplier-public claims corroborated against the official model card and OpenAI API region/support matrix, with precise model-route match. This confirms documented policy scope, not endpoint-specific ZDR qualification where unlisted, granted customer entitlement, signed agreements, enabled settings, recorded sessions, chosen processing region or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -7938,7 +7947,7 @@
           "full_governance_verified": false
         },
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
         "independent_public_audio_pricing_review_20261014": {
           "date": "2026-10-14",
           "model_specific_source": "https://developers.openai.com/api/docs/models/gpt-realtime-translate",
@@ -8033,7 +8042,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -8042,7 +8051,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -8050,11 +8059,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -8109,6 +8117,15 @@
             "checked_on": "2026-10-14",
             "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
             "verification_status": "MODEL_ENDPOINT_REGIONAL_ELIGIBILITY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support > /v1/realtime/transcription_sessions; Support by region > United States, Europe (EEA + Switzerland); Storage requirements and retention controls per endpoint",
+            "observed_value": "gpt-live-transcribe: supplier lists /v1/realtime/transcription_sessions with this model and USA and Europe (EEA + Switzerland) as eligible regional storage/processing service options. Model card confirms live speech-to-text, model card price USD 0.017 per minute. OpenAI API customer content is not used to train by default unless opted in, subject to documented exceptions. The endpoint-specific Zero Data Retention/abuse-monitoring matrix does NOT separately enumerate /v1/realtime/transcription_sessions, so generic /v1/realtime ZDR eligibility is NOT being extended as proof for this specific route. No actual customer regional endpoint, ZDR approval, abuse-log retention, contractual DPA, storage configuration or tenant entitlement has been inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "Supplier-public model-to-API regional eligibility and documented negative inference about ZDR proof only; tenant and feature-specific retention are explicitly UNVERIFIED",
+            "verification_status": "MODEL_ROUTE_REGIONAL_POLICY_OFFICIAL_SOURCE_VERIFIED_NO_ZDR_TENANT_ASSERTION"
           }
         ],
         "provider_policy_evidence": {
@@ -8124,7 +8141,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Six supplier-public claims corroborated against the official model card and OpenAI API region/support matrix, with precise model-route match. This confirms documented policy scope, not endpoint-specific ZDR qualification where unlisted, granted customer entitlement, signed agreements, enabled settings, recorded sessions, chosen processing region or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8176,7 +8194,7 @@
           "full_governance_verified": false
         },
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
         "independent_public_audio_pricing_review_20261014": {
           "date": "2026-10-14",
           "model_specific_source": "https://developers.openai.com/api/docs/models/gpt-live-transcribe",
@@ -8269,7 +8287,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -8278,7 +8296,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -8286,11 +8304,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -8345,6 +8362,15 @@
             "checked_on": "2026-10-14",
             "scope": "Official model-to-endpoint and regional processing eligibility, NOT customer/tenant-specific deployment, data storage region, data retention policy or approved privacy controls",
             "verification_status": "MODEL_ENDPOINT_REGIONAL_ELIGIBILITY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://developers.openai.com/api/docs/guides/your-data",
+            "locator": "API Endpoint, tool and model support > /v1/realtime/transcription_sessions; Support by region > United States, Europe (EEA + Switzerland); Storage requirements and retention controls per endpoint",
+            "observed_value": "gpt-realtime-whisper: supplier lists /v1/realtime/transcription_sessions with this model and USA and Europe (EEA + Switzerland) as eligible regional storage/processing service options. Model card confirms live speech-to-text, model card price USD 0.017 per minute. OpenAI API customer content is not used to train by default unless opted in, subject to documented exceptions. The endpoint-specific Zero Data Retention/abuse-monitoring matrix does NOT separately enumerate /v1/realtime/transcription_sessions, so generic /v1/realtime ZDR eligibility is NOT being extended as proof for this specific route. No actual customer regional endpoint, ZDR approval, abuse-log retention, contractual DPA, storage configuration or tenant entitlement has been inspected.",
+            "checked_on": "2026-10-14",
+            "scope": "Supplier-public model-to-API regional eligibility and documented negative inference about ZDR proof only; tenant and feature-specific retention are explicitly UNVERIFIED",
+            "verification_status": "MODEL_ROUTE_REGIONAL_POLICY_OFFICIAL_SOURCE_VERIFIED_NO_ZDR_TENANT_ASSERTION"
           }
         ],
         "provider_policy_evidence": {
@@ -8360,7 +8386,8 @@
           "source_url": "https://developers.openai.com/api/docs/guides/your-data",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Six supplier-public claims corroborated against the official model card and OpenAI API region/support matrix, with precise model-route match. This confirms documented policy scope, not endpoint-specific ZDR qualification where unlisted, granted customer entitlement, signed agreements, enabled settings, recorded sessions, chosen processing region or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -8412,7 +8439,7 @@
           "full_governance_verified": false
         },
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
+        "last_specific_source_url": "https://developers.openai.com/api/docs/guides/your-data",
         "independent_public_audio_pricing_review_20261014": {
           "date": "2026-10-14",
           "model_specific_source": "https://developers.openai.com/api/docs/models/gpt-realtime-whisper",
