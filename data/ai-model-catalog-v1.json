@@ -6362,7 +6362,8 @@
         "model distillation"
       ],
       "limitations": [
-        "legacy lifecycle in Bedrock; verify successor before new production use"
+        "legacy lifecycle in Bedrock; verify successor before new production use",
+        "Unresolved AWS Bedrock lifecycle conflict: do not recommend or deploy until the actual account and region confirm availability via GetFoundationModel."
       ],
       "scores": {
         "reasoning": 9,
@@ -6411,7 +6412,21 @@
         },
         "provider_contracts": {
           "status": "UNVERIFIED_REQUIRES_AUTHORIZED_CONTRACT"
+        },
+        "lifecycle": {
+          "status": "CONFLICT_NOT_APPROVED",
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "checked_at": "2026-10-14",
+          "customer_region_readback": false
         }
+      },
+      "selection_eligible": false,
+      "lifecycle_conflict": {
+        "state": "UNRESOLVED_REGION_SPECIFIC_AVAILABILITY",
+        "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "checked_at": "2026-10-14",
+        "reconciliation_required": "Authenticated GetFoundationModel in the actual AWS region/account; published lifecycle documents have conflicting/stale regional dates",
+        "not_releasable_as_active": true
       }
     },
     {
