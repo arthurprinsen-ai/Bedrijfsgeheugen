@@ -7869,6 +7869,25 @@
           "governance_and_region_not_attested": true,
           "automatic_recommendation_eligible": false,
           "claim_scope_unchanged": true
+        },
+        "realtime_retention_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "model_id": "gpt-realtime-translate",
+          "official_source": "https://developers.openai.com/api/docs/guides/your-data",
+          "model_route": "/v1/realtime/translations",
+          "model_specific_api_route_documented": true,
+          "public_processing_support": [
+            "United States",
+            "Europe (EEA + Switzerland)"
+          ],
+          "endpoint_retention_table_has_exact_route": false,
+          "explicit_retention_policy_for_exact_route": "NOT_DOCUMENTED_IN_PUBLISHED_MATRIX",
+          "inference_prevented": "Do not inherit /v1/realtime, /v1/audio/transcriptions, or /v1/audio/translations ZDR and retention values to these distinct realtime subpaths without a direct official supplier statement.",
+          "supplier_governance_verified": false,
+          "customer_tenant_or_contract_verified": false,
+          "automatic_recommendation_eligible": false,
+          "release_approved": false,
+          "source_context": "Official API Endpoint, tool and model support lists exact realtime subpaths and model support; Storage requirements table lists /v1/realtime but does not separately list /v1/realtime/translations or /v1/realtime/transcription_sessions."
         }
       },
       "pricing_basis": {
@@ -8088,6 +8107,25 @@
           "governance_and_region_not_attested": true,
           "automatic_recommendation_eligible": false,
           "claim_scope_unchanged": true
+        },
+        "realtime_retention_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "model_id": "gpt-live-transcribe",
+          "official_source": "https://developers.openai.com/api/docs/guides/your-data",
+          "model_route": "/v1/realtime/transcription_sessions",
+          "model_specific_api_route_documented": true,
+          "public_processing_support": [
+            "United States",
+            "Europe (EEA + Switzerland)"
+          ],
+          "endpoint_retention_table_has_exact_route": false,
+          "explicit_retention_policy_for_exact_route": "NOT_DOCUMENTED_IN_PUBLISHED_MATRIX",
+          "inference_prevented": "Do not inherit /v1/realtime, /v1/audio/transcriptions, or /v1/audio/translations ZDR and retention values to these distinct realtime subpaths without a direct official supplier statement.",
+          "supplier_governance_verified": false,
+          "customer_tenant_or_contract_verified": false,
+          "automatic_recommendation_eligible": false,
+          "release_approved": false,
+          "source_context": "Official API Endpoint, tool and model support lists exact realtime subpaths and model support; Storage requirements table lists /v1/realtime but does not separately list /v1/realtime/translations or /v1/realtime/transcription_sessions."
         }
       },
       "pricing_basis": {
@@ -8305,6 +8343,25 @@
           "governance_and_region_not_attested": true,
           "automatic_recommendation_eligible": false,
           "claim_scope_unchanged": true
+        },
+        "realtime_retention_scope_review_20261014": {
+          "checked_on": "2026-10-14",
+          "model_id": "gpt-realtime-whisper",
+          "official_source": "https://developers.openai.com/api/docs/guides/your-data",
+          "model_route": "/v1/realtime/transcription_sessions",
+          "model_specific_api_route_documented": true,
+          "public_processing_support": [
+            "United States",
+            "Europe (EEA + Switzerland)"
+          ],
+          "endpoint_retention_table_has_exact_route": false,
+          "explicit_retention_policy_for_exact_route": "NOT_DOCUMENTED_IN_PUBLISHED_MATRIX",
+          "inference_prevented": "Do not inherit /v1/realtime, /v1/audio/transcriptions, or /v1/audio/translations ZDR and retention values to these distinct realtime subpaths without a direct official supplier statement.",
+          "supplier_governance_verified": false,
+          "customer_tenant_or_contract_verified": false,
+          "automatic_recommendation_eligible": false,
+          "release_approved": false,
+          "source_context": "Official API Endpoint, tool and model support lists exact realtime subpaths and model support; Storage requirements table lists /v1/realtime but does not separately list /v1/realtime/translations or /v1/realtime/transcription_sessions."
         }
       },
       "pricing_basis": {
