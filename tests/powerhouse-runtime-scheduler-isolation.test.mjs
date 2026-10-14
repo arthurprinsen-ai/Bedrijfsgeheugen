@@ -154,3 +154,8 @@ test('outage recovery advances only a committed bounded cursor after producer ve
 test('rollback recognizes upgraded cursor reconciler',()=>{
   assert.match(rollback,/reconcile_missed_operational_slots_cursor_v1/);
 });
+
+const incrementalParserContract=readFileSync('supabase/migrations/20261014135000_revenue_attribution_incremental.sql','utf8');
+test('incremental revenue UPSERT disambiguates SELECT from ON CONFLICT',()=>{
+  assert.match(incrementalParserContract,/FROM pg_temp\.revenue_delta_stage\s+WHERE true[^\n]*\n\s+ON CONFLICT\(/);
+});
