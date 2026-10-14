@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createPortalForecastHandler,verifiedForecasts} from '../platform/api/portal-forecast-handler.mjs';
 const point=(date,value)=>({date,value});
-const valid={id:'revenue',metric:'revenue',source:'Finance ledger',model:'time-series-v1',updatedAt:'2026-10-14T10:00:00Z',verified:true,tenantId:'tenant42',validation:{status:'passed',tenantBound:true,tenantId:'tenant42'},history:[point('2026-08',90)],forecast:[point('2026-11',110)]};
+const valid={id:'revenue',metric:'revenue',source:'Finance ledger',model:'time-series-v1',updatedAt:'2026-10-14T10:00:00Z',verified:true,tenantId:'tenant42',validation:{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'},history:[point('2026-08',90)],forecast:[point('2026-11',110)]};
 test('unauthenticated request never touches canonical data',async()=>{
  let calls=0;const h=createPortalForecastHandler({getUser:async()=>null,getCanonical:async()=>{calls++}});
  const r=await h(new Request('https://example.test/api/portal-forecasts'));
@@ -45,4 +45,10 @@ test('forecast dates require a recent observed timestamp and reject future asser
 test('canonical projection tenant metadata must match authenticated identity',()=>{
  assert.deepEqual(verifiedForecasts({tenantId:'tenant43',forecasts:[valid]},'tenant42',{now:new Date('2026-10-14T20:00:00Z')}),[]);
  assert.deepEqual(verifiedForecasts({payload:{tenant_id:'tenant43',forecasts:[valid]}},'tenant42',{now:new Date('2026-10-14T20:00:00Z')}),[]);
+});
+
+test('expired or absent independent forecast verification cannot be presented as valid',()=>{
+ const now=new Date('2026-10-14T20:00:00Z');
+ assert.deepEqual(verifiedForecasts({forecasts:[{...valid,validation:{...valid.validation,verifiedAt:'2026-08-01T00:00:00Z'}}]},'tenant42',{now}),[]);
+ assert.deepEqual(verifiedForecasts({forecasts:[{...valid,validation:{...valid.validation,verifiedAt:null}}]},'tenant42',{now}),[]);
 });
