@@ -5447,11 +5447,12 @@
           },
           {
             "claim": "governance",
-            "url": "https://huggingface.co/meta-llama/Llama-4-Scout-17B-16E-Instruct-Original",
-            "locator": "License / usage terms of the model",
-            "observed_value": "Model governed by Llama 4 Community License with attribution and use restrictions, plus additional commercial terms for very large services; self-host data processing, logs, residency and customer agreement depend on operator.",
+            "url": "https://github.com/meta-llama/llama-models/blob/main/models/llama4/LICENSE",
+            "locator": "Llama 4 Community License Agreement > License Rights and Redistribution; Additional Commercial Terms",
+            "observed_value": "Llama 4 Community License permits use and redistribution with obligations including license-copy and 'Built with Llama' attribution, and requires separate permission for entities exceeding the specified 700 million MAU threshold. This licenses weights; it does not establish hosted inference data retention, processing region or DPA.",
             "checked_on": "2026-10-14",
-            "scope": "published license only; no customer-specific GDPR/DPA/residency attestation"
+            "scope": "model-specific weight license; customer/deployment security settings unverified",
+            "verification_status": "LICENSE_ONLY_TENANT_UNVERIFIED"
           }
         ],
         "governance_baseline_classification": {
@@ -5715,10 +5716,11 @@
           {
             "claim": "governance",
             "url": "https://huggingface.co/Qwen/Qwen3-32B",
-            "locator": "License / usage terms of the model",
-            "observed_value": "Qwen3-32B weights are Apache-2.0 licensed; self-hosted privacy, data retention and regional processing are controlled by the deployer. Alibaba Model Studio policies do not automatically apply to independent self-hosting.",
+            "locator": "Publisher model repository > License: apache-2.0; Use this model > Transformers, vLLM and SGLang",
+            "observed_value": "Official Qwen3-32B weights show Apache-2.0 licensing and local operation through Transformers, vLLM and SGLang. Model weight licensing does not determine commercial hosted inference pricing, account-specific data retention or region.",
             "checked_on": "2026-10-14",
-            "scope": "published license only; no customer-specific GDPR/DPA/residency attestation"
+            "scope": "model-specific weight license; customer/deployment security settings unverified",
+            "verification_status": "LICENSE_ONLY_TENANT_UNVERIFIED"
           }
         ],
         "governance_baseline_classification": {
