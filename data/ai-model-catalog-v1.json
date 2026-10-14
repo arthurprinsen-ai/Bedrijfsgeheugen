@@ -2270,14 +2270,16 @@
       "limitations": [
         "Supplier restricts Gemini 2.5 access to customers with prior active usage; do not recommend for new projects without entitlement check.",
         "Existing users retain API access; Google limits new access to Gemini 2.5 models, recommending newer models for new projects",
-        "Gemini 2.5 Flash-Lite does not support image generation, audio generation or Live API"
+        "Gemini 2.5 Flash-Lite does not support image generation, audio generation or Live API",
+        "Paid Gemini API terms and feature-specific state must be verified for the tenant; no claim about free-tier training, EU residency, or Vertex deployment is implied.",
+        "Google limits access to Gemini 2.5 models to accounts with prior usage; they remain active but are not recommended for new projects."
       ],
       "governance": {
-        "storage_residency": "EU option documented",
-        "inference_residency": "EU option documented",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "No guarantee of project-specific EU storage without a separately confirmed service and deployment region",
+        "inference_residency": "Gemini Developer API processing geography not attested for project; Vertex AI regional inference is distinct",
+        "training_on_customer_data": "Paid Gemini Developer API services do not use prompts or responses to improve Google products; unpaid tier and separate Vertex policies differ",
+        "retention": "Gemini API may retain abuse-monitoring logs; Interactions API stores state by default, explicit caches and Files API store separately; details conditional on endpoint",
+        "zero_data_retention": "Zero-retention requires avoiding or configuring stateful features; paid service ZDR caveats and Google Maps grounding exceptions apply; no customer project setup verified",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -2286,7 +2288,7 @@
       "verified_at": "2026-10-14",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -2295,7 +2297,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "checked_on": "2026-10-14",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
         "verified_claims": [
@@ -2303,11 +2305,10 @@
           "status",
           "capabilities",
           "pricing",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -2346,13 +2347,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms > Use Restrictions; Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Google Gemini API Additional Terms (effective 2026-03-23): Paid Services do not use prompts or responses to improve products and process them under a data processing addendum; limited abuse/security logging and international transient storage may apply. Unpaid Services outside stated EEA/Swiss/UK exception may use prompts and responses to improve products. For API clients in EEA, Switzerland or UK, Paid Services are required. Actual project billing status, data region, legal documents and runtime controls are not verified.",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging; Interactions API; Live API; Files API Storage; Caching",
+            "observed_value": "gemini-2.5-flash-lite: Gemini Developer API paid services do not train on user prompts/responses for product improvement; paid-tier logging and endpoint state remain subject to privacy/abuse conditions. For stateless generation, avoid stateful Interactions, explicit caches and File storage to reduce retention; Interactions store=true by default and Google Maps grounding has an exception. This is supplier conditional policy, not a verified customer paid tier or tenant ZDR.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "official supplier Gemini Developer API baseline applied to named stable model; tenant settings and Vertex deployments excluded"
           }
         ],
         "provider_policy_evidence": {
@@ -10496,7 +10495,8 @@
         "enterprise workflows"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Paid Gemini API terms and feature-specific state must be verified for the tenant; no claim about free-tier training, EU residency, or Vertex deployment is implied."
       ],
       "scores": {
         "reasoning": 9,
@@ -10519,11 +10519,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "No guarantee of project-specific EU storage without a separately confirmed service and deployment region",
+        "inference_residency": "Gemini Developer API processing geography not attested for project; Vertex AI regional inference is distinct",
+        "training_on_customer_data": "Paid Gemini Developer API services do not use prompts or responses to improve Google products; unpaid tier and separate Vertex policies differ",
+        "retention": "Gemini API may retain abuse-monitoring logs; Interactions API stores state by default, explicit caches and Files API store separately; details conditional on endpoint",
+        "zero_data_retention": "Zero-retention requires avoiding or configuring stateful features; paid service ZDR caveats and Google Maps grounding exceptions apply; no customer project setup verified",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -10533,7 +10533,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -10542,7 +10542,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "checked_on": "2026-10-14",
         "source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash",
         "verified_claims": [
@@ -10550,11 +10550,10 @@
           "status",
           "pricing",
           "capabilities",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "model_id",
@@ -10593,13 +10592,11 @@
           },
           {
             "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging; Interactions API; Live API; Files API Storage; Caching",
+            "observed_value": "gemini-3.8-flash: Gemini Developer API paid services do not train on user prompts/responses for product improvement; paid-tier logging and endpoint state remain subject to privacy/abuse conditions. For stateless generation, avoid stateful Interactions, explicit caches and File storage to reduce retention; Interactions store=true by default and Google Maps grounding has an exception. This is supplier conditional policy, not a verified customer paid tier or tenant ZDR.",
             "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
+            "scope": "official supplier Gemini Developer API baseline applied to named stable model; tenant settings and Vertex deployments excluded"
           }
         ],
         "provider_policy_evidence": {
@@ -11635,7 +11632,8 @@
         "agents"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Paid Gemini API terms and feature-specific state must be verified for the tenant; no claim about free-tier training, EU residency, or Vertex deployment is implied."
       ],
       "scores": {
         "reasoning": 8,
@@ -11658,11 +11656,11 @@
       "source_type": "official-provider",
       "verified_at": "2026-10-14",
       "governance": {
-        "storage_residency": "unknown",
-        "inference_residency": "unknown",
-        "training_on_customer_data": "verify current product/contract",
-        "retention": "verify current product/contract",
-        "zero_data_retention": "verify current product/contract",
+        "storage_residency": "No guarantee of project-specific EU storage without a separately confirmed service and deployment region",
+        "inference_residency": "Gemini Developer API processing geography not attested for project; Vertex AI regional inference is distinct",
+        "training_on_customer_data": "Paid Gemini Developer API services do not use prompts or responses to improve Google products; unpaid tier and separate Vertex policies differ",
+        "retention": "Gemini API may retain abuse-monitoring logs; Interactions API stores state by default, explicit caches and Files API store separately; details conditional on endpoint",
+        "zero_data_retention": "Zero-retention requires avoiding or configuring stateful features; paid service ZDR caveats and Google Maps grounding exceptions apply; no customer project setup verified",
         "subprocessors": "verify current provider list",
         "dpa": "verify current product/contract",
         "cmk": "verify current product/contract",
@@ -11672,7 +11670,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -11681,7 +11679,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://ai.google.dev/gemini-api/docs/models",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -11689,22 +11687,11 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
-          {
-            "claim": "governance",
-            "url": "https://ai.google.dev/gemini-api/terms",
-            "locator": "Gemini API Additional Terms of Service > Unpaid Services > How Google Uses Your Data; Paid Services > How Google Uses Your Data",
-            "observed_value": "Gemini API Paid Services do not use submitted prompts/responses to improve products, but retain limited abuse-monitoring records and may process internationally. Unpaid Services may use content for product improvement, subject to the published EEA/UK/Swiss exception. A customer's paid-service, feature and regional settings are unverified.",
-            "checked_on": "2026-10-14",
-            "scope": "official provider/API baseline only; NOT model-specific deployed tenant or executed customer contract evidence",
-            "verification_status": "PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED",
-            "independently_checked_source": "OFFICIAL_PROVIDER_DOCUMENTATION_2026-10-14"
-          },
           {
             "claim": "model_id",
             "url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.6-flash",
@@ -11741,6 +11728,14 @@
             "locator": "New models > Pricing",
             "observed_value": "Gemini 3.6 Flash: USD 1.50 input, USD 7.50 output per 1M tokens; service tiers may differ",
             "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "governance",
+            "url": "https://ai.google.dev/gemini-api/docs/zdr",
+            "locator": "Training restriction; Prompt logging; Interactions API; Live API; Files API Storage; Caching",
+            "observed_value": "gemini-3.6-flash: Gemini Developer API paid services do not train on user prompts/responses for product improvement; paid-tier logging and endpoint state remain subject to privacy/abuse conditions. For stateless generation, avoid stateful Interactions, explicit caches and File storage to reduce retention; Interactions store=true by default and Google Maps grounding has an exception. This is supplier conditional policy, not a verified customer paid tier or tenant ZDR.",
+            "checked_on": "2026-10-14",
+            "scope": "official supplier Gemini Developer API baseline applied to named stable model; tenant settings and Vertex deployments excluded"
           }
         ],
         "provider_policy_evidence": {
