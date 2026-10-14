@@ -517,20 +517,15 @@
         "checked_on": "2026-10-14",
         "verified_claims": [
           "model_id",
-          "status",
-          "input_usd_m",
-          "output_usd_m",
-          "context_k"
+          "pricing"
         ],
         "not_verified": [
-          "pricing modifiers and specific deployment billing",
-          "capabilities beyond official overview",
-          "deployment eligibility",
-          "governance and data-processing terms",
-          "custom contractual pricing",
-          "all model scores"
+          "status",
+          "capabilities",
+          "deployment",
+          "governance"
         ],
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "evidence_note": "Official Anthropic model overview confirms active listed Claude API model ID, standard input/output USD per million tokens and 1M context. Not a full supplier attestation. Pricing documentation has separate fast-mode, regional and partner-platform rules.",
         "additional_official_pricing_source": "https://platform.claude.com/docs/en/about-claude/pricing",
         "verification_required": [
@@ -541,7 +536,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED"
       }
     },
     {
