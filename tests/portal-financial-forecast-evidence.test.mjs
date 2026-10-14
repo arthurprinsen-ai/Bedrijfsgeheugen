@@ -1,6 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { eligibleFinancialForecast } from '../supabase/functions/_shared/portal-financial-forecast-acceptance.js';
+import { eligibleFinancialForecast as validateFinancialForecast } from '../supabase/functions/_shared/portal-financial-forecast-acceptance.js';
+
+// Deterministic approval clock: regression tests must not change with the wall clock.
+const reviewClock=Date.parse('2026-10-14T12:00:00Z');
+const eligibleFinancialForecast=(row,tenant)=>validateFinancialForecast(row,tenant,reviewClock);
 
 const point=(date,value)=>({date,value});
 const base={
@@ -54,4 +58,20 @@ test('bands must match the same periods, include every forecast and enclose expe
   {...base,lower_points:low.map(p=>({...p,date:'2026-01'})),upper_points:high},
   {...base,lower_points:low.map(p=>({...p,value:200})),upper_points:high}
  ])assert.equal(eligibleFinancialForecast(row,'tenant42'),false);
+});
+
+test('financial evidence must be current, not future-dated, and revalidated at readback',()=>{
+ assert.equal(validateFinancialForecast(base,'tenant42',reviewClock),true);
+ const expired=Date.parse('2026-11-14T12:00:00Z');
+ assert.equal(validateFinancialForecast(base,'tenant42',expired),false,
+  'Stored passed review never authorizes a stale financial series');
+ for(const row of [
+  {...base,source_updated_at:'2026-09-01T10:00:00Z'},
+  {...base,verified_at:'2026-10-15T10:00:00Z'},
+  {...base,source_updated_at:'2026-10-15T10:00:00Z',verified_at:'2026-10-16T10:00:00Z'}
+ ])assert.equal(validateFinancialForecast(row,'tenant42',reviewClock),false);
+ assert.equal(validateFinancialForecast(base,'tenant42',NaN),false);
+ const atBoundary={...base,source_updated_at:'2026-09-14T12:00:00Z'};
+ assert.equal(validateFinancialForecast(atBoundary,'tenant42',reviewClock),true);
+ assert.equal(validateFinancialForecast(atBoundary,'tenant42',reviewClock+1),false);
 });
