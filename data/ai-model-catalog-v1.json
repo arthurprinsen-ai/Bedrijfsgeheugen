@@ -17339,7 +17339,7 @@
       "provider": "xAI",
       "source": "https://docs.x.ai/developers/models/speech-to-text",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -17348,7 +17348,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.x.ai/developers/models/speech-to-text",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -17356,11 +17356,10 @@
           "model_id",
           "status",
           "pricing",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -17415,6 +17414,15 @@
             "checked_on": "2026-10-14",
             "scope": "model-specific documented negative regional eligibility; no customer tenant or contract claim",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "Data & Privacy FAQ > team ZDR state, response x-zero-data-retention, unavailable stored-media and Batch features, default 30-day abuse-log storage; crosscheck official model detail and Regional Endpoints model exclusions",
+            "observed_value": "Speech-to-Text model defaults to grok-voice-transcribe-2.0. Published REST price $0.10/hour and streaming price $0.20/hour, cluster us-east-1. Regional endpoints explicitly exclude voice API; us-east-1 cluster is not a customer region guarantee. Team ZDR activation must be verified in authenticated response header and should not be assumed available for all voice features; API rights/contract unverified.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently reviewed official model-specific API route, xAI team ZDR media/storage exceptions and negative US-regional eligibility. This is public supplier-policy verification only; actual team setting, customer's residency, signed DPA, rights, output bucket, account and ZDR response header remain UNVERIFIED.",
+            "verification_status": "MODEL_ENDPOINT_GOVERNANCE_PUBLIC_DOCUMENTATION_CONFIRMED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17431,7 +17439,8 @@
           "source_url": "https://docs.x.ai/developers/faq/security",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independently checked six supplier-public claim areas against current official xAI model, API region and security documentation on 2026-10-14. Governance scope is NEGATIVE for any dedicated US regional guarantee (not supported for voice/image/video) and conditional for team ZDR; generated media and storage limitations apply. NOT customer DPA, authenticated region, ZDR setting, team entitlement, uploaded output location, downstream controls or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -17457,7 +17466,7 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.x.ai/developers/models/speech-to-text",
+        "last_specific_source_url": "https://docs.x.ai/developers/faq/security",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -17533,7 +17542,7 @@
       "provider": "xAI",
       "source": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -17542,7 +17551,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -17550,11 +17559,10 @@
           "capabilities",
           "status",
           "pricing",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -17609,6 +17617,15 @@
             "checked_on": "2026-10-14",
             "scope": "model-specific documented negative regional eligibility; no customer tenant or contract claim",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "Data & Privacy FAQ > team ZDR state, response x-zero-data-retention, unavailable stored-media and Batch features, default 30-day abuse-log storage; crosscheck official model detail and Regional Endpoints model exclusions",
+            "observed_value": "Official model card lists grok-imagine-image-2.0, $0.01/input image, from $0.04/output image depending resolution, and us-east-1/us-west-2 clusters. Dedicated US regional endpoint expressly excludes image APIs; clusters alone do not guarantee data residency. Under team ZDR, image output cannot be hosted by xAI: base64 or customer-owned pre-signed upload URL is required and file_id/stored media not supported. Customer output storage location and ZDR state not authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently reviewed official model-specific API route, xAI team ZDR media/storage exceptions and negative US-regional eligibility. This is public supplier-policy verification only; actual team setting, customer's residency, signed DPA, rights, output bucket, account and ZDR response header remain UNVERIFIED.",
+            "verification_status": "MODEL_ENDPOINT_GOVERNANCE_PUBLIC_DOCUMENTATION_CONFIRMED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17625,7 +17642,8 @@
           "source_url": "https://docs.x.ai/developers/faq/security",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independently checked six supplier-public claim areas against current official xAI model, API region and security documentation on 2026-10-14. Governance scope is NEGATIVE for any dedicated US regional guarantee (not supported for voice/image/video) and conditional for team ZDR; generated media and storage limitations apply. NOT customer DPA, authenticated region, ZDR setting, team entitlement, uploaded output location, downstream controls or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -17651,7 +17669,7 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+        "last_specific_source_url": "https://docs.x.ai/developers/faq/security",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
@@ -17727,7 +17745,7 @@
       "provider": "xAI",
       "source": "https://docs.x.ai/developers/models/grok-imagine-video",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -17736,7 +17754,7 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PARTIALLY_VERIFIED",
+        "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
         "source_url": "https://docs.x.ai/developers/models/grok-imagine-video",
         "checked_on": "2026-10-14",
         "verified_claims": [
@@ -17744,11 +17762,10 @@
           "model_id",
           "status",
           "pricing",
-          "deployment"
-        ],
-        "not_verified": [
+          "deployment",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -17803,6 +17820,15 @@
             "checked_on": "2026-10-14",
             "scope": "model-specific documented negative regional eligibility; no customer tenant or contract claim",
             "verification_status": "MODEL_ENDPOINT_POLICY_OBSERVED_TENANT_UNVERIFIED"
+          },
+          {
+            "claim": "governance",
+            "url": "https://docs.x.ai/developers/faq/security",
+            "locator": "Data & Privacy FAQ > team ZDR state, response x-zero-data-retention, unavailable stored-media and Batch features, default 30-day abuse-log storage; crosscheck official model detail and Regional Endpoints model exclusions",
+            "observed_value": "Official model card lists grok-imagine-video, output $0.05/sec (480p) or $0.07/sec (720p), input image $0.002, input video $0.01/sec, clusters us-east-1/us-west-2 for Batch. Dedicated US regional endpoint expressly excludes video APIs; clusters alone do not guarantee customer regional processing. Under team ZDR, xAI cannot store generated videos and a customer-controlled pre-signed output.upload_url must be supplied. ZDR also excludes Batch API; customer ZDR setting and downstream video storage location are not authenticated.",
+            "checked_on": "2026-10-14",
+            "scope": "Independently reviewed official model-specific API route, xAI team ZDR media/storage exceptions and negative US-regional eligibility. This is public supplier-policy verification only; actual team setting, customer's residency, signed DPA, rights, output bucket, account and ZDR response header remain UNVERIFIED.",
+            "verification_status": "MODEL_ENDPOINT_GOVERNANCE_PUBLIC_DOCUMENTATION_CONFIRMED_TENANT_UNVERIFIED"
           }
         ],
         "provider_policy_evidence": {
@@ -17819,7 +17845,8 @@
           "source_url": "https://docs.x.ai/developers/faq/security",
           "reviewed_on": "2026-10-14",
           "limits": "Not tenant-specific authorization, residency or contract evidence"
-        }
+        },
+        "verification_scope_note": "Independently checked six supplier-public claim areas against current official xAI model, API region and security documentation on 2026-10-14. Governance scope is NEGATIVE for any dedicated US regional guarantee (not supported for voice/image/video) and conditional for team ZDR; generated media and storage limitations apply. NOT customer DPA, authenticated region, ZDR setting, team entitlement, uploaded output location, downstream controls or production acceptance."
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -17845,7 +17872,7 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-video",
+        "last_specific_source_url": "https://docs.x.ai/developers/faq/security",
         "claim_evidence_classification": {
           "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
           "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
