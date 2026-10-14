@@ -220,7 +220,16 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra",
-        "source_check_scope": "Official per-model page checked for pricing, context, features, endpoints; governance remains unverified"
+        "source_check_scope": "Official per-model page checked for pricing, context, features, endpoints; governance remains unverified",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000
     },
@@ -383,7 +392,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000
     },
@@ -560,7 +578,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -721,7 +748,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-sol",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000
     },
@@ -902,7 +938,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -1078,7 +1123,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -1239,10 +1293,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "governance"
-        ],
-        "missing_receipt_count": 1,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -1255,7 +1307,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview"
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/sonnet-5/overview",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000,
       "anthropic_api_governance_scope_20261014": {
@@ -1431,7 +1492,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -1601,7 +1671,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -1765,7 +1844,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview"
+        "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-pro-preview",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 65536
     },
@@ -1928,7 +2016,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-lite",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 65536
     },
@@ -2094,7 +2191,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://ai.google.dev/gemini-api/docs/models/gemini-2.5-flash-lite",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 65536
     },
@@ -2259,7 +2365,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-medium-3-5-26-04",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -2429,7 +2544,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "license_evidence": {
         "source_url": "https://docs.mistral.ai/models/mistral-large-3-25-12",
@@ -2608,7 +2732,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -2775,7 +2908,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -2942,7 +3084,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3113,7 +3264,16 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
         "last_specific_source_url": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
-        "source_check_scope": "Official model page confirms API ID, context and token prices; governance remains unverified"
+        "source_check_scope": "Official model page confirms API ID, context and token prices; governance remains unverified",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3278,7 +3438,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3446,7 +3615,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -3612,7 +3790,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -3771,7 +3958,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-4.6"
+        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-4.6",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -3907,10 +4103,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -3921,7 +4116,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -4056,10 +4260,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://api-docs.deepseek.com/quick_start/pricing/",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4070,7 +4273,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -4271,7 +4483,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -4462,7 +4683,16 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.cohere.com/v2/docs/command-a",
         "last_specific_source_check": "2026-10-14",
-        "source_check_scope": "Official Command A page confirms 256K context, 8K output, API options and USD token price; customer governance unverified"
+        "source_check_scope": "Official Command A page confirms 256K context, 8K output, API options and USD token price; customer governance unverified",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 8000
     },
@@ -4610,10 +4840,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.cohere.com/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4624,7 +4853,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -4775,10 +5013,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://cohere.com/pricing",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -4789,7 +5026,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -4931,7 +5177,17 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "status": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "deployment": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+        },
+        "evidence_accounting_date": "2026-10-14",
+        "model_variant_selection_required": true
       },
       "family_evidence": {
         "scope": "model_family_reference_only",
@@ -4953,7 +5209,8 @@
         "checked_on": "2026-10-14",
         "individual_model_claims_verified": false
       },
-      "catalog_entry_type": "model_family_placeholder"
+      "catalog_entry_type": "model_family_placeholder",
+      "catalog_record_type": "model_family"
     },
     {
       "id": "qwen-open-weight",
@@ -5078,7 +5335,17 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "status": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "deployment": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "governance": "NO_USABLE_MODEL_SOURCE_RECEIPT"
+        },
+        "evidence_accounting_date": "2026-10-14",
+        "model_variant_selection_required": true
       },
       "family_evidence": {
         "scope": "model_family_reference_only",
@@ -5104,7 +5371,8 @@
         "checked_on": "2026-10-14",
         "scope": "conditionally applicable hosting-provider policy, NOT a model-specific or customer attestation"
       },
-      "catalog_entry_type": "model_family_placeholder"
+      "catalog_entry_type": "model_family_placeholder",
+      "catalog_record_type": "model_family"
     },
     {
       "tier": "balanced",
@@ -5267,7 +5535,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -5425,7 +5702,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -5583,7 +5869,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -5744,7 +6039,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-image-2",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -5902,7 +6206,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -6060,7 +6373,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -6218,7 +6540,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -6373,7 +6704,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -6529,7 +6869,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -6684,7 +7033,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -6841,7 +7199,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -6998,7 +7365,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -7155,7 +7531,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -7313,7 +7698,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -7459,11 +7853,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing",
-          "governance"
-        ],
-        "missing_receipt_count": 2,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7476,7 +7867,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-120b",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 131072,
       "pricing_deployment_research_20261014": {
@@ -7627,11 +8027,8 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [
-          "pricing",
-          "governance"
-        ],
-        "missing_receipt_count": 2,
+        "missing_claim_receipts": [],
+        "missing_receipt_count": 0,
         "source_reference": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -7645,7 +8042,16 @@
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://developers.openai.com/api/docs/models/gpt-oss-20b",
         "last_specific_source_check": "2026-10-14",
-        "source_check_scope": "Official model page confirms 131072 context and max output, Apache 2.0 license and downloadable weights; pricing and tenant governance unverified"
+        "source_check_scope": "Official model page confirms 131072 context and max output, Apache 2.0 license and downloadable weights; pricing and tenant governance unverified",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 131072,
       "pricing_deployment_research_20261014": {
@@ -7818,7 +8224,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://platform.claude.com/docs/en/models/fable-5/overview"
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/fable-5/overview",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000
     },
@@ -7984,7 +8399,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview"
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-8/overview",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000
     },
@@ -8149,7 +8573,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-7/overview"
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-7/overview",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000
     },
@@ -8314,7 +8747,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-6/overview"
+        "last_specific_source_url": "https://platform.claude.com/docs/en/models/opus-4-6/overview",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "max_output_tokens": 128000
     },
@@ -8475,7 +8917,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -8629,14 +9080,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
           "governance"
         ],
-        "missing_receipt_count": 6,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8647,7 +9093,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -8806,7 +9261,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -8952,8 +9416,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -8964,7 +9430,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -9110,8 +9585,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -9122,7 +9599,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -9269,8 +9755,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -9281,7 +9769,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -9439,7 +9936,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -9614,7 +10120,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -9777,7 +10292,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -9951,7 +10475,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -10122,7 +10655,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -10292,7 +10834,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_modalities": {
         "text_input": 0.5,
@@ -10464,7 +11015,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -10635,7 +11195,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -10807,7 +11376,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -10999,8 +11577,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -11011,7 +11591,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11191,8 +11780,10 @@
           "deployment",
           "governance"
         ],
-        "missing_claim_receipts": [],
-        "missing_receipt_count": 0,
+        "missing_claim_receipts": [
+          "governance"
+        ],
+        "missing_receipt_count": 1,
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -11203,7 +11794,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11386,7 +11986,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11560,7 +12169,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11732,7 +12350,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "pricing_basis": {
         "currency": "USD",
@@ -11901,7 +12528,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12078,7 +12714,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-4-0",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12249,7 +12894,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/ocr-3-25-12",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12419,7 +13073,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-tts-26-03",
-        "last_specific_source_check": "2026-10-14"
+        "last_specific_source_check": "2026-10-14",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12584,7 +13247,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12751,7 +13423,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -12922,7 +13603,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-small-25-07"
+        "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-small-25-07",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13090,7 +13780,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/codestral-embed-25-05"
+        "last_specific_source_url": "https://docs.mistral.ai/models/codestral-embed-25-05",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13257,7 +13956,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13416,10 +14124,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
           "governance"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://docs.mistral.ai/models/shieldstral-1-0",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -13432,7 +14139,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/shieldstral-1-0"
+        "last_specific_source_url": "https://docs.mistral.ai/models/shieldstral-1-0",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13608,7 +14324,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03"
+        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-moderation-26-03",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13780,7 +14505,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06"
+        "last_specific_source_url": "https://docs.mistral.ai/models/model-cards/leanstral-1-5-26-06",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -13950,7 +14684,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-3"
+        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-3",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14127,7 +14870,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-2"
+        "last_specific_source_url": "https://docs.mistral.ai/models/zai-glm-5-2",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -14296,7 +15048,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.x.ai/developers/models/speech-to-text"
+        "last_specific_source_url": "https://docs.x.ai/developers/models/speech-to-text",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -14457,7 +15218,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0"
+        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-image-2.0",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -14618,7 +15388,16 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-video"
+        "last_specific_source_url": "https://docs.x.ai/developers/models/grok-imagine-video",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -14767,7 +15546,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -14916,7 +15704,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -15059,7 +15856,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       }
     },
     {
@@ -15217,7 +16023,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -15369,7 +16192,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -15460,8 +16300,9 @@
           {
             "claim": "status",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
-            "locator": "Bedrock legacy lifecycle table: EOL September 14 2026",
-            "checked_on": "2026-10-14"
+            "locator": "Legacy and end-of-life (EOL) models > Amazon > Nova Premier",
+            "checked_on": "2026-10-14",
+            "observed_value": "AWS Bedrock legacy lifecycle table lists Nova Premier (amazon.nova-premier-v1:0) EOL 2026-09-14 for US regions. Official Nova Premier model card also has a conflicting 'EOL no sooner than 2026-10-31' field; treat as documented supplier discrepancy, not accepted account access."
           },
           {
             "claim": "capabilities",
@@ -15509,11 +16350,10 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "status",
           "pricing",
           "governance"
         ],
-        "missing_receipt_count": 3,
+        "missing_receipt_count": 2,
         "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -15524,7 +16364,42 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_source_conflicts": [
+        {
+          "claim": "status",
+          "state": "CONFLICTING_OFFICIAL_DATES",
+          "sources": [
+            {
+              "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+              "observed_value": "EOL 2026-09-14"
+            },
+            {
+              "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+              "observed_value": "EOL no sooner than 2026-10-31; same card says EOL 2026-09-14"
+            }
+          ],
+          "release_effect": "BLOCK_NEW_DEPLOYMENT",
+          "checked_on": "2026-10-14"
+        }
+      ],
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -15678,7 +16553,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -15834,7 +16726,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html"
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -15989,7 +16898,24 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html"
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -16142,7 +17068,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -16298,13 +17241,30 @@
         },
         "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
         "last_specific_source_check": "2026-10-14",
-        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html"
+        "last_specific_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "aws_official_deployment_research_20261014": {
         "source": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
         "model_id": "amazon.nova-2-multimodal-embeddings-v1:0",
         "checked_on": "2026-10-14",
         "tenant_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -16458,7 +17418,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -16611,7 +17588,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -16763,7 +17757,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -16917,7 +17928,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -17071,7 +18099,24 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF"
+        },
+        "evidence_accounting_date": "2026-10-14"
+      },
+      "supplier_pricing_research": {
+        "url": "https://aws.amazon.com/bedrock/pricing/",
+        "locator": "Amazon > Model Pricing > Amazon Nova / Titan; Standard, Flex, Priority, Reserved modes",
+        "checked_on": "2026-10-14",
+        "finding": "Published Bedrock pricing varies by model, modality, service tier and inference path. No independently confirmed rate for this exact model/region/tier was entered.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -17208,10 +18253,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "governance"
+          "pricing"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17222,7 +18266,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -17232,6 +18285,14 @@
         "commercial_terms_verified": false,
         "provider_api_pricing_verified": false,
         "tenant_controls_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "locator": "Official TII Hugging Face model card > License; Usage",
+        "checked_on": "2026-10-14",
+        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -17379,10 +18440,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "governance"
+          "pricing"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17393,7 +18453,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -17403,6 +18472,14 @@
         "commercial_terms_verified": false,
         "provider_api_pricing_verified": false,
         "tenant_controls_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "locator": "Official TII Hugging Face model card > License; Usage",
+        "checked_on": "2026-10-14",
+        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -17537,10 +18614,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "governance"
+          "pricing"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17551,7 +18627,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -17561,6 +18646,14 @@
         "commercial_terms_verified": false,
         "provider_api_pricing_verified": false,
         "tenant_controls_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "locator": "Official TII Hugging Face model card > License; Usage",
+        "checked_on": "2026-10-14",
+        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -17709,10 +18802,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "governance"
+          "pricing"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17723,7 +18815,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -17733,6 +18834,14 @@
         "commercial_terms_verified": false,
         "provider_api_pricing_verified": false,
         "tenant_controls_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "locator": "Official TII Hugging Face model card > License; Usage",
+        "checked_on": "2026-10-14",
+        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -17881,10 +18990,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "governance"
+          "pricing"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -17895,7 +19003,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -17905,6 +19022,14 @@
         "commercial_terms_verified": false,
         "provider_api_pricing_verified": false,
         "tenant_controls_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "locator": "Official TII Hugging Face model card > License; Usage",
+        "checked_on": "2026-10-14",
+        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -18053,10 +19178,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "governance"
+          "pricing"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -18067,7 +19191,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "falcon_license_research_20261014": {
         "license_tag": "falcon-llm-license",
@@ -18077,6 +19210,14 @@
         "commercial_terms_verified": false,
         "provider_api_pricing_verified": false,
         "tenant_controls_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "locator": "Official TII Hugging Face model card > License; Usage",
+        "checked_on": "2026-10-14",
+        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     },
     {
@@ -18211,10 +19352,9 @@
           "governance"
         ],
         "missing_claim_receipts": [
-          "pricing",
-          "governance"
+          "pricing"
         ],
-        "missing_receipt_count": 2,
+        "missing_receipt_count": 1,
         "source_reference": "https://huggingface.co/tiiuae/Falcon-OCR",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
@@ -18225,7 +19365,16 @@
           "scope": "Provider overview/index reviewed, not model-specific confirmation",
           "model_claims_verified_by_index": false
         },
-        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance"
+        "review_note": "Per-model source URL and claim receipts require independent source-to-value verification before full acceptance",
+        "claim_evidence_classification": {
+          "model_id": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "status": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "pricing": "NO_USABLE_MODEL_SOURCE_RECEIPT",
+          "capabilities": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "deployment": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED",
+          "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
+        },
+        "evidence_accounting_date": "2026-10-14"
       },
       "falcon_license_research_20261014": {
         "license_tag": "apache-2.0",
@@ -18235,6 +19384,14 @@
         "commercial_terms_verified": false,
         "provider_api_pricing_verified": false,
         "tenant_controls_verified": false
+      },
+      "supplier_pricing_research": {
+        "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+        "locator": "Official TII Hugging Face model card > License; Usage",
+        "checked_on": "2026-10-14",
+        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
+        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "not_a_claim_receipt": true
       }
     }
   ],
@@ -18268,6 +19425,19 @@
       "ElevenLabs",
       "AssemblyAI"
     ],
-    "policy": "Add a model when it is materially distinct for a user decision. Keep retired/deprecated models for migration context. Never infer governance."
+    "policy": "Add a model when it is materially distinct for a user decision. Keep retired/deprecated models for migration context. Never infer governance.",
+    "verification_accounting": {
+      "total_model_records": 110,
+      "total_claims": 660,
+      "model_scoped_receipts": 528,
+      "provider_baseline_only": 96,
+      "missing_or_incomplete_receipts": 36,
+      "full_scope_verified_models": 0,
+      "model_family_records": 2,
+      "full_model_verification_incomplete": true,
+      "release_gate": "BLOCKED",
+      "classification_date": "2026-10-14",
+      "note": "Model source receipt present is not independently approved; provider-level policy is not model/tenant-specific proof."
+    }
   }
 }
