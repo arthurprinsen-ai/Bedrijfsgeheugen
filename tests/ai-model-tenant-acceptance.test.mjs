@@ -154,3 +154,8 @@ test('tenant region is not proven by a vague or boolean residency assertion',()=
   assert.match(r.stdout,/TENANT_RESIDENCY_REGION_UNVERIFIED/);
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+test('structured configuration values compare by content instead of object identity',()=>{
+ const source=fs.readFileSync('tests/ai-model-tenant-acceptance.mjs','utf8');
+ assert.match(source,/JSON\.stringify\(r\.observed_value\)!==JSON\.stringify\(r\.expected_value\)/);
+});
