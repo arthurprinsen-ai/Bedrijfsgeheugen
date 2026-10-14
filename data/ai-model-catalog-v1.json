@@ -17352,7 +17352,21 @@
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
-        ]
+        ],
+        "model_license_evidence": {
+          "claim": "official_weight_license_and_deployment_policy",
+          "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "locator": "Official TII model card > Model Details > License; Usage > Transformers / vLLM / llama.cpp (where listed)",
+          "observed_value": "Official TII repository distributes weights under Falcon-LLM License and documents self-hosted inference. Data processing and storage for self-hosted models are determined by the actual deployment; no hosted API retention, fees or customer assurance may be inferred.",
+          "checked_on": "2026-10-14",
+          "scope": "official model card license and self-hosting baseline only",
+          "unverified": [
+            "commercial rights and duties for specific use",
+            "deployed security",
+            "hosted inference terms",
+            "hosting cost"
+          ]
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -17668,7 +17682,21 @@
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
-        ]
+        ],
+        "model_license_evidence": {
+          "claim": "official_weight_license_and_deployment_policy",
+          "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "locator": "Official TII model card > Model Details > License; Usage > Transformers / vLLM / llama.cpp (where listed)",
+          "observed_value": "Official TII repository distributes weights under Falcon-LLM License and documents self-hosted inference. Data processing and storage for self-hosted models are determined by the actual deployment; no hosted API retention, fees or customer assurance may be inferred.",
+          "checked_on": "2026-10-14",
+          "scope": "official model card license and self-hosting baseline only",
+          "unverified": [
+            "commercial rights and duties for specific use",
+            "deployed security",
+            "hosted inference terms",
+            "hosting cost"
+          ]
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -17826,7 +17854,21 @@
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
-        ]
+        ],
+        "model_license_evidence": {
+          "claim": "official_weight_license_and_deployment_policy",
+          "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "locator": "Official TII model card > Model Details > License; Usage > Transformers / vLLM / llama.cpp (where listed)",
+          "observed_value": "Official TII repository distributes weights under Falcon-LLM License and documents self-hosted inference. Data processing and storage for self-hosted models are determined by the actual deployment; no hosted API retention, fees or customer assurance may be inferred.",
+          "checked_on": "2026-10-14",
+          "scope": "official model card license and self-hosting baseline only",
+          "unverified": [
+            "commercial rights and duties for specific use",
+            "deployed security",
+            "hosted inference terms",
+            "hosting cost"
+          ]
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -17984,7 +18026,21 @@
             "scope": "Model-specific official vendor repository distribution/license label only; customer-specific controls, current commercial license interpretation and hosted configurations remain UNVERIFIED",
             "verification_status": "VENDOR_MODEL_CARD_LICENSE_OBSERVED_CUSTOMER_CONTROLS_UNVERIFIED"
           }
-        ]
+        ],
+        "model_license_evidence": {
+          "claim": "official_weight_license_and_deployment_policy",
+          "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "locator": "Official TII model card > Model Details > License; Usage > Transformers / vLLM / llama.cpp (where listed)",
+          "observed_value": "Official TII repository distributes weights under Falcon-LLM License and documents self-hosted inference. Data processing and storage for self-hosted models are determined by the actual deployment; no hosted API retention, fees or customer assurance may be inferred.",
+          "checked_on": "2026-10-14",
+          "scope": "official model card license and self-hosting baseline only",
+          "unverified": [
+            "commercial rights and duties for specific use",
+            "deployed security",
+            "hosted inference terms",
+            "hosting cost"
+          ]
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
