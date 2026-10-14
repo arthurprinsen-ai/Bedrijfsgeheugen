@@ -15957,6 +15957,13 @@
           "limitations": "Enterprise commitments require qualifying commercial customer status; trial keys follow separate terms. ZDR, training opt-out, private deployment mode, region and customer contract settings are not proven for any tenant or specific model.",
           "checked_on": "2026-10-14",
           "scope": "official enterprise supplier policy baseline; model-specific and tenant authorization unverified"
+        },
+        "pricing_research": {
+          "status": "CURRENT_PUBLIC_MODEL_RATE_UNVERIFIED",
+          "url": "https://cohere.com/pricing",
+          "checked_on": "2026-10-14",
+          "scope": "Cohere Embed multilingual v3.0",
+          "reason": "The official pricing page explains token/production billing and private Model Vault tiers but does not state a current public price for this exact legacy model. Do not substitute a newer Embed 5 rate."
         }
       },
       "supplier_audit": {
@@ -16134,7 +16141,14 @@
         },
         "verification_notes": [
           "Exact Bedrock inference ID not confirmed by the model card"
-        ]
+        ],
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
+        }
       },
       "supplier_audit": {
         "assessment": "EVIDENCE_INCOMPLETE",
@@ -16308,6 +16322,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -16480,6 +16501,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -16685,6 +16713,13 @@
           "as_of": "2025-05-21",
           "current_rate_verified": false,
           "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -16880,6 +16915,13 @@
           "as_of": "2025-05-21",
           "current_rate_verified": false,
           "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -17076,6 +17118,13 @@
           "as_of": "2025-05-21",
           "current_rate_verified": false,
           "url": "https://aws.amazon.com/blogs/machine-learning/effective-cost-optimization-strategies-for-amazon-bedrock/"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -17256,6 +17305,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -17427,6 +17483,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -17606,6 +17669,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -17776,6 +17846,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -17961,6 +18038,13 @@
           "as_of": "2024-05-02",
           "current_rate_verified": false,
           "url": "https://aws.amazon.com/blogs/machine-learning/get-started-with-amazon-titan-text-embeddings-v2-a-new-state-of-the-art-embeddings-model-on-amazon-bedrock/"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -18137,6 +18221,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
@@ -18308,6 +18399,13 @@
           "limitations": "This is an AWS service-policy observation, not a Nova/Titan-specific model or tenant configuration receipt. No Amazon model claim has been marked fully verified.",
           "checked_on": "2026-10-14",
           "scope": "provider baseline only; model and customer-specific controls unverified"
+        },
+        "pricing_research": {
+          "status": "REGION_MODEL_TIER_RATE_UNVERIFIED",
+          "url": "https://aws.amazon.com/bedrock/pricing/",
+          "checked_on": "2026-10-14",
+          "scope": "Amazon Bedrock model pricing",
+          "reason": "AWS publishes variable model, region, modality and tier pricing. The accessible pricing page does not independently establish an exact comparable unit price for this specific catalog model; no numerical rate has been inferred."
         }
       },
       "supplier_audit": {
