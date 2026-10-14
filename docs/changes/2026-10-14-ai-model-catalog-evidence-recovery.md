@@ -362,3 +362,16 @@ Seven public AWS-owned model cards / AWS official legacy lifecycle tables were i
 | `amazon-titan-multimodal-embeddings-g1` | https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html | Amazon Titan Multimodal Embeddings G1 for text and image embedding, via AWS Bedrock runtime; current regional price/eligibility account-dependent |
 
 The official AWS lifecycle listing https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html provides region-qualified removals and directs consumers to `GetFoundationModel`/`ListFoundationModels`; these are not callable using public sources alone. No customer AWS credentials were read, no contracts asserted, no provider `CONFLICT` overwritten, and every public source review remains `release_eligible=false`. Pricing and approved tenant retention require separate evidence.
+
+
+## Three Cohere exact-model public source checks (2026-10-14)
+
+Three Cohere official product/model guides independently inspected. API model identifiers and rate-limited API access must not be confused with a commercial Model Vault SKU, executed customer contract or actual rate. In particular, a free trial/production key within rate limits is not an unlimited free enterprise production commitment.
+
+| Catalog model | Official Cohere source | Public facts and pricing caveat |
+| --- | --- | --- |
+| `command-a-plus-05-2026` | https://docs.cohere.com/docs/command-a-plus | Model ID command-a-plus-05-2026; 128K input /64K output, multilingual 48 languages, free API access within limits, paid enterprise Model Vault separate; Apache-2.0 downloadable weights |
+| `command-a-reasoning-08-2025` | https://docs.cohere.com/docs/command-a-reasoning | Model ID command-a-reasoning-08-2025; 256K context/32K output, Chat V2, free key use within rate limits, Model Vault separate |
+| `embed-multilingual-v3.0` | https://docs.cohere.com/docs/cohere-embed | Embed Multilingual v3.0 is a distinct embedding-family ID; model documentation lists multilingual text embeddings; no reliable per-model current dollar rate inferred from an older Vault instance price |
+
+No claim of customer-governance enablement, provider account credentials, agreed Model Vault billing, region, or full source acceptance has been made. Review metadata remains `release_eligible=false`; incomplete tariff fields remain explicitly unverified rather than filled by guesses.
