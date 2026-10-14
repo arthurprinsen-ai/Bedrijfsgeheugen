@@ -89,6 +89,8 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
      const live=await response.json();
      if(live.tenant_id!==r.tenant_id || live.model_id!==r.model_id ||
         live.provider!==r.provider || live.claim!==r.claim ||
+        live.evidence_reference!==r.evidence_reference || live.authenticated!==true ||
+        typeof live.readback_id!=='string' || !live.readback_id.trim() ||
         JSON.stringify(live.observed_value)!==JSON.stringify(r.expected_value))
        throw new Error('LIVE_PROVIDER_CONFIGURATION_MISMATCH');
      if(!isRecent(live.observed_at)) throw new Error('LIVE_PROVIDER_READBACK_STALE');
