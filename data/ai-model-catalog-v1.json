@@ -482,10 +482,10 @@
           "input_usd_m",
           "output_usd_m",
           "context_k",
-          "pricing"
+          "pricing",
+          "capabilities"
         ],
         "not_verified": [
-          "capabilities",
           "deployment",
           "governance"
         ],
@@ -504,20 +504,30 @@
         "claim_evidence": [
           {
             "claim": "model_id",
+            "observed_value": "claude-opus-5-5",
+            "locator": "Compare models > Claude API ID (model column)",
             "url": "https://platform.claude.com/docs/en/models/overview",
-            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
+            "observed_value": "Listed current model in Compare models",
+            "locator": "Compare models (current model lineup)",
             "url": "https://platform.claude.com/docs/en/models/overview",
-            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
+            "observed_value": "Standard Claude API USD per 1M tokens: input $4, output $20; variant/partner rates excluded",
+            "locator": "Compare models > Pricing",
             "url": "https://platform.claude.com/docs/en/models/overview",
-            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "observed_value": "Text and image input; text output; multilingual, vision and tool use; 1M token context",
+            "locator": "Compare models > current models capabilities and context window",
+            "url": "https://platform.claude.com/docs/en/models/overview",
             "checked_on": "2026-10-14"
           }
         ]
@@ -599,10 +609,10 @@
         "verified_claims": [
           "model_id",
           "pricing",
-          "status"
+          "status",
+          "capabilities"
         ],
         "not_verified": [
-          "capabilities",
           "deployment",
           "governance"
         ],
@@ -621,20 +631,30 @@
         "claim_evidence": [
           {
             "claim": "model_id",
+            "observed_value": "claude-sonnet-5-5",
+            "locator": "Compare models > Claude API ID (model column)",
             "url": "https://platform.claude.com/docs/en/models/overview",
-            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "status",
+            "observed_value": "Listed current model in Compare models",
+            "locator": "Compare models (current model lineup)",
             "url": "https://platform.claude.com/docs/en/models/overview",
-            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
             "checked_on": "2026-10-14"
           },
           {
             "claim": "pricing",
+            "observed_value": "Standard Claude API USD per 1M tokens: input $2, output $10; variant/partner rates excluded",
+            "locator": "Compare models > Pricing",
             "url": "https://platform.claude.com/docs/en/models/overview",
-            "locator": "Compare models: API ID and standard USD input/output price per 1M tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "observed_value": "Text and image input; text output; multilingual, vision and tool use; 1M token context",
+            "locator": "Compare models > current models capabilities and context window",
+            "url": "https://platform.claude.com/docs/en/models/overview",
             "checked_on": "2026-10-14"
           }
         ]
