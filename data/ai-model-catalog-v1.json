@@ -21736,11 +21736,11 @@
         "tenant_controls_verified": false
       },
       "supplier_pricing_research": {
-        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
         "locator": "Official TII Hugging Face model card > License; Usage",
         "checked_on": "2026-10-14",
-        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
-        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "finding": "Official TII model card documents downloadable self-hosted weights under Falcon-LLM License but no fixed TII-hosted per-token API tariff. The linked legal page includes older Falcon model licenses; H1/H1R applicable commercial license terms, hosted service fees and customer operator costs are NOT independently established. Never equate self-hosted weights with zero deployment cost or grant of hosting rights.",
+        "verification_status": "UNVERIFIED_NUMERIC_HOSTED_API_PRICE",
         "not_a_claim_receipt": true
       },
       "independent_supplier_license_audit_20261014": {
@@ -21985,11 +21985,11 @@
         "tenant_controls_verified": false
       },
       "supplier_pricing_research": {
-        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
         "locator": "Official TII Hugging Face model card > License; Usage",
         "checked_on": "2026-10-14",
-        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
-        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "finding": "Official TII model card documents downloadable self-hosted weights under Falcon-LLM License but no fixed TII-hosted per-token API tariff. The linked legal page includes older Falcon model licenses; H1/H1R applicable commercial license terms, hosted service fees and customer operator costs are NOT independently established. Never equate self-hosted weights with zero deployment cost or grant of hosting rights.",
+        "verification_status": "UNVERIFIED_NUMERIC_HOSTED_API_PRICE",
         "not_a_claim_receipt": true
       },
       "independent_supplier_license_audit_20261014": {
@@ -22234,11 +22234,11 @@
         "tenant_controls_verified": false
       },
       "supplier_pricing_research": {
-        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
         "locator": "Official TII Hugging Face model card > License; Usage",
         "checked_on": "2026-10-14",
-        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
-        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "finding": "Official TII model card documents downloadable self-hosted weights under Falcon-LLM License but no fixed TII-hosted per-token API tariff. The linked legal page includes older Falcon model licenses; H1/H1R applicable commercial license terms, hosted service fees and customer operator costs are NOT independently established. Never equate self-hosted weights with zero deployment cost or grant of hosting rights.",
+        "verification_status": "UNVERIFIED_NUMERIC_HOSTED_API_PRICE",
         "not_a_claim_receipt": true
       },
       "independent_supplier_license_audit_20261014": {
@@ -22487,8 +22487,8 @@
         "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
         "locator": "Official TII Hugging Face model card > License; Usage",
         "checked_on": "2026-10-14",
-        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
-        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "finding": "Official TII model card documents downloadable self-hosted weights under Falcon-LLM License but no fixed TII-hosted per-token API tariff. The linked legal page includes older Falcon model licenses; H1/H1R applicable commercial license terms, hosted service fees and customer operator costs are NOT independently established. Never equate self-hosted weights with zero deployment cost or grant of hosting rights.",
+        "verification_status": "UNVERIFIED_NUMERIC_HOSTED_API_PRICE",
         "not_a_claim_receipt": true
       },
       "independent_supplier_license_audit_20261014": {
@@ -22734,11 +22734,11 @@
         "tenant_controls_verified": false
       },
       "supplier_pricing_research": {
-        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
         "locator": "Official TII Hugging Face model card > License; Usage",
         "checked_on": "2026-10-14",
-        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
-        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "finding": "Official TII model card documents downloadable self-hosted weights under Falcon-LLM License but no fixed TII-hosted per-token API tariff. The linked legal page includes older Falcon model licenses; H1/H1R applicable commercial license terms, hosted service fees and customer operator costs are NOT independently established. Never equate self-hosted weights with zero deployment cost or grant of hosting rights.",
+        "verification_status": "UNVERIFIED_NUMERIC_HOSTED_API_PRICE",
         "not_a_claim_receipt": true
       },
       "independent_supplier_license_audit_20261014": {
@@ -22984,11 +22984,11 @@
         "tenant_controls_verified": false
       },
       "supplier_pricing_research": {
-        "url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+        "url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
         "locator": "Official TII Hugging Face model card > License; Usage",
         "checked_on": "2026-10-14",
-        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
-        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "finding": "Official TII model card documents downloadable self-hosted weights under Falcon-LLM License but no fixed TII-hosted per-token API tariff. The linked legal page includes older Falcon model licenses; H1/H1R applicable commercial license terms, hosted service fees and customer operator costs are NOT independently established. Never equate self-hosted weights with zero deployment cost or grant of hosting rights.",
+        "verification_status": "UNVERIFIED_NUMERIC_HOSTED_API_PRICE",
         "not_a_claim_receipt": true
       },
       "independent_supplier_license_audit_20261014": {
@@ -23224,8 +23224,8 @@
         "url": "https://huggingface.co/tiiuae/Falcon-OCR",
         "locator": "Official TII Hugging Face model card > License; Usage",
         "checked_on": "2026-10-14",
-        "finding": "Weights are offered for self-hosting subject to the Falcon-LLM license; no fixed provider inference rate verified. Cloud GPU and host costs vary.",
-        "verification_status": "UNVERIFIED_NUMERIC_PRICE",
+        "finding": "Official TII Falcon-OCR model card specifically labels its downloadable OCR weights Apache-2.0, not Falcon-LLM License. It documents self-hosted inference but quotes no fixed managed TII API/token rate. Actual GPU, cloud, storage, operations and any external inference-provider charges remain unknown; Apache-2.0 is not an attestation of customer hosting controls.",
+        "verification_status": "UNVERIFIED_NUMERIC_HOSTED_API_PRICE",
         "not_a_claim_receipt": true
       },
       "independent_supplier_license_audit_20261014": {
