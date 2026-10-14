@@ -37,6 +37,31 @@ for(const [index,r] of (Array.isArray(rows)?rows:[]).entries()){
  if (!r.readback || !Object.hasOwn(r.readback,'observed_value') ||
      JSON.stringify(r.readback.observed_value)!==JSON.stringify(r.observed_value))
    errors.push(p+':READBACK_VALUE_MISMATCH');
+ // Optionally perform the actual provider readback through a pinned HTTPS endpoint.
+ // This is deliberately fail-closed; no endpoint, token or matching tenant => no approval.
+ if (process.env.TENANT_LIVE_READBACK_REQUIRED === '1' && r.claim !== 'signed_dpa') {
+   const endpoint=process.env.TENANT_LIVE_READBACK_ENDPOINT;
+   const token=process.env.TENANT_LIVE_READBACK_TOKEN;
+   const allowedOrigin=process.env.TENANT_LIVE_READBACK_ALLOWED_ORIGIN;
+   try {
+     if(!endpoint || !token || !allowedOrigin) throw new Error('LIVE_PROVIDER_CONNECTION_REQUIRED');
+     const target=new URL(endpoint), origin=new URL(allowedOrigin);
+     if(target.protocol!=='https:' || origin.protocol!=='https:' ||
+        target.origin!==origin.origin || !target.pathname.startsWith('/'))
+       throw new Error('INVALID_PINNED_PROVIDER_ENDPOINT');
+     const response=await fetch(target,{method:'POST',redirect:'error',
+       signal:AbortSignal.timeout(12000),
+       headers:{'content-type':'application/json','authorization':'Bearer '+token},
+       body:JSON.stringify({tenant_id:r.tenant_id,provider:r.provider,model_id:r.model_id,claim:r.claim})});
+     if(!response.ok) throw new Error('PROVIDER_READBACK_HTTP_'+response.status);
+     const live=await response.json();
+     if(live.tenant_id!==r.tenant_id || live.model_id!==r.model_id ||
+        live.provider!==r.provider || live.claim!==r.claim ||
+        JSON.stringify(live.observed_value)!==JSON.stringify(r.expected_value))
+       throw new Error('LIVE_PROVIDER_CONFIGURATION_MISMATCH');
+     if(!isRecent(live.observed_at)) throw new Error('LIVE_PROVIDER_READBACK_STALE');
+   } catch(error) { errors.push(p+':'+String(error.message??error)); }
+ }
  if(r.claim==='signed_dpa' && r.readback?.source!=='approved_contract_repository') errors.push(p+':SIGNED_DPA_NOT_IN_APPROVED_VAULT');
  if(r.claim!=='signed_dpa' && r.readback?.source!=='authenticated_provider_api') errors.push(p+':PROVIDER_API_READBACK_REQUIRED');
 }
