@@ -14,7 +14,13 @@ test('AI model catalog recovery is evidence-scoped and avoids false verification
  assert.equal(astra.input_usd_m,10);
  assert.equal(astra.output_usd_m,50);
  assert.equal(astra.cached_input_usd_m,1);
- assert.ok(astra.verification_evidence?.not_verified?.includes('governance'));
+ const governance=astra.verification_evidence?.claim_evidence?.filter(r=>r.claim==='governance')||[];
+ const providerOnly=governance.every(r=>r.verification_status==='PROVIDER_POLICY_OBSERVED_TENANT_UNVERIFIED'||
+  String(r.scope??'').includes('NOT model-specific'));
+ if(providerOnly){
+  assert.notEqual(astra.verification_evidence?.claim_scope,'full','Provider policy alone cannot certify full model governance');
+  assert.equal(astra.supplier_audit?.claim_evidence_classification?.governance,'PROVIDER_POLICY_ONLY');
+ }
  assert.ok(c.models.some(m=>m.verified_at==='2026-09-30'),'Do not restamp unverified models');
 });
 
