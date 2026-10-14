@@ -16795,6 +16795,33 @@
           "public_model_source_verification_status": "SCOPE_LIMITED_PROVENANCE_VERIFIED_NO_FULL_GOVERNANCE_APPROVAL",
           "automatic_recommendation_eligible": false,
           "production_approved": false
+        },
+        "independent_mistral_model_card_crosscheck_20261014": {
+          "checked_on": "2026-10-14",
+          "classification": "INDEPENDENT_MODEL_SPECIFIC_OFFICIAL_PUBLIC_SOURCE_CROSSCHECK",
+          "url": "https://docs.mistral.ai/models/zai-glm-5-3",
+          "locator": "Model card > API identifier, lifecycle, context, price and feature list",
+          "observed_api_id": "zai-glm-5-3",
+          "status_public": "GA",
+          "context_tokens": 1000000,
+          "max_output_tokens": 128000,
+          "prices_usd_m": {
+            "input": 1.4,
+            "cached_input": 0.14,
+            "output": 4.4
+          },
+          "features": [
+            "chat_completions",
+            "function_calling",
+            "structured_outputs",
+            "predicted_outputs",
+            "batching"
+          ],
+          "mistral_hosted_third_party_open_weights": true,
+          "customer_entitlement_verified": false,
+          "tenant_region_and_governance_verified": false,
+          "full_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "provider_policy_research_20261014": {
@@ -17051,6 +17078,30 @@
           "public_model_source_verification_status": "SCOPE_LIMITED_PROVENANCE_VERIFIED_NO_FULL_GOVERNANCE_APPROVAL",
           "automatic_recommendation_eligible": false,
           "production_approved": false
+        },
+        "independent_mistral_model_card_crosscheck_20261014": {
+          "checked_on": "2026-10-14",
+          "classification": "INDEPENDENT_MODEL_SPECIFIC_OFFICIAL_PUBLIC_SOURCE_CROSSCHECK",
+          "url": "https://docs.mistral.ai/models/zai-glm-5-2",
+          "locator": "Model card > API identifier, deprecated date, context and replacement",
+          "observed_api_id": "zai-glm-5-2",
+          "status_public": "DEPRECATED",
+          "deprecated_on": "2026-09-29",
+          "replacement": "zai-glm-5-3",
+          "context_tokens": 1000000,
+          "max_output_tokens": 128000,
+          "prices_from_current_model_page": "NOT_PUBLISHED_ON_THIS_PAGE",
+          "features": [
+            "chat_completions",
+            "function_calling",
+            "structured_outputs",
+            "batching"
+          ],
+          "mistral_hosted_third_party_open_weights": true,
+          "customer_entitlement_verified": false,
+          "tenant_region_and_governance_verified": false,
+          "full_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "provider_policy_research_20261014": {
