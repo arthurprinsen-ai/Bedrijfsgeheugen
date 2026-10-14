@@ -20310,7 +20310,25 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "official_per_model_card_readback_20261014": {
+          "checked_on": "2026-10-14",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+          "source_locator": "Model Details > Programmatic Access > Model ID",
+          "observed_value": "amazon.nova-lite-v1:0",
+          "verified_public_claims": [
+            "official individual model card",
+            "published Amazon Bedrock runtime model identifier"
+          ],
+          "not_verified": [
+            "live regional account entitlement, access and quotas",
+            "current account-specific tariff and hosting cost",
+            "customer DPA, data residency and enabled governance controls"
+          ],
+          "customer_account_readback": false,
+          "independent_six_claim_supplier_approval": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -20572,7 +20590,25 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "official_per_model_card_readback_20261014": {
+          "checked_on": "2026-10-14",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+          "source_locator": "Model Details > Programmatic Access > Model ID",
+          "observed_value": "amazon.nova-micro-v1:0",
+          "verified_public_claims": [
+            "official individual model card",
+            "published Amazon Bedrock runtime model identifier"
+          ],
+          "not_verified": [
+            "live regional account entitlement, access and quotas",
+            "current account-specific tariff and hosting cost",
+            "customer DPA, data residency and enabled governance controls"
+          ],
+          "customer_account_readback": false,
+          "independent_six_claim_supplier_approval": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -21052,7 +21088,25 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "official_per_model_card_readback_20261014": {
+          "checked_on": "2026-10-14",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+          "source_locator": "Model Details > Programmatic Access > Model ID",
+          "observed_value": "amazon.nova-2-multimodal-embeddings-v1:0",
+          "verified_public_claims": [
+            "official individual model card",
+            "published Amazon Bedrock runtime model identifier"
+          ],
+          "not_verified": [
+            "live regional account entitlement, access and quotas",
+            "current account-specific tariff and hosting cost",
+            "customer DPA, data residency and enabled governance controls"
+          ],
+          "customer_account_readback": false,
+          "independent_six_claim_supplier_approval": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "aws_official_deployment_research_20261014": {
         "source": "https://docs.aws.amazon.com/nova/latest/nova2-userguide/embeddings.html",
