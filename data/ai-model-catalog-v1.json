@@ -714,7 +714,7 @@
         "AWS",
         "Google Cloud"
       ],
-      "source": "https://www.anthropic.com/news/claude-haiku-4-5",
+      "source": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
       "limitations": [],
       "governance": {
         "storage_residency": "unknown",
@@ -730,16 +730,26 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
-        "verification_required": [
+        "source_url": "https://platform.claude.com/docs/en/models/haiku-4-5/overview",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
           "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
+          "input_usd_m",
+          "output_usd_m",
+          "context_k",
+          "input_output_modalities"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "not_verified": [
+          "governance",
+          "customer region eligibility",
+          "contract pricing",
+          "lifecycle status against current models overview",
+          "all deployment permission scopes",
+          "scores"
+        ],
+        "claim_scope": "partial",
+        "evidence_note": "Official model documentation lists Claude API alias claude-haiku-4-5, canonical snapshot claude-haiku-4-5-20251001, 200K context, $1 input/$5 output per million tokens; remains legacy, so does not imply current preferred or unrestricted availability.",
+        "official_lifecycle_source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
       }
     },
     {
