@@ -319,6 +319,7 @@ jobs:
           tests/powerhouse-daily-self-evolution.test.mjs
           tests/brain-self-improvement-layer-v1.test.mjs
           tests/ai-model-intelligence-freshness-v1.test.mjs
+          tests/ai-model-supplier-evidence-accounting.test.mjs
           tests/ai-model-customer-governance-evidence.test.mjs
           tests/ai-model-supplier-customer-separation.test.mjs
           tests/ai-model-tenant-acceptance.test.mjs
@@ -490,6 +491,7 @@ jobs:
           tests/powerhouse-daily-self-evolution.test.mjs
           tests/brain-self-improvement-layer-v1.test.mjs
           tests/ai-model-intelligence-freshness-v1.test.mjs
+          tests/ai-model-supplier-evidence-accounting.test.mjs
           tests/ai-model-customer-governance-evidence.test.mjs
           tests/ai-model-supplier-customer-separation.test.mjs
           tests/ai-model-tenant-acceptance.test.mjs
