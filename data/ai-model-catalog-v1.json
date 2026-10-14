@@ -2206,7 +2206,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2215,7 +2215,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "capabilities"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+            "locator": "Listed generative model Command A+, input/output token billing",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+            "locator": "Listed generative model Command A+, input/output token billing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -2270,7 +2296,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -2279,7 +2305,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "capabilities"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+            "locator": "Listed generative model Command A, input/output token billing",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+            "locator": "Listed generative model Command A, input/output token billing",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -3470,7 +3522,7 @@
     {
       "tier": "specialist",
       "status": "active",
-      "input_usd_m": null,
+      "input_usd_m": 0.13,
       "output_usd_m": null,
       "cached_input_usd_m": null,
       "context_k": null,
@@ -3519,7 +3571,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3528,13 +3580,45 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "pricing",
+          "capabilities"
+        ],
+        "not_verified": [
+          "status",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+            "locator": "Model specification: 0.13 USD/M input tokens, embeddings for text",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+            "locator": "Model specification: 0.13 USD/M input tokens, embeddings for text",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+            "locator": "Model specification: 0.13 USD/M input tokens, embeddings for text",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
       "tier": "economy",
       "status": "active",
-      "input_usd_m": null,
+      "input_usd_m": 0.02,
       "output_usd_m": null,
       "cached_input_usd_m": null,
       "context_k": null,
@@ -3583,7 +3667,7 @@
       "provider": "OpenAI",
       "source": "https://developers.openai.com/api/docs/models/all",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -3592,7 +3676,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://developers.openai.com/api/docs/models/all",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "pricing"
+        ],
+        "not_verified": [
+          "status",
+          "capabilities",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+            "locator": "Model comparison: text-embedding-3-small 0.02 USD/M input tokens",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "pricing",
+            "url": "https://developers.openai.com/api/docs/models/text-embedding-3-large",
+            "locator": "Model comparison: text-embedding-3-small 0.02 USD/M input tokens",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7229,7 +7339,7 @@
       "provider": "xAI",
       "source": "https://docs.x.ai/developers/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7238,7 +7348,33 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.x.ai/developers/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "capabilities"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://docs.x.ai/developers/models",
+            "locator": "Model selection recommends Grok Imagine Image 2.0 for images",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/models",
+            "locator": "Model selection recommends Grok Imagine Image 2.0 for images",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -7256,7 +7392,8 @@
         "video generation"
       ],
       "limitations": [
-        "per-second pricing; not a general language model"
+        "per-second pricing; not a general language model",
+        "Official model selector lists Grok Imagine Video 1.5; catalog alias is not yet confirmed as an exact callable API ID."
       ],
       "scores": {
         "reasoning": 2,
@@ -7292,7 +7429,7 @@
       "provider": "xAI",
       "source": "https://docs.x.ai/developers/models",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -7301,7 +7438,27 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://docs.x.ai/developers/models",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "capabilities"
+        ],
+        "not_verified": [
+          "model_id",
+          "status",
+          "pricing",
+          "deployment",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "capabilities",
+            "url": "https://docs.x.ai/developers/models",
+            "locator": "Model selection recommends Grok Imagine Video 1.5 for videos, catalog identifier may be alias",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     },
     {
@@ -9165,7 +9322,7 @@
       "verified_at": "2026-09-30",
       "source_type": "official-provider",
       "verification_evidence": {
-        "claim_scope": "unverified",
+        "claim_scope": "partial",
         "verification_required": [
           "model_id",
           "status",
@@ -9174,7 +9331,39 @@
           "deployment",
           "governance"
         ],
-        "evidence_status": "PENDING_SUPPLIER_FIELD_VERIFICATION"
+        "evidence_status": "PARTIALLY_VERIFIED",
+        "source_url": "https://huggingface.co/tiiuae/Falcon-OCR",
+        "checked_on": "2026-10-14",
+        "verified_claims": [
+          "model_id",
+          "capabilities",
+          "deployment"
+        ],
+        "not_verified": [
+          "status",
+          "pricing",
+          "governance"
+        ],
+        "claim_evidence": [
+          {
+            "claim": "model_id",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Supplier model card: 270M OCR VLM, plain text/LaTeX/HTML, local vLLM Docker deployment",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Supplier model card: 270M OCR VLM, plain text/LaTeX/HTML, local vLLM Docker deployment",
+            "checked_on": "2026-10-14"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://huggingface.co/tiiuae/Falcon-OCR",
+            "locator": "Supplier model card: 270M OCR VLM, plain text/LaTeX/HTML, local vLLM Docker deployment",
+            "checked_on": "2026-10-14"
+          }
+        ]
       }
     }
   ],
