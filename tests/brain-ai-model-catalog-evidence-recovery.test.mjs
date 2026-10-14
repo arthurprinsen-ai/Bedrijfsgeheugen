@@ -357,3 +357,19 @@ test('AWS Nova public model-card readback preserves exact IDs and customer autho
   assert.ok(['partial','full'].includes(model.verification_evidence?.claim_scope),id+' claim accounting remains explicit');
  }
 });
+
+
+test('DeepSeek stateless Responses endpoint is API behavior, not model-wide retention or customer governance', async()=>{
+ const {classifySupplierClaim}=await import('./ai-model-supplier-evidence-worklist.mjs');
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ for(const id of ['deepseek-flash','deepseek-v4-pro']){
+  const model=catalog.models.find(m=>m.id===id);
+  assert.ok(model,id);
+  const evidence=model.verification_evidence;
+  const endpoints=(evidence.claim_evidence||[]).filter(r=>r.claim==='governance'&&r.scope==='endpoint-only supplier fact, not platform-wide/tenant retention guarantee');
+  assert.ok(endpoints.length>0,'Official stateless API receipt must not be treated as tenant entitlement');
+  assert.equal(classifySupplierClaim(evidence,'governance'),'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
+  assert.equal(model.supplier_audit.claim_evidence_classification.governance,'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
+  assert.equal(model.supplier_audit.automatic_recommendation_eligible,false,id);
+ }
+});
