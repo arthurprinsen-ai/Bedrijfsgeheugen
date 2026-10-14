@@ -20370,7 +20370,8 @@
       "modalities": [
         "text",
         "image",
-        "video"
+        "video",
+        "audio"
       ],
       "strengths": [
         "multimodal embeddings",
@@ -20474,8 +20475,9 @@
             "claim": "capabilities",
             "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
             "locator": "Model Details > Modalities",
-            "observed_value": "Multimodal embeddings: text, image and video converted into vectors for search/retrieval; async inference supported",
-            "checked_on": "2026-10-14"
+            "observed_value": "Official Amazon Bedrock model card lists Audio, Image, Text and Video as supported input modalities and Embedding as the supported output modality; Bedrock runtime uses StartAsyncInvoke for this model.",
+            "checked_on": "2026-10-14",
+            "scope": "Supplier-published model input/output modalities only; account access and region availability not attested."
           },
           {
             "claim": "pricing",
