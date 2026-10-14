@@ -224,7 +224,12 @@ test('audio-minute model prices retain their units and do not enter token-cost p
   assert.equal(m.pricing_basis?.usd_per_minute,rate);
   assert.equal(m.input_usd_m,null);
   assert.equal(m.output_usd_m,null);
-  assert.equal(m.verification_evidence?.claim_scope,'partial');
+  assert.ok(['partial','full'].includes(m.verification_evidence?.claim_scope),id+': supplier claim scope must be explicit');
+  if(m.verification_evidence?.claim_scope==='full'){
+   assert.equal(m.verification_evidence?.checked_on,m.verified_at,id+': full supplier receipt dates must reconcile');
+   assert.deepEqual(m.verification_evidence?.not_verified||[],[],id+': no contradictory supplier verified flags');
+  }
+  assert.equal(m.supplier_audit?.independent_verification_required,true,id+': public receipts do not grant independent acceptance');
   assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false);
  }
  const html=fs.readFileSync('ai-modelwijzer.html','utf8');
