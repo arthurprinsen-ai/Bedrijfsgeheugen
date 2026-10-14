@@ -15125,7 +15125,7 @@
       },
       "id": "voxtral-mini-transcribe-2",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
       "verification_evidence": {
         "claim_scope": "full",
         "verification_required": [
@@ -15137,7 +15137,7 @@
           "governance"
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "status",
@@ -15220,7 +15220,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -15252,7 +15252,9 @@
           "customer_runtime_verified": false,
           "model_public_price_verified": true,
           "automatic_recommendation_eligible": false
-        }
+        },
+        "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-26-02",
+        "last_specific_source_check": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15272,7 +15274,8 @@
         "checked_on": "2026-10-14",
         "additional_costs_or_conditions": "Other processing modes, contract entitlements, and tenant settings require separate verification",
         "scope": "Public model-specific supplier tariff only; customer contract, account access, region and enabled controls not attested"
-      }
+      },
+      "provider_api_id": "voxtral-mini-2602"
     },
     {
       "tier": "open-weight",
@@ -15327,7 +15330,7 @@
       },
       "id": "voxtral-mini-transcribe-realtime",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
       "verification_evidence": {
         "claim_scope": "full",
         "verification_required": [
@@ -15339,7 +15342,7 @@
           "governance"
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "status",
@@ -15430,7 +15433,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -15462,7 +15465,9 @@
           "customer_runtime_verified": false,
           "model_public_price_verified": true,
           "automatic_recommendation_eligible": false
-        }
+        },
+        "last_specific_source_url": "https://docs.mistral.ai/models/voxtral-mini-transcribe-realtime-26-02",
+        "last_specific_source_check": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -15482,7 +15487,8 @@
         "checked_on": "2026-10-14",
         "additional_costs_or_conditions": "Customer-region routing, transcription mode and account entitlement untested",
         "scope": "Public model-specific supplier tariff only; customer contract, account access, region and enabled controls not attested"
-      }
+      },
+      "provider_api_id": "voxtral-mini-transcribe-realtime-2602"
     },
     {
       "tier": "open-weight",
@@ -15923,7 +15929,7 @@
       },
       "id": "mistral-embed",
       "provider": "Mistral AI",
-      "source": "https://docs.mistral.ai/models",
+      "source": "https://docs.mistral.ai/models/mistral-embed-23-12",
       "verification_evidence": {
         "claim_scope": "full",
         "verification_required": [
@@ -15935,7 +15941,7 @@
           "governance"
         ],
         "evidence_status": "FULLY_VERIFIED_SUPPLIER_ONLY",
-        "source_url": "https://docs.mistral.ai/models",
+        "source_url": "https://docs.mistral.ai/models/mistral-embed-23-12",
         "checked_on": "2026-10-14",
         "verified_claims": [
           "status",
@@ -16018,7 +16024,7 @@
         ],
         "missing_claim_receipts": [],
         "missing_receipt_count": 0,
-        "source_reference": "https://docs.mistral.ai/models",
+        "source_reference": "https://docs.mistral.ai/models/mistral-embed-23-12",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -16040,7 +16046,9 @@
         "evidence_accounting_date": "2026-10-14",
         "pending_independent_claim_reviews": 0,
         "review_required_claims": [],
-        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff"
+        "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
+        "last_specific_source_url": "https://docs.mistral.ai/models/mistral-embed-23-12",
+        "last_specific_source_check": "2026-10-14"
       },
       "provider_policy_research_20261014": {
         "claim": "provider_data_retention_policy",
@@ -16050,7 +16058,8 @@
         "limitations": "This is a provider/API and endpoint eligibility statement; it is not proof that this model uses an eligible endpoint, that ZDR was approved, or that customer contracts or residency settings are active.",
         "checked_on": "2026-10-14",
         "scope": "Mistral provider-level public policy context only; per-model and tenant settings UNVERIFIED"
-      }
+      },
+      "provider_api_id": "mistral-embed-2312"
     },
     {
       "tier": "open-weight",
