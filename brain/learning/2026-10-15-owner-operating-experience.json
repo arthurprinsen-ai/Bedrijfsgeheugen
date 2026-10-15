@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|owner-operating-experience|tenant-evidence-approval-boundary|20261015",
+  "compiler": {
+    "failure_class": "PORTAL_OWNER_EXPERIENCE_FRAGMENTED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "MKB-eigenaren zagen meerdere afzonderlijke navigatiepagina's en technische modules in plaats van vijf taakgerichte ondernemersfuncties. Zonder overkoepelende bewijsweergave kon een beschikbare analyse te gemakkelijk worden aangezien voor een gerealiseerd financieel resultaat of een uitgevoerde provideractie.",
+  "prevention_rule": "Bied één Portal V2 ingang met Mijn bedrijf, Mijn kansen, Mijn acties, Mijn adviseur en Mijn instellingen. Projecteer uitsluitend tenantgebonden, actuele records met niet-lege bronreferenties. Laat financiële KPI's onbekend wanneer gevalideerde bronactuals ontbreken; onderscheid action proposal, approval, provider execution/readback en verified outcome. Vertrouw op bestaande modelkeuze- en beslisgateways in plaats van automatische activatie.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-v2-experience-contract.test.mjs"
+    ],
+    "regression_contract": "tests/portal-v2-owner-operating-system.test.mjs"
+  },
+  "evidence": {
+    "obligation_id": "powerhouse-owner-operating-experience-20261015-v1",
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4405",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4406",
+    "verification": "TESTS_PENDING_CI",
+    "production_readback": "NOT_YET_VERIFIED"
+  },
+  "outcome": {
+    "status": "IMPLEMENTED_IN_PROTECTED_PR",
+    "external_execution": "NOT_CLAIMED"
+  }
+}
