@@ -8,3 +8,5 @@
 - Regression: `tests/brain-powerhouse-provider-proof-execution-status-v2.test.mjs` checks all proof predicates and 2026-10-15 historical replay.
 - No publishing/writes: only publication reporting logic changes; personal post must not be resent.
 - Release acceptance: provider-managed preview green on exact head, Required CI & CodeQL green, protected merge, native production schema/function readback, two verified deliveries / one unverified personal and one verified social.
+
+- Fail-closed NULL regression: explicit SQL `coalesce((proof predicates),false)` plus missing-receipt replay, so a missing delivery_evidence object can never disappear from `unresolved_publish_count` through SQL three-valued logic.
