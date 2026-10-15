@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-provider-verified-social-status-v1",
+  "fingerprint": "powerhouse|execution_status|canonical-social-published-legacy-social_posts-drift|20261015",
+  "compiler": {
+    "failure_class": "COMMERCIAL_DAILY_PROOF_COUNTER_DIVERGENT_AUTHORITY",
+    "scope": "COMMERCIAL_ASSURANCE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "The SQL function powerhouse_execution_status counted social_posts records instead of canonical powerhouse_channel_decisions provider verification. The native publisher wrote LinkedIn provider references to canonical decisions; social_posts remained empty. Persisted degraded daily snapshot was stale because the daily guard updates execution_status only on state transition.",
+  "prevention": "Count distinct verifiable provider-object identifiers from canonical social channel decisions where provider_truth_verified is true and state is terminal; never count status alone, never include blog, and never use the legacy Buffer telemetry table. Refresh evidence.execution_status on each guard cycle even while degraded, without changing state or completed_at until the existing predictive, publication and autonomous growth gates all pass.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-verified-social-daily-count.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-provider-verified-social-daily-count.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-provider-verified-social-daily-count.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_sql": "powerhouse_execution_status published_social_count=0 from social_posts even though canonical linkedin_company delivery has verified provider object urn:li:share:7516489347345334272; linkedin_personal object has provider_truth_verified=false; blog public proof=true.",
+    "production_status": "On 2026-10-15 execution_status live execution_complete=true, delivered_publish_count=3, but 0 published social; persisted run snapshot still had delivered_publish_count=2 while state=degraded due unresolved Instagram/predictive proof.",
+    "safety": "P0 remains degraded until independent Instagram final media and predictive/calibration obligations are proven; no synthetic posts or emails. Source-only repair pending provider preview/merge/production readback."
+  },
+  "outcome": {
+    "source_fixed_in_pr": true,
+    "production_verified": false,
+    "complete_cycle_proven": false
+  }
+}
