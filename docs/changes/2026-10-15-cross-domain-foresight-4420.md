@@ -22,4 +22,4 @@ Het model is een **exploratieve statistische trend**, niet onafhankelijk gevalid
 Getoetste serverprojection per tenant voor aanvullende Powerhouse, Brein en Heartbeat signalen, van juiste eigenaar, versheid, backtesting en onafhankelijke validatie voorzien. Globale marketingforecasts blijven uitgesloten.
 CI, protected merge, productie-deploy, geauthenticeerde tenant-readback op de exacte GitHub-SHA. Geen groenrapportage zonder bewijs.
 
-Regression: tests/powerhouse-contextual-foresight-studio.test.mjs
+Regression: portal-v2/tests/foresight-scenario-studio.test.mjs
