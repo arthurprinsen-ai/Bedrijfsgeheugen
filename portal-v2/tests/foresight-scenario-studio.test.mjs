@@ -125,7 +125,7 @@ test('favourable scenario reduces metrics whose goal direction is down',()=>{
  assert.equal(adverse.scenario.baseline,baseline.scenario.baseline);
  assert.ok(favourable.scenario.simulated<baseline.scenario.baseline);
  assert.ok(adverse.scenario.simulated>baseline.scenario.baseline);
- assert.equal(favourable.scenario.delta,-Math.abs(baseline.scenario.baseline)*0.1);
+ assert.ok(Math.abs(favourable.scenario.delta+Math.abs(baseline.scenario.baseline)*0.1)<1e-9);
 });
 
 test('positive scenario improves a negative baseline instead of making it more negative',()=>{
