@@ -25,28 +25,32 @@ function observations(state,goal,metric){
   }
   return [...map.values()].sort((a,b)=>a.time-b.time).slice(-120);
 }
-function trend(points,days){
+function trend(points,days,asOf=Date.now()){
   if(points.length<3||points.at(-1).time-points[0].time<14*86400000)return null;
+  if(!Number.isFinite(asOf)||points.at(-1).time>asOf+86400000||asOf-points.at(-1).time>90*86400000)return null;
   const first=points[0].time,xx=points.map(p=>(p.time-first)/86400000),yy=points.map(p=>p.value);
   const n=xx.length,mx=xx.reduce((a,b)=>a+b,0)/n,my=yy.reduce((a,b)=>a+b,0)/n;
   const denominator=xx.reduce((s,x)=>s+(x-mx)**2,0);
   if(denominator===0)return null;
   const slope=xx.reduce((s,x,i)=>s+(x-mx)*(yy[i]-my),0)/denominator;
   const intercept=my-slope*mx;
-  const targetX=xx.at(-1)+days;
+  const targetTime=Math.max(asOf,points.at(-1).time)+days*86400000;
+  const targetX=(targetTime-first)/86400000;
   const expected=intercept+slope*targetX;
   const rmse=Math.sqrt(yy.reduce((s,y,i)=>s+(y-(intercept+slope*xx[i]))**2,0)/Math.max(1,n-2));
-  const width=1.96*rmse*(1+Math.min(2,days/Math.max(30,xx.at(-1)-xx[0])));
-  return {expected,lower:expected-width,upper:expected+width,rmse,slope,method:'linear-trend',historyCount:n,notBacktested:true};
+  const daysFromLast=targetX-xx.at(-1);
+  const width=1.96*rmse*(1+Math.min(2,daysFromLast/Math.max(30,xx.at(-1)-xx[0])));
+  return {expected,lower:expected-width,upper:expected+width,rmse,slope,method:'linear-trend',historyCount:n,forecastFor:new Date(targetTime).toISOString().slice(0,10),notBacktested:true};
 }
 export function buildForesightStudioModel(state={},options={}){
   const days=[30,90,180,365].includes(Number(options.days))?Number(options.days):90;
+  const asOf=Number.isFinite(Date.parse(options.asOf||''))?Date.parse(options.asOf):Date.now();
   const goalIds=Object.keys(GOAL_METRICS);
   const metrics=goalIds.map(id=>{
     const def=GOAL_METRICS[id],metadata=paths[id];
     const baseline=buildGoalForecast(state,id);
     const history=observations(state,id,def.metric);
-    const prediction=trend(history,days);
+    const prediction=trend(history,days,asOf);
     const current=history.length?history.at(-1).value:(baseline?.currentSource?valueOf(baseline.current):null);
     const evidenceCount=history.filter(p=>p.evidenceRef).length;
     return {
@@ -55,7 +59,7 @@ export function buildForesightStudioModel(state={},options={}){
       history,forecast:prediction,
       evidenceCount,quality:prediction?(history.length>=6&&evidenceCount>=3?'HISTORICAL_TREND_WITH_REFS':'EXPLORATORY_TREND'):'INSUFFICIENT_HISTORY',
       source:'Klantgebonden historie in bestaande portaalcontext',
-      note:prediction?'Statistische extrapolatie, geen onafhankelijk gevalideerde voorspelling.':'Minimaal 3 metingen over 14 dagen nodig.'
+      note:prediction?'Statistische extrapolatie vanaf de peildatum; niet onafhankelijk gevalideerd.':'Minimaal 3 meetdagen over 14 dagen en een meting uit de laatste 90 dagen nodig.'
     };
   });
   const active=metrics.find(x=>x.id===options.metric)||metrics.find(x=>x.forecast)||metrics[0];
@@ -101,14 +105,14 @@ function chart(metric,scenario){
     '<polyline points="'+segment(metric.forecast.expected)+'" fill="none" stroke="#15876c" stroke-dasharray="6 4" stroke-width="3"/>'+
     (scenario&&scenario.sensitivity!==0?'<polyline points="'+segment(scenario.simulated)+'" fill="none" stroke="#ae4bd5" stroke-dasharray="4 4" stroke-width="3"/>':'')+
     '<text x="46" y="204" font-size="12" fill="#67748d">'+esc(points[0].date)+'</text>'+
-    '<text x="676" y="204" text-anchor="end" font-size="12" fill="#67748d">+'+esc(metric.forecast?'gekozen horizon':'')+'</text>'+
+    '<text x="676" y="204" text-anchor="end" font-size="12" fill="#67748d">'+esc(metric.forecast.forecastFor)+'</text>'+
     '<text x="46" y="20" font-size="11" fill="#67748d">'+esc(fmt(max,metric.unit))+'</text>'+
     '<text x="46" y="180" font-size="11" fill="#67748d">'+esc(fmt(min,metric.unit))+'</text></svg>';
 }
 function markup(model){
   const m=model.active,s=model.scenario;
   const choose=model.metrics.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===m.id?' selected':'')+'>'+esc(x.domain+' · '+x.label)+(x.forecast?'':' · bron ontbreekt')+'</option>').join('');
-  const forecast=s?'<div class="pfs-stat-grid"><div><small>Actuele meting</small><strong>'+esc(fmt(m.current,m.unit))+'</strong></div><div><small>Trend op horizon</small><strong>'+esc(fmt(s.baseline,m.unit))+'</strong></div><div><small>Wat-als-variant</small><strong>'+esc(fmt(s.simulated,m.unit))+'</strong></div><div><small>Statistische band</small><strong>'+esc(fmt(s.lower,m.unit))+' – '+esc(fmt(s.upper,m.unit))+'</strong></div></div>':'<div class="pfs-gap">Voor '+esc(m.label)+' is nog geen onderbouwde tijdreeks beschikbaar. Scenarioresultaten blijven uit totdat minimaal drie chronologische metingen beschikbaar zijn.</div>';
+  const forecast=s?'<div class="pfs-stat-grid"><div><small>Laatste meting</small><strong>'+esc(fmt(m.current,m.unit))+'</strong></div><div><small>Trend op horizon</small><strong>'+esc(fmt(s.baseline,m.unit))+'</strong></div><div><small>Wat-als-variant</small><strong>'+esc(fmt(s.simulated,m.unit))+'</strong></div><div><small>Statistische band</small><strong>'+esc(fmt(s.lower,m.unit))+' – '+esc(fmt(s.upper,m.unit))+'</strong></div></div>':'<div class="pfs-gap">Voor '+esc(m.label)+' is nog geen onderbouwde tijdreeks beschikbaar. Scenarioresultaten blijven uit totdat minimaal drie chronologische metingen beschikbaar zijn.</div>';
   const variants=[['-10','Tegenvaller'],['0','Basispad'],['10','Meewind']].map(([pct,title])=>'<button type="button" data-pfs-preset="'+pct+'"'+(model.scenario?.sensitivity===Number(pct)?' aria-pressed="true"':' aria-pressed="false"')+'>'+title+'</button>').join('');
   return '<section class="pfs-studio" data-pfs-studio="true" aria-label="Powerhouse interactieve scenariostudio">'+
     '<div class="pfs-head"><div><span class="pfs-eyebrow">POWERHOUSE · BREIN · FORESIGHT</span><h3>Wat gebeurt er als je niets verandert — of juist ingrijpt?</h3>'+
