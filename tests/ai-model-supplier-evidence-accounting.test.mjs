@@ -263,10 +263,11 @@ test('Google legacy preview Standard Paid prices are modality-scoped not blanket
   }else{
    assert.equal(evidence.claim_scope,'partial');
    assert.ok(evidence.not_verified.includes('governance'));
+   assert.equal(model.supplier_audit.independent_verification_required,true,
+    'Incomplete supplier evidence requires further independent review');
   }
   assert.equal(model.supplier_audit.automatic_recommendation_eligible,false,
    'Public evidence never grants automatic recommendation or tenant approval');
-  assert.equal(model.supplier_audit.independent_verification_required,true);
  }
 });
 
