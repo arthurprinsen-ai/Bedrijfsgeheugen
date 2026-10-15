@@ -5,7 +5,6 @@ import {navigatePortal} from './router.js';
 import {createOwnerFinancialClient} from './owner-financial-truth.js';
 import {createDecisionCommandClient} from './company-cockpit-ui.js';
 import {mapRuntimeProjection} from './runtime-evidence.js';
-import {buildCompanyCockpit} from './company-cockpit.js';
 
 let pendingOwnerArea='bedrijf';
 
@@ -102,6 +101,8 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
  if(!root?.querySelector)return null;
  const doc=root.ownerDocument||globalThis.document;ensureCss(doc);
  let host=root.querySelector(':scope > [data-owner-os]');
+ // Compact dashboard refreshes must not retain click handlers with stale tenant state.
+ if(host&&compact){host.remove();host=null;}
  if(!host){host=doc.createElement('section');host.dataset.ownerOs='v1';host.className='owner-os';host.setAttribute('aria-label','Powerhouse ondernemersbesturing');if(compact&&root.querySelector('.topbar'))root.querySelector('.topbar').after(host);else root.prepend(host);}
  host.dataset.ownerCompact=String(compact);
  let financial=null,financeStatus='Financiële gegevens nog niet ingelezen',decisionRuntime=null,decisionStatus='Klik op vernieuwen om actuele besluiten op te halen',decisionLoading=false,financeLoading=false;
@@ -119,12 +120,13 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
    if(!headers?.authorization)throw new Error('AUTH_REQUIRED');
    const projection=await decisionClient.loadProjection();
    const expected=String(state?.tenant_id||state?.powerhouse?.tenant_id||'');
-   if(projection?.tenantId&&expected&&String(projection.tenantId)!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
+   if(!projection?.tenantId)throw new Error('BRAIN_TENANT_PROOF_MISSING');
+   if(expected&&String(projection.tenantId)!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
    decisionRuntime=mapRuntimeProjection(projection);decisionStatus='Teruggelezen uit de beveiligde Brain-besluitregistratie';
   }catch(error){decisionRuntime=null;decisionStatus=`Niet beschikbaar (${String(error?.message||'ONBEKEND')}). Geen besluit uitgevoerd.`;}
   finally{decisionLoading=false;refresh();}
  }
- if(!compact&&stateClient?.authHeaders&&!stateClient?.isDemo?.()&&['authenticated','empty'].includes(stateClient?.getSnapshot?.()?.mode)){
+ if(!compact&&stateClient?.authHeaders&&!stateClient?.isDemo?.()&&stateClient?.getSnapshot?.()?.mode==='authenticated'){
   financeLoading=true;
   const financialClient=createOwnerFinancialClient({fetchImpl,authHeadersProvider});
   financialClient.load(String(state?.tenant_id||state?.powerhouse?.tenant_id||'')).then(value=>{
@@ -154,9 +156,11 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
     const old=decisionRuntime?.decisions?.items?.find(item=>item.id===decisionId);
     if(!old||old.status!==expectedStatus){decisionStatus='Besluit verouderd: vernieuw eerst de Brain-status.';refresh();return;}
     decisionLoading=true;commandButton.disabled=true;decisionStatus='Besluit indienen en autorisatie teruglezen…';
-    void decisionClient.command({command,decisionId,expectedStatus}).then(({projection})=>{
+    const idempotencyKey=`owner-v2:${command.toLowerCase()}:${decisionId}:${expectedStatus}`;
+    void decisionClient.command({command,decisionId,expectedStatus,idempotencyKey}).then(({projection})=>{
       const expected=String(state?.tenant_id||state?.powerhouse?.tenant_id||'');
-      if(projection?.tenantId&&expected&&String(projection.tenantId)!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
+      if(!projection?.tenantId)throw new Error('BRAIN_TENANT_PROOF_MISSING');
+      if(expected&&String(projection.tenantId)!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
       decisionRuntime=mapRuntimeProjection(projection);
       const newItem=decisionRuntime?.decisions?.items?.find(item=>item.id===decisionId);
       decisionStatus=newItem&&newItem.status!==expectedStatus?
