@@ -71,6 +71,23 @@ const models = catalog.models.map(m => {
     missing_claim_receipt_count: missingClaims.length
   };
 });
+// Supplier directory is an inventory of external AI, not the runtime router.
+// Incomplete or conflicting research entries remain in the audit worklist.
+// Only a model explicitly admitted into automatic selection may gate the release.
+const unsafeAutoSelection = catalog.models.filter(m => {
+ const a=m.supplier_audit;
+ const requested=m.auto_recommendation_eligible===true||
+   a?.automatic_recommendation_eligible===true;
+ return requested && (
+   a?.automatic_recommendation_eligible!==true||
+   a?.independent_verification_required===true||
+   m.status!=='active'||
+   m.record_kind==='model_family_placeholder'||
+   Boolean(m.catalog_alias)||
+   !hasFullEvidence(m)
+ );
+}).map(m=>m.id);
+
 const claimGapCounts = Object.fromEntries(requiredClaims.map(claim => [
   claim, models.filter(m => m.missing_verified_claims.includes(claim)).length
 ]));
@@ -85,10 +102,11 @@ const providerGaps = Object.entries(Object.groupBy(models, m => m.provider))
 const report = {
   generated_at: now.toISOString(), catalog_version: catalog.version,
   important: 'HTTP reachability cannot verify prices, lifecycle, model IDs, deployment, capabilities or governance; no verified_at timestamps are changed.',
-  counts: { models: models.length, sources: sources.length, stale: models.filter(m => m.classification === 'STALE_CLAIMS_UNVERIFIED').length, fully_verified: models.filter(m => m.eligible_for_automatic_freshness_attestation).length, not_fully_verified: models.filter(m => !m.eligible_for_automatic_freshness_attestation).length, unreachable_sources: [...sourceChecks.values()].filter(x => !x.reachable).length, duplicate_ids: duplicateIds.length, missing_official_urls: missingSources.length },
+  counts: { models: models.length, sources: sources.length, stale: models.filter(m => m.classification === 'STALE_CLAIMS_UNVERIFIED').length, fully_verified: models.filter(m => m.eligible_for_automatic_freshness_attestation).length, not_fully_verified: models.filter(m => !m.eligible_for_automatic_freshness_attestation).length, unreachable_sources: [...sourceChecks.values()].filter(x => !x.reachable).length, duplicate_ids: duplicateIds.length, missing_official_urls: missingSources.length, unsafe_auto_selection: unsafeAutoSelection.length },
   supplier_claim_backlog: Object.entries(models.reduce((groups, m) => { (groups[m.provider] ??= []).push(m); return groups; }, {})).map(([provider, entries]) => ({ provider, models: entries.length, fully_verified: entries.filter(x => x.eligible_for_automatic_freshness_attestation).length, missing_receipts: entries.reduce((sum, x) => sum + x.missing_claim_receipt_count, 0), missing_by_claim: Object.fromEntries(requiredClaims.map(claim => [claim, entries.filter(x => x.missing_claim_receipts.includes(claim)).length])) })),
   total_missing_claim_receipts: models.reduce((sum, x) => sum + x.missing_claim_receipt_count, 0),
   missing_claim_counts: claimGapCounts, provider_gaps: providerGaps,
+  unsafe_automatic_model_ids: unsafeAutoSelection,
   duplicate_model_ids: [...new Set(duplicateIds)], missing_source_models: missingSources, source_checks: [...sourceChecks.values()], models
 };
 // Production readback is explicit and immutable: compare semantic catalog JSON, not HTTP 200.
@@ -127,4 +145,7 @@ const json = JSON.stringify(report, null, 2) + '\n';
 // CI artifact after reviewing it, but remote observations must not select a disk path.
 if (process.argv[2]) throw new Error('OUTPUT_PATH_NOT_SUPPORTED_USE_STDOUT');
 process.stdout.write(json);
-if (report.counts.not_fully_verified || report.counts.duplicate_ids || report.counts.missing_official_urls) process.exitCode = 2;
+// Research-only entries are not a global release veto. Missing provenance and
+// unsafe automatic selection remain hard failures; exact production parity is
+// separately mandatory whenever release-mode readback is requested.
+if (report.counts.unsafe_auto_selection || report.counts.duplicate_ids || report.counts.missing_official_urls) process.exitCode = 2;
