@@ -1,7 +1,7 @@
 {
   "date": "2026-10-15",
   "fingerprint": "powerhouse|portal-v2|foresight|tenant-source-filter-v3",
-  "obligation_id": "powerhouse-foresight-tenant-driver-filters-20261015-v3",
+  "obligation_id": "powerhouse-foresight-tenant-signal-drivers-v2",
   "compiler": {
     "failure_class": "UNSCOPED_FORECAST_SIGNAL_PROMOTION",
     "scope": "CUSTOMER_PORTAL",
