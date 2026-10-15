@@ -1,5 +1,6 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
+import {incompleteStructuredArtifactReason,largerArtifactTokenBudget} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -150,6 +151,12 @@ class AIProviderHttpError extends Error {
     this.providerDetail=safe;
   }
 }
+class AIProviderIncompleteOutputError extends Error {
+  constructor(model:string,budget:number,reason:string){
+    super('AI_ARTIFACT_INCOMPLETE_OUTPUT:'+model+':'+reason+':budget='+budget);
+    this.name='AIProviderIncompleteOutputError';
+  }
+}
 async function callAI(key: string, model: string, system: string, user: unknown, tool: any, maxTokens = 3200) {
   const schema = { type:'object', properties:tool.input_schema.properties, required:tool.input_schema.required, additionalProperties:false };
   const response = await fetch('https://api.openai.com/v1/responses', {
@@ -165,9 +172,18 @@ async function callAI(key: string, model: string, system: string, user: unknown,
     console.error('ORCHESTRATOR_AI_PROVIDER_ERROR',response.status,model,detail);
     throw new AIProviderHttpError(response.status,model,detail);
   }
+  const explicitTruncation=incompleteStructuredArtifactReason(body);
+  if(explicitTruncation)throw new AIProviderIncompleteOutputError(model,maxTokens,explicitTruncation);
   const raw=(body.output||[]).flatMap((o:any)=>o.content||[]).filter((c:any)=>c.type==='output_text').map((c:any)=>c.text).join('');
   if(!raw)throw new Error('AI_TOOL_OUTPUT_MISSING:'+model);
-  const result=JSON.parse(raw);
+  let result:any;
+  try {
+    result=JSON.parse(raw);
+  } catch(error) {
+    const truncated=incompleteStructuredArtifactReason(body,error);
+    if(truncated)throw new AIProviderIncompleteOutputError(model,maxTokens,truncated);
+    throw error;
+  }
   if(!validArtifactObject(result))throw new Error('AI_ARTIFACT_SCHEMA_INVALID:'+model);
   return result;
 }
@@ -561,7 +577,15 @@ Deno.serve(async (req) => {
     let fallbackReason:string|null=null;
     try {
       if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
-      artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,pending.channel==='blog'?4800:1800);
+      const initialBudget=pending.channel==='blog'?4800:1800;
+      try {
+        artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,initialBudget);
+      } catch(firstError) {
+        if(!(firstError instanceof AIProviderIncompleteOutputError))throw firstError;
+        const retryBudget=largerArtifactTokenBudget(initialBudget);
+        console.warn('ORCHESTRATOR_ARTIFACT_OUTPUT_BOUNDED_RETRY',pending.channel,gov.model_id,initialBudget,retryBudget);
+        artifact=await callAI(apiKey,gov.model_id,editorialSystem,artifactInput,artifactTool,retryBudget);
+      }
     } catch(error) {
       if(!composioFallbackEligible(error))throw error;
       const {data:fallbackGov,error:fallbackGovError}=await db.from('brain_ai_governance_registry')
