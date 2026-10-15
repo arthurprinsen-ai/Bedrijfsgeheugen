@@ -19905,6 +19905,22 @@
           "current_operational_lifecycle_resolved": false,
           "automatic_recommendation_eligible": false,
           "operational_resolution_required": "AWS Bedrock authenticated GetFoundationModel/ListFoundationModels per intended region plus provider clarification."
+        },
+        "cross_locale_eol_check_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "OFFICIAL_AWS_LOCALE_PUBLICATION_CONFLICT_RUNTIME_UNATTESTED",
+          "english_source": "https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "english_observed": "English current legacy EOL listing does not show amazon.nova-premier-v1:0",
+          "italian_source": "https://docs.aws.amazon.com/it_it/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "italian_observed": "Italian localized AWS listing still contains amazon.nova-premier-v1:0 for us-east-1, us-east-2, us-west-2, EOL Sep 14 2026",
+          "model_card": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+          "model_card_observed": "AWS card simultaneously displays EOL no sooner than Oct 31 2026, Model EOL Sep 14 2026, lifecycle Legacy",
+          "freshness_limit": "Public localized pages can lag; last independent crawl of Italian page was not on the same date as English page. Public pages are not authenticated AWS runtime responses.",
+          "confidence": "CONFLICT_NOT_RESOLVED",
+          "needed": "Authorized AWS Bedrock GetFoundationModel/ListFoundationModels modelLifecycle readback in every target AWS Region, and formal clarification for contradictory public dates",
+          "account_region_attested": false,
+          "independent_supplier_accepted": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_source_conflicts": [
