@@ -1,7 +1,11 @@
 {
   "fingerprint": "powerhouse|social|linkedin-company|composio-fallback-truncated-json|bounded-retry|v1",
   "compiler": {
-    "failure_class": "COMPOSIO_FALLBACK_INCOMPLETE_JSON"
+    "failure_class": "COMPOSIO_FALLBACK_INCOMPLETE_JSON",
+    "scope": "CONTENT_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 16,
+    "security_sensitive": false
   },
   "root_cause": "Composio/Groq structured content fallback parses model output strictly but unlike OpenAI has no bounded retry for documented truncation, leaving linkedin_company stuck at decided.",
   "evidence": {
@@ -13,6 +17,9 @@
   "prevention_rule": "Only when parse failure is a verified truncated JSON or provider finish_reason=length, retry Composio/Groq with at most one larger token budget. Never accept partial, schema-invalid, unapproved, or source-ungrounded copy.",
   "evaluation": {
     "historical_replay": [
+      "tests/brain-content-artifact-incomplete-retry.test.mjs"
+    ],
+    "cases": [
       {
         "case": "unterminated-json-at-677",
         "expected": "one larger-budget retry; strict schema mandatory",
