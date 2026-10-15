@@ -1,5 +1,6 @@
 import { buildGoalForecast, GOAL_METRICS } from '../brain/context/goal-forecast-engine.mjs';
 import {buildTenantForesightEvidence,renderTenantForesightEvidence} from './foresight-tenant-evidence.js';
+import {buildForesightPortfolio,renderForesightPortfolio} from './foresight-portfolio.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const valueOf=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):null;
@@ -144,7 +145,12 @@ export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',o
   const draw=()=>{
     const model=buildForesightStudioModel(state,selected);
     const evidence=intelligence?buildTenantForesightEvidence(intelligence,{metric:model.active.id,mode:selected.signalMode}):null;
-    section.innerHTML=markup(model)+renderTenantForesightEvidence(evidence,{status:sourceStatus});
+    const portfolio=buildForesightPortfolio(model,state?.portal?.runtime);
+    // Expanded comparison state is retained across metric and horizon redraws.
+    const expanded=section.querySelector('[data-pfs-portfolio]')?.open ?? (pageId==='overzicht');
+    section.innerHTML=markup(model)+renderForesightPortfolio(portfolio,{open:expanded})+renderTenantForesightEvidence(evidence,{status:sourceStatus});
+    section.querySelectorAll('[data-pfs-compare-metric]').forEach(button=>button.addEventListener('click',()=>{selected.metric=button.dataset.pfsCompareMetric;selected.sensitivity=0;draw();}));
+    section.querySelectorAll('[data-pfs-open-page]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.pfsOpenPage)));
     section.querySelector('[data-pfs-metric]')?.addEventListener('change',event=>{selected.metric=event.target.value;selected.sensitivity=0;draw();});
     section.querySelector('[data-pfs-days]')?.addEventListener('change',event=>{selected.days=Number(event.target.value);draw();});
     section.querySelector('[data-pfs-sensitivity]')?.addEventListener('input',event=>{selected.sensitivity=Number(event.target.value);draw();});
