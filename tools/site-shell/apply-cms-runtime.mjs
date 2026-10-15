@@ -17,10 +17,14 @@ for(const file of [...new Set(targets)]){
   let html=fs.readFileSync(file,'utf8');
   if(!/<\/head>/i.test(html))continue;
   covered++;
-  if(html.includes('/assets/cms-runtime.js'))continue;
-  html=html.replace(/<\/head>/i,'<script src="/assets/cms-runtime.js" defer data-bg-cms-runtime="1"></script>\n</head>');
-  fs.writeFileSync(file,html);
-  changed++;
+  const before=html;
+  if(!html.includes('/assets/cms-runtime.js')){
+    html=html.replace(/<\/head>/i,'<script src="/assets/cms-runtime.js" defer data-bg-cms-runtime="1"></script>\n</head>');
+  }
+  if(!html.includes('/assets/mobile-viewport-cleanup.js')){
+    html=html.replace(/<\/head>/i,'<script src="/assets/mobile-viewport-cleanup.js?v=20261015" defer data-bg-mobile-fix="1"></script>\n</head>');
+  }
+  if(html!==before){fs.writeFileSync(file,html);changed++;}
 }
 
 const inventory={
