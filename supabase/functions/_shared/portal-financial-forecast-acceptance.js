@@ -68,6 +68,10 @@ export function eligibleFinancialForecast(row,expectedTenant,now=Date.now()){
  if(!series(row.historical_points,6)||!series(row.forecast_points))return false;
  if(row.historical_points.at(-1).date>=row.forecast_points[0].date
    ||row.historical_points[0].date.length!==row.forecast_points[0].date.length)return false;
+ // A source from October cannot contain audited actuals dated in November.
+ const lastActual=row.historical_points.at(-1).date;
+ const observedThrough=new Date(source).toISOString().slice(0,lastActual.length);
+ if(lastActual>observedThrough)return false;
  if(backtest.holdout_count>row.historical_points.length-3
     ||!replayFinancialHoldout(backtest,row.historical_points))return false;
  return bounds(row);
