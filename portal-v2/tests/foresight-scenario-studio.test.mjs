@@ -103,3 +103,41 @@ test('horizons run from selected as-of date rather than stale last observation',
  assert.equal(stale.active.forecast,null);
  assert.equal(stale.scenario,null);
 });
+
+test('favourable scenario reduces metrics whose goal direction is down',()=>{
+ const descendingGoal={
+  portal:{business_context:{goal_targets:{automate:{
+   history:[
+    {date:'2026-06-01',value:120,evidenceRef:'ops-1'},
+    {date:'2026-07-01',value:115,evidenceRef:'ops-2'},
+    {date:'2026-08-01',value:110,evidenceRef:'ops-3'},
+    {date:'2026-09-01',value:105,evidenceRef:'ops-4'}
+   ],
+   target_value:80,target_date:'2027-01-01'
+  }}}}
+ };
+ const common={metric:'automate',days:90,asOf:'2026-10-15T00:00:00Z'};
+ const baseline=buildForesightStudioModel(descendingGoal,{...common,sensitivity:0});
+ const favourable=buildForesightStudioModel(descendingGoal,{...common,sensitivity:10});
+ const adverse=buildForesightStudioModel(descendingGoal,{...common,sensitivity:-10});
+ assert.equal(favourable.active.direction,'down');
+ assert.equal(favourable.scenario.baseline,baseline.scenario.baseline);
+ assert.equal(adverse.scenario.baseline,baseline.scenario.baseline);
+ assert.ok(favourable.scenario.simulated<baseline.scenario.baseline);
+ assert.ok(adverse.scenario.simulated>baseline.scenario.baseline);
+ assert.equal(favourable.scenario.delta,-Math.abs(baseline.scenario.baseline)*0.1);
+});
+
+test('positive scenario improves a negative baseline instead of making it more negative',()=>{
+ const loss={portal:{business_context:{goal_targets:{profit:{history:[
+  {date:'2026-06-01',value:-20},
+  {date:'2026-07-01',value:-19},
+  {date:'2026-08-01',value:-18},
+  {date:'2026-09-01',value:-17}
+ ]}}}}};
+ const options={metric:'profit',days:30,asOf:'2026-10-15T00:00:00Z'};
+ const baseline=buildForesightStudioModel(loss,options);
+ const upside=buildForesightStudioModel(loss,{...options,sensitivity:20});
+ assert.ok(baseline.scenario.baseline<0);
+ assert.ok(upside.scenario.simulated>baseline.scenario.baseline);
+});
