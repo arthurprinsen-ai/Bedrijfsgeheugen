@@ -11,12 +11,13 @@
   "prevention_rule": "Apply responsive first-fold styles to the generated V18 shell from one shared, cache-versioned stylesheet; keep one accessible mobile nav trigger, readable responsive type, an unobscured highlight and no timed overlay covering mobile CTAs. Guard changes with a site-shell lane test and protected CI.",
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-mobile-first-fold.test.mjs"
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
     ]
   },
   "test_evidence": {
     "paths": [
-      "tests/site-shell-mobile-first-fold.test.mjs"
+      "tests/site-shell-mobile-first-fold.test.mjs",
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
     ],
     "status": "Test source committed; protected CI and production visual readback pending."
   },
