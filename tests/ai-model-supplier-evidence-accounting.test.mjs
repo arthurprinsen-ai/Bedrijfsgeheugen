@@ -478,3 +478,23 @@ test('primary supplier audit source references match all 110 exact model sources
  assert.ok(nova.supplier_source_conflicts?.length,
   'Aligning primary AWS source must not erase the independent lifecycle conflict');
 });
+
+test('Nova Premier localized EOL sources stay conflicted until authenticated AWS modelLifecycle',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const model=catalog.models.find(m=>m.id==='amazon-nova-premier');
+ assert.ok(model);
+ const cross=model.supplier_audit?.cross_locale_eol_check_20261015;
+ assert.ok(cross,'Both official AWS locale observations must remain traceable');
+ assert.equal(cross.checked_on,'2026-10-15');
+ assert.match(cross.english_source,/^https:\/\/docs\.aws\.amazon\.com\//);
+ assert.match(cross.italian_source,/^https:\/\/docs\.aws\.amazon\.com\/it_it\//);
+ assert.match(cross.italian_observed,/Sep 14 2026/);
+ assert.match(cross.english_observed,/does not show/);
+ assert.equal(cross.account_region_attested,false);
+ assert.equal(cross.independent_supplier_accepted,false);
+ assert.equal(cross.automatic_recommendation_eligible,false);
+ assert.equal(cross.confidence,'CONFLICT_NOT_RESOLVED');
+ assert.equal(model.supplier_audit.automatic_recommendation_eligible,false);
+ assert.ok(model.supplier_source_conflicts?.length>0);
+ assert.notEqual(model.verification_evidence?.claim_scope,'full');
+});
