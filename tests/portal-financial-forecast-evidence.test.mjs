@@ -15,7 +15,12 @@ const base={
  historical_points:['2026-04','2026-05','2026-06','2026-07','2026-08','2026-09'].map((d,i)=>point(d,100+i*10)),
  forecast_points:[point('2026-10',170),point('2026-11',180)],
  lower_points:null,upper_points:null,
- backtest:{status:'passed',method:'walk-forward',holdout_count:3,mae:12,baseline_mae:14},
+ backtest:{status:'passed',method:'walk-forward',holdout_count:3,mae:6,baseline_mae:10,
+  holdout_points:[
+   {date:'2026-07',actual:130,predicted:124,baseline_predicted:120},
+   {date:'2026-08',actual:140,predicted:134,baseline_predicted:130},
+   {date:'2026-09',actual:150,predicted:144,baseline_predicted:140}
+  ]},
  independent_review:{prepared_by:'source-analyst',approved_by:'independent-reviewer',
   approval_evidence_ref:'restricted:approval/42',backtest_evidence_ref:'restricted:backtest/42',
   financial_source_evidence_ref:'restricted:finance/ledger/receipt-1'}
@@ -48,6 +53,28 @@ test('requires actual series and bounded backtest holdout, rejecting invalid num
  ];
  for(const row of cases)assert.equal(eligibleFinancialForecast(row,'tenant42'),false);
 });
+test('independent finance approval rejects unreplayable, altered or misdated backtests',()=>{
+ assert.equal(eligibleFinancialForecast(base,'tenant42'),true);
+ const valid=base.backtest;
+ const invalid=[
+  {...valid,holdout_points:undefined},
+  {...valid,holdout_points:[]},
+  {...valid,mae:0},
+  {...valid,baseline_mae:0},
+  {...valid,holdout_count:4},
+  {...valid,holdout_points:valid.holdout_points.slice(1)},
+  {...valid,holdout_points:valid.holdout_points.map((p,i)=>i===1?{...p,actual:141}:p)},
+  {...valid,holdout_points:valid.holdout_points.map((p,i)=>i===2?{...p,date:'2026-08'}:p)},
+  {...valid,holdout_points:valid.holdout_points.map((p,i)=>i===0?{...p,predicted:NaN}:p)},
+  {...valid,holdout_points:valid.holdout_points.map((p,i)=>i===0?{...p,baseline_predicted:115}:p)},
+ ];
+ for(const backtest of invalid)
+  assert.equal(eligibleFinancialForecast({...base,backtest},'tenant42'),false);
+ const tamperedHistory={...base,historical_points:base.historical_points.map((p,i)=>
+  i===4?{...p,value:p.value+1}:p)};
+ assert.equal(eligibleFinancialForecast(tamperedHistory,'tenant42'),false);
+});
+
 test('bands must match the same periods, include every forecast and enclose expected values',()=>{
  const low=[point('2026-10',150),point('2026-11',160)];
  const high=[point('2026-10',190),point('2026-11',210)];
