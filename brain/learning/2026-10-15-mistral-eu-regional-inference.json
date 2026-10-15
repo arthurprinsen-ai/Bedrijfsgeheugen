@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse|mistral-eu-inference|global-endpoint-route-confusion|20261015",
+  "compiler": {
+    "failure_class": "SECURITY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The provider route named mistral-api-eu was allowed to pair with a signed AUTO-region Mistral runtime. The adapter always addressed api.mistral.ai, which is the global endpoint and does not guarantee regional inference. This could misrepresent customer-requested data-sovereignty properties.",
+  "prevention_rule": "Require verified Mistral EU route to bind tenant profile computeRegion=EU and independently signed claim computeRegion=EU. Use api.eu.mistral.ai for region EU; route AUTO uses global only when no EU route is selected. Require account-specific EU processingRegion and residencyEvidenceId in server-side provisioning; fail closed otherwise. The model directory cannot assert an endpoint claim.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "path": "tests/brain-tenant-ai-inference-gateway-v1.test.mjs",
+    "required": "EU hostname proof, no global fallback, unsupported region denies before network, readback refused without regional provisioning",
+    "status": "PENDING_REQUIRED_CI"
+  },
+  "outcome": {
+    "security_guard": "code candidate awaiting protected CI",
+    "runtime_credential_assurance": "requires real provider readback; none invented"
+  }
+}
