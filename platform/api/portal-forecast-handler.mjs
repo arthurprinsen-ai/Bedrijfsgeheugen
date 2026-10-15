@@ -63,7 +63,7 @@ export function createPortalForecastHandler({getUser,getCanonical}={}){
   const projection=await getCanonical(tenantId);
   if(!projection)return json({forecasts:[],status:'NO_CANONICAL_FORECASTS'});
   const forecasts=verifiedForecasts(projection,tenantId);
-  return json({forecasts,status:forecasts.length?'OK':'NO_VALIDATED_FINANCIAL_FORECASTS'});
+  return json(forecasts.length?{tenantId,forecasts,status:'OK'}:{forecasts:[],status:'NO_VALIDATED_FINANCIAL_FORECASTS'});
  }catch{return json({error:'FORECAST_SOURCE_UNAVAILABLE'},503)}
  };
 }

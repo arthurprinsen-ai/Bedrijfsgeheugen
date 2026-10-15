@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildOwnerOperatingModel,ownerCategory,OWNER_AREAS} from '../portal-v2/owner-operating-model.js';
-import {renderOwnerOperatingHtml} from '../portal-v2/owner-operating-system.js';
+import {renderOwnerOperatingHtml,renderOwnerCanonicalDecisions} from '../portal-v2/owner-operating-system.js';
 
 const NOW=Date.parse('2026-10-15T12:00:00.000Z');
 const tenant='tenant-a';
@@ -69,4 +69,35 @@ test('all five owner areas are present; executable controls are explicit and esc
  assert.match(html,/data-owner-route="ai-modelkeuze"/);
  assert.doesNotMatch(html,/<img src=x onerror/);
  assert.match(html,/&lt;img src=x/);
+});
+
+test('reviewed financial readouts render provenance; unknown stays absent',()=>{
+ const financial={
+  revenue:{value:'€ 15.000',period:'2026-09',note:'Gevalideerde historische reeks · 2026-09',source:'erp',model:'v2',verifiedAt:'2026-10-14'},
+  cash:null,margin:null,records:1,status:'VALIDATED'
+ };
+ const html=renderOwnerOperatingHtml({}, {financial,now:NOW});
+ assert.match(html,/Omzet · laatste bronperiode/);
+ assert.match(html,/€ 15\.000/);
+ assert.match(html,/Gevalideerde historische reeks/);
+ assert.match(html,/Nog geen geverifieerde margeberekening/);
+ assert.doesNotMatch(html,/Kasprognose · eerste toekomstige periode/);
+});
+test('canonical actions only enable human approval for unblocked proposed decisions',()=>{
+ const runtime={decisions:{items:[
+  {id:'action:1',status:'PROPOSED',title:'Nieuwe offerte',owner:'sales'},
+  {id:'action:2',status:'PROPOSED',title:'Niet uitvoerbaar',blockedBy:'NO_CONSENT'},
+  {id:'action:3',status:'DONE',title:'Reeds afgehandeld'}
+ ]}};
+ const html=renderOwnerCanonicalDecisions(runtime);
+ assert.equal((html.match(/data-owner-command="APPROVE"/g)||[]).length,1);
+ assert.equal((html.match(/data-owner-command="REJECT"/g)||[]).length,1);
+ assert.match(html,/data-owner-expected-status="PROPOSED"/);
+ const bad=renderOwnerCanonicalDecisions({decisions:{items:[{id:'<svg onload=alert(1)>',status:'PROPOSED'}]}});
+ assert.doesNotMatch(bad,/<svg/);
+ assert.match(bad,/&lt;svg/);
+});
+test('five overview buttons retain distinct deep-link area identities',()=>{
+ const html=renderOwnerOperatingHtml({}, {compact:true,now:NOW});
+ for(const area of ['bedrijf','kansen','acties','adviseur','instellingen'])assert.match(html,new RegExp('data-owner-area="'+area+'"'));
 });
