@@ -30,5 +30,5 @@
     "test": "portal-v2/tests/foresight-tenant-evidence.test.mjs",
     "production": "Pending independent protected CI, exact deploy and authenticated readback"
   },
-  "status": "CANDIDATE_NOT_PRODUCTON_VERIFIED"
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED"
 }
