@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-14",
+  "obligation_id": "ai-model-supplier-receipts-sync-20261014",
+  "fingerprint": "powerhouse|ai-model-catalog|supplier-dual-receipt-drift|isolated-db-migration|20261014",
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The supplier verification table stores dated claim_evidence in both a column and nested catalog_record.verification_evidence; concurrent legitimate writers may update only one copy. The database migration was also placed in catalog PR #4368, violating its declared protected change scope.",
+  "prevention": "Use a private SECURITY INVOKER before-insert/update trigger to merge old/new receipts by exact JSON identity, fail if non-array receipts are supplied, write both copies atomically, and keep verification_status, independent approval and recommendation flags untouched. Keep migrations in a separate scoped PR with its own tests and release checks.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-supplier-receipts-migration.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-ai-model-supplier-receipts-migration.test.mjs"
+    ],
+    "github_change": "supabase/migrations/20261014193000_ai_model_supplier_receipts_keep_in_sync.sql",
+    "separate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4372",
+    "database_pre_deployment_readback": "Zero mismatched duplicate receipt columns observed at 2026-10-14 19:4x UTC. This is not evidence that the trigger is installed.",
+    "production_readback": "NOT_PROVEN",
+    "customer_contracts_verified": false,
+    "supplier_claims_auto_approved": false,
+    "release_eligible": false,
+    "classification_note": "Learning replay checks data-integrity invariants only. Independent security review, disposable PostgreSQL run and production canary are additional release prerequisites, not claimed completed."
+  },
+  "limitations": [
+    "Static SQL contract test does not substitute for a disposable Postgres integration migration test.",
+    "Migration must remain draft until security review, CI, protected merge and authorized database deployment.",
+    "Old and new source receipts remain source observations, not claim-level approvals."
+  ]
+}
