@@ -53,10 +53,18 @@ test('browser only fetches finance with authenticated tenant context and no retr
  let calls=0;
  const c=createOwnerFinancialClient({
   authHeadersProvider:async()=>({authorization:'Bearer sample',accept:'application/json'}),
-  fetchImpl:async(url,options)=>{calls++;assert.equal(url,'/api/portal-forecasts');assert.equal(options.cache,'no-store');assert.equal(options.credentials,'same-origin');assert.equal(options.headers.authorization,'Bearer sample');return {ok:true,json:async()=>({status:'OK',forecasts:[forecast('revenue')]})};}
+  fetchImpl:async(url,options)=>{calls++;assert.equal(url,'/api/portal-forecasts');assert.equal(options.cache,'no-store');assert.equal(options.credentials,'same-origin');assert.equal(options.headers.authorization,'Bearer sample');return {ok:true,json:async()=>({tenantId,status:'OK',forecasts:[forecast('revenue')]})};}
  });
  const out=await c.load(tenantId);
  assert.equal(calls,1);assert.equal(out.records,1);
  const forbidden=createOwnerFinancialClient({authHeadersProvider:async()=>({}),fetchImpl:async()=>{throw Error('should never fetch')}});
  await assert.rejects(()=>forbidden.load(tenantId),/AUTH_REQUIRED/);
+});
+
+test('tenant returned by authenticated forecast API is the authority, never a browser hint',async()=>{
+ const client=createOwnerFinancialClient({
+  authHeadersProvider:async()=>({authorization:'Bearer sample'}),
+  fetchImpl:async()=>({ok:true,json:async()=>({tenantId:'other',status:'OK',forecasts:[forecast('revenue',{tenantId:'other',validation:{status:'passed',tenantBound:true,tenantId:'other',verifiedAt:'2026-10-14T14:00:00Z'}})]})})
+ });
+ await assert.rejects(()=>client.load(tenantId),/TENANT_SCOPE_MISMATCH/);
 });
