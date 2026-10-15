@@ -12216,7 +12216,18 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "deprecated_alias_routing_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_model_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+          "supplier_release_notes_url": "https://ai.google.dev/gemini-api/docs/changelog",
+          "declared_deprecated": true,
+          "actual_api_request_target": "gemini-3.8-flash",
+          "source_claim": "Official Google model pages say deprecated aliases are automatically routed to successor models; do not claim they are distinct currently served model versions.",
+          "successor_customer_billing_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "official_paid_standard_pricing_review_20261014": {
         "official_source": "https://ai.google.dev/gemini-api/docs/pricing",
@@ -12637,7 +12648,18 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "deprecated_alias_routing_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_model_url": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+          "supplier_release_notes_url": "https://ai.google.dev/gemini-api/docs/changelog",
+          "declared_deprecated": true,
+          "actual_api_request_target": "gemini-3.6-flash",
+          "source_claim": "Official Google model pages say deprecated aliases are automatically routed to successor models; do not claim they are distinct currently served model versions.",
+          "successor_customer_billing_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "pricing_basis": {
         "currency": "USD",
@@ -23176,6 +23198,18 @@
           "automatic_recommendation_eligible": false,
           "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
           "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
+        },
+        "falcon_h1_license_price_evidence_20261015": {
+          "checked_on": "2026-10-15",
+          "supplier_model_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "classification": "EXACT_OFFICIAL_MODEL_CARD_LICENSE_REFERENCE_OBSERVED_ONLY",
+          "observed_value": "The publisher's exact model repository distributes self-hostable weights and identifies falcon-llm-license; no fixed first-party hosted API USD-per-token price is published in this model card. Commercial redistribution and hosted-service rights require interpreting the applicable Falcon LLM license version and deployment agreements. Absence of a published API tariff is not evidence of zero infrastructure cost or unconditional commercial use.",
+          "published_api_price_verified": false,
+          "customer_commercial_license_verified": false,
+          "customer_runtime_retention_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23522,6 +23556,18 @@
           "automatic_recommendation_eligible": false,
           "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
           "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
+        },
+        "falcon_h1_license_price_evidence_20261015": {
+          "checked_on": "2026-10-15",
+          "supplier_model_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "classification": "EXACT_OFFICIAL_MODEL_CARD_LICENSE_REFERENCE_OBSERVED_ONLY",
+          "observed_value": "The publisher's exact model repository distributes self-hostable weights and identifies falcon-llm-license; no fixed first-party hosted API USD-per-token price is published in this model card. Commercial redistribution and hosted-service rights require interpreting the applicable Falcon LLM license version and deployment agreements. Absence of a published API tariff is not evidence of zero infrastructure cost or unconditional commercial use.",
+          "published_api_price_verified": false,
+          "customer_commercial_license_verified": false,
+          "customer_runtime_retention_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23868,6 +23914,18 @@
           "automatic_recommendation_eligible": false,
           "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
           "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
+        },
+        "falcon_h1_license_price_evidence_20261015": {
+          "checked_on": "2026-10-15",
+          "supplier_model_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "classification": "EXACT_OFFICIAL_MODEL_CARD_LICENSE_REFERENCE_OBSERVED_ONLY",
+          "observed_value": "The publisher's exact model repository distributes self-hostable weights and identifies falcon-llm-license; no fixed first-party hosted API USD-per-token price is published in this model card. Commercial redistribution and hosted-service rights require interpreting the applicable Falcon LLM license version and deployment agreements. Absence of a published API tariff is not evidence of zero infrastructure cost or unconditional commercial use.",
+          "published_api_price_verified": false,
+          "customer_commercial_license_verified": false,
+          "customer_runtime_retention_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24215,6 +24273,18 @@
           "automatic_recommendation_eligible": false,
           "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
           "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
+        },
+        "falcon_h1_license_price_evidence_20261015": {
+          "checked_on": "2026-10-15",
+          "supplier_model_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "classification": "EXACT_OFFICIAL_MODEL_CARD_LICENSE_REFERENCE_OBSERVED_ONLY",
+          "observed_value": "The publisher's exact model repository distributes self-hostable weights and identifies falcon-llm-license; no fixed first-party hosted API USD-per-token price is published in this model card. Commercial redistribution and hosted-service rights require interpreting the applicable Falcon LLM license version and deployment agreements. Absence of a published API tariff is not evidence of zero infrastructure cost or unconditional commercial use.",
+          "published_api_price_verified": false,
+          "customer_commercial_license_verified": false,
+          "customer_runtime_retention_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24562,6 +24632,18 @@
           "automatic_recommendation_eligible": false,
           "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
           "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
+        },
+        "falcon_h1_license_price_evidence_20261015": {
+          "checked_on": "2026-10-15",
+          "supplier_model_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "classification": "EXACT_OFFICIAL_MODEL_CARD_LICENSE_REFERENCE_OBSERVED_ONLY",
+          "observed_value": "The publisher's exact model repository distributes self-hostable weights and identifies falcon-llm-license; no fixed first-party hosted API USD-per-token price is published in this model card. Commercial redistribution and hosted-service rights require interpreting the applicable Falcon LLM license version and deployment agreements. Absence of a published API tariff is not evidence of zero infrastructure cost or unconditional commercial use.",
+          "published_api_price_verified": false,
+          "customer_commercial_license_verified": false,
+          "customer_runtime_retention_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24909,6 +24991,18 @@
           "automatic_recommendation_eligible": false,
           "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
           "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
+        },
+        "falcon_h1_license_price_evidence_20261015": {
+          "checked_on": "2026-10-15",
+          "supplier_model_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "license_terms_url": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "classification": "EXACT_OFFICIAL_MODEL_CARD_LICENSE_REFERENCE_OBSERVED_ONLY",
+          "observed_value": "The publisher's exact model repository distributes self-hostable weights and identifies falcon-llm-license; no fixed first-party hosted API USD-per-token price is published in this model card. Commercial redistribution and hosted-service rights require interpreting the applicable Falcon LLM license version and deployment agreements. Absence of a published API tariff is not evidence of zero infrastructure cost or unconditional commercial use.",
+          "published_api_price_verified": false,
+          "customer_commercial_license_verified": false,
+          "customer_runtime_retention_verified": false,
+          "supplier_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "falcon_license_research_20261014": {
