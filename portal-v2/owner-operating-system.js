@@ -6,6 +6,7 @@ import {createOwnerFinancialClient} from './owner-financial-truth.js';
 import {createDecisionCommandClient} from './company-cockpit-ui.js';
 import {mapRuntimeProjection} from './runtime-evidence.js';
 import {buildCompanyCockpit} from './company-cockpit.js';
+import {buildOwnerVerifiedValueReport,renderOwnerValueReport} from './owner-verified-value.js';
 
 let pendingOwnerArea='bedrijf';
 
@@ -65,12 +66,12 @@ export function renderOwnerCanonicalDecisions(runtime=null,status='Nog niet opge
   </article>`).join(''):empty('Geen huidige besluiten teruggelezen uit de tenantgebonden Brain-projectie.')}
  </section>`;
 }
-function actionsPanel(m,runtime=null,decisionStatus='Nog niet opgehaald'){
+function actionsPanel(m,runtime=null,decisionStatus='Nog niet opgehaald',valueReport=null){
  return `<p class="owner-intro">Van signaal naar voorstel, bevoegd besluit, uitvoering, provider-readback en gerealiseerde waarde. Een voorstel is nooit automatisch een verzonden bericht of uitgevoerde wijziging.</p>
  <div class="owner-metrics">${metric('Voorstellen met bewijs',m.ready?m.counts.acties:'—','Nog niet gelijk aan uitgevoerd')}${metric('Goedkeuring nodig',m.ready?m.counts.besluiten:'—','Externe of materiële acties')}${metric('Bewezen uitkomsten',m.ready?m.counts.uitkomsten:'—','Met bronreferenties')}${metric('Automatisch uitgevoerd','—','Alleen met onafhankelijke provider-readback')}</div>
  <div class="owner-policy"><article><h3>1 · Binnen beleid</h3><p>Uitsluitend laag-risico interne handelingen die voorafgaande identiteit, rechten en beleidstoets passeren. Een classificatie is geen uitvoeringsbewijs.</p></article><article><h3>2 · Eerst akkoord</h3><p>Offertes, acquisitie, prijzen, contracten en klantcommunicatie worden voorbereid en pas na aantoonbare autorisatie aangeboden voor uitvoering.</p></article><article><h3>3 · Beschermd</h3><p>Juridische/financiële verplichtingen, personeelsbesluiten en vertrouwelijke informatie vereisen een bevoegde menselijke beslissing en gescheiden uitvoeringscontrole.</p></article></div>
  <section><h3>Actievoorstellen</h3>${m.actions.length?m.actions.slice(0,10).map(x=>`<article class="owner-fact"><div class="owner-fact-meta"><span>${x.ownerSafety.level==='goedkeuring'?'Akkoord nodig':x.ownerSafety.level==='binnen-beleid'?'Beleidstoets mogelijk':x.ownerSafety.level==='inzage'?'Alleen inzage':'Niet uitvoerbaar'}</span><span>${esc(categoryLabels[x.ownerCategory]||'Strategie')}</span></div><h4>${s(x.title||x.id)}</h4><p>${esc(text(x))}</p>${button('Open besluit en audittrail','actieve-acties')}</article>`).join(''):empty('Er zijn geen bewijsbare actievoorstellen. Er wordt niets automatisch uitgevoerd of als succesvol aangemerkt.')}</section>
- <section><h3>Gerealiseerde resultaten</h3>${m.outcomes.length?m.outcomes.slice(0,5).map(x=>card(x,'Outcome geverifieerd')).join(''):empty('Nog geen geregistreerde en geverifieerde besparing of extra omzet. Verwachtingen worden niet bij werkelijk resultaat opgeteld.')}</section>${renderOwnerCanonicalDecisions(runtime,decisionStatus)}${links('acties')}`;
+ <section><h3>Gerealiseerde resultaten</h3>${m.outcomes.length?m.outcomes.slice(0,5).map(x=>card(x,'Outcome geverifieerd')).join(''):empty('Nog geen geregistreerde en geverifieerde besparing of extra omzet. Verwachtingen worden niet bij werkelijk resultaat opgeteld.')}</section>${renderOwnerValueReport(valueReport)}${renderOwnerCanonicalDecisions(runtime,decisionStatus)}${links('acties')}`;
 }
 function advisorPanel(){
  return `<p class="owner-intro">Stel een vraag in gewone taal. De bestaande beveiligde vraagfunctie gebruikt uitsluitend de toegestane bedrijfscontext. Ontbrekende data of een niet-geautoriseerd model leidt tot een duidelijke blokkade, nooit een stille fallback.</p>
@@ -83,11 +84,11 @@ function settingsPanel(){
  return `<div class="owner-policy"><article><h3>Data & koppelingen</h3><p>Bekijk per bron status, eigenaar, actualiteit en toestemming. Zonder aansluiting geen verzonnen bedrijfsresultaten.</p></article><article><h3>Bevoegdheden</h3><p>Externe acties vereisen expliciete, herleidbare goedkeuring. Het portaal mag geen gebruikersrol of klantcontract veronderstellen.</p></article><article><h3>AI & soevereiniteit</h3><p>Modelkeuze is een aanvraag: activering vereist onafhankelijk geverifieerde provider, contract, klantrechten en datalocatie. Geen impliciete AI-dataoverdracht.</p></article></div>
  <h3>Beheer de bestaande instellingen</h3>${links('instellingen')}`;
 }
-export function renderOwnerOperatingHtml(state={}, {compact=false,selected='bedrijf',now=Date.now(),financial=null,financialStatus='',decisionRuntime=null,decisionStatus='Nog niet opgehaald'}={}){
+export function renderOwnerOperatingHtml(state={}, {compact=false,selected='bedrijf',now=Date.now(),financial=null,financialStatus='',decisionRuntime=null,decisionStatus='Nog niet opgehaald',valueReport=null}={}){
  const m=buildOwnerOperatingModel(state,{now});
  const status=m.ready?`${m.proof.verified} actuele brononderbouwde onderdelen · ${m.proof.stale} verouderd · ${m.proof.unavailable} zonder bewijs`:'Geen geauthenticeerde bedrijfsprojectie beschikbaar';
  if(compact)return `<div class="owner-heading"><div><span class="owner-eyebrow">POWERHOUSE · JOUW DIGITALE RECHTERHAND</span><h2>Jij onderneemt. Powerhouse helpt je vooruit.</h2><p>Wat vraagt jouw aandacht? Wat kan voorbereid worden? Wat is aantoonbaar afgerond?</p></div>${button('Open mijn bedrijfsbesturing','ondernemerscockpit')}</div><div class="owner-status" role="status">${esc(status)}</div><div class="owner-compact-grid">${OWNER_AREAS.map(a=>button(a.label,'ondernemerscockpit',a.id)).join('')}</div>${m.attention[0]?`<p class="owner-daily"><strong>Nu relevant:</strong> ${s(m.attention[0].title||m.attention[0].id)}</p>`:'<p class="owner-daily">Nog geen geverifieerde prioriteit. Begin bij je bedrijfsgegevens en koppelingen.</p>'}`;
- const bodies={bedrijf:companyPanel(m,financial,financialStatus),kansen:opportunitiesPanel(m),acties:actionsPanel(m,decisionRuntime,decisionStatus),adviseur:advisorPanel(),instellingen:settingsPanel()};
+ const bodies={bedrijf:companyPanel(m,financial,financialStatus),kansen:opportunitiesPanel(m),acties:actionsPanel(m,decisionRuntime,decisionStatus,valueReport),adviseur:advisorPanel(),instellingen:settingsPanel()};
  return `<div class="owner-heading"><div><span class="owner-eyebrow">BEDRIJFSGEHEUGEN · POWERHOUSE</span><h2>Mijn bedrijfsbesturing</h2><p>Meer omzet, betere marges, grip op uitvoering en minder handmatig werk — op basis van aantoonbaar beschikbare informatie.</p></div></div>
  <div class="owner-status" role="status">${esc(status)}</div>
  <div role="tablist" class="owner-tabs" aria-label="Mijn bedrijfsbesturing">${OWNER_AREAS.map(a=>`<button type="button" role="tab" id="owner-tab-${a.id}" aria-controls="owner-panel-${a.id}" aria-selected="${selected===a.id}" data-owner-tab="${a.id}">${esc(a.label)}</button>`).join('')}</div>
@@ -104,10 +105,10 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
  let host=root.querySelector(':scope > [data-owner-os]');
  if(!host){host=doc.createElement('section');host.dataset.ownerOs='v1';host.className='owner-os';host.setAttribute('aria-label','Powerhouse ondernemersbesturing');if(compact&&root.querySelector('.topbar'))root.querySelector('.topbar').after(host);else root.prepend(host);}
  host.dataset.ownerCompact=String(compact);
- let financial=null,financeStatus='Financiële gegevens nog niet ingelezen',decisionRuntime=null,decisionStatus='Klik op vernieuwen om actuele besluiten op te halen',decisionLoading=false,financeLoading=false;
+ let financial=null,financeStatus='Financiële gegevens nog niet ingelezen',decisionRuntime=null,valueReport=null,decisionStatus='Klik op vernieuwen om actuele besluiten op te halen',decisionLoading=false,financeLoading=false;
  const selected=OWNER_AREAS.some(a=>a.id===pendingOwnerArea)?pendingOwnerArea:'bedrijf';
  host.dataset.ownerSelected=selected;pendingOwnerArea='bedrijf';
- const refresh=()=>{if(!host.isConnected)return;host.innerHTML=renderOwnerOperatingHtml(state,{compact,selected:host.dataset.ownerSelected,financial,financialStatus:financeStatus,decisionRuntime,decisionStatus});};
+ const refresh=()=>{if(!host.isConnected)return;host.innerHTML=renderOwnerOperatingHtml(state,{compact,selected:host.dataset.ownerSelected,financial,financialStatus:financeStatus,decisionRuntime,decisionStatus,valueReport});};
  refresh();
  const authHeadersProvider=()=>stateClient?.authHeaders?.()||Promise.resolve({});
  const decisionClient=createDecisionCommandClient({fetchImpl,authHeadersProvider});
@@ -119,9 +120,10 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
    if(!headers?.authorization)throw new Error('AUTH_REQUIRED');
    const projection=await decisionClient.loadProjection();
    const expected=String(state?.tenant_id||state?.powerhouse?.tenant_id||'');
-   if(projection?.tenantId&&expected&&String(projection.tenantId)!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
-   decisionRuntime=mapRuntimeProjection(projection);decisionStatus='Teruggelezen uit de beveiligde Brain-besluitregistratie';
-  }catch(error){decisionRuntime=null;decisionStatus=`Niet beschikbaar (${String(error?.message||'ONBEKEND')}). Geen besluit uitgevoerd.`;}
+   if(!expected||String(projection?.tenantId||'')!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
+   decisionRuntime=mapRuntimeProjection(projection);
+   valueReport=buildOwnerVerifiedValueReport(projection,{expectedTenant:expected});decisionStatus='Teruggelezen uit de beveiligde Brain-besluitregistratie';
+  }catch(error){decisionRuntime=null;valueReport=null;decisionStatus=`Niet beschikbaar (${String(error?.message||'ONBEKEND')}). Geen besluit uitgevoerd.`;}
   finally{decisionLoading=false;refresh();}
  }
  if(!compact&&stateClient?.authHeaders&&!stateClient?.isDemo?.()&&['authenticated','empty'].includes(stateClient?.getSnapshot?.()?.mode)){
@@ -156,8 +158,9 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
     decisionLoading=true;commandButton.disabled=true;decisionStatus='Besluit indienen en autorisatie teruglezen…';
     void decisionClient.command({command,decisionId,expectedStatus}).then(({projection})=>{
       const expected=String(state?.tenant_id||state?.powerhouse?.tenant_id||'');
-      if(projection?.tenantId&&expected&&String(projection.tenantId)!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
+      if(!expected||String(projection?.tenantId||'')!==expected)throw new Error('TENANT_SCOPE_MISMATCH');
       decisionRuntime=mapRuntimeProjection(projection);
+      valueReport=buildOwnerVerifiedValueReport(projection,{expectedTenant:expected});
       const newItem=decisionRuntime?.decisions?.items?.find(item=>item.id===decisionId);
       decisionStatus=newItem&&newItem.status!==expectedStatus?
         `Besluit ${command==='APPROVE'?'goedgekeurd':'afgewezen'} en bijgewerkt in Brain (${newItem.status}). Geen externe verzending geclaimd.`:
