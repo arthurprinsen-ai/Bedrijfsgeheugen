@@ -25,6 +25,13 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/supabase-migration-repair-bridge/index.ts"
 
+# Independent reviewer; preserve currently deployed unauthenticated-JWT mode.
+# The publisher must receive an explicit PASS and exact final-text hash before sending.
+[functions.bg-pre-publish-review]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-pre-publish-review/index.ts"
+
 [functions.powerhouse-social-publisher]
 enabled = true
 verify_jwt = false
