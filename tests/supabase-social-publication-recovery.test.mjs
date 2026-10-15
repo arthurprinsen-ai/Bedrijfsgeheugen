@@ -2,6 +2,8 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { runInNewContext } from "node:vm";
+import { basename } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const runner = readFileSync("supabase/functions/social-recovery-runner/index.ts", "utf8");
 const workflow = readFileSync(".github/workflows/social-publication-recovery.yml", "utf8");
@@ -25,7 +27,9 @@ test("recovery is independently scheduled, not only manually dispatched", () => 
   assert.match(workflow, /\n  schedule:\n/);
   assert.match(workflow, /cron: '[^']+\* \* \*'/);
   assert.match(workflow, /social-recovery-runner/);
-  assert.match(workflow, /tests\/social-publication-recovery\.test\.mjs/);
+  const currentTestFile = `tests/${basename(fileURLToPath(import.meta.url))}`;
+  assert.ok(workflow.includes(`node --test ${currentTestFile}`),
+    `The scheduled recovery must execute its own regression test: ${currentTestFile}`);
   assert.match(workflow, /EVENT_NAME:.*github\.event_name/);
   assert.match(workflow, /\$\{EVENT_NAME\}.*push/);
 });
