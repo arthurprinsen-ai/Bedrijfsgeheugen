@@ -3,6 +3,7 @@ import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 import { nativePageContent } from './native-pages.js';
 import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
+import { mountOwnerOperatingSystem } from './owner-operating-system.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
 import { loadRuntimeEvidence } from './runtime-evidence.js';
 import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
@@ -29,6 +30,7 @@ import { mountAiModelChoice } from './modules/ai-model-choice.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
+  ondernemerscockpit:['Mijn bedrijfsbesturing','Jouw bedrijf, kansen, acties, adviseur en instellingen in één omgeving — met bronbewijs en heldere bevoegdheden.'],
   profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
   'sales-intelligence':['Sales Intelligence & behoefte','Zie wat de klant aantoonbaar wil bereiken, welk probleem en effect zijn bevestigd, welke vraag nu volgt en wanneer een aanbod past.'],
   'ai-modelkeuze':['Kies jouw AI-modellen','Alle 110 modellen vergelijken en als gewenste AI-route vastleggen, met data-soevereiniteit, leveranciersbewijs en EU AI Act-toepassingscontrole.'],
@@ -326,6 +328,7 @@ export function openPortalPage(pageId){
       }).catch(()=>{}); // Never claim that a missing provider/readback proves compliance.
     }
   }
+  else if(pageId==='ondernemerscockpit'){native.innerHTML='';mountOwnerOperatingSystem(native,{state:portalStateSnapshot()});}
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
