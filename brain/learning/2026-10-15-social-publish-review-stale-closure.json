@@ -14,13 +14,20 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-social-prepublish-retry.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-prepublish-retry.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-prepublish-retry.test.mjs"
     ]
   },
   "evidence": {
     "database_readback": "2026-10-15 POWERHOUSE daily state degraded, personal review_status 503, violations [], no delivery_ref; 0 published social count. 56 active writing rules. Latest 24 confidence-ranked rule from 2026-10-09, while 5 0.85-0.95 confidence active rules refreshed on 2026-10-15.",
     "identity_contract_readback": "Both channel-identity-hard-gate-v3 and arthur-personal-linkedin-identity-v4 VERIFIED, verified=true, enforcement=FAIL_CLOSED.",
     "provider_boundary": "No provider create or send proven; Gmail no sent Oct 14-15; SalesRobot trial expired, campaign PAUSED; company r_organization_admin 403; Instagram exact final media proof required.",
-    "release_gate": "Exact-head Required CI + CodeQL, protected merge and explicit deployment of bg-pre-publish-review AND powerhouse-social-publisher before rerunning original daily claim and verifying external provider ID."
+    "release_gate": "Exact-head Required CI + CodeQL, protected merge and explicit deployment of bg-pre-publish-review AND powerhouse-social-publisher before rerunning original daily claim and verifying external provider ID.",
+    "canonical_learning_gate": "Required historical replay, shadow and canary CI modes run the fail-closed source regression against immutable protected candidate; no live provider send is implied by those test modes."
   },
   "outcome": {
     "source_fixed_in_pr": true,
