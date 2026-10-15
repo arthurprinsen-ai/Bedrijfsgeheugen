@@ -68,10 +68,17 @@ export function buildForesightStudioModel(state={},options={}){
     sensitivity,kind:'WHAT_IF_NOT_PREDICTION'
   }:null;
   const count=metrics.filter(x=>x.forecast).length;
-  // The global Powerhouse forecast registry and platform heartbeat are not customer data.
-  // Only future independently authenticated, tenant-scoped projection may connect them.
+  // The authenticated brain-operating-loop projects operational observations per tenant.
+  // Never turn these events into a forecast, outcome or global Powerhouse health claim.
+  const runtime=state?.portal?.runtime;
+  const obs=runtime?.observability;
+  const age=Date.now()-Date.parse(obs?.updatedAt||'');
+  const hasTenantRuntime=obs?.source==='brain-operating-loop'&&Number.isFinite(age)&&age>=0&&age<86400000;
+  const eventCount=hasTenantRuntime?arr(obs?.events).length:0;
+  const actionCount=hasTenantRuntime?arr(runtime?.actions?.items).length:0;
+  const sourceCount=hasTenantRuntime?arr(runtime?.sources?.items).length:0;
   return {days,metrics,active,scenario,available:count,
-    intelligence:{brain:'Klantgebonden doelen en tijdreeksen',powerhouse:'Tenantgebonden voorspellingsfeed nog niet geverifieerd',heartbeat:'Tenantgebonden Heartbeat nog niet geverifieerd'},
+    intelligence:{brain:hasTenantRuntime?'Brein: '+eventCount+' recente runtime-observaties, '+actionCount+' geregistreerde acties':'Klantgebonden doelen en tijdreeksen',powerhouse:'Platformbrede Powerhouse-forecasts zijn niet automatisch tenantdata',heartbeat:hasTenantRuntime?'Brongezondheid: '+sourceCount+' onderdelen in geauthenticeerde Brein-projectie; geen garantie voor actuele Heartbeat-SLA':'Tenantgebonden Heartbeat nog niet geverifieerd'},
     truth:'No global Powerhouse/admin data, demo fixtures or synthetic KPIs are used.'};
 }
 const fmt=(value,unit)=>value===null||!Number.isFinite(Number(value))?'—':new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(value)+(unit?' '+unit:'');
