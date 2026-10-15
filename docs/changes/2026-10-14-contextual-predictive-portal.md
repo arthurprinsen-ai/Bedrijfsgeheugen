@@ -34,3 +34,10 @@ Supabase project `adhjwmvyoixzjtmiroln` bevat `powerhouse_forecasts`, `powerhous
 - De Edge-gateway vereist nu ook een geregistreerde bronbewijsreferentie en expliciete backtestmetingen, zonder het interne bronbewijs aan de browser te verstrekken.
 - Nieuwe en gewijzigde tests staan in `tests/portal-forecast-auth.test.mjs` en `tests/portal-financial-forecast-store.test.mjs`; een volledige succesvolle beschermde CI-run op de laatste commit is nog niet aangetoond.
 - Source state blijft **0 klantreeksen, 0 geverifieerde prognoses**; vendor-gate en productie-readback blijven onafhankelijk vereist. Vertrouw de `VERIFIED`-status niet zonder claimniveau-evidence.
+
+
+## Beschermde release-integratie en Supabase Preview-herstel — 15 oktober 2026
+
+De leverancierscatalogus is inmiddels via beschermde PR #4374 gemerged, met geslaagde Required en CodeQL, en een geslaagde Netlify-productie-readback op de catalogusrelease. De financiële portalimplementatie is met die hoofdversie geïntegreerd als een *nieuw* herstelvoorstel, zonder de leverancierstests te verwijderen. De oorspronkelijke PR #4369 had een langlopende GitHub-branch die niet aan een Supabase Preview Branch was gekoppeld: de verplichte providercheck gaf `skipped` en de release werd terecht geweigerd. PR #4388 gebruikt daarom een nieuwe releasebranch en moet zelf een provider-owned Supabase Preview op het exacte nieuwe commit-SHA bewijzen. Een overgenomen oude check of alleen geslaagde broncontracttests tellen nadrukkelijk niet als previewbewijs.
+
+De API accepteert maximaal 30 gevalideerde weergavereeksen na controles, waarbij de gateway een begrensde kandidatenpool uitleest. De financiële validator controleert minstens zes historische perioden, bronouderdom, onafhankelijke beoordelaars, holdout-replay en het verbod op toekomstige realisaties. De productietabel bevat bij de laatste controle nog geen goedgekeurde echte klantprognoses; de interface moet daarom expliciet geen geverifieerde financiële prognose tonen. Pas na groen providerbewijs, Required/CodeQL, beschermde merge en live tenant-isolatie-/deploy-readback kan deze aanvullende financiële release worden afgemeld.
