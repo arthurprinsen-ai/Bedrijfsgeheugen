@@ -202,7 +202,7 @@ function parseArtifactJson(raw:string){
   if(!validArtifactObject(parsed))throw new Error('COMPOSIO_ARTIFACT_SCHEMA_INVALID');
   return parsed;
 }
-async function callComposioArtifact(db:any,model:string,system:string,user:unknown,maxTokens=3200){
+async function callComposioArtifact(db:any,model:string,system:string,user:unknown,maxTokens=3200,allowTruncationRetry=true){
   const key=clean((await db.rpc('bg_geheim',{p_naam:'COMPOSIO_API_KEY'})).data);
   if(!key)throw new Error('COMPOSIO_GENERATION_KEY_UNAVAILABLE');
   const strictSystem=system+' Return ONLY one valid JSON object with exactly these string keys: title, body, cta, hook_type, focus_keyword, meta_description. No markdown or extra prose. Every factual statement and metadata value must be supported by the supplied user data; do not infer unspecified facts.';
@@ -219,7 +219,21 @@ async function callComposioArtifact(db:any,model:string,system:string,user:unkno
   if(!response.ok||body?.successful!==true)throw new Error('COMPOSIO_GENERATION_FAILED:'+response.status+':'+clean(body?.error||body?.message||body?.data?.message).slice(0,200));
   const raw=clean(body?.data?.choices?.[0]?.message?.content);
   if(!raw)throw new Error('COMPOSIO_GENERATION_EMPTY');
-  return parseArtifactJson(raw);
+  try {
+    return parseArtifactJson(raw);
+  } catch(error) {
+    const finishReason=clean(body?.data?.choices?.[0]?.finish_reason).toLowerCase();
+    const providerTruncation=finishReason==='length'
+      ? {status:'incomplete',incomplete_details:{reason:'max_output_tokens'}}
+      : {};
+    const reason=incompleteStructuredArtifactReason(providerTruncation,error);
+    // Retry only demonstrably truncated structured output, at most once.
+    // Invalid schema, rejected copy and ambiguous provider failures remain blocked.
+    if(!allowTruncationRetry||!reason)throw error;
+    const retryBudget=largerArtifactTokenBudget(maxTokens);
+    console.warn('COMPOSIO_ARTIFACT_OUTPUT_BOUNDED_RETRY',model,maxTokens,retryBudget,reason);
+    return callComposioArtifact(db,model,system,user,retryBudget,false);
+  }
 }
 function composioFallbackEligible(error:any){
   if(error instanceof AIProviderHttpError){
