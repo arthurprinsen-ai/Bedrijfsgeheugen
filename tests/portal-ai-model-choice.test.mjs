@@ -86,6 +86,6 @@ test('six highlighted models are present and map to the advertised portal respon
  }
  assert.match(src,/schemaVersion:2,models:draft\.models,assignments:draft\.assignments/);
  assert.match(src,/JSON\.stringify\(readback\?\.assignments\)/);
- assert.match(src,/policy:'eu-both'/);
+ assert.match(src,/value\.policy:'eu-both'/);
  assert.match(src,/review_only_not_activated/);
 });
