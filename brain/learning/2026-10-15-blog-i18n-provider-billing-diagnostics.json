@@ -1,7 +1,11 @@
 {
   "fingerprint": "powerhouse|daily-blog|english-static-translation|anthropic-credit-low|2026-10-15",
   "compiler": {
-    "failure_class": "BILLING_TERMINAL_PROVIDER_FAILURE_DURING_STATIC_I18N"
+    "failure_class": "BILLING_TERMINAL_PROVIDER_FAILURE_DURING_STATIC_I18N",
+    "scope": "CONTENT_TRANSLATION",
+    "security_sensitive": true,
+    "machine_enforceable": true,
+    "repeat_count": 5
   },
   "history": {
     "business_date": "2026-10-15",
@@ -23,5 +27,18 @@
   "root_cause": "Approved Anthropic provider credits exhausted; current batch bisection pointlessly reattempted permanent billing errors without exposing full missing cache-key set for review.",
   "prevention_rule": "When public blog translation cache is incomplete, output bounded exact source strings and stop on terminal provider billing errors. Never waive production cache validation or fabricate translated strings.",
   "rollout_state": "PR_REQUIRED_CI_AND_MERGE_PENDING",
-  "acceptance": "Production blog only counts after exact bilingual build, protected PR merge, Netlify live readback."
+  "acceptance": "Production blog only counts after exact bilingual build, protected PR merge, Netlify live readback.",
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-daily-blog-i18n-credit-diagnostics-20261015",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-i18n-credit-fail-fast.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-i18n-credit-fail-fast.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-i18n-credit-fail-fast.test.mjs"
+    ]
+  }
 }
