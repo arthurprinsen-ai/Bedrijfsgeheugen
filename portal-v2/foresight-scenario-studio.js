@@ -1,4 +1,5 @@
 import { buildGoalForecast, GOAL_METRICS } from '../brain/context/goal-forecast-engine.mjs';
+import {buildTenantForesightEvidence,renderTenantForesightEvidence} from './foresight-tenant-evidence.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const valueOf=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):null;
@@ -136,12 +137,14 @@ function markup(model){
 }
 export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',openPage}={}){
   if(!host?.appendChild)return null;
-  host.querySelector?.('[data-pfs-studio]')?.remove();
+  host.querySelectorAll?.('[data-pfs-host]').forEach(node=>node.remove());
   const selected={metric:'',days:90,sensitivity:0,asOf:new Date().toISOString().slice(0,10)+'T00:00:00Z'};
-  const section=(host.ownerDocument||document).createElement('div');
+  let intelligence=null,sourceStatus='loading';
+  const section=(host.ownerDocument||document).createElement('div');section.dataset.pfsHost='true';
   const draw=()=>{
     const model=buildForesightStudioModel(state,selected);
-    section.innerHTML=markup(model);
+    const evidence=intelligence?buildTenantForesightEvidence(intelligence,{metric:model.active.id}):null;
+    section.innerHTML=markup(model)+renderTenantForesightEvidence(evidence,{status:sourceStatus});
     section.querySelector('[data-pfs-metric]')?.addEventListener('change',event=>{selected.metric=event.target.value;selected.sensitivity=0;draw();});
     section.querySelector('[data-pfs-days]')?.addEventListener('change',event=>{selected.days=Number(event.target.value);draw();});
     section.querySelector('[data-pfs-sensitivity]')?.addEventListener('input',event=>{selected.sensitivity=Number(event.target.value);draw();});
@@ -149,5 +152,9 @@ export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',o
     section.querySelector('[data-pfs-page]')?.addEventListener('click',event=>openPage?.(event.currentTarget.dataset.pfsPage));
   };
   draw();host.appendChild(section);
+  Promise.resolve().then(()=>import('./modules/entrepreneur-intelligence.js'))
+    .then(mod=>mod.loadEntrepreneurData())
+    .then(packet=>{if(!section.isConnected)return;intelligence=packet;sourceStatus='ready';draw();})
+    .catch(()=>{if(!section.isConnected)return;sourceStatus='unavailable';draw();});
   return section;
 }
