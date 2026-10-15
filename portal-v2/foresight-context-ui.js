@@ -1,5 +1,6 @@
 
 import {buildBusinessContext} from '../brain/context/business-context-engine.mjs';
+import {mountScenarioWorkbench} from './scenario-workbench.js';
 import {contextualCardsForPage,toRoadmapProposal,inventoryPortalCustomerFields,CONTEXTUAL_ACTION_PAGES} from './contextual-action-cards.js';
 
 const CONTEXT_PAGES=new Set(['bedrijfssituatie','cijfers-maatstaven','businesscase','waarde-financiering','branche-markt','roadmap','actieve-acties','due-diligence','exit','outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center',...CONTEXTUAL_ACTION_PAGES]);
@@ -80,7 +81,7 @@ function selfImprovementPanel(s={}){
 }
 function ensureStyles(doc=document){
   if(!doc||doc.querySelector('link[data-foresight-context-ui]'))return;
-  const link=doc.createElement('link');link.rel='stylesheet';link.href='./foresight-context.css';link.dataset.foresightContextUi='true';doc.head.appendChild(link);
+  const link=doc.createElement('link');link.rel='stylesheet';link.href='./foresight-context.css';link.dataset.foresightContextUi='true';doc.head.appendChild(link);const scenarioStyle=doc.createElement('link');scenarioStyle.rel='stylesheet';scenarioStyle.href='./scenario-workbench.css';scenarioStyle.dataset.scenarioWorkbenchStyle='true';doc.head.appendChild(scenarioStyle);
 }
 function contextModel(state={}){try{return buildBusinessContext(state||{});}catch{return null;}}
 export function buildContextualForesightModel(pageId,state={},quality=null,{overview=false}={}){
@@ -103,10 +104,10 @@ function sectionMarkup({pageId,state,quality,overview=false}={}){
   const showScenario=model.showScenario;
   const predictionCards=forecasts.slice(0,overview?3:4).map(forecastCard).join('');
   const scenarioCards=showScenario?scenarios.slice(0,3).map(scenarioCard).join(''):'';
-  if(!predictionCards&&!scenarioCards&&!showQuality)return '';
+  // The workbench is useful even when no customer forecast has enough evidence; never hide the missing-data explanation.
   return '<section class="fsv-context" data-foresight-context="true" data-page="'+esc(pageId||'overzicht')+'">'+
     '<div class="fsv-head"><div><span class="fsv-kicker">Powerhouse Foresight</span><h3>'+(overview?'Wat zien we aankomen?':'Vooruitblik in deze context')+'</h3><p>Waarschijnlijkheden en scenario’s naast de actuele bedrijfscontext — met onzekerheid zichtbaar, nooit als zekerheid.</p></div><span class="fsv-live">Predict → Act → Learn</span></div>'+
-    (predictionCards?'<div class="fsv-grid">'+predictionCards+'</div>':'<div class="fsv-empty"><b>Nog geen onderbouwde bedrijfsforecast.</b><span>Leg doelen, actuele waarden en minimaal drie historiepunten vast; Powerhouse vult hier geen voorbeeldvoorspellingen in.</span></div>')+
+    '<div data-sw-host="true"></div>'+ (predictionCards?'<div class="fsv-grid">'+predictionCards+'</div>':'<div class="fsv-empty"><b>Nog geen onderbouwde bedrijfsforecast.</b><span>Leg doelen, actuele waarden en minimaal drie historiepunten vast; Powerhouse vult hier geen voorbeeldvoorspellingen in.</span></div>')+
     (scenarioCards?'<div class="fsv-scenarios">'+scenarioCards+'</div>':'')+
     (showQuality&&quality?qualityPanel(quality)+selfImprovementPanel(quality.self_improvement):'')+
     '</section>';
@@ -190,7 +191,7 @@ export async function mountContextualForesight(host,{pageId,state={},openPage,fe
   const html=sectionMarkup({pageId,state,quality});
   if(!html)return host.querySelector?.('[data-contextual-impact-cards]')||null;
   const holder=(host.ownerDocument||document).createElement('div');holder.innerHTML=html;
-  const section=holder.firstElementChild;host.appendChild(section);bind(section,openPage);return section;
+  const section=holder.firstElementChild;host.appendChild(section);bind(section,openPage);mountScenarioWorkbench(section.querySelector('[data-sw-host]'),{state,context:contextModel(state),openPage});return section;
 }
 export async function mountOverviewForesight(root,{state={},openPage,fetchImpl=globalThis.fetch}={}){
   const main=root?.querySelector?.('.main');if(!main)return null;
@@ -206,6 +207,6 @@ export async function mountOverviewForesight(root,{state={},openPage,fetchImpl=g
   const section=holder.firstElementChild;if(!section)return null;
   const anchor=main.querySelector('[data-business-journey-overview]')||main.querySelector('#companyDecisionCockpit')||main.querySelector('.dashboard');
   if(anchor?.parentNode===main)anchor.after(section);else main.appendChild(section);
-  bind(section,openPage);return section;
+  bind(section,openPage);mountScenarioWorkbench(section.querySelector('[data-sw-host]'),{state,context:contextModel(state),openPage});return section;
 }
 export const FORESIGHT_CONTEXT_PAGES=Object.freeze([...CONTEXT_PAGES]);
