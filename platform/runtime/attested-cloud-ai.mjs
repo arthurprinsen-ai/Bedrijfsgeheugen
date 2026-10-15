@@ -69,10 +69,14 @@ export function createVerifiedCloudAdapters({fetchFn,config,now=Date.now()}={}){
  if(config.MISTRAL_API){
   const c=config.MISTRAL_API;
   registry.MISTRAL_API=async({route,request})=>{
+   // Mistral's global API does not guarantee regional inference. The EU route
+   // must use the EU-regional hostname, authorized by a separately attested
+   // region-specific tenant profile and allowlisted endpoint proof.
    if(!c.apiKey||c.endpointId!==route.endpointId||!validModelId(route.modelId)
-      ||route.region!=='AUTO')
+      ||!['AUTO','EU'].includes(route.region))
     reject('MISTRAL_RUNTIME_NOT_PROVISIONED');
-   const response=await fetchFn('https://api.mistral.ai/v1/chat/completions',{
+   const regionalHost=route.region==='EU'?'https://api.eu.mistral.ai':'https://api.mistral.ai';
+   const response=await fetchFn(regionalHost+'/v1/chat/completions',{
     method:'POST',signal:AbortSignal.timeout(12_000),headers:{authorization:'Bearer '+c.apiKey,'content-type':'application/json'},
     body:JSON.stringify({model:route.modelId,messages:request.messages,max_tokens:request.maxTokens,temperature:0})
    });
