@@ -23011,6 +23011,25 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_scope_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "MODEL_REPOSITORY_LICENSE_LABEL_OBSERVED_H1_LEGAL_SCOPE_NOT_AUTHENTICATED",
+          "model_id": "falcon-h1-0.5b-instruct",
+          "model_repository_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "model_card_locator": "Repository header > License: falcon-llm-license; Usage > self-host Transformers",
+          "official_license_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "license_page_locator": "Retrieved public TII terms page contains older Falcon 2 11B and 180B terms; no explicit Falcon-H1 section located",
+          "observed": "This official tiiuae model repository labels the model falcon-llm-license and provides local/self-host Transformers inference. Linked TII terms page does not establish model-specific H1 hosting rights; do not apply older model license clauses to H1 by assumption.",
+          "not_verified": [
+            "Falcon-H1-specific operative license grant",
+            "third-party hosted inference or commercial redistribution rights",
+            "vendor-hosted per-token API tariff",
+            "customer-specific deployment cost and data governance"
+          ],
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false,
+          "customer_entitlement_attested": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23319,6 +23338,25 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_scope_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "MODEL_REPOSITORY_LICENSE_LABEL_OBSERVED_H1_LEGAL_SCOPE_NOT_AUTHENTICATED",
+          "model_id": "falcon-h1-1.5b-instruct",
+          "model_repository_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "model_card_locator": "Repository header > License: falcon-llm-license; Usage > self-host Transformers",
+          "official_license_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "license_page_locator": "Retrieved public TII terms page contains older Falcon 2 11B and 180B terms; no explicit Falcon-H1 section located",
+          "observed": "This official tiiuae model repository labels the model falcon-llm-license and provides local/self-host Transformers inference. Linked TII terms page does not establish model-specific H1 hosting rights; do not apply older model license clauses to H1 by assumption.",
+          "not_verified": [
+            "Falcon-H1-specific operative license grant",
+            "third-party hosted inference or commercial redistribution rights",
+            "vendor-hosted per-token API tariff",
+            "customer-specific deployment cost and data governance"
+          ],
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false,
+          "customer_entitlement_attested": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23627,6 +23665,25 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_scope_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "MODEL_REPOSITORY_LICENSE_LABEL_OBSERVED_H1_LEGAL_SCOPE_NOT_AUTHENTICATED",
+          "model_id": "falcon-h1-3b-instruct",
+          "model_repository_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "model_card_locator": "Repository header > License: falcon-llm-license; Usage > self-host Transformers",
+          "official_license_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "license_page_locator": "Retrieved public TII terms page contains older Falcon 2 11B and 180B terms; no explicit Falcon-H1 section located",
+          "observed": "This official tiiuae model repository labels the model falcon-llm-license and provides local/self-host Transformers inference. Linked TII terms page does not establish model-specific H1 hosting rights; do not apply older model license clauses to H1 by assumption.",
+          "not_verified": [
+            "Falcon-H1-specific operative license grant",
+            "third-party hosted inference or commercial redistribution rights",
+            "vendor-hosted per-token API tariff",
+            "customer-specific deployment cost and data governance"
+          ],
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false,
+          "customer_entitlement_attested": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23936,6 +23993,25 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_scope_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "MODEL_REPOSITORY_LICENSE_LABEL_OBSERVED_H1_LEGAL_SCOPE_NOT_AUTHENTICATED",
+          "model_id": "falcon-h1-7b-instruct",
+          "model_repository_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "model_card_locator": "Repository header > License: falcon-llm-license; Usage > self-host Transformers",
+          "official_license_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "license_page_locator": "Retrieved public TII terms page contains older Falcon 2 11B and 180B terms; no explicit Falcon-H1 section located",
+          "observed": "This official tiiuae model repository labels the model falcon-llm-license and provides local/self-host Transformers inference. Linked TII terms page does not establish model-specific H1 hosting rights; do not apply older model license clauses to H1 by assumption.",
+          "not_verified": [
+            "Falcon-H1-specific operative license grant",
+            "third-party hosted inference or commercial redistribution rights",
+            "vendor-hosted per-token API tariff",
+            "customer-specific deployment cost and data governance"
+          ],
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false,
+          "customer_entitlement_attested": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24245,6 +24321,25 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_scope_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "MODEL_REPOSITORY_LICENSE_LABEL_OBSERVED_H1_LEGAL_SCOPE_NOT_AUTHENTICATED",
+          "model_id": "falcon-h1-34b-instruct",
+          "model_repository_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "model_card_locator": "Repository header > License: falcon-llm-license; Usage > self-host Transformers",
+          "official_license_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "license_page_locator": "Retrieved public TII terms page contains older Falcon 2 11B and 180B terms; no explicit Falcon-H1 section located",
+          "observed": "This official tiiuae model repository labels the model falcon-llm-license and provides local/self-host Transformers inference. Linked TII terms page does not establish model-specific H1 hosting rights; do not apply older model license clauses to H1 by assumption.",
+          "not_verified": [
+            "Falcon-H1-specific operative license grant",
+            "third-party hosted inference or commercial redistribution rights",
+            "vendor-hosted per-token API tariff",
+            "customer-specific deployment cost and data governance"
+          ],
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false,
+          "customer_entitlement_attested": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24554,6 +24649,25 @@
           "customer_runtime_attested": false,
           "commercial_tariff_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_scope_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "MODEL_REPOSITORY_LICENSE_LABEL_OBSERVED_H1_LEGAL_SCOPE_NOT_AUTHENTICATED",
+          "model_id": "falcon-h1r-7b",
+          "model_repository_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "model_card_locator": "Repository header > License: falcon-llm-license; Usage > self-host Transformers",
+          "official_license_link": "https://falconllm.tii.ae/falcon-terms-and-conditions.html",
+          "license_page_locator": "Retrieved public TII terms page contains older Falcon 2 11B and 180B terms; no explicit Falcon-H1 section located",
+          "observed": "This official tiiuae model repository labels the model falcon-llm-license and provides local/self-host Transformers inference. Linked TII terms page does not establish model-specific H1 hosting rights; do not apply older model license clauses to H1 by assumption.",
+          "not_verified": [
+            "Falcon-H1-specific operative license grant",
+            "third-party hosted inference or commercial redistribution rights",
+            "vendor-hosted per-token API tariff",
+            "customer-specific deployment cost and data governance"
+          ],
+          "independent_supplier_full_verification": false,
+          "automatic_recommendation_eligible": false,
+          "customer_entitlement_attested": false
         }
       },
       "falcon_license_research_20261014": {
