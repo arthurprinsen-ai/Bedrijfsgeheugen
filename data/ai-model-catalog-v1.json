@@ -5191,7 +5191,34 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_pricing_source_crosscheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "OFFICIAL_PUBLIC_PRODUCT_SPECIFIC_VAULT_PRICE_NOT_CUSTOMER_TARIFF",
+          "sources": [
+            {
+              "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+              "locator": "Generative models > Command A+ > L USD 17.50/hour; XL USD 32.50/hour"
+            },
+            {
+              "url": "https://docs.cohere.com/v1/docs/command-a-plus",
+              "locator": "Pricing > API keys free up to rate limits; Model Vault production"
+            },
+            {
+              "url": "https://cohere.com/pricing",
+              "locator": "Production key billing and Model Vault instance-based pricing; no customer quote"
+            }
+          ],
+          "observed": "A+ published Standard Vault L USD17.50/instance-hour, XL USD32.50/instance-hour; provider says public API free until rate limits. Do not misrepresent Vault instance rate as API token price or a signed customer invoice.",
+          "not_verified": [
+            "customer Vault entitlement",
+            "executed billing plan and term",
+            "model-specific tenant retention and residency",
+            "non-Vault commercial pricing"
+          ],
+          "verified_for_auto_recommendation": false,
+          "independent_supplier_full_acceptance": false
+        }
       },
       "provider_api_id": "command-a-plus-05-2026",
       "catalog_alias": "command-a-plus",
@@ -5729,7 +5756,30 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_pricing_source_crosscheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "OFFICIAL_PUBLIC_VAULT_SKU_AVAILABILITY_NOT_RECONCILED_WITH_CORPORATE_PRICE_LIST",
+          "sources": [
+            {
+              "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+              "locator": "Embed 4 > Small USD4/hour USD2500/month; Medium USD5/hour USD3250/month"
+            },
+            {
+              "url": "https://cohere.com/pricing",
+              "locator": "Current Model Vault pricing table lists Embed 5, not Embed 4"
+            }
+          ],
+          "observed": "Official Vault documentation still lists Embed 4 Standard Vault instance prices. Current general Cohere price table lists Embed 5 and not Embed 4. Absence from the general page does not prove deprecation, availability, entitlement or a current customer rate.",
+          "not_verified": [
+            "current Embed 4 Standard Vault purchasability",
+            "pay-as-you-go Embed 4 API token rate",
+            "executed commercial terms",
+            "model-specific tenant governance"
+          ],
+          "verified_for_auto_recommendation": false,
+          "independent_supplier_full_acceptance": false
+        }
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -5977,7 +6027,33 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_pricing_source_crosscheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "OFFICIAL_PUBLIC_VAULT_INSTANCE_RATE_CORROBORATED_API_SEARCH_RATE_UNVERIFIED",
+          "sources": [
+            {
+              "url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+              "locator": "Rerank 4 Pro > Medium USD5/hour USD3250/month; Large USD10/hour USD6500/month"
+            },
+            {
+              "url": "https://cohere.com/pricing",
+              "locator": "Model Vault > Rerank 4 Pro Medium USD5/hour, Large USD10/hour"
+            },
+            {
+              "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+              "locator": "Rerank prices measured in searches distinct from Embed token metering"
+            }
+          ],
+          "observed": "Both current corporate and Standard Vault pages confirm Rerank 4 Pro per-instance Medium/Large rates. This does not constitute a public per-search API tariff; these pricing units must never be converted to USD/M tokens.",
+          "not_verified": [
+            "pay-as-you-go Rerank 4 Pro API cost per search",
+            "customer Model Vault entitlement",
+            "tenant data-processing settings"
+          ],
+          "verified_for_auto_recommendation": false,
+          "independent_supplier_full_acceptance": false
+        }
       },
       "vault_pricing_research_20261014": {
         "source": "https://docs.cohere.com/docs/model-vault/standard/pricing",
@@ -19112,7 +19188,33 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_pricing_source_crosscheck_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "OFFICIAL_BILLING_BASIS_CONFIRMED_NUMERIC_RATE_NOT_PUBLICLY_ESTABLISHED",
+          "sources": [
+            {
+              "url": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+              "locator": "How Are Costs Calculated > Embedding models charged per embedded tokens"
+            },
+            {
+              "url": "https://cohere.com/pricing",
+              "locator": "Current Model Vault table contains no v3 multilingual API rate"
+            },
+            {
+              "url": "https://docs.cohere.com/v2/changelog",
+              "locator": "Apr 4 2026 Embed v2 retirement names embed-multilingual-v3.0 as replacement"
+            }
+          ],
+          "observed": "Official pricing guide establishes embedded-token billing basis. Current general public price page does not establish an exact USD per-token rate for embed-multilingual-v3.0; provider changelog identifies model as successor to retired v2. No numeric rate has been assigned.",
+          "not_verified": [
+            "official current exact USD API rate",
+            "customer invoice or negotiated discount",
+            "model-specific tenant governance"
+          ],
+          "verified_for_auto_recommendation": false,
+          "independent_supplier_full_acceptance": false
+        }
       },
       "embedding_dimensions": 1024,
       "provider_api_id": "embed-multilingual-v3.0"
