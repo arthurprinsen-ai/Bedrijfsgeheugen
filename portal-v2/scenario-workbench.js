@@ -33,6 +33,35 @@ function hasEvidence(value){
   if (!value || typeof value!=='object') return false;
   return Object.keys(value).length>0;
 }
+// Leading indicators are observed facts from this customer's authenticated portal snapshot.
+// They inform the scenario review; they do not silently alter numeric forecasts.
+const indicatorSpecs=[
+ {path:'portal.brain.signals',source:'Brein',domain:'market'},
+ {path:'portal.brain.decisions',source:'Brein-besluit',domain:'impact'},
+ {path:'portal.brain.outcomes',source:'Brein-uitkomst',domain:'impact'},
+ {path:'portal.heartbeat.observations',source:'Heartbeat',domain:'technology'},
+ {path:'portal.heartbeat.metrics',source:'Heartbeat',domain:'operations'},
+ {path:'portal.signals',source:'Portaalsignaal',domain:'market'},
+ {path:'portal.external_signals',source:'Marktsignaal',domain:'market'},
+ {path:'portal.actions',source:'Uitvoering',domain:'operations'},
+ {path:'portal.outcomes',source:'Gerealiseerde uitkomst',domain:'impact'},
+ {path:'portal.knowledge.items',source:'Kennis',domain:'people'},
+ {path:'portal.customer.metrics',source:'Klantindicator',domain:'commercial'},
+ {path:'portal.sales.metrics',source:'Commercie',domain:'commercial'}
+];
+export function collectTenantIndicators(state={}){
+ return indicatorSpecs.flatMap(spec=>arr(at(state,spec.path)).slice(-12).flatMap(item=>{
+  if(!item||typeof item!=='object'||Array.isArray(item))return [];
+  const title=String(item.title||item.label||item.name||item.onderdeel||item.type||'').trim();
+  if(!title)return [];
+  const atTime=String(item.observed_at||item.observedAt||item.created_at||item.updated_at||item.date||'');
+  const status=String(item.status||item.state||item.severity||'Gemeten');
+  const evidence=String(item.source_evidence_ref||item.evidence_ref||item.source_ref||'');
+  return [{title:title.slice(0,160),source:spec.source,domain:spec.domain,status:status.slice(0,48),
+   date:Number.isFinite(Date.parse(atTime))?atTime:null,evidence:evidence.slice(0,120)}];
+ })).slice(-30);
+}
+
 const controls = new WeakMap();
 function stateFor(host){if(!controls.has(host))controls.set(host,{domain:'all',goal:'auto',scenario:'baseline',intensity:100});return controls.get(host);}
 function historyFor(state,forecast) {
@@ -63,7 +92,7 @@ export function buildScenarioWorkbenchModel(state={},context={}){
   });
   const coverage=sources.map(s=>({id:s.id,label:s.label,paths:s.paths.filter(p=>hasEvidence(at(state,p)))}));
   const domains=WORKBENCH_DOMAINS.map(d=>({...d,goalCount:goals.filter(g=>d.goals.includes(g.id)).length,readyCount:goals.filter(g=>d.goals.includes(g.id)&&g.expected!==null).length}));
-  return {goals,domains,coverage,availableSources:coverage.filter(x=>x.paths.length).length};
+  return {goals,domains,coverage,indicators:collectTenantIndicators(state),availableSources:coverage.filter(x=>x.paths.length).length};
 }
 function scenarioFactor(mode, intensity){return mode==='baseline'?0:mode==='cautious'?0.5:mode==='ambitious'?1.25:Math.max(0,Math.min(1.5,Number(intensity)||0))/1;}
 export function calculateScenario(goal,mode='baseline',intensity=1){
@@ -103,6 +132,15 @@ function sourceCoverage(model){
   '<div><b>'+esc(s.label)+'</b><small>'+ (s.paths.length?'Aangetroffen: '+esc(s.paths.join(', ')):'Nog geen klantgebonden gegevens aangetroffen')+'</small></div>').join('')+
  '</div><p>Alleen gegevens uit de geauthenticeerde klantcontext. Globale Brein-/Heartbeat-platformtelemetrie is geen bewijs van klantprestaties.</p></details>';
 }
+function indicatorPanel(model,domain){
+ const rows=model.indicators.filter(x=>!domain||x.domain===domain.id).slice(-8).reverse();
+ return '<div class="sw-indicators"><h5>Leading indicators uit Brein, Heartbeat en bedrijfsdata</h5>'+
+  (rows.length?'<div class="sw-indicator-list">'+rows.map(x=>
+   '<article><span><b>'+esc(x.title)+'</b><small>'+esc(x.source)+' · '+esc(x.date?.slice(0,10)||'Geen peildatum')+'</small></span><span><strong>'+esc(x.status)+'</strong><small>'+esc(x.evidence?'Bronreferentie '+x.evidence:'Brondocument niet gekoppeld')+'</small></span></article>').join('')+'</div>':
+   '<p>Nog geen klantgebonden waarnemingen in dit domein. Er wordt geen platformtelemetrie als klantfeit gebruikt.</p>')+
+  '<p>Waarnemingen zijn contextsignalen, geen bevestigde causale voorspellers. Actualiteit en impact worden afzonderlijk beoordeeld.</p></div>';
+}
+
 function render(host,model,opts){
  const domain=model.domains.find(d=>d.id===opts.domain);
  const visibleGoals=domain?model.goals.filter(g=>domain.goals.includes(g.id)):model.goals;
@@ -132,7 +170,7 @@ function render(host,model,opts){
   '<div class="sw-links"><button type="button" data-sw-page="bedrijfssituatie">Doelen & context →</button><button type="button" data-sw-page="roadmap">Acties & roadmap →</button><button type="button" data-sw-page="outcomes-evidence">Uitkomsten & bewijs →</button><button type="button" data-sw-page="brain-verwerking">Powerhouse Brein →</button></div></div></div>';
  }
  host.innerHTML='<section class="sw-workbench" aria-label="Powerhouse scenario-werkbank"><header class="sw-header"><div><span class="sw-kicker">POWERHOUSE · BREIN + HEARTBEAT + FORECASTING</span><h3>Wat gebeurt er als we anders kiezen?</h3><p>Verken je bedrijf per domein, vergelijk scenario’s en herleid elke conclusie naar historische metingen, aannames en acties.</p></div><span class="sw-label">Predict → Decide → Act → Learn</span></header>'+
-  domainRows+controlRows+details+sourceCoverage(model)+
+  domainRows+controlRows+details+indicatorPanel(model,domain)+sourceCoverage(model)+
   '<p class="sw-caveat">Een rekenkundig wat-als-scenario is geen bewezen causale verandering. Onbevestigde klantdata en globale platformsignalen leveren nooit automatisch een bedrijfsforecast op.</p></section>';
 }
 export function mountScenarioWorkbench(host,{state={},context={},openPage}={}){
