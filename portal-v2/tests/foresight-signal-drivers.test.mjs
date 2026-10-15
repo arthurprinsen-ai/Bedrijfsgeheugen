@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {selectTenantForesightSignals} from '../foresight-signal-drivers.js';
+import {buildForesightStudioModel} from '../foresight-scenario-studio.js';
 
 const observedAt='2026-10-14T09:00:00Z',now=Date.parse('2026-10-15T12:00:00Z');
 const base=(signals,patch={})=>({
@@ -55,4 +56,22 @@ test('exposes only at most eight bounded descriptors with no tenant id',()=>{
  assert.equal(result.total,20);
  assert.equal(result.items.length,8);
  assert.equal(Object.hasOwn(result.items[0],'tenantId'),false);
+});
+
+test('positive improvement reduces lower-is-better risk and manual hours (not a reversed scenario)',()=>{
+  const history=[
+    {date:'2026-07-01',value:100},{date:'2026-08-01',value:95},
+    {date:'2026-09-01',value:90},{date:'2026-10-01',value:85}
+  ];
+  const state={portal:{business_context:{goal_targets:{
+    automate:{history},resilience:{history}
+  }}}};
+  for(const metric of ['automate','resilience']){
+    const best=buildForesightStudioModel(state,{metric,sensitivity:10,asOf:'2026-10-15T00:00:00Z'});
+    const base=buildForesightStudioModel(state,{metric,sensitivity:0,asOf:'2026-10-15T00:00:00Z'});
+    const worse=buildForesightStudioModel(state,{metric,sensitivity:-10,asOf:'2026-10-15T00:00:00Z'});
+    assert.ok(best.scenario.simulated<base.scenario.baseline);
+    assert.ok(worse.scenario.simulated>base.scenario.baseline);
+    assert.equal(base.scenario.baseline,best.scenario.baseline);
+  }
 });
