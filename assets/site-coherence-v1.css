@@ -295,3 +295,23 @@ body[data-bg-route] main :where(.card,.paneel,.kaart,.pcard,.service,.model,.mwG
   }
   .inhoud-kop .hero-kicker { font-size: 11px !important; }
 }
+
+
+/* Mobile header, hero and intrusive overlay repair — 2026-10-15 */
+@media(max-width:767px){
+.v17-header{position:relative!important;z-index:100!important}
+.v17-header .v17-nav{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;min-height:66px!important;padding-block:10px!important}
+.v17-header .brand{display:inline-flex!important;align-items:center!important;gap:10px!important;min-width:0!important;max-width:calc(100% - 66px)!important;font-size:clamp(17px,4.6vw,23px)!important;letter-spacing:-.035em!important;white-space:nowrap!important}
+.v17-header .brand .mark{flex:0 0 35px!important;width:35px!important;height:35px!important}
+.v17-header .navlinks{display:none!important}
+.hero-video-content .hero-copy{min-width:0!important}
+.hero-video-content h1{font-size:clamp(32px,8.2vw,46px)!important;line-height:1.12!important;letter-spacing:-.045em!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;max-width:100%!important}
+.hero-video-content h1 .mark{display:inline!important;box-decoration-break:clone!important;-webkit-box-decoration-break:clone!important;padding:0 .06em!important;line-height:1.24!important}
+.hero-video-content .handline{font-size:clamp(23px,6vw,31px)!important;line-height:1.15!important}
+.hero-video-content .hero-sub{font-size:16px!important;line-height:1.55!important}
+.inhoud-kop{padding-top:64px!important;padding-bottom:58px!important}
+.inhoud-kop h1{font-size:clamp(36px,9vw,52px)!important;line-height:1.08!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important}
+.inhoud-kop .intro{font-size:17px!important;line-height:1.55!important}
+.bgx-lek{display:none!important;visibility:hidden!important;pointer-events:none!important}
+}
+@media(max-width:380px){.v17-header .brand{font-size:17px!important}.hero-video-content h1{font-size:31px!important}}
