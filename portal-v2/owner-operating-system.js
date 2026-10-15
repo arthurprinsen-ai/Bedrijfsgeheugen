@@ -124,10 +124,10 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
   }catch(error){decisionRuntime=null;decisionStatus=`Niet beschikbaar (${String(error?.message||'ONBEKEND')}). Geen besluit uitgevoerd.`;}
   finally{decisionLoading=false;refresh();}
  }
- if(!compact&&stateClient?.authHeaders&&String(state?.tenant_id||state?.powerhouse?.tenant_id||'')){
+ if(!compact&&stateClient?.authHeaders&&!stateClient?.isDemo?.()&&['authenticated','empty'].includes(stateClient?.getSnapshot?.()?.mode)){
   financeLoading=true;
   const financialClient=createOwnerFinancialClient({fetchImpl,authHeadersProvider});
-  financialClient.load(String(state.tenant_id||state.powerhouse.tenant_id)).then(value=>{
+  financialClient.load(String(state?.tenant_id||state?.powerhouse?.tenant_id||'')).then(value=>{
     financial=value;financeStatus=value.records?`${value.records} onafhankelijk gevalideerde prognosereeksen; historische waarnemingen en prognoses duidelijk onderscheiden`:'Geen gevalideerde financiële reeks in de canonieke bron';
   }).catch(error=>{financial=null;financeStatus=`Financiële bron niet beschikbaar (${String(error?.message||'onbekend')}). Geen cijfers geschat.`;})
    .finally(()=>{financeLoading=false;refresh();});
