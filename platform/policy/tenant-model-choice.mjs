@@ -1,3 +1,4 @@
+import {resolveDesiredTenantModel} from './tenant-ai-default-model.mjs';
 // A customer preference is NEVER a runtime authorization. This server-only
 // gate binds the tenant's selected workload to separately signed runtime proof.
 const SUPPORTED=Object.freeze({
@@ -13,9 +14,10 @@ export function evaluateTenantModelChoice({tenantId,portalRecord,sovereigntyPoli
  const prefs=portalRecord.data.portal?.aiModelPreferences;
  if(prefs?.requestState!=='review_only_not_activated'||!Array.isArray(prefs.models))
   return deny('MODEL_CHOICE_REQUIRED');
- const desiredId=prefs.assignments?.[WORKLOAD];
- if(typeof desiredId!=='string'||!desiredId||!prefs.models.some(x=>x?.modelId===desiredId))
-  return deny('BRAIN_MODEL_NOT_ASSIGNED');
+ const resolved=resolveDesiredTenantModel(prefs,WORKLOAD);
+ if(!resolved.ok)
+  return deny(resolved.code==='MODEL_WORKLOAD_NOT_ASSIGNED'?'BRAIN_MODEL_NOT_ASSIGNED':resolved.code);
+ const desiredId=resolved.modelId;
  const model=catalog?.models?.find(x=>x.id===desiredId);
  if(!model||supplierStatus?.records?.[desiredId]!=='VERIFIED')
   return deny('SUPPLIER_CLAIMS_UNRESOLVED',desiredId);
@@ -23,8 +25,7 @@ export function evaluateTenantModelChoice({tenantId,portalRecord,sovereigntyPoli
   return deny('MODEL_LIFECYCLE_NOT_ACTIVE',desiredId);
  if(typeof model.provider_api_id!=='string'||!model.provider_api_id.trim())
   return deny('MODEL_API_ID_NOT_VERIFIED',desiredId);
- const selected=prefs.models.find(x=>x?.modelId===desiredId);
- if(!selected?.routeId)return deny('MODEL_DEPLOYMENT_ROUTE_REQUIRED',desiredId);
+ const selected={routeId:resolved.routeId};
  const proof=registryRecord?.signedProof?.receipt;
  if(!proof||proof.tenantId!==tenantId)
   return deny('SIGNED_TENANT_RUNTIME_PROOF_REQUIRED',desiredId);
@@ -49,5 +50,5 @@ export function evaluateTenantModelChoice({tenantId,portalRecord,sovereigntyPoli
  // The model binding does not establish provider entitlement, service region,
  // DPA, pricing, consent, signatures, expiry or runtime health. Those remain
  // independent mandatory checks in runAttestedTenantChat.
- return Object.freeze({ok:true,code:'MODEL_BINDING_CONFIRMED_RUNTIME_PROOF_STILL_REQUIRED',modelId:desiredId,workload:WORKLOAD});
+ return Object.freeze({ok:true,code:'MODEL_BINDING_CONFIRMED_RUNTIME_PROOF_STILL_REQUIRED',modelId:desiredId,workload:WORKLOAD,selectionSource:resolved.source});
 }

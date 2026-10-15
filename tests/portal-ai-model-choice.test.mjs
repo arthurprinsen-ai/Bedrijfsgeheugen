@@ -84,7 +84,7 @@ test('six highlighted models are present and map to the advertised portal respon
  for(const workload of ['brain','routine','analysis','documents','knowledge','sensitive']){
   assert.match(src,new RegExp("\\['"+workload+"','"));
  }
- assert.match(src,/schemaVersion:2,models:draft\.models,assignments:draft\.assignments/);
+ assert.match(src,/schemaVersion:3,models:draft\.models,defaultModelId:draft\.defaultModelId,assignments:draft\.assignments/);
  assert.match(src,/JSON\.stringify\(readback\?\.assignments\)/);
  assert.match(src,/value\.policy:'eu-both'/);
  assert.match(src,/review_only_not_activated/);
@@ -99,4 +99,19 @@ test('customer may manually test only its saved Brain choice through verified te
  assert.match(source,/response\.ok&&result\?\.status==='ANSWERED'/);
  assert.match(source,/Geen fallback naar een andere provider/);
  assert.doesNotMatch(source,/\/api\/portaalvraag/);
+});
+
+test('one default model is shown above overrides, persists tenant-scoped, and never activates itself',()=>{
+ const src=read('portal-v2/modules/ai-model-choice.js');
+ assert.match(src,/Mijn standaard AI-model/);
+ assert.match(src,/Standaardmodel voor mijn bedrijf/);
+ assert.match(src,/defaultSelect\.addEventListener\('change'/);
+ assert.match(src,/draft\.defaultModelId=id/);
+ assert.match(src,/draft\.models\.push\(\{modelId:id,routeId:''\}\)/);
+ assert.match(src,/defaultRoute\.addEventListener\('change'/);
+ assert.match(src,/schemaVersion:3,models:draft\.models,defaultModelId:draft\.defaultModelId/);
+ assert.match(src,/readback\?\.defaultModelId!==payload\.defaultModelId/);
+ assert.match(src,/Gebruik standaardmodel waar geschikt/);
+ assert.match(src,/financiële berekeningen/);
+ assert.match(src,/requestState:'review_only_not_activated'/);
 });

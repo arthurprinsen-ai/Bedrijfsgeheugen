@@ -17,6 +17,11 @@ export async function askPortal(question,{fetchImpl=globalThis.fetch,page='overz
     credentials:'same-origin',
     body:JSON.stringify({vraag:clean})
   });
+  if(response.status===409){
+    const refusal=await response.json().catch(()=>null);
+    if(refusal?.code==='TENANT_MODEL_ROUTING_REQUIRED')
+      throw new Error('Je standaard-AI-model is nog niet aangesloten op deze vraagfunctie. Gebruik AI-modellen kiezen voor een beveiligde modeltest. Er is geen andere provider gebruikt.');
+  }
   if(!response.ok)throw new Error(`PORTAALVRAAG_${response.status}`);
   const payload=await response.json();
   return {text:String(payload?.antwoord||payload?.answer||payload?.text||'').trim(),assurance:payload?.assurance||null};

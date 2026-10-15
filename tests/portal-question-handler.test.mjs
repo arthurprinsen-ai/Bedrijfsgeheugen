@@ -29,3 +29,19 @@ test('portal AI validates question and keeps request context bounded',async()=>{
  const short=await h(new Request('https://x/api/portaalvraag',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({vraag:'x'})}));assert.equal(short.status,400);
  const good=await h(new Request('https://x/api/portaalvraag',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({vraag:'Welke risico’s zijn zichtbaar?'})}));assert.equal(good.status,200);assert.ok(len<=5000);
 });
+
+test('tenant choosing one AI default never silently invokes legacy Anthropic project QA',async()=>{
+ let egress=0;
+ const h=createPortalQuestionHandler({
+  getUser:async()=>({id:'u1',appMetadata:{tenantId:'tenant-a'}}),
+  store:{get:async t=>{assert.equal(t,'tenant-a');return {data:{portal:{aiModelPreferences:{
+   requestState:'review_only_not_activated',defaultModelId:'mistral-medium-3-5',
+   assignments:{},models:[{modelId:'mistral-medium-3-5',routeId:'mistral-api-eu'}]
+  }},company:{name:'Customer data'}}}}},
+  runAnswer:async()=>{egress++;return{text:'Unwanted'}},apiKey:'test-key'
+ });
+ const r=await h(new Request('https://x/api/portaalvraag',{method:'POST',body:JSON.stringify({vraag:'Analyseer mijn winst'}),headers:{'content-type':'application/json'}}));
+ assert.equal(r.status,409);
+ assert.equal((await r.json()).code,'TENANT_MODEL_ROUTING_REQUIRED');
+ assert.equal(egress,0);
+});
