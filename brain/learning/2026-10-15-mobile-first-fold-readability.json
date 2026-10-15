@@ -1,0 +1,28 @@
+{
+  "fingerprint": "website|mobile-v18-first-fold|header-hero-overlay|20261015",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The deployed V18 website shell displayed a yellow three-bar brand icon indistinguishable from a separate hamburger control. Unbounded mobile hero headline and yellow marker background impaired readability; a timed fixed .bgx-lek popup obscured the primary content and CTA. The generated shell is not equivalent to the repository's legacy index.html.",
+  "prevention_rule": "Apply responsive first-fold styles to the generated V18 shell from one shared, cache-versioned stylesheet; keep one accessible mobile nav trigger, readable responsive type, an unobscured highlight and no timed overlay covering mobile CTAs. Guard changes with a site-shell lane test and protected CI.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/site-shell-mobile-first-fold.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "paths": [
+      "tests/site-shell-mobile-first-fold.test.mjs"
+    ],
+    "status": "Test source committed; protected CI and production visual readback pending."
+  },
+  "outcome": {
+    "implementation": "Mobile first-fold shared style correction in PR #4390",
+    "production_status": "NOT_YET_PROVEN",
+    "visual_readback": "REQUIRES_POST_DEPLOY_MOBILE_CHECK"
+  }
+}
