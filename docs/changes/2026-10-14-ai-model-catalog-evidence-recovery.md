@@ -1,5 +1,21 @@
 # AI model catalog evidence recovery — 2026-10-14
 
+## Third-party AI product release decision — 2026-10-15 (supersedes catalog-wide release veto)
+
+POWERHOUSE does **not** build or sell foundation AI models. It orchestrates existing third-party AI integrations. The 110-entry model catalog is an *information and research directory*, not the runtime service registry and not an assertion that all 110 models are contracted, current or usable in each customer account.
+
+**Revised release contract:**
+- Third-party catalog records may remain `PARTIAL`, `CONFLICT`, outdated or incompletely documented if and only if their limitations are transparently presented and they **cannot** be selected automatically. Continue supplier enrichment separately; preserve every original evidence receipt and historical date.
+- A model is eligible for automated provider recommendations only when both its explicit supplier audit approval and dated, model-scoped proof for all six required claims pass. The public Modelwijzer must fail closed. Tenant-region, DPA, provider permissions and restricted-data claims require separate authenticated customer evidence, never inherited from a provider model card.
+- `amazon-nova-premier` remains research-only and production-ineligible while public AWS lifecycle dates conflict. A real authenticated account/region Bedrock readback is required only if POWERHOUSE intends to activate that model, not to release unrelated platform features.
+- Mandatory protected GitHub Required, CodeQL and review thread resolution are **unchanged**. Protected merge is still required. Production acceptance still requires immutable merged/deployed commit identity and exact same-origin catalog artifact readback; any requested mismatched artifact fails.
+- Runtime execution through existing provider connectors has its **own** separate authentication, entitlement and customer-data controls. An informational catalog entry is not execution authorization.
+- The separately proposed contextual finance portal and its missing verified customer forecast/independent approval remain an independent product acceptance obligation; this catalog decision cannot approve them.
+
+**Decision rationale:** Requiring all 110 external providers to have independently established customer-specific governance and pricing before shipping any POWERHOUSE code misclassified an external-model directory as 110 proprietary supported runtime dependencies. That was the recurring structural blocker. The former historical sections below remain an evidence trail but their stated global `110/110 FULL or no release` criterion is **superseded** by the model-activation boundary above, not by falsifying provider claims.
+
+**Implementation evidence:** `tests/ai-model-intelligence-freshness-v1.test.mjs` enforces disclosure and per-model activation safety; `tests/ai-model-catalog-evidence-audit.mjs` continues reporting outstanding research but only rejects unsafe auto-selection, missing provenance, duplicate IDs and requested production parity failures. `ai-modelwijzer.html` forbids unapproved automatic recommendations and loads its catalog and lead endpoint from the deployed origin.
+
 Obligation-ID: ai-model-catalog-evidence-recovery-20261014
 
 This change corrects selected OpenAI model entries and introduces an evidence audit of the 110-record catalog. URL reachability is explicitly not claim verification. The existing 14-day freshness gate remains active. Vendor-by-vendor verification, protected CI, CodeQL and production readback remain mandatory.
