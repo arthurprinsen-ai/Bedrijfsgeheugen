@@ -116,3 +116,36 @@ test('Mistral EU inference and storage claims need separate scoped evidence',()=
    assert.equal(e.model_eu_storage_evidence?.verified,true,`${m.id}: EU inference does not prove EU control-plane storage`);
  }
 });
+
+
+// Supplier platform-specific AWS evidence overrides a stale generic provider platform
+// table only for the published Bedrock model/endpoint claim, never for customer rights.
+test('Embed 4 Bedrock Marketplace claim cannot certify customer entitlement or pricing', () => {
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const model=catalog.models.find(m=>m.id==='embed-4');
+ assert.ok(model,'Cohere Embed 4 must exist in the catalog');
+ const proof=model.aws_bedrock_embed_v4_source_review_20261015;
+ assert.ok(proof,'Independently checked, dated AWS Bedrock card is required');
+ assert.equal(proof.source_url,'https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-cohere-embed-v4.html');
+ assert.equal(proof.aws_bedrock_id,'cohere.embed-v4:0');
+ assert.equal(proof.eu_geo_profile,'eu.cohere.embed-v4:0');
+ assert.equal(proof.global_profile,'global.cohere.embed-v4:0');
+ assert.equal(proof.aws_marketplace_billing,true);
+ assert.ok(model.deployment.some(value=>value.includes('AWS Bedrock Marketplace')));
+ assert.ok(model.verification_evidence.claim_evidence.some(e=>
+   e.claim==='deployment' &&
+   e.url===proof.source_url &&
+   e.checked_on==='2026-10-15' &&
+   e.observed_value.includes('cohere.embed-v4:0')
+ ));
+ assert.equal(proof.aws_region_account_authorization_confirmed,false);
+ assert.equal(proof.customer_region_residency_confirmed,false);
+ assert.equal(proof.aws_marketplace_customer_rates_confirmed,false);
+ assert.equal(proof.signed_customer_contract_verified,false);
+ assert.equal(proof.production_release_approved,false);
+ assert.equal(proof.automatic_recommendation_eligible,false);
+ assert.equal(model.verification_evidence.claim_scope,'partial');
+ assert.ok(model.verification_evidence.not_verified.includes('pricing'));
+ assert.ok(model.verification_evidence.not_verified.includes('governance'));
+ assert.notEqual(model.supplier_audit?.automatic_recommendation_eligible,true);
+});
