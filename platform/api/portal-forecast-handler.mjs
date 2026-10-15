@@ -35,6 +35,8 @@ export function verifiedForecasts(projection,tenantId,{now=new Date()}={}){
  return forecasts.filter(f=>f&&f.verified===true&&f.validation?.status==='passed'&&f.validation?.tenantBound===true&&typeof f.validation?.verifiedAt==='string'&&fresh(f.validation.verifiedAt)&&f.tenantId===tenantId&&f.validation?.tenantId===tenantId&&
  typeof f.source==='string'&&f.source.trim()&&typeof f.model==='string'&&f.model.trim()&&
  typeof f.updatedAt==='string'&&fresh(f.updatedAt)&&
+ // A changed ledger/source requires a new independent review, not the prior approval.
+ Date.parse(f.updatedAt)<=Date.parse(f.validation.verifiedAt)&&
  // Must match the authoritative six-observation independent financial review gate.
  dates(f.history,6)&&dates(f.forecast)&&
  f.history.at(-1).date<f.forecast[0].date&&f.history[0].date.length===f.forecast[0].date.length&&
