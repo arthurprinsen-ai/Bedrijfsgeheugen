@@ -498,3 +498,14 @@ test('Nova Premier localized EOL sources stay conflicted until authenticated AWS
  assert.ok(model.supplier_source_conflicts?.length>0);
  assert.notEqual(model.verification_evidence?.claim_scope,'full');
 });
+
+test('committed 110-model supplier ledger contains no derived-classification drift',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ assert.equal(catalog.models.length,110);
+ const report=reconcileSupplierAudit(catalog);
+ assert.equal(report.changed_models,0,
+  'Derived missing/review counters must track source receipts for every model; use the fail-closed reconciler before commit. Drift: '+report.changed_model_ids.join(', '));
+ assert.equal(report.applied,false);
+ assert.ok(catalog.models.every(model=>model.supplier_audit?.automatic_recommendation_eligible===false),
+  'Supplier ledger consistency does not independently authorize automatic recommendations');
+});
