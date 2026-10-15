@@ -12,6 +12,7 @@ De bestaande route `/api/portal-ondernemersdata` authenticates de identiteit via
 - De interface gebruikt de bestaande beveiligde API en hergebruikt de bestaande Omgevingsradar voor bronverificatie.
 - Signalenscores zijn geen voorspelde kansen; kansen, omzet en besparingen worden niet gekwantificeerd zonder onafhankelijke prognosevalidatie.
 - De bestaande scenario-baseline blijft onaangetast bij laden van de signalen.
+- Scenario-effecten volgen doelrichting: bij restrisico en handmatig werk betekent een positieve verbetering juist een lagere verwachte waarde. Dit is alleen een scenario-aanname, geen causale modelvoorspelling.
 
 ## Veiligheidscriteria
 - Vereis scope.authenticatedTenant gelijk aan intelligence.tenantId; wees fail-closed bij mismatch, absent claim of canonical tenant.
