@@ -328,7 +328,7 @@ export function openPortalPage(pageId){
       }).catch(()=>{}); // Never claim that a missing provider/readback proves compliance.
     }
   }
-  else if(pageId==='ondernemerscockpit'){native.innerHTML='';mountOwnerOperatingSystem(native,{state:portalStateSnapshot()});}
+  else if(pageId==='ondernemerscockpit'){native.innerHTML='';mountOwnerOperatingSystem(native,{state:portalStateSnapshot(),stateClient:portalContext.stateClient});}
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
