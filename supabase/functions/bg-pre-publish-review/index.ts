@@ -197,7 +197,13 @@ Deno.serve(async (req) => {
 
   const [{ data: contracts, error: contractError }, { data: rules, error: rulesError }] = await Promise.all([
     db.from('brain_records').select('record_id,status,verified,result').eq('tenant_id','canonical').in('record_id',[PARENT_CONTRACT,PERSONAL_CONTRACT]),
-    db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status,bijgewerkt_op').eq('status','actief').order('vertrouwen',{ ascending: false }).limit(24),
+    // Freshness must be checked against recent, sufficiently trusted ACTIVE rules.
+    // Ranking only by confidence selected 24 old 1.0 rules and excluded recent 0.85-0.95
+    // validated rules, permanently returning RULE_CONTEXT_STALE despite daily updates.
+    // Keep the 96-hour gate and independently VERIFIED identity contracts unchanged.
+    db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status,bijgewerkt_op')
+      .eq('status','actief').gte('vertrouwen',0.85)
+      .order('bijgewerkt_op',{ ascending: false }).order('vertrouwen',{ ascending: false }).limit(24),
   ]);
   if (contractError) return json({ ok: false, can_publish: false, error: 'CHANNEL_IDENTITY_CONTRACT_UNAVAILABLE' }, 503);
   const parent = (contracts || []).find((x: any) => x.record_id === PARENT_CONTRACT);
