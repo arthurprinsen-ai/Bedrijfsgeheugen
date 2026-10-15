@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Evidence-first catalog audit: URL reachability is NOT a verification of model claims.
-// Usage: node tests/ai-model-catalog-evidence-audit.mjs [output-file]
+// Usage: node tests/ai-model-catalog-evidence-audit.mjs (JSON on stdout; no direct file sink)
 import fs from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import { classifySupplierClaim } from './ai-model-supplier-evidence-worklist.mjs';
@@ -123,6 +123,8 @@ if (productionUrl) {
   }
 }
 const json = JSON.stringify(report, null, 2) + '\n';
-if (process.argv[2]) await fs.writeFile(process.argv[2], json);
-else process.stdout.write(json);
+// Emit structured audit results on stdout only. The caller may persist a bounded
+// CI artifact after reviewing it, but remote observations must not select a disk path.
+if (process.argv[2]) throw new Error('OUTPUT_PATH_NOT_SUPPORTED_USE_STDOUT');
+process.stdout.write(json);
 if (report.counts.not_fully_verified || report.counts.duplicate_ids || report.counts.missing_official_urls) process.exitCode = 2;
