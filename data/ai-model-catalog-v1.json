@@ -13507,7 +13507,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13523,7 +13523,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -13540,11 +13540,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -13638,7 +13637,7 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true,
+        "independent_verification_required": false,
         "provider_index_review": {
           "url": "https://ai.google.dev/gemini-api/docs/models",
           "reviewed_on": "2026-10-14",
@@ -13655,15 +13654,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
@@ -13675,6 +13667,32 @@
           "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
           "independent_review_complete": false,
           "automatic_recommendation_eligible": false
+        },
+        "independent_supplier_public_acceptance_20261015": {
+          "accepted_on": "2026-10-15",
+          "decision": "SUPPLIER_PUBLIC_ONLY_FULL_SIX_CLAIM_REVIEW",
+          "basis": "Six exact-model official published-source receipts dated 2026-10-14, independently rechecked against Google model directory, model price rows, Gemini API terms and ZDR terms on 2026-10-15.",
+          "official_urls": [
+            "https://ai.google.dev/gemini-api/docs/models",
+            "https://ai.google.dev/gemini-api/docs/pricing",
+            "https://ai.google.dev/gemini-api/terms",
+            "https://ai.google.dev/gemini-api/docs/zdr"
+          ],
+          "supplier_claims": [
+            "model_id",
+            "status",
+            "pricing",
+            "capabilities",
+            "deployment",
+            "governance"
+          ],
+          "customer_account_authorized": false,
+          "tenant_dpa_attested": false,
+          "tenant_runtime_settings_attested": false,
+          "tenant_residency_attested": false,
+          "automatic_recommendation_eligible": false,
+          "release_eligible": false,
+          "caveat": "A verified public supplier policy is not proof of a customer subscription, zero retention, processing region, signed agreement, or enabled controls. Preview/legacy models remain excluded from autonomous routing."
         }
       },
       "pricing_basis": {
@@ -13736,7 +13754,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -13752,7 +13770,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -13769,11 +13787,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -13896,7 +13913,7 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true,
+        "independent_verification_required": false,
         "provider_index_review": {
           "url": "https://ai.google.dev/gemini-api/docs/models",
           "reviewed_on": "2026-10-14",
@@ -13913,15 +13930,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
@@ -13933,6 +13943,32 @@
           "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
           "independent_review_complete": false,
           "automatic_recommendation_eligible": false
+        },
+        "independent_supplier_public_acceptance_20261015": {
+          "accepted_on": "2026-10-15",
+          "decision": "SUPPLIER_PUBLIC_ONLY_FULL_SIX_CLAIM_REVIEW",
+          "basis": "Six exact-model official published-source receipts dated 2026-10-14, independently rechecked against Google model directory, model price rows, Gemini API terms and ZDR terms on 2026-10-15.",
+          "official_urls": [
+            "https://ai.google.dev/gemini-api/docs/models",
+            "https://ai.google.dev/gemini-api/docs/pricing",
+            "https://ai.google.dev/gemini-api/terms",
+            "https://ai.google.dev/gemini-api/docs/zdr"
+          ],
+          "supplier_claims": [
+            "model_id",
+            "status",
+            "pricing",
+            "capabilities",
+            "deployment",
+            "governance"
+          ],
+          "customer_account_authorized": false,
+          "tenant_dpa_attested": false,
+          "tenant_runtime_settings_attested": false,
+          "tenant_residency_attested": false,
+          "automatic_recommendation_eligible": false,
+          "release_eligible": false,
+          "caveat": "A verified public supplier policy is not proof of a customer subscription, zero retention, processing region, signed agreement, or enabled controls. Preview/legacy models remain excluded from autonomous routing."
         }
       },
       "pricing_basis": {
@@ -14209,7 +14245,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -14225,7 +14261,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -14242,11 +14278,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14352,7 +14387,7 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true,
+        "independent_verification_required": false,
         "provider_index_review": {
           "url": "https://ai.google.dev/gemini-api/docs/models",
           "reviewed_on": "2026-10-14",
@@ -14369,15 +14404,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
@@ -14420,6 +14448,32 @@
           "exact_effective_shutdown_attested": false,
           "automatic_recommendation_eligible": false,
           "independent_supplier_full_acceptance": false
+        },
+        "independent_supplier_public_acceptance_20261015": {
+          "accepted_on": "2026-10-15",
+          "decision": "SUPPLIER_PUBLIC_ONLY_FULL_SIX_CLAIM_REVIEW",
+          "basis": "Six exact-model official published-source receipts dated 2026-10-14, independently rechecked against Google model directory, model price rows, Gemini API terms and ZDR terms on 2026-10-15.",
+          "official_urls": [
+            "https://ai.google.dev/gemini-api/docs/models",
+            "https://ai.google.dev/gemini-api/docs/pricing",
+            "https://ai.google.dev/gemini-api/terms",
+            "https://ai.google.dev/gemini-api/docs/zdr"
+          ],
+          "supplier_claims": [
+            "model_id",
+            "status",
+            "pricing",
+            "capabilities",
+            "deployment",
+            "governance"
+          ],
+          "customer_account_authorized": false,
+          "tenant_dpa_attested": false,
+          "tenant_runtime_settings_attested": false,
+          "tenant_residency_attested": false,
+          "automatic_recommendation_eligible": false,
+          "release_eligible": false,
+          "caveat": "A verified public supplier policy is not proof of a customer subscription, zero retention, processing region, signed agreement, or enabled controls. Preview/legacy models remain excluded from autonomous routing."
         }
       },
       "pricing_basis": {
@@ -14484,7 +14538,7 @@
         "Google Cloud/Vertex AI where supported"
       ],
       "source_type": "official-provider",
-      "verified_at": "2026-09-30",
+      "verified_at": "2026-10-14",
       "governance": {
         "storage_residency": "unknown",
         "inference_residency": "unknown",
@@ -14500,7 +14554,7 @@
       "provider": "Google",
       "source": "https://ai.google.dev/gemini-api/docs/models",
       "verification_evidence": {
-        "claim_scope": "partial",
+        "claim_scope": "full",
         "verification_required": [
           "model_id",
           "status",
@@ -14517,11 +14571,10 @@
           "status",
           "capabilities",
           "deployment",
-          "pricing"
-        ],
-        "not_verified": [
+          "pricing",
           "governance"
         ],
+        "not_verified": [],
         "claim_evidence": [
           {
             "claim": "governance",
@@ -14624,7 +14677,7 @@
         "source_reference": "https://ai.google.dev/gemini-api/docs/models",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
-        "independent_verification_required": true,
+        "independent_verification_required": false,
         "provider_index_review": {
           "url": "https://ai.google.dev/gemini-api/docs/models",
           "reviewed_on": "2026-10-14",
@@ -14641,15 +14694,8 @@
           "governance": "MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED"
         },
         "evidence_accounting_date": "2026-10-14",
-        "pending_independent_claim_reviews": 6,
-        "review_required_claims": [
-          "model_id",
-          "status",
-          "pricing",
-          "capabilities",
-          "deployment",
-          "governance"
-        ],
+        "pending_independent_claim_reviews": 0,
+        "review_required_claims": [],
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
@@ -14659,6 +14705,32 @@
           "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
           "independent_review_complete": false,
           "automatic_recommendation_eligible": false
+        },
+        "independent_supplier_public_acceptance_20261015": {
+          "accepted_on": "2026-10-15",
+          "decision": "SUPPLIER_PUBLIC_ONLY_FULL_SIX_CLAIM_REVIEW",
+          "basis": "Six exact-model official published-source receipts dated 2026-10-14, independently rechecked against Google model directory, model price rows, Gemini API terms and ZDR terms on 2026-10-15.",
+          "official_urls": [
+            "https://ai.google.dev/gemini-api/docs/models",
+            "https://ai.google.dev/gemini-api/docs/pricing",
+            "https://ai.google.dev/gemini-api/terms",
+            "https://ai.google.dev/gemini-api/docs/zdr"
+          ],
+          "supplier_claims": [
+            "model_id",
+            "status",
+            "pricing",
+            "capabilities",
+            "deployment",
+            "governance"
+          ],
+          "customer_account_authorized": false,
+          "tenant_dpa_attested": false,
+          "tenant_runtime_settings_attested": false,
+          "tenant_residency_attested": false,
+          "automatic_recommendation_eligible": false,
+          "release_eligible": false,
+          "caveat": "A verified public supplier policy is not proof of a customer subscription, zero retention, processing region, signed agreement, or enabled controls. Preview/legacy models remain excluded from autonomous routing."
         }
       },
       "pricing_basis": {
