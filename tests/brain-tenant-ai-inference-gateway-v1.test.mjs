@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {handleTenantAiInference} from '../platform/api/tenant-ai-inference-handler.mjs';
 import {signVerifiedRuntimeProof} from '../platform/runtime/attested-cloud-ai.mjs';
 import {CURRENT_AI_DEPLOYMENT_PROFILE} from '../platform/policy/customer-ai-deployment.mjs';
+import {evaluateTenantModelChoice} from '../platform/policy/tenant-model-choice.mjs';
 const now=1_000_000,key='test-server-only-key-0123456789abcdef0123456789';
 const tenantId='tenant-a';
 const profile={...CURRENT_AI_DEPLOYMENT_PROFILE,provider:'MISTRAL_API',modelFamily:'MISTRAL',modelId:'mistral-small-latest'};
@@ -152,4 +153,67 @@ test('gateway denies egress when CSRD approval or endpoint allowlist is missing 
   assert.deepEqual(await response.json(),{error:'AI_RUNTIME_NOT_VERIFIED'});
  }
  assert.equal(calls,0);
+});
+
+const selectedModel='mistral-medium-3-5',exactApi='mistral-medium-3-5';
+const catalogModel={id:selectedModel,provider:'Mistral AI',status:'active',provider_api_id:exactApi};
+const modelChoiceBase={
+ tenantId,
+ portalRecord:{tenantId,data:{portal:{aiModelPreferences:{
+  schemaVersion:2,requestState:'review_only_not_activated',
+  models:[{modelId:selectedModel,routeId:'mistral-api-eu'}],
+  assignments:{brain:selectedModel},policy:'review'
+ }}}},
+ sovereigntyPolicy:{mode:'TRANSPARENT_GLOBAL'},
+ registryRecord:{signedProof:{receipt:{tenantId,useCaseId:'portal-project-answer',provider:'MISTRAL_API',modelId:exactApi}}},
+ catalog:{models:[catalogModel]},
+ supplierStatus:{records:{[selectedModel]:'VERIFIED'}}
+};
+
+test('saved tenant Brain assignment binds exactly to separately attested provider/model/route',()=>{
+ const yes=evaluateTenantModelChoice(modelChoiceBase);
+ assert.equal(yes.ok,true);
+ assert.equal(yes.modelId,selectedModel);
+ for(const [patch,expected] of [
+  [{supplierStatus:{records:{[selectedModel]:'PARTIAL'}}},'SUPPLIER_CLAIMS_UNRESOLVED'],
+  [{supplierStatus:{records:{[selectedModel]:'CONFLICT'}}},'SUPPLIER_CLAIMS_UNRESOLVED'],
+  [{portalRecord:{tenantId:'other',data:modelChoiceBase.portalRecord.data}},'TENANT_PORTAL_STATE_REQUIRED'],
+  [{portalRecord:{tenantId,data:{portal:{aiModelPreferences:{...modelChoiceBase.portalRecord.data.portal.aiModelPreferences,assignments:{}}}}}},'BRAIN_MODEL_NOT_ASSIGNED'],
+  [{registryRecord:{signedProof:{receipt:{tenantId,provider:'MISTRAL_API',useCaseId:'portal-project-answer',modelId:'another-model'}}}},'SIGNED_PROVIDER_MODEL_MISMATCH'],
+  [{portalRecord:{tenantId,data:{portal:{aiModelPreferences:{...modelChoiceBase.portalRecord.data.portal.aiModelPreferences,models:[{modelId:selectedModel,routeId:'mistral-selfhost'}]}}}}},'DEPLOYMENT_ROUTE_NOT_ATTESTED'],
+  [{catalog:{models:[{...catalogModel,status:'deprecated'}]}},'MODEL_LIFECYCLE_NOT_ACTIVE'],
+  [{catalog:{models:[{...catalogModel,provider_api_id:null}]}},'MODEL_API_ID_NOT_VERIFIED']
+ ]){
+  const got=evaluateTenantModelChoice({...modelChoiceBase,...patch});
+  assert.equal(got.ok,false,expected);
+  assert.equal(got.code,expected);
+ }
+});
+
+test('a preferred EEA storage and inference location cannot be faked by customer preferences',()=>{
+ const set=(policy,mode)=>evaluateTenantModelChoice({...modelChoiceBase,
+  portalRecord:{tenantId,data:{portal:{aiModelPreferences:{
+   ...modelChoiceBase.portalRecord.data.portal.aiModelPreferences,policy
+  }}}},sovereigntyPolicy:{mode}});
+ assert.equal(set('eu-both','TRANSPARENT_GLOBAL').code,'EU_PROCESSING_REQUIREMENT_NOT_ENFORCED');
+ assert.equal(set('eu-storage','TRANSPARENT_GLOBAL').code,'EU_STORAGE_REQUIREMENT_NOT_ENFORCED');
+ assert.equal(set('strict','EU_ONLY').code,'CUSTOMER_CONTROLLED_RUNTIME_REQUIRED');
+ assert.equal(set('eu-both','EU_ONLY').ok,true);
+});
+
+test('tenant inference route never calls provider when model preference gate is blocked or unavailable',async()=>{
+ let egress=0,checked=0;
+ const common={request:req({question:'Do not send'}),user,tenantId,sovereignty,registry,proofKey:key,now,
+  fetchFn:async()=>{egress++;throw Error('UNAUTHORIZED_PROVIDER_EGRESS')}};
+ const mismatch=await handleTenantAiInference({...common,choiceGuard:async({tenantId:t,registryRecord,sovereigntyPolicy})=>{
+  checked++;assert.equal(t,tenantId);assert.ok(registryRecord.signedProof);assert.ok(sovereigntyPolicy.ai_deployment_profile);
+  return {ok:false,code:'SUPPLIER_CLAIMS_UNRESOLVED'};
+ }});
+ assert.equal(mismatch.status,409);
+ assert.deepEqual(await mismatch.json(),{error:'MODEL_CHOICE_NOT_ACTIVATED',reason:'SUPPLIER_CLAIMS_UNRESOLVED'});
+ const absent=await handleTenantAiInference({...common,choiceGuard:async()=>{throw Error('STORE_DOWN')}});
+ assert.equal(absent.status,503);
+ assert.deepEqual(await absent.json(),{error:'MODEL_CHOICE_READBACK_UNAVAILABLE'});
+ assert.equal(checked,1);
+ assert.equal(egress,0);
 });
