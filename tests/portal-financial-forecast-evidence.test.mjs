@@ -78,7 +78,9 @@ test('independent finance approval rejects unreplayable, altered or misdated bac
 test('future-dated historical actuals cannot be approved before source was observed',()=>{
  const futureActual={...base,
   historical_points:base.historical_points.map((p,i)=>i===5?point('2026-11',p.value):p),
-  forecast_points:[point('2026-12',180)]};
+  forecast_points:[point('2026-12',180)],
+  backtest:{...base.backtest,holdout_points:base.backtest.holdout_points.map((p,i)=>
+   i===2?{...p,date:'2026-11'}:p)}};
  assert.equal(eligibleFinancialForecast(futureActual,'tenant42'),false);
  const futureSource={...base,source_updated_at:'2026-10-16T10:00:00Z',verified_at:'2026-10-17T10:00:00Z'};
  assert.equal(eligibleFinancialForecast(futureSource,'tenant42'),false);
