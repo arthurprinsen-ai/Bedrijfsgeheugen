@@ -391,8 +391,16 @@ test('four Google supplier audits cannot inherit acceptance from public pricing 
   const independentAccepted=audit.independent_verification_required===false&&
    audit.pending_independent_claim_reviews===0;
   if(!independentAccepted){
-   assert.equal(e.claim_scope,'partial',id+': public tariffs are not full supplier acceptance');
-   assert.ok(e.not_verified?.includes('governance'),id+': retain independent governance review');
+   // A complete six-claim public-source record is still not the independent
+   // supplier approval or tenant entitlement required for live recommendations.
+   assert.ok(['full','partial'].includes(e.claim_scope),id+': retain truthful source scope');
+   if(e.claim_scope==='partial')
+    assert.ok(e.not_verified?.includes('governance'),id+': retain independent governance review');
+   else {
+    assert.deepEqual(e.not_verified,[],id+': all six public claims must be accounted for');
+    assert.equal(audit.independent_verification_required,true,
+     id+': public-source completion does not imply independent release approval');
+   }
    assert.equal(audit.automatic_recommendation_eligible,false,id+': do not recommend pending models');
   }
   if(audit.automatic_recommendation_eligible===true)
