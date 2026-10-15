@@ -146,9 +146,12 @@ Deno.serve(async(req:Request)=>{
       .select('tenant_id,forecast_id,metric,title,unit,source_name,source_evidence_ref,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest,independent_review')
       .eq('tenant_id',tenantId)
       .eq('verification_status','passed')
-      .order('verified_at',{ascending:false}).limit(30);
+      // Candidate fetch remains tenant-scoped and bounded. Filter and independently
+      // validate rows BEFORE limiting to 30 chart entries, so an expired/corrupt
+      // top-ranked review cannot crowd out a valid later source.
+      .order('verified_at',{ascending:false}).limit(150);
     if(error)return json({error:'FINANCIAL_FORECAST_READ_FAILED'},503);
-    const forecasts=(rows||[]).filter(row=>eligibleFinancialForecast(row,tenantId)).map(row=>({
+    const forecasts=(rows||[]).filter(row=>eligibleFinancialForecast(row,tenantId)).slice(0,30).map(row=>({
       id:row.forecast_id,tenantId,metric:row.metric,title:row.title,unit:row.unit,
       source:row.source_name,model:row.model_version,updatedAt:row.source_updated_at,
       history:row.historical_points,forecast:row.forecast_points,
