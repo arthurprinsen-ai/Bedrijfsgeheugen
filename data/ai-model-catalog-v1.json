@@ -4600,7 +4600,62 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_26_model_review_20261015": {
+          "model_id": "deepseek-flash",
+          "provider": "DeepSeek",
+          "next_action": "Obtain enterprise processing agreement, service-specific retention and regional processing assurance before customer use",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official live DeepSeek API model/pricing table and Open Platform terms checked. Published peak and off-peak prices are public supplier tariffs. A stateless endpoint does not establish API-wide ZDR, signed processing agreement or geographic guarantees.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "contract-specific residency",
+            "tenant entitlement",
+            "ZDR retention and training controls by account",
+            "executed customer DPA",
+            "governance"
+          ],
+          "primary_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "primary_source_scope": "MULTI_MODEL_API_PRICING_TABLE",
+          "missing_supplier_receipts": [
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://api-docs.deepseek.com/quick_start/pricing/",
+            "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        },
+        "public_tariff_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "price_scope": "PUBLISHED_API_PEAK_OFFPEAK_USD_PER_1M_TOKENS",
+          "published_rates": {
+            "peak": {
+              "output": 1.2,
+              "cache_hit_input": 0.006,
+              "cache_miss_input": 0.3
+            },
+            "off_peak": {
+              "output": 0.6,
+              "cache_hit_input": 0.003,
+              "cache_miss_input": 0.15
+            }
+          },
+          "official_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "customer_rate_verified": false,
+          "full_supplier_approved": false,
+          "all_deployments_covered": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
@@ -4860,7 +4915,62 @@
         },
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_26_model_review_20261015": {
+          "model_id": "deepseek-v4-pro",
+          "provider": "DeepSeek",
+          "next_action": "Obtain enterprise processing agreement, service-specific retention and regional processing assurance before customer use",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official live DeepSeek API model/pricing table and Open Platform terms checked. Published peak and off-peak prices are public supplier tariffs. A stateless endpoint does not establish API-wide ZDR, signed processing agreement or geographic guarantees.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "contract-specific residency",
+            "tenant entitlement",
+            "ZDR retention and training controls by account",
+            "executed customer DPA",
+            "governance"
+          ],
+          "primary_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "primary_source_scope": "MULTI_MODEL_API_PRICING_TABLE",
+          "missing_supplier_receipts": [
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://api-docs.deepseek.com/quick_start/pricing/",
+            "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        },
+        "public_tariff_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "price_scope": "PUBLISHED_API_PEAK_OFFPEAK_USD_PER_1M_TOKENS",
+          "published_rates": {
+            "peak": {
+              "output": 3.96,
+              "cache_hit_input": 0.044,
+              "cache_miss_input": 1.32
+            },
+            "off_peak": {
+              "output": 1.98,
+              "cache_hit_input": 0.022,
+              "cache_miss_input": 0.66
+            }
+          },
+          "official_source_url": "https://api-docs.deepseek.com/quick_start/pricing/",
+          "customer_rate_verified": false,
+          "full_supplier_approved": false,
+          "all_deployments_covered": false,
+          "automatic_recommendation_eligible": false
+        }
       },
       "deepseek_terms_scope_20261014": {
         "source": "https://cdn.deepseek.com/policies/en-US/deepseek-open-platform-terms-of-service.html",
@@ -5218,6 +5328,55 @@
           ],
           "verified_for_auto_recommendation": false,
           "independent_supplier_full_acceptance": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "command-a-plus",
+          "provider": "Cohere",
+          "next_action": "Obtain exact API/vault deployment tariff for chosen SKU and model-specific commercial/data-handling terms; verify tenant settings independently",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official model docs and Standard Model Vault rate tables checked. Model Vault instance charges are not an API token/search rate or the customers contracted tariff. Provider data commitments are conditional and do not attest customer settings.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "contractual Model Vault pricing",
+            "tenant-specific availability",
+            "governance and residency",
+            "production terms",
+            "customer-specific governance contract and residency",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://docs.cohere.com/docs/command-a-plus",
+          "primary_source_scope": "NAMED_SUPPLIER_MODEL_PAGE",
+          "missing_supplier_receipts": [
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "https://cohere.com/enterprise-data-commitments"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        },
+        "public_tariff_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "price_scope": "PUBLISHED_STANDARD_MODEL_VAULT_USD_PER_INSTANCE_HOUR",
+          "published_rates": {
+            "L_instance_hour": 17.5,
+            "XL_instance_hour": 32.5
+          },
+          "official_source_url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "customer_rate_verified": false,
+          "full_supplier_approved": false,
+          "all_deployments_covered": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "provider_api_id": "command-a-plus-05-2026",
@@ -5807,6 +5966,53 @@
           "customer_zdr_enabled_verified": false,
           "supplier_full_verification": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "embed-4",
+          "provider": "Cohere",
+          "next_action": "Obtain exact API/vault deployment tariff for chosen SKU and model-specific commercial/data-handling terms; verify tenant settings independently",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official model docs and Standard Model Vault rate tables checked. Model Vault instance charges are not an API token/search rate or the customers contracted tariff. Provider data commitments are conditional and do not attest customer settings.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "governance",
+            "API per-token/per-search production pricing",
+            "actual tenant purchase/commitment",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.cohere.com/docs/cohere-embed",
+          "primary_source_scope": "MULTI_MODEL_PRODUCT_DIRECTORY",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "https://cohere.com/enterprise-data-commitments"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        },
+        "public_tariff_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "price_scope": "PUBLISHED_STANDARD_MODEL_VAULT_USD_PER_INSTANCE_HOUR",
+          "published_rates": {
+            "Small_instance_hour": 4,
+            "Medium_instance_hour": 5
+          },
+          "official_source_url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "customer_rate_verified": false,
+          "full_supplier_approved": false,
+          "all_deployments_covered": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "vault_pricing_research_20261014": {
@@ -6122,6 +6328,53 @@
           "customer_deployed_vault_verified": false,
           "customer_zdr_enabled_verified": false,
           "supplier_full_verification": false,
+          "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "rerank-4-pro",
+          "provider": "Cohere",
+          "next_action": "Obtain exact API/vault deployment tariff for chosen SKU and model-specific commercial/data-handling terms; verify tenant settings independently",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official model docs and Standard Model Vault rate tables checked. Model Vault instance charges are not an API token/search rate or the customers contracted tariff. Provider data commitments are conditional and do not attest customer settings.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "API pay-as-you-go monetary price",
+            "customer contract and tenant entitlement",
+            "governance",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.cohere.com/v2/docs/rerank",
+          "primary_source_scope": "MULTI_MODEL_PRODUCT_DIRECTORY",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "https://cohere.com/enterprise-data-commitments"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        },
+        "public_tariff_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "price_scope": "PUBLISHED_STANDARD_MODEL_VAULT_USD_PER_INSTANCE_HOUR",
+          "published_rates": {
+            "Large_instance_hour": 10,
+            "Medium_instance_hour": 5
+          },
+          "official_source_url": "https://docs.cohere.com/docs/model-vault/standard/pricing",
+          "customer_rate_verified": false,
+          "full_supplier_approved": false,
+          "all_deployments_covered": false,
           "automatic_recommendation_eligible": false
         }
       },
@@ -12261,6 +12514,40 @@
           "successor_customer_billing_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "gemini-3.7-flash",
+          "provider": "Google",
+          "next_action": "Replace deprecated aliases with the current destination model and verify the actual account tier/rate and data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official model cards and changelog confirm both Gemini 3.5 Flash and Gemini 3.7 Flash are deprecated aliases routed to newer active endpoints; historical alias costs cannot certify effective target billing or governance.",
+          "release_eligible": false,
+          "lifecycle_warning": "Deprecated alias, route to canonical model; never automatically recommend alias",
+          "unresolved_claims": [
+            "model_id API entitlement",
+            "status and lifecycle",
+            "governance",
+            "pricing for other tiers"
+          ],
+          "primary_source_url": "https://ai.google.dev/gemini-api/docs/pricing",
+          "primary_source_scope": "GENERIC_SUPPLIER_INDEX_OR_PRICING_PAGE_WITH_SEPARATE_NAMED_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "governance"
+          ],
+          "published_lifecycle_status": "deprecated",
+          "official_complementary_sources": [
+            "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+            "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+            "https://ai.google.dev/gemini-api/docs/changelog"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "official_paid_standard_pricing_review_20261014": {
@@ -12693,6 +12980,38 @@
           "successor_customer_billing_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "gemini-3.5-flash",
+          "provider": "Google",
+          "next_action": "Replace deprecated aliases with the current destination model and verify the actual account tier/rate and data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official model cards and changelog confirm both Gemini 3.5 Flash and Gemini 3.7 Flash are deprecated aliases routed to newer active endpoints; historical alias costs cannot certify effective target billing or governance.",
+          "release_eligible": false,
+          "lifecycle_warning": "Deprecated alias, route to canonical model; never automatically recommend alias",
+          "unresolved_claims": [
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://ai.google.dev/gemini-api/docs/models",
+          "primary_source_scope": "GENERIC_SUPPLIER_INDEX_OR_PRICING_PAGE_WITH_SEPARATE_NAMED_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "governance"
+          ],
+          "published_lifecycle_status": "deprecated",
+          "official_complementary_sources": [
+            "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+            "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+            "https://ai.google.dev/gemini-api/docs/changelog"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "pricing_basis": {
@@ -19400,6 +19719,40 @@
           ],
           "verified_for_auto_recommendation": false,
           "independent_supplier_full_acceptance": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "embed-multilingual-v3.0",
+          "provider": "Cohere",
+          "next_action": "Obtain exact API/vault deployment tariff for chosen SKU and model-specific commercial/data-handling terms; verify tenant settings independently",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official model docs and Standard Model Vault rate tables checked. Model Vault instance charges are not an API token/search rate or the customers contracted tariff. Provider data commitments are conditional and do not attest customer settings.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "current per-model dollar-denominated embedding rate",
+            "customer-specific governance",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://docs.cohere.com/docs/cohere-embed",
+          "primary_source_scope": "MULTI_MODEL_PRODUCT_DIRECTORY",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://docs.cohere.com/docs/model-vault/standard/pricing",
+            "https://cohere.com/enterprise-data-commitments"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "embedding_dimensions": 1024,
@@ -19649,6 +20002,40 @@
           "customer_account_entitlement_verified": false,
           "tenant_region_config_verified": false,
           "storage_residency_verified": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-2-lite",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "pricing",
+            "governance",
+            "current regional and tenant pricing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-lite.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -19943,6 +20330,40 @@
           "vendor_governance_independently_accepted": false,
           "automatic_recommendation_eligible": false,
           "caveat": "Published provider support is not an authenticated customer's account entitlement, selected route, storage residency, or executed DPA. Retain PARTIAL and independent acceptance hold."
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-2-sonic",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "governance",
+            "region and tier-specific current billing",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -20516,6 +20937,40 @@
           "independent_six_claim_supplier_approval": false,
           "customer_runtime_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-pro",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "governance",
+            "current region/service-tier billing price",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-pro.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -20784,6 +21239,40 @@
           "customer_runtime_attested": false,
           "independent_model_limit_verified": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-lite",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "governance",
+            "current region/service-tier billing price",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-lite.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -21087,6 +21576,40 @@
           "contract_governance_verified": false,
           "independent_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-micro",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "governance",
+            "current region/service-tier billing price",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -21304,7 +21827,40 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-sonic",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "EOL announcement is Region-specific; inactive for new automatic deployment and no guarantee of AWS account entitlement",
+          "unresolved_claims": [
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "primary_source_scope": "OFFICIAL_REGION_SCOPED_LIFECYCLE_INDEX",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "eol",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -21585,6 +22141,41 @@
           "customer_account_readback": false,
           "independent_six_claim_supplier_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-multimodal-embeddings",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "pricing",
+            "governance",
+            "text, image, document and audio modality pricing",
+            "account and region billing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-amazon-nova-multimodal-embeddings.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "aws_official_deployment_research_20261014": {
@@ -21825,7 +22416,41 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-canvas",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "EOL announcement is Region-specific; inactive for new automatic deployment and no guarantee of AWS account entitlement",
+          "unresolved_claims": [
+            "governance",
+            "current customer region-specific rate",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "primary_source_scope": "OFFICIAL_REGION_SCOPED_LIFECYCLE_INDEX",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "eol",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -22073,7 +22698,41 @@
         "accounting_scope": "Source receipts ≠ verified supplier claims; provider policy baseline ≠ model/tenant proof; partial/historical pricing ≠ live customer tariff",
         "prior_full_verification_date_restored": "2026-09-30",
         "claim_source_review_date": "2026-10-14",
-        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification."
+        "date_semantics": "Partial 2026-10-14 source receipt reviews do not restamp last full catalog verification.",
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-nova-reel",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "EOL announcement is Region-specific; inactive for new automatic deployment and no guarantee of AWS account entitlement",
+          "unresolved_claims": [
+            "governance",
+            "current customer region-specific rate",
+            "pricing"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+          "primary_source_scope": "OFFICIAL_REGION_SCOPED_LIFECYCLE_INDEX",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "eol",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
+        }
       },
       "supplier_pricing_research": {
         "url": "https://aws.amazon.com/bedrock/pricing/",
@@ -22363,6 +23022,42 @@
           "customer_account_entitlement_verified": false,
           "tenant_region_config_verified": false,
           "storage_residency_verified": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-titan-text-embeddings-v2",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "pricing",
+            "governance",
+            "current regional and tenant pricing",
+            "current tenant region-specific pricing",
+            "customer deployment and governance"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-text-embeddings-v2.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -22627,6 +23322,41 @@
           "tenant_region_config_verified": false,
           "storage_residency_verified": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-titan-image-generator-g1-v2",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "EOL announcement is Region-specific; inactive for new automatic deployment and no guarantee of AWS account entitlement",
+          "unresolved_claims": [
+            "pricing",
+            "governance",
+            "current tenant region-specific pricing",
+            "customer deployment and governance",
+            "status"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-image-generator-g1-v2.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "governance"
+          ],
+          "published_lifecycle_status": "eol",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -22893,6 +23623,41 @@
           "customer_account_entitlement_verified": false,
           "tenant_region_config_verified": false,
           "storage_residency_verified": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "amazon-titan-multimodal-embeddings-g1",
+          "provider": "Amazon",
+          "next_action": "Verify exact model price and lifecycle in target AWS account/Region and configured retention mode; preserve any regional lifecycle discrepancy",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Official Bedrock model card/lifecycle checked. Listed product capabilities do not confirm account/Region availability; public Bedrock pricing varies by Region/model/service tier. Bedrock data retention needs account/Region or project mode plus model allowed_modes, not published policy alone.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "pricing",
+            "governance",
+            "current tenant region-specific pricing",
+            "customer deployment and governance"
+          ],
+          "primary_source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-titan-multimodal-embeddings-g1.html",
+          "primary_source_scope": "EXACT_OFFICIAL_BEDROCK_MODEL_CARD",
+          "missing_supplier_receipts": [
+            "pricing",
+            "governance"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://aws.amazon.com/bedrock/pricing/",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+            "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "supplier_pricing_research": {
@@ -23244,6 +24009,38 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "falcon-h1-0.5b-instruct",
+          "provider": "TII/Falcon",
+          "next_action": "Review Falcon-H1 applicable operative license and selected hosting plan/actual compute price; verify deployment data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Each official TII Hugging Face repository checked. Published Falcon-LLM license marker and downloadable weights do not establish hosting costs, a supplier-hosted per-token tariff or an independently authenticated commercial license for this specific deployment.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "customer-specific governance",
+            "commercial license terms and fees",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "primary_source_scope": "EXACT_OFFICIAL_MODEL_REPOSITORY",
+          "missing_supplier_receipts": [
+            "pricing"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://falconllm.tii.ae/falcon-terms-and-conditions.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23602,6 +24399,38 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "falcon-h1-1.5b-instruct",
+          "provider": "TII/Falcon",
+          "next_action": "Review Falcon-H1 applicable operative license and selected hosting plan/actual compute price; verify deployment data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Each official TII Hugging Face repository checked. Published Falcon-LLM license marker and downloadable weights do not establish hosting costs, a supplier-hosted per-token tariff or an independently authenticated commercial license for this specific deployment.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "customer-specific governance",
+            "commercial license terms and fees",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "primary_source_scope": "EXACT_OFFICIAL_MODEL_REPOSITORY",
+          "missing_supplier_receipts": [
+            "pricing"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://falconllm.tii.ae/falcon-terms-and-conditions.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "falcon_license_research_20261014": {
@@ -23960,6 +24789,38 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "falcon-h1-3b-instruct",
+          "provider": "TII/Falcon",
+          "next_action": "Review Falcon-H1 applicable operative license and selected hosting plan/actual compute price; verify deployment data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Each official TII Hugging Face repository checked. Published Falcon-LLM license marker and downloadable weights do not establish hosting costs, a supplier-hosted per-token tariff or an independently authenticated commercial license for this specific deployment.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "customer-specific governance",
+            "commercial license terms and fees",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "primary_source_scope": "EXACT_OFFICIAL_MODEL_REPOSITORY",
+          "missing_supplier_receipts": [
+            "pricing"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://falconllm.tii.ae/falcon-terms-and-conditions.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24319,6 +25180,38 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "falcon-h1-7b-instruct",
+          "provider": "TII/Falcon",
+          "next_action": "Review Falcon-H1 applicable operative license and selected hosting plan/actual compute price; verify deployment data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Each official TII Hugging Face repository checked. Published Falcon-LLM license marker and downloadable weights do not establish hosting costs, a supplier-hosted per-token tariff or an independently authenticated commercial license for this specific deployment.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "customer-specific governance",
+            "commercial license terms and fees",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "primary_source_scope": "EXACT_OFFICIAL_MODEL_REPOSITORY",
+          "missing_supplier_receipts": [
+            "pricing"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://falconllm.tii.ae/falcon-terms-and-conditions.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "falcon_license_research_20261014": {
@@ -24678,6 +25571,38 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "falcon-h1-34b-instruct",
+          "provider": "TII/Falcon",
+          "next_action": "Review Falcon-H1 applicable operative license and selected hosting plan/actual compute price; verify deployment data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Each official TII Hugging Face repository checked. Published Falcon-LLM license marker and downloadable weights do not establish hosting costs, a supplier-hosted per-token tariff or an independently authenticated commercial license for this specific deployment.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "customer-specific governance",
+            "commercial license terms and fees",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "primary_source_scope": "EXACT_OFFICIAL_MODEL_REPOSITORY",
+          "missing_supplier_receipts": [
+            "pricing"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://falconllm.tii.ae/falcon-terms-and-conditions.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "falcon_license_research_20261014": {
@@ -25037,6 +25962,38 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "public_26_model_review_20261015": {
+          "model_id": "falcon-h1r-7b",
+          "provider": "TII/Falcon",
+          "next_action": "Review Falcon-H1 applicable operative license and selected hosting plan/actual compute price; verify deployment data controls",
+          "reviewed_on": "2026-10-15",
+          "review_scope": "PUBLIC_SUPPLIER_DOCUMENTATION_ONLY",
+          "public_finding": "Each official TII Hugging Face repository checked. Published Falcon-LLM license marker and downloadable weights do not establish hosting costs, a supplier-hosted per-token tariff or an independently authenticated commercial license for this specific deployment.",
+          "release_eligible": false,
+          "lifecycle_warning": "Account entitlement and actual runtime availability are not verified",
+          "unresolved_claims": [
+            "customer-specific governance",
+            "commercial license terms and fees",
+            "pricing",
+            "governance"
+          ],
+          "primary_source_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "primary_source_scope": "EXACT_OFFICIAL_MODEL_REPOSITORY",
+          "missing_supplier_receipts": [
+            "pricing"
+          ],
+          "published_lifecycle_status": "active",
+          "official_complementary_sources": [
+            "https://falconllm.tii.ae/falcon-terms-and-conditions.html"
+          ],
+          "provider_account_access_evidence": false,
+          "automatic_recommendation_eligible": false,
+          "signed_customer_agreement_checked": false,
+          "independent_supplier_full_approval": false,
+          "customer_specific_contract_evidence": false,
+          "all_six_claims_independently_accepted": false,
+          "model_specific_account_configuration_checked": false
         }
       },
       "falcon_license_research_20261014": {
