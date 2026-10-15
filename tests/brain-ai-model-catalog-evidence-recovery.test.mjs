@@ -408,3 +408,11 @@ test('research catalog is loaded from the active deployment, not another environ
  assert.ok(!html.includes("fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json'"));
  assert.ok(!html.includes("fetch('https://www.bedrijfsgeheugen.nl/api/ai-modelwijzer-lead'"));
 });
+
+
+test('audit results never write network-derived data to an arbitrary path',()=>{
+ const source=fs.readFileSync('tests/ai-model-catalog-evidence-audit.mjs','utf8');
+ assert.doesNotMatch(source,/fs\.writeFile\s*\(/);
+ assert.match(source,/OUTPUT_PATH_NOT_SUPPORTED_USE_STDOUT/);
+ assert.match(source,/process\.stdout\.write\(json\)/);
+});
