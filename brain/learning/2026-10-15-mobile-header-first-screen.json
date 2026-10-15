@@ -8,14 +8,15 @@
       "tests/brain-mobile-first-screen.test.mjs"
     ]
   },
-  "root_cause": "The deploy build replaces original index/product HTML with a V18 canonical shared shell; legacy CSS in assets/kop.css does not style the active v17-header. Fixed promotional overlay and unbounded mobile headline remained active.",
+  "root_cause": "The V18 canonical shell creates the active mobile header; legacy styles do not target it. A decorative brand mark visually resembles a second hamburger menu. Asynchronously hiding it after DOM ready can itself create CLS on blog routes. Oversized highlight boxes and the fixed zoektijd banner obscured key content.",
   "prevention": {
     "regression_contract": "tests/site-shell-mobile-header.test.mjs",
     "actions": [
       "Apply rules to the active v17-header via canonical components.mjs.",
       "Disable large trustbar only at phone widths.",
       "Remove opaque H1 marker background on phones.",
-      "Project the overlay cleanup in final Netlify build stage for generated pages."
+      "Project the overlay cleanup in final Netlify build stage for generated pages.",
+      "Prevent post-paint brand layout shift by hiding the decorative first brand child in canonical mobile CSS, before the first paint; retain existing CLS threshold at 0.100."
     ]
   },
   "evidence": {
@@ -35,7 +36,8 @@
         "route": "/product",
         "observation": "Header/hero oversized, timed cost overlay blocks content"
       }
-    ]
+    ],
+    "ci_followup": "After syncing current main, browser CI identified 3 mobile blog routes at CLS 0.101-0.103; CSS pre-paint fix committed, new CI revalidation required."
   },
   "outcome": {
     "status": "IMPLEMENTED_ON_PR_NOT_PRODUCTION",
