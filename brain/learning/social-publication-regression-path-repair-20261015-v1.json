@@ -15,7 +15,8 @@
     "The recovery contract derives the required workflow test filename from import.meta.url; a path rename must be reflected in the actual workflow command.",
     "Preserve the same-day fail-closed identity guard, service-role authorization, provider write safeguards, unique publication claims, and actual provider outcome readback.",
     "A merged source change and deployed function are not publication proof: assert successful workflow steps and live provider publication IDs independently.",
-    "A separate expired SUPABASE_ACCESS_TOKEN in GitHub Actions must be renewed with an authorized credential; never bypass source-parity, CI or deploy checks."
+    "A separate expired SUPABASE_ACCESS_TOKEN in GitHub Actions must be renewed with an authorized credential; never bypass source-parity, CI or deploy checks.",
+    "Learning evaluation uses the canonical brain-prefixed test runner for all three non-send modes; the workflow invokes its exact own, independent social-recovery regression test."
   ],
   "evidence": {
     "baseline_main_sha": "389f052b9da66fc5401f5ae5924af5496bfc0554",
@@ -29,13 +30,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-social-publication-recovery.test.mjs"
+      "tests/brain-social-recovery-canonicalization.test.mjs"
     ],
     "shadow": [
-      "tests/supabase-social-publication-recovery.test.mjs"
+      "tests/brain-social-recovery-canonicalization.test.mjs"
     ],
     "canary": [
-      ".github/workflows/social-publication-recovery.yml"
+      "tests/brain-social-recovery-canonicalization.test.mjs"
     ]
   },
   "status": "CANDIDATE_PENDING_PROTECTED_CI_AND_PROVIDER_READBACK"
