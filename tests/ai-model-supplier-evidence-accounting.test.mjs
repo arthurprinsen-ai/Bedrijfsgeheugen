@@ -518,3 +518,44 @@ test('committed 110-model supplier ledger contains no derived-classification dri
  assert.ok(catalog.models.every(model=>model.supplier_audit?.automatic_recommendation_eligible===false),
   'Supplier ledger consistency does not independently authorize automatic recommendations');
 });
+
+test('deprecated Gemini aliases preserve exact routing without standalone production entitlement',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const targetById={
+  'gemini-3.5-flash':'gemini-3.6-flash',
+  'gemini-3.7-flash':'gemini-3.8-flash'
+ };
+ for(const [id,target] of Object.entries(targetById)){
+  const m=catalog.models.find(x=>x.id===id),canonical=catalog.models.find(x=>x.id===target);
+  assert.ok(m&&canonical,id+': deprecated alias and routed model must exist');
+  assert.equal(m.status,'deprecated');
+  assert.equal(m.catalog_alias,true);
+  assert.equal(m.alias_of,target);
+  const r=m.supplier_audit?.official_deprecated_alias_routing_recheck_20261015;
+  assert.equal(r?.api_calls_automatically_routed_to,target);
+  assert.equal(r?.supplier_full_approval,false);
+  assert.equal(r?.production_release_eligible,false);
+  assert.equal(r?.automatic_recommendation_eligible,false);
+  assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false);
+  assert.equal(m.verification_evidence?.claim_scope,'partial');
+ }
+});
+
+test('six Falcon weight-source reviews cannot become invented hosted token tariffs',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const ids=['falcon-h1-0.5b-instruct','falcon-h1-1.5b-instruct','falcon-h1-3b-instruct',
+  'falcon-h1-7b-instruct','falcon-h1-34b-instruct','falcon-h1r-7b'];
+ for(const id of ids){
+  const m=catalog.models.find(x=>x.id===id);
+  assert.ok(m,id);
+  const review=m.supplier_audit?.falcon_license_and_self_host_price_readback_20261015;
+  assert.equal(review?.checked_on,'2026-10-15',id);
+  assert.equal(review?.exact_official_model_page,m.source,id);
+  assert.equal(review?.published_license_label,'falcon-llm-license',id);
+  assert.equal(review?.hosted_provider_token_tariff,'NOT_ESTABLISHED_BY_MODEL_CARD',id);
+  assert.equal(review?.supplier_full_approval,false,id);
+  assert.equal(review?.automatic_recommendation_eligible,false,id);
+  assert.equal(m.verification_evidence?.claim_scope,'partial',id);
+  assert.equal(m.supplier_audit?.automatic_recommendation_eligible,false,id);
+ }
+});
