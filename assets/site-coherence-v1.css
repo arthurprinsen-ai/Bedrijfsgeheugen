@@ -177,3 +177,121 @@ body[data-bg-route] main .bg-revenue-links + .bg-revenue-links{display:none!impo
 body[data-bg-route] main :where(section,article,div)[data-bg-empty-shell="true"]{display:none!important}
 body[data-bg-route] main :where(.btn,.cta,.bgkop-cta,.bgkop-mcta,.bgvoet-knop){min-height:46px;align-items:center;justify-content:center}
 body[data-bg-route] main :where(.card,.paneel,.kaart,.pcard,.service,.model,.mwGov){min-width:0}
+
+
+/* Mobile first-fold correction — 2026-10-15
+   Production uses the generated v17/v18 shell, not the legacy .bgkop alone.
+   The brand glyph resembles a second hamburger; keep the real menu control.
+   Do not cover the mobile page with a timed lead-generation popup. */
+@media (max-width: 760px) {
+  /* Three separate trust bullets used to consume an entire screen above the hero. */
+  .bg-uniform-trust { display: none !important; }
+
+  .v17-header { top: 0 !important; min-height: 0 !important; }
+  .v17-header .v17-nav {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 64px !important;
+    height: 64px !important;
+    padding: 0 16px !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: nowrap !important;
+    gap: 10px !important;
+  }
+  .v17-header .brand {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-width: 0 !important;
+    max-width: calc(100% - 62px);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif !important;
+    font-size: clamp(18px, 5.3vw, 23px) !important;
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    letter-spacing: -.035em !important;
+  }
+  /* The yellow three-bar brand mark is indistinguishable from a second menu icon. */
+  .v17-header .brand > .mark { display: none !important; }
+  .v17-header .mobile-toggle {
+    display: inline-flex !important;
+    flex: 0 0 48px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-radius: 12px !important;
+  }
+  .v17-header .navlinks,
+  .v17-header .v17-login,
+  .v17-header .v17-signup { display: none !important; }
+
+  /* The previous yellow marker covered multiple lines of white text. */
+  .hero-video .hero-video-content,
+  .hero-video .hero-video-content.wrap {
+    width: calc(100% - 36px) !important;
+    max-width: 100% !important;
+    margin-inline: auto !important;
+  }
+  .hero-video .hero-copy { min-width: 0 !important; width: 100% !important; }
+  .hero-video .hero-copy h1[data-bg-daily-steering-title] {
+    max-width: 100% !important;
+    font-size: clamp(30px, 8vw, 42px) !important;
+    line-height: 1.12 !important;
+    letter-spacing: -.04em !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: none !important;
+    margin-block: 20px 14px !important;
+  }
+  .hero-video .hero-copy h1[data-bg-daily-steering-title] .mark {
+    color: #FFE86B !important;
+    background: none !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    border: 0 !important;
+    line-height: inherit !important;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+  .hero-video .hero-copy .handline {
+    font-size: clamp(20px, 5.4vw, 25px) !important;
+    line-height: 1.2 !important;
+    margin-bottom: 18px !important;
+  }
+  .hero-video .hero-copy .hero-sub {
+    font-size: 16px !important;
+    line-height: 1.55 !important;
+    max-width: 100% !important;
+    overflow-wrap: break-word !important;
+  }
+
+  /* A timed, unrequested banner currently masks the main conversion flow. */
+  .bgx-lek,
+  .bgx-lek.bgx-aan { display: none !important; }
+
+  /* Platform and other v18 pages inherit the same accessible mobile hero. */
+  .inhoud-kop { padding: 60px 0 36px !important; }
+  .inhoud-kop > .wrap { width: calc(100% - 36px) !important; max-width: 100% !important; }
+  .inhoud-kop h1 {
+    max-width: 100% !important;
+    font-size: clamp(32px, 8vw, 42px) !important;
+    line-height: 1.1 !important;
+    overflow-wrap: break-word !important;
+  }
+  .inhoud-kop .intro {
+    font-size: 16px !important;
+    line-height: 1.6 !important;
+    max-width: 100% !important;
+  }
+  .inhoud-kop .hero-kicker { font-size: 11px !important; }
+}
