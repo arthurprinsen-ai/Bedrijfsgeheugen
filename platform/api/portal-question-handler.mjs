@@ -17,6 +17,14 @@ export function createPortalQuestionHandler({getUser,store,runAnswer,apiKey,maxQ
    const tenantId=resolveIdentityTenant(user);
    const record=tenantId?await store.get(tenantId):null;
    if(!record?.data) return reply({antwoord:'Ik zie nog geen bedrijfsdata in je beveiligde Bedrijfsgeheugen. Open het portaal eerst op het apparaat waar je bestaande gegevens staan.'},404);
+   // A tenant-wide AI default must never silently send its data to the legacy
+   // Anthropic-only service. The attested tenant AI gateway is separate.
+   // No externally supplied model or tenant ID can override this guard.
+   const modelPreferences=record.data?.portal?.aiModelPreferences;
+   if(modelPreferences?.requestState==='review_only_not_activated'&&
+      (modelPreferences.defaultModelId||modelPreferences.assignments?.brain)){
+    return reply({fout:'Je organisatie heeft een eigen AI-model gekozen. Deze bestaande vraagfunctie is nog niet gekoppeld aan de goedgekeurde modelroute. Open AI-modellen kiezen om het gekozen Bedrijfsbrein-model te testen.',code:'TENANT_MODEL_ROUTING_REQUIRED'},409);
+   }
    let projectContext='';try{projectContext=JSON.stringify({sourceUpdatedAt:record.sourceUpdatedAt||record.updatedAt||now(),...record.data}).slice(0,maxContext)}catch{projectContext=''}
    if(projectContext.length<20) return reply({antwoord:'Ik zie nog onvoldoende bedrijfsdata om deze vraag betrouwbaar te beantwoorden.'},404);
    try{
