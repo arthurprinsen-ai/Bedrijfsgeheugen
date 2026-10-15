@@ -26,6 +26,8 @@ test("recovery is independently scheduled, not only manually dispatched", () => 
   assert.match(workflow, /cron: '[^']+\* \* \*'/);
   assert.match(workflow, /social-recovery-runner/);
   assert.match(workflow, /tests\/social-publication-recovery\.test\.mjs/);
+  assert.match(workflow, /EVENT_NAME:.*github\.event_name/);
+  assert.match(workflow, /\$\{EVENT_NAME\}.*push/);
 });
 
 test("recovery still requires provider evidence and same-day identity", () => {
