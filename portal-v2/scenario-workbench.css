@@ -1,0 +1,26 @@
+
+.sw-workbench{border:1px solid #dce5f7;background:linear-gradient(140deg,#f8fbff,#fff);border-radius:15px;padding:16px;margin:12px 0 18px;color:#1c2a43}
+.sw-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sw-header h3{font-size:20px;letter-spacing:-.02em;margin:4px 0 7px}.sw-header p{font-size:12px;max-width:750px;color:#5d6980;margin:0 0 14px;line-height:1.6}
+.sw-kicker{font-size:10px;letter-spacing:.07em;color:#2454a6;font-weight:800}.sw-label{white-space:nowrap;border-radius:20px;padding:6px 9px;background:#ecf3ff;color:#2454a6;font-size:10px;font-weight:700}
+.sw-domain-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0 14px}
+.sw-domain-grid button{display:flex;flex-direction:column;gap:4px;align-items:flex-start;text-align:left;border:1px solid #e0e7f1;border-radius:12px;background:#fff;padding:11px;cursor:pointer;color:inherit}
+.sw-domain-grid button:hover,.sw-domain-grid button.selected{border-color:#3979ca;background:#eaf3ff}.sw-domain-grid button b{font-size:11px}.sw-domain-grid button small{font-size:10px;color:#65738b}
+.sw-controls{display:flex;align-items:end;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid #e7edf7;border-radius:12px;padding:10px}
+.sw-controls label{display:flex;flex-direction:column;gap:6px;font-size:10px;font-weight:800;color:#4b5970;min-width:140px}
+.sw-controls select{border:1px solid #ccd8ea;color:#14233c;background:white;border-radius:8px;padding:9px;max-width:230px}
+.sw-controls input[type=range]{accent-color:#5b53bc;width:140px}
+.sw-selected{display:flex;justify-content:space-between;align-items:start;gap:8px;margin:14px 0 4px}.sw-selected h4{font-size:16px;margin:4px 0}.sw-selected small{color:#66738b;font-size:10px}
+.sw-workbench svg{display:block;width:100%;height:auto;max-height:260px;margin:8px 0}
+.sw-legend{display:flex;flex-wrap:wrap;gap:14px;margin:4px 0 11px;color:#63728a;font-size:10px}
+.sw-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:10px 0}
+.sw-metrics article{background:#fff;border:1px solid #e7ecf5;padding:10px;border-radius:10px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.sw-metrics article small{font-size:10px;color:#63728a}.sw-metrics article b{font-size:16px;word-break:break-word}
+.sw-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.sw-detail-grid>div{background:#fff;border:1px solid #e7ecf5;padding:12px;border-radius:11px}.sw-detail-grid h5{margin:0 0 9px;font-size:12px}.sw-detail-grid p{font-size:11px;line-height:1.55;color:#66718a}
+.sw-levers{display:grid;gap:6px}.sw-levers>div{display:grid;grid-template-columns:1fr auto;gap:4px;background:#f8faff;border-radius:7px;padding:7px;font-size:11px}.sw-levers small{grid-column:1/-1;color:#738198}
+.sw-links{display:flex;flex-wrap:wrap;gap:6px}.sw-links button{background:#eff5ff;border:0;border-radius:7px;color:#2258a0;font-size:10px;font-weight:750;padding:7px;cursor:pointer}
+.sw-sources{margin:13px 0;padding:12px;background:#fff;border:1px solid #e4eaf4;border-radius:10px}.sw-sources summary{font-size:12px;font-weight:800;cursor:pointer}
+.sw-source-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:9px 0}.sw-source-grid>div{display:flex;flex-direction:column;gap:5px;background:#f7f9fd;padding:9px;border-radius:8px}.sw-source-grid b{font-size:11px}.sw-source-grid small{color:#6a748a;font-size:10px;overflow-wrap:anywhere}.sw-sources p,.sw-caveat{font-size:10px;color:#68768d;line-height:1.55}
+.sw-empty{background:#fff;border:1px dashed #b7cbe6;padding:19px;border-radius:10px;font-size:12px;color:#596986;margin:10px 0}.sw-empty p{line-height:1.5}
+@media(max-width:850px){.sw-header{flex-direction:column}.sw-domain-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sw-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.sw-detail-grid{grid-template-columns:1fr}.sw-source-grid{grid-template-columns:1fr}}
+@media(max-width:410px){.sw-domain-grid{grid-template-columns:1fr 1fr}.sw-controls label{width:100%;max-width:100%}.sw-controls select{max-width:100%;width:100%}.sw-selected{flex-direction:column}}
