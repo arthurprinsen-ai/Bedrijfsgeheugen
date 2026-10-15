@@ -23030,6 +23030,25 @@
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false,
           "customer_entitlement_attested": false
+        },
+        "public_pricing_boundary_review_20261015": {
+          "checked_on": "2026-10-15",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "source_locator": "Official TII model card > License, Model Details, Usage / Transformers, vLLM; model page has no standard TII-hosted pay-per-token tariff.",
+          "observed_distribution": "Downloadable Falcon-H1 weights, local/self-host inference libraries and Falcon-LLM License notice.",
+          "observed_supplier_hosted_tariff": "NOT_PUBLISHED_ON_EXACT_OFFICIAL_MODEL_CARD",
+          "model_specific_rate_verified": false,
+          "third_party_provider_rate_verified": false,
+          "commercial_license_terms_independently_interpreted": false,
+          "actual_operator_cost_verified": false,
+          "per_million_input_usd": null,
+          "per_million_output_usd": null,
+          "price_zero_asserted": false,
+          "supplier_pricing_claim_fully_verified": false,
+          "customer_governance_or_account_approved": false,
+          "automatic_recommendation_eligible": false,
+          "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
+          "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
         }
       },
       "falcon_license_research_20261014": {
@@ -23357,6 +23376,25 @@
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false,
           "customer_entitlement_attested": false
+        },
+        "public_pricing_boundary_review_20261015": {
+          "checked_on": "2026-10-15",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "source_locator": "Official TII model card > License, Model Details, Usage / Transformers, vLLM; model page has no standard TII-hosted pay-per-token tariff.",
+          "observed_distribution": "Downloadable Falcon-H1 weights, local/self-host inference libraries and Falcon-LLM License notice.",
+          "observed_supplier_hosted_tariff": "NOT_PUBLISHED_ON_EXACT_OFFICIAL_MODEL_CARD",
+          "model_specific_rate_verified": false,
+          "third_party_provider_rate_verified": false,
+          "commercial_license_terms_independently_interpreted": false,
+          "actual_operator_cost_verified": false,
+          "per_million_input_usd": null,
+          "per_million_output_usd": null,
+          "price_zero_asserted": false,
+          "supplier_pricing_claim_fully_verified": false,
+          "customer_governance_or_account_approved": false,
+          "automatic_recommendation_eligible": false,
+          "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
+          "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
         }
       },
       "falcon_license_research_20261014": {
@@ -23684,6 +23722,25 @@
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false,
           "customer_entitlement_attested": false
+        },
+        "public_pricing_boundary_review_20261015": {
+          "checked_on": "2026-10-15",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "source_locator": "Official TII model card > License, Model Details, Usage / Transformers, vLLM; model page has no standard TII-hosted pay-per-token tariff.",
+          "observed_distribution": "Downloadable Falcon-H1 weights, local/self-host inference libraries and Falcon-LLM License notice.",
+          "observed_supplier_hosted_tariff": "NOT_PUBLISHED_ON_EXACT_OFFICIAL_MODEL_CARD",
+          "model_specific_rate_verified": false,
+          "third_party_provider_rate_verified": false,
+          "commercial_license_terms_independently_interpreted": false,
+          "actual_operator_cost_verified": false,
+          "per_million_input_usd": null,
+          "per_million_output_usd": null,
+          "price_zero_asserted": false,
+          "supplier_pricing_claim_fully_verified": false,
+          "customer_governance_or_account_approved": false,
+          "automatic_recommendation_eligible": false,
+          "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
+          "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
         }
       },
       "falcon_license_research_20261014": {
@@ -24012,6 +24069,25 @@
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false,
           "customer_entitlement_attested": false
+        },
+        "public_pricing_boundary_review_20261015": {
+          "checked_on": "2026-10-15",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "source_locator": "Official TII model card > License, Model Details, Usage / Transformers, vLLM; model page has no standard TII-hosted pay-per-token tariff.",
+          "observed_distribution": "Downloadable Falcon-H1 weights, local/self-host inference libraries and Falcon-LLM License notice.",
+          "observed_supplier_hosted_tariff": "NOT_PUBLISHED_ON_EXACT_OFFICIAL_MODEL_CARD",
+          "model_specific_rate_verified": false,
+          "third_party_provider_rate_verified": false,
+          "commercial_license_terms_independently_interpreted": false,
+          "actual_operator_cost_verified": false,
+          "per_million_input_usd": null,
+          "per_million_output_usd": null,
+          "price_zero_asserted": false,
+          "supplier_pricing_claim_fully_verified": false,
+          "customer_governance_or_account_approved": false,
+          "automatic_recommendation_eligible": false,
+          "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
+          "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
         }
       },
       "falcon_license_research_20261014": {
@@ -24340,6 +24416,25 @@
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false,
           "customer_entitlement_attested": false
+        },
+        "public_pricing_boundary_review_20261015": {
+          "checked_on": "2026-10-15",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "source_locator": "Official TII model card > License, Model Details, Usage / Transformers, vLLM; model page has no standard TII-hosted pay-per-token tariff.",
+          "observed_distribution": "Downloadable Falcon-H1 weights, local/self-host inference libraries and Falcon-LLM License notice.",
+          "observed_supplier_hosted_tariff": "NOT_PUBLISHED_ON_EXACT_OFFICIAL_MODEL_CARD",
+          "model_specific_rate_verified": false,
+          "third_party_provider_rate_verified": false,
+          "commercial_license_terms_independently_interpreted": false,
+          "actual_operator_cost_verified": false,
+          "per_million_input_usd": null,
+          "per_million_output_usd": null,
+          "price_zero_asserted": false,
+          "supplier_pricing_claim_fully_verified": false,
+          "customer_governance_or_account_approved": false,
+          "automatic_recommendation_eligible": false,
+          "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
+          "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
         }
       },
       "falcon_license_research_20261014": {
@@ -24668,6 +24763,25 @@
           "independent_supplier_full_verification": false,
           "automatic_recommendation_eligible": false,
           "customer_entitlement_attested": false
+        },
+        "public_pricing_boundary_review_20261015": {
+          "checked_on": "2026-10-15",
+          "source_url": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "source_locator": "Official TII model card > License, Model Details, Usage / Transformers, vLLM; model page has no standard TII-hosted pay-per-token tariff.",
+          "observed_distribution": "Downloadable Falcon-H1 weights, local/self-host inference libraries and Falcon-LLM License notice.",
+          "observed_supplier_hosted_tariff": "NOT_PUBLISHED_ON_EXACT_OFFICIAL_MODEL_CARD",
+          "model_specific_rate_verified": false,
+          "third_party_provider_rate_verified": false,
+          "commercial_license_terms_independently_interpreted": false,
+          "actual_operator_cost_verified": false,
+          "per_million_input_usd": null,
+          "per_million_output_usd": null,
+          "price_zero_asserted": false,
+          "supplier_pricing_claim_fully_verified": false,
+          "customer_governance_or_account_approved": false,
+          "automatic_recommendation_eligible": false,
+          "evidence_classification": "OFFICIAL_MODEL_SOURCE_DISTRIBUTION_AND_LICENSE_REVIEW_ONLY_PRICING_UNVERIFIED",
+          "next_required_evidence": "A contractually applicable TII/serving-provider tariff or actual operating cost and license assessment for the selected deployment; customer runtime and governance evidence separately."
         }
       },
       "falcon_license_research_20261014": {
