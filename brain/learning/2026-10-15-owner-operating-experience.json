@@ -13,7 +13,13 @@
     "historical_replay": [
       "tests/brain-portal-v2-experience-contract-v2.test.mjs"
     ],
-    "regression_contract": "tests/portal-v2-owner-operating-system.test.mjs"
+    "regression_contract": "tests/portal-v2-owner-operating-system.test.mjs",
+    "shadow": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ]
   },
   "evidence": {
     "obligation_id": "powerhouse-owner-operating-experience-20261015-v1",
