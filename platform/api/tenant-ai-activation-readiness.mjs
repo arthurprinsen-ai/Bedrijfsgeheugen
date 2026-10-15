@@ -54,7 +54,7 @@ export function evaluateTenantAiActivation({
   'Een aantoonbare tenantpolicy en daadwerkelijk toegestane uitvoeringsregio zijn vereist. EU-marketingclaims zijn niet genoeg.'));
  const registryOk=Boolean(registryRecord&&typeof proofKey==='string'&&proofKey.length>=32&&
   registryRecord.signedProof&&registryRecord.config);
- items.push(state('provider','Geautoriseerde providerverbinding',registryOk,
+ items.push(state('provider','Beveiligde providerconfiguratie',registryOk,
   'Een bevoegde beheerder moet het provideraccount en de beveiligde runtimeverbinding onafhankelijk valideren.'));
  let receipt=null;
  if(registryOk&&Number.isSafeInteger(Number(policy?.policy_version))&&profile){
@@ -93,7 +93,7 @@ export function evaluateTenantAiActivation({
   provision.providerReadbackEvidenceId===receipt.providerReadbackEvidenceId&&
   provision.egressEvidenceId===receipt.egressEvidenceId&&
   (receipt.computeRegion==='AUTO'||endpoint.region===receipt.computeRegion));
- items.push(state('endpoint','Gecontroleerde endpoint, accountrechten en verbinding',endpointOk,
+ items.push(state('endpoint','Endpoint- en accountbewijsregistratie',endpointOk,
   'De providerroute moet met echte accountrechten, endpoint en bewijsregistratie worden gevalideerd.'));
  const riskOk=prefs?.aiRisk==='standard'&&truthy(prefs.useCase)&&prefs.useCase.length>=8;
  items.push(state('application','Toepassingsdoel en eerste AI Act-classificatie',riskOk,
