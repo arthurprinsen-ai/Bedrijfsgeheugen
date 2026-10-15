@@ -16,6 +16,8 @@
     "OpenAI": {
       "total": 20,
       "identity_mentions": 20,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -23,6 +25,8 @@
     "Anthropic": {
       "total": 11,
       "identity_mentions": 11,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -30,13 +34,17 @@
     "Google": {
       "total": 21,
       "identity_mentions": 21,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Mistral AI": {
       "total": 22,
-      "identity_mentions": 22,
+      "identity_mentions": 11,
+      "provider_api_id_mentions": 11,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -44,6 +52,8 @@
     "xAI": {
       "total": 5,
       "identity_mentions": 5,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -51,13 +61,17 @@
     "DeepSeek": {
       "total": 2,
       "identity_mentions": 2,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Cohere": {
       "total": 7,
-      "identity_mentions": 7,
+      "identity_mentions": 5,
+      "provider_api_id_mentions": 2,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -65,6 +79,8 @@
     "Meta": {
       "total": 1,
       "identity_mentions": 1,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -72,13 +88,17 @@
     "Alibaba/Qwen": {
       "total": 1,
       "identity_mentions": 1,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
     },
     "Amazon": {
       "total": 13,
-      "identity_mentions": 13,
+      "identity_mentions": 0,
+      "provider_api_id_mentions": 13,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
@@ -86,6 +106,8 @@
     "TII/Falcon": {
       "total": 7,
       "identity_mentions": 7,
+      "provider_api_id_mentions": 0,
+      "family_references": 0,
       "no_exact_id": 0,
       "fetch_failed": 0,
       "not_run": 0
