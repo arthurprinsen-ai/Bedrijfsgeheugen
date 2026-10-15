@@ -432,3 +432,31 @@ test('2026-10-15 scoped price and Falcon license reviews retain mandatory suppli
   assert.equal(m.verification_evidence?.claim_scope,'partial',id);
  }
 });
+
+test('Falcon H1 public pricing boundary cannot become free hosted API',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const ids=['falcon-h1-0.5b-instruct','falcon-h1-1.5b-instruct',
+  'falcon-h1-3b-instruct','falcon-h1-7b-instruct','falcon-h1-34b-instruct','falcon-h1r-7b'];
+ for(const id of ids){
+  const m=catalog.models.find(x=>x.id===id);
+  assert.ok(m,'Missing TII/Falcon model '+id);
+  assert.equal(m.provider,'TII/Falcon');
+  const record=m.supplier_audit?.public_pricing_boundary_review_20261015;
+  assert.ok(record,'Missing exact official model source review '+id);
+  assert.equal(record.source_url,m.source);
+  assert.equal(record.checked_on,'2026-10-15');
+  assert.equal(record.model_specific_rate_verified,false);
+  assert.equal(record.price_zero_asserted,false);
+  assert.equal(record.commercial_license_terms_independently_interpreted,false);
+  assert.equal(record.customer_governance_or_account_approved,false);
+  assert.equal(record.supplier_pricing_claim_fully_verified,false);
+  assert.equal(record.automatic_recommendation_eligible,false);
+  assert.equal(record.per_million_input_usd,null);
+  assert.equal(record.per_million_output_usd,null);
+  assert.equal(m.input_usd_m,null);
+  assert.equal(m.output_usd_m,null);
+  assert.equal(m.verification_evidence.claim_scope,'partial');
+  assert.ok(m.verification_evidence.not_verified.includes('pricing'));
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ }
+});
