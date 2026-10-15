@@ -416,3 +416,15 @@ test('audit results never write network-derived data to an arbitrary path',()=>{
  assert.match(source,/OUTPUT_PATH_NOT_SUPPORTED_USE_STDOUT/);
  assert.match(source,/process\.stdout\.write\(json\)/);
 });
+
+
+test('catalog research coverage never overrides the automatic selection safety gate',()=>{
+ const audit=fs.readFileSync('tests/ai-model-catalog-evidence-audit.mjs','utf8');
+ assert.match(audit,/const unsafeAutoSelection = catalog\.models\.filter/);
+ assert.match(audit,/a\?\.automatic_recommendation_eligible!==true/);
+ assert.match(audit,/!hasFullEvidence\(m\)/);
+ assert.match(audit,/report\.counts\.unsafe_auto_selection/);
+ assert.doesNotMatch(audit,/if \(report\.counts\.not_fully_verified \|\|/);
+ assert.match(audit,/MODEL_CATALOG_REQUIRE_PRODUCTION_READBACK/);
+ assert.match(audit,/CATALOG_CONTENT_MISMATCH/);
+});
