@@ -1352,7 +1352,37 @@ Deno.serve(async (req) => {
         results.push({channel:row.channel,status:'blocked',reason:error});continue;
       }
     }
-    const gate = await review(url, reviewPayload);
+    // Temporary reviewer outages are not content/identity rejections. Keep the original
+    // content_ready claim retryable; never call any provider without a complete PASS.
+    let gate: any;
+    try {
+      gate = await review(url, reviewPayload);
+    } catch (error) {
+      gate = { http: 503, review_transport_error: error instanceof Error ? error.message : String(error) };
+    }
+    if ([429,500,502,503,504].includes(Number(gate.http))) {
+      const evidence = {
+        ...(row.delivery_evidence || {}),
+        pre_publish_gate: 'retry_pending',
+        identity_gate_version: GATE,
+        reviewed_text_hash: textHash,
+        review_status: gate.http,
+        review_transport_error: gate.review_transport_error || null,
+        provider_truth_verified: false,
+        provider_create_success: false,
+        possible_provider_side_effect: false,
+        republish_forbidden: false,
+      };
+      const { error: retryError } = await db.from('powerhouse_channel_decisions')
+        .update({ state: 'content_ready', delivery_evidence: evidence, updated_at: new Date().toISOString() })
+        .eq('run_date', runDate).eq('channel', row.channel).eq('state', 'content_ready');
+      if (retryError) throw new Error('PRE_PUBLISH_REVIEW_RETRY_STATE_WRITE:' + retryError.message);
+      await recordObligation(db, runDate, row.channel, 'BLOCKED', null, evidence,
+        'Retry the original content with the independent reviewer on the next scheduled run; never publish without PASS.',
+        'PRE_PUBLISH_REVIEW_TRANSIENT_UNAVAILABLE');
+      results.push({ channel: row.channel, status: 'review_retry_pending', review_status: gate.http });
+      continue;
+    }
     if (gate.http !== 200 || gate.can_publish !== true || gate.identity_gate_decision !== 'PASS' || gate.final_text_hash !== textHash) {
       const evidence = { ...(row.delivery_evidence || {}), pre_publish_gate: 'blocked', identity_gate_version: GATE, reviewed_text_hash: textHash, violations: gate.violations || [], review_status: gate.http, provider_truth_verified: false };
       await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
