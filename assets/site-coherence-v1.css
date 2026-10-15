@@ -230,6 +230,10 @@ body[data-bg-route] main :where(.card,.paneel,.kaart,.pcard,.service,.model,.mwG
     margin: 0 !important;
     border-radius: 12px !important;
   }
+  .v17-header .mobile-toggle:focus-visible {
+    outline: 3px solid #FFE86B !important;
+    outline-offset: 3px !important;
+  }
   .v17-header .navlinks,
   .v17-header .v17-login,
   .v17-header .v17-signup { display: none !important; }
