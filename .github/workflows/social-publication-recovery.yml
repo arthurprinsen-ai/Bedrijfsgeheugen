@@ -7,6 +7,9 @@ on:
         description: Optional YYYY-MM-DD; must equal today in Europe/Amsterdam
         required: false
         type: string
+  schedule:
+    # Independent of Supabase cron; multiple Amsterdam daytime recovery opportunities.
+    - cron: '17 6,9,12,15,18 * * *'
   push:
     branches: [main]
     paths:
@@ -28,6 +31,11 @@ jobs:
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
     steps:
       - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify scheduled recovery and Bearer authentication contract
+        run: node --test tests/social-publication-recovery.test.mjs
 
       - name: Resolve same-day recovery date
         id: date
