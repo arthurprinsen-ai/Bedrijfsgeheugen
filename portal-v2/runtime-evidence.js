@@ -235,7 +235,7 @@ export function mapRuntimeProjection(projection) {
   };
 }
 
-export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}) } = {}) {
+export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}), validateSession = () => true } = {}) {
   try {
     const auth = typeof authHeadersProvider === 'function' ? await authHeadersProvider() : {};
     // Server projection is tenant-specific; without an authenticated bearer, do
@@ -244,10 +244,15 @@ export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domain
     const response = await fetchImpl('/api/brain-operating-loop', {
       headers: { accept: 'application/json', ...(auth || {}) }, credentials: 'same-origin'
     });
+    // If permissions were revoked, discard the previous session's transient view.
+    if(response.status===401||response.status===403){
+      if(typeof domainState?.setDerived==='function')domainState.setDerived('portal.runtime',null);
+      return null;
+    }
     if (!response.ok) return null;
     const projection = await response.json();
     const runtime = mapRuntimeProjection(projection);
-    if (!Object.keys(runtime).length) return null;
+    if (!Object.keys(runtime).length || !validateSession()) return null;
     if (typeof domainState?.setDerived === 'function') domainState.setDerived('portal.runtime', runtime);
     if (typeof globalThis.dispatchEvent === 'function' && typeof globalThis.CustomEvent === 'function') {
       globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',updatedAt:runtime?.observability?.updatedAt||null}}));
