@@ -47,7 +47,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       runtime:Object.freeze({
         model:'portal-v2/foresight-scenario-studio.js',
         mount:'portal-v2/foresight-context-ui.js',
-        test:'tests/powerhouse-contextual-foresight-studio.test.mjs',
+        test:'portal-v2/tests/foresight-scenario-studio.test.mjs',
         learning:'brain/learning/2026-10-15-cross-domain-foresight-4420.json',
         documentation:'docs/changes/2026-10-15-cross-domain-foresight-4420.md'
       }),
