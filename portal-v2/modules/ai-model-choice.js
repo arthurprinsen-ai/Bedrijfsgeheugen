@@ -129,6 +129,11 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   wrap.append(el('h4',null,m.id),el('small',null,m.provider||'Leverancier onbekend'),el('span','tag',STATUS_LABELS[supplierStatus]||STATUS_LABELS.UNKNOWN));
   if(m.provider_api_id)wrap.append(el('p','path','API-ID: '+m.provider_api_id));
   const lifecycle=recordAvailability(m,supplierStatus);wrap.append(el('p',supplierStatus==='CONFLICT'?'blocked':'hint',lifecycle));
+  if(supplierStatus==='PARTIAL'){
+   const pending=[...new Set([...(Array.isArray(m.supplier_audit?.missing_claim_receipts)?m.supplier_audit.missing_claim_receipts:[]),...(Array.isArray(m.supplier_audit?.review_required_claims)?m.supplier_audit.review_required_claims:[])])];
+   wrap.append(el('p','warn',pending.length?'Nog te controleren: '+pending.join(', '):'Een of meer leveranciersclaims zijn nog niet onafhankelijk bevestigd.'));
+  }
+  if(supplierStatus==='CONFLICT')wrap.append(el('p','warn blocked','Tegenstrijdige bronnen: leverancier en geautoriseerde account-/regiocontrole vereist.'));
   if(m.strengths?.length)wrap.append(el('p','hint','Sterk in: '+m.strengths.slice(0,3).join(', ')));
   const official=safeSource(m.source);if(official){const a=el('a',null,'Officiële modelbron ↗');a.href=official;a.target='_blank';a.rel='noopener';wrap.append(a)}
   const choice=el('button',chosen?'primary':'',chosen?'Verwijder van wensenlijst':'Selecteer als gewenst model');choice.type='button';
