@@ -96,7 +96,7 @@ test('authenticated tenant with no independently validated finance returns expli
   });
   const r=await h(new Request('https://example.test/api/portal-forecasts'));
   assert.equal(r.status,200);
-  assert.deepEqual(await r.json(),{forecasts:[],status:'NO_VALIDATED_FINANCIAL_FORECASTS'});
+  assert.deepEqual(await r.json(),{tenantId:'tenant42',forecasts:[],status:'NO_VALIDATED_FINANCIAL_FORECASTS'});
 });
 
 test('chronology, invalid calendar days and incomplete history cannot be labelled verified',()=>{
