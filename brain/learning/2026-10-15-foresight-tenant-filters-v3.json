@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-foresight-tenant-evidence-filters-v3",
+  "fingerprint": "powerhouse|portal-v2|one-source-overlay|risk-opportunity-filters|v3",
+  "compiler": {
+    "failure_class": "TENANT_SIGNAL_FILTER_CAN_CROSS_SCOPE",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "An older concurrent candidate introduced a second authenticated signal loader in the same Foresight mount, risking duplicate UI, stale async application and divergent tenant signal interpretations.",
+  "prevention": "Re-use exactly one existing authenticated intelligence packet and tenant-authority checks. Filter scored signals and associated candidate actions together by risk/opportunity/development. Never turn scored signals into probabilities or numeric forecast inputs. Do not merge the obsolete parallel loader.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-foresight-signal-filters-v3.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-foresight-signal-filters-v3.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-foresight-signal-filters-v3.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Merged V2 tenant evidence overlay from #4427",
+    "tests": [
+      "portal-v2/tests/foresight-signal-filters-v3.test.mjs"
+    ],
+    "release_gate": "Protected CI/CodeQL, exact SHA production deploy and authenticated tenant readback"
+  },
+  "outcome": {
+    "source_candidate_created": true,
+    "production_verified": false,
+    "causal_forecast_proven": false
+  }
+}
