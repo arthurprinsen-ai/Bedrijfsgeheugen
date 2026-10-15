@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { repairBusinessInputsFromAuthority } from './business-input-read-repair.js';
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
+import { boundedReads } from './bounded-reads.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
@@ -120,10 +121,13 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
     status:signals.length?'CURRENT':'EMPTY'
   };
 }
-async function readRows(label:string,query:any){
-  const {data,error}=await query;
-  if(error)throw new Error(label);
-  return Array.isArray(data)?data:[];
+function readRows(label:string,query:any){
+  // Lazy: database requests are issued only when boundedReads schedules a job.
+  return async()=>{
+    const {data,error}=await query;
+    if(error)throw new Error(label);
+    return Array.isArray(data)?data:[];
+  };
 }
 
 Deno.serve(async(req:Request)=>{
@@ -442,7 +446,7 @@ Deno.serve(async(req:Request)=>{
       const [
         sources,publications,signalsRaw,domains,sourceCatalog,signalsCanonical,
         tenantImpacts,canonicalActions,tenantActions,baseSnapshots
-      ]=await Promise.all([
+      ]=await boundedReads([
         readRows('SOURCES',client.from('bronnen')
           .select('id,naam,uitgever,soort,controle_frequentie,laatst_gecontroleerd,laatste_controle_gelukt,actief,trefwoorden')
           .eq('actief',true).order('uitgever').order('naam')),
@@ -473,7 +477,7 @@ Deno.serve(async(req:Request)=>{
         readRows('INTELLIGENCE_SNAPSHOT',client.from('powerhouse_intelligence_snapshot_v1')
           .select('tenant_id,refreshed_at,catalog_source_count,public_source_count,connector_source_count,domain_count,observed_signal_count,signals_24h,signals_7d,high_attention_count,scored_impact_count,action_candidate_count,known_opportunity_value_eur,known_risk_value_eur,top_domains,source_health,status,evidence,updated_at')
           .eq('tenant_id','canonical').limit(1))
-      ]);
+      ],{maxConcurrent:3});
       const intelligenceSignals=mergeEntrepreneurSignals(signalsCanonical,tenantImpacts);
       const actionCandidates=mergeEntrepreneurActions(canonicalActions,tenantActions);
       const snapshot=buildEntrepreneurSnapshot(baseSnapshots[0]||null,domains,sourceCatalog,intelligenceSignals,tenantImpacts,actionCandidates);
