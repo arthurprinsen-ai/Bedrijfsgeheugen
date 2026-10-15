@@ -19575,7 +19575,7 @@
         "vision": 1,
         "agents": 7
       },
-      "eu_processing": null,
+      "eu_processing": true,
       "eu_storage": null,
       "open_weights": false,
       "self_host": false,
@@ -19587,7 +19587,7 @@
       "verified_at": "2026-09-30",
       "governance": {
         "storage_residency": "AWS region/deployment dependent",
-        "inference_residency": "AWS region/deployment dependent",
+        "inference_residency": "Official Amazon Nova 2 Sonic model card and Bedrock regional compatibility list in-region inference available in Stockholm (eu-north-1) only for EU; no Geo or Global routing. Customer account/region configuration and actual EU inference not attested.",
         "training_on_customer_data": "verify current Bedrock/Amazon model contract",
         "retention": "verify current Bedrock service terms",
         "zero_data_retention": "verify current service configuration",
@@ -19774,6 +19774,25 @@
           "independent_six_claim_supplier_approval": false,
           "customer_runtime_attested": false,
           "automatic_recommendation_eligible": false
+        },
+        "aws_eu_in_region_public_availability_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "OFFICIAL_AWS_PUBLIC_IN_REGION_AVAILABILITY_NOT_CUSTOMER_ATTESTATION",
+          "model_id": "amazon.nova-2-sonic-v1:0",
+          "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-2-sonic.html",
+          "independent_corroboration": "https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html",
+          "source_locator": "Nova 2 Sonic > Regional Availability > eu-north-1 (Stockholm): In-Region supported; Geo not supported; Global not supported",
+          "eu_in_region_potential": true,
+          "region": "eu-north-1",
+          "routing": "In-Region only",
+          "geo_cross_region_supported": false,
+          "global_cross_region_supported": false,
+          "eu_storage_attested": false,
+          "customer_account_entitlement_verified": false,
+          "tenant_region_config_verified": false,
+          "vendor_governance_independently_accepted": false,
+          "automatic_recommendation_eligible": false,
+          "caveat": "Published provider support is not an authenticated customer's account entitlement, selected route, storage residency, or executed DPA. Retain PARTIAL and independent acceptance hold."
         }
       },
       "supplier_pricing_research": {
