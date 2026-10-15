@@ -36,6 +36,29 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'powerhouse-contextual-foresight-studio-v1',
+      fingerprint:'powerhouse|portal-v2|cross-domain-foresight|v1',
+      label:'Powerhouse Foresight — interactieve cross-domain scenarioverkenning',
+      owner:'ONE BRAIN / Portal V2 / authenticated Brain operating loop',
+      authority:'tenant-specific portal goal histories and tenant-authenticated Brain observations only',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['customer historical metrics with provenance','customer strategic goals','authenticated tenant Brain runtime observations']),
+      outputs:Object.freeze(['7-domain goal and trend explorer','30/90/180/365 day trend horizons','transparent hypothesis-based what-if scenario charts','contextual dependencies and existing action routes']),
+      runtime:Object.freeze({
+        model:'portal-v2/foresight-scenario-studio.js',
+        mount:'portal-v2/foresight-context-ui.js',
+        test:'portal-v2/tests/foresight-scenario-studio.test.mjs',
+        learning:'brain/learning/2026-10-15-cross-domain-foresight-4420.json',
+        documentation:'docs/changes/2026-10-15-cross-domain-foresight-4420.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true, customerHistoryRequired:true, noGlobalForecastLeak:true,
+        noSyntheticKpis:true, noScenarioAsPrediction:true, noCausalOrRealizedClaims:true,
+        unknownHeartbeatIsNotGreen:true, tenantAuthorizationRequired:true,
+        backtestAndIndependentReviewForVerifiedForecast:true
+      })
+    }),
+    Object.freeze({
       id:'daily-entrepreneur-steering-v1',
       fingerprint:'powerhouse|one-brain|daily-entrepreneur-steering|v1',
       label:'Daily entrepreneur steering — know, decide, do, measure, learn',
