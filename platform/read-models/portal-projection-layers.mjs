@@ -14,6 +14,11 @@ export function composePortalProjectionLayers({legacy=null,canonical=null}={}){
    else if(key==='company')out.company={...obj(l.company),...obj(value)};
    else if(key==='graph')out.graph=mergeGraph(l.graph,value);
    else if(key==='admin')out.admin=mergeAdmin(l.admin,value);
+   // The legacy tenant projection owns customer AI preferences and activation
+   // requests. Canonical Brain pages may also contain `portal`, but must not
+   // erase these tenant choices merely by being present. For matching fields
+   // the newer canonical value still wins, so no stale legacy override occurs.
+   else if(key==='portal')out.portal={...obj(l.portal),...obj(value)};
    else if(key==='sourceMeta')out.sourceMeta={...obj(l.sourceMeta),...obj(value)};
    else out[key]=value;
  }

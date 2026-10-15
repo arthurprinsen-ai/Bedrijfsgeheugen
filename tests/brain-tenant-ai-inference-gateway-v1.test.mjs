@@ -7,6 +7,7 @@ import {evaluateTenantModelChoice} from '../platform/policy/tenant-model-choice.
 import {evaluateTenantAiActivation} from '../platform/api/tenant-ai-activation-readiness.mjs';
 import {handleTenantAiActivationStatus} from '../platform/api/tenant-ai-activation-handler.mjs';
 import {resolveDesiredTenantModel} from '../platform/policy/tenant-ai-default-model.mjs';
+import {composePortalProjectionLayers} from '../platform/read-models/portal-projection-layers.mjs';
 const now=1_000_000,key='test-server-only-key-0123456789abcdef0123456789';
 const tenantId='tenant-a';
 const profile={...CURRENT_AI_DEPLOYMENT_PROFILE,provider:'MISTRAL_API',modelFamily:'MISTRAL',modelId:'mistral-small-latest'};
@@ -373,4 +374,15 @@ test('readiness API authenticates first, scopes storage to identity tenant and p
  });
  assert.equal(mismatched.status,403);
  assert.equal((await mismatched.json()).error,'TENANT_SCOPE_MISMATCH');
+});
+
+test('activation request remains server-verifiable after canonical Brain updates portal pages',()=>{
+ const legacy={tenantId,data:activationPortal.data};
+ const canonical={tenantId,data:{portal:{pages:{forecast:{status:'source-derived'}}},sourceMeta:{updatedAt:'2026-10-15T12:44:00.000Z'}}};
+ const portalRecord={tenantId,data:composePortalProjectionLayers({legacy,canonical})};
+ const evaluated=evaluateTenantAiActivation({...activationInputs,portalRecord});
+ assert.equal(evaluated.reviewRequested,true);
+ assert.equal(evaluated.checks.find(x=>x.key==='request').status,'COMPLETE');
+ assert.equal(portalRecord.data.portal.pages.forecast.status,'source-derived');
+ assert.equal(portalRecord.data.portal.aiModelPreferences.defaultModelId,'mistral-small');
 });
