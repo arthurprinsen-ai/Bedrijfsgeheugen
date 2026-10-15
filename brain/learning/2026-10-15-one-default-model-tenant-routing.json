@@ -11,8 +11,7 @@
   "prevention_rule": "Persist one tenant defaultModelId alongside optional workload overrides. Resolve strict override-first, default-second only for named workloads; then match catalog/API ID, signed proof, route, supplier status, tenant and sovereignty before any provider call. A preference never grants permission and forecast computations remain canonical.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs",
-      "tests/portal-ai-model-choice.test.mjs"
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
     ]
   },
   "test_evidence": {
