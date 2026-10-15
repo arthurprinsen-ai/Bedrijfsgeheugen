@@ -39,6 +39,7 @@ export function replayFinancialHoldout(backtest,history){
   sumError+=Math.abs(row.predicted-row.actual);
   sumBaselineError+=Math.abs(row.baseline_predicted-row.actual);
  }
+ if(!Number.isFinite(sumError)||!Number.isFinite(sumBaselineError))return false;
  const expectedMae=sumError/count, expectedBaselineMae=sumBaselineError/count;
  if(!finite(backtest.mae)||!finite(backtest.baseline_mae)
     ||backtest.mae<0||backtest.baseline_mae<0)return false;
