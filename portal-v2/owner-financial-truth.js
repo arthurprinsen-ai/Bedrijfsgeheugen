@@ -64,7 +64,7 @@ export function ownerFinancialReadouts(payload,{tenantId,now=Date.now()}={}){
 }
 export function createOwnerFinancialClient({fetchImpl=globalThis.fetch,authHeadersProvider=async()=>({})}={}){
  return Object.freeze({async load(tenantId){
-  if(!clean(tenantId))throw new Error('TENANT_SCOPE_REQUIRED');
+  const expectedTenant=clean(tenantId);
   const auth=await authHeadersProvider();
   if(!/^Bearer\s+.+$/i.test(clean(auth?.authorization)))throw new Error('AUTH_REQUIRED');
   const response=await fetchImpl('/api/portal-forecasts',{
@@ -73,7 +73,8 @@ export function createOwnerFinancialClient({fetchImpl=globalThis.fetch,authHeade
   });
   if(!response.ok)throw new Error(`FINANCIAL_SOURCE_HTTP_${response.status}`);
   const payload=await response.json();
-  if(!payload||!Array.isArray(payload.forecasts))throw new Error('FINANCIAL_RESPONSE_INVALID');
-  return ownerFinancialReadouts(payload,{tenantId});
+  if(!payload||!Array.isArray(payload.forecasts)||!clean(payload.tenantId))throw new Error('FINANCIAL_RESPONSE_INVALID');
+  if(expectedTenant&&expectedTenant!==payload.tenantId)throw new Error('TENANT_SCOPE_MISMATCH');
+  return ownerFinancialReadouts(payload,{tenantId:payload.tenantId});
  }});
 }
