@@ -1,8 +1,4 @@
--- P0 #4198: canonical provider social proof and freshness for a degraded day.
--- The publication and predictive safety gates are preserved unchanged.
--- Source is generated from production pg_get_functiondef readback (2026-10-15).
--- "published_social_count" denotes independently provider-verified social
--- decisions; never infer this value from a mere local 'published' state.
+-- P0 #4198 canonical verified social provider readback; no bypass of completion guards.
 CREATE OR REPLACE FUNCTION public.powerhouse_execution_status(p_run_date date DEFAULT CURRENT_DATE)
  RETURNS jsonb
  LANGUAGE sql
@@ -29,9 +25,7 @@ with d as (
   where run_date=p_run_date
 ), s as (
   -- Only the canonical provider-verified social deliveries are counted.
-  -- The legacy social_posts table is independent learning telemetry and can be
-  -- empty even after the native LinkedIn publisher has received a valid ACK.
-  -- A PUBLISHED status alone or an unverifiable provider object cannot pass.
+  -- The legacy social_posts table is independent learning telemetry.
   select count(distinct btrim(delivery_ref))::int as published_social_count
   from public.powerhouse_channel_decisions
   where run_date=p_run_date
@@ -42,32 +36,8 @@ with d as (
     and coalesce((delivery_evidence->>'provider_truth_verified')::boolean,false)=true
     and (
       (channel in ('linkedin_personal','linkedin_company')
-        and delivery_ref ~ '^urn:li:(share|ugcPost):[0-9]+(
-  'run_date',p_run_date,
-  'decision_count',d.decision_count,
-  'publish_count',d.publish_count,
-  'delivered_publish_count',d.delivered_publish_count,
-  'unresolved_publish_count',d.unresolved_publish_count,
-  'published_social_count',s.published_social_count,
-  'all_channels_decided',d.decision_count=7,
-  'execution_complete',d.decision_count=7 and d.unresolved_publish_count=0
-)
-from d cross join s;
-$function$
-)
-      or (channel='instagram_company' and delivery_ref !~ '^[[:space:]]*(
-  'run_date',p_run_date,
-  'decision_count',d.decision_count,
-  'publish_count',d.publish_count,
-  'delivered_publish_count',d.delivered_publish_count,
-  'unresolved_publish_count',d.unresolved_publish_count,
-  'published_social_count',s.published_social_count,
-  'all_channels_decided',d.decision_count=7,
-  'execution_complete',d.decision_count=7 and d.unresolved_publish_count=0
-)
-from d cross join s;
-$function$
-)
+        and delivery_ref ~ '^urn:li:(share|ugcPost):[0-9]+$')
+      or (channel='instagram_company' and delivery_ref !~ '^[[:space:]]*$')
     )
 )
 select jsonb_build_object(
@@ -152,9 +122,7 @@ begin
            updated_at=now()
      where run_date=p_run_date;
   elsif current_state in ('started','degraded') and not all_ok then
-    -- Keep the readback snapshot fresh even when an unrelated genuine
-    -- Instagram/media or predictive proof gate correctly blocks completion.
-    -- Never modify state or completed_at to manufacture a green outcome.
+    -- Refresh evidence while still degraded, without changing state or completed_at.
     update public.powerhouse_daily_runs
        set evidence=coalesce(evidence,'{}'::jsonb)||jsonb_build_object(
              'execution_contract','powerhouse-daily-execution-contract-v1',
