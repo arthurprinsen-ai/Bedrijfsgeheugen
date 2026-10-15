@@ -1,7 +1,7 @@
 import { readFile, writeFile, glob } from 'node:fs/promises';
 
 const ORIGIN='https://www.bedrijfsgeheugen.nl';
-const STYLE='/assets/site-coherence-v1.css?v=20261001';
+const STYLE='/assets/site-coherence-v1.css?v=20261015-mobile1';
 
 function routeFor(path){
   const p=String(path).replace(/\\/g,'/');
