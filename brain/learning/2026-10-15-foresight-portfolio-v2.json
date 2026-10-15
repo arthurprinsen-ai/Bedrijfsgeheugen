@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-foresight-portfolio-4420-v2",
+  "fingerprint": "powerhouse|foresight|cross-domain-scenarios|runtime-evidence|v2",
+  "compiler": {
+    "failure_class": "UNVERIFIED_CROSS_DOMAIN_SCENARIO_OR_HEARTBEAT_PROMOTION",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Initial seven-domain scenario studio displayed one metric at a time and did not provide a portfolio-wide evidence and observed Brain operational comparison. Platform forecast counts can be confused with tenant-approved customer predictions.",
+  "prevention": "Allow portfolio scenario comparison only from observed customer historical metrics; distinguish independent what-if assumptions, unknown data, recent authenticated Brain runtime observations and unverified Heartbeat history. Never aggregate mixed units or infer causal uplift.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-foresight-portfolio-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "portal-v2/tests/foresight-portfolio.test.mjs",
+      "tests/brain-foresight-portfolio-v2.test.mjs"
+    ],
+    "scope": "Single existing V2 scenario studio, additive read-only derived UI, no Supabase mutation",
+    "model_validation": "Not independent backtesting or numeric cross-domain calibration"
+  },
+  "outcome": {
+    "candidate_implemented": true,
+    "prod_verified": false,
+    "customer_backtest_verified": false
+  }
+}
