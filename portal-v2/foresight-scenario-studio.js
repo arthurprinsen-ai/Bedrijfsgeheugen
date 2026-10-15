@@ -1,4 +1,5 @@
 import { buildGoalForecast, GOAL_METRICS } from '../brain/context/goal-forecast-engine.mjs';
+import {createForesightSignalDriverController} from './foresight-signal-drivers.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const valueOf=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):null;
@@ -126,13 +127,14 @@ function markup(model){
     '<button type="button" data-pfs-page="'+esc(m.page)+'">Bekijk bron en bijbehorende acties →</button></div>'+
     '<div><h4>Betrouwbaarheid en herkomst</h4><p>'+m.history.length+' historische meetpunten; '+m.evidenceCount+' bronverwijzingen. Status: '+esc(m.quality)+'.</p><p>'+esc(m.note)+'</p></div></div>'+
     '<details class="pfs-sources"><summary>Brein, Powerhouse en Heartbeat: aansluitstatus</summary><p>'+esc(model.intelligence.brain)+' · '+esc(model.intelligence.powerhouse)+' · '+esc(model.intelligence.heartbeat)+'.</p><p>Een platformbrede voorspelling is geen automatisch gevalideerde klantprognose. Eerst authenticatie, tenant-scope, versheid en modelkwaliteit controleren.</p></details>'+
-    '</section>';
+    '<div data-pfs-driver-host></div></section>';
 }
 export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',openPage}={}){
   if(!host?.appendChild)return null;
   host.querySelector?.('[data-pfs-studio]')?.remove();
   const selected={metric:'',days:90,sensitivity:0,asOf:new Date().toISOString().slice(0,10)+'T00:00:00Z'};
   const section=(host.ownerDocument||document).createElement('div');
+  const signalDrivers=createForesightSignalDriverController({openPage});
   const draw=()=>{
     const model=buildForesightStudioModel(state,selected);
     section.innerHTML=markup(model);
@@ -141,6 +143,7 @@ export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',o
     section.querySelector('[data-pfs-sensitivity]')?.addEventListener('input',event=>{selected.sensitivity=Number(event.target.value);draw();});
     section.querySelectorAll('[data-pfs-preset]').forEach(button=>button.addEventListener('click',()=>{selected.sensitivity=Number(button.dataset.pfsPreset);draw();}));
     section.querySelector('[data-pfs-page]')?.addEventListener('click',event=>openPage?.(event.currentTarget.dataset.pfsPage));
+    signalDrivers.render(section.querySelector('[data-pfs-driver-host]'),model.active.id);
   };
   draw();host.appendChild(section);
   return section;
