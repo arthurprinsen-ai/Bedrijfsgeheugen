@@ -445,9 +445,9 @@ function renderModels(){
  $('modelCount').textContent=rows.length===catalog.models.length?catalog.models.length:`${rows.length}/${catalog.models.length}`;
 }
 async function init(){
- try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}
- catch{try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'reload'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
- try{const g=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-provider-governance-v1.json',{cache:'no-store'});providerGovernance=await g.json();}catch{providerGovernance={providers:[]};}
+ try{const r=await fetch('/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}
+ catch{try{const r=await fetch('/data/ai-model-catalog-v1.json',{cache:'reload'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
+ try{const g=await fetch('/data/ai-provider-governance-v1.json',{cache:'no-store'});providerGovernance=await g.json();}catch{providerGovernance={providers:[]};}
  $('modelCount').textContent=catalog.models.length;$('providerCount').textContent=new Set(catalog.models.map(m=>m.provider)).size;
  const dates=catalog.models.map(m=>m.verification_evidence?.checked_on).filter(x=>typeof x==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(x));
  const latest=dates.sort().at(-1);
@@ -463,7 +463,7 @@ document.querySelectorAll('.goalCard').forEach(card=>card.addEventListener('clic
 ['cadence','people','volume','dataSensitivity','errorImpact','integration','priority','budget','deploymentPreference'].forEach(id=>$(id)?.addEventListener('change',simpleProfile));
 $('advise').addEventListener('click',advise);
 ['search','providerFilter','tierFilter','governanceFilter','modalityFilter','taskFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderModels));
-$('leadForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('email').value.trim(),status=$('leadStatus');status.textContent='Opslaan…';const advice=lastAdvice||{model:'not-selected',goal:$('goalInput').value.trim()};const idempotencyKey='ai-modelwijzer:'+email.toLowerCase()+':'+advice.model;try{const r=await fetch('https://www.bedrijfsgeheugen.nl/api/ai-modelwijzer-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,model:advice.model,goal:advice.goal,idempotencyKey})});const j=await r.json();status.textContent=j.ok?'Opgeslagen. Je modelkeuze zit nu in de vervolgstap.':'Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}catch{status.textContent='Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}});
+$('leadForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('email').value.trim(),status=$('leadStatus');status.textContent='Opslaan…';const advice=lastAdvice||{model:'not-selected',goal:$('goalInput').value.trim()};const idempotencyKey='ai-modelwijzer:'+email.toLowerCase()+':'+advice.model;try{const r=await fetch('/api/ai-modelwijzer-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,model:advice.model,goal:advice.goal,idempotencyKey})});const j=await r.json();status.textContent=j.ok?'Opgeslagen. Je modelkeuze zit nu in de vervolgstap.':'Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}catch{status.textContent='Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}});
 init();
 </script>
 <script data-bg-page-runtime="modelwijzer-flow-autoplay-v1">
