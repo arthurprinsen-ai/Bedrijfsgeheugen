@@ -27,7 +27,19 @@ test('blog SEO and approved attributed facts remain present in EN translation',(
   assert.ok(entries.some(([k,v])=>k.includes('Digitalisering MKB: wat verandert') && v.includes('SME digitalization')));
   assert.ok(entries.some(([k,v])=>k.includes('TKI Bouw en Techniek') && v.includes('€3 million') && v.includes('Bouwend Nederland')));
   assert.ok(entries.some(([k,v])=>k.includes('Powerhouse') && v.includes('Powerhouse') && v.includes('explicit approval')));
-  assert.ok(entries.some(([k,v])=>k.includes('https://www.bouwendnederland.nl/kennis/digitalisering') && v.includes('https://www.bouwendnederland.nl/kennis/digitalisering')));
+  // Parse and match the attributed source URL by protocol, host and exact path.
+  // A substring match is vulnerable to lookalike URLs on unrelated hosts.
+  const officialSource=urlText=>{
+    try {
+      const u=new URL(urlText);
+      return u.protocol==='https:' &&
+        u.hostname==='www.bouwendnederland.nl' &&
+        u.pathname==='/kennis/digitalisering';
+    } catch { return false; }
+  };
+  assert.ok(entries.some(([source,english])=>
+    urls(source).some(officialSource) && urls(english).some(officialSource)
+  ));
   assert.ok(entries.some(([k,v])=>k.includes('15-10-2026') && v.includes('15-10-2026')));
 });
 test('no machine-translation override or bypass is included in the cache patch',()=>{
