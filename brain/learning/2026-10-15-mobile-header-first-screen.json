@@ -5,16 +5,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "case": "2026-10-15 iPhone homepage screenshot",
-        "observed": "Header displays a menu-like yellow brand pictogram beside the actual menu, oversized yellow H1 highlights overlap at phone widths, a large timed cost banner covers the CTA",
-        "status": "user-observed"
-      },
-      {
-        "case": "2026-10-15 iPhone platform screenshot",
-        "observed": "Trustbar and oversized page-hero push content down; timed cost banner covers breadcrumb/content",
-        "status": "user-observed"
-      }
+      "tests/brain-mobile-first-screen.test.mjs"
     ]
   },
   "root_cause": "The deploy build replaces original index/product HTML with a V18 canonical shared shell; legacy CSS in assets/kop.css does not style the active v17-header. Fixed promotional overlay and unbounded mobile headline remained active.",
@@ -34,7 +25,17 @@
       "tests/site-shell-mobile-header.test.mjs (added; CI acceptance pending)"
     ],
     "review": "Customer-supplied iPhone screenshots reviewed against live homepage and /product",
-    "production_readback": "NOT_YET_VERIFIED; release is intentionally gated"
+    "production_readback": "NOT_YET_VERIFIED; release is intentionally gated",
+    "historical_screenshots": [
+      {
+        "route": "/",
+        "observation": "Mobile title overflows and yellow marker blocks cover text"
+      },
+      {
+        "route": "/product",
+        "observation": "Header/hero oversized, timed cost overlay blocks content"
+      }
+    ]
   },
   "outcome": {
     "status": "IMPLEMENTED_ON_PR_NOT_PRODUCTION",
