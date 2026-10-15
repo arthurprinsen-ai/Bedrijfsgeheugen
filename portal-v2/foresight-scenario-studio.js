@@ -139,22 +139,37 @@ export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',o
   if(!host?.appendChild)return null;
   host.querySelectorAll?.('[data-pfs-host]').forEach(node=>node.remove());
   const selected={metric:'',days:90,sensitivity:0,asOf:new Date().toISOString().slice(0,10)+'T00:00:00Z'};
-  let intelligence=null,sourceStatus='loading';
+  selected.kind='all';
+  let intelligence=null,sourceStatus='loading',requestGeneration=0;
   const section=(host.ownerDocument||document).createElement('div');section.dataset.pfsHost='true';
   const draw=()=>{
     const model=buildForesightStudioModel(state,selected);
-    const evidence=intelligence?buildTenantForesightEvidence(intelligence,{metric:model.active.id}):null;
-    section.innerHTML=markup(model)+renderTenantForesightEvidence(evidence,{status:sourceStatus});
+    const evidence=intelligence?buildTenantForesightEvidence(intelligence,{metric:model.active.id,kind:selected.kind}):null;
+    section.innerHTML=markup(model)+renderTenantForesightEvidence(evidence,{status:sourceStatus,kind:selected.kind});
     section.querySelector('[data-pfs-metric]')?.addEventListener('change',event=>{selected.metric=event.target.value;selected.sensitivity=0;draw();});
     section.querySelector('[data-pfs-days]')?.addEventListener('change',event=>{selected.days=Number(event.target.value);draw();});
     section.querySelector('[data-pfs-sensitivity]')?.addEventListener('input',event=>{selected.sensitivity=Number(event.target.value);draw();});
     section.querySelectorAll('[data-pfs-preset]').forEach(button=>button.addEventListener('click',()=>{selected.sensitivity=Number(button.dataset.pfsPreset);draw();}));
     section.querySelector('[data-pfs-page]')?.addEventListener('click',event=>openPage?.(event.currentTarget.dataset.pfsPage));
+    section.querySelector('[data-pfs-evidence-filter]')?.addEventListener('change',event=>{
+      selected.kind=event.target.value;
+      draw();
+    });
+    section.querySelector('[data-pfs-evidence-refresh]')?.addEventListener('click',refreshEvidence);
   };
-  draw();host.appendChild(section);
-  Promise.resolve().then(()=>import('./modules/entrepreneur-intelligence.js'))
-    .then(mod=>mod.loadEntrepreneurData())
-    .then(packet=>{if(!section.isConnected)return;intelligence=packet;sourceStatus='ready';draw();})
-    .catch(()=>{if(!section.isConnected)return;sourceStatus='unavailable';draw();});
+  const refreshEvidence=()=>{
+    const ticket=++requestGeneration;
+    intelligence=null;sourceStatus='loading';draw();
+    Promise.resolve().then(()=>import('./modules/entrepreneur-intelligence.js'))
+      .then(mod=>mod.loadEntrepreneurData())
+      .then(packet=>{
+        if(!section.isConnected||ticket!==requestGeneration)return;
+        intelligence=packet;sourceStatus='ready';draw();
+      }).catch(()=>{
+        if(!section.isConnected||ticket!==requestGeneration)return;
+        intelligence=null;sourceStatus='unavailable';draw();
+      });
+  };
+  draw();host.appendChild(section);refreshEvidence();
   return section;
 }
