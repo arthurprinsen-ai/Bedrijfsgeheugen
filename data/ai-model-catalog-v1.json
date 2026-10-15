@@ -23286,6 +23286,22 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_and_self_host_price_readback_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_official_model_page": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
+          "model_identifier": "tiiuae/Falcon-H1-0.5B-Instruct",
+          "published_license_label": "falcon-llm-license",
+          "model_weights_distribution": "Official TII model card offers model weights and documented self-hosted inference methods",
+          "hosted_provider_token_tariff": "NOT_ESTABLISHED_BY_MODEL_CARD",
+          "hosting_compute_storage_and_operations_usd": "UNKNOWN_DEPLOYMENT_DEPENDENT",
+          "commercial_license_interpretation": "REQUIRES_CURRENT_LICENSE_TERMS_REVIEW_FOR_ACTUAL_COMMERCIAL_USE",
+          "classification": "OFFICIAL_MODEL_CARD_SOURCE_READBACK_NOT_FULL_PRICE_APPROVAL",
+          "supplier_full_approval": false,
+          "customer_runtime_checked": false,
+          "automatic_recommendation_eligible": false,
+          "pricing_status": "OPEN_OR_NON_COMPARABLE_TO_SAAS_TOKEN_PRICE",
+          "note": "Published downloadable weights do not imply a free production-hosted API, zero compute costs or unrestricted commercial usage."
         }
       },
       "falcon_license_research_20261014": {
@@ -23644,6 +23660,22 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_and_self_host_price_readback_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_official_model_page": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
+          "model_identifier": "tiiuae/Falcon-H1-1.5B-Instruct",
+          "published_license_label": "falcon-llm-license",
+          "model_weights_distribution": "Official TII model card offers model weights and documented self-hosted inference methods",
+          "hosted_provider_token_tariff": "NOT_ESTABLISHED_BY_MODEL_CARD",
+          "hosting_compute_storage_and_operations_usd": "UNKNOWN_DEPLOYMENT_DEPENDENT",
+          "commercial_license_interpretation": "REQUIRES_CURRENT_LICENSE_TERMS_REVIEW_FOR_ACTUAL_COMMERCIAL_USE",
+          "classification": "OFFICIAL_MODEL_CARD_SOURCE_READBACK_NOT_FULL_PRICE_APPROVAL",
+          "supplier_full_approval": false,
+          "customer_runtime_checked": false,
+          "automatic_recommendation_eligible": false,
+          "pricing_status": "OPEN_OR_NON_COMPARABLE_TO_SAAS_TOKEN_PRICE",
+          "note": "Published downloadable weights do not imply a free production-hosted API, zero compute costs or unrestricted commercial usage."
         }
       },
       "falcon_license_research_20261014": {
@@ -24002,6 +24034,22 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_and_self_host_price_readback_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_official_model_page": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
+          "model_identifier": "tiiuae/Falcon-H1-3B-Instruct",
+          "published_license_label": "falcon-llm-license",
+          "model_weights_distribution": "Official TII model card offers model weights and documented self-hosted inference methods",
+          "hosted_provider_token_tariff": "NOT_ESTABLISHED_BY_MODEL_CARD",
+          "hosting_compute_storage_and_operations_usd": "UNKNOWN_DEPLOYMENT_DEPENDENT",
+          "commercial_license_interpretation": "REQUIRES_CURRENT_LICENSE_TERMS_REVIEW_FOR_ACTUAL_COMMERCIAL_USE",
+          "classification": "OFFICIAL_MODEL_CARD_SOURCE_READBACK_NOT_FULL_PRICE_APPROVAL",
+          "supplier_full_approval": false,
+          "customer_runtime_checked": false,
+          "automatic_recommendation_eligible": false,
+          "pricing_status": "OPEN_OR_NON_COMPARABLE_TO_SAAS_TOKEN_PRICE",
+          "note": "Published downloadable weights do not imply a free production-hosted API, zero compute costs or unrestricted commercial usage."
         }
       },
       "falcon_license_research_20261014": {
@@ -24361,6 +24409,22 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_and_self_host_price_readback_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_official_model_page": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
+          "model_identifier": "tiiuae/Falcon-H1-7B-Instruct",
+          "published_license_label": "falcon-llm-license",
+          "model_weights_distribution": "Official TII model card offers model weights and documented self-hosted inference methods",
+          "hosted_provider_token_tariff": "NOT_ESTABLISHED_BY_MODEL_CARD",
+          "hosting_compute_storage_and_operations_usd": "UNKNOWN_DEPLOYMENT_DEPENDENT",
+          "commercial_license_interpretation": "REQUIRES_CURRENT_LICENSE_TERMS_REVIEW_FOR_ACTUAL_COMMERCIAL_USE",
+          "classification": "OFFICIAL_MODEL_CARD_SOURCE_READBACK_NOT_FULL_PRICE_APPROVAL",
+          "supplier_full_approval": false,
+          "customer_runtime_checked": false,
+          "automatic_recommendation_eligible": false,
+          "pricing_status": "OPEN_OR_NON_COMPARABLE_TO_SAAS_TOKEN_PRICE",
+          "note": "Published downloadable weights do not imply a free production-hosted API, zero compute costs or unrestricted commercial usage."
         }
       },
       "falcon_license_research_20261014": {
@@ -24720,6 +24784,22 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_and_self_host_price_readback_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_official_model_page": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
+          "model_identifier": "tiiuae/Falcon-H1-34B-Instruct",
+          "published_license_label": "falcon-llm-license",
+          "model_weights_distribution": "Official TII model card offers model weights and documented self-hosted inference methods",
+          "hosted_provider_token_tariff": "NOT_ESTABLISHED_BY_MODEL_CARD",
+          "hosting_compute_storage_and_operations_usd": "UNKNOWN_DEPLOYMENT_DEPENDENT",
+          "commercial_license_interpretation": "REQUIRES_CURRENT_LICENSE_TERMS_REVIEW_FOR_ACTUAL_COMMERCIAL_USE",
+          "classification": "OFFICIAL_MODEL_CARD_SOURCE_READBACK_NOT_FULL_PRICE_APPROVAL",
+          "supplier_full_approval": false,
+          "customer_runtime_checked": false,
+          "automatic_recommendation_eligible": false,
+          "pricing_status": "OPEN_OR_NON_COMPARABLE_TO_SAAS_TOKEN_PRICE",
+          "note": "Published downloadable weights do not imply a free production-hosted API, zero compute costs or unrestricted commercial usage."
         }
       },
       "falcon_license_research_20261014": {
@@ -25079,6 +25159,22 @@
           "customer_runtime_retention_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "falcon_license_and_self_host_price_readback_20261015": {
+          "checked_on": "2026-10-15",
+          "exact_official_model_page": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
+          "model_identifier": "tiiuae/Falcon-H1R-7B",
+          "published_license_label": "falcon-llm-license",
+          "model_weights_distribution": "Official TII model card offers model weights and documented self-hosted inference methods",
+          "hosted_provider_token_tariff": "NOT_ESTABLISHED_BY_MODEL_CARD",
+          "hosting_compute_storage_and_operations_usd": "UNKNOWN_DEPLOYMENT_DEPENDENT",
+          "commercial_license_interpretation": "REQUIRES_CURRENT_LICENSE_TERMS_REVIEW_FOR_ACTUAL_COMMERCIAL_USE",
+          "classification": "OFFICIAL_MODEL_CARD_SOURCE_READBACK_NOT_FULL_PRICE_APPROVAL",
+          "supplier_full_approval": false,
+          "customer_runtime_checked": false,
+          "automatic_recommendation_eligible": false,
+          "pricing_status": "OPEN_OR_NON_COMPARABLE_TO_SAAS_TOKEN_PRICE",
+          "note": "Published downloadable weights do not imply a free production-hosted API, zero compute costs or unrestricted commercial usage."
         }
       },
       "falcon_license_research_20261014": {
