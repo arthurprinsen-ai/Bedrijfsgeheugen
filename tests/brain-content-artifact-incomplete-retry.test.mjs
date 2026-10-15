@@ -28,3 +28,15 @@ test('provider generation requires valid strict schema and retains independent a
   assert.match(source,/if\(!personalFinalCopyValid\(bodyText,personalSource\?\.evidence\|\|\{\}\)\) throw new Error\('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED'\)/);
   assert.match(source,/if\s*\(!companyTrackingUrl \|\| !bodyText\.includes\(companyTrackingUrl\)\)/);
 });
+
+test('Composio/Groq fallback retries incomplete strict JSON once without bypassing schema or editorial checks',()=>{
+  const source=readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
+  assert.match(source,/async function callComposioArtifact\([^\n]*allowTruncationRetry=true\)/);
+  assert.match(source,/const reason=incompleteStructuredArtifactReason\(providerTruncation,error\)/);
+  assert.match(source,/if\(!allowTruncationRetry\|\|!reason\)throw error/);
+  assert.match(source,/callComposioArtifact\(db,model,system,user,retryBudget,false\)/);
+  assert.match(source,/return parseArtifactJson\(raw\)/);
+  assert.match(source,/COMPOSIO_ARTIFACT_SCHEMA_INVALID/);
+  assert.match(source,/PERSONAL_EDITORIAL_CONTRACT_FAILED/);
+  assert.match(source,/PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED/);
+});
