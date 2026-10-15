@@ -80,7 +80,7 @@ test('reviewed financial readouts render provenance; unknown stays absent',()=>{
  assert.match(html,/Omzet · laatste bronperiode/);
  assert.match(html,/€ 15\.000/);
  assert.match(html,/Gevalideerde historische reeks/);
- assert.match(html,/Geen geverifieerde margeberekening/);
+ assert.match(html,/Nog geen geverifieerde margeberekening/);
  assert.doesNotMatch(html,/Kasprognose · eerste toekomstige periode/);
 });
 test('canonical actions only enable human approval for unblocked proposed decisions',()=>{
