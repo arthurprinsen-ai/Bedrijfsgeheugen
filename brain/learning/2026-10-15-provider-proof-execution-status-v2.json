@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "powerhouse-provider-proof-execution-status-20261015",
+  "fingerprint": "powerhouse|daily-run|legacy-social_posts-empty|unverified-urn-false-complete|v2",
+  "compiler": {
+    "failure_class": "CANONICAL_EXECUTION_STATUS_UNVERIFIED_PROVIDER_DELIVERY",
+    "scope": "COMMERCIAL_PROVIDER_EVIDENCE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Production powerhouse_execution_status counted social_posts rows, which were empty for the Composio social publisher, while accepting state=published without checking provider_truth_verified. On 15 October: canonical company LinkedIn + blog had independent proof but a personal URN had 403 Forbidden readback; live function nevertheless counted all 3 as delivered and 0 social posts.",
+  "prevention": "Reconstruct daily publication status exclusively from canonical channel decisions and only count provider-verified evidence with a nonblank delivery reference and provider_status published. Do not treat a provider-issued URN alone, a queue, scheduled state, cron completion, token presence or a DB artifact as external proof. Never republish to fix a reporting inconsistency.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-provider-proof-execution-status-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-provider-proof-execution-status-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-provider-proof-execution-status-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "supabase": "2026-10-15 social_posts count=0, channel_decisions blog and linkedin_company provider_truth_verified=true, linkedin_personal published provider_truth_verified=false with readback Forbidden 403; previous execution_status() returned 3 delivered and 0 social.",
+    "contract": "Existing 7 channel decisions and single canonical decision table; no writes to provider, no duplicate send.",
+    "release_gate": "Required CI + CodeQL + native Supabase Preview + protected merge + production SQL function readback with exact counts, no fabricated LinkedIn personal proof"
+  },
+  "outcome": {
+    "source_candidate_created": true,
+    "production_verified": false,
+    "provider_personal_readback_verified": false
+  }
+}
