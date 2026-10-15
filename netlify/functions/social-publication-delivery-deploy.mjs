@@ -1,10 +1,8 @@
-import { runSocialPublicationDelivery } from './social-publication-delivery.mjs';
-
+// Historical deploy hook retired: do not execute a second social sender.
+// Production delivery is exclusively managed by the existing Supabase publisher.
 export default {
-  async deploySucceeded(event) {
-    if (event?.deploy?.context !== 'production') return;
-    await runSocialPublicationDelivery();
-  }
+  async deploySucceeded() {
+    return {ok:true,legacy_sender:'RETIRED',provider_write_performed:false};
+  },
 };
-
-export const config = { region:'fra' };
+export const config={region:'fra'};
