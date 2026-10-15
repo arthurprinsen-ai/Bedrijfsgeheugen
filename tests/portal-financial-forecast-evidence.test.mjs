@@ -123,7 +123,7 @@ test('financial gateway filters invalid reviews before applying the chart cap',(
  assert.match(edge,/\.filter\(row=>eligibleFinancialForecast\(row,tenantId\)\)\.slice\(0,30\)/,
   'Independent review must precede the presentation cap');
  const invalid=Array.from({length:30},(_,i)=>({...base,forecast_id:'unreviewed-'+i,verification_status:'passed',
-  verified_at:'2026-09-01T10:00:00Z'}));
+  verified_at:'2026-10-14T11:00:00Z',source_updated_at:'2026-08-01T10:00:00Z'}));
  const rows=[...invalid,base];
  const safe=rows.filter(row=>eligibleFinancialForecast(row,'tenant42')).slice(0,30);
  assert.deepEqual(safe,[base],'One valid older candidate should not be hidden by thirty invalid reviews');
