@@ -22,4 +22,4 @@ De huidige browserprojectie `powerhouse.executive` levert geen betrouwbare, gene
 5. Voor autonome externe handelingen: expliciete rollen en policies, brongebonden toestemming, duurzame idempotente job/outbox, provider-write/readback en resultaatmeting via de bestaande Brain-executieketen. **Geen** parallelle sender of nieuwe tenantdatabase is toegevoegd.
 
 ## Canonieke bestandsset
-`portal-v2/owner-operating-model.js`, `portal-v2/owner-operating-system.js`, `portal-v2/owner-operating-system.css`, minimale aansluitingen in `page-registry.js`, `page-shell.js`, `modules/overview.js`, met `tests/owner-operating-system.test.mjs`.
+`portal-v2/owner-operating-model.js`, `portal-v2/owner-operating-system.js`, `portal-v2/owner-operating-system.css`, minimale aansluitingen in `page-registry.js`, `page-shell.js`, `modules/overview.js`, met `tests/portal-v2-owner-operating-system.test.mjs`.
