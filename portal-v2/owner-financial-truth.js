@@ -5,8 +5,12 @@
  */
 const clean=value=>String(value??'').trim();
 const finite=value=>typeof value==='number'&&Number.isFinite(value);
-const validDate=value=>typeof value==='string'&&/^\d{4}-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12]\d|3[01]))?$/.test(value)&&
- (value.length===7||new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value);
+const validDate=value=>{
+ if(typeof value!=='string'||!/^\d{4}-(?:0[1-9]|1[0-2])(?:-(?:0[1-9]|[12]\d|3[01]))?$/.test(value))return false;
+ if(value.length===7)return true;
+ const parsed=new Date(value+'T00:00:00Z');
+ return Number.isFinite(parsed.getTime())&&parsed.toISOString().slice(0,10)===value;
+};
 const fresh=(date,now)=>{const ms=Date.parse(date||'');const age=now-ms;return Number.isFinite(age)&&age>=0&&age<=30*86_400_000;};
 const seriesValid=series=>Array.isArray(series)&&series.length>0&&series.length<=120&&
  series.every((point,i)=>validDate(point?.date)&&finite(point?.value)&&
