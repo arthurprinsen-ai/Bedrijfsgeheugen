@@ -12,6 +12,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
     ]
   },
   "test_evidence": {
