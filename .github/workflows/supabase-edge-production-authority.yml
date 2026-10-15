@@ -234,8 +234,16 @@ jobs:
               mkdir -p "$root"
               if ! (
                 cd "$root"
-                supabase functions download "$fn" --project-ref "$PROJECT_REF" --use-api
+                # Retain the diagnostic for classification without exposing credentials.
+                supabase functions download "$fn" --project-ref "$PROJECT_REF" --use-api 2>&1 | tee "$root/download.log"
               ); then
+                # Authentication failures cannot recover through retries; require a
+                # renewed GitHub Actions SUPABASE_ACCESS_TOKEN. Preserve the release
+                # gate and stop immediately instead of repeating the same 401 24 times.
+                if grep -Eiq 'Error status 401|Invalid access token' "$root/download.log"; then
+                  echo "::error::SUPABASE_ACCESS_TOKEN_INVALID_REAUTH_REQUIRED"
+                  exit 78
+                fi
                 attempt_ok=false
                 break
               fi
