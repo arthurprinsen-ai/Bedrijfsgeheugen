@@ -1,0 +1,34 @@
+{
+  "id": "social-recovery-regression-invocation-20261015-v1",
+  "fingerprint": "social-recovery|test-rename-workflow-dispatch-unblocked|v1",
+  "date": "2026-10-15",
+  "status": "CANDIDATE_REQUIRES_REQUIRED_CI_AND_PRODUCTION_PROOF",
+  "compiler": {
+    "failure_class": "TEST_WORKFLOW_REFERENCE_STALE_AFTER_CANONICAL_RENAME",
+    "machine_enforceable": true
+  },
+  "root_cause": "A renamed regression-test file was not reflected in its own test assertion. The scheduled social recovery workflow failed in the preflight before invocation, despite merged deployment code.",
+  "prevention": [
+    "Keep the workflow's regression test assertion aligned with the exact invocation path, then execute the standalone test in the scheduled workflow.",
+    "Retain fail-closed service role authentication, same-day-only recovery, no duplicate provider writes, and provider proof before declaring success.",
+    "Check workflow dispatch outcome and real provider acknowledgement separately from GitHub CI success."
+  ],
+  "evidence": {
+    "workflow": "social-publication-recovery.yml",
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/38737629053",
+    "failed_subtest": "recovery is independently scheduled, not only manually dispatched",
+    "expected": "node --test tests/supabase-social-publication-recovery.test.mjs",
+    "provider_write_confirmed": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-social-publication-recovery.test.mjs"
+    ],
+    "shadow": [
+      "tests/supabase-social-publication-recovery.test.mjs"
+    ],
+    "canary": [
+      ".github/workflows/social-publication-recovery.yml"
+    ]
+  }
+}
