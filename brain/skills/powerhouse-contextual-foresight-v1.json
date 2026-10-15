@@ -1,0 +1,16 @@
+{
+  "skill": "powerhouse-contextual-foresight-v1",
+  "fingerprint": "powerhouse|portal-v2|cross-domain-foresight|v1",
+  "owner": "Powerhouse Brein / Portal V2",
+  "instruction": "Forecasts must explicitly distinguish observed tenant data, trend extrapolation, hypothetical scenario, and independently verified forecast. Link to goals, actions and evidenced runtime. Never treat global platform forecasts as tenant data, or portray an unmeasured effect as realized value.",
+  "routing": [
+    "portal-v2/foresight-context-ui.js",
+    "portal-v2/foresight-scenario-studio.js"
+  ],
+  "tests": [
+    "portal-v2/tests/foresight-scenario-studio.test.mjs"
+  ],
+  "authority": "tenant-authenticated portal state; no global registry assumption",
+  "terminalStatus": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4420"
+}
