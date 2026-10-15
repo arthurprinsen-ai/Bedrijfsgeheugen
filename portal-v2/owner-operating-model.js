@@ -29,7 +29,7 @@ export function ownerCategory(item={}){
 function actionSafety(item){
  const risk=classifyActionRisk(item);
  const check=evaluateActionEligibility({...item,risk_class:risk},{approved:false,policy_allowed:false});
- const level=(risk>=2||check.state==='APPROVAL_REQUIRED')?'goedkeuring':check.eligible&&check.state==='AUTO_APPROVED'?'binnen-beleid':'niet-uitvoerbaar';
+ const level=risk===0?'inzage':(risk>=2||check.state==='APPROVAL_REQUIRED')?'goedkeuring':risk===1&&check.eligible&&check.state==='AUTO_APPROVED'?'binnen-beleid':'niet-uitvoerbaar';
  return Object.freeze({risk,level,eligibility:check.state,reason:check.reason||null});
 }
 export function buildOwnerOperatingModel(state={}, {now=Date.now()}={}){
