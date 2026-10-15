@@ -21,6 +21,31 @@ const bounds=row=>{
  return forecast.every((f,i)=>low[i].date===f.date&&high[i].date===f.date
    &&low[i].value<=f.value&&f.value<=high[i].value);
 };
+// Recalculate reported walk-forward holdout error from dated observations.
+// Evidence is still subject to independent provenance review: numerical consistency alone
+// does not authenticate the originating historical ledger or stored predictions.
+export function replayFinancialHoldout(backtest,history){
+ const count=backtest?.holdout_count, points=backtest?.holdout_points;
+ if(!Number.isInteger(count)||count<3||count>120||!Array.isArray(points)
+    ||points.length!==count||!series(history,6)
+    ||count>history.length-3)return false;
+ let sumError=0,sumBaselineError=0;
+ const holdout=history.slice(-count);
+ for(let i=0;i<count;i++){
+  const row=points[i], observed=holdout[i];
+  if(!row||row.date!==observed.date||!finite(row.actual)||
+     !finite(row.predicted)||!finite(row.baseline_predicted)||
+     row.actual!==observed.value)return false;
+  sumError+=Math.abs(row.predicted-row.actual);
+  sumBaselineError+=Math.abs(row.baseline_predicted-row.actual);
+ }
+ const expectedMae=sumError/count, expectedBaselineMae=sumBaselineError/count;
+ if(!finite(backtest.mae)||!finite(backtest.baseline_mae)
+    ||backtest.mae<0||backtest.baseline_mae<0)return false;
+ const close=(a,b)=>Math.abs(a-b)<=1e-8*Math.max(1,Math.abs(a),Math.abs(b));
+ return close(backtest.mae,expectedMae)&&close(backtest.baseline_mae,expectedBaselineMae);
+}
+
 export function eligibleFinancialForecast(row,expectedTenant,now=Date.now()){
  if(!row||!text(expectedTenant)||row.tenant_id!==expectedTenant||row.verification_status!=='passed')return false;
  const review=row.independent_review||{},backtest=row.backtest||{};
@@ -42,6 +67,7 @@ export function eligibleFinancialForecast(row,expectedTenant,now=Date.now()){
  if(!series(row.historical_points,6)||!series(row.forecast_points))return false;
  if(row.historical_points.at(-1).date>=row.forecast_points[0].date
    ||row.historical_points[0].date.length!==row.forecast_points[0].date.length)return false;
- if(backtest.holdout_count>row.historical_points.length-3)return false;
+ if(backtest.holdout_count>row.historical_points.length-3
+    ||!replayFinancialHoldout(backtest,row.historical_points))return false;
  return bounds(row);
 }
