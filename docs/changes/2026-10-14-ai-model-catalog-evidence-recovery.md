@@ -536,3 +536,14 @@ GitHub catalog `data/ai-model-catalog-v1.json` was corrected in commit `ae36b6c3
 The [official English AWS Nova Premier model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html) was retrievable on **2026-10-15**, superseding the 2026-10-14 *URL reachability* observation that this English page redirected. The live card still simultaneously reports **Model EOL date 2026-09-14**, **EOL no sooner than 2026-10-31**, and **Model lifecycle Legacy** for `amazon.nova-premier-v1:0`. These are contradictory public AWS facts. The [English legacy lifecycle table](https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html) does not resolve the discrepancy; localized supplier versions may differ. Public site accessibility is not authenticated model availability or lifecycle evidence.
 
 A guarded supplier observation was stored and independently read back on the existing Supabase `amazon-nova-premier` row under `catalog_record.supplier_audit.aws_nova_premier_english_card_discrepancy_recheck_20261015`. `verification_status=CONFLICT` and `automatic_recommendation_eligible=false` remain in force. Provider confirmation plus authenticated AWS Bedrock `GetFoundationModel` or `ListFoundationModels` `modelLifecycle` for the intended account and Region are needed before an independent lifecycle acceptance decision. No signed customer agreement, price, entitlement, or regional runtime proof has been inferred.
+
+
+## Nova Premier cross-locale lifecycle contradiction — 2026-10-15
+
+New independent readback crosschecked official AWS sources for `amazon.nova-premier-v1:0`:
+
+- [AWS Nova Premier model card](https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html) says `Legacy`, gives EOL `2026-09-14` and simultaneously "EOL no sooner than" `2026-10-31`. These statements cannot all describe one resolved lifecycle.
+- [AWS Italian-locale official lifecycle index](https://docs.aws.amazon.com/it_it/bedrock/latest/userguide/model-lifecycle-legacy.html) lists `amazon.nova-premier-v1:0` in the **reached EOL** table, EOL `2026-09-14`.
+- [AWS English-locale official lifecycle index](https://docs.aws.amazon.com/en_en/bedrock/latest/userguide/model-lifecycle-legacy.html) omits Nova Premier in the observed EOL table. Absence from an index does not prove active access.
+
+Stored and read back `catalog_record.aws_cross_locale_lifecycle_conflict_20261015` in Supabase `public.ai_model_supplier_verification_v1`, maintaining `CONFLICT` and `automatic_recommendation_eligible=false`. Account/region authorized `GetFoundationModel.modelLifecycle` and an AWS source reconciliation are **not yet available**. Never derive account eligibility, contractual coverage or a definitive EOL/Legacy status from these inconsistent public records; keep the release gate active.
