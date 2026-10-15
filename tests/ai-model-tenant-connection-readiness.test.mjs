@@ -45,3 +45,25 @@ test('placeholder public key fails closed before authenticated reads',()=>{
  assert.equal(status.status,'BLOCKED');
  assert.ok(status.connections.some(c=>c.integration==='attestation'&&c.status==='INVALID_PUBLIC_VERIFY_KEY'));
 });
+
+test('Bedrock preflight does not accept untrusted region values',()=>{
+ const env={...process.env,POWERHOUSE_BEDROCK_TARGET_REGIONS:'invalid-region'};
+ const r=spawnSync(process.execPath,['tests/ai-model-tenant-connection-readiness.mjs'],{encoding:'utf8',env});
+ assert.equal(r.status,2);
+ const outcome=JSON.parse(r.stdout);
+ assert.equal(outcome.status,'BLOCKED');
+ assert.equal(outcome.connections.find(x=>x.integration==='aws_bedrock_nova_premier').status,'INVALID_REGION_CONFIGURATION');
+});
+
+test('Bedrock readback with no AWS identity stays blocked',()=>{
+ const env={...process.env,POWERHOUSE_BEDROCK_TARGET_REGIONS:'us-east-1',
+  AWS_PROFILE:'nonexistent-powerhouse-readback-test-profile',
+  AWS_SHARED_CREDENTIALS_FILE:'/dev/null',AWS_CONFIG_FILE:'/dev/null'};
+ const r=spawnSync(process.execPath,['tests/ai-model-tenant-connection-readiness.mjs'],{encoding:'utf8',env,timeout:25000});
+ assert.equal(r.status,2);
+ const outcome=JSON.parse(r.stdout);
+ assert.equal(outcome.status,'BLOCKED');
+ const aws=outcome.connections.find(x=>x.integration==='aws_bedrock_nova_premier');
+ assert.equal(aws.status,'AWS_IDENTITY_NOT_AUTHENTICATED');
+ assert.equal(aws.account_identity_checked,undefined);
+});
