@@ -65,10 +65,11 @@ export function buildForesightStudioModel(state={},options={}){
   });
   const active=metrics.find(x=>x.id===options.metric)||metrics.find(x=>x.forecast)||metrics[0];
   const sensitivity=Math.max(-30,Math.min(30,Number.isFinite(Number(options.sensitivity))?Number(options.sensitivity):0));
+  const signedEffect=(active.direction==='down'?-1:1)*sensitivity/100;
   const scenario=active.forecast?{
     baseline:active.forecast.expected,
-    simulated:active.forecast.expected*(1+sensitivity/100),
-    delta:active.forecast.expected*sensitivity/100,
+    simulated:active.forecast.expected*(1+signedEffect),
+    delta:active.forecast.expected*signedEffect,
     lower:active.forecast.lower,upper:active.forecast.upper,
     sensitivity,kind:'WHAT_IF_NOT_PREDICTION'
   }:null;
@@ -121,7 +122,7 @@ function markup(model){
     '<div class="pfs-controls"><label>Bedrijfsonderdeel<select data-pfs-metric>'+choose+'</select></label>'+
     '<label>Vooruitkijken<select data-pfs-days>'+[30,90,180,365].map(d=>'<option value="'+d+'"'+(model.days===d?' selected':'')+'>'+d+' dagen</option>').join('')+'</select></label></div>'+
     '<div class="pfs-scenarios" aria-label="Scenariokeuzes">'+variants+'</div>'+
-    '<label class="pfs-slider">Veronderstelde afwijking ten opzichte van de trend: <b>'+esc((s?.sensitivity||0)+'%')+'</b><input type="range" min="-30" max="30" step="5" value="'+(s?.sensitivity||0)+'" data-pfs-sensitivity></label>'+
+    '<label class="pfs-slider">Veronderstelde doelverbetering (+) of tegenvaller (−): <b>'+esc((s?.sensitivity||0)+'%')+'</b><input type="range" min="-30" max="30" step="5" value="'+(s?.sensitivity||0)+'" data-pfs-sensitivity></label>'+
     '<div class="pfs-chart">'+chart(m,s)+'</div><p class="pfs-legend">━ Historische metingen &nbsp; ┄ Statistische trend &nbsp; ▨ Indicatieve bandbreedte &nbsp; ┄ Paars: wat-als-scenario</p>'+
     forecast+'<div class="pfs-bottom"><div><h4>Doorwerking in je bedrijf</h4><p>Relevante afhankelijkheden: '+m.related.map(esc).join(' · ')+'. Niet automatisch als geldelijk effect of causaal resultaat berekend.</p>'+
     '<button type="button" data-pfs-page="'+esc(m.page)+'">Bekijk bron en bijbehorende acties →</button></div>'+
