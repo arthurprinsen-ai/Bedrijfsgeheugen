@@ -19,6 +19,6 @@
     "No confidence claim before calibration and backtest",
     "No scenario counted as realized outcome"
   ],
-  "regression": "tests/powerhouse-contextual-foresight-studio.test.mjs",
+  "regression": "portal-v2/tests/foresight-scenario-studio.test.mjs",
   "status": "CANDIDATE_NOT_PRODUCTION_PROVEN"
 }
