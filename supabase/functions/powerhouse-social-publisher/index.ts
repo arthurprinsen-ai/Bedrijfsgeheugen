@@ -1,5 +1,6 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {canRecoverExpiredCompanyClaim} from '../_shared/social-publish-claim-recovery.mjs';
+import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
@@ -1360,7 +1361,7 @@ Deno.serve(async (req) => {
     } catch (error) {
       gate = { http: 503, review_transport_error: error instanceof Error ? error.message : String(error) };
     }
-    if ([429,500,502,503,504].includes(Number(gate.http))) {
+    if (isTransientPrePublishReviewFailure(gate.http)) {
       const evidence = {
         ...(row.delivery_evidence || {}),
         pre_publish_gate: 'retry_pending',
