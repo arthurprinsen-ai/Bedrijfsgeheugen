@@ -35,7 +35,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify scheduled recovery and Bearer authentication contract
-        run: node --test tests/social-publication-recovery.test.mjs
+        run: node --test tests/supabase-social-publication-recovery.test.mjs
 
       - name: Resolve same-day recovery date
         id: date
