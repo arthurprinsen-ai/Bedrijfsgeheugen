@@ -398,3 +398,13 @@ test('Nova Micro authoritative 10K output limit does not override supplier or te
  assert.equal(review.contract_governance_verified,false);
  assert.equal(review.pricing_verified,false);
 });
+
+
+test('research catalog is loaded from the active deployment, not another environment',()=>{
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.ok(html.includes("fetch('/data/ai-model-catalog-v1.json'"));
+ assert.ok(html.includes("fetch('/data/ai-provider-governance-v1.json'"));
+ assert.ok(html.includes("fetch('/api/ai-modelwijzer-lead'"));
+ assert.ok(!html.includes("fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json'"));
+ assert.ok(!html.includes("fetch('https://www.bedrijfsgeheugen.nl/api/ai-modelwijzer-lead'"));
+});
