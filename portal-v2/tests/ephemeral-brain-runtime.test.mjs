@@ -112,3 +112,15 @@ test('401 or 403 clears previously cached transient runtime',async()=>{
   assert.deepEqual(events,[['portal.runtime',null]]);
  }
 });
+
+test('a revoked response from a superseded session cannot erase the next tenant view',async()=>{
+ const writes=[];
+ const result=await loadRuntimeEvidence({
+  fetchImpl:async()=>new Response('{}',{status:401}),
+  authHeadersProvider:async()=>({authorization:'Bearer old-account'}),
+  validateSession:()=>false,
+  domainState:{setDerived:(path,value)=>writes.push([path,value])}
+ });
+ assert.equal(result,null);
+ assert.deepEqual(writes,[]);
+});
