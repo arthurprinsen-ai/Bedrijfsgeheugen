@@ -43,7 +43,13 @@ test('model choice remains a wishlist only, with explicit save/readback and no r
  assert.match(client,/inference_residency/);
  assert.match(client,/storage_residency/);
  assert.match(client,/aiRisk/);
- assert.doesNotMatch(client,/fetchImpl\([^)]*method\s*:\s*['"]POST/);
+ // The wishlist must not invoke a provider; only the explicit user-clicked
+ // smoke test may POST to the separately authenticated, fail-closed tenant gateway.
+ assert.match(client,/trialButton\.addEventListener\('click'/);
+ assert.match(client,/fetchImpl\('\/api\/tenant-ai-inference'/);
+ assert.match(client,/if\(dirty\)/);
+ assert.match(client,/draft\.assignments\.brain/);
+ assert.doesNotMatch(client,/fetchImpl\(['"]https:\/\/(?:api\.|bedrock-runtime)/);
 });
 
 test('AI sovereignty labels are provider route specific; nothing in catalog is falsely EU certified',()=>{

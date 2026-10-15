@@ -1,7 +1,7 @@
 import {runAttestedTenantChat} from '../runtime/attested-cloud-ai.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
-export async function handleTenantAiInference({request,user,tenantId,sovereignty,registry,proofKey,fetchFn,now=Date.now()}={}){
+export async function handleTenantAiInference({request,user,tenantId,sovereignty,registry,proofKey,fetchFn,choiceGuard,now=Date.now()}={}){
  if(request?.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
  // Tenant ID is supplied by the trusted Identity gateway, never from a browser input.
  if(!user?.id||typeof tenantId!=='string'||!tenantId.trim())return json({error:'UNAUTHORIZED'},401);
@@ -54,6 +54,15 @@ export async function handleTenantAiInference({request,user,tenantId,sovereignty
     claim?.tenantId!==tenantId||claim?.policyVersion!==Number(policy.policy_version)||
     claim?.changeId!==impact.changeId)
   return json({error:'CROSS_DOMAIN_REVIEW_REQUIRED'},409);
+ // Enforce the customer's selected Brain model against server-held signed proof.
+ // A public supplier VERIFIED label or a saved customer preference is not permission
+ // to make an outbound AI call. The actual runtime evidence remains authoritative.
+ if(typeof choiceGuard==='function'){
+  let gate;
+  try{gate=await choiceGuard({tenantId,user,registryRecord:record,sovereigntyPolicy:policy});}
+  catch{return json({error:'MODEL_CHOICE_READBACK_UNAVAILABLE'},503);}
+  if(gate?.ok!==true)return json({error:'MODEL_CHOICE_NOT_ACTIVATED',reason:gate?.code||'MODEL_CHOICE_NOT_VERIFIED'},409);
+ }
  // No direct user-origin model/provider/endpoint/region parameters; the model comes
  // exclusively from the tenant's authoritative saved policy and signed proof.
  const question=body.question.trim();

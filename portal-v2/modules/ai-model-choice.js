@@ -118,7 +118,38 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  const saved=el('span','status');saved.dataset.amcSaveState='';footer.append(add(el('div','row'),save,saved));
  footer.append(el('p','hint','Opgeslagen voorkeuren blijven gescheiden van live AI-inferentie. Voor werkelijke activering zijn geverifieerde API-toegang, modelbeschikbaarheid, tenantrechten, DPA/AVG, regio, verwerking en risicoacceptatie vereist.'));
  const toPass=el('button',null,'Bekijk Data & AI Sovereignty');toPass.type='button';toPass.addEventListener('click',()=>openPage?.('data-ai-passport'));footer.append(toPass);
- parent.append(footer);root.replaceChildren(parent);
+ parent.append(footer);
+ const trial=el('section');trial.append(el('h3',null,'Test jouw goedgekeurde Bedrijfsbrein-model'),
+ el('p','hint','Optionele, handmatig gestarte modeltest. Alleen jouw ingetypte tekst wordt verstuurd; portaalbestanden en bedrijfscontext gaan niet mee. Een provider wordt uitsluitend aangeroepen na de server-side controle van modelkeuze, tenant, leverancier, regio en ondertekend runtimebewijs. Een geslaagde test kan verbruikskosten hebben.'));
+ const trialForm=el('div','tools'),trialQuestion=el('input');
+ trialQuestion.type='text';trialQuestion.maxLength=500;
+ trialQuestion.placeholder='Typ een niet-vertrouwelijke testvraag';trialQuestion.setAttribute('aria-label','Niet-vertrouwelijke modeltestvraag');
+ const trialButton=el('button','primary','Test gekozen model');trialButton.type='button';
+ const trialOutcome=el('p','status');trialOutcome.setAttribute('aria-live','polite');
+ trialForm.append(trialQuestion,trialButton);trial.append(trialForm,trialOutcome);parent.append(trial);
+ trialButton.addEventListener('click',async()=>{
+  if(!loggedIn()){trialOutcome.textContent='Log in als klant voor de modeltest.';return}
+  if(dirty){trialOutcome.textContent='Sla eerst je modelkeuzes en functietoewijzingen op.';return}
+  if(!draft.assignments.brain||!draft.models.some(x=>x.modelId===draft.assignments.brain)){
+   trialOutcome.textContent='Selecteer en bewaar eerst een model voor Bedrijfsbrein.';return;
+  }
+  const question=trialQuestion.value.trim();
+  if(question.length<3){trialOutcome.textContent='Vul een testvraag van minimaal drie tekens in.';return}
+  trialButton.disabled=true;trialOutcome.textContent='Server-side modelrechten en route controleren…';
+  try{
+   const response=await fetchImpl('/api/tenant-ai-inference',{
+    method:'POST',credentials:'same-origin',cache:'no-store',
+    headers:{'content-type':'application/json','accept':'application/json'},
+    body:JSON.stringify({question})
+   });
+   const result=await response.json().catch(()=>null);
+   if(response.ok&&result?.status==='ANSWERED'&&typeof result.answer==='string')
+    trialOutcome.textContent='Model '+String(result.modelId||'')+' heeft geantwoord: '+result.answer;
+   else trialOutcome.textContent='Nog niet uitvoerbaar ('+String(result?.reason||result?.error||response.status).slice(0,140)+'). Geen fallback naar een andere provider.';
+  }catch{trialOutcome.textContent='Geen bevestigde verbinding met de beveiligde AI-gateway; test niet geslaagd.'}
+  finally{trialButton.disabled=false}
+ });
+ root.replaceChildren(parent);
  const selected=()=>new Map(draft.models.map(x=>[x.modelId,x.routeId]));
  const setSelected=(id,routeId,enabled)=>{
   const old=selected();if(enabled)old.set(id,routeId);else old.delete(id);
