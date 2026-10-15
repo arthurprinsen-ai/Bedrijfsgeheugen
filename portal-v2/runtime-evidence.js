@@ -246,7 +246,7 @@ export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domain
     });
     // If permissions were revoked, discard the previous session's transient view.
     if(response.status===401||response.status===403){
-      if(typeof domainState?.setDerived==='function')domainState.setDerived('portal.runtime',null);
+      if(validateSession()&&typeof domainState?.setDerived==='function')domainState.setDerived('portal.runtime',null);
       return null;
     }
     if (!response.ok) return null;
