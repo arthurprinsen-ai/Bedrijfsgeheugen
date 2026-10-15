@@ -45,17 +45,39 @@ export function createDomainState({load,save}={}){
  if(typeof load!=='function')throw new TypeError('DOMAIN_STATE_LOAD_REQUIRED');
  if(typeof save!=='function')throw new TypeError('DOMAIN_STATE_SAVE_REQUIRED');
  let state={};let currentStatus='idle';let currentError=null;let revision=0;let initialized=false;const listeners=new Set();let activeFlush=null;
- const publish=()=>{const snap=publicSnapshot(state,currentStatus,currentError);for(const listener of listeners){try{listener(snap)}catch{}}return snap;};
+ // Server-derived operating-loop evidence is view-only and MUST NOT enter durable customer edits.
+ // Restrict the overlay to the one existing read-only runtime projection.
+ const derived=new Map();
+ const visibleState=()=>{
+  const view=clone(state);
+  // Historical payloads may contain stale runtime snapshots: do not surface them as current.
+  if(isObject(view.portal))delete view.portal.runtime;
+  for(const [key,value] of derived)viewPath(view,key,value);
+  return view;
+ };
+ const viewPath=(root,path,value)=>{const partsList=parts(path);let cursor=root;for(let i=0;i<partsList.length-1;i++){const k=partsList[i];cursor[k]=isObject(cursor[k])?cursor[k]:{};cursor=cursor[k];}cursor[partsList.at(-1)]=clone(value);};
+
+ const publish=()=>{const snap=publicSnapshot(visibleState(),currentStatus,currentError);for(const listener of listeners){try{listener(snap)}catch{}}return snap;};
  const asError=(error,fallback)=>error instanceof Error?error:new Error(String(error||fallback));
  const markDirty=()=>{revision+=1;currentStatus='dirty';currentError=null;publish();};
- async function init(){try{const loaded=normalizeState(await load());const needsMigration=hasLegacyPortalData(loaded);state=upgradeLegacyPortalState(loaded);if(needsMigration){currentStatus='saving';publish();state=upgradeLegacyPortalState(normalizeState(await save(clone(state))));currentStatus='saved';}else currentStatus='idle';currentError=null;revision=0;initialized=true;return publish();}catch(error){state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');publish();throw currentError;}}
- function get(path=''){return path?readPath(state,path):clone(state);}
+ async function init(){derived.clear();try{const loaded=normalizeState(await load());const needsMigration=hasLegacyPortalData(loaded);state=upgradeLegacyPortalState(loaded);if(needsMigration){currentStatus='saving';publish();state=upgradeLegacyPortalState(normalizeState(await save(clone(state))));currentStatus='saved';}else currentStatus='idle';currentError=null;revision=0;initialized=true;return publish();}catch(error){state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');publish();throw currentError;}}
+ function get(path=''){const view=visibleState();return path?readPath(view,path):view;}
  function set(path,value){state=writePath(state,path,value);markDirty();return get(path);}
  function project(path,value){state=writePath(state,path,value);currentError=null;publish();return get(path);}
+ function setDerived(path,value){
+  if(path!=='portal.runtime')throw new TypeError('DOMAIN_DERIVED_PATH_NOT_ALLOWED');
+  if(value!==null&&!isObject(value))throw new TypeError('DOMAIN_DERIVED_RUNTIME_OBJECT_REQUIRED');
+  if(value===null)derived.delete(path);else derived.set(path,clone(value));
+  publish();
+  return get(path);
+ }
  function patch(path,value){if(!isObject(value))throw new TypeError('DOMAIN_STATE_PATCH_OBJECT_REQUIRED');state=writePath(state,path,value,{merge:true});markDirty();return get(path);}
- async function performFlush(){if(currentStatus!=='dirty'&&currentStatus!=='error')return publicSnapshot(state,currentStatus,currentError);const saveRevision=revision;const candidate=clone(state);currentStatus='saving';currentError=null;publish();try{const confirmed=normalizeState(await save(candidate));if(revision===saveRevision){state=upgradeLegacyPortalState(confirmed);currentStatus='saved';}else currentStatus='dirty';currentError=null;return publish();}catch(error){currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');currentStatus='error';publish();throw currentError;}}
+ async function performFlush(){if(currentStatus!=='dirty'&&currentStatus!=='error')return publicSnapshot(state,currentStatus,currentError);const saveRevision=revision;const candidate=clone(state);
+ // Never upload transient or historically persisted operating-loop projections.
+ if(isObject(candidate.portal))delete candidate.portal.runtime;
+ currentStatus='saving';currentError=null;publish();try{const confirmed=normalizeState(await save(candidate));if(revision===saveRevision){state=upgradeLegacyPortalState(confirmed);currentStatus='saved';}else currentStatus='dirty';currentError=null;return publish();}catch(error){currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');currentStatus='error';publish();throw currentError;}}
  function flush(){if(activeFlush)return activeFlush;activeFlush=performFlush().finally(()=>{activeFlush=null});return activeFlush;}
- return Object.freeze({init,initialized:()=>initialized,get,set,project,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(state,currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
+ return Object.freeze({init,initialized:()=>initialized,get,set,project,setDerived,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(visibleState(),currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
 }
 
 const SECTION_BINDINGS=Object.freeze({
@@ -182,7 +204,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   return enriched;
  }
  function set(path,value){const before=domain.get();const result=domain.set(path,value);track(path);publishImpact(path,before,domain.get());return result;}
- function setDerived(path,value){if(typeof domain.project!=='function')throw new TypeError('DOMAIN_DERIVED_PROJECTION_REQUIRED');return domain.project(path,value);}
+ function setDerived(path,value){return domain.setDerived(path,value);}
  function patch(path,value){const before=domain.get();const result=domain.patch(path,value);track(path);publishImpact(path,before,domain.get());return result;}
  async function performPortalFlush(){
   // Snapshot causal lineage before any await: edits made during the state or
