@@ -115,3 +115,25 @@ test('one default model is shown above overrides, persists tenant-scoped, and ne
  assert.match(src,/financiële berekeningen/);
  assert.match(src,/requestState:'review_only_not_activated'/);
 });
+
+test('activation center shows a real tenant-scoped server checklist and never requests customer API keys',()=>{
+ const src=read('portal-v2/modules/ai-model-choice.js');
+ const api=read('netlify/functions/tenant-ai-activation-status.mjs');
+ assert.match(src,/Model aansluiten en activeren/);
+ assert.match(src,/Activering aanvragen/);
+ assert.match(src,/Controleer aansluitstatus/);
+ assert.match(src,/activationConsent\.checked/);
+ assert.match(src,/portal\.aiModelActivationRequest/);
+ assert.match(src,/requestState:'REQUESTED'/);
+ assert.match(src,/requestedAt:new Date\(\)\.toISOString\(\)/);
+ assert.match(src,/await domainState\.flush\(\)/);
+ assert.match(src,/\/api\/tenant-ai-activation-status/);
+ assert.match(src,/method:'GET',credentials:'same-origin'/);
+ assert.match(src,/proof\?\.reviewRequested===true/);
+ assert.match(src,/geen model geactiveerd/i);
+ assert.doesNotMatch(src,/type=['"]password['"]/);
+ assert.match(api,/resolveIdentityTenant\(user\)/);
+ assert.match(api,/createEuPrimaryPortalStore/);
+ assert.match(api,/evaluateTenantAiActivation|handleTenantAiActivationStatus/);
+ assert.doesNotMatch(api,/signVerifiedRuntimeProof/);
+});
