@@ -33,6 +33,13 @@ export function evaluateTenantModelChoice({tenantId,portalRecord,sovereigntyPoli
   return deny('SIGNED_USE_CASE_MISMATCH',desiredId);
  if(proof.modelId!==model.provider_api_id)
   return deny('SIGNED_PROVIDER_MODEL_MISMATCH',desiredId);
+ // A customer's explicit EU Mistral route must never resolve to the global
+ // Mistral API (which does not attest a specific inference geography).
+ // The independently signed runtime proof must agree with the tenant profile.
+ if(proof.provider==='MISTRAL_API'&&(
+   sovereigntyPolicy?.ai_deployment_profile?.computeRegion!=='EU'||
+   proof.computeRegion!=='EU'))
+  return deny('MISTRAL_EU_INFERENCE_NOT_ATTESTED',desiredId);
  const route=SUPPORTED[proof.provider];
  if(!route||model.provider!==route.supplier||selected.routeId!==route.route)
   return deny('DEPLOYMENT_ROUTE_NOT_ATTESTED',desiredId);
