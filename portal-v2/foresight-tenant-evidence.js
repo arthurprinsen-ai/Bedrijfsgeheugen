@@ -54,7 +54,8 @@ export function buildTenantForesightEvidence(packet,{metric='revenue_growth',kin
  }).sort((a,b)=>Number(b.matched)-Number(a.matched)||b.score-a.score).slice(0,5);
  const actions=list(intelligence.actionCandidates).filter(x=>
    x?.tenant_id===tenant&&x?.tenant_specific===true&&['READY','MATERIALIZED','CANDIDATE'].includes(x.status)&&
-   x?.title&&x?.signal_key&&bySignal.has(String(x.signal_key))
+   x?.title&&x?.signal_key&&bySignal.has(String(x.signal_key))&&
+   (selectedKind==='all'||classifyTenantForesightSignal(bySignal.get(String(x.signal_key)))===selectedKind)
  ).map(x=>({title:String(x.title),state:String(x.status),evidence:evidencePresent(x.evidence),metricMatch:relevant({...bySignal.get(String(x.signal_key)),...x},metric)}))
    .sort((a,b)=>Number(b.metricMatch)-Number(a.metricMatch)).slice(0,3);
  const signalWithNoCompanyImpact=signals.filter(x=>
