@@ -54,7 +54,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   [catalog,governance,snapshot]=await Promise.all([
    getJson('/data/ai-model-catalog-v1.json'),
    getJson('/data/ai-provider-governance-v1.json'),
-   getJson('/data/ai-model-supplier-status-v1.json')
+   getJson('/portal-v2/ai-model-supplier-status-v1.json')
   ]);
   if(!Array.isArray(catalog.models)||catalog.models.length!==110||
      new Set(catalog.models.map(m=>m.id)).size!==110||
