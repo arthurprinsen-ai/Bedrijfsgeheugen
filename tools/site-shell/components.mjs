@@ -23,6 +23,8 @@ header.v17-header .brand{text-decoration:none}
   header.v17-header{position:sticky!important;top:0!important;z-index:1100!important;min-height:64px!important;height:64px!important;max-height:64px!important}
   header.v17-header .v17-nav{width:100%!important;max-width:100%!important;min-height:64px!important;height:64px!important;max-height:64px!important;padding:0 16px!important;gap:10px!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
   header.v17-header .v17-nav>.brand{flex:1 1 auto!important;min-width:0!important;max-width:calc(100% - 80px)!important;font-size:clamp(16px,4.8vw,21px)!important;letter-spacing:-.035em!important;line-height:1.1!important;white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important}
+  /* Hide the decorative hamburger-shaped brand ornament BEFORE first paint to avoid mobile CLS. */
+  header.v17-header .v17-nav>.brand>:first-child:not(:last-child){display:none!important}
   header.v17-header .brand .bg-mobile-ornament-hidden{display:none!important}
   header.v17-header .v17-nav>.mobile-toggle{flex:0 0 65px!important;min-width:65px!important;max-width:65px!important;width:65px!important;height:42px!important;min-height:42px!important;display:inline-flex!important;justify-content:center!important;align-items:center!important;padding:0!important;margin:0!important;border:1px solid rgba(255,255,255,.27)!important;border-radius:11px!important;background:#22262d!important;color:#fff!important;box-shadow:none!important;font-size:0!important}
   header.v17-header .v17-nav>.mobile-toggle>*{display:none!important}
