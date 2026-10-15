@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {handleTenantAiInference} from '../platform/api/tenant-ai-inference-handler.mjs';
-import {signVerifiedRuntimeProof} from '../platform/runtime/attested-cloud-ai.mjs';
+import {signVerifiedRuntimeProof,createVerifiedCloudAdapters} from '../platform/runtime/attested-cloud-ai.mjs';
 import {CURRENT_AI_DEPLOYMENT_PROFILE} from '../platform/policy/customer-ai-deployment.mjs';
 import {evaluateTenantModelChoice} from '../platform/policy/tenant-model-choice.mjs';
 import {evaluateTenantAiActivation} from '../platform/api/tenant-ai-activation-readiness.mjs';
@@ -168,8 +168,8 @@ const modelChoiceBase={
   models:[{modelId:selectedModel,routeId:'mistral-api-eu'}],
   assignments:{brain:selectedModel},policy:'review'
  }}}},
- sovereigntyPolicy:{mode:'TRANSPARENT_GLOBAL'},
- registryRecord:{signedProof:{receipt:{tenantId,useCaseId:'portal-project-answer',provider:'MISTRAL_API',modelId:exactApi}}},
+ sovereigntyPolicy:{mode:'TRANSPARENT_GLOBAL',ai_deployment_profile:{...profile,computeRegion:'EU'}},
+ registryRecord:{signedProof:{receipt:{tenantId,useCaseId:'portal-project-answer',provider:'MISTRAL_API',modelId:exactApi,computeRegion:'EU'}}},
  catalog:{models:[catalogModel]},
  supplierStatus:{records:{[selectedModel]:'VERIFIED'}}
 };
@@ -198,7 +198,7 @@ test('a preferred EEA storage and inference location cannot be faked by customer
  const set=(policy,mode)=>evaluateTenantModelChoice({...modelChoiceBase,
   portalRecord:{tenantId,data:{portal:{aiModelPreferences:{
    ...modelChoiceBase.portalRecord.data.portal.aiModelPreferences,policy
-  }}}},sovereigntyPolicy:{mode}});
+  }}}},sovereigntyPolicy:{mode,ai_deployment_profile:{...profile,computeRegion:'EU'}}});
  assert.equal(set('eu-both','TRANSPARENT_GLOBAL').code,'EU_PROCESSING_REQUIREMENT_NOT_ENFORCED');
  assert.equal(set('eu-storage','TRANSPARENT_GLOBAL').code,'EU_STORAGE_REQUIREMENT_NOT_ENFORCED');
  assert.equal(set('strict','EU_ONLY').code,'CUSTOMER_CONTROLLED_RUNTIME_REQUIRED');
@@ -316,13 +316,18 @@ const activationPortal={tenantId,data:{portal:{
   modelId:'mistral-small',routeId:'mistral-api-eu',
   workload:'brain',requestedAt:'2026-10-15T10:00:00.000Z'}
 }}};
+const euProfile={...profile,computeRegion:'EU',storageRegion:'EU'};
+const euReceipt={...receipt,computeRegion:'EU',storageRegion:'EU'};
+const euProvision={...registry['tenant-a'].config.MISTRAL_API,processingRegion:'EU',residencyEvidenceId:euReceipt.residencyEvidenceId};
+const euRegistry={...registry['tenant-a'],signedProof:signVerifiedRuntimeProof({receipt:euReceipt,key}),
+ config:{MISTRAL_API:euProvision},approvedEndpoints:registry['tenant-a'].approvedEndpoints.map(x=>({...x,region:'EU'}))};
 const activationInputs={
  tenantId,portalRecord:activationPortal,
  catalog:{models:[{id:'mistral-small',provider:'Mistral AI',provider_api_id:'mistral-small-latest',status:'active'}]},
  supplierStatus:{records:{'mistral-small':'VERIFIED'}},
- registryRecord:registry['tenant-a'],proofKey:key,
- sovereigntySnapshot:{policy:{mode:'TRANSPARENT_GLOBAL',enforcement_mode:'BLOCK',
-  ai_deployment_profile:profile,policy_version:3},violations:[]},now
+ registryRecord:euRegistry,proofKey:key,
+ sovereigntySnapshot:{policy:{mode:'EU_ONLY',enforcement_mode:'BLOCK',
+  ai_deployment_profile:euProfile,policy_version:3},violations:[]},now
 };
 
 test('readiness center confirms all independent tenant-level proof checks without calling a provider',()=>{
@@ -364,7 +369,7 @@ test('readiness API authenticates first, scopes storage to identity tenant and p
  assert.equal(unauth.status,401);assert.equal(calls,0);
  const good=await handleTenantAiActivationStatus({
   request:req,user,tenantId,store,sovereignty:sovereign,
-  registry,proofKey:key,catalog:activationInputs.catalog,supplierStatus:activationInputs.supplierStatus,now
+  registry:{[tenantId]:euRegistry},proofKey:key,catalog:activationInputs.catalog,supplierStatus:activationInputs.supplierStatus,now
  });
  assert.equal(good.status,200);assert.equal((await good.json()).readyForTest,true);
  assert.equal(calls,1);assert.equal(requests,1);
@@ -385,4 +390,36 @@ test('activation request remains server-verifiable after canonical Brain updates
  assert.equal(evaluated.checks.find(x=>x.key==='request').status,'COMPLETE');
  assert.equal(portalRecord.data.portal.pages.forecast.status,'source-derived');
  assert.equal(portalRecord.data.portal.aiModelPreferences.defaultModelId,'mistral-small');
+});
+
+test('selected Mistral EU route rejects global runtime evidence',()=>{
+ assert.equal(evaluateTenantModelChoice(modelChoiceBase).ok,true);
+ assert.equal(evaluateTenantModelChoice({...modelChoiceBase,sovereigntyPolicy:{
+  ...modelChoiceBase.sovereigntyPolicy,ai_deployment_profile:{...profile,computeRegion:'AUTO'}}}).code,'MISTRAL_EU_INFERENCE_NOT_ATTESTED');
+ assert.equal(evaluateTenantModelChoice({...modelChoiceBase,registryRecord:{
+  signedProof:{receipt:{...modelChoiceBase.registryRecord.signedProof.receipt,computeRegion:'AUTO'}}
+ }}).code,'MISTRAL_EU_INFERENCE_NOT_ATTESTED');
+});
+
+test('EU Mistral adapter uses regional hostname; unsupported regions deny before network',async()=>{
+ const urls=[];
+ const adapter=createVerifiedCloudAdapters({
+  fetchFn:async(url,init)=>{urls.push(url);assert.equal(JSON.parse(init.body).model,'mistral-small-2603');return {ok:true,status:200,json:async()=>({choices:[{message:{content:'EU only'}}]})};},
+  config:{MISTRAL_API:{apiKey:'server-only-test',endpointId:'eu-endpoint'}}
+ }).MISTRAL_API;
+ const input={route:{region:'EU',endpointId:'eu-endpoint',modelId:'mistral-small-2603'},request:{messages:[{role:'user',content:'Hi'}],maxTokens:128}};
+ const reply=await adapter(input);
+ assert.equal(reply.text,'EU only');
+ assert.deepEqual(urls,['https://api.eu.mistral.ai/v1/chat/completions']);
+ await assert.rejects(adapter({...input,route:{...input.route,region:'US'}}),/MISTRAL_RUNTIME_NOT_PROVISIONED/);
+ assert.equal(urls.length,1);
+});
+
+test('EU inference readiness requires provider verified region evidence in provisioning',()=>{
+ assert.equal(evaluateTenantAiActivation(activationInputs).readyForTest,true);
+ const missing=evaluateTenantAiActivation({...activationInputs,registryRecord:{
+  ...euRegistry,config:{MISTRAL_API:{...euProvision,residencyEvidenceId:undefined}}
+ }});
+ assert.equal(missing.readyForTest,false);
+ assert.equal(missing.checks.find(x=>x.key==='endpoint').status,'ACTION_REQUIRED');
 });
