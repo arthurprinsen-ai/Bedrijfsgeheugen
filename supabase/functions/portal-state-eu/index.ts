@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { repairBusinessInputsFromAuthority } from './business-input-read-repair.js';
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
+import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
@@ -137,6 +138,30 @@ Deno.serve(async(req:Request)=>{
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+
+  // Authoritative tenant financial series only. No market-signal-to-finance conversion.
+  // This gateway is service-token protected; a browser never receives a database key.
+  if(action==='financial_forecasts'){
+    const {data:rows,error}=await client.from('portal_financial_forecasts_v1')
+      .select('tenant_id,forecast_id,metric,title,unit,source_name,source_evidence_ref,model_version,source_updated_at,historical_points,forecast_points,lower_points,upper_points,verification_status,verified_at,verified_by,backtest,independent_review')
+      .eq('tenant_id',tenantId)
+      .eq('verification_status','passed')
+      // Candidate fetch remains tenant-scoped and bounded. Filter and independently
+      // validate rows BEFORE limiting to 30 chart entries, so an expired/corrupt
+      // top-ranked review cannot crowd out a valid later source.
+      .order('verified_at',{ascending:false}).limit(150);
+    if(error)return json({error:'FINANCIAL_FORECAST_READ_FAILED'},503);
+    const forecasts=(rows||[]).filter(row=>eligibleFinancialForecast(row,tenantId)).slice(0,30).map(row=>({
+      id:row.forecast_id,tenantId,metric:row.metric,title:row.title,unit:row.unit,
+      source:row.source_name,model:row.model_version,updatedAt:row.source_updated_at,
+      history:row.historical_points,forecast:row.forecast_points,
+      ...(row.lower_points?{low:row.lower_points}:{}),
+      ...(row.upper_points?{high:row.upper_points}:{}),
+      verified:true,
+      validation:{status:'passed',tenantBound:true,tenantId,verifiedAt:row.verified_at}
+    }));
+    return json({tenantId,forecasts});
+  }
 
   if(action==='cms_public'){
     const cmsSurface=String(body?.surface||'website').trim();
