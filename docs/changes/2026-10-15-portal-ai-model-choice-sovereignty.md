@@ -25,3 +25,11 @@ A chosen model becomes **runtime eligible** only after a deliberately implemente
 - EDPB cross-border transfers for SMEs: https://www.edpb.europa.eu/sme/be-compliant/international-data-transfers_en
 
 No assertion of GDPR compliance, full EU sovereignty, provider contractual proof or fully active 110-model inference is made by this release.
+
+## Uitgelichte modellen en koppeling per functie
+
+Het klantenportaal toont standaard een beknopte startselectie: `gpt-6-luna` (dagelijkse taken), `gpt-6-sol` (Bedrijfsbrein), `mistral-medium-3-5` (analyse), `gpt-oss-20b` (klantbeheerde infrastructuur), `mistral-ocr-3` (documenten) en `text-embedding-3-small` (kennis zoeken). Deze modellen zijn zichtbaar, niet vooraf geselecteerd of uitvoerbaar verklaard. Alle 110 records blijven bereikbaar.
+
+Een gekozen model kan per portaalfunctie als **aangevraagde inzet** worden vastgelegd: `brain`, `routine`, `analysis`, `documents`, `knowledge` of `sensitive`. De mappings worden onder `portal.aiModelPreferences.assignments` opgeslagen. Het databeleid start voor nieuwe klanten bij voorkeur `eu-both` (EER-opslag + EER-inferentie), maar die voorkeur is géén bewezen technische afdwinging.
+
+De aanvraagstatus blijft `review_only_not_activated`. Er bestaat met deze wijziging geen automatische server-side mapping tussen klantvoorkeur en AI-gateway; daarvoor moet een afzonderlijke geautoriseerde activation controller per model/account/regio/tenant bestaan. Contracten, privacyrechten en leveranciersevidence kunnen niet vanuit de wensenlijst worden afgeleid.
