@@ -70,3 +70,39 @@ test('failed/unauthenticated data gives explicit empty state, not fabricated sig
  assert.match(renderTenantForesightEvidence(null,{status:'unavailable'}),/niet beschikbaar/);
  assert.match(renderTenantForesightEvidence(null,{status:'loading'}),/gecontroleerd/);
 });
+
+test('risk, opportunity and development filters use only scored tenant evidence',()=>{
+ const risk=buildTenantForesightEvidence(packet,{metric:'resilience',mode:'risk',now});
+ assert.deepEqual(risk.impacts.map(x=>x.id),['imp-2']);
+ assert.equal(risk.impacts[0].kind,'risk');
+ assert.deepEqual(risk.actions,[]);
+ const opportunity=buildTenantForesightEvidence(packet,{metric:'revenue_growth',mode:'opportunity',now});
+ assert.deepEqual(opportunity.impacts.map(x=>x.id),['imp-1']);
+ assert.deepEqual(opportunity.actions.map(x=>x.title),['Verbeter leadopvolging']);
+ assert.equal(opportunity.impacts[0].kind,'opportunity');
+ const developments=buildTenantForesightEvidence(packet,{metric:'profit',mode:'development',now});
+ assert.deepEqual(developments.impacts,[]);
+ assert.equal(developments.external[0].title,'Macrotrend zonder bedrijfsimpact');
+ assert.equal(developments.selectedMode,'development');
+ assert.equal(buildTenantForesightEvidence(packet,{mode:'INVALID',now}).selectedMode,'all');
+});
+test('client-side scenario filter cannot promote an unscoped or stale source into verified tenant impact',()=>{
+ const source=structuredClone(packet);
+ source.intelligence.companyImpacts.push({
+   tenant_id:'tenant-b',status:'SCORED',signal_key:'cyber',impact_key:'from-other-tenant',
+   impact_score:100,observed_at:'2026-10-14T08:00:00Z',evidence:{ref:'foreign'}
+ });
+ const risk=buildTenantForesightEvidence(source,{metric:'resilience',mode:'risk',now});
+ assert.deepEqual(risk.impacts.map(x=>x.id),['imp-2']);
+ assert.equal(risk.impacts[0].evidenceLinked,true);
+ assert.equal(Object.hasOwn(risk.impacts[0],'predictedRevenue'),false);
+ assert.equal(risk.heartbeat,'NOT_EVIDENCED');
+});
+test('evidence filter renders as an actual native select without unescaped injected provider markup',()=>{
+ const risk=buildTenantForesightEvidence(packet,{metric:'resilience',mode:'risk',now});
+ const html=renderTenantForesightEvidence(risk,{status:'ready'});
+ assert.match(html,/data-pfs-evidence-filter/);
+ assert.match(html,/data-pfs-evidence-refresh/);
+ assert.match(html,/<option value="risk" selected>/);
+ assert.ok(!html.includes('Andere klant'));
+});
