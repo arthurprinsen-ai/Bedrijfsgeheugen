@@ -12,3 +12,7 @@ Begrens concurrentie tot drie per batch met lazy query-start en behoud fail-clos
 
 ## Acceptatiegrens
 Source PR, tests en CodeQL, beschermde merge, Edge-uitrol, echte Netlify/auth readback. Zonder deze laatste signalen geen productieclaim.
+
+## Protected-current-main recovery (2026-10-15)
+
+Candidate was replayed strictly over current main `c40bddc1018b7923f2c10371c4191547b28a5ea4`, preserving exactly the six original changed paths. Earlier Required/CodeQL/Supabase checks on the prior head are not sufficient; the new exact head must pass again. No database changes or live publication claimed by this branch refresh.
