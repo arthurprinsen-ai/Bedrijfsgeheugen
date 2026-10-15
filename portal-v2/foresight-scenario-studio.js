@@ -131,7 +131,7 @@ function markup(model){
 export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',openPage}={}){
   if(!host?.appendChild)return null;
   host.querySelector?.('[data-pfs-studio]')?.remove();
-  const selected={metric:'',days:90,sensitivity:0};
+  const selected={metric:'',days:90,sensitivity:0,asOf:new Date().toISOString().slice(0,10)+'T00:00:00Z'};
   const section=(host.ownerDocument||document).createElement('div');
   const draw=()=>{
     const model=buildForesightStudioModel(state,selected);
