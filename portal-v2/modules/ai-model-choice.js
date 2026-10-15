@@ -125,6 +125,16 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  footer.append(el('p','hint','Opgeslagen voorkeuren blijven gescheiden van live AI-inferentie. Voor werkelijke activering zijn geverifieerde API-toegang, modelbeschikbaarheid, tenantrechten, DPA/AVG, regio, verwerking en risicoacceptatie vereist.'));
  const toPass=el('button',null,'Bekijk Data & AI Sovereignty');toPass.type='button';toPass.addEventListener('click',()=>openPage?.('data-ai-passport'));footer.append(toPass);
  parent.append(footer);
+ const activation=el('section');activation.append(
+  el('h3',null,'Model aansluiten en activeren'),
+  el('p',null,'1. Bewaar het model en de route. 2. Vraag aansluiting aan. 3. POWERHOUSE controleert provideraccount, dataverwerking en goedkeuringen. 4. Test na aantoonbare vrijgave.'),
+  el('p','warn','Voer hier nooit API-sleutels, wachtwoorden of contractdocumenten in. Een aanvraag activeert geen provider.'));
+ const activationConsent=el('input');activationConsent.type='checkbox';
+ const consentRow=el('label','row');consentRow.append(activationConsent,el('span',null,'Ik ben bevoegd deze aanvraag voor mijn organisatie in te dienen. Onafhankelijke controle blijft verplicht.'));activation.append(consentRow);
+ const activationActions=el('div','tools'),requestActivation=el('button','primary','Activering aanvragen'),refreshButton=el('button',null,'Controleer aansluitstatus');
+ requestActivation.type=refreshButton.type='button';activationActions.append(requestActivation,refreshButton);activation.append(activationActions);
+ const activationSummary=el('p','status','Status nog niet gecontroleerd.');activationSummary.setAttribute('aria-live','polite');
+ const activationChecks=el('div','amc-activation-checks');activation.append(activationSummary,activationChecks);parent.append(activation);
  const trial=el('section');trial.append(el('h3',null,'Test jouw goedgekeurde Bedrijfsbrein-model'),
  el('p','hint','Optionele, handmatig gestarte modeltest. Alleen jouw ingetypte tekst wordt verstuurd; portaalbestanden en bedrijfscontext gaan niet mee. Een provider wordt uitsluitend aangeroepen na de server-side controle van modelkeuze, tenant, leverancier, regio en ondertekend runtimebewijs. Een geslaagde test kan verbruikskosten hebben.'));
  const trialForm=el('div','tools'),trialQuestion=el('input');
@@ -157,6 +167,66 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   finally{trialButton.disabled=false}
  });
  root.replaceChildren(parent);
+ const refreshActivation=async()=>{
+  if(!loggedIn()){activationSummary.textContent='Log in als klant om de status te bekijken.';return null}
+  if(dirty){activationSummary.textContent='Bewaar eerst je gewijzigde modelkeuze.';return null}
+  refreshButton.disabled=true;activationSummary.textContent='Geauthenticeerde servercontrole ophalen…';
+  try{
+   const response=await fetchImpl('/api/tenant-ai-activation-status',{
+    method:'GET',credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}
+   });
+   const data=await response.json().catch(()=>null);
+   if(!response.ok||!Array.isArray(data?.checks)){
+    activationSummary.textContent='Activeringsstatus niet betrouwbaar beschikbaar ('+String(data?.error||response.status)+'). Geen model geactiveerd.';
+    activationChecks.replaceChildren();return null;
+   }
+   const checks=data.checks.filter(x=>x&&typeof x.label==='string'&&typeof x.status==='string');
+   activationChecks.replaceChildren(...checks.map(x=>
+    el('p',x.status==='COMPLETE'?'hint':'warn',
+     (x.status==='COMPLETE'?'✓ ':'○ ')+x.label+
+     (x.status==='COMPLETE'?'':' — '+String(x.detail||'Nog niet bevestigd').slice(0,220)))));
+   activationSummary.textContent=data.readyForTest?
+    'Servercontroles akkoord voor een handmatige test; een geslaagde providerrespons is nog niet bewezen.':
+    'Nog niet geactiveerd: '+checks.filter(x=>x.status!=='COMPLETE').length+' controles vereisen aandacht.';
+   return data;
+  }catch{
+   activationSummary.textContent='Geen geauthenticeerde serverstatus; model niet geactiveerd.';
+   activationChecks.replaceChildren();return null;
+  }finally{refreshButton.disabled=false}
+ };
+ refreshButton.addEventListener('click',()=>{void refreshActivation()});
+ requestActivation.addEventListener('click',async()=>{
+  if(!loggedIn()||!domainState?.set||!domainState?.flush){
+   activationSummary.textContent='Log in om een activeringsaanvraag vast te leggen.';return;
+  }
+  if(dirty){activationSummary.textContent='Bewaar eerst de modelkeuze en route.';return}
+  if(!activationConsent.checked){
+   activationSummary.textContent='Bevestig eerst je bevoegdheid om de aanvraag in te dienen.';return;
+  }
+  const id=draft.assignments.brain||draft.defaultModelId;
+  const target=draft.models.find(m=>m.modelId===id);
+  if(!id||!target?.routeId){
+   activationSummary.textContent='Bewaar eerst een standaardmodel of Bedrijfsbrein-model met providerroute.';return;
+  }
+  requestActivation.disabled=true;activationSummary.textContent='Aanvraag in je klantomgeving vastleggen…';
+  try{
+   const payload={schemaVersion:1,requestState:'REQUESTED',modelId:id,
+    routeId:target.routeId,workload:'brain',requestedAt:new Date().toISOString()};
+   domainState.set('portal.aiModelActivationRequest',payload);
+   domainState.set('sourceMeta.updatedAt',payload.requestedAt);
+   await domainState.flush();
+   const persisted=domainState.get('portal.aiModelActivationRequest');
+   if(persisted?.requestState!=='REQUESTED'||persisted.modelId!==id||
+      persisted.routeId!==target.routeId||persisted.requestedAt!==payload.requestedAt)
+    throw new Error('REQUEST_READBACK_FAILED');
+   const proof=await refreshActivation();
+   activationSummary.textContent=proof?.reviewRequested===true?
+    'Activeringsaanvraag bevestigd in de tenantserver. Echte provider-, contract- en governanceverificatie blijft noodzakelijk.':
+    'Aanvraag lokaal opgeslagen, maar serverontvangst nog niet bewezen. Geen model geactiveerd.';
+  }catch{activationSummary.textContent='Opslaan niet bevestigd. Controleer je klantrechten en verbinding.'}
+  finally{requestActivation.disabled=false}
+ });
+ if(loggedIn())void refreshActivation();
  const selected=()=>new Map(draft.models.map(x=>[x.modelId,x.routeId]));
  const setSelected=(id,routeId,enabled)=>{
   const old=selected();if(enabled)old.set(id,routeId);else old.delete(id);
