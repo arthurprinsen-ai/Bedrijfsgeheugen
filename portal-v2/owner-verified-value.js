@@ -22,7 +22,8 @@ export function buildOwnerVerifiedValueReport(projection,{expectedTenant}={}){
   let excluded=0;
   for(const record of rows){
     const id=clean(record?.id);
-    const unit=units[clean(record?.valueUnit).toLowerCase()];
+    const unitKey=clean(record?.valueUnit).toLowerCase();
+    const unit=Object.hasOwn(units,unitKey)?units[unitKey]:null;
     const value=record?.realisedValue;
     const proof=values(record?.evidenceIds).filter(x=>typeof x==='string'&&x.trim()).map(x=>x.trim());
     if(!id||!unit||!Number.isFinite(value)||Math.abs(value)>1e10||proof.length===0){excluded++;continue;}
