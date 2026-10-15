@@ -70,3 +70,13 @@
 .owner-os .owner-decision-commands button:first-child{background:#2457c7;border-color:#2457c7;color:#fff}
 .owner-os .owner-decision-commands button:disabled{opacity:.6;cursor:wait}
 @media(max-width:680px){.owner-os .owner-canonical-decisions{padding:12px}.owner-os .owner-decision-commands button{flex:1;text-align:center}}
+
+/* Authenticated financial provenance and explicit human-only decision controls */
+.owner-os .owner-finance-status{font-size:12px;color:var(--owner-muted);margin:12px 0 4px}
+.owner-os .owner-decision-head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.owner-os .owner-decision-head h3{margin:16px 0}
+.owner-os .owner-decision-commands{display:flex;flex-wrap:wrap;gap:9px;margin-top:12px}
+.owner-os .owner-decision-commands button{border:1px solid #c6d5ef;color:#214d9a;background:#fff;border-radius:9px;padding:8px 13px;font-size:12px;font-weight:750}
+.owner-os .owner-decision-commands button:first-child{background:#2457c7;color:#fff;border-color:#2457c7}
+.owner-os .owner-decision-commands button:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:680px){.owner-os .owner-decision-head{align-items:stretch}.owner-os .owner-decision-head .owner-link{width:100%}.owner-os .owner-decision-commands button{flex:1;text-align:center}}
