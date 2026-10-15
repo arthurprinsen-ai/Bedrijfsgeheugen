@@ -113,5 +113,5 @@ test('Mijn acties consumes proven value from canonical Brain readback without in
  assert.match(html,/PH-P003/);
  assert.match(html,/provider:readback:1/);
  assert.match(html,/€ 1\.250/);
- assert.match(html,/Géén maand- of 30-dagenclaim|geen maand- of 30-dagenclaim/);
+ assert.match(html,/géén maand- of 30-dagenclaim/);
 });
