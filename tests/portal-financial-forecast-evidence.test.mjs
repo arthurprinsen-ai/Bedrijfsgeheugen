@@ -75,6 +75,15 @@ test('independent finance approval rejects unreplayable, altered or misdated bac
  assert.equal(eligibleFinancialForecast(tamperedHistory,'tenant42'),false);
 });
 
+test('future-dated historical actuals cannot be approved before source was observed',()=>{
+ const futureActual={...base,
+  historical_points:base.historical_points.map((p,i)=>i===5?point('2026-11',p.value):p),
+  forecast_points:[point('2026-12',180)]};
+ assert.equal(eligibleFinancialForecast(futureActual,'tenant42'),false);
+ const futureSource={...base,source_updated_at:'2026-10-16T10:00:00Z',verified_at:'2026-10-17T10:00:00Z'};
+ assert.equal(eligibleFinancialForecast(futureSource,'tenant42'),false);
+});
+
 test('bands must match the same periods, include every forecast and enclose expected values',()=>{
  const low=[point('2026-10',150),point('2026-11',160)];
  const high=[point('2026-10',190),point('2026-11',210)];
