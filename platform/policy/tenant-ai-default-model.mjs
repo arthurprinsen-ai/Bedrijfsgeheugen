@@ -7,11 +7,13 @@ export function resolveDesiredTenantModel(preferences,workload='brain'){
  if(!MODEL_WORKLOADS.includes(workload))
   return Object.freeze({ok:false,code:'UNKNOWN_MODEL_WORKLOAD'});
  if(!preferences||preferences.requestState!=='review_only_not_activated'||
-    !Array.isArray(preferences.models)||!preferences.assignments||
-    typeof preferences.assignments!=='object'||Array.isArray(preferences.assignments))
+    !Array.isArray(preferences.models)||
+    (preferences.assignments!==undefined&&(!preferences.assignments||
+    typeof preferences.assignments!=='object'||Array.isArray(preferences.assignments))))
   return Object.freeze({ok:false,code:'MODEL_CHOICE_REQUIRED'});
- const hasOverride=hasOwn(preferences.assignments,workload);
- const id=hasOverride?preferences.assignments[workload]:preferences.defaultModelId;
+ const assignments=preferences.assignments||{};
+ const hasOverride=hasOwn(assignments,workload);
+ const id=hasOverride?assignments[workload]:preferences.defaultModelId;
  if(typeof id!=='string'||!id||id.length>120)
   return Object.freeze({ok:false,code:'MODEL_WORKLOAD_NOT_ASSIGNED'});
  const matches=preferences.models.filter(row=>row&&row.modelId===id);
