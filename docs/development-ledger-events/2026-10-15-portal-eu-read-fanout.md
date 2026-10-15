@@ -16,3 +16,7 @@ Source PR, tests en CodeQL, beschermde merge, Edge-uitrol, echte Netlify/auth re
 ## Protected-current-main recovery (2026-10-15)
 
 Candidate was replayed strictly over current main `c40bddc1018b7923f2c10371c4191547b28a5ea4`, preserving exactly the six original changed paths. Earlier Required/CodeQL/Supabase checks on the prior head are not sufficient; the new exact head must pass again. No database changes or live publication claimed by this branch refresh.
+
+## Clean six-file successor to #4412
+
+The predecessor PR #4412 was closed without merge because its GitHub PR comparison base remained stale and Required reported unrelated main changes as candidate files (`SCOPE_CONTAMINATED`). The source change was reconstituted on protected main `768372b977792cd6798b6b5929a7b580e3ec15af`, preserving exactly six intended changed paths and no production write. All checks must rerun on the successor PR and exact successor head. The earlier green Supabase preview and CodeQL do not substitute for new evidence.
