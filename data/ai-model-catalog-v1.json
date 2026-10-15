@@ -5565,11 +5565,13 @@
       "deployment": [
         "Cohere",
         "Model Vault",
-        "private deployment"
+        "private deployment",
+        "AWS Bedrock Marketplace (cohere.embed-v4:0; EU Geo or Global profiles)"
       ],
       "source": "https://docs.cohere.com/docs/cohere-embed",
       "limitations": [
-        "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing."
+        "Current model-specific pay-as-you-go price is not independently confirmed; published examples/Vault rates are not interchangeable with customer billing.",
+        "Bedrock listing is AWS Marketplace billed, distinct from Cohere direct API and Standard Model Vault. Geo cross-region does not prove one EU processing region; Global can route outside the EU. Customer authorization remains untested."
       ],
       "governance": {
         "storage_residency": "unknown",
@@ -5665,6 +5667,15 @@
             "scope": "Public Model Vault instance pricing; API per-token rate and individual customer contract separate.",
             "checked_on": "2026-10-14",
             "verification_type": "independently_observed_model_specific_standard_vault_price"
+          },
+          {
+            "claim": "deployment",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-cohere-embed-v4.html",
+            "checked_on": "2026-10-15",
+            "locator": "Programmatic Access / bedrock-runtime / cohere.embed-v4:0; Regional Availability / EU Geo",
+            "observed_value": "AWS Bedrock Marketplace currently lists Active Cohere Embed v4 via bedrock-runtime Invoke, model ID cohere.embed-v4:0; EU geo ID eu.cohere.embed-v4:0, global ID global.cohere.embed-v4:0. Marketplace-billed, not Cohere API/Vault tariff; EU geo is not one-region proof and global routing is not residency restricted.",
+            "scope": "Public AWS Bedrock model card platform support only; tenant entitlement, marketplace rates and destination residency unverified.",
+            "verification_type": "independent_official_bedrock_model_card_readback"
           }
         ],
         "identity_warning": {
@@ -5803,6 +5814,31 @@
         "customer_residency_verified": false,
         "production_release_approved": false,
         "automatic_recommendation_eligible": false
+      },
+      "aws_bedrock_embed_v4_source_review_20261015": {
+        "source_url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-cohere-embed-v4.html",
+        "checked_on": "2026-10-15",
+        "observed": "AWS Bedrock Marketplace currently lists Active Cohere Embed v4 via bedrock-runtime Invoke, model ID cohere.embed-v4:0; EU geo ID eu.cohere.embed-v4:0, global ID global.cohere.embed-v4:0. Marketplace-billed, not Cohere API/Vault tariff; EU geo is not one-region proof and global routing is not residency restricted.",
+        "source_sections": [
+          "Model Details / Model lifecycle",
+          "Pricing / AWS Marketplace",
+          "Programmatic Access / Model ID / Geo and Global inference IDs",
+          "Regional Availability / EU geo destinations"
+        ],
+        "canonical_cohere_api_id": "embed-v4.0",
+        "aws_bedrock_id": "cohere.embed-v4:0",
+        "eu_geo_profile": "eu.cohere.embed-v4:0",
+        "global_profile": "global.cohere.embed-v4:0",
+        "official_platform_lifecycle": "Active",
+        "source_conflict": "Cohere platform table may still label Bedrock 'coming soon'; AWS model card is authoritative for Bedrock platform support.",
+        "aws_marketplace_billing": true,
+        "aws_region_account_authorization_confirmed": false,
+        "customer_region_residency_confirmed": false,
+        "aws_marketplace_customer_rates_confirmed": false,
+        "signed_customer_contract_verified": false,
+        "full_supplier_verification_complete": false,
+        "automatic_recommendation_eligible": false,
+        "production_release_approved": false
       }
     },
     {
