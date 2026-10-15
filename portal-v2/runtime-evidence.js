@@ -238,6 +238,9 @@ export function mapRuntimeProjection(projection) {
 export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}) } = {}) {
   try {
     const auth = typeof authHeadersProvider === 'function' ? await authHeadersProvider() : {};
+    // Server projection is tenant-specific; without an authenticated bearer, do
+    // not even request it, and never promote anonymous/demo runtime into state.
+    if(!/^Bearer\s+\S+/i.test(String(auth?.authorization||'')))return null;
     const response = await fetchImpl('/api/brain-operating-loop', {
       headers: { accept: 'application/json', ...(auth || {}) }, credentials: 'same-origin'
     });
