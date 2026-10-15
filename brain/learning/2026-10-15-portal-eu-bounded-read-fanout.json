@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|portal-eu|bounded-postgrest-reads|504-prevention-20261015",
+  "compiler": {
+    "failure_class": "PORTAL_DB_CONNECTION_PRESSURE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The authenticated entrepreneur intelligence endpoint starts ten PostgREST requests in parallel. During the production 504 window Supabase recorded repeated statement timeouts, cron job startup failures and an overloaded multi-process runtime scheduler. No evidence justified converting failed queries into empty success data.",
+  "prevention_rule": "Only launch lazy PostgREST queries in batches of at most three. Preserve all ten reads, original order, existing tenant filters and strict fail-closed behavior. Any database read error must still return HTTP 500/502/503, never a success-shaped false proof. Avoid disabling unrelated schedulers.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-eu-bounded-reads.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-eu-bounded-reads.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-eu-bounded-reads.test.mjs"
+    ]
+  },
+  "evidence": {
+    "productionSha": "7c34bb0317456282aaa76abdee383acc7f716963",
+    "readbackJob": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/38766230765",
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4410",
+    "databaseObservation": "SQL statement timeouts at 16:08–16:13Z, job 171 longest ~722 seconds; 10 simultaneous portal database reads",
+    "runtimeResult": "PENDING_DEPLOY"
+  },
+  "outcome": {
+    "code_status": "CANDIDATE",
+    "provider_validation": "NOT_YET_PROVEN",
+    "production_acceptance": "BLOCKED_UNTIL_AUTHENTICATED_READBACK"
+  }
+}
