@@ -26,5 +26,5 @@ test('provider generation requires valid strict schema and retains independent a
   assert.match(source,/artifact=await callAI\(apiKey,gov\.model_id,editorialSystem,artifactInput,artifactTool,retryBudget\)/);
   assert.match(source,/if\(editorialViolations\.length\) throw new Error\('PERSONAL_EDITORIAL_CONTRACT_FAILED:/);
   assert.match(source,/if\(!personalFinalCopyValid\(bodyText,personalSource\?\.evidence\|\|\{\}\)\) throw new Error\('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED'\)/);
-  assert.match(source,/if\(!companyTrackingUrl \|\| !bodyText\.includes\(companyTrackingUrl\)\)/);
+  assert.match(source,/if\s*\(!companyTrackingUrl \|\| !bodyText\.includes\(companyTrackingUrl\)\)/);
 });
