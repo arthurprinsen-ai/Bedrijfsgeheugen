@@ -40,13 +40,15 @@ test('external financial or customer-facing actions always need approval and are
   next_best_actions:[
    evidence('offerte-uitsturen',{external:true,customer_facing:true,financial:true,decision_required:true}),
    evidence('interne-analyse',{internal:true,reversible:true,identity_verified:true,permission_verified:true}),
-   evidence('ongeautoriseerde-analyse',{internal:true,reversible:true})
+   evidence('ongeautoriseerde-analyse',{internal:true,reversible:true}),
+   evidence('read-only-zonder-proof',{})
   ],opportunities:[],risks:[],outcomes:[],changes:[],forecasts:[]
  }),{now:NOW});
- assert.equal(m.counts.acties,3);
+ assert.equal(m.counts.acties,4);
  assert.equal(m.actions[0].ownerSafety.level,'goedkeuring');
  assert.equal(m.actions[1].ownerSafety.level,'binnen-beleid');
  assert.equal(m.actions[2].ownerSafety.level,'niet-uitvoerbaar');
+ assert.equal(m.actions[3].ownerSafety.level,'inzage');
  assert.equal(m.autonomousExecutionVerified,false);
 });
 test('only verified outcomes with traceable evidence count',()=>{
