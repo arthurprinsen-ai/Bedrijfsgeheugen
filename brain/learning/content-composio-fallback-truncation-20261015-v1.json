@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|social|linkedin-company|composio-fallback-truncated-json|bounded-retry|v1",
+  "compiler": {
+    "failure_class": "COMPOSIO_FALLBACK_INCOMPLETE_JSON"
+  },
+  "root_cause": "Composio/Groq structured content fallback parses model output strictly but unlike OpenAI has no bounded retry for documented truncation, leaving linkedin_company stuck at decided.",
+  "evidence": {
+    "observed_at": "2026-10-15",
+    "source": "Supabase powerhouse_content_orchestrator bg_gezondheid: artifact-ai Unterminated string in JSON, and powerhouse_channel_decisions linkedin_company 16 attempts.",
+    "test_evidence": "Source contract test added; protected CI pending.",
+    "production_readback": "PENDING_PROTECTED_MERGE_AND_PROVIDER_EVIDENCE"
+  },
+  "prevention_rule": "Only when parse failure is a verified truncated JSON or provider finish_reason=length, retry Composio/Groq with at most one larger token budget. Never accept partial, schema-invalid, unapproved, or source-ungrounded copy.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case": "unterminated-json-at-677",
+        "expected": "one larger-budget retry; strict schema mandatory",
+        "status": "contract-covered"
+      },
+      {
+        "case": "schema-or-editorial-failure",
+        "expected": "fail closed; no retry or provider publication",
+        "status": "contract-covered"
+      },
+      {
+        "case": "repeat-truncation",
+        "expected": "fail closed after one larger-budget attempt",
+        "status": "contract-covered"
+      }
+    ]
+  },
+  "outcome": {
+    "status": "CODE_CANDIDATE_ONLY",
+    "provider_side_effect_verified": false
+  }
+}
