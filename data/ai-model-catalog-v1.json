@@ -20720,6 +20720,15 @@
             "checked_on": "2026-10-14",
             "scope": "HISTORIC_VENDOR_RATE_NOT_CURRENT_PRICE",
             "verification_status": "CURRENT_PRICING_UNVERIFIED"
+          },
+          {
+            "claim": "capabilities",
+            "url": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+            "locator": "Model Details > Context window and Max output tokens",
+            "observed_value": "128K context window, 10K maximum output tokens (amazon.nova-micro-v1:0)",
+            "checked_on": "2026-10-15",
+            "scope": "Verified publicly documented model technical limit only; no customer account attestation",
+            "verification_status": "OFFICIAL_MODEL_CARD_TECHNICAL_LIMIT_CONFIRMED_NO_TENANT_APPROVAL"
           }
         ],
         "provider_policy_evidence": {
@@ -20845,6 +20854,20 @@
           "customer_account_readback": false,
           "independent_six_claim_supplier_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "aws_nova_micro_technical_limit_recheck_20261015": {
+          "reviewed_on": "2026-10-15",
+          "official_source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html",
+          "source_locator": "Model Details: Context window 128K tokens; Max output tokens 10K",
+          "observed_max_output_tokens": 10000,
+          "observed_context_window_tokens": 128000,
+          "correction": "Previous 5000 limit in GitHub catalog is contradicted by the current official AWS Nova Micro model card.",
+          "supplier_scope": "model-specific published technical specification only",
+          "pricing_verified": false,
+          "tenant_runtime_verified": false,
+          "contract_governance_verified": false,
+          "independent_six_claim_approval": false,
+          "automatic_recommendation_eligible": false
         }
       },
       "supplier_pricing_research": {
@@ -20864,7 +20887,7 @@
         "customer_region_verified": false
       },
       "provider_api_id": "amazon.nova-micro-v1:0",
-      "max_output_tokens": 5000
+      "max_output_tokens": 10000
     },
     {
       "tier": "specialist",
