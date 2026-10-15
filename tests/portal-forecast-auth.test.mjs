@@ -64,6 +64,19 @@ test('forecast dates require a recent observed timestamp and reject future asser
  assert.deepEqual(verifiedForecasts({forecasts:[{...valid,updatedAt:'2026-10-16T00:00:00Z'}]},'tenant42',{now}),[]);
  assert.deepEqual(verifiedForecasts({forecasts:[{...valid,updatedAt:'invalid-date'}]},'tenant42',{now}),[]);
 });
+test('financial source changed after independent approval must never be displayed',()=>{
+ const now=new Date('2026-10-15T06:00:00Z');
+ assert.equal(verifiedForecasts({forecasts:[valid]},'tenant42',{now}).length,1);
+ const changedAfterReview={...valid,updatedAt:'2026-10-14T13:00:00Z'};
+ assert.deepEqual(verifiedForecasts({forecasts:[changedAfterReview]},'tenant42',{now}),[],
+  'A supplier source revision requires a new independent review');
+ const earlierReview={...valid,validation:{...valid.validation,verifiedAt:'2026-10-14T09:00:00Z'}};
+ assert.deepEqual(verifiedForecasts({forecasts:[earlierReview]},'tenant42',{now}),[],
+  'Review must happen after its source observation');
+ const reviewedAgain={...changedAfterReview,validation:{...valid.validation,verifiedAt:'2026-10-14T14:00:00Z'}};
+ assert.equal(verifiedForecasts({forecasts:[reviewedAgain]},'tenant42',{now}).length,1);
+});
+
 test('canonical projection tenant metadata must match authenticated identity',()=>{
  assert.deepEqual(verifiedForecasts({tenantId:'tenant43',forecasts:[valid]},'tenant42',{now:new Date('2026-10-14T20:00:00Z')}),[]);
  assert.deepEqual(verifiedForecasts({payload:{tenant_id:'tenant43',forecasts:[valid]}},'tenant42',{now:new Date('2026-10-14T20:00:00Z')}),[]);
