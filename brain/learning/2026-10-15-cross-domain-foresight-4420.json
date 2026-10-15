@@ -20,5 +20,22 @@
     "No scenario counted as realized outcome"
   ],
   "regression": "portal-v2/tests/foresight-scenario-studio.test.mjs",
-  "status": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+  "status": "CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "compiler": {
+    "failure_class": "FORECAST_GOVERNANCE_UNVERIFIED_MULTI_DOMAIN",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-foresight-studio-canonicalization.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Tenant-bound historical inputs and existing Brain runtime projection",
+    "regression": "Native Portal V2 suite imported by canonical learning replay",
+    "status": "CANDIDATE_PRE_RELEASE"
+  }
 }
