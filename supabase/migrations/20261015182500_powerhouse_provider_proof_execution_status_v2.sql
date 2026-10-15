@@ -16,13 +16,13 @@ with decisions as (
     decision,
     state,
     delivery_ref,
-    (
+    coalesce((
       decision = 'publish'
       and state in ('published','measured','learned')
       and nullif(btrim(delivery_ref), '') is not null
       and delivery_evidence->>'provider_truth_verified' = 'true'
       and delivery_evidence->>'provider_status' = 'published'
-    ) as independently_proven
+    ), false) as independently_proven
   from public.powerhouse_channel_decisions
   where run_date = p_run_date
 ), d as (
