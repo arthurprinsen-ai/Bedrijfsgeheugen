@@ -398,3 +398,37 @@ test('four Google supplier audits cannot inherit acceptance from public pricing 
    assert.equal(independentAccepted,true,id+': supplier release requires independent acceptance');
  }
 });
+
+test('2026-10-15 scoped price and Falcon license reviews retain mandatory supplier holds',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const byId=new Map(catalog.models.map(m=>[m.id,m]));
+ const cohere=['command-a-plus','embed-4','embed-multilingual-v3.0','rerank-4-pro'];
+ for(const id of cohere){
+  const m=byId.get(id);
+  assert.ok(m,id);
+  const r=m.supplier_audit?.public_pricing_source_crosscheck_20261015;
+  assert.equal(r?.checked_on,'2026-10-15',id);
+  assert.ok(Array.isArray(r.sources)&&r.sources.length>=2,id);
+  assert.ok(r.sources.every(s=>s.url.startsWith('https://')&&s.locator),id);
+  assert.equal(r.verified_for_auto_recommendation,false,id);
+  assert.equal(r.independent_supplier_full_acceptance,false,id);
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false,id);
+  assert.equal(m.verification_evidence?.claim_scope,'partial',id);
+ }
+ assert.match(byId.get('embed-4').supplier_audit.public_pricing_source_crosscheck_20261015.classification,/AVAILABILITY_NOT_RECONCILED/);
+ assert.match(byId.get('embed-multilingual-v3.0').supplier_audit.public_pricing_source_crosscheck_20261015.classification,/NUMERIC_RATE_NOT_PUBLICLY_ESTABLISHED/);
+ const falcon=['falcon-h1-0.5b-instruct','falcon-h1-1.5b-instruct','falcon-h1-3b-instruct','falcon-h1-7b-instruct','falcon-h1-34b-instruct','falcon-h1r-7b'];
+ for(const id of falcon){
+  const m=byId.get(id);
+  assert.ok(m,id);
+  const review=m.supplier_audit?.falcon_license_scope_recheck_20261015;
+  assert.equal(review?.checked_on,'2026-10-15',id);
+  assert.equal(review.model_repository_url,m.source,id);
+  assert.match(review.classification,/H1_LEGAL_SCOPE_NOT_AUTHENTICATED/,id);
+  assert.equal(review.customer_entitlement_attested,false,id);
+  assert.equal(review.automatic_recommendation_eligible,false,id);
+  assert.equal(review.independent_supplier_full_verification,false,id);
+  assert.equal(m.supplier_audit.automatic_recommendation_eligible,false,id);
+  assert.equal(m.verification_evidence?.claim_scope,'partial',id);
+ }
+});
