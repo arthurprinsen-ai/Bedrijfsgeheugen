@@ -336,7 +336,7 @@ test('AWS Nova public model-card readback preserves exact IDs and customer autho
  const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
  const expected={
   'amazon-nova-2-sonic':{api:'amazon.nova-2-sonic-v1:0',context_k:1000,max_output_tokens:64000,regional:['eu-north-1','us-east-1']},
-  'amazon-nova-micro':{api:'amazon.nova-micro-v1:0',context_k:128,max_output_tokens:5000,regional:['eu-west-2','us-east-1']},
+  'amazon-nova-micro':{api:'amazon.nova-micro-v1:0',context_k:128,max_output_tokens:10000,regional:['eu-west-2','us-east-1']},
   'amazon-nova-multimodal-embeddings':{api:'amazon.nova-2-multimodal-embeddings-v1:0',context_k:null,max_output_tokens:null,regional:['us-east-1']}
  };
  for(const [id,asserted] of Object.entries(expected)){
@@ -379,4 +379,22 @@ test('DeepSeek stateless Responses endpoint is API behavior, not model-wide rete
   assert.equal(model.supplier_audit?.claim_evidence_classification?.governance,'PROVIDER_BASELINE_ONLY_NOT_MODEL_PROOF',id);
   assert.equal(model.supplier_audit?.automatic_recommendation_eligible,false,id);
  }
+});
+
+
+test('Nova Micro authoritative 10K output limit does not override supplier or tenant safeguards',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const m=catalog.models.find(x=>x.id==='amazon-nova-micro');
+ assert.ok(m);
+ assert.equal(m.max_output_tokens,10000);
+ const review=m.supplier_audit?.aws_nova_micro_technical_limit_recheck_20261015;
+ assert.equal(review?.observed_max_output_tokens,10000);
+ assert.equal(review?.observed_context_window_tokens,128000);
+ assert.equal(review?.official_source,'https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-micro.html');
+ assert.ok(m.verification_evidence?.claim_evidence?.some(r=>r.claim==='capabilities'&&r.checked_on==='2026-10-15'&&r.observed_value?.includes('10K maximum output tokens')));
+ assert.equal(m.verification_evidence.claim_scope,'partial');
+ assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
+ assert.equal(review.tenant_runtime_verified,false);
+ assert.equal(review.contract_governance_verified,false);
+ assert.equal(review.pricing_verified,false);
 });
