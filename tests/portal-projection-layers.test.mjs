@@ -23,3 +23,24 @@ test('canonical projector maps governed business objects into portal sections',(
 test('unknown canonical types remain visible in audit instead of disappearing',()=>{
  const out=projectCanonicalObject({}, {id:'X1',tenantId:'t1',type:'Capability',lifecycle:'ACTIVE',provenance:{sourceRef:'system'},data:{},updatedAt:'2026-08-29T20:00:00Z'});assert.equal(out.audit.length,1);assert.match(out.audit[0].event,/Capability/);
 });
+
+test('legacy tenant AI model preferences and activation request survive unrelated canonical portal updates',()=>{
+ const legacy={data:{portal:{
+  aiModelPreferences:{schemaVersion:3,defaultModelId:'mistral-medium-3-5',requestState:'review_only_not_activated'},
+  aiModelActivationRequest:{requestState:'REQUESTED',modelId:'mistral-medium-3-5',routeId:'mistral-api-eu'},
+  pages:{growth:{status:'legacy'}}
+ }}};
+ const canonical={data:{portal:{pages:{growth:{status:'canonical'}},strategy:{current:'active'}}}};
+ const merged=composePortalProjectionLayers({legacy,canonical});
+ assert.deepEqual(merged.portal.aiModelPreferences,legacy.data.portal.aiModelPreferences);
+ assert.deepEqual(merged.portal.aiModelActivationRequest,legacy.data.portal.aiModelActivationRequest);
+ assert.deepEqual(merged.portal.pages,canonical.data.portal.pages);
+ assert.deepEqual(merged.portal.strategy,canonical.data.portal.strategy);
+});
+test('explicit canonical AI preferences remain authoritative over older legacy values',()=>{
+ const l={portal:{aiModelPreferences:{defaultModelId:'outdated'},aiModelActivationRequest:{requestState:'REQUESTED'}}};
+ const c={portal:{aiModelPreferences:{defaultModelId:'newer'},aiModelActivationRequest:{requestState:'CANCELLED'}}};
+ const merged=composePortalProjectionLayers({legacy:{data:l},canonical:{data:c}});
+ assert.deepEqual(merged.portal.aiModelPreferences,c.portal.aiModelPreferences);
+ assert.deepEqual(merged.portal.aiModelActivationRequest,c.portal.aiModelActivationRequest);
+});

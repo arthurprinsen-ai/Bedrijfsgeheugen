@@ -659,6 +659,16 @@ async function translateAll(strings) {
   }
   if (!missing.length) return result;
 
+  // Public marketing-copy cache keys only. Preserve an exact, bounded review
+  // list when the approved translation provider cannot serve today's article.
+  if (PREPARE_CACHE_PATCH_NAME) {
+    console.log('STATIC_I18N_CACHE_GAPS_V1', JSON.stringify({
+      patch: PREPARE_CACHE_PATCH_NAME,
+      total: missing.length,
+      sources: missing.slice(0,80)
+    }));
+  }
+
   const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
   if (cacheRequired) {
     console.error('STATIC_I18N_CACHE_MISSING', JSON.stringify(missing));
@@ -718,6 +728,11 @@ async function translateAll(strings) {
           provider_body: providerBody,
           delay_ms: transient ? delay : 0
         }));
+        // Payment/credit exhaustion is terminal, not a batch-size error.
+        // Do not bisect the same 402-like billing problem into dozens of calls.
+        if (status === 400 && /credit balance is too low|insufficient quota|billing/i.test(providerBody || '')) {
+          throw new Error('STATIC_I18N_PROVIDER_BILLING_BLOCKED: ' + (error?.message || String(error)));
+        }
         if (!transient && status >= 400 && status < 500) break;
         await new Promise(r=>setTimeout(r,delay));
       }
