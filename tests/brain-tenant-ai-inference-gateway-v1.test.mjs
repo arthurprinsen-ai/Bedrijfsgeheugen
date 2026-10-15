@@ -285,7 +285,7 @@ test('readiness center confirms all independent tenant-level proof checks withou
  assert.equal(result.status,'READY_FOR_AUTHORIZED_TEST');
  assert.equal(result.selectedModelId,'mistral-small');
  assert.equal(result.reviewRequested,true);
- assert.equal(result.checks.length,8);
+ assert.equal(result.checks.length,9);
  assert.ok(result.checks.every(x=>x.status==='COMPLETE'));
 });
 
