@@ -29,3 +29,13 @@ test('publisher does not convert transient review failure to permanent blocked a
   assert.doesNotMatch(retryBranch, /publishLinkedIn|publishInstagram|provider_create_success:\s*true/);
   assert.match(source.slice(stop, stop + 450), /gate\.can_publish !== true/);
 });
+
+test('reviewer checks freshness against active high-confidence recently updated rules', () => {
+  const source = readFileSync(new URL('../supabase/functions/bg-pre-publish-review/index.ts', import.meta.url), 'utf8');
+  assert.match(source, /const MAX_RULE_AGE_MS = 96 \* 60 \* 60 \* 1000/);
+  assert.match(source, /\.eq\('status','actief'\)\.gte\('vertrouwen',0\.85\)/);
+  assert.match(source, /\.order\('bijgewerkt_op',\{ ascending: false \}\)/);
+  assert.match(source, /'RULE_CONTEXT_STALE'/);
+  assert.match(source, /parent\.verified !== true/);
+  assert.match(source, /personal\.verified !== true/);
+});
