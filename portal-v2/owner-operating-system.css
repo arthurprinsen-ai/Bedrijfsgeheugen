@@ -70,3 +70,17 @@
 .owner-os .owner-decision-commands button:first-child{background:#2457c7;border-color:#2457c7;color:#fff}
 .owner-os .owner-decision-commands button:disabled{opacity:.6;cursor:wait}
 @media(max-width:680px){.owner-os .owner-canonical-decisions{padding:12px}.owner-os .owner-decision-commands button{flex:1;text-align:center}}
+
+/* Verified outcome ledger: derives exclusively from the existing protected Brain readback. */
+.owner-os .owner-value-report{margin:22px 0;padding:16px;background:#f9fbff;border:1px solid #cbdcf1;border-radius:15px;min-width:0}
+.owner-os .owner-value-report .owner-decision-head h3{margin:0}
+.owner-os .owner-proof-indicator{font-size:11px;font-weight:750;color:#28518a;border:1px solid #bcd1ed;background:white;border-radius:99px;padding:6px 9px}
+.owner-os .owner-value-totals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.owner-os .owner-value-totals>div{display:flex;flex-direction:column;gap:5px;padding:14px;border:1px solid var(--owner-edge);background:#fff;border-radius:12px;min-width:0}
+.owner-os .owner-value-totals small{font-size:11px;color:var(--owner-muted)}
+.owner-os .owner-value-totals strong{font-size:clamp(19px,2.4vw,26px);line-height:1.2;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.owner-os .owner-value-details{margin-top:14px}
+.owner-os .owner-value-details summary{cursor:pointer;padding:10px 0;font-weight:750;font-size:13px}
+.owner-os .owner-proof-note{font-size:11px;color:#57687d}
+.owner-os .owner-value-details article small{overflow-wrap:anywhere;display:block}
+@media(max-width:680px){.owner-os .owner-value-report{padding:12px}.owner-os .owner-value-totals{grid-template-columns:1fr;gap:8px}.owner-os .owner-proof-indicator{white-space:normal}}
