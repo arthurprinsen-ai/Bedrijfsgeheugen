@@ -25,11 +25,13 @@ import { mountBusinessContextWorkspace } from './modules/business-context-worksp
 import { mountContextualForesight } from './foresight-context-ui.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
 import { mountSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
+import { mountAiModelChoice } from './modules/ai-model-choice.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
   profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
   'sales-intelligence':['Sales Intelligence & behoefte','Zie wat de klant aantoonbaar wil bereiken, welk probleem en effect zijn bevestigd, welke vraag nu volgt en wanneer een aanbod past.'],
+  'ai-modelkeuze':['Kies jouw AI-modellen','Alle 110 modellen vergelijken en als gewenste AI-route vastleggen, met data-soevereiniteit, leveranciersbewijs en EU AI Act-toepassingscontrole.'],
   'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
   'trust-center':['Security Trust Center','Bekijk aantoonbaar hoe data, toegang, leveranciers, securitycontrols en relevante normen zijn ingericht.'],
   'data-ai-passport':['Data & AI Sovereignty','Zie waar data wordt opgeslagen en verwerkt, welke AI-routes actief zijn en welke soevereiniteitsbeperkingen gelden.'],
@@ -94,7 +96,7 @@ const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gege
 const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','omgevingsradar','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek','compliance-governance']);
-export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','compliance-governance','compliance-command-center','eu-ai-act-audit']);
+export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','ai-modelkeuze','compliance-governance','compliance-command-center','eu-ai-act-audit']);
 const protectedTrustSet=new Set(PROTECTED_TRUST_PAGES);
 const portalContext={domainState:null,stateClient:null};
 
@@ -141,7 +143,9 @@ export function pagePresentation(pageId, state) {
     kind:'native-v2',
     evidenceLabel: pageId==='csrd-impact'
       ? 'Impactdata + evidence in één traceerbare cockpit'
-      : BRAIN_PAGES.has(pageId)
+      : pageId==='ai-modelkeuze'
+         ? 'Klantvoorkeuren · geen provideractivatie of compliance-certificering'
+         : BRAIN_PAGES.has(pageId)
         ? 'Native Portal V2 · status alleen met runtime-evidence'
         : content.derived
           ? 'Native Portal V2 · cijfers berekend op je eigen gegevens'
@@ -326,7 +330,8 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
-  else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
+  else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
+   else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
   else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,stateClient:portalContext.stateClient,openPage:openPortalPage});}
   else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
