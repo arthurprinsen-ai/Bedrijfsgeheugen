@@ -32,16 +32,13 @@ const empty=(specific)=>`<div class="owner-unknown" role="status"><strong>Nog ni
 const metric=(name,value,note)=>`<div class="owner-metric"><small>${esc(name)}</small><strong>${s(value)}</strong><span>${esc(note)}</span></div>`;
 const categoryLabels={finance:'Marge en geld',groei:'Nieuwe omzet',klanten:'Klantbehoud',operatie:'Mensen en processen',risico:'Risicobeheersing',strategie:'Strategie'};
 
-function financialSource(fact){
- if(!fact)return '';
- return `<div class="owner-financial-source"><small>Gevalideerd: ${esc(fact.source)} · ${esc(fact.model)} · controle ${esc(fact.verifiedAt)}</small></div>`;
-}
+const financeNote=(fact,otherwise)=>fact?`${fact.note} · bron ${fact.source} · gecontroleerd ${fact.verifiedAt}`:otherwise;
 function companyPanel(m,financial=null,financialStatus=''){
  const revenue=financial?.revenue||null,cash=financial?.cash||null,margin=financial?.margin||null;
  return `<div class="owner-metrics">
-  ${metric(revenue?'Omzet · laatste bronperiode':'Omzet','${revenue?.value||'—'}',revenue?.note||'Geen geverifieerde financiële bron')}${financialSource(revenue)}
-  ${metric(cash?'Kasprognose · eerste toekomstige periode':'Kasprognose',cash?.value||'—',cash?.note||'Nog geen onafhankelijk gevalideerde kasprognose')}${financialSource(cash)}
-  ${metric(margin?'Brutomarge · laatste bronperiode':'Brutomarge',margin?.value||'—',margin?.note||'Nog geen geverifieerde margeberekening')}${financialSource(margin)}
+  ${metric(revenue?'Omzet · laatste bronperiode':'Omzet',revenue?.value||'—',financeNote(revenue,'Geen geverifieerde financiële bron'))}
+  ${metric(cash?'Kasprognose · eerste toekomstige periode':'Kasprognose',cash?.value||'—',financeNote(cash,'Nog geen onafhankelijk gevalideerde kasprognose'))}
+  ${metric(margin?'Brutomarge · laatste bronperiode':'Brutomarge',margin?.value||'—',financeNote(margin,'Nog geen geverifieerde margeberekening'))}
   ${metric('Besluiten nodig',m.ready?m.counts.besluiten:'—','Met actueel tenantbewijs')}
  </div><p class="owner-finance-status" role="status">${esc(financialStatus||'Financiële bron: alleen geverifieerde gegevens komen in beeld.')}</p>
  <div class="owner-two"><section><h3>Vandaag belangrijk</h3>${m.attention.length?m.attention.map(x=>card(x,x.attention_reason||'Prioriteit')).join(''):empty('Er zijn geen actuele topprioriteiten met herleidbare bronregistratie beschikbaar. Wij tonen geen aannames als bedrijfsfeiten.')}</section>
