@@ -80,3 +80,35 @@ test('authenticated Brain projection publishes derived runtime without mutation 
  assert.equal(store.status(),'idle');
  assert.equal(store.get('portal.profile.name'),'Tenant A');
 });
+
+test('a slow old-session response cannot project across an account switch',async()=>{
+ let finish;
+ const delayed=new Promise(resolve=>{finish=resolve});
+ const accepted=[];
+ let valid=true;
+ const pending=loadRuntimeEvidence({
+  fetchImpl:async()=>delayed,
+  domainState:{setDerived:(path,value)=>accepted.push({path,value})},
+  authHeadersProvider:async()=>({authorization:'Bearer session-A'}),
+  validateSession:()=>valid
+ });
+ await Promise.resolve();
+ valid=false;
+ finish(Response.json({records:[{id:'A-private',type:'Evidence',observedAt:new Date().toISOString()}]}));
+ const runtime=await pending;
+ assert.equal(runtime,null);
+ assert.equal(accepted.length,0,'old session must not update the new account view');
+});
+
+test('401 or 403 clears previously cached transient runtime',async()=>{
+ for(const status of [401,403]){
+  const events=[];
+  const runtime=await loadRuntimeEvidence({
+   fetchImpl:async()=>new Response('{}',{status}),
+   domainState:{setDerived:(path,value)=>events.push([path,value])},
+   authHeadersProvider:async()=>({authorization:'Bearer revoked'})
+  });
+  assert.equal(runtime,null);
+  assert.deepEqual(events,[['portal.runtime',null]]);
+ }
+});
