@@ -28,3 +28,26 @@
 .pfs-source-toolbar button{cursor:pointer;font-size:12px;font-weight:700}
 .pfs-source-toolbar button:focus-visible,.pfs-source-toolbar select:focus-visible{outline:2px solid #225fc9;outline-offset:2px}
 @media(max-width:540px){.pfs-source-toolbar{align-items:stretch}.pfs-source-toolbar h4{flex-basis:100%}.pfs-source-toolbar label{flex:1}.pfs-source-toolbar select{width:100%}}
+
+
+/* Cross-domain read-only, evidence-first scenario comparison. */
+.pfs-portfolio{margin:14px 0 20px;border:1px solid #d6e3f4;border-radius:15px;background:#fff;overflow:hidden;padding:0;color:#23334f}
+.pfs-portfolio summary{cursor:pointer;display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:15px;font-size:14px;font-weight:800;color:#164e97;background:#f4f8ff}
+.pfs-portfolio summary span{margin-left:auto;font-size:11px;font-weight:600;color:#667994}
+.pfs-portfolio>p{margin:12px 15px;font-size:11px;line-height:1.6;color:#596f8c}
+.pfs-portfolio-scroll{overflow-x:auto;max-width:100%;padding:0 10px}
+.pfs-portfolio table{border-collapse:collapse;width:100%;min-width:720px;text-align:left;font-size:12px}
+.pfs-portfolio th,.pfs-portfolio td{padding:12px 10px;vertical-align:top;border-bottom:1px solid #e5ebf3;font-variant-numeric:tabular-nums}
+.pfs-portfolio thead th{font-size:11px;color:#4e5c70;background:#f6f9fd}
+.pfs-portfolio tbody th button{background:none;border:0;color:#1957a0;font-weight:750;cursor:pointer;text-align:left;padding:0}
+.pfs-portfolio tbody th button:hover{text-decoration:underline}
+.pfs-portfolio tbody th button:focus-visible,.pfs-portfolio button:focus-visible{outline:2px solid #275fc1;outline-offset:3px}
+.pfs-portfolio th small,.pfs-portfolio td small{display:block;color:#71819a;font-weight:400;font-size:10px;margin-top:4px}
+.pfs-portfolio-missing{color:#87909d;background:#fafbfd}
+.pfs-portfolio-needs{margin:12px 15px;background:#f7f9fc;border:1px dashed #cbd9ed;border-radius:11px;padding:11px}
+.pfs-portfolio-needs h4,.pfs-portfolio-operational h4{font-size:12px;margin:2px 0 6px}
+.pfs-portfolio-needs p,.pfs-portfolio-operational p{font-size:11px;line-height:1.55;color:#63728b;margin:6px 0}
+.pfs-portfolio-needs button,.pfs-portfolio-operational button{background:#e9f1ff;color:#195296;border:1px solid #bed1ef;border-radius:9px;padding:8px;font-size:11px;font-weight:700;cursor:pointer}
+.pfs-portfolio-operational{margin:12px 15px;background:#f5f8fe;border-radius:11px;padding:11px}
+.pfs-portfolio>small{display:block;margin:12px 15px 15px;color:#71829b;font-size:10px;line-height:1.5}
+@media(max-width:700px){.pfs-portfolio summary{font-size:12px}.pfs-portfolio summary span{margin-left:0}.pfs-portfolio-scroll{padding:0 6px}}
