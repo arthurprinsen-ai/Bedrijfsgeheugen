@@ -36,6 +36,29 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'powerhouse-tenant-scored-signal-drivers-v2',
+      fingerprint:'powerhouse|portal-v2|tenant-scored-signal-drivers|v2',
+      label:'Foresight signal drivers from authenticated customer-specific Powerhouse context',
+      owner:'ONE BRAIN / Portal V2 / EU entrepreneur_intelligence',
+      authority:'Netlify Identity resolved tenant + EU tenant company impact overlay',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['authenticated entrepreneur intelligence','tenant_specific_impact and SCORED company impact records','source timestamps, score, domain, provenance']),
+      outputs:Object.freeze(['explicit opt-in risk/opportunity/other signal filters','goal-context hints without causal prediction','link to existing Omgevingsradar']),
+      runtime:Object.freeze({
+        model:'portal-v2/foresight-signal-drivers.js',
+        mount:'portal-v2/foresight-scenario-studio.js',
+        tests:'tests/brain-foresight-signal-drivers-canonicalization.test.mjs',
+        learning:'brain/learning/2026-10-15-foresight-tenant-signal-drivers-v2.json'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true, noGlobalSignalAsCustomerImpact:true,
+        tenantScopeMatchRequired:true, scoredCompanyImpactRequired:true,
+        sourceFreshnessRequired:true, impactScoreIsNotPrediction:true,
+        noSilentSensitiveDataSharing:true, noNumericForecastMutation:true,
+        productionRequiresAuthenticatedReadback:true
+      })
+    }),
+    Object.freeze({
       id:'powerhouse-contextual-foresight-studio-v1',
       fingerprint:'powerhouse|portal-v2|cross-domain-foresight|v1',
       label:'Powerhouse Foresight — interactieve cross-domain scenarioverkenning',
