@@ -92,6 +92,9 @@ export function evaluateTenantAiActivation({
   truthy(endpoint.region)&&
   provision.providerReadbackEvidenceId===receipt.providerReadbackEvidenceId&&
   provision.egressEvidenceId===receipt.egressEvidenceId&&
+  (receipt.provider!=='MISTRAL_API'||receipt.computeRegion!=='EU'||
+   (provision.processingRegion==='EU'&&
+    provision.residencyEvidenceId===receipt.residencyEvidenceId))&&
   (receipt.computeRegion==='AUTO'||endpoint.region===receipt.computeRegion));
  items.push(state('endpoint','Endpoint- en accountbewijsregistratie',endpointOk,
   'De providerroute moet met echte accountrechten, endpoint en bewijsregistratie worden gevalideerd.'));
