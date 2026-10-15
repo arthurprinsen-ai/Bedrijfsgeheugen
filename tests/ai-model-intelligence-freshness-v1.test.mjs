@@ -42,54 +42,78 @@ test('all 110 supplier audit summaries reconcile with claim source classificatio
  assert.deepEqual(invalid,[]);
 });
 
-test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit',()=>{
+test('Third-party model directory remains source-labeled; only auto-eligible models require full fresh supplier approval',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
- assert.ok(c.models.length>=100);
+ assert.equal(c.models.length,110);
+ assert.equal(new Set(c.models.map(m=>m.id)).size,110);
  assert.ok(new Set(c.models.map(m=>m.provider)).size>=10);
  const failures=[];
  const required=['model_id','status','pricing','capabilities','deployment','governance'];
+ const tenantOnly=['dpa','signed_dpa','contract','tenant_data_residency','tenant_zdr','customer_cmk','private_networking_enabled'];
  for(const m of c.models){
   const issues=[];
-  if(!/^https:\/\//.test(m.source??'')) issues.push('invalid source');
-  if(!m.jurisdiction) issues.push('missing jurisdiction');
-  if(!m.verified_at) issues.push('missing verification date');
   const e=m.verification_evidence;
-  if(!e||typeof e!=='object') issues.push('missing supplier evidence');
+  const a=m.supplier_audit;
+  const wantsAuto=m.auto_recommendation_eligible===true||a?.automatic_recommendation_eligible===true;
+  if(!/^https:\/\/[^ ]+$/.test(m.source??''))issues.push('invalid source');
+  if(!m.jurisdiction)issues.push('missing jurisdiction');
+  if(!m.verified_at)issues.push('missing historical verification date');
+  if(!e||typeof e!=='object')issues.push('missing supplier evidence classification');
   else {
-   if(e.source_url!==m.source) issues.push('source mismatch');
-   if(!/^\d{4}-\d{2}-\d{2}$/.test(e.checked_on??'')) issues.push('invalid evidence date');
-   if(e.claim_scope!=='full') issues.push('partial verification');
-   if((e.not_verified??[]).length) issues.push('unverified claims');
-   if(e.checked_on!==m.verified_at) issues.push('evidence date differs');
-   // Supplier facts may not declare tenant-specific agreements or enabled controls as verified.
-   // Customer acceptance is a separate, opt-in workflow, not a catalog release dependency.
-   const tenantOnly=['dpa','signed_dpa','contract','tenant_data_residency','tenant_zdr','customer_cmk','private_networking_enabled'];
-   for(const claim of tenantOnly) if(e.verified_claims?.includes(claim))
-     issues.push('tenant-specific claim incorrectly presented as supplier verified '+claim);
-   for(const claim of required) {
-    if(!e.verified_claims?.includes(claim)) issues.push('unverified '+claim);
+   if(e.source_url!==m.source)issues.push('source mismatch');
+   if(!/^\d{4}-\d{2}-\d{2}$/.test(e.checked_on??''))issues.push('invalid evidence date');
+   if(tenantOnly.some(claim=>e.verified_claims?.includes(claim)))
+     issues.push('tenant-specific claim incorrectly presented as supplier verified');
+  }
+  if(!a||typeof a.automatic_recommendation_eligible!=='boolean')
+    issues.push('missing explicit independent automatic recommendation decision');
+  if(!Array.isArray(m.limitations))issues.push('missing limitations');
+  if(!m.governance||!Object.hasOwn(m.governance,'storage_residency')||!Object.hasOwn(m.governance,'inference_residency'))
+    issues.push('incomplete governance');
+  if(!Object.hasOwn(m,'eu_processing')||!Object.hasOwn(m,'eu_storage'))
+    issues.push('missing EU flags');
+  // Research-only third-party listings are allowed with clear partial/CONFLICT
+  // classification. They must not be promoted into the running AI router.
+  if(wantsAuto){
+   if(m.status!=='active'||m.record_kind==='model_family_placeholder'||m.catalog_alias)
+     issues.push('unsafe lifecycle/family/alias recommended');
+   if(a?.automatic_recommendation_eligible!==true||a?.independent_verification_required===true)
+     issues.push('independent supplier approval not present');
+   if(e?.claim_scope!=='full'||(e?.not_verified??[]).length)
+     issues.push('partial or conflicting supplier evidence for recommended model');
+   if(e?.checked_on!==m.verified_at)issues.push('evidence date differs');
+   const age=(Date.now()-new Date((e?.checked_on??'')+'T00:00:00Z'))/86400000;
+   if(!Number.isFinite(age)||age<0||age>14)issues.push('stale supplier verification on recommended model');
+   for(const claim of required){
+    if(!e?.verified_claims?.includes(claim))issues.push('unverified '+claim);
     if(classifySupplierClaim(e,claim)!=='MODEL_SOURCE_RECEIPT_PRESENT_REVIEW_REQUIRED')
-      issues.push('missing independently reviewable model claim receipt '+claim);
+      issues.push('missing independently reviewable '+claim);
    }
   }
-  const age=(Date.now()-new Date((m.verified_at??'')+'T00:00:00Z'))/86400000;
-  if(!Number.isFinite(age)||age<0||age>14) issues.push('stale verification');
-  if(!Array.isArray(m.limitations)) issues.push('missing limitations');
-  if(!m.governance||!Object.hasOwn(m.governance,'storage_residency')||!Object.hasOwn(m.governance,'inference_residency')) issues.push('incomplete governance');
-  if(!Object.hasOwn(m,'eu_processing')||!Object.hasOwn(m,'eu_storage')) issues.push('missing EU flags');
-  if(issues.length) failures.push(m.id+': '+issues.join(', '));
+  if(issues.length)failures.push(m.id+': '+issues.join(', '));
  }
- assert.deepEqual(failures,[],`Supplier verification failed for ${failures.length}/${c.models.length} models:\n${failures.join('\n')}`);
-
+ assert.deepEqual(failures,[], 'Release safety failure(s):\n'+failures.join('\n'));
  const strengths=c.models.flatMap(m=>m.strengths||[]).join(' ').toLowerCase();
- assert.match(strengths,/image generation/);
- assert.match(strengths,/ocr/);
- assert.match(strengths,/embedding/);
- assert.match(strengths,/moderation/);
+ for(const capability of ['image generation','ocr','embedding','moderation'])
+   assert.ok(strengths.includes(capability),capability);
  assert.ok(c.models.some(m=>(m.modalities||[]).includes('audio')));
  assert.ok(c.models.some(m=>(m.modalities||[]).includes('video')));
  assert.ok(c.models.some(m=>m.self_host===true));
 });
+
+test('Undecided third-party model listings remain non-actionable in the advisor',()=>{
+ const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+ assert.match(html,/m\.supplier_audit\?\.automatic_recommendation_eligible!==true/);
+ assert.match(html,/if\(!fullSupplierEvidence\(m\)\)return false/);
+ assert.match(html,/m\.status==='eol'/);
+ assert.match(html,/gedeeltelijk\/onvoldoende geverifieerd/);
+ assert.ok(c.models.some(m=>m.verification_evidence?.claim_scope==='partial'),
+   'Partial listings must be preserved as research, not silently removed');
+ for(const m of c.models.filter(m=>m.verification_evidence?.claim_scope!=='full'))
+   assert.notEqual(m.supplier_audit?.automatic_recommendation_eligible,true,m.id);
+});
+
 test('supplier verification ledger explicitly accounts for every required claim',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
  const claims=['model_id','status','pricing','capabilities','deployment','governance'];
