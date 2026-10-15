@@ -73,7 +73,9 @@ export function createOwnerFinancialClient({fetchImpl=globalThis.fetch,authHeade
   });
   if(!response.ok)throw new Error(`FINANCIAL_SOURCE_HTTP_${response.status}`);
   const payload=await response.json();
-  if(!payload||!Array.isArray(payload.forecasts)||!clean(payload.tenantId))throw new Error('FINANCIAL_RESPONSE_INVALID');
+  if(!payload||!Array.isArray(payload.forecasts))throw new Error('FINANCIAL_RESPONSE_INVALID');
+  if(payload.forecasts.length===0&&['NO_CANONICAL_FORECASTS','NO_VALIDATED_FINANCIAL_FORECASTS'].includes(payload.status))return ownerFinancialReadouts(payload,{tenantId:payload.tenantId||expectedTenant});
+  if(!clean(payload.tenantId))throw new Error('FINANCIAL_RESPONSE_INVALID');
   if(expectedTenant&&expectedTenant!==payload.tenantId)throw new Error('TENANT_SCOPE_MISMATCH');
   return ownerFinancialReadouts(payload,{tenantId:payload.tenantId});
  }});
