@@ -11,9 +11,10 @@ const STATUS_LABELS=Object.freeze({
 });
 const ACT_STATES=new Set(['eol','retired','deprecated']);
 const POLICY_OPTIONS=[
- ['review','Ik wil per model de dataverwerking beoordelen'],
- ['eu','Voorkeur: opslag en verwerking binnen de EER'],
- ['strict','Eis: klantgestuurde omgeving en soevereiniteit']
+ ['review','Geen vooraf gekozen soevereiniteitsniveau; beoordeling per model'],
+ ['eu-storage','Voorkeur: gegevensopslag binnen de EER'],
+ ['eu-both','Voorkeur: gegevensopslag én verwerking binnen de EER'],
+ ['strict','Eis: klantgestuurde of soevereine uitvoeringsomgeving']
 ];
 const AI_RISK_OPTIONS=[
  ['unknown','Nog niet beoordeeld'],
@@ -71,7 +72,8 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  const parent=el('div','amc');const intro=el('section');add(intro,el('h3',null,'Kies AI-modellen voor jouw organisatie'),
   el('p',null,'Alle 110 bestaande derde-partijmodellen zijn te bekijken en aan jouw wensenlijst toe te voegen. Een keuze is een verzoek, nooit automatische aansluiting of uitvoering met bedrijfsgegevens.'),
   el('p','warn','Een EU-datacenter is niet hetzelfde als volledige datasoevereiniteit. Controleer afzonderlijk opslag, inferentie, toegang door leverancier/subverwerkers, juridische zeggenschap, bewaartermijn, training en internationale doorgifte.'));
- const counters=el('p','counter','110 catalogusrecords · 83 leveranciersdossiers geregistreerd · 26 onderzoek · 1 conflict (momentopname '+snapshot.as_of+')');
+ const statuses=Object.values(snapshot.records);const ct=s=>statuses.filter(x=>x===s).length;
+ const counters=el('p','counter',catalog.models.length+' catalogusrecords · '+ct('VERIFIED')+' leveranciersdossiers geregistreerd · '+ct('PARTIAL')+' onderzoek · '+ct('CONFLICT')+' conflict (momentopname '+snapshot.as_of+')');
  intro.append(counters);parent.append(intro);
  const settings=el('section');settings.append(el('h3',null,'Jouw eisen'));
  const form=el('div','tools');
@@ -82,8 +84,8 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  const useWrap=el('label','field','Waarvoor wil je AI gebruiken? (maximaal 250 tekens)');
  const use=el('input');use.type='text';use.maxLength=250;use.placeholder='Bijvoorbeeld samenvatten van klantdocumenten';use.value=draft.useCase;useWrap.append(use);
  form.append(policyWrap,riskWrap,useWrap);settings.append(form);
- settings.append(el('p','hint','AI Act-risico wordt per concrete toepassing en rol vastgesteld, niet alleen per model. Een keuze hier is geen compliance-certificering. Voor risicovolle toepassingen eerst de verplichte beoordeling en passende controles uitvoeren.'));
- const links=el('p','path');const a1=el('a',null,'EU AI Act – Europese Commissie'),a2=el('a',null,'EDPB – internationale doorgifte');a1.href='https://digital-strategy.ec.europa.eu/en/policies/guidelines-gpai-providers';a2.href='https://www.edpb.europa.eu/sme/be-compliant/international-data-transfers_en';a1.target=a2.target='_blank';a1.rel=a2.rel='noopener';links.append(a1,' · ',a2);settings.append(links);parent.append(settings);
+ settings.append(el('p','hint','EU AI Act: AI-geletterdheid en verboden toepassingen gelden al sinds 2 februari 2025; transparantieverplichtingen voor bepaalde AI-systemen sinds 2 augustus 2026. Hoog-risicoverplichtingen worden per concrete toepassing, rol en ingangsdatum beoordeeld. Kies je model pas voor productie na toetsing van de toepassing, menselijke controle, AVG en contracten. Dit is geen compliance-certificering.'));
+ const links=el('p','path');const a1=el('a',null,'EU AI Act – officiële EU-tijdlijn'),a2=el('a',null,'EDPB – internationale doorgifte');a1.href='https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline';a2.href='https://www.edpb.europa.eu/sme/be-compliant/international-data-transfers_en';a1.target=a2.target='_blank';a1.rel=a2.rel='noopener';links.append(a1,' · ',a2);settings.append(links);parent.append(settings);
  const bar=el('section');bar.append(el('h3',null,'Alle beschikbare catalogusrecords'));
  const toolbar=el('div','tools'),search=el('input');search.type='search';search.placeholder='Zoek model, API-ID of leverancier';
  const provider=el('select');provider.append(option('ALL','Alle leveranciers'));[...new Set(catalog.models.map(x=>x.provider))].sort().forEach(x=>provider.append(option(x,x)));
@@ -164,7 +166,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
    await domainState.flush();
    const readback=domainState.get('portal.aiModelPreferences');
    if(JSON.stringify(readback?.models)!==JSON.stringify(payload.models)||readback?.policy!==payload.policy||readback?.requestState!=='review_only_not_activated')throw new Error('TENANT_READBACK_MISMATCH');
-   dirty=false;setMessage('Wensenlijst opgeslagen en teruggelesen uit jouw klantomgeving.');
+   dirty=false;setMessage('Wensenlijst opgeslagen en teruggelezen uit jouw klantomgeving.');
   }catch(error){setMessage('Opslaan niet bevestigd; controleer verbinding en klantrechten.',true)}
   finally{save.disabled=!loggedIn()}
  });
