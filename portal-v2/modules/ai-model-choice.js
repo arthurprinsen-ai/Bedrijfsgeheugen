@@ -163,6 +163,8 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   try{
    const payload={schemaVersion:1,models:draft.models,policy:draft.policy,aiRisk:draft.aiRisk,useCase:draft.useCase,requestState:'review_only_not_activated',updatedAt:new Date().toISOString()};
    domainState.set('portal.aiModelPreferences',payload);
+   // Projection store uses sourceMeta.updatedAt for optimistic stale-write rejection.
+   domainState.set('sourceMeta.updatedAt',payload.updatedAt);
    await domainState.flush();
    const readback=domainState.get('portal.aiModelPreferences');
    if(JSON.stringify(readback?.models)!==JSON.stringify(payload.models)||readback?.policy!==payload.policy||readback?.requestState!=='review_only_not_activated')throw new Error('TENANT_READBACK_MISMATCH');
