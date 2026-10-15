@@ -19960,7 +19960,7 @@
           "governance"
         ],
         "missing_receipt_count": 2,
-        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+        "source_reference": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -22923,7 +22923,7 @@
           "pricing"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference": "https://huggingface.co/tiiuae/Falcon-H1-0.5B-Instruct",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -23269,7 +23269,7 @@
           "pricing"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference": "https://huggingface.co/tiiuae/Falcon-H1-1.5B-Instruct",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -23615,7 +23615,7 @@
           "pricing"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference": "https://huggingface.co/tiiuae/Falcon-H1-3B-Instruct",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -23962,7 +23962,7 @@
           "pricing"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference": "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -24309,7 +24309,7 @@
           "pricing"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference": "https://huggingface.co/tiiuae/Falcon-H1-34B-Instruct",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
@@ -24656,7 +24656,7 @@
           "pricing"
         ],
         "missing_receipt_count": 1,
-        "source_reference": "https://huggingface.co/collections/tiiuae/falcon-h1",
+        "source_reference": "https://huggingface.co/tiiuae/Falcon-H1R-7B",
         "source_reference_is_not_proof": true,
         "automatic_recommendation_eligible": false,
         "independent_verification_required": true,
