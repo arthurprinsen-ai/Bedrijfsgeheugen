@@ -14187,7 +14187,8 @@
         "text-to-speech"
       ],
       "limitations": [
-        "verify exact endpoint pricing and regional processing for production"
+        "verify exact endpoint pricing and regional processing for production",
+        "Google labels this as a legacy preview and lists 17 November 2026 as the earliest published shutdown date; migrate new workloads to gemini-3.8-flash-tts or gemini-3.8-flash-lite-tts. Actual endpoint cutoff and customer entitlement remain unverified."
       ],
       "scores": {
         "reasoning": 3,
@@ -14402,6 +14403,23 @@
           "correction": "Published model pricing and service-policy applicability do not establish independently accepted six-claim supplier governance. Pre-existing verified_at stays unchanged.",
           "independent_review_complete": false,
           "automatic_recommendation_eligible": false
+        },
+        "google_legacy_preview_warning_20261015": {
+          "checked_on": "2026-10-15",
+          "classification": "OFFICIAL_GOOGLE_LEGACY_PREVIEW_AND_EARLIEST_SHUTDOWN_PUBLIC_NOTICE",
+          "source_url": "https://ai.google.dev/gemini-api/docs/deprecations",
+          "model_page": "https://ai.google.dev/gemini-api/docs/models/gemini-3.1-flash-tts-preview",
+          "model_id": "gemini-3.1-flash-tts-preview",
+          "source_locator": "Gemini deprecations > Preview models > gemini-3.1-flash-tts-preview",
+          "earliest_announced_shutdown": "2026-11-17",
+          "recommended_replacements": [
+            "gemini-3.8-flash-tts",
+            "gemini-3.8-flash-lite-tts"
+          ],
+          "customer_endpoint_access_verified": false,
+          "exact_effective_shutdown_attested": false,
+          "automatic_recommendation_eligible": false,
+          "independent_supplier_full_acceptance": false
         }
       },
       "pricing_basis": {
