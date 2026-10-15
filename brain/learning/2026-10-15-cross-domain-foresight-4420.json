@@ -1,0 +1,24 @@
+{
+  "schemaVersion": "brain-learning.v1",
+  "id": "cross-domain-foresight-4420",
+  "fingerprint": "powerhouse|portal-v2|cross-domain-foresight|v1",
+  "date": "2026-10-15",
+  "trigger": "Multi-domain forecasting scenarios across the entire customer portal",
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4420",
+  "rootCause": "Financial-only verified forecasts fragmented from operational Brain context and goals",
+  "change": [
+    "Reuse canonical Portal V2",
+    "Trend from chronological observed tenant history only",
+    "Separate runtime health from numerical prediction",
+    "Simulations remain assumptions"
+  ],
+  "preventionRules": [
+    "No global Powerhouse data as tenant forecasts",
+    "No invented time series",
+    "No claim of causal effect without evidence",
+    "No confidence claim before calibration and backtest",
+    "No scenario counted as realized outcome"
+  ],
+  "regression": "tests/powerhouse-contextual-foresight-studio.test.mjs",
+  "status": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+}
