@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "brain-learning.v1",
+  "id": "foresight-tenant-signal-drivers-v2",
+  "obligation_id": "powerhouse-contextual-foresight-4420",
+  "fingerprint": "powerhouse|portal-v2|tenant-scored-signal-drivers|v2",
+  "compiler": {
+    "failure_class": "CROSS_TENANT_FORECAST_SIGNAL_PROMOTION",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The first scenario studio forecasts from tenant history but cannot yet show tenant-scored external drivers. Global Powerhouse signals can be mistaken for tenant-specific evidence without strict server-overlay validation.",
+  "prevention": "Only consume the already authenticated tenant intelligence endpoint. Reject cross-tenant or canonical scopes, require explicit company impacts scored for the current tenant, reject stale events, never convert impact scores to probabilities, finance forecasts, or realized value.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-foresight-signal-drivers-canonicalization.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-foresight-signal-drivers-canonicalization.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-foresight-signal-drivers-canonicalization.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "/api/portal-ondernemersdata -> EU store entrepreneur_intelligence with tenantId and tenant overlay",
+    "overlayTable": "powerhouse_intelligence_company_impact_v1",
+    "sourceTable": "powerhouse_intelligence_signal_projection_v1",
+    "tests": [
+      "portal-v2/tests/foresight-signal-drivers.test.mjs"
+    ],
+    "production": "Protected merge, Netlify exact SHA and authenticated tenant isolation verification required"
+  },
+  "status": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+}
