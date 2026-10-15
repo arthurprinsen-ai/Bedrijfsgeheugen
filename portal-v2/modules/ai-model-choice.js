@@ -67,7 +67,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  let draft=readShortlist(domainState?.get?.()||{});
  draft.models=draft.models.filter(x=>ids.has(x.modelId));
  let dirty=false,filter='',statusFilter='ALL',providerFilter='ALL';
- const loggedIn=()=>{const s=stateClient?.getSnapshot?.();return s?.mode==='authenticated'&&!stateClient?.isDemo?.()&&Boolean(s?.user)};
+ const loggedIn=()=>{const s=stateClient?.getSnapshot?.();return (s?.mode==='authenticated'||s?.mode==='empty')&&!stateClient?.isDemo?.()&&Boolean(s?.user)};
  const setMessage=(text,isError=false)=>{const x=root.querySelector('[data-amc-save-state]');if(x){x.textContent=text;x.classList.toggle('blocked',isError)}};
  const parent=el('div','amc');const intro=el('section');add(intro,el('h3',null,'Kies AI-modellen voor jouw organisatie'),
   el('p',null,'Alle 110 bestaande derde-partijmodellen zijn te bekijken en aan jouw wensenlijst toe te voegen. Een keuze is een verzoek, nooit automatische aansluiting of uitvoering met bedrijfsgegevens.'),
