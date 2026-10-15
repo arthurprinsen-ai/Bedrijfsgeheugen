@@ -322,6 +322,9 @@ jobs:
           tests/ai-model-supplier-evidence-accounting.test.mjs
           tests/ai-model-customer-governance-evidence.test.mjs
           tests/ai-model-supplier-customer-separation.test.mjs
+          tests/ai-model-choice-sovereignty.test.mjs
+          tests/portal-ai-model-choice.test.mjs
+          tests/brain-ai-model-choice-sovereignty.test.mjs
           tests/ai-model-tenant-acceptance.test.mjs
           tests/ai-model-tenant-connection-readiness.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
