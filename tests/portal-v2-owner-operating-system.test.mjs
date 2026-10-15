@@ -101,3 +101,17 @@ test('five overview buttons retain distinct deep-link area identities',()=>{
  const html=renderOwnerOperatingHtml({}, {compact:true,now:NOW});
  for(const area of ['bedrijf','kansen','acties','adviseur','instellingen'])assert.match(html,new RegExp('data-owner-area="'+area+'"'));
 });
+
+test('Mijn acties consumes proven value from canonical Brain readback without inserting forecast totals',()=>{
+ const html=renderOwnerOperatingHtml({},{selected:'acties',valueReport:{
+  status:'PROVEN',
+  records:1,excluded:0,unattributed:0,
+  totals:{eur:1250,hours:null},
+  items:[{id:'value:1',subjectId:'action:1',problemId:'PH-P003',unit:'eur',value:1250,display:'€ 1.250',evidenceIds:['provider:readback:1']}]
+ }});
+ assert.match(html,/Aantoonbaar gerealiseerde waarde/);
+ assert.match(html,/PH-P003/);
+ assert.match(html,/provider:readback:1/);
+ assert.match(html,/€ 1\.250/);
+ assert.match(html,/Géén maand- of 30-dagenclaim|geen maand- of 30-dagenclaim/);
+});
