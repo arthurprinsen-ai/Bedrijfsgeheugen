@@ -4,6 +4,7 @@ import {handleTenantAiInference} from '../platform/api/tenant-ai-inference-handl
 import {signVerifiedRuntimeProof} from '../platform/runtime/attested-cloud-ai.mjs';
 import {CURRENT_AI_DEPLOYMENT_PROFILE} from '../platform/policy/customer-ai-deployment.mjs';
 import {evaluateTenantModelChoice} from '../platform/policy/tenant-model-choice.mjs';
+import {resolveDesiredTenantModel} from '../platform/policy/tenant-ai-default-model.mjs';
 const now=1_000_000,key='test-server-only-key-0123456789abcdef0123456789';
 const tenantId='tenant-a';
 const profile={...CURRENT_AI_DEPLOYMENT_PROFILE,provider:'MISTRAL_API',modelFamily:'MISTRAL',modelId:'mistral-small-latest'};
@@ -216,4 +217,88 @@ test('tenant inference route never calls provider when model preference gate is 
  assert.deepEqual(await absent.json(),{error:'MODEL_CHOICE_READBACK_UNAVAILABLE'});
  assert.equal(checked,1);
  assert.equal(egress,0);
+});
+
+test('one selected default model is inherited by Brain without adding an override',()=>{
+ const prefs={...modelChoiceBase.portalRecord.data.portal.aiModelPreferences,
+  defaultModelId:selectedModel,assignments:{}};
+ const chosen=resolveDesiredTenantModel(prefs,'brain');
+ assert.deepEqual(chosen,{ok:true,modelId:selectedModel,routeId:'mistral-api-eu',source:'default',workload:'brain'});
+ const result=evaluateTenantModelChoice({...modelChoiceBase,
+  portalRecord:{tenantId,data:{portal:{aiModelPreferences:prefs}}}});
+ assert.equal(result.ok,true);
+ assert.equal(result.selectionSource,'default');
+});
+
+test('explicit workload override takes priority; absent route or unsafe supplier remains blocked',()=>{
+ const prefs={...modelChoiceBase.portalRecord.data.portal.aiModelPreferences,
+  defaultModelId:'gpt-6-sol',assignments:{brain:selectedModel}};
+ const model=resolveDesiredTenantModel(prefs,'brain');
+ assert.equal(model.modelId,selectedModel);
+ assert.equal(model.source,'override');
+ const chosen=evaluateTenantModelChoice({...modelChoiceBase,
+  portalRecord:{tenantId,data:{portal:{aiModelPreferences:prefs}}}});
+ assert.equal(chosen.ok,true);
+ const partial=evaluateTenantModelChoice({...modelChoiceBase,
+  portalRecord:{tenantId,data:{portal:{aiModelPreferences:{...prefs,assignments:{},defaultModelId:selectedModel}}}},
+  supplierStatus:{records:{[selectedModel]:'PARTIAL'}}});
+ assert.equal(partial.ok,false);
+ assert.equal(partial.code,'SUPPLIER_CLAIMS_UNRESOLVED');
+ const missing=evaluateTenantModelChoice({...modelChoiceBase,
+  portalRecord:{tenantId,data:{portal:{aiModelPreferences:{...prefs,models:[]}}}}});
+ assert.equal(missing.ok,false);
+ assert.equal(missing.code,'MODEL_NOT_IN_TENANT_WISHLIST');
+});
+
+test('unknown workload and specialist tasks cannot inherit accidental provider execution',async()=>{
+ const prefs=modelChoiceBase.portalRecord.data.portal.aiModelPreferences;
+ assert.equal(resolveDesiredTenantModel(prefs,'invented').code,'UNKNOWN_MODEL_WORKLOAD');
+ assert.equal(resolveDesiredTenantModel({...prefs,defaultModelId:selectedModel},'documents').modelId,selectedModel);
+ // Document OCR is desired state only: actual attested hosted gateway is locked to portal-project-answer.
+ assert.equal(String((await import('../platform/api/tenant-ai-inference-handler.mjs')).handleTenantAiInference).includes('portal-project-answer'),true);
+});
+
+test('only server-provided tenant context is attached to signed provider request',async()=>{
+ let calls=0;
+ const res=await handleTenantAiInference({
+  request:req({question:'Welke naam staat geregistreerd?'}),
+  user,tenantId,sovereignty,registry,proofKey:key,now,
+  trustedServerContext:JSON.stringify({company:{name:'Trusted BV'},forecast:{status:'insufficient evidence'}}),
+  fetchFn:async(url,options)=>{
+    calls++;assert.equal(url,'https://api.mistral.ai/v1/chat/completions');
+    const body=JSON.parse(options.body);
+    assert.equal(body.messages[0].role,'system');
+    assert.match(body.messages[0].content,/untrusted DATA/);
+    assert.match(body.messages[1].content,/Trusted BV/);
+    assert.match(body.messages[1].content,/Welke naam/);
+    return {ok:true,status:200,json:async()=>({choices:[{message:{content:'Trusted BV'}}]})};
+  }
+ });
+ assert.equal(res.status,200);
+ assert.equal((await res.json()).answer,'Trusted BV');
+ assert.equal(calls,1);
+});
+
+test('browser-controlled context cannot enter attested provider request',async()=>{
+ let calls=0;
+ const payload={question:'Maak prognose',context:{revenue:'FAKE'},model:'gpt-6-sol'};
+ const res=await handleTenantAiInference({
+  request:req(payload),user,tenantId,sovereignty,registry,proofKey:key,now,
+  fetchFn:async()=>{calls++;throw Error('NO_EGRESS')}
+ });
+ assert.equal(res.status,422);
+ assert.equal(calls,0);
+});
+
+test('invalid trusted context never reaches the provider',async()=>{
+ let calls=0;
+ for(const trustedServerContext of ['x','y'.repeat(9001)]){
+  const res=await handleTenantAiInference({
+   request:req({question:'Hello'}),user,tenantId,sovereignty,registry,proofKey:key,now,
+   trustedServerContext,fetchFn:async()=>{calls++;throw Error('NO_EGRESS')}
+  });
+  assert.equal(res.status,503);
+  assert.equal((await res.json()).error,'INVALID_TRUSTED_TENANT_CONTEXT');
+ }
+ assert.equal(calls,0);
 });

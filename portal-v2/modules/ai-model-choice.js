@@ -58,6 +58,7 @@ function readShortlist(state){
   policy:POLICY_OPTIONS.some(x=>x[0]===value.policy)?value.policy:'eu-both',
   aiRisk:AI_RISK_OPTIONS.some(x=>x[0]===value.aiRisk)?value.aiRisk:'unknown',
   useCase:String(value.useCase||'').slice(0,250),
+   defaultModelId:typeof value.defaultModelId==='string'?value.defaultModelId:(Array.isArray(value.models)&&value.models.length===1?String(value.models[0]?.modelId||''):''),
    assignments:value.assignments&&typeof value.assignments==='object'&&!Array.isArray(value.assignments)?Object.fromEntries(WORKLOADS.filter(x=>typeof value.assignments[x[0]]==='string').map(x=>[x[0],String(value.assignments[x[0]])])):{}
  };
 }
@@ -83,6 +84,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  const ids=new Set(catalog.models.map(m=>m.id));
  let draft=readShortlist(domainState?.get?.()||{});
  draft.models=draft.models.filter(x=>ids.has(x.modelId));
+  if(!ids.has(draft.defaultModelId)||!draft.models.some(x=>x.modelId===draft.defaultModelId))draft.defaultModelId='';
   for(const [workload,modelId] of Object.entries(draft.assignments))if(!ids.has(modelId)||!draft.models.some(x=>x.modelId===modelId))delete draft.assignments[workload];
  let dirty=false,filter='',statusFilter='ALL',providerFilter='ALL';
  const loggedIn=()=>{const s=stateClient?.getSnapshot?.();return (s?.mode==='authenticated'||s?.mode==='empty')&&!stateClient?.isDemo?.()&&Boolean(s?.user)};
@@ -104,6 +106,10 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  form.append(policyWrap,riskWrap,useWrap);settings.append(form);
  settings.append(el('p','hint','EU AI Act: AI-geletterdheid en verboden toepassingen gelden al sinds 2 februari 2025; transparantieverplichtingen voor bepaalde AI-systemen sinds 2 augustus 2026. Hoog-risicoverplichtingen worden per concrete toepassing, rol en ingangsdatum beoordeeld. Kies je model pas voor productie na toetsing van de toepassing, menselijke controle, AVG en contracten. Dit is geen compliance-certificering.'));
  const links=el('p','path');const a1=el('a',null,'EU AI Act – officiële EU-tijdlijn'),a2=el('a',null,'EDPB – internationale doorgifte');a1.href='https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline';a2.href='https://www.edpb.europa.eu/sme/be-compliant/international-data-transfers_en';a1.target=a2.target='_blank';a1.rel=a2.rel='noopener';links.append(a1,' · ',a2);settings.append(links);parent.append(settings);
+ const defaultSection=el('section');defaultSection.append(el('h3',null,'Mijn standaard AI-model'),el('p','hint','Kies één model als standaard voor geschikte AI-taken. Dit bepaalt de gewenste route voor Bedrijfsbrein en toekomstige AI-functies, maar verandert geen bestaande voorspellingen of rekenregels. Activering blijft afhankelijk van geverifieerde klant- en providerrechten.'));
+ const defaultField=el('label','field','Standaardmodel voor mijn bedrijf'),defaultSelect=el('select');defaultField.append(defaultSelect);defaultSection.append(defaultField);
+ const routeField=el('label','field','Gewenste verwerkingsroute voor standaardmodel'),defaultRoute=el('select');routeField.append(defaultRoute);defaultSection.append(routeField);
+ const defaultInfo=el('p','hint');defaultSection.append(defaultInfo);parent.append(defaultSection);
  const featured=el('section');featured.append(el('h3',null,'Zes aanbevolen startmodellen'),el('p','hint','Uitgelichte catalogusmodellen, niet automatisch geactiveerd of EU-gecertificeerd.'));
  const featuredCards=el('div','cards');featured.append(featuredCards);parent.append(featured);
  const allocation=el('section');allocation.append(el('h3',null,'Kies per portaalfunctie een gewenst model'),el('p','hint','Een taaktoewijzing is een verzoek, geen live koppeling met het AI-brein.'));
@@ -130,8 +136,9 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  trialButton.addEventListener('click',async()=>{
   if(!loggedIn()){trialOutcome.textContent='Log in als klant voor de modeltest.';return}
   if(dirty){trialOutcome.textContent='Sla eerst je modelkeuzes en functietoewijzingen op.';return}
-  if(!draft.assignments.brain||!draft.models.some(x=>x.modelId===draft.assignments.brain)){
-   trialOutcome.textContent='Selecteer en bewaar eerst een model voor Bedrijfsbrein.';return;
+  const activeBrainId=draft.assignments.brain||draft.defaultModelId;
+   if(!activeBrainId||!draft.models.some(x=>x.modelId===activeBrainId&&x.routeId)){
+   trialOutcome.textContent='Kies een standaardmodel of Bedrijfsbrein-uitzondering en selecteer een providerroute. Bewaar de instellingen eerst.';return;
   }
   const question=trialQuestion.value.trim();
   if(question.length<3){trialOutcome.textContent='Vul een testvraag van minimaal drie tekens in.';return}
@@ -155,7 +162,8 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   const old=selected();if(enabled)old.set(id,routeId);else old.delete(id);
   draft.models=[...old].map(([modelId,path])=>({modelId,routeId:path}));
    for(const [workload,modelId] of Object.entries(draft.assignments))if(!old.has(modelId))delete draft.assignments[workload];
-   dirty=true;setMessage('Nog niet opgeslagen');renderCards();renderFeatured();renderAssignments()
+   if(draft.defaultModelId&&!old.has(draft.defaultModelId))draft.defaultModelId='';
+   dirty=true;setMessage('Nog niet opgeslagen');renderCards();renderFeatured();renderAssignments();renderDefault()
  };
  function routePanel(m,selectedRoute){
   const panel=el('div','route');
@@ -214,18 +222,32 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
     panel.append(button);return panel;
   }));
  }
+ function renderDefault(){
+  defaultSelect.replaceChildren(option('','Kies een standaard AI-model'));
+  for(const m of catalog.models)defaultSelect.append(option(m.id,m.provider+' · '+m.id+' · '+(STATUS_LABELS[snapshot.records[m.id]]||STATUS_LABELS.UNKNOWN)));
+  defaultSelect.value=draft.defaultModelId||'';
+  defaultRoute.replaceChildren(option('','Nog geen route gekozen'));
+  const model=catalog.models.find(m=>m.id===draft.defaultModelId);
+  for(const p of model?providerPaths(governance,model.provider):[])defaultRoute.append(option(p.id,p.label||p.id));
+  const chosen=draft.models.find(x=>x.modelId===draft.defaultModelId);
+  defaultRoute.value=chosen?.routeId||'';
+  defaultRoute.disabled=!model;
+  const evidence=model?snapshot.records[model.id]||'UNKNOWN':'UNKNOWN';
+  defaultInfo.textContent=!model?'Kies een model. Geen enkel AI-model is vooraf geactiveerd.':
+   'Status: '+(STATUS_LABELS[evidence]||STATUS_LABELS.UNKNOWN)+' · '+(chosen?.routeId?'Route aangevraagd':'Selecteer nog een providerroute')+' · geen automatische uitvoering';
+ }
  function renderAssignments(){
   const models=draft.models.map(x=>catalog.models.find(m=>m.id===x.modelId)).filter(Boolean);
   assignmentRows.replaceChildren(...WORKLOADS.map(([key,label,suggested])=>{
     const field=el('label','field',label),control=el('select');
     control.setAttribute('aria-label','Gewenst model voor '+label);
-    control.append(option('','Nog geen toewijzing · suggestie: '+suggested));
+    control.append(option('','Gebruik standaardmodel waar geschikt · suggestie: '+suggested));
     for(const m of models)control.append(option(m.id,m.provider+' · '+m.id));
     control.value=models.some(m=>m.id===draft.assignments[key])?draft.assignments[key]:'';
     control.addEventListener('change',()=>{if(control.value)draft.assignments[key]=control.value;else delete draft.assignments[key];dirty=true;setMessage('Nog niet opgeslagen')});
     field.append(control);return field;
   }));
-  assignmentRows.append(el('p','hint','Server-side activering vereist nog goedgekeurde provider-toegang, model- en regiochecks, klantcontract en autorisatie.'));
+  assignmentRows.append(el('p','hint','Lege uitzonderingen gebruiken het standaardmodel alleen bij geschikte, daadwerkelijk aangesloten AI-taken. OCR, embeddings, financiële berekeningen en lokale routes worden niet automatisch door een taalmodel overgenomen. Server-side activering vereist goedgekeurde provider-toegang, regio en klantcontract.'));
  }
  function renderCards(){
   const q=filter.toLocaleLowerCase('nl'),results=catalog.models.filter(m=>(statusFilter==='ALL'||(snapshot.records[m.id]||'UNKNOWN')===statusFilter)&&
@@ -233,6 +255,12 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   count.textContent=results.length+' van 110 weergegeven · '+draft.models.length+' geselecteerd · status per model gebaseerd op leveranciersevidence van '+snapshot.as_of;
   cards.replaceChildren(...results.map(card));
  }
+ defaultSelect.addEventListener('change',()=>{
+  const id=defaultSelect.value;
+  if(id&&!draft.models.some(x=>x.modelId===id))draft.models.push({modelId:id,routeId:''});
+  draft.defaultModelId=id;dirty=true;setMessage('Nog niet opgeslagen');renderCards();renderFeatured();renderAssignments();renderDefault();
+ });
+ defaultRoute.addEventListener('change',()=>{if(draft.defaultModelId)setSelected(draft.defaultModelId,defaultRoute.value,true)});
  policy.addEventListener('change',()=>{draft.policy=policy.value;dirty=true;setMessage('Nog niet opgeslagen')});
  risk.addEventListener('change',()=>{draft.aiRisk=risk.value;dirty=true;setMessage('Nog niet opgeslagen')});
  use.addEventListener('input',()=>{draft.useCase=use.value.slice(0,250);dirty=true;setMessage('Nog niet opgeslagen')});
@@ -245,17 +273,17 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   if(!loggedIn()||!domainState?.set||!domainState?.flush){setMessage('Alleen een aangemelde klant kan opslaan.',true);return}
   save.disabled=true;setMessage('Bezig met opslaan…');
   try{
-   const payload={schemaVersion:2,models:draft.models,assignments:draft.assignments,policy:draft.policy,aiRisk:draft.aiRisk,useCase:draft.useCase,requestState:'review_only_not_activated',updatedAt:new Date().toISOString()};
+   const payload={schemaVersion:3,models:draft.models,defaultModelId:draft.defaultModelId,assignments:draft.assignments,policy:draft.policy,aiRisk:draft.aiRisk,useCase:draft.useCase,requestState:'review_only_not_activated',updatedAt:new Date().toISOString()};
    domainState.set('portal.aiModelPreferences',payload);
    // Projection store uses sourceMeta.updatedAt for optimistic stale-write rejection.
    domainState.set('sourceMeta.updatedAt',payload.updatedAt);
    await domainState.flush();
    const readback=domainState.get('portal.aiModelPreferences');
-   if(JSON.stringify(readback?.models)!==JSON.stringify(payload.models)||JSON.stringify(readback?.assignments)!==JSON.stringify(payload.assignments)||readback?.policy!==payload.policy||readback?.requestState!=='review_only_not_activated')throw new Error('TENANT_READBACK_MISMATCH');
+   if(JSON.stringify(readback?.models)!==JSON.stringify(payload.models)||JSON.stringify(readback?.assignments)!==JSON.stringify(payload.assignments)||readback?.defaultModelId!==payload.defaultModelId||readback?.policy!==payload.policy||readback?.requestState!=='review_only_not_activated')throw new Error('TENANT_READBACK_MISMATCH');
    dirty=false;setMessage('Wensenlijst opgeslagen en teruggelezen uit jouw klantomgeving.');
   }catch(error){setMessage('Opslaan niet bevestigd; controleer verbinding en klantrechten.',true)}
   finally{save.disabled=!loggedIn()}
  });
- renderCards();renderFeatured();renderAssignments();
+ renderCards();renderFeatured();renderAssignments();renderDefault();
  return {ready:true,modelCount:catalog.models.length,statusDate:snapshot.as_of,hasUnsavedChanges:()=>dirty};
 }

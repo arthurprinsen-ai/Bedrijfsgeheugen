@@ -22,9 +22,13 @@ const parseRegistry=raw=>{
   return data&&typeof data==='object'&&!Array.isArray(data)?data:null;
  }catch{return null;}
 };
-export default async request=>{
- const user=await getUser(request);
- const tenantId=resolveIdentityTenant(user);
+async function invokeWithVerifiedTenant(request,{user=null,tenantId=null,trustedServerContext}={}){
+ const identity=user||await getUser(request);
+ const ownTenant=tenantId||resolveIdentityTenant(identity);
+ // An internally supplied tenant must still match the signed identity tenant.
+ if(ownTenant!==resolveIdentityTenant(identity))
+  return Response.json({error:'TENANT_IDENTITY_MISMATCH'},{status:403});
+
  const registry=parseRegistry(Netlify.env.get('BG_TENANT_AI_VERIFIED_RUNTIME_REGISTRY'));
  const proofKey=Netlify.env.get('BG_TENANT_AI_PROOF_SIGNING_KEY');
  // Avoid initializing provider authority when the server route is unprovisioned.
@@ -43,8 +47,22 @@ export default async request=>{
   });
  };
  return handleTenantAiInference({
-  request,user,tenantId,registry,proofKey,sovereignty,
-  choiceGuard,fetchFn:fetch
+  request,user:identity,tenantId:ownTenant,registry,proofKey,sovereignty,
+  choiceGuard,trustedServerContext,fetchFn:fetch
  });
-};
+}
+// Accepts context only from trusted server code, never from the HTTP request
+// body or a querystring parameter. The same signed tenant/model policy applies.
+export async function runSelectedPortalAnswer({user,tenantId,question,projectContext}={}){
+ const simulatedRequest={
+  method:'POST',headers:{get:()=>null},
+  json:async()=>({question})
+ };
+ const response=await invokeWithVerifiedTenant(simulatedRequest,{
+  user,tenantId,trustedServerContext:projectContext
+ });
+ const payload=await response.json().catch(()=>({}));
+ return {ok:response.ok,status:response.status,payload};
+}
+export default async request=>invokeWithVerifiedTenant(request);
 export const config={path:'/api/tenant-ai-inference'};
