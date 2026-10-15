@@ -4,7 +4,7 @@ import {renderAnswerAssurance} from './trusted-advisor-assurance.js';
 import {navigatePortal} from './router.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[ch]));
-const s=value=>esc(value||'—');
+const s=value=>esc(value===null||value===undefined||value===''?'—':value);
 const text=item=>item?.explanation||item?.summary||item?.next_action||'Er is geen nadere toelichting uit de bron beschikbaar.';
 const quickQuestions=[
  'Waarom verdient mijn bedrijf minder terwijl de omzet stijgt?',
@@ -33,7 +33,7 @@ function companyPanel(m){
   ${metric('Brutomarge','—','Wacht op marge- en kostengrondslag')}
   ${metric('Besluiten nodig',m.ready?m.counts.besluiten:'—','Met actueel tenantbewijs')}
  </div>
- <div class="owner-two"><section><h3>Vandaag belangrijk</h3>${m.attention.length?m.attention.map(x=>card(x,x.attention_reason||'Prioriteit')).join(''):empty('Er zijn geen actuele, onafhankelijk onderbouwde topprioriteiten beschikbaar. Wij tonen geen aannames als bedrijfsfeiten.')}</section>
+ <div class="owner-two"><section><h3>Vandaag belangrijk</h3>${m.attention.length?m.attention.map(x=>card(x,x.attention_reason||'Prioriteit')).join(''):empty('Er zijn geen actuele topprioriteiten met herleidbare bronregistratie beschikbaar. Wij tonen geen aannames als bedrijfsfeiten.')}</section>
  <section><h3>Vooruitkijken</h3>${m.forecasts.length?m.forecasts.slice(0,3).map(x=>card(x,'Prognose')).join(''):empty('Koppel betrouwbare financiële en operationele tijdreeksen. Zonder bronbewijs wordt geen voorspelling gepubliceerd.')}</section></div>${links('bedrijf')}`;
 }
 function opportunitiesPanel(m){
@@ -47,7 +47,7 @@ function actionsPanel(m){
  <div class="owner-metrics">${metric('Voorstellen met bewijs',m.ready?m.counts.acties:'—','Nog niet gelijk aan uitgevoerd')}${metric('Goedkeuring nodig',m.ready?m.counts.besluiten:'—','Externe of materiële acties')}${metric('Bewezen uitkomsten',m.ready?m.counts.uitkomsten:'—','Met bronreferenties')}${metric('Automatisch uitgevoerd','—','Alleen met onafhankelijke provider-readback')}</div>
  <div class="owner-policy"><article><h3>1 · Binnen beleid</h3><p>Uitsluitend laag-risico interne handelingen die voorafgaande identiteit, rechten en beleidstoets passeren. Een classificatie is geen uitvoeringsbewijs.</p></article><article><h3>2 · Eerst akkoord</h3><p>Offertes, acquisitie, prijzen, contracten en klantcommunicatie worden voorbereid en pas na aantoonbare autorisatie aangeboden voor uitvoering.</p></article><article><h3>3 · Beschermd</h3><p>Juridische/financiële verplichtingen, personeelsbesluiten en vertrouwelijke informatie vereisen een bevoegde menselijke beslissing en gescheiden uitvoeringscontrole.</p></article></div>
  <section><h3>Actievoorstellen</h3>${m.actions.length?m.actions.slice(0,10).map(x=>`<article class="owner-fact"><div class="owner-fact-meta"><span>${x.ownerSafety.level==='goedkeuring'?'Akkoord nodig':x.ownerSafety.level==='binnen-beleid'?'Beleidstoets mogelijk':'Niet uitvoerbaar'}</span><span>${esc(categoryLabels[x.ownerCategory]||'Strategie')}</span></div><h4>${s(x.title||x.id)}</h4><p>${esc(text(x))}</p>${button('Open besluit en audittrail','actieve-acties')}</article>`).join(''):empty('Er zijn geen bewijsbare actievoorstellen. Er wordt niets automatisch uitgevoerd of als succesvol aangemerkt.')}</section>
- <section><h3>Gerealiseerde resultaten</h3>${m.outcomes.length?m.outcomes.slice(0,5).map(x=>card(x,'Outcome geverifieerd')).join(''):empty('Nog geen aantoonbaar gerealiseerde besparing of extra omzet. Verwachtingen worden niet bij werkelijk resultaat opgeteld.')}</section>${links('acties')}`;
+ <section><h3>Gerealiseerde resultaten</h3>${m.outcomes.length?m.outcomes.slice(0,5).map(x=>card(x,'Outcome geverifieerd')).join(''):empty('Nog geen geregistreerde en geverifieerde besparing of extra omzet. Verwachtingen worden niet bij werkelijk resultaat opgeteld.')}</section>${links('acties')}`;
 }
 function advisorPanel(){
  return `<p class="owner-intro">Stel een vraag in gewone taal. De bestaande beveiligde vraagfunctie gebruikt uitsluitend de toegestane bedrijfscontext. Ontbrekende data of een niet-geautoriseerd model leidt tot een duidelijke blokkade, nooit een stille fallback.</p>
@@ -60,8 +60,8 @@ function settingsPanel(){
  return `<div class="owner-policy"><article><h3>Data & koppelingen</h3><p>Bekijk per bron status, eigenaar, actualiteit en toestemming. Zonder aansluiting geen verzonnen bedrijfsresultaten.</p></article><article><h3>Bevoegdheden</h3><p>Externe acties vereisen expliciete, herleidbare goedkeuring. Het portaal mag geen gebruikersrol of klantcontract veronderstellen.</p></article><article><h3>AI & soevereiniteit</h3><p>Modelkeuze is een aanvraag: activering vereist onafhankelijk geverifieerde provider, contract, klantrechten en datalocatie. Geen impliciete AI-dataoverdracht.</p></article></div>
  <h3>Beheer de bestaande instellingen</h3>${links('instellingen')}`;
 }
-export function renderOwnerOperatingHtml(state={}, {compact=false,selected='bedrijf'}={}){
- const m=buildOwnerOperatingModel(state);
+export function renderOwnerOperatingHtml(state={}, {compact=false,selected='bedrijf',now=Date.now()}={}){
+ const m=buildOwnerOperatingModel(state,{now});
  const status=m.ready?`${m.proof.verified} actuele brononderbouwde onderdelen · ${m.proof.stale} verouderd · ${m.proof.unavailable} zonder bewijs`:'Geen geauthenticeerde bedrijfsprojectie beschikbaar';
  if(compact)return `<div class="owner-heading"><div><span class="owner-eyebrow">POWERHOUSE · JOUW DIGITALE RECHTERHAND</span><h2>Jij onderneemt. Powerhouse helpt je vooruit.</h2><p>Wat vraagt jouw aandacht? Wat kan voorbereid worden? Wat is aantoonbaar afgerond?</p></div>${button('Open mijn bedrijfsbesturing','ondernemerscockpit')}</div><div class="owner-status" role="status">${esc(status)}</div><div class="owner-compact-grid">${OWNER_AREAS.map(a=>button(a.label,'ondernemerscockpit')).join('')}</div>${m.attention[0]?`<p class="owner-daily"><strong>Nu relevant:</strong> ${s(m.attention[0].title||m.attention[0].id)}</p>`:'<p class="owner-daily">Nog geen geverifieerde prioriteit. Begin bij je bedrijfsgegevens en koppelingen.</p>'}`;
  const bodies={bedrijf:companyPanel(m),kansen:opportunitiesPanel(m),acties:actionsPanel(m),adviseur:advisorPanel(),instellingen:settingsPanel()};
