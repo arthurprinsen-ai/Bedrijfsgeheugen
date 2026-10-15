@@ -4,6 +4,8 @@ import {handleTenantAiInference} from '../platform/api/tenant-ai-inference-handl
 import {signVerifiedRuntimeProof} from '../platform/runtime/attested-cloud-ai.mjs';
 import {CURRENT_AI_DEPLOYMENT_PROFILE} from '../platform/policy/customer-ai-deployment.mjs';
 import {evaluateTenantModelChoice} from '../platform/policy/tenant-model-choice.mjs';
+import {evaluateTenantAiActivation} from '../platform/api/tenant-ai-activation-readiness.mjs';
+import {handleTenantAiActivationStatus} from '../platform/api/tenant-ai-activation-handler.mjs';
 import {resolveDesiredTenantModel} from '../platform/policy/tenant-ai-default-model.mjs';
 const now=1_000_000,key='test-server-only-key-0123456789abcdef0123456789';
 const tenantId='tenant-a';
@@ -256,4 +258,74 @@ test('unknown workload and specialist tasks cannot inherit accidental provider e
  assert.equal(resolveDesiredTenantModel({...prefs,defaultModelId:selectedModel},'documents').modelId,selectedModel);
  // Document OCR is desired state only: actual attested hosted gateway is locked to portal-project-answer.
  assert.equal(String((await import('../platform/api/tenant-ai-inference-handler.mjs')).handleTenantAiInference).includes('portal-project-answer'),true);
+});
+
+const activationPreferences={requestState:'review_only_not_activated',
+ schemaVersion:3,defaultModelId:'mistral-small',policy:'review',
+ aiRisk:'standard',useCase:'Vragen beantwoorden over klantprojecten',
+ models:[{modelId:'mistral-small',routeId:'mistral-api-eu'}],assignments:{}};
+const activationPortal={tenantId,data:{portal:{
+ aiModelPreferences:activationPreferences,
+ aiModelActivationRequest:{schemaVersion:1,requestState:'REQUESTED',
+  modelId:'mistral-small',routeId:'mistral-api-eu',
+  workload:'brain',requestedAt:'2026-10-15T10:00:00.000Z'}
+}}};
+const activationInputs={
+ tenantId,portalRecord:activationPortal,
+ catalog:{models:[{id:'mistral-small',provider:'Mistral AI',provider_api_id:'mistral-small-latest',status:'active'}]},
+ supplierStatus:{records:{'mistral-small':'VERIFIED'}},
+ registryRecord:registry['tenant-a'],proofKey:key,
+ sovereigntySnapshot:{policy:{mode:'TRANSPARENT_GLOBAL',enforcement_mode:'BLOCK',
+  ai_deployment_profile:profile,policy_version:3},violations:[]},now
+};
+
+test('readiness center confirms all independent tenant-level proof checks without calling a provider',()=>{
+ const result=evaluateTenantAiActivation(activationInputs);
+ assert.equal(result.readyForTest,true,JSON.stringify(result.checks));
+ assert.equal(result.status,'READY_FOR_AUTHORIZED_TEST');
+ assert.equal(result.selectedModelId,'mistral-small');
+ assert.equal(result.reviewRequested,true);
+ assert.equal(result.checks.length,8);
+ assert.ok(result.checks.every(x=>x.status==='COMPLETE'));
+});
+
+test('a provider key and client activation request cannot substitute for independent verification',()=>{
+ for(const [patch,failed] of [
+  [{supplierStatus:{records:{'mistral-small':'PARTIAL'}}},'supplier'],
+  [{supplierStatus:{records:{'mistral-small':'CONFLICT'}}},'supplier'],
+  [{registryRecord:null},'provider'],
+  [{proofKey:null},'provider'],
+  [{portalRecord:{tenantId,data:{portal:{aiModelPreferences:activationPreferences}}}},'request'],
+  [{tenantId:'attacker'},'model'],
+  [{sovereigntySnapshot:{policy:{...activationInputs.sovereigntySnapshot.policy,mode:'TRANSPARENT_GLOBAL'},violations:[]},
+    portalRecord:{tenantId,data:{portal:{...activationPortal.data.portal,
+     aiModelPreferences:{...activationPreferences,policy:'eu-both'}}}}},'sovereignty']
+ ]){
+  const result=evaluateTenantAiActivation({...activationInputs,...patch});
+  assert.equal(result.readyForTest,false,failed);
+  assert.equal(result.checks.find(x=>x.key===failed)?.status,'ACTION_REQUIRED',failed);
+ }
+});
+
+test('readiness API authenticates first, scopes storage to identity tenant and performs zero provider egress',async()=>{
+ let calls=0,requests=0;
+ const store={get:async t=>{calls++;assert.equal(t,tenantId);return activationPortal}};
+ const sovereign={get:async t=>{requests++;assert.equal(t,tenantId);return {snapshot:activationInputs.sovereigntySnapshot}}};
+ const req=new Request('https://example.test/api/tenant-ai-activation-status',{method:'GET'});
+ const unauth=await handleTenantAiActivationStatus({
+  request:req,user:null,tenantId,store,sovereignty:sovereign
+ });
+ assert.equal(unauth.status,401);assert.equal(calls,0);
+ const good=await handleTenantAiActivationStatus({
+  request:req,user,tenantId,store,sovereignty:sovereign,
+  registry,proofKey:key,catalog:activationInputs.catalog,supplierStatus:activationInputs.supplierStatus,now
+ });
+ assert.equal(good.status,200);assert.equal((await good.json()).readyForTest,true);
+ assert.equal(calls,1);assert.equal(requests,1);
+ const mismatched=await handleTenantAiActivationStatus({
+  request:req,user,tenantId,store:{get:async()=>({...activationPortal,tenantId:'other'})},
+  sovereignty:sovereign
+ });
+ assert.equal(mismatched.status,403);
+ assert.equal((await mismatched.json()).error,'TENANT_SCOPE_MISMATCH');
 });
