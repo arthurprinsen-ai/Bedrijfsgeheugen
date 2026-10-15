@@ -47,6 +47,8 @@ if (Object.hasOwn(process.env,'POWERHOUSE_BEDROCK_TARGET_REGIONS')) {
      encoding:'utf8',timeout:20000,stdio:['ignore','pipe','pipe'],maxBuffer:1024*1024
    }));
    identityVerified=/^\d{12}$/.test(String(identity?.Account||'')) &&
+     /^\d{12}$/.test(process.env.POWERHOUSE_BEDROCK_EXPECTED_ACCOUNT_ID||'') &&
+     identity.Account===process.env.POWERHOUSE_BEDROCK_EXPECTED_ACCOUNT_ID &&
      typeof identity?.Arn==='string' && identity.Arn.startsWith('arn:');
   }catch{ /* no untrusted AWS CLI stderr in audit output */ }
   if(!identityVerified){
