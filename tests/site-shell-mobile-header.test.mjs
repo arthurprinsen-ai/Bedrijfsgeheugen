@@ -11,6 +11,7 @@ test('mobile header has one compact navigational control and no trustbar overflo
   assert.match(css, /@media\(max-width:700px\)/);
   assert.match(css, /\.bg-uniform-trust,\.bgtop,\.announcement\{display:none!important\}/);
   assert.match(css, /header\.v17-header \.v17-nav>\.mobile-toggle::after\{content:"Menu"/);
+  assert.match(css, /header\.v17-header \.v17-nav>\.brand>:first-child:not\(:last-child\)\{display:none!important\}/);
   assert.match(css, /header\.v17-header \.v17-nav>\.mobile-toggle\[aria-expanded="true"\]::after\{content:"Sluit"/);
 });
 
