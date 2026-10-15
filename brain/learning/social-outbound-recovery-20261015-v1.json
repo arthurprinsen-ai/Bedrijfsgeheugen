@@ -20,7 +20,8 @@
     "linkedIn_company_missing_scope": "r_organization_admin",
     "instagram_blocker": "MEDIA_ASSET_REQUIRED",
     "salesrobot_subscription": "TRIAL_EXPIRED",
-    "email_blocker": "NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR"
+    "email_blocker": "NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR",
+    "learning_evaluation_note": "Canary checks are no-send contract assertions; they do not constitute a live provider publication or Supabase production deployment."
   },
   "status": "CANDIDATE_PENDING_REQUIRED_CI_AND_PRODUCTION_READBACK",
   "revision": 1,
@@ -33,8 +34,14 @@
     "security_sensitive": true
   },
   "evaluation": {
-    "regression_tests": [
-      "tests/supabase-social-publication-recovery.test.mjs"
+    "historical_replay": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
     ]
   }
 }
