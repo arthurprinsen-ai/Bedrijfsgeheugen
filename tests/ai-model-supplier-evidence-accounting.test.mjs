@@ -460,3 +460,21 @@ test('Falcon H1 public pricing boundary cannot become free hosted API',()=>{
   assert.equal(m.supplier_audit.automatic_recommendation_eligible,false);
  }
 });
+
+test('primary supplier audit source references match all 110 exact model sources',()=>{
+ const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+ assert.equal(catalog.models.length,110);
+ for(const model of catalog.models){
+  assert.equal(model.verification_evidence?.source_url,model.source,
+   model.id+': source and verification evidence must agree');
+  assert.equal(model.supplier_audit?.source_reference,model.source,
+   model.id+': primary audit source must be model-specific source, not generic index');
+  assert.equal(model.supplier_audit?.source_reference_is_not_proof,true,
+   'A model-specific URL is not itself full claim verification');
+  assert.equal(model.supplier_audit?.automatic_recommendation_eligible,false,
+   'Source alignment never authorizes automatic model recommendations');
+ }
+ const nova=catalog.models.find(m=>m.id==='amazon-nova-premier');
+ assert.ok(nova.supplier_source_conflicts?.length,
+  'Aligning primary AWS source must not erase the independent lifecycle conflict');
+});
