@@ -38,9 +38,10 @@ test('uses only chronological customer history and retains metadata',()=>{
 });
 
 test('scenario sensitivity is explicit and does not change baseline forecast',()=>{
- const base=buildForesightStudioModel(state,{metric:'revenue_growth',days:90,sensitivity:0});
- const downside=buildForesightStudioModel(state,{metric:'revenue_growth',days:90,sensitivity:-10});
- const upside=buildForesightStudioModel(state,{metric:'revenue_growth',days:90,sensitivity:10});
+ const asOf='2026-10-15T00:00:00Z'; // compare exactly the same observation cutoff
+ const base=buildForesightStudioModel(state,{metric:'revenue_growth',days:90,sensitivity:0,asOf});
+ const downside=buildForesightStudioModel(state,{metric:'revenue_growth',days:90,sensitivity:-10,asOf});
+ const upside=buildForesightStudioModel(state,{metric:'revenue_growth',days:90,sensitivity:10,asOf});
  assert.equal(base.scenario.baseline,downside.scenario.baseline);
  assert.equal(base.scenario.baseline,upside.scenario.baseline);
  assert.ok(downside.scenario.simulated<base.scenario.baseline);
