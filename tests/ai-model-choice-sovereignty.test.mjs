@@ -53,6 +53,7 @@ test('AI sovereignty labels are provider route specific; nothing in catalog is f
  assert.equal(governance.providers.every(p=>Array.isArray(p.paths)&&p.paths.length>0),true);
  assert.match(client,/geen bewijs van klantcontract/);
  assert.match(client,/Een EU-datacenter is niet hetzelfde als volledige datasoevereiniteit/);
- assert.match(client,/AI Act-risico wordt per concrete toepassing/);
+ assert.match(client,/EU AI Act:/);
+ assert.match(client,/per concrete toepassing/);
  assert.match(client,/geen automatische aansluiting of uitvoering/);
 });
