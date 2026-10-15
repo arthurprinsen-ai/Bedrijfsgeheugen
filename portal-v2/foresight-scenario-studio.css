@@ -20,3 +20,10 @@
 .pfs-sourcebox summary{cursor:pointer;font-size:12px;font-weight:700;color:#245ca0}
 .pfs-source-disclaimer{font-size:10px!important;color:#7b879a!important;margin-bottom:0}
 @media(max-width:720px){.pfs-sourcebox{padding:12px}.pfs-sourcegrid{grid-template-columns:1fr}}
+
+.pfs-source-controls{display:flex;align-items:end;flex-wrap:wrap;gap:10px;margin:10px 0 12px}
+.pfs-source-controls label{display:grid;gap:5px;font-size:12px;font-weight:700;color:#395077}
+.pfs-source-controls select,.pfs-source-controls button{min-height:40px;border:1px solid #bfcde6;border-radius:9px;background:#fff;color:#174f90;padding:8px 12px;font-size:12px}
+.pfs-source-controls button{font-weight:750;cursor:pointer;background:#edf4ff}
+.pfs-source-controls select:focus-visible,.pfs-source-controls button:focus-visible{outline:3px solid #7caffc;outline-offset:2px}
+@media(max-width:720px){.pfs-source-controls label{width:100%}.pfs-source-controls select{width:100%}}
