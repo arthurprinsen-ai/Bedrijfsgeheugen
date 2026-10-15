@@ -72,3 +72,20 @@ test('the customer can request any model but never activate inference via a pref
  assert.match(ui,/storage_residency/);
  assert.doesNotMatch(ui,/fetch\(['"]https:\/\/(?:api\.|bedrock-runtime)/);
 });
+
+test('six highlighted models are present and map to the advertised portal responsibilities',()=>{
+ const src=read('portal-v2/modules/ai-model-choice.js');
+ const highlights=['gpt-6-luna','gpt-6-sol','mistral-medium-3-5','gpt-oss-20b','mistral-ocr-3','text-embedding-3-small'];
+ for(const id of highlights){
+  assert.ok(catalog.models.some(m=>m.id===id),id);
+  assert.equal(supplier.records[id],'VERIFIED',id);
+  assert.ok(src.includes("'"+id+"'"),id);
+ }
+ for(const workload of ['brain','routine','analysis','documents','knowledge','sensitive']){
+  assert.match(src,new RegExp("\\['"+workload+"','"));
+ }
+ assert.match(src,/schemaVersion:2,models:draft\.models,assignments:draft\.assignments/);
+ assert.match(src,/JSON\.stringify\(readback\?\.assignments\)/);
+ assert.match(src,/policy:'eu-both'/);
+ assert.match(src,/review_only_not_activated/);
+});
