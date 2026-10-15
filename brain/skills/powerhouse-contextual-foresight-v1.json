@@ -8,7 +8,7 @@
     "portal-v2/foresight-scenario-studio.js"
   ],
   "tests": [
-    "tests/powerhouse-contextual-foresight-studio.test.mjs"
+    "portal-v2/tests/foresight-scenario-studio.test.mjs"
   ],
   "authority": "tenant-authenticated portal state; no global registry assumption",
   "terminalStatus": "CANDIDATE_NOT_RELEASED",
