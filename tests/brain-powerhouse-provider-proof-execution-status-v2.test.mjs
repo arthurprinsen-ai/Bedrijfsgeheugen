@@ -14,6 +14,8 @@ test('execution status keeps its original callable contract and fail-closed comp
 });
 
 test('provider URN without independent readback never counts as delivered',()=>{
+  assert.match(sql,/coalesce\(\(/, 'NULL proof must never satisfy an obligation');
+  assert.match(sql,/\), false\) as independently_proven/, 'missing provider JSON is an explicit failure, not SQL UNKNOWN');
   assert.match(sql,/delivery_evidence->>'provider_truth_verified' = 'true'/);
   assert.match(sql,/delivery_evidence->>'provider_status' = 'published'/);
   assert.match(sql,/nullif\(btrim\(delivery_ref\), ''\) is not null/);
@@ -41,6 +43,9 @@ test('historical replay of 2026-10-15 blocks unverified personal while counting 
   ];
   const independentlyProven = r=>r.decision==='publish' && ['published','measured','learned'].includes(r.state)
     && Boolean(r.ref?.trim()) && r.truth===true && r.status==='published';
+  // A new decided channel has neither provider receipt nor evidence JSON.
+  const missingReceipt={channel:'linkedin_personal',decision:'publish',state:'published',ref:null,truth:null,status:null};
+  assert.equal(independentlyProven(missingReceipt),false);
   const publish=rows.filter(r=>r.decision==='publish');
   const delivered=publish.filter(independentlyProven);
   const social=delivered.filter(r=>['linkedin_company','linkedin_personal','instagram_company'].includes(r.channel));
