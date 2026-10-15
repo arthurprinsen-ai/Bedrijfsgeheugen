@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import { eligibleFinancialForecast as validateFinancialForecast } from '../supabase/functions/_shared/portal-financial-forecast-acceptance.js';
 
 // Deterministic approval clock: regression tests must not change with the wall clock.
@@ -113,3 +114,18 @@ test('financial evidence must be current, not future-dated, and revalidated at r
  assert.equal(validateFinancialForecast(atBoundary,'tenant42',reviewClock),true);
  assert.equal(validateFinancialForecast(atBoundary,'tenant42',reviewClock+1),false);
 });
+
+test('financial gateway filters invalid reviews before applying the chart cap',()=>{
+ const edge=readFileSync(new URL('../supabase/functions/portal-state-eu/index.ts',import.meta.url),'utf8');
+ assert.match(edge,/\.eq\('tenant_id',tenantId\)/,'Every candidate must be scoped to authenticated tenant');
+ assert.match(edge,/\.order\('verified_at',\{ascending:false\}\)\.limit\(150\)/,
+  'Fetch a bounded set of candidate rows, not just the 30 most recent declarations');
+ assert.match(edge,/\.filter\(row=>eligibleFinancialForecast\(row,tenantId\)\)\.slice\(0,30\)/,
+  'Independent review must precede the presentation cap');
+ const invalid=Array.from({length:30},(_,i)=>({...base,forecast_id:'unreviewed-'+i,verification_status:'passed',
+  verified_at:'2026-09-01T10:00:00Z'}));
+ const rows=[...invalid,base];
+ const safe=rows.filter(row=>eligibleFinancialForecast(row,'tenant42')).slice(0,30);
+ assert.deepEqual(safe,[base],'One valid older candidate should not be hidden by thirty invalid reviews');
+});
+
