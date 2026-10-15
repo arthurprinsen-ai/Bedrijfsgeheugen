@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-15",
+  "fingerprint": "powerhouse|portal-v2|foresight|tenant-source-filter-v3",
+  "obligation_id": "powerhouse-foresight-tenant-driver-filters-20261015-v3",
+  "compiler": {
+    "failure_class": "UNSCOPED_FORECAST_SIGNAL_PROMOTION",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The stale signal-driver candidate creates a second loader and separate forecast panel on older code, competing with the already merged authenticated tenant evidence overlay.",
+  "prevention": "Use only the existing, Netlify Identity-authenticated entrepreneur intelligence response with explicit tenant and company-impact scope; add category selection to the same rendered evidence panel, never a second global loader. Risk, opportunity and development filters cannot change the forecast engine, synthesize monetary impact or approve a source.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-foresight-tenant-drivers-v3.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-foresight-tenant-drivers-v3.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-foresight-tenant-drivers-v3.test.mjs"
+    ]
+  },
+  "evidence": {
+    "test": "portal-v2/tests/foresight-tenant-evidence.test.mjs",
+    "authoritativeApi": "/api/portal-ondernemersdata",
+    "validatedTenant": true,
+    "crossTenantPrevention": "Only exact authenticated tenant impact, never a canonical-only score",
+    "noAutomaticNumericEffect": true
+  },
+  "outcome": {
+    "codeReady": true,
+    "productionVerified": false,
+    "protectedReleaseRequired": true
+  }
+}
