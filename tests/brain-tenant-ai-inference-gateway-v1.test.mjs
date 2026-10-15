@@ -369,7 +369,7 @@ test('readiness API authenticates first, scopes storage to identity tenant and p
  assert.equal(unauth.status,401);assert.equal(calls,0);
  const good=await handleTenantAiActivationStatus({
   request:req,user,tenantId,store,sovereignty:sovereign,
-  registry,proofKey:key,catalog:activationInputs.catalog,supplierStatus:activationInputs.supplierStatus,now
+  registry:{[tenantId]:euRegistry},proofKey:key,catalog:activationInputs.catalog,supplierStatus:activationInputs.supplierStatus,now
  });
  assert.equal(good.status,200);assert.equal((await good.json()).readyForTest,true);
  assert.equal(calls,1);assert.equal(requests,1);
