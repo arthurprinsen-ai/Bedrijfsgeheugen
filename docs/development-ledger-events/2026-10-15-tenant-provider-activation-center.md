@@ -6,7 +6,7 @@
 De klant ziet 110 AI-modellen en kan een tenantbreed standaardmodel kiezen. Een wens levert echter geen providerrechten of AVG/AI Act-goedkeuring op. Er ontbrak een transparante klantflow die echte providerblokkades kan teruglezen.
 
 ## Wijzigingen
-- `platform/api/tenant-ai-activation-readiness.mjs` voert acht onafhankelijke, read-only bewijscontroles uit.
+- `platform/api/tenant-ai-activation-readiness.mjs` voert negen onafhankelijke, read-only bewijscontroles uit.
 - `platform/api/tenant-ai-activation-handler.mjs` en `netlify/functions/tenant-ai-activation-status.mjs` geven uitsluitend een geauthenticeerde klant zijn eigen niet-gevoelige statussen terug.
 - `portal-v2/modules/ai-model-choice.js` toont de stappen en laat een bevoegd ingelogde klant zonder credentials een activeringsaanvraag indienen in de bestaande tenantstore. De aanvraag wordt teruggelezen; serverreadback is apart nodig om ontvangst te bevestigen.
 - Bestaande Brain- en Portal-regressietests controleren bewust geen provider-egress en onafhankelijk tenant-/providerbewijs.
