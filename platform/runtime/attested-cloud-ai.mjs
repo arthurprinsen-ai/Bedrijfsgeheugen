@@ -114,6 +114,12 @@ export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVe
  if(!provision||provision.providerReadbackEvidenceId!==receipt.providerReadbackEvidenceId
      ||provision.egressEvidenceId!==receipt.egressEvidenceId)
   reject('RUNTIME_PROVISIONING_EVIDENCE_MISMATCH');
+ // EU regional inference is a separately provisioned, provider-confirmed
+ // capability; a catalog EU label or signed tenant wish is insufficient.
+ if(receipt.provider==='MISTRAL_API'&&receipt.computeRegion==='EU'&&(
+   provision.processingRegion!=='EU'||
+   provision.residencyEvidenceId!==receipt.residencyEvidenceId))
+  reject('MISTRAL_EU_REGION_PROVISION_NOT_VERIFIED');
  if(receipt.provider==='AWS_BEDROCK'&&(
   provision.awsRegion!==receipt.awsRegion||provision.modelId!==receipt.modelId||
   provision.residencyEvidenceId!==receipt.residencyEvidenceId))
