@@ -42,7 +42,7 @@ test('customer navigation exposes model choice in canonical group and the Data &
  const hub=read('portal-v2/hubs.js');
  const page=read('portal-v2/page-shell.js');
  const plan=read('portal-v2/plan-access.js');
- assert.match(nav,/'ai-modelkeuze':\{label:'AI-modellen kiezen'\}/);
+ assert.match(nav,/'ai-modelkeuze':\{label:'AI-modellen kiezen(?: & datasoevereiniteit)?'\}/);
  assert.match(nav,/'ai-capabilities','ai-modelkeuze','data-ai-passport'/);
  assert.match(hub,/'ai-capabilities','ai-modelkeuze','data-ai-passport'/);
  assert.match(page,/mountAiModelChoice/);
