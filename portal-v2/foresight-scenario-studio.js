@@ -64,13 +64,19 @@ export function buildForesightStudioModel(state={},options={}){
   });
   const active=metrics.find(x=>x.id===options.metric)||metrics.find(x=>x.forecast)||metrics[0];
   const sensitivity=Math.max(-30,Math.min(30,Number.isFinite(Number(options.sensitivity))?Number(options.sensitivity):0));
-  const scenario=active.forecast?{
-    baseline:active.forecast.expected,
-    simulated:active.forecast.expected*(1+sensitivity/100),
-    delta:active.forecast.expected*sensitivity/100,
+  // A positive sensitivity is a *favourable* assumption: it increases up-goals
+  // and decreases down-goals (risk, manual workload). Use absolute magnitude so
+  // a negative baseline can also improve in the correct direction.
+  const baseline=active.forecast?.expected??null;
+  const directionSign=active.direction==='down'?-1:1;
+  const delta=baseline===null?null:Math.abs(baseline)*directionSign*sensitivity/100;
+  const scenario=baseline===null?null:{
+    baseline,
+    simulated:baseline+delta,
+    delta,
     lower:active.forecast.lower,upper:active.forecast.upper,
     sensitivity,kind:'WHAT_IF_NOT_PREDICTION'
-  }:null;
+  };
   const count=metrics.filter(x=>x.forecast).length;
   // The authenticated brain-operating-loop projects operational observations per tenant.
   // Never turn these events into a forecast, outcome or global Powerhouse health claim.
