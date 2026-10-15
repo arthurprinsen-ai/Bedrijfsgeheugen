@@ -7,7 +7,7 @@ const json=path=>JSON.parse(read(path));
 
 test('all 110 catalogue records have published explicit review status; never imply runtime approval',()=>{
  const catalog=json('data/ai-model-catalog-v1.json');
- const snapshot=json('data/ai-model-supplier-status-v1.json');
+ const snapshot=json('portal-v2/ai-model-supplier-status-v1.json');
  assert.equal(catalog.models.length,110);
  assert.equal(new Set(catalog.models.map(m=>m.id)).size,110);
  assert.deepEqual(Object.keys(snapshot.records).sort(),catalog.models.map(m=>m.id).sort());
