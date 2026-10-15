@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const read=path=>fs.readFileSync(path,'utf8');
 const parse=path=>JSON.parse(read(path));
 const catalog=parse('data/ai-model-catalog-v1.json');
-const supplier=parse('data/ai-model-supplier-status-v1.json');
+const supplier=parse('portal-v2/ai-model-supplier-status-v1.json');
 const governance=parse('data/ai-provider-governance-v1.json');
 
 test('all 110 supplier statuses match individual catalog identities, with no synthetic approval',()=>{
@@ -47,7 +47,7 @@ test('customer navigation exposes model choice in canonical group and the Data &
  assert.match(hub,/'ai-capabilities','ai-modelkeuze','data-ai-passport'/);
  assert.match(page,/mountAiModelChoice/);
  assert.match(page,/pageId==='ai-modelkeuze'/);
- assert.match(plan,/'ai-modelkeuze':'starter'/);
+ assert.match(plan,/'ai-modelkeuze':'pro'/);
 });
 
 test('the customer can request any model but never activate inference via a preference alone',()=>{
