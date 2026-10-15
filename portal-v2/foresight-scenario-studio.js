@@ -51,7 +51,7 @@ export function buildForesightStudioModel(state={},options={}){
     const baseline=buildGoalForecast(state,id);
     const history=observations(state,id,def.metric);
     const prediction=trend(history,days,asOf);
-    const current=history.length?history.at(-1).value:(baseline?.currentSource?valueOf(baseline.current):null);
+    const current=history.length?history.at(-1).value:null; // never synthesize a latest observation from an implicit zero
     const evidenceCount=history.filter(p=>p.evidenceRef).length;
     return {
       id,domain:metadata.domain,page:metadata.page,related:metadata.related,
