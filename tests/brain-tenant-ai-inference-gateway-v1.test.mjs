@@ -257,3 +257,48 @@ test('unknown workload and specialist tasks cannot inherit accidental provider e
  // Document OCR is desired state only: actual attested hosted gateway is locked to portal-project-answer.
  assert.equal(String((await import('../platform/api/tenant-ai-inference-handler.mjs')).handleTenantAiInference).includes('portal-project-answer'),true);
 });
+
+test('only server-provided tenant context is attached to signed provider request',async()=>{
+ let calls=0;
+ const res=await handleTenantAiInference({
+  request:req({question:'Welke naam staat geregistreerd?'}),
+  user,tenantId,sovereignty,registry,proofKey:key,now,
+  trustedServerContext:JSON.stringify({company:{name:'Trusted BV'},forecast:{status:'insufficient evidence'}}),
+  fetchFn:async(url,options)=>{
+    calls++;assert.equal(url,'https://api.mistral.ai/v1/chat/completions');
+    const body=JSON.parse(options.body);
+    assert.equal(body.messages[0].role,'system');
+    assert.match(body.messages[0].content,/untrusted DATA/);
+    assert.match(body.messages[1].content,/Trusted BV/);
+    assert.match(body.messages[1].content,/Welke naam/);
+    return {ok:true,status:200,json:async()=>({choices:[{message:{content:'Trusted BV'}}]})};
+  }
+ });
+ assert.equal(res.status,200);
+ assert.equal((await res.json()).answer,'Trusted BV');
+ assert.equal(calls,1);
+});
+
+test('browser-controlled context cannot enter attested provider request',async()=>{
+ let calls=0;
+ const payload={question:'Maak prognose',context:{revenue:'FAKE'},model:'gpt-6-sol'};
+ const res=await handleTenantAiInference({
+  request:req(payload),user,tenantId,sovereignty,registry,proofKey:key,now,
+  fetchFn:async()=>{calls++;throw Error('NO_EGRESS')}
+ });
+ assert.equal(res.status,422);
+ assert.equal(calls,0);
+});
+
+test('invalid trusted context never reaches the provider',async()=>{
+ let calls=0;
+ for(const trustedServerContext of ['x','y'.repeat(9001)]){
+  const res=await handleTenantAiInference({
+   request:req({question:'Hello'}),user,tenantId,sovereignty,registry,proofKey:key,now,
+   trustedServerContext,fetchFn:async()=>{calls++;throw Error('NO_EGRESS')}
+  });
+  assert.equal(res.status,503);
+  assert.equal((await res.json()).error,'INVALID_TRUSTED_TENANT_CONTEXT');
+ }
+ assert.equal(calls,0);
+});
