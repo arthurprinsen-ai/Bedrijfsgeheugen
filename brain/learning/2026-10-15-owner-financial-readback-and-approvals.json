@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|owner-financial-readback|tenant-id-missing-and-action-double-submit|20261015",
+  "compiler": {
+    "failure_class": "PORTAL_OWNER_FINANCE_TENANT_CONTRACT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The five-area owner dashboard exposed only placeholders despite an independently validated canonical forecast endpoint; empty canonical results omitted the authenticated tenant identity. Client actions were not yet wired to the canonical decision API and required an idempotent human command / protected readback boundary.",
+  "prevention_rule": "The authenticated /api/portal-forecasts handler returns server-resolved tenantId for OK and empty results; no browser-invented tenant or financial value is accepted. The owner dashboard only displays reviewed forecast records with scope, freshness, source, model, period, and independent review. APPROVE/REJECT issue fixed-key human commands via canonical /api/company-decision, enforce expected status, re-read Brain, and never infer provider execution. Block auto model activation and cross-tenant readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "code_changes": [
+      "portal-v2/owner-financial-truth.js",
+      "portal-v2/owner-operating-system.js",
+      "platform/api/portal-forecast-handler.mjs",
+      "tests/portal-owner-financial-truth.test.mjs"
+    ],
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4407",
+    "statuses": {
+      "unit_test": "PENDING_PROTECTED_CI",
+      "codeql": "PENDING",
+      "supabase": "CONNECTION_TIMEOUT",
+      "production_readback": "NOT_YET_PROVEN"
+    }
+  },
+  "outcome": {
+    "claim": "IMPLEMENTATION_CANDIDATE_NOT_YET_PRODUCTION",
+    "autonomous_external_sends": false,
+    "realized_value_claimed": false
+  }
+}
