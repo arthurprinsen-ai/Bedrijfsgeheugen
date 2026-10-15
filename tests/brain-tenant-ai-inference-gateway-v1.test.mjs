@@ -250,7 +250,7 @@ test('explicit workload override takes priority; absent route or unsafe supplier
  assert.equal(missing.code,'MODEL_NOT_IN_TENANT_WISHLIST');
 });
 
-test('unknown workload and specialist tasks cannot inherit accidental provider execution',()=>{
+test('unknown workload and specialist tasks cannot inherit accidental provider execution',async()=>{
  const prefs=modelChoiceBase.portalRecord.data.portal.aiModelPreferences;
  assert.equal(resolveDesiredTenantModel(prefs,'invented').code,'UNKNOWN_MODEL_WORKLOAD');
  assert.equal(resolveDesiredTenantModel({...prefs,defaultModelId:selectedModel},'documents').modelId,selectedModel);
