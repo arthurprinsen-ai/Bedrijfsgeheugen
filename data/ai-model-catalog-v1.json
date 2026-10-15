@@ -12042,7 +12042,8 @@
       ],
       "limitations": [
         "verify exact endpoint pricing and regional processing for production",
-        "Deprecated in official Google release notes; do not select for new deployments."
+        "Deprecated in official Google release notes; do not select for new deployments.",
+        "October 15, 2026 official alias check: gemini-3.7-flash is deprecated; API calls route to gemini-3.8-flash. Retain for historical comparison only; quote target model/tier pricing with customer billing verification, never a fixed legacy alias tariff."
       ],
       "scores": {
         "reasoning": 8,
@@ -12261,6 +12262,24 @@
           "successor_customer_billing_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "official_deprecated_alias_routing_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "official_model_card": "https://ai.google.dev/gemini-api/docs/models/gemini-3.7-flash",
+          "official_releases": "https://ai.google.dev/gemini-api/docs/changelog",
+          "official_pricing": "https://ai.google.dev/gemini-api/docs/pricing",
+          "deprecated_announced_on": "2026-10-08",
+          "api_calls_automatically_routed_to": "gemini-3.8-flash",
+          "exact_routed_model_in_catalog": true,
+          "verification_scope": "Official published model endpoint alias routing only; no account entitlement, customer effective billing or contract check",
+          "legacy_model_price_not_representative_of_routed_model": true,
+          "routed_target_published_standard_paid_input_usd_m": 0.75,
+          "routed_target_published_standard_paid_output_usd_m": 3.75,
+          "other_tiers_account_actual_billing_unverified": true,
+          "customer_account_runtime_attested": false,
+          "supplier_full_approval": false,
+          "automatic_recommendation_eligible": false,
+          "production_release_eligible": false
         }
       },
       "official_paid_standard_pricing_review_20261014": {
@@ -12274,7 +12293,9 @@
         "governance_verified": false,
         "production_approved": false,
         "automatic_recommendation_eligible": false
-      }
+      },
+      "catalog_alias": true,
+      "alias_of": "gemini-3.8-flash"
     },
     {
       "tier": "balanced",
@@ -12495,7 +12516,8 @@
         "verify exact endpoint pricing and regional processing for production",
         "Official Google documentation: deprecated; API requests automatically route to gemini-3.6-flash. Prefer gemini-3.6-flash or gemini-3.8-flash for new workloads.",
         "Deprecated in official Google release notes; do not select for new deployments.",
-        "Deprecated API alias; forwarded to gemini-3.6-flash; do not use for new projects."
+        "Deprecated API alias; forwarded to gemini-3.6-flash; do not use for new projects.",
+        "October 15, 2026 official alias check: gemini-3.5-flash is deprecated; API calls route to gemini-3.6-flash. Retain for historical comparison only; quote target model/tier pricing with customer billing verification, never a fixed legacy alias tariff."
       ],
       "scores": {
         "reasoning": 8,
@@ -12693,6 +12715,24 @@
           "successor_customer_billing_verified": false,
           "supplier_six_claim_approval": false,
           "automatic_recommendation_eligible": false
+        },
+        "official_deprecated_alias_routing_recheck_20261015": {
+          "checked_on": "2026-10-15",
+          "official_model_card": "https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash",
+          "official_releases": "https://ai.google.dev/gemini-api/docs/changelog",
+          "official_pricing": "https://ai.google.dev/gemini-api/docs/pricing",
+          "deprecated_announced_on": "2026-10-08",
+          "api_calls_automatically_routed_to": "gemini-3.6-flash",
+          "exact_routed_model_in_catalog": true,
+          "verification_scope": "Official published model endpoint alias routing only; no account entitlement, customer effective billing or contract check",
+          "legacy_model_price_not_representative_of_routed_model": true,
+          "routed_target_published_standard_paid_input_usd_m": 0.75,
+          "routed_target_published_standard_paid_output_usd_m": 3.75,
+          "other_tiers_account_actual_billing_unverified": true,
+          "customer_account_runtime_attested": false,
+          "supplier_full_approval": false,
+          "automatic_recommendation_eligible": false,
+          "production_release_eligible": false
         }
       },
       "pricing_basis": {
@@ -12703,7 +12743,9 @@
         "observation_date": "2026-10-14",
         "notes": "Legacy Gemini 3.5 Flash Standard paid: USD 1.50 per 1M input tokens and USD 9.00 per 1M output tokens; deprecated alias routes to Gemini 3.6 Flash, so actual billing must be checked for routed requests.",
         "tenant_billing_not_verified": true
-      }
+      },
+      "catalog_alias": true,
+      "alias_of": "gemini-3.6-flash"
     },
     {
       "tier": "economy",
