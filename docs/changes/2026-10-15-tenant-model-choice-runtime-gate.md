@@ -12,3 +12,6 @@ Deze runtimekoppeling is uitsluitend voor de bestaande `portal-project-answer`/B
 
 ## Acceptatie
 Reproduceerbare regressietests moeten aantonen dat een blokkade géén uitgaand providerverzoek veroorzaakt; Required CI en CodeQL moeten succesvol zijn. Verifieer daarna een beschermde merge, exact productie-SHA en een niet-gesimuleerde, geauthenticeerde readback. Zonder bewijs van een werkelijke geautoriseerde klant- en providerconnectie mag geen werkende AI-executie worden geclaimd.
+
+## Gebruikersroute voor gecontroleerde modeltest
+In **AI-modellen kiezen & datasoevereiniteit** kan een ingelogde klant na het bewaren van een Bedrijfsbrein-toewijzing vrijwillig een niet-vertrouwelijke vraag insturen. De browser post alleen `question` naar `/api/tenant-ai-inference`, niet de volledige portalstate of bedrijfsdocumenten. De bestaande gateway vult de tenantcontext en ondertekende providerroute uitsluitend server-side in. Een niet-geprovisioneerde provider of een niet-passende EU-eis geeft een blokkeringscode. **Er is uitdrukkelijk geen automatische fallback naar de oude Anthropic-vraagfunctie.** Een geslaagde modeltest kan kosten opleveren en bewijst op zichzelf niet dat andere portaalfuncties zijn gekoppeld.
