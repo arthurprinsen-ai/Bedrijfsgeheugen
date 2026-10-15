@@ -89,3 +89,14 @@ test('six highlighted models are present and map to the advertised portal respon
  assert.match(src,/value\.policy:'eu-both'/);
  assert.match(src,/review_only_not_activated/);
 });
+
+test('customer may manually test only its saved Brain choice through verified tenant gateway',()=>{
+ const source=read('portal-v2/modules/ai-model-choice.js');
+ assert.match(source,/\/api\/tenant-ai-inference/);
+ assert.match(source,/trialButton\.addEventListener\('click'/);
+ assert.match(source,/if\(dirty\)/);
+ assert.match(source,/draft\.assignments\.brain/);
+ assert.match(source,/response\.ok&&result\?\.status==='ANSWERED'/);
+ assert.match(source,/Geen fallback naar een andere provider/);
+ assert.doesNotMatch(source,/\/api\/portaalvraag/);
+});
