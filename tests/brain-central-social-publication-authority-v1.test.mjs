@@ -69,7 +69,7 @@ test('retired legacy social delivery cannot schedule or write provider posts',()
   const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
   assert.match(delivery,/LEGACY_BUFFER_SOCIAL_WRITER_RETIRED_V1/);
   assert.match(delivery,/provider_write_performed:false/);
-  assert.doesNotMatch(delivery,/schedule:\\s*'\\*\\/10/);
+  assert.ok(!delivery.includes("schedule: '*/10"));
 });
 
 test('retired deploy hook cannot trigger another sender',()=>{
