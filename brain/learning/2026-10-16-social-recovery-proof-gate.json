@@ -15,13 +15,13 @@
   "prevention_rule": "A social recovery run must fail unless all required publish decisions are published and the runner verifies provider side-effect truth.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-central-social-publication-authority-v1.test.mjs"
+      "tests/social-recovery-provider-proof-gate.test.mjs"
     ],
     "shadow": [
-      "tests/brain-central-social-publication-authority-v1.test.mjs"
+      "tests/social-recovery-provider-proof-gate.test.mjs"
     ],
     "canary": [
-      "tests/brain-central-social-publication-authority-v1.test.mjs"
+      "tests/social-recovery-provider-proof-gate.test.mjs"
     ]
   },
   "production_verified": false
