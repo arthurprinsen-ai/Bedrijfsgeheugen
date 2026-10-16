@@ -24,5 +24,11 @@
       "tests/brain-central-social-publication-authority-v1.test.mjs"
     ]
   },
-  "production_verified": false
+  "production_verified": false,
+  "test_evidence": {
+    "historical_replay": "PASS in Required CI job 116939601385, 2026-10-16T10:59:40Z",
+    "test_file": "tests/brain-central-social-publication-authority-v1.test.mjs",
+    "run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/38890794063",
+    "production_readback": "NOT_VERIFIED"
+  }
 }
