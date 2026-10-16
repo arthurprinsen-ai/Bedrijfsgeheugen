@@ -100,8 +100,8 @@ jobs:
           writeFileSync('/tmp/social-recovery-sanitized.json',JSON.stringify(safe,null,2)+'\n');
           console.log('CANONICAL_SOCIAL_RECOVERY_RESULT='+JSON.stringify(safe));
           const required=safe.decisions.filter(d=>['linkedin_personal','linkedin_company','instagram_company'].includes(d.channel)&&d.decision==='publish');
-          const unresolved=required.filter(d=>!['published','scheduled'].includes(d.state));
-          if(!safe.ok || safe.http < 200 || safe.http >= 300 || unresolved.length){
+          const unresolved=required.filter(d=>d.state!=='published'||d.provider_truth_verified!==true);
+          if(!safe.ok || safe.http < 200 || safe.http >= 300 || safe.providerTruthHealthy!==true || unresolved.length){
             console.error('SOCIAL_PUBLICATION_UNRESOLVED='+JSON.stringify(unresolved));
             process.exitCode=2;
           }
