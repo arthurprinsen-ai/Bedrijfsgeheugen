@@ -76,13 +76,13 @@ test('retired deploy hook cannot trigger another sender',()=>{
   const hook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
   assert.match(hook,/legacy_sender:'RETIRED'/);
   assert.match(hook,/provider_write_performed:false/);
-  assert.doesNotMatch(hook,/runSocialPublicationDelivery|createPost\\(/);
+  assert.doesNotMatch(hook,/runSocialPublicationDelivery|createPost\(/);
 });
 
 test('canonical scheduled recovery requires published provider truth',()=>{
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
-  assert.match(workflow,/d\\.state!=='published'/);
-  assert.match(workflow,/safe\\.providerTruthHealthy!==true/);
+  assert.match(workflow,/d\.state!=='published'/);
+  assert.match(workflow,/safe\.providerTruthHealthy!==true/);
   assert.match(workflow,/social-recovery-runner/);
 });
 
