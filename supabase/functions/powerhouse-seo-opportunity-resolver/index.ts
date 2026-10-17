@@ -12,7 +12,22 @@ function norm(v:unknown){
   return clean(v).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 }
 function tokenSet(v:unknown){
-  return new Set(norm(v).split(' ').filter(x=>x.length>=4));
+  const stem=(x:string)=>x.length>6&&x.endsWith('en')?x.slice(0,-2):x.length>5&&x.endsWith('s')?x.slice(0,-1):x;
+  return new Set(norm(v).split(' ').filter(x=>x.length>=4).map(stem));
+}
+function ownerByRoute(route:unknown){
+  const raw=clean(route); if(!raw) return null;
+  const normalized=raw.replace(/\/$/,'');
+  const page=((owners as any).pages||[]).find((p:any)=>clean(p.route).replace(/\/$/,'')===normalized);
+  return page?{...page,match_score:1,match_source:'observed_existing_route'}:null;
+}
+function observedOwner(row:any,gsc:any){
+  const candidates=[row?.rankende_url,...(gsc?.pages||[])].filter(Boolean);
+  for(const route of candidates){
+    const hit=ownerByRoute(route);
+    if(hit) return hit;
+  }
+  return null;
 }
 function overlap(a:unknown,b:unknown){
   const aa=tokenSet(a), bb=tokenSet(b);
@@ -108,7 +123,7 @@ Deno.serve(async(req:Request)=>{
       const keyword=clean(row.zoekwoord);
       const g0=gscByQuery.get(norm(keyword));
       const gsc=g0?{impressions:g0.impressions,clicks:g0.clicks,position:g0.positionWeight?g0.positionWeighted/g0.positionWeight:null,pages:[...g0.pages]}:null;
-      const owner=ownerFor(keyword);
+      const owner=ownerFor(keyword)||observedOwner(row,gsc);
       const forecast=chooseForecast(keyword,forecastResult.data||[]);
       const score=scoreKeyword(row,gsc,forecast);
       const commercial=(num(row.cpc)>=2||num(row.zoekvolume)>=100);
@@ -118,9 +133,38 @@ Deno.serve(async(req:Request)=>{
     }
     opportunities.sort((a,b)=>b.score-a.score);
     const top=opportunities.slice(0,5);
+    const materialActions=top.filter(x=>x.action!=='NO_ACTION_EVIDENCE_INSUFFICIENT').slice(0,3);
 
-    let recommendations=0, forecastsWritten=0;
-    for(const item of top){
+    let recommendations=0, forecastsWritten=0, intelligenceWritten=0;
+    for(const item of materialActions){
+      const intentClass=(num(item.row.cpc)>=2||num(item.row.zoekvolume)>=100)?'commercial':'informational';
+      const {error:iError}=await db.from('powerhouse_seo_keyword_intelligence_v1').upsert({
+        tenant_id:'canonical',
+        locale:'nl',
+        market:'NL',
+        language_code:'nl',
+        keyword:item.keyword,
+        search_volume:Math.round(Math.max(0,num(item.row.zoekvolume))),
+        cpc_eur:Math.max(0,num(item.row.cpc)),
+        competition:clean(item.row.concurrentie)||null,
+        competition_index:null,
+        intent_class:intentClass,
+        canonical_owner:item.owner?.route||'NO_CANONICAL_OWNER',
+        conversion_destination:item.owner?.primary_cta?.url||'/frisse-blik',
+        source:'powerhouse-seo-opportunity-resolver',
+        observed_at:observedAt,
+        evidence:{
+          contract:CONTRACT,
+          dataforseo_observed_at:item.row.opgehaald_op,
+          gsc:item.gsc,
+          opportunity_score:item.score,
+          action:item.action,
+          forecast_id:item.forecast?.forecast_id||null,
+          truth_boundary:'search volume, CPC, ranking and forecast are prioritization evidence, not realized revenue'
+        }
+      },{onConflict:'tenant_id,locale,market,keyword'});
+      if(iError) throw new Error('SEO_INTELLIGENCE_WRITE:'+iError.message);
+      intelligenceWritten++;
       const forecastKey='seo:'+runDate+':'+norm(item.keyword).replaceAll(' ','-').slice(0,120);
       const probability=Math.max(.05,Math.min(.95,item.score/100));
       const evidence={
@@ -173,7 +217,7 @@ Deno.serve(async(req:Request)=>{
     const {error:hError}=await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'ok',
       detail:'keywords='+latestByKeyword.size+'; gsc_queries='+gscByQuery.size+'; top='+top.length+'; recommendations='+recommendations,
-      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten}
+      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),material_actions:materialActions.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,intelligence_written:intelligenceWritten}
     });
     if(hError) throw new Error('HEALTH_WRITE:'+hError.message);
     await db.rpc('powerhouse_record_source_observation_v1',{
@@ -183,7 +227,7 @@ Deno.serve(async(req:Request)=>{
       p_observed_at:observedAt,
       p_evidence:{contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action}))}
     });
-    return json({ok:true,contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))});
+    return json({ok:true,contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,intelligence_written:intelligenceWritten,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),material_actions:materialActions.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT,run_date:runDate}}).catch(()=>{});
