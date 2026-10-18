@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-18",
+  "obligation": "production-reconcile-main-push-20261018",
+  "observation": "GitHub push paths-ignore suppressed production reconciliation for changes to workflow, Supabase, and BRAIN paths.",
+  "intervention": "Remove push paths-ignore, retain existing deploy applicability gate.",
+  "expected": "Every main push invokes snapshot reconciliation, only deploy-eligible changes proceed to Netlify.",
+  "validation": "Required CI, CodeQL, protected merge, exact production readback required; no deployment claimed."
+}
