@@ -17,5 +17,12 @@
       "tests/brain-production-reconciliation.test.mjs"
     ]
   },
-  "fingerprint": "production-reconciliation-main-push-20261018"
+  "fingerprint": "production-reconciliation-main-push-20261018",
+  "root_cause": "Workflow-level paths-ignore prevented GitHub Actions dispatch for operational-path changes, bypassing the existing internal deployment applicability check.",
+  "prevention_rule": "All main pushes must enter the reconciliation workflow; deployment applicability remains evaluated inside the workflow. Regression test verifies both conditions.",
+  "test_evidence": {
+    "historical_replay": "tests/brain-production-reconciliation.test.mjs",
+    "ci_status": "pending on this revision",
+    "production_readback": "not yet proven"
+  }
 }
