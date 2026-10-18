@@ -36,29 +36,9 @@ name: Production Source Snapshot
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'docs/**'
-      - '.agents/**'
-      - 'tests/**'
-      - '.github/**'
-      - 'brain/learning/**'
-      - 'supabase/**'
-      - 'config/delivery-prevention-rules.json'
-      - 'config/powerhouse-agent-delivery-scheduler-v1.json'
-      - 'tools/site-shell/verify-targeted-website-routes.mjs'
-      - 'tools/site-shell/contracts.mjs'
-      - 'tools/site-shell/test-shell-components.mjs'
-      - 'tools/site-shell/live-contract.mjs'
-      - 'tools/site-shell/test-live-contract.mjs'
-      - 'tools/site-shell/production-supersession.mjs'
-      - 'tools/site-shell/standalone-visibility-check.mjs'
-      - 'brain/contracts/production-readback-v1.json'
-      - 'tools/delivery/**'
-      - 'tools/ci/**'
-      - 'brain/policies/**'
-      - 'AGENTS.md'
-      - 'platform/system-map/canonical-system-map.mjs'
-      - 'tools/brain-delivery-system.mjs'
+    # Every main push is reconciled; the applicability gate below decides whether
+    # Netlify deployment is required. Ignoring operational paths here previously
+    # suppressed reconciliation entirely for workflow/Supabase/BRAIN changes.
   workflow_dispatch:
     inputs:
       deploy:
