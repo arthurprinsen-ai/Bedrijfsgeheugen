@@ -6,5 +6,5 @@ test('all main pushes enter production reconciliation', () => {
   const workflow = readFileSync('.github/workflows/production-source-snapshot.yml', 'utf8');
   assert.match(workflow, /push:\\s*\\n\\s*branches: \\[main\\]/);
   assert.doesNotMatch(workflow, /paths-ignore:/);
-  assert.match(workflow, /deriveNetlifyDeploymentApplicability/);
+  assert.match(workflow, /Derive canonical Netlify deployment applicability/);
 });
