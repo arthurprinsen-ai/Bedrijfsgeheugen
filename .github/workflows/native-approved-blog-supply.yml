@@ -81,6 +81,18 @@ jobs:
           import json, os, urllib.request
           token=os.environ['NOTION_TOKEN'].strip(); date=os.environ['DATE']; queue=os.environ['NOTION_QUEUE_ID']
           if not token: raise SystemExit('NOTION_TOKEN ontbreekt')
+          schema_req=urllib.request.Request(
+            f'https://api.notion.com/v1/data_sources/{queue}',
+            headers={'Authorization':'Bearer '+token,'Notion-Version':'2025-09-03'})
+          with urllib.request.urlopen(schema_req,timeout=30) as r:
+            schema=(json.load(r).get('properties') or {})
+          expected={'Titel':'title','Approved Blogtekst':'rich_text',
+                    'Meta-omschrijving':'rich_text','Autopublish toegestaan':'checkbox',
+                    'Publicatiedatum':'date','Dispatch status':'select'}
+          mismatches=[key for key,kind in expected.items()
+                      if (schema.get(key) or {}).get('type')!=kind]
+          if mismatches:
+            raise SystemExit('NOTION_APPROVED_STOCK_SCHEMA_MISMATCH:'+','.join(mismatches))
           body={"filter":{"and":[
             {"property":"Source Mode","select":{"equals":"Approved central article"}},
             {"property":"Dispatch status","select":{"equals":"Pending"}},
