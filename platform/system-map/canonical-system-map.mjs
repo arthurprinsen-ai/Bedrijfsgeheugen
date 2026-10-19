@@ -36,6 +36,30 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'tenant-decision-twin-roadmap-proposal-v1',
+      fingerprint:'powerhouse|portal-v2|decision-twin-roadmap-proposal|v1',
+      label:'Evidence-backed what-if → tenant roadmap review-only proposal',
+      owner:'ONE BRAIN / Portal V2 / Foresight',
+      authority:'existing tenant-specific Portal domain-state and roadmap persisted with authenticated flush',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['three independently referenced historical measurements','bounded nonzero scenario assumption','current authenticated tenant state']),
+      outputs:Object.freeze(['idempotent roadmap draft','review and owner assignment requirement','explicit zero external-provider dispatch']),
+      runtime:Object.freeze({
+        studio:'portal-v2/foresight-scenario-studio.js',
+        builder:'portal-v2/decision-twin-receipt.js',
+        regression:'tests/brain-decision-twin-roadmap-proposal-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-decision-twin-roadmap-proposal.json',
+        documentation:'docs/changes/2026-10-19-decision-twin-roadmap-proposal-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true,noNewBackend:true,realTenantRequired:true,
+        distinctEvidenceRequired:true,simulationNeverRealization:true,
+        approvedExternalProviderNotInferred:true,clientClickRequired:true,
+        domainStateServerAckRequired:true,noSyntheticRevenue:true,
+        protectedMergeAndProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'tenant-decision-twin-receipt-v1',
       fingerprint:'powerhouse|portal-v2|decision-twin-proof-receipt|v1',
       label:'Decision Twin — scenario-to-action-to-outcome evidence receipt',

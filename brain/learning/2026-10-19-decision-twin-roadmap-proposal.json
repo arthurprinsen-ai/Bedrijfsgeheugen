@@ -1,0 +1,33 @@
+{
+  "fingerprint": "powerhouse|decision-twin|scenario-to-reviewable-roadmap|20261019",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "decision-twin-roadmap-proposal-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442",
+  "compiler": {
+    "failure_class": "SCENARIO_HAS_NO_REVIEWABLE_NEXT_STEP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The existing Powerhouse Foresight studio shows scenario arithmetic and proof labels, but cannot persist a specific tenant-grounded hypothesis as a reviewable next step in the already-existing roadmap.",
+  "prevention_rule": "A scenario may only create a deterministic, idempotent, tenant-bound roadmap draft when >=3 independent historic source references, a nonzero bounded what-if, and live authenticated tenant context exist. Never mark a proposal executed, approved, financially realized or connector-enabled.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-decision-twin-roadmap-proposal-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-decision-twin-roadmap-proposal-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-decision-twin-roadmap-proposal-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-decision-twin-roadmap-proposal-v1.test.mjs",
+    "production_readback": "NOT_VERIFIED"
+  }
+}
