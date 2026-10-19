@@ -36,6 +36,28 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'netlify-pinned-composio-session-health-v1',
+      fingerprint:'netlify|composio|pinned-session-health|v1',
+      label:'Netlify authorized session tool exposure and provider-health evidence',
+      owner:'ONE BRAIN / protected production delivery',
+      authority:'GitHub main-only OIDC, Supabase Vault project-scope Composio key, pre-authorized Netlify site',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['active account from same Composio project','two fixed approved Netlify tool slugs','authenticated OIDC read-only provider health']),
+      outputs:Object.freeze(['strict positive tool allowlist','privacy-safe HTTP 400 session diagnostics','no provider write without verified authorization']),
+      runtime:Object.freeze({
+        edge:'supabase/functions/netlify-deploy-bridge/index.ts',
+        regression:'tests/brain-netlify-session-tool-exposure-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-netlify-session-tool-exposure.json',
+        documentation:'docs/changes/2026-10-19-netlify-composio-session-health-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingBridgeOnly:true,oidcRepositoryAndMainOnly:true,
+        vaultProjectAuthorityRequired:true,fixedSiteOnly:true,
+        readOnlyHealthBeforeWrite:true,noCredentialLogging:true,
+        protectedDeploymentAndProviderProofRequired:true
+      })
+    }),
+    Object.freeze({
       id:'netlify-last-live-revision-reconcile-v1',
       fingerprint:'deployment|latest-push-cancels-running-upload|20261019',
       label:'Protected Netlify release reconciliation against last verified production SHA',
