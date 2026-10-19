@@ -241,6 +241,7 @@ jobs:
                 fi
               fi
               echo "::error::NETLIFY_JIT_FALLBACK_UNAVAILABLE http=$bridge_http error=$bridge_error"
+              node tools/delivery/netlify-authority-incident.mjs "$bridge_http" "$bridge_error" "$EXPECTED_SHA" "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
               exit 78
             fi
             fresh_proxy="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.proxy||""))' "$bridge_json")"
