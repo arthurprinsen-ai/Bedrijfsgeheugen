@@ -26,8 +26,6 @@
   },
   "evaluation": {
     "historical_replay": [
-      "2026-10-19T17:30:43Z log `ubuntu26.04-x64` unsupported",
-      "2026-10-19T17:31:24Z same deterministic failure after 3 retries",
       "tests/brain-production-browser-runner-compat-20261019.test.mjs"
     ]
   },
@@ -39,7 +37,11 @@
       "Provider native preview when applicable",
       "Real browser install and visible-page render on deployed production SHA"
     ],
-    "no_fake_green": true
+    "no_fake_green": true,
+    "old_failure_times": [
+      "2026-10-19T17:30:43Z",
+      "2026-10-19T17:31:24Z"
+    ]
   },
   "status": "CANDIDATE_NEEDS_CI_PROTECTED_MERGE_AND_LIVE_READBACK"
 }
