@@ -1,0 +1,29 @@
+/* Portal V2 stage chart: one responsive visual system for mobile/desktop.
+   Container queries prevent five labels from being squeezed into small cards. */
+.v2visual.v2-stage-chart{box-sizing:border-box;container-type:inline-size;min-width:0;max-width:100%;width:100%;overflow:visible!important;touch-action:pan-y}
+.v2-stage-chart *{box-sizing:border-box;min-width:0}
+.v2-stage-chart figcaption{font:800 clamp(.95rem,1.5vw,1.08rem)/1.3 "Bricolage Grotesque",system-ui,sans-serif!important;color:var(--saas-text,#15213b);opacity:1!important;margin:0 0 .55rem!important}
+.v2-stage-now{font-size:.84rem;line-height:1.45;color:var(--saas-text,#15213b);font-weight:700;margin:0 0 .75rem}
+.v2-stage-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;align-items:start}
+.v2-stage-step{position:relative;min-width:0;border:1px solid var(--saas-line,#dde5ef);border-radius:12px;background:#fff;overflow:visible}
+.v2-stage-step[open]{border-color:var(--saas-accent,#4f46e5);background:#f6f7ff}
+.v2-stage-step summary{position:relative;list-style:none;display:flex;align-items:center;gap:.45rem;flex-wrap:wrap;min-height:58px;padding:.65rem;cursor:pointer;touch-action:manipulation;color:#15213b}
+.v2-stage-step summary::-webkit-details-marker{display:none}
+.v2-stage-step summary::marker{content:""}
+.v2-stage-step summary:focus-visible{outline:3px solid var(--saas-accent,#4f46e5);outline-offset:3px;border-radius:10px}
+.v2-stage-step summary:hover{background:#eef3ff;border-radius:11px}
+.v2-stage-number{flex:0 0 26px;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:#e9ecfa;color:#2849bc;font-size:.85rem;font-weight:900}
+.v2-stage-step.is-current .v2-stage-number{background:#ff4f17;color:white}
+.v2-stage-name{flex:1 1 60px;overflow-wrap:anywhere;word-break:normal;font-size:.84rem;font-weight:750;line-height:1.3}
+.v2-stage-you{display:inline-flex;font-size:.7rem;font-weight:800;color:#d24722;border-radius:99px;background:#ffebdf;padding:.2rem .4rem}
+.v2-stage-content{padding:0 .7rem .75rem;color:#3f4b61;font-size:.79rem;line-height:1.5;overflow-wrap:break-word}
+.v2-stage-content p{margin:.35rem 0 0}
+.v2-stage-note{font-size:.76rem;color:#626c80;line-height:1.5;margin:.65rem 0 0}
+.v2-stage-hovertext{display:none}
+@media(hover:hover) and (pointer:fine){
+.v2-stage-step:not([open]):hover{z-index:5;box-shadow:0 10px 25px rgba(40,57,93,.12)}
+.v2-stage-step:not([open]):hover .v2-stage-hovertext{display:block;position:absolute;z-index:6;top:calc(100% + 5px);left:0;width:max(180px,100%);max-width:260px;padding:.55rem .65rem;border-radius:9px;background:#16243e;color:#fff;font-size:.74rem;font-weight:500;line-height:1.4;overflow-wrap:break-word;box-shadow:0 10px 26px rgba(9,22,49,.21)}
+}
+@container (max-width:700px){.v2-stage-chart .v2-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container (max-width:420px){.v2-stage-chart .v2-stage-grid{grid-template-columns:1fr}.v2-stage-chart .v2-stage-step summary{min-height:48px;padding:.55rem .65rem}.v2-stage-chart .v2-stage-step .v2-stage-name{font-size:.88rem}}
+@media(prefers-reduced-motion:reduce){.v2-stage-chart *{scroll-behavior:auto}}
