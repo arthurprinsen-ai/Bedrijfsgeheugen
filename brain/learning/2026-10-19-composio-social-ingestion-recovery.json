@@ -1,0 +1,36 @@
+{
+  "fingerprint": "social-provider-metrics-20261019-canonical-closed-loop-recovery",
+  "compiler": {
+    "failure_class": "CONNECTOR_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 11,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-error-learning-contract.test.mjs"
+    ]
+  },
+  "problem": "Social metric snapshots stopped on 2026-10-08; historical Buffer telemetry was retired without a working authorized direct provider reader.",
+  "evidence": {
+    "instagram_business_insights_available": true,
+    "instagram_provider_identity": "bedrijfsgeheugen.nl",
+    "linkedin_personal_reaction_count_available": true,
+    "linkedin_company_org_scope_blocked": "403 r_organization_social",
+    "social_learning_evaluation_last_observed": "2026-09-19"
+  },
+  "remediation": "Scheduled read-only Composio social insights into the existing social_posts/social_metric_snapshots with exact owned account validation and canonical evidence. Never treat missing impressions, revenue, likes or reactions as zero.",
+  "prevention": [
+    "bounded read-only provider actions; no publishing tool can be called by the adapter",
+    "canonical provider account identity verified; wrong Mira/personal Instagram excluded",
+    "provider metrics are observed, not estimated or fabricated",
+    "each source has independent partial failure, observed readback and safe 6-hour retry",
+    "immutable daily provider outcome evidence in Powerhouse runtime events",
+    "protected tests, source deployment, scheduler readback before terminal status"
+  ],
+  "status": "CANDIDATE_REQUIRES_PRODUCTION_PROOF"
+}
