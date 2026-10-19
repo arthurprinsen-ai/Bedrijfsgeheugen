@@ -30,6 +30,6 @@
   "test_evidence": {
     "failed_live_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39301488760",
     "contract_test": "tests/brain-native-blog-notion-title-contract-20261019.test.mjs",
-    "production_not_notion_verified": true
+    "notion_stock_verified": false
   }
 }
