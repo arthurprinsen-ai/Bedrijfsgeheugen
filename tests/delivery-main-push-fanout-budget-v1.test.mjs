@@ -12,14 +12,15 @@ function eventBlock(source,event){
   return next>=0 ? tail.slice(0,next) : tail.split('\njobs:')[0];
 }
 
-test('production deploy and readback skip closure-only main pushes', () => {
-  for(const name of ['production-source-snapshot.yml','production-release-readback.yml']){
-    const push=eventBlock(read(name),'push');
-    assert.match(push,/paths-ignore:/);
-    for(const path of ["docs/**",".agents/**","tests/**",".github/**","brain/learning/**","supabase/**","tools/ci/**"]){
-      assert.ok(push.includes(path), name+' must ignore '+path+' when it is the only change');
-    }
-  }
+test('snapshot reconciles every main push while Netlify applicability avoids closure-only deployment', () => {
+  const snapshot=read('production-source-snapshot.yml');
+  const push=eventBlock(snapshot,'push');
+  assert.match(push,/branches: \\[main\\]/);
+  assert.doesNotMatch(push,/paths-ignore:/);
+  assert.match(snapshot,/deriveNetlifyDeploymentApplicability/);
+  assert.match(snapshot,/steps\\.scope\\.outputs\\.deployment_required == 'true'/);
+  const readback=read('production-release-readback.yml');
+  assert.match(readback,/deriveNetlifyDeploymentApplicability/);
 });
 
 test('website and SEO post-merge checks are domain scoped', () => {
