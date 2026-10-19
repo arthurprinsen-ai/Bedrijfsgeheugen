@@ -114,18 +114,45 @@ async function getProxy() {
   if (!sessionRes.ok) {
     // Do not print raw provider body: it can contain account or user identifiers.
     // Categorize validation failures without exposing project credentials.
-    const summary = String(sessionRaw || "").toLowerCase();
-    const reason = /tool[^\\n]{0,60}(?:slug|invalid|unknown)/i.test(summary)
-      ? "TOOL_ALLOWLIST_INVALID"
-      : /connected.account|connected_account/.test(summary)
+    // Interpret *fields* independently. The former /tool...invalid/ regex
+    // conflated toolkit names with a tool allowlist even after we removed the
+    // allowlist. No free-text response body or user/account/token reaches logs.
+    let validation: any = null;
+    try { validation = JSON.parse(sessionRaw); } catch {}
+    const providerText = String(sessionRaw || "").toLowerCase().slice(0, 12000);
+    const hasField = (word: string) =>
+      new RegExp("(^|[^a-z0-9_])" + word + "([^a-z0-9_]|$)", "i").test(providerText);
+    const details = Array.isArray(validation?.detail) ? validation.detail
+      : Array.isArray(validation?.errors) ? validation.errors : [];
+    const reportedField = ["connected_accounts","toolkits","tools","user_id","auth_configs","search","execute"]
+      .find((field) => details.some((entry: any) => {
+        const segments = Array.isArray(entry?.loc) ? entry.loc
+          : Array.isArray(entry?.path) ? entry.path : [];
+        return segments.some((part: any) => String(part) === field);
+      })) || null;
+    const signals = {
+      connected_accounts: /connected[_ .-]?accounts?/i.test(providerText),
+      toolkit: hasField("toolkit") || hasField("toolkits"),
+      tool_slug: /tool[_ .-]?slug|tool allowlist|invalid tools/i.test(providerText),
+      user_id: /user[_ .-]?id/i.test(providerText),
+      auth_config: /auth[_ .-]?config/i.test(providerText),
+    };
+    const category = reportedField === "connected_accounts" || signals.connected_accounts
       ? "CONNECTED_ACCOUNT_CONSTRAINT"
-      : /user_id|user id/.test(summary)
-      ? "USER_ID_CONSTRAINT"
-      : /toolkit/.test(summary)
+      : reportedField === "toolkits" || signals.toolkit
       ? "TOOLKIT_CONSTRAINT"
+      : reportedField === "tools" || signals.tool_slug
+      ? "TOOL_ALLOWLIST_CONSTRAINT"
+      : reportedField === "user_id" || signals.user_id
+      ? "USER_ID_CONSTRAINT"
+      : reportedField === "auth_configs" || signals.auth_config
+      ? "AUTH_CONFIG_CONSTRAINT"
       : "SESSION_REQUEST_INVALID";
     console.error("NETLIFY_COMPOSIO_SESSION_VALIDATION", JSON.stringify({
-      http: sessionRes.status, category: reason,
+      http: sessionRes.status,
+      category, field: reportedField,
+      response_format: validation ? "json" : "non_json",
+      signals,
     }));
     throw new Error("composio session create " + sessionRes.status);
   }
