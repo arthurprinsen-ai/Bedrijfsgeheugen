@@ -23,23 +23,24 @@ function valid(value,schema) {
   return typeof value===schema.type&&(!schema.enum||schema.enum.includes(value));
 }
 
-export async function requestForecastPlan({apiKey,model,schema,payload,instructions='',fetchImpl=fetch}) {
+export async function requestForecastPlan({apiKey,model,schema,payload,instructions='',toolName='forecast_plan',timeoutMs=90000,maxOutputTokens=6000,fetchImpl=fetch}) {
+  if(!['forecast_plan','calibration'].includes(toolName))throw new Error('AI_TOOL_CONFIGURATION_INVALID');
   if(!apiKey||!model)throw new Error('AI_CONFIGURATION_REQUIRED');
   const response=await fetchImpl('https://api.openai.com/v1/responses',{
     method:'POST',headers:{Authorization:`Bearer ${apiKey}`,'content-type':'application/json'},
-    signal:AbortSignal.timeout(90000),
+    signal:AbortSignal.timeout(Math.max(1,Math.min(90000,timeoutMs))),
     body:JSON.stringify({model,store:false,instructions,
       input:[{role:'user',content:[{type:'input_text',text:JSON.stringify(payload)}]}],
-      reasoning:{effort:'minimal'},max_output_tokens:6000,
-      tools:[{type:'function',name:'forecast_plan',description:'Evidence-bound predictive market forecasts',strict:true,parameters:schema}],
-      tool_choice:{type:'function',name:'forecast_plan'},parallel_tool_calls:false})
+      reasoning:{effort:'minimal'},max_output_tokens:Math.min(6000,maxOutputTokens),
+      tools:[{type:'function',name:toolName,description:'Evidence-bound predictive market forecasts',strict:true,parameters:schema}],
+      tool_choice:{type:'function',name:toolName},parallel_tool_calls:false})
   });
   // Never persist raw provider error text or credentials in shared health receipts.
   if(!response.ok)throw new Error(`AI_PROVIDER_REQUEST_FAILED:${response.status}`);
   const body=await response.json().catch(()=>{throw new Error('AI_RESPONSE_INVALID');});
   if(body.status!=='completed')throw new Error('AI_RESPONSE_INCOMPLETE');
   const calls=(body.output||[]).filter(item=>item.type==='function_call');
-  if(calls.length!==1||calls[0].name!=='forecast_plan')throw new Error('AI_TOOL_OUTPUT_MISSING');
+  if(calls.length!==1||calls[0].name!==toolName)throw new Error('AI_TOOL_OUTPUT_MISSING');
   let plan;try{plan=JSON.parse(calls[0].arguments);}catch{throw new Error('AI_TOOL_OUTPUT_INVALID');}
   if(!valid(plan,schema))throw new Error('AI_TOOL_OUTPUT_INVALID');
   return plan;

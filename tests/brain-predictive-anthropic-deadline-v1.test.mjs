@@ -9,13 +9,13 @@ const transport=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predict
 const src=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predictive-engine/index.ts'),'utf8');
 
 test('real provider tool inference retains a finite timeout below the 120s scheduled HTTP budget',()=>{
- assert.match(transport,/signal:AbortSignal\.timeout\(90000\)/);
- assert.match(transport,/max_output_tokens:6000/);
+ assert.match(transport,/Math\.min\(90000,timeoutMs\)/);
+ assert.match(transport,/max_output_tokens:Math\.min\(6000,maxOutputTokens\)/);
  assert.doesNotMatch(src,/AbortSignal\.timeout\(45000\)/);
 });
 test('deadline change preserves approved OpenAI-only route and strict forecast evidence guards',()=>{
  assert.match(src,/gov\.provider!=='OpenAI'/);
- assert.match(transport,/tool_choice:\{type:'function',name:'forecast_plan'\}/);
+ assert.match(transport,/tool_choice:\{type:'function',name:toolName\}/);
  assert.match(src,/generationProvider='OpenAI'/);
  assert.match(src,/uniqueSources\.size<minRefs/);
  assert.match(src,/authorizePowerhouseScheduler\(req\)/);

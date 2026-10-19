@@ -18,9 +18,9 @@ test('model context is bounded and retains two independent public source types',
 });
 test('the forced governed tool keeps a bounded four-forecast schema and sufficient response budget',()=>{
  assert.match(src,/maxItems:4/);
- assert.match(transport,/max_output_tokens:6000/);
- assert.match(transport,/tool_choice:\{type:'function',name:'forecast_plan'\}/);
- assert.match(transport,/signal:AbortSignal\.timeout\(90000\)/);
+ assert.match(transport,/max_output_tokens:Math\.min\(6000,maxOutputTokens\)/);
+ assert.match(transport,/tool_choice:\{type:'function',name:toolName\}/);
+ assert.match(transport,/Math\.min\(90000,timeoutMs\)/);
 });
 test('missing output fails closed with provider stop reason, content types and token count',()=>{
  assert.match(transport,/AI_TOOL_OUTPUT_MISSING/);

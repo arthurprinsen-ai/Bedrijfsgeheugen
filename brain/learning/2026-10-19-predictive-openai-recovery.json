@@ -2,9 +2,9 @@
   "date": "2026-10-19",
   "obligation": "predictive-openai-recovery-20261019",
   "fingerprint": "predictive-openai-recovery-20261019",
-  "root_cause": "Canonical predictive runtime remained hardcoded to Anthropic claude-sonnet-5 after user-directed OpenAI replacement. Actual production returned AI_400 credit balance; source still forwarded internal forecasts and free-text revenue learning to its old provider.",
-  "intervention": "Replace only existing approved canonical public-market use case with strict OpenAI Responses and explicit public-market payload; no alternate provider, scheduler or customer activation.",
-  "prevention": "Provider migration must cover live engine, governance, strict response validation, public-only egress, current regressions and exact protected-main runtime readback together. Never recommend topping up a retired provider as completion of user-requested replacement. Preserve validated opaque SHA-256 evidence identifiers byte-for-byte; contact redaction applies only to prose.",
+  "root_cause": "Canonical predictive runtime remained hardcoded to Anthropic claude-sonnet-5 after user-directed OpenAI replacement. Actual production returned AI_400 credit balance; source still forwarded internal forecasts and free-text revenue learning to its old provider. Calibrator uses the same governance row, so an engine-only migration would invalidate its provider gate.",
+  "intervention": "Replace only existing approved canonical public-market use case with strict OpenAI Responses and explicit public-market payload; no alternate provider, scheduler or customer activation. Migrate both consumers atomically; calibrator uses opaque reference tokens with local source restoration, strict calendar dates, two actual refs, a total 90s deadline and no unverified negative outcome/revenue influence. Read-only aggregate proved276 person and27 public due obligations; service-only queue projection filters public scopes before bounded batch, without closing or sending person work.",
+  "prevention": "Provider migration must cover live engine, governance, strict response validation, public-only egress, current regressions and exact protected-main runtime readback together. Never recommend topping up a retired provider as completion of user-requested replacement. Preserve validated opaque SHA-256 evidence identifiers byte-for-byte; contact redaction applies only to prose. Scope shared transport delivery to both consumers; classify adaptive routing as backend control-plane without skipping R4/security/shared checks.",
   "compiler": {
     "failure_class": "PREDICTIVE_RETIRED_PROVIDER_CREDIT_FAILURE",
     "scope": "BACKEND",
@@ -15,21 +15,38 @@
   "prevention_rule": "PREDICTIVE_OPENAI_PUBLIC_MARKET_V1",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-predictive-openai-20261019.test.mjs"
+      "tests/brain-predictive-openai-20261019.test.mjs",
+      "tests/brain-predictive-openai-calibration-20261019.test.mjs"
     ],
     "shadow": [
-      "tests/brain-predictive-openai-20261019.test.mjs"
+      "tests/brain-predictive-openai-20261019.test.mjs",
+      "tests/brain-predictive-openai-calibration-20261019.test.mjs"
     ],
     "canary": [
-      "tests/brain-predictive-openai-20261019.test.mjs"
+      "tests/brain-predictive-openai-20261019.test.mjs",
+      "tests/brain-predictive-openai-calibration-20261019.test.mjs"
     ]
   },
   "test_evidence": {
     "red_observed": true,
-    "focused_tests_passed": 38,
+    "focused_tests_passed": 43,
     "production_verified": false,
     "delivery_and_scope_tests_passed": 104,
-    "independent_review": "Fixed digit-heavy SHA evidence identifier corruption; regression observed red then green; no other important findings."
+    "independent_review": "Two scoped reviews; fixed raw evidence-reference privacy leak and invalid normalized calendar date; 11 transport/calibration tests pass, no remaining important findings.",
+    "inherited_legacy_failures": [
+      "forecast calibrator never calls catch on a Supabase query builder",
+      "error-path health write remains best-effort and original 500 contract is preserved",
+      "known external AI provider exhaustion degrades without transport 500",
+      "non-provider runtime failures remain fail closed",
+      "tests/supabase-powerhouse-forecast-calibrator-hourly.test.mjs (references absent retired migration filename)"
+    ],
+    "inherited_legacy_baseline_same_failures": true,
+    "local_backend_dependency_unavailable": "brain-ai-usage-attribution requires @netlify/blobs; local worktree lacks package cache; native Required backend remains authoritative",
+    "due_scope_counts": {
+      "person": 276,
+      "market": 26,
+      "regulation": 1
+    }
   },
   "status": "CODE_CANDIDATE_REQUIRES_PROTECTED_DELIVERY",
   "evidence_urls": [

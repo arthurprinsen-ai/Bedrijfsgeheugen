@@ -39,3 +39,9 @@ test('opaque hashed evidence keys survive contact redaction unchanged',()=>{
  const payload=adapter.publicMarketPayload({date:'2026-10-19',signals:[{signal_key:key,source_type:'external_news',entity_scope:'market',evidence:{}}]});
  assert.equal(payload.signals[0].signal_key,key);
 });
+test('shared transport binds the exact calibration tool with the smaller budget',async()=>{
+ let sent;
+ const verdict=await adapter.requestForecastPlan({apiKey:'test',model:'gpt-5-mini',schema:{type:'object',additionalProperties:false,properties:{},required:[]},payload:{},toolName:'calibration',maxOutputTokens:1400,timeoutMs:1000,fetchImpl:async(url,init)=>{sent=JSON.parse(init.body);return {ok:true,json:async()=>({status:'completed',output:[{type:'function_call',name:'calibration',arguments:'{}'}]})};}});
+ assert.deepEqual(verdict,{});assert.equal(sent.tools[0].name,'calibration');
+ assert.equal(sent.tool_choice.name,'calibration');assert.equal(sent.max_output_tokens,1400);
+});

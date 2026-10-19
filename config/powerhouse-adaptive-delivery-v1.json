@@ -183,14 +183,18 @@
       "id": "predictive-openai-public-market",
       "paths": [
         "supabase/functions/powerhouse-predictive-engine/",
-        "tests/brain-predictive-openai-20261019.test.mjs"
+        "tests/brain-predictive-openai-20261019.test.mjs",
+        "supabase/functions/powerhouse-forecast-calibrator/",
+        "tests/brain-predictive-openai-calibration-20261019.test.mjs"
       ],
       "tests": [
         "tests/brain-predictive-openai-20261019.test.mjs",
         "tests/brain-predictive-bounded-tool-context-v1.test.mjs",
         "tests/brain-predictive-postgrest-batching-v1.test.mjs",
         "tests/brain-predictive-anthropic-deadline-v1.test.mjs",
-        "tests/brain-predictive-approved-fallback-v1.test.mjs"
+        "tests/brain-predictive-approved-fallback-v1.test.mjs",
+        "tests/brain-predictive-openai-calibration-20261019.test.mjs",
+        "tests/supabase-edge-runtime-scope-v1.test.mjs"
       ]
     }
   ],
