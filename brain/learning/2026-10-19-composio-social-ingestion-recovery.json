@@ -32,5 +32,6 @@
     "immutable daily provider outcome evidence in Powerhouse runtime events",
     "protected tests, source deployment, scheduler readback before terminal status"
   ],
-  "status": "CANDIDATE_REQUIRES_PRODUCTION_PROOF"
+  "status": "CANDIDATE_REQUIRES_PRODUCTION_PROOF",
+  "root_cause": "Legacy Buffer-owned social telemetry stopped, and no verified, scheduled replacement ingested real business Instagram and personal LinkedIn provider metrics into the existing canonical snapshot store."
 }
