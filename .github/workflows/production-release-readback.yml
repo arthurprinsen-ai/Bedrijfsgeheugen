@@ -269,7 +269,7 @@ jobs:
           exit 1
       - name: Install production browser verifier
         if: steps.scope.outputs.browser_required == 'true'
-        run: PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+        run: PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
       - id: routes
         name: Verify affected production routes
         if: steps.scope.outputs.browser_required == 'true'
