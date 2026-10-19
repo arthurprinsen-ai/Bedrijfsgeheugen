@@ -43,10 +43,17 @@ on:
     # Every main push is reconciled; the applicability gate below decides whether
     # Netlify deployment is required. Ignoring operational paths here previously
     # suppressed reconciliation entirely for workflow/Supabase/BRAIN changes.
+  schedule:
+    - cron: '35 6 * * *'
   workflow_dispatch:
     inputs:
       deploy:
         description: Deploy this exact source to Netlify production
+        required: false
+        type: boolean
+        default: false
+      authority_probe:
+        description: Check OIDC-authorized Netlify backup transport without deploying
         required: false
         type: boolean
         default: false
@@ -97,6 +104,31 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${applicability.deploymentRequired}\n`);
           console.log(JSON.stringify(applicability,null,2));
           NODE
+      - name: Probe OIDC-authorized Netlify backup transport (no deploy)
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.authority_probe == true)
+        env:
+          BRIDGE_URL: https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge
+        run: |
+          set -euo pipefail
+          request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=bedrijfsgeheugen-netlify-deploy-bridge"
+          token_json="$(curl --fail-with-body --silent --show-error --max-time 20 \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
+          oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
+          test -n "$oidc_token"
+          response_file="$(mktemp)"
+          bridge_http="$(curl --silent --show-error --max-time 40 -o "$response_file" -w '%{http_code}' \
+            -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' \
+            --data '{"action":"health"}' "$BRIDGE_URL" || true)"
+          probe_ok="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.ok===true))}catch{process.stdout.write("false")}' "$response_file")"
+          failure_code="$(node -e 'try{const x=JSON.parse(require("fs").readFileSync(process.argv[1],"utf8"));process.stdout.write(String(x.error||"none").replace(/[^a-z0-9_]/gi,"").slice(0,90))}catch{process.stdout.write("response_invalid")}' "$response_file")"
+          echo "NETLIFY_BACKUP_AUTHORITY_HEALTH http=$bridge_http healthy=$probe_ok error=$failure_code"
+          if [ "$bridge_http" != "200" ] || [ "$probe_ok" != "true" ]; then
+            echo "::error::NETLIFY_BACKUP_AUTHORITY_UNAVAILABLE http=$bridge_http error=$failure_code"
+            printf '### Netlify backup authority unavailable\nHTTP: %s\nError: %s\nIncident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447\n' "$bridge_http" "$failure_code" >> "$GITHUB_STEP_SUMMARY"
+            exit 78
+          fi
+          echo "Netlify backup authority reachable via OIDC; no Netlify build or production mutation requested."
+          echo "### Netlify OIDC backup authority health: OK (not a deploy proof)" >> "$GITHUB_STEP_SUMMARY"
       - name: Record Netlify deployment not applicable
         if: steps.scope.outputs.deployment_required != 'true'
         run: echo "Netlify deployment is not applicable for this source change; provider mutation and browser proof are skipped."
