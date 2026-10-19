@@ -1,4 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
 import {incompleteStructuredArtifactReason,largerArtifactTokenBudget} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
@@ -585,6 +586,17 @@ Deno.serve(async (req) => {
         }) || null
       : pickRecommendation(recs,pending.channel);
     if (pending.channel==='instagram_company' && (!instagramWinner || !recommendation)) throw new Error('INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED');
+    let recentCompanyPosts:string[]=[];
+    if(pending.channel==='linkedin_company'){
+      const {data:publishedHistory,error:historyError}=await db.from('powerhouse_content_artifacts')
+        .select('run_date,body').eq('channel','linkedin_company').eq('status','published')
+        .order('run_date',{ascending:false}).limit(28);
+      if(historyError)throw new Error('COMPANY_EDITORIAL_HISTORY_UNAVAILABLE:'+historyError.message);
+      const current=Date.parse(runDate+'T00:00:00Z');
+      recentCompanyPosts=(publishedHistory||[])
+        .filter((p:any)=>{const days=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;return days>=1&&days<=21;})
+        .map((p:any)=>clean(p.body)).filter(Boolean);
+    }
     let companyTrackingUrl:string|null=null;
     if (pending.channel==='linkedin_company') {
       const key=`li-company-${runDate.replaceAll('-','')}`;
@@ -605,17 +617,17 @@ Deno.serve(async (req) => {
         ? `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn als herkenbare observatie uit het dagelijks leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. Gebruik source_text alleen als feitelijke inspiratie. Gebruik GEEN ik/mijn/mij/me-vorm, suggereer niet dat Arthur dit zelf heeft meegemaakt en verzin geen persoonlijke ervaring. Toegestaan: telefoon/schermtijd, huis, vervoer, boodschappen, sport, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Schrijf menselijk, concreet en met lichte humor waar passend.`
         : `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`)
       : pending.channel==='linkedin_company'
-      ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
+      ? 'Schrijf een direct publiceerbare Nederlandstalige LinkedIn-bedrijfspost voor Bedrijfsgeheugen, voor de eigenaar of directeur van een MKB-bedrijf. Tussen 90 en 145 woorden; maximaal 1.450 tekens. Begin met één herkenbare, concrete ondernemersfrictie uit bijvoorbeeld een verloren offerte, foutieve planning, trage facturatie, ontbrekende kennis, achterblijvende klantopvolging of onvoorspelbare cashflow. Toon in gewone spreektaal het gevolg (geld, tijd, risico, klant), een haalbare eerste stap en waarom verbonden bedrijfskennis, bestaande systemen en dagelijkse sturing helpen. De lezer moet zich herkennen en weten wat hij morgen anders kan doen. Positioneer het portaal of Powerhouse alleen waar relevant en aantoonbaar; nooit als intern systeemrapport of als losse AI-tool. GEEN beleidsmemo met kopjes Signaal/Context/Gevolg/Beslissing/Actie/Resultaat/Leren, geen checklist voor het MT, geen marketingjargon, geen technische AI-release, geen niet-onderbouwde claim en geen verzonnen klantcase. Kies een andere invalshoek dan recent_company_posts. Hergebruik een subsidie, bronbericht, sector of nieuwsgebeurtenis uit die posts nooit als hoofdonderwerp binnen 21 dagen. Externe actualiteit is hoogstens ondersteunend bewijs bij een breed ondernemersprobleem; een subsidieregeling is geen hoofdproduct. Neem de tracking_url exact één keer op en sluit af met een nuttige uitnodiging of natuurlijke vraag. Gebruik een warme, geloofwaardige, menselijke bedrijfsstem, geen Arthur-ik-verhaal. Vertrouw alleen op aangeleverde feitelijke evidence.'
       : pending.channel==='blog' ? BLOG_READER_READY_PROMPT
       : pending.channel==='instagram_company' ? 'Mira verbeeldt één canoniek PH-P ondernemersprobleem. Verplichte caption: herkenbare scène, oorzaak, potentieel gevolg, concrete portaalcapaciteit/actie/eigenaar, meetpunt en menselijke pointe. Gebruik uitsluitend mira_entrepreneur_context, verzin geen klantresultaat, en claim geen onbewezen portalfeature. Laat in de bijschrifttekst zien wat het portaal doet; het beeld blijft één echte Mira-scène, geen corporate tekstkaart.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
     const editorialSystem = pending.channel==='linkedin_personal'
       ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: 130–200 woorden; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; eindig met één oprechte open vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
-      : system + ' ' + STEERING_BRAND_CONTRACT;
+      : pending.channel==='linkedin_company' ? system : system + ' ' + STEERING_BRAND_CONTRACT;
     stage = 'artifact-ai';
     const miraBusinessProblem=pending.channel==='instagram_company'?selectMiraProblem(runDate):null;
     const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraBusinessProblem?{...miraProductionEvidence(miraBusinessProblem),canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
-      tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+      tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
@@ -697,6 +709,20 @@ Deno.serve(async (req) => {
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
       if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
+      let editorialViolations=companyEditorialViolations(bodyText,{recentPosts:recentCompanyPosts});
+      if(editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
+        const revision=await callAI(apiKey,gov.model_id,editorialSystem+
+          ' HERSCHRIJF VOOR PUBLICATIE: afgekeurd op '+editorialViolations.map((v:any)=>v.code).join(', ')+
+          '. Maak één geheel nieuwe zakelijke LinkedIn-post van 100–135 woorden en maximaal 1.450 tekens: herkenbaar ondernemersprobleem, zakelijk gevolg, concreet eerste advies, begrijpelijke bedrijfswaarde. Geen rapportkoppen, technisch jargon of eerder onderwerp. Voeg tracking_url exact één keer toe. Geen verzonnen bewijs.',
+          {...artifactInput,rejected_draft:bodyText,editorial_rejection_codes:editorialViolations.map((v:any)=>v.code)},artifactTool,2400);
+        let revised=compactLinkedInCommentary(clean(revision?.body));
+        if(revised && companyTrackingUrl && !revised.includes(companyTrackingUrl)) revised+=`\n\n${companyTrackingUrl}`;
+        const revisedViolations=companyEditorialViolations(revised,{recentPosts:recentCompanyPosts});
+        if(revised && revisedViolations.length===0) {
+          bodyText=revised;artifact={...artifact,...revision,body:revised};editorialViolations=[];
+        }
+      }
+      if(editorialViolations.length)throw new Error('COMPANY_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map((v:any)=>v.code).join(','));
     }
     const finalTextHash = await digest(bodyText);
     const personalEvidence = pending.channel==='linkedin_personal' ? {...(personalSource.evidence||{}),content_id:clean(personalSource.evidence?.content_id)||`${runDate}:linkedin_personal`,calendar_date:runDate,
@@ -721,7 +747,7 @@ Deno.serve(async (req) => {
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
+      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='linkedin_company'?COMPANY_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,

@@ -1,4 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
@@ -228,7 +229,26 @@ Deno.serve(async (req) => {
     if (ruleError) return json({ ok: false, can_generate: false, can_publish: false, error: 'RULE_CHECK_FAILED', channel }, 503);
     genericBlockers = (violations || []).filter((v: any) => v.violation);
   }
-  const blockers = [...identityBlockers, ...genericBlockers];
+  let companyEditorialBlockers:any[]=[];
+  if(channel==='linkedin_company'){
+    const reviewedDate=/^\d{4}-\d{2}-\d{2}$/.test(clean(body.run_date))
+      ? clean(body.run_date) : new Date().toISOString().slice(0,10);
+    const {data:previous,error:historyError}=await db.from('powerhouse_content_artifacts')
+      .select('run_date,body').eq('channel','linkedin_company').eq('status','published')
+      .order('run_date',{ascending:false}).limit(28);
+    if(historyError)return json({ok:false,can_generate:false,can_publish:false,error:'COMPANY_EDITORIAL_HISTORY_UNAVAILABLE',channel},503);
+    const current=Date.parse(reviewedDate+'T00:00:00Z');
+    const recentPosts=(previous||[]).filter((p:any)=>{
+      const ageDays=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;
+      return ageDays>=1&&ageDays<=21;
+    }).map((p:any)=>clean(p.body)).filter(Boolean);
+    companyEditorialBlockers=companyEditorialViolations(text,{recentPosts});
+    if(body.editorial_policy_version!==COMPANY_EDITORIAL_POLICY)
+      companyEditorialBlockers.unshift({code:'COMPANY_EDITORIAL_POLICY_OUTDATED',message:'Canoniek bedrijfspagina-redactiecontract ontbreekt.'});
+    if(body.final_copy_approved!==true)
+      companyEditorialBlockers.unshift({code:'COMPANY_EDITORIAL_APPROVAL_MISSING',message:'Exacte bedrijfspagina-tekst is niet redactioneel goedgekeurd.'});
+  }
+  const blockers = [...identityBlockers, ...genericBlockers, ...companyEditorialBlockers];
   const pass = blockers.length === 0;
   return json({
     ok: pass,
