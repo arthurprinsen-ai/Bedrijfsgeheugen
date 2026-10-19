@@ -2148,3 +2148,13 @@ export const PREDICTIVE_MIGRATION_IDENTITY_PARITY_V1=Object.freeze({
  regression:'tests/brain-predictive-migration-history-20261019.test.mjs',
  learning:'brain/learning/2026-10-19-predictive-migration-identity-parity.json'
 });
+
+export const PREDICTIVE_UNCERTAINTY_ACK_V1=Object.freeze({
+ fingerprint:'predictive-uncertainty-write-ack-timeout-20261019',
+ persistence:'supabase/functions/powerhouse-forecast-calibrator/persist-uncertainty.mjs',
+ refresh:'supabase/migrations/20261019210359_predictive_uncertainty_persistence_ack.sql',
+ openAndSameRevisionRequired:true,acknowledgedReadbackRequired:true,
+ maxPersistenceAttempts:2,modelRetry:false,unchangedRowsFilteredBeforeUpsert:true,
+ regression:'tests/brain-predictive-uncertainty-persistence-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-uncertainty-write-ack.json'
+});
