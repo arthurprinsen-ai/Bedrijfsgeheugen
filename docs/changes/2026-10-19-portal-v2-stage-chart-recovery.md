@@ -13,3 +13,6 @@ De iPhone-screenshots tonen overlappende labels in de vijf-stadia-kaarten, CMMI 
 
 ## Acceptatie en status
 Vóór groen: Required CI, CodeQL, build-parity, geverifieerde beschermde merge, Netlify productieverwijzing naar exact commit en visuele readback op iPhone-breedtes. Zonder deze bewijzen is dit code onder beoordeling en geen live-fix.
+
+## Aanvullende bevinding: exact screenshot-pad
+De screenshotlabels `Handwerk`, `Geordend`, `bovenste 25%`, `Late majority` en CMMI worden daadwerkelijk gegenereerd door `portal-v2/modules/legacy-overview-complete.js`. Dit tweede renderpad is daarom in dezelfde PR gerepareerd: de oude SVG/rail blijft in de DOM voor bestaande broncontracten, maar wordt visueel vervangen door native `details/summary`-fases met containerqueries en concrete uitleg. De bestaande test `tests/portal-v2-legacy-interactive-graphs.test.mjs` is aangepast aan de nieuwe semantische interactie en behoudt het oude databroncontract. Browseracceptatie na merge blijft verplicht.
