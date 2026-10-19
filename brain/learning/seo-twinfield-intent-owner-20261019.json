@@ -1,0 +1,29 @@
+{
+  "fingerprint": "seo|twinfield|canonical-intent-owner|2026-10-19",
+  "compiler": {
+    "failure_class": "SEO_INTENT_OWNER_VARIANT_OMITTED"
+  },
+  "root_cause": "Plural and reversed Twinfield search terms absent from canonical intent-owner projection, risking duplicate page recommendations.",
+  "prevention_rule": "Resolve plural and reversed Twinfield variants to existing /twinfield-koppeling money page before suggesting new pages.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "input": "twinfield koppelingen",
+        "expected_owner": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
+        "status": "pending CI verification"
+      },
+      {
+        "input": "koppeling twinfield",
+        "expected_owner": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
+        "status": "pending CI verification"
+      }
+    ]
+  },
+  "evidence": {
+    "source": "GitHub PR #4443 canonical intent owners update",
+    "commit": "06c66ebec27fbf0176f548818c82c4a6970b18ff",
+    "ci": "pending",
+    "production_readback": "not yet performed"
+  },
+  "outcome": "No conversion, order, or revenue uplift claimed; validate after protected merge."
+}
