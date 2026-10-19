@@ -3,7 +3,7 @@ import {test} from 'node:test';
 import {readFileSync} from 'node:fs';
 
 const source=readFileSync(new URL('../.github/workflows/portal-v2-production-dom-readback.yml',import.meta.url),'utf8');
-const line=source.split('\n').find(s=>s.includes('supabase/functions/netlify-deploy-bridge/index.ts) ;;'));
+const line=source.split('\n').find(s=>s.includes('supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;'));
 const allowed=line?.trim().replace(/^case\s+\S+\s+in\s*/,'').replace(/\)\s*;;\s*$/,'').split('|')||[];
 const singleFileAllowed=file=>allowed.some(pattern=>
  pattern.endsWith('/*')?file.startsWith(pattern.slice(0,-1)):file===pattern
@@ -12,8 +12,11 @@ const singleFileAllowed=file=>allowed.some(pattern=>
 test('exact deployment bridge (not all Supabase runtime) is allowable after published portal SHA',()=>{
  assert.ok(line,'scope whitelist must have exact bridge path');
  assert.equal(singleFileAllowed('supabase/functions/netlify-deploy-bridge/index.ts'),true);
+ assert.equal(singleFileAllowed('brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json'),true);
+ assert.equal(singleFileAllowed('platform/system-map/canonical-system-map.mjs'),true);
  for(const other of [
   'supabase/functions/portal-state-eu/index.ts',
+  'brain/skills/other-agent-runtime.json',
   'supabase/functions/netlify-deploy-bridge/other.ts',
   'portal-v2/decision-twin-receipt.js',
   'portal-v2/foresight-scenario-studio.js',
