@@ -1,0 +1,32 @@
+{
+  "fingerprint": "daily-publication-provider-truth-20261019-v2",
+  "compiler": {
+    "failure_class": "FALSE_SUCCESS",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "prevention_rule": "When LinkedIn provider create returns an immutable URN, a permission-limited subsequent GET must never relaunch the post or downgrade provider side-effect existence. A failed or blocked Instagram job retains the exact media review error and action across routine sync. Canonical proof health alone defines daily terminality; no synthetic successes.",
+  "regression_contract": "daily-publication-provider-truth-20261019-v2",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-provider-truth-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-publication-provider-truth-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-provider-truth-20261019.test.mjs"
+    ]
+  },
+  "root_cause": "Legacy watchdog treated missing optional GET as a missing publication and sync replaced specific Mira media rejection diagnostics with generic dispatch instructions.",
+  "evidence": {
+    "production_replay": "2026-10-19 four-channel proof gate returns 3 terminal, 1 blocked. Verified watchdog mutation count 0 for previously published personal LinkedIn provider URN; Instagram remains unproven.",
+    "migration": "supabase/migrations/20261019215000_publication_provider_proof_reliability_v2.sql"
+  },
+  "canonical_eligible": false,
+  "tests": [
+    "tests/brain-publication-provider-truth-20261019.test.mjs"
+  ]
+}
