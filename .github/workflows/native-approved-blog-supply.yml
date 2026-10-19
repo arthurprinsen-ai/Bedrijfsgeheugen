@@ -99,28 +99,14 @@ jobs:
         if: steps.stock.outputs.covered == 'true'
         run: echo "NO_ACTION_APPROVED_STOCK_EXISTS:${{ steps.day.outputs.date }}"
 
-      - name: Generate one BRAIN-led approved blog candidate
+      - name: Generate one BRAIN-led approved blog candidate with OpenAI
         if: steps.stock.outputs.covered != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
-        uses: anthropics/claude-code-action@v1
-        with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-5 --max-turns 20 --allowedTools Read,Write"
-          prompt: |
-            Maak precies één Nederlandstalig blogartikel voor Bedrijfsgeheugen.nl en schrijf uitsluitend geldig JSON naar tmp/native-approved-blog.json.
-
-            Gebruik tmp/brain-content-learning.json als verplichte BRAIN/Powerhouse-input. Optimaliseer primair voor order/omzet, daarna qualified lead, lead/conversie, CTA/click en pas daarna engagement/reach. Neem bewezen commerciële patronen over zonder eerdere tekst te kopiëren. Gebruik exploration alleen wanneer de learning-context daar aanleiding toe geeft.
-
-            JSON-schema:
-            {
-              "title":"...",
-              "slug":"lowercase-kebab-case",
-              "keyword":"...",
-              "meta":"120-170 tekens",
-              "blogtext":"markdownachtige tekst met alinea's en ## tussenkoppen",
-              "brain_reason":"korte concrete reden vanuit learning-context"
-            }
-
-            Inhoudseisen: 900-1500 woorden, concreet voor Nederlands MKB, geen verzonnen cijfers/cases/testimonials, geen holle AI-taal, duidelijke zakelijke probleemstelling, bruikbare aanpak en natuurlijke CTA richting Frisse Blik of Frisse Blik Scan. Eén hoofdonderwerp, geen keyword stuffing. Schrijf het bestand en wijzig verder niets.
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          BUSINESS_DATE: ${{ steps.day.outputs.date }}
+        run: |
+          set -euo pipefail
+          node tools/content-growth/generate-openai-approved-blog.mjs
 
       - name: Build deterministic verification candidate
         if: steps.stock.outputs.covered != 'true' && github.event_name == 'workflow_dispatch' && inputs.verification_mode
