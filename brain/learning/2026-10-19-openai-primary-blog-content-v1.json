@@ -9,14 +9,15 @@
     "repeat_count": 3,
     "security_sensitive": true
   },
-  "root_cause": "Hourly Powerhouse blog publisher failed at localized-routes because the translation pipeline attempted Anthropic first with credit balance too low; a separate approved blog supply workflow used Claude Code action requiring an unavailable OIDC token. Both stopped before valid protected blog publication.",
+  "root_cause": "Hourly Powerhouse blog publisher failed at localized-routes because the translation pipeline attempted Anthropic first with credit balance too low; a separate approved blog supply workflow used Claude Code action requiring an unavailable OIDC token. Both stopped before valid protected blog publication. A CodeQL review detected sensitive raw local BRAIN file content potentially forwarded in an OpenAI outbound request.",
   "intervention": "Replace native blog generation's Anthropic action with a bounded OpenAI Responses API call and strict JSON schema; route scoped bilingual prepublish translations exclusively through the existing OpenAI API translation transport, keeping the cache complete before protected merge. Migrate the separately scheduled Weekblog and blog-bijwerken agent actions to the official OpenAI Codex GitHub Action (trusted bot, drop-sudo, restricted workspace) without changing their deterministic candidate-PR validation.",
-  "prevention": "No Anthropic dependency in these two canonical active execution paths, no fallback to unapproved text, no publication from a generation artifact without Notion validation, full English cache, Required CI, protected merge, Netlify production provider and public URL evidence.",
-  "prevention_rule": "OPENAI_PRIMARY_NATIVE_BLOG_GENERATION_AND_I18N_STRICT_CACHE_V1",
+  "prevention": "No Anthropic dependency in these two canonical active execution paths, no fallback to unapproved text, no publication from a generation artifact without Notion validation, full English cache, Required CI, protected merge, Netlify production provider and public URL evidence. Externally submitted BRAIN source text must first be mapped locally to a finite public editorial topic; no raw CRM, email, account, revenue, or customer fields may leave the workspace.",
+  "prevention_rule": "OPENAI_PUBLIC_EDITORIAL_PROJECTION_NO_RAW_BRAIN_UPLOAD_V2",
   "evaluation": {
     "historical_replay": [
       "tests/brain-openai-native-approved-blog-20261019.test.mjs",
-      "tests/brain-openai-legacy-blog-writers-20261019.test.mjs"
+      "tests/brain-openai-legacy-blog-writers-20261019.test.mjs",
+      "tests/brain-openai-native-approved-blog-20261019.test.mjs#private BRAIN record fields never leave the workspace"
     ],
     "shadow": [
       "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
@@ -30,7 +31,8 @@
     "failing_native_supply_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39236467385",
     "runtime_validation": "pending protected CI",
     "live_proof": "unverified",
-    "legacy_weekblog": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39238320820"
+    "legacy_weekblog": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39238320820",
+    "codeql_security_review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/security/code-scanning/215"
   },
   "state": "CANDIDATE_ALL_FOUR_BLOG_PROVIDER_PATHS_AWAITING_CI_AND_PROVIDER_READBACK"
 }
