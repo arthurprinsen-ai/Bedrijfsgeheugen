@@ -1,0 +1,34 @@
+/* Mobile-first visualisation system. Uses existing CMS/portal design tokens. */
+#p-overzicht .bgv3-card{min-width:0;overflow:hidden}
+#p-overzicht .bgv3-card #staat,
+#p-overzicht .bgv3-card #ovCmmiGraf,
+#p-overzicht .bgv3-card #curveMini{display:none!important}
+#p-overzicht .bgv3-card #staatT,
+#p-overzicht .bgv3-card #ovCmmi,
+#p-overzicht .bgv3-card #curveMiniT,
+#p-overzicht .bgv3-card .detailvak{display:none!important}
+#p-overzicht .bgv3-host{min-width:0;width:100%;font-family:inherit;overflow-wrap:break-word}
+#p-overzicht .bgv3-summary{display:flex;gap:.55rem;flex-wrap:wrap;margin:.6rem 0 .85rem}
+#p-overzicht .bgv3-summary>span{flex:1 1 100px;min-width:0;padding:.6rem .75rem;background:var(--np-vlak,#F4F5F8);border:1px solid var(--np-lijn,#E0E4EB);border-radius:10px;display:flex;flex-direction:column;gap:.08rem}
+#p-overzicht .bgv3-summary b{font:600 .69rem/1.4 "Instrument Sans",system-ui,sans-serif;color:var(--np-grijs,#6B7280)}
+#p-overzicht .bgv3-summary strong{font:800 clamp(1.1rem,2vw,1.45rem)/1.25 "Bricolage Grotesque",system-ui,sans-serif;color:var(--np-inkt,#14171A);white-space:normal}
+#p-overzicht .bgv3-source{font-size:.79rem;line-height:1.5;color:var(--np-grijs,#667085);margin:.35rem 0 .85rem}
+#p-overzicht .bgv3-track{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.5rem;width:100%;align-items:stretch}
+#p-overzicht .bgv3-stage{position:relative;display:flex;flex-direction:column;gap:.35rem;align-items:flex-start;text-align:left;min-width:0;min-height:92px;padding:.75rem .65rem;border:1.5px solid var(--np-lijn,#DDE3EE);border-radius:12px;background:#fff;color:var(--np-inkt,#1A2436);font-family:inherit;cursor:pointer;touch-action:manipulation;white-space:normal;overflow-wrap:anywhere;transition:background-color .16s,border-color .16s,box-shadow .16s}
+#p-overzicht .bgv3-stage:hover,#p-overzicht .bgv3-stage.bgv3-highlight{border-color:var(--np-blauw,#2742D6);background:#F3F6FF}
+#p-overzicht .bgv3-stage:focus-visible{outline:3px solid var(--np-blauw,#2742D6);outline-offset:3px}
+#p-overzicht .bgv3-stage[aria-pressed=true]{border-color:var(--np-blauw,#2742D6);box-shadow:inset 0 0 0 1px var(--np-blauw,#2742D6)}
+#p-overzicht .bgv3-stage.bgv3-current .bgv3-level{background:var(--np-oranje,#FF4F17);color:#fff}
+#p-overzicht .bgv3-stage .bgv3-level{width:28px;height:28px;display:inline-grid;place-items:center;background:var(--np-vlak,#F4F5F8);color:var(--np-blauw,#2742D6);border-radius:9px;font-weight:800;font-size:.88rem;flex:0 0 28px}
+#p-overzicht .bgv3-stage-copy{display:flex;flex-direction:column;gap:.15rem;min-width:0}
+#p-overzicht .bgv3-stage-copy strong{font-size:clamp(.76rem,1.2vw,.89rem);line-height:1.28;font-weight:700;overflow-wrap:anywhere}
+#p-overzicht .bgv3-stage-copy small{font-size:.72rem;color:var(--np-grijs,#667085)}
+#p-overzicht .bgv3-indicator{color:#CE3F1B;font-size:.72rem;font-weight:800;min-height:1em}
+#p-overzicht .bgv3-detail{padding:.85rem 1rem;background:var(--np-vlak,#F4F5F8);border:1px solid var(--np-lijn,#E0E4EB);border-radius:12px;margin-top:.8rem;max-width:100%;overflow-wrap:break-word}
+#p-overzicht .bgv3-detail-head{font-size:.92rem;font-weight:800;line-height:1.35;color:var(--np-inkt,#14171A)}
+#p-overzicht .bgv3-explanation,#p-overzicht .bgv3-next{font-size:.83rem;line-height:1.5;margin:.35rem 0 0}
+#p-overzicht .bgv3-next{color:var(--np-blauw,#2742D6);font-weight:600}
+#p-overzicht .bgv3-instruction{font-size:.74rem;color:var(--np-grijs,#667085);line-height:1.45;margin:.7rem 0 0}
+@media(max-width:950px){#p-overzicht .bgv3-track{grid-template-columns:repeat(2,minmax(0,1fr))}#p-overzicht .bgv3-stage{min-height:72px;flex-direction:row;align-items:center}}
+@media(max-width:490px){#p-overzicht .bgv3-track{grid-template-columns:1fr;gap:.4rem}#p-overzicht .bgv3-stage{min-height:50px;padding:.5rem .7rem}#p-overzicht .bgv3-stage-copy{flex:1}#p-overzicht .bgv3-stage-copy strong{font-size:.85rem}#p-overzicht .bgv3-stage-copy small{display:none}#p-overzicht .bgv3-indicator{margin-left:auto;min-width:25px}}
+@media(prefers-reduced-motion:reduce){#p-overzicht .bgv3-stage{transition:none}}
