@@ -27,5 +27,6 @@
   "canonical_eligible": false,
   "tests": [
     "tests/brain-external-signal-quota-failover-20261019.test.mjs"
-  ]
+  ],
+  "root_cause": "Existing bg-externe-signalen producer depended on a single Tavily API credential; after the provider returned HTTP 432 usage limit, each bounded 3-topic run failed without recording a new provider-verified source observation. DataForSEO was connected and had usable existing credentials but was not wired as a governed fallback."
 }
