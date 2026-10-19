@@ -9,7 +9,7 @@ on:
 
 jobs:
   visual-density:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # Pin for Playwright 1.55 OS support
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
