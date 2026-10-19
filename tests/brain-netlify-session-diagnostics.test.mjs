@@ -23,7 +23,9 @@ test('provider session error diagnostics contain only HTTP, fixed field enum, re
 test('OIDC/account pins and provider response failure gates remain',()=>{
   assert.match(source,/jwtVerify\(token, jwks, \{ issuer, audience \}\)/);
   assert.match(source,/connected_accounts: \{ netlify_mcp: \[context\.accountId\] \}/);
-  assert.match(source,/if \(!executeRes\.ok \|\| parsed\?\.successful !== true\)/);
+  assert.match(source,/const accepted = executeRes\.ok && resultType === "completed"/);
+  assert.match(source,/parsed\?\.data !== undefined && parsed\?\.data !== null/);
+  assert.match(source,/parsed\?\.data\?\.successful !== false/);
   assert.match(source,/tool_slug: slug/);
   assert.match(source,/execute: \{ enable_multi_execute: false \}/);
   assert.match(source,/operation: "deploy-site"/);
