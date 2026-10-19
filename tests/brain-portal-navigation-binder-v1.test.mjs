@@ -23,6 +23,7 @@ test('navigation binds every route, without aborting remaining portal controls',
     document:root,
     appRender:()=>{},
     bindForecastControls:()=>{forecastBound=true},
+    bindPortalAction:()=>{},
     $:()=>null,
     $$:selector=>selector==='[data-route]'?nodes:[],
     navigate:route=>routes.push(route)
