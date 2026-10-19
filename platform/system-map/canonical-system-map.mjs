@@ -2139,3 +2139,12 @@ export const PREDICTIVE_UNCERTAINTY_RETENTION_V1=Object.freeze({
  learning:'brain/learning/2026-10-19-predictive-uncertainty-retention.json',
  documentation:'docs/changes/2026-10-19-predictive-uncertainty-retention.md'
 });
+
+export const PREDICTIVE_MIGRATION_IDENTITY_PARITY_V1=Object.freeze({
+ fingerprint:'predictive-production-migration-identity-parity-20261019',
+ actualAppliedVersion:'20261019203052',compatibilityVersion:'20261019223000',
+ sourceSha256:'f267cda0725f4020c47e4ec6511e84a4f4e527327f1b417490a80564f74fb521',
+ trackingHistoryImmutable:true,providerDeploymentRequired:true,
+ regression:'tests/brain-predictive-migration-history-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-migration-identity-parity.json'
+});

@@ -218,6 +218,17 @@
       "tests": [
         "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
       ]
+    },
+    {
+      "id": "predictive-migration-identity-parity",
+      "paths": [
+        "supabase/migrations/20261019203052_growth_source_daily_measurement.sql",
+        "supabase/migrations/20261019223000_growth_source_daily_measurement.sql",
+        "tests/brain-predictive-migration-history-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-predictive-migration-history-20261019.test.mjs"
+      ]
     }
   ],
   "alwaysTests": [
