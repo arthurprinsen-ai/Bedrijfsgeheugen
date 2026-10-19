@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {generateOpenAIApprovedBlog, validateApprovedBlogCandidate}
+import {generateOpenAIApprovedBlog, validateApprovedBlogCandidate, selectApprovedPublicTopic}
   from '../tools/content-growth/generate-openai-approved-blog.mjs';
 
 const workflow=readFileSync('.github/workflows/native-approved-blog-supply.yml','utf8');
@@ -42,6 +42,31 @@ test('OpenAI structured blog candidate is data-only, schema-checked and not sent
   assert.equal(body.text.format.type,'json_schema');
   assert.equal(body.text.format.strict,true);
   assert.deepEqual(body.text.format.schema.required,Object.keys(sample));
+});
+
+test('private BRAIN record fields never leave the workspace or appear in OpenAI request body', async()=>{
+  const secretMarker='PRIVATE_EMAIL_secret@example.org';
+  const privateLearning={learning:{
+    exploit_candidates:[{content_id:'blog:bedrijfskennis-borgen',buyer_email:secretMarker,company:'PrivateCo',revenue:5800}],
+    customer_note:secretMarker,
+    confidence:{observed_items:2}
+  }};
+  const publicBrief=selectApprovedPublicTopic(privateLearning);
+  assert.deepEqual(Object.keys(publicBrief),['topic','editorial_angle','proof_boundary']);
+  assert.equal(JSON.stringify(publicBrief).includes(secretMarker),false);
+  let payload;
+  await generateOpenAIApprovedBlog({
+    learning:privateLearning,date:'2026-10-19',apiKey:'test',
+    fetchImpl:async(_url,options)=>{
+      payload=options.body;
+      return {ok:true,json:async()=>complete(sample)};
+    }
+  });
+  assert.ok(payload.includes('Bedrijfskennis borgen'));
+  assert.ok(!payload.includes(secretMarker));
+  assert.ok(!payload.includes('PrivateCo'));
+  assert.ok(!payload.includes('buyer_email'));
+  assert.ok(!payload.includes('5800'));
 });
 
 test('missing key, absent BRAIN evidence, incomplete result or unsupported candidate fails closed',async()=>{
