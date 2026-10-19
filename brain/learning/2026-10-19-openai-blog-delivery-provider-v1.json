@@ -4,9 +4,10 @@
   "fingerprint": "native-blog-anthropic-oidc-missing|daily-blog-anthropic-credits-exhausted",
   "root_cause": [
     "Native approved blog supply relied on anthropics/claude-code-action@v1 but its GitHub workflow granted only contents:read, not the OIDC permission required by that action. GitHub run 39236467385 failed at missing ACTIONS_ID_TOKEN_REQUEST_URL.",
-    "Canonical daily blog publication attempted Anthropic translation while Anthropic balance was exhausted (HTTP 400), preventing durable English cache generation and the protected blog candidate in run 39174978217."
+    "Canonical daily blog publication attempted Anthropic translation while Anthropic balance was exhausted (HTTP 400), preventing durable English cache generation and the protected blog candidate in run 39174978217.",
+    "Legacy Weekblog separately used Anthropic credit check and Claude Code agent, and Blog bijwerken separately used Claude Code agent; both remained dependent on Anthropic and could fail even if primary daily supply was migrated."
   ],
-  "intervention": "Replace native Claude agent action with dependency-free OpenAI Responses structured-output generator using existing OPENAI_API_KEY; enforce source-bound Dutch 900-1500-word post schema. Pin canonical daily blog pre-publish translation credentials to OpenAI only, using existing validated OpenAI transport and mandatory full translation cache.",
+  "intervention": "Replace native Claude agent action with dependency-free OpenAI Responses structured-output generator using existing OPENAI_API_KEY; enforce source-bound Dutch 900-1500-word post schema. Pin canonical daily blog pre-publish translation credentials to OpenAI only, using existing validated OpenAI transport and mandatory full translation cache. Replace both legacy authoring agents with official OpenAI Codex GitHub Action in confined workspace permission profile and existing strict changed-file allowlists.",
   "prevention": "Never assume a generated artifact is published. Keep independent candidate validation, Notion approved stock, exact content ID, SEO/i18n cache, protected checks/merge, production readback. Missing OpenAI key, billing or incomplete output must fail closed instead of emitting fabricated or untranslated output.",
   "compiler": {
     "failure_class": "DELIVERY",
@@ -15,7 +16,7 @@
     "repeat_count": 2,
     "security_sensitive": false
   },
-  "prevention_rule": "OPENAI_ONLY_BLOG_SUPPLY_AND_PREPUBLISH_FULL_TRANSLATION_V1",
+  "prevention_rule": "OPENAI_ONLY_ALL_FOUR_BLOG_SUPPLY_PUBLISH_AND_UPDATE_LANES_V1",
   "evaluation": {
     "historical_replay": [
       "tests/brain-native-openai-blog-provider-20261019.test.mjs"
@@ -32,7 +33,8 @@
     "github_daily_failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39174978217",
     "prechange_blog_status": "GENERATED without provider live readback on 2026-10-19",
     "postchange_required_ci": "pending",
-    "postchange_production_readback": "not yet verified"
+    "postchange_production_readback": "not yet verified",
+    "github_weekblog_failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39238320820"
   },
   "state": "CANDIDATE_AWAITING_PROTECTED_REQUIRED_CI_AND_PRODUCTION_READBACK"
 }
