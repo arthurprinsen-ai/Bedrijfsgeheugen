@@ -467,3 +467,10 @@ The existing image/temporal verifiers use the governance-approved OpenAI Respons
 ## Production registration and proof scope
 Fingerprint: `mira-production-stage-registration-20261019`.
 The router, image verifier and temporal verifier must all be explicitly enabled in supabase/config.toml before protected-main provider delivery can attest this chain. An attestation for other functions never proves Mira source parity. Shared-helper changes must retain explicitly edited undeclared slugs in the resolved scope so the existing registration guard rejects them; never silently drop the very function being repaired. Require exact function inventory/source parity plus a genuine same-video proof request after promotion.
+
+
+## Producer claim preservation under readiness polling
+
+Fingerprint: `mira-media-preflight-preserve-worker-cas-v1`.
+
+A CLAIMED/GENERATING media job legitimately has no final URL while the external provider runs. Readiness/preflight must preserve its owner/history and never reset it to WAITING_ASSET. All other existing-job projections require exact id+updated_at CAS; if state changed, reread before touching obligation evidence. Concurrent first insert is a typed retry. Completion remains owner-bound and proof remains verifier-owned. Never generate a duplicate because a poll lost a worker claim.
