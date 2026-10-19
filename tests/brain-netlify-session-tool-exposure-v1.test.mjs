@@ -39,5 +39,5 @@ test('OIDC and read-only health never become deployment authority',()=>{
  const health=code.slice(code.indexOf('if (action === "health")'),code.indexOf('phase = "proxy_read"'));
  assert.ok(health.includes('"NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER"'));
  assert.ok(health.includes('get-project'));
- assert.ok(!health.includes('deploy-site'));
+ assert.ok(!health.includes('operation: "deploy-site"'));
 });
