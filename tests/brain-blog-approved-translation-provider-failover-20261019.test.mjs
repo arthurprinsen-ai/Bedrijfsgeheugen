@@ -39,14 +39,16 @@ test('incomplete, missing or malformed responses cannot become accepted translat
   await assert.rejects(()=>translateBatchWithOpenAI(['Hoi'],'test',{fetchImpl:async()=>({ok:true,json:async()=>payload([])})}),/SHAPE_INVALID/);
 });
 
-test('blog-only failover preserves the protected source and production cache gates',()=>{
-  assert.match(build,/STATIC_I18N_APPROVED_PROVIDER_FAILOVER/);
-  assert.match(build,/translateBatchWithOpenAI\(part,backupKey\)/);
-  assert.match(build,/if \(!providerUnavailable \|\| !backupKey\) throw primaryError/);
+test('OpenAI-only prepublish translation preserves protected cache gates',()=>{
+  assert.match(build,/const key = String\(process\.env\.OPENAI_API_KEY \|\| ''\)/);
+  assert.match(build,/const translated = await translateBatchWithOpenAI\(part,key\)/);
+  assert.match(build,/STATIC_I18N_OPENAI_KEY_MISSING/);
+  assert.doesNotMatch(build,/ANTHROPIC_API_KEY|api\.anthropic\.com|claude-haiku/);
   assert.match(build,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(build,/STATIC_I18N_PREPARE_INCOMPLETE/);
   assert.match(build,/STATIC_I18N_REQUIRE_CACHE/);
   assert.match(workflow,/OPENAI_API_KEY:\s*\$\{\{ secrets\.OPENAI_API_KEY \}\}/);
+  assert.doesNotMatch(workflow,/ANTHROPIC_API_KEY/);
   assert.match(workflow,/STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1/);
   assert.match(workflow,/gh pr merge "\$pr" --auto --squash/);
 });
