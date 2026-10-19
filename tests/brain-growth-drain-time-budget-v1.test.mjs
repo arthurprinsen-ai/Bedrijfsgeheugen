@@ -1,6 +1,20 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {drainGrowthQueue} from '../netlify/functions/growth-replay.mjs';
+import {readFileSync} from 'node:fs';
+import {runInNewContext} from 'node:vm';
+// The admission learning gate does not install npm packages. Execute the exact
+// production function source, injecting provider mocks instead of loading Netlify SDK.
+const code=readFileSync(new URL('../netlify/functions/growth-replay.mjs',import.meta.url),'utf8');
+const begin=code.indexOf('export async function drainGrowthQueue(');
+const end=code.indexOf('\nexport default async function handler',begin);
+assert.ok(begin>=0&&end>begin,'production replay function not found');
+const drainGrowthQueue=runInNewContext('('+code.slice(begin,end).replace(/^export /,'')+')',{
+  MAX_REPLAY:25,getStore:()=>{throw Error('unexpected live store')},
+  persistToDataHub:()=>{throw Error('unexpected live ingest')},
+  deliver:()=>{throw Error('unexpected live delivery')},
+  markBrainQueue:()=>{throw Error('unexpected live brain write')},
+  env:()=>'',Math,Date
+});
 
 function fixture(keys){
   const data=new Map(keys.map(key=>[key,{
