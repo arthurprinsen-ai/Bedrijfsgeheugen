@@ -25,8 +25,8 @@ test('below-minimum OpenAI article gets a bounded evidence-preserving revision',
   const api=mockFetch([makeDraft(780),makeDraft(1050)]);
   const item=await generateApprovedBlog({learning,apiKey:'test-key',fetchImpl:api.fetchImpl});
   assert.equal(api.calls.length,2);
-  assert.ok(item.blogtext.split(/\\s+/).length>=900);
-  assert.ok(item.blogtext.split(/\\s+/).length<=1500);
+  assert.ok(item.blogtext.split(/\s+/).length>=900);
+  assert.ok(item.blogtext.split(/\s+/).length<=1500);
   assert.equal(item.slug,makeDraft(1050).slug);
   const firstPayload=JSON.parse(api.calls[0].args.body);
   assert.equal(firstPayload.store,false);
