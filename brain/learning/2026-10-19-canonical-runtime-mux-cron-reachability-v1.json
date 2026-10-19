@@ -12,5 +12,17 @@
     "overdue_forecasts": 385,
     "unresolved_forecasts": 247
   },
-  "status": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_READBACK"
+  "status": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "compiler": {
+    "failure_class": "SCHEDULER_SLOT_GAP",
+    "scope": "SCHEDULER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-scheduler-reachability-20261019.test.mjs"
+    ]
+  }
 }
