@@ -38,3 +38,20 @@ test('backend keeps authentication in Netlify and curated public-source reads in
   assert.match(edge,/select\('url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,brontrouw,bevestiging,versheid,relevantie,vertrouwen,toegestaan,opgehaald_op,deadline'\)/);
   assert.doesNotMatch(edge,/\.from\('(?:bronpublicaties|bg_externe_signalen)'\)[\s\S]{0,180}\.select\('\*'\)/);
 });
+
+test('omgevingsradar separates actual new source observations from snapshot recomputation',()=>{
+  assert.match(workspace,/data-source-freshness=/);
+  assert.match(workspace,/Geen nieuwe bronwaarnemingen aangetoond in 24 uur/);
+  assert.match(workspace,/Projectie herberekend/);
+  assert.match(workspace,/bronactualiteit/);
+  assert.match(workspace,/sinceYesterday\.length/);
+  assert.doesNotMatch(workspace,/snap\.signals_24h\?\?sinceYesterday\.length/);
+});
+test('action shortlist is prioritized but still distinguishes candidate from executable task',()=>{
+  assert.match(workspace,/prioritizedActions=\[\.\.\.actions\]\.sort/);
+  assert.match(workspace,/Signaalprioriteit/);
+  assert.match(workspace,/Gekoppeld aan bestaande actie/);
+  assert.match(workspace,/Voorstel · nog geen uitvoeringsactie/);
+  assert.match(workspace,/Eigenaar nog niet toegewezen/);
+  assert.match(workspace,/Streefdatum/);
+});
