@@ -187,16 +187,44 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
   const raw = await executeRes.text();
   let parsed: any = null;
   try { parsed = JSON.parse(raw); } catch {}
-  if (!executeRes.ok || parsed?.successful !== true) {
+  // Composio session.execute returns {result_type,data,error,log_id}, NOT
+  // the legacy direct tool envelope {successful,data,error}. A completed
+  // provider call is proven only by result_type=completed, an actual data
+  // payload, and no provider error or nested unsuccessful tool result.
+  const providerError = parsed?.error;
+  const errorText = typeof providerError === "string" ? providerError.toLowerCase()
+    : JSON.stringify(providerError || parsed?.detail || "").toLowerCase();
+  const resultType = typeof parsed?.result_type === "string"
+    ? parsed.result_type : "missing";
+  const accepted = executeRes.ok && resultType === "completed" &&
+    parsed?.data !== undefined && parsed?.data !== null &&
+    !providerError && parsed?.data?.successful !== false;
+  if (!accepted) {
+    // Never log raw response, account IDs, user IDs, provider secrets or
+    // arbitrary provider messages. Composio log IDs are safe references.
+    const errorKind = /not found|unknown tool|tool.*not.*available/i.test(errorText)
+      ? "TOOL_NOT_EXPOSED"
+      : /connected.account|connected_account|no account/i.test(errorText)
+      ? "ACCOUNT_BINDING"
+      : /unauthorized|permission|forbidden|scope/i.test(errorText)
+      ? "PROVIDER_PERMISSION"
+      : /schema|validation|invalid|argument|input/i.test(errorText)
+      ? "INPUT_CONTRACT"
+      : "OTHER";
+    const providerLogId = typeof parsed?.log_id === "string" &&
+      /^log_[a-zA-Z0-9_-]{3,100}$/.test(parsed.log_id)
+      ? parsed.log_id : null;
     console.error("NETLIFY_SESSION_TOOL_REJECTED",JSON.stringify({
       http: executeRes.status,
       kind: slug === "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER" ? "read" : "deploy_authority",
       has_json: Boolean(parsed),
-      response_success: parsed?.successful === true,
+      result_type: resultType,
+      error_kind: errorKind,
+      provider_log_id: providerLogId,
     }));
     throw new Error("composio pinned session execute " + executeRes.status);
   }
-  return raw;
+  return JSON.stringify(parsed.data);
 }
 
 async function getProxy(context:{apiKey:string,accountId:string,userId:string}) {
