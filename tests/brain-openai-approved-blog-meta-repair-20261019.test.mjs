@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {repairApprovedBlogMeta, validateApprovedBlog} from '../tools/content-growth/openai-approved-blog.mjs';
 
 const introduction = "Veel ondernemers missen samenhang tussen de beschikbare cijfers, de afspraken in hun team en de dagelijkse keuzes. Door eerst de werkelijke knelpunten te onderzoeken wordt duidelijk waar de uitvoering beter kan.";
-const body = [introduction,'## Wat gaat er mis?',Array(155).fill('Meet de bestaande situatie, controleer de bron en koppel elke verbetering aan een eigenaar.').join(' '),'## Wat kun je doen?',Array(25).fill('Evalueer de uitkomst en verbeter het proces op basis van aantoonbare feiten.').join(' ')].join('\n\n');
+const body = [introduction,'## Wat gaat er mis?',Array(65).fill('Meet de bestaande situatie, controleer de bron en koppel elke verbetering aan een eigenaar.').join(' '),'## Wat kun je doen?',Array(10).fill('Evalueer de uitkomst en verbeter het proces op basis van aantoonbare feiten.').join(' ')].join('\n\n');
 const basic={title:'Zo maak je dagelijkse keuzes beter onderbouwd',slug:'dagelijkse-keuzes-onderbouwen',keyword:'beslissingen onderbouwen',meta:'Een compacte beschrijving',blogtext:body,brain_reason:'Public marketing-learning signal is aggregated; no customer facts claimed.'};
 
 test('too short SEO meta derives from the generated evidence, never fabricates facts',()=>{
