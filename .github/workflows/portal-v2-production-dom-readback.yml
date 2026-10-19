@@ -38,7 +38,7 @@ jobs:
           node-version: '22'
       - name: Install Chromium verifier
         run: |
-          PLAYWRIGHT_PACKAGE=@playwright/test@1.55.0 bash tools/ci/install-chromium.sh
+          PLAYWRIGHT_PACKAGE=@playwright/test@1.61.0 bash tools/ci/install-chromium.sh
       - name: Resolve exact readback alias
         env:
           EVENT_NAME: ${{ github.event_name }}
