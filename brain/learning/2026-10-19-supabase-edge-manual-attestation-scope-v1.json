@@ -17,13 +17,13 @@
   "prevention_rule": "Manual Supabase Edge Production Authority runs must supply nonempty comma-separated registered function slugs; reject blank input with SUPABASE_EDGE_MANUAL_SCOPE_REQUIRED. Keep automatic push diff scoping, protected-main ancestry, Management API credential authentication and byte-for-byte provider parity intact.",
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-edge-manual-attestation-scope.test.mjs"
+      "tests/brain-supabase-edge-manual-attestation-scope.test.mjs"
     ],
     "shadow": [
-      "tests/supabase-edge-manual-attestation-scope.test.mjs"
+      "tests/brain-supabase-edge-manual-attestation-scope.test.mjs"
     ],
     "canary": [
-      "tests/supabase-edge-manual-attestation-scope.test.mjs"
+      "tests/brain-supabase-edge-manual-attestation-scope.test.mjs"
     ]
   },
   "test_evidence": {
