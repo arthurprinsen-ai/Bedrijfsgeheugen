@@ -91,7 +91,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
           SLUG: ${{ steps.render.outputs.slug }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -euo pipefail
@@ -147,7 +146,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -euo pipefail
