@@ -25,12 +25,19 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-netlify-transport-authority-regression.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-transport-authority-regression.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-transport-authority-regression.test.mjs"
     ]
   },
   "test_evidence": {
     "historical_replay": "tests/brain-netlify-transport-authority-regression.test.mjs",
     "ci_status": "pending on PR",
-    "production_readback": "not yet proven"
+    "production_readback": "not yet proven",
+    "evaluation_scopes": "Historical replay, shadow and CI-mode canary simulate bridge authorization and fail-closed behavior; live production side effect still requires separate authenticated readback."
   },
   "acceptance": "Protected merge of tested change, approved Netlify/Composio account binding, successful transport/build only when applicable, published Netlify deploy SHA and public release.json readback, functional production check.",
   "native_git_reconciliation": {
