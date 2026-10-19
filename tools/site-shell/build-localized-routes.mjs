@@ -6,7 +6,7 @@ import { parse, serialize } from 'parse5';
 import { translateBatchWithOpenAI } from './static-i18n-openai-fallback.mjs';
 
 const ROOT = process.cwd();
-const MODEL = 'claude-haiku-4-5-20251001';
+// OpenAI Responses is the sole provider for prepublish translation.
 const SITE = 'https://www.bedrijfsgeheugen.nl';
 const LOCALES = ['nl','en'];
 const EXCLUDED_TOP = new Set(['.git','.github','node_modules','assets','components','email','intern','preview','site','tools','tests','docs','brain','platform','config','.netlify','dist','nl','en']);
@@ -610,45 +610,6 @@ function parseTranslations(raw) {
   throw new Error('Translation provider returned invalid JSON');
 }
 
-async function translateBatch(strings,key) {
-  const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(),60000);
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'content-type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01'
-      },
-      body:JSON.stringify({
-        model:MODEL,
-        max_tokens:6000,
-        system:'Translate Dutch website UI and marketing copy faithfully into natural English. Preserve Bedrijfsgeheugen, product names, URLs, numbers, currencies, placeholders and factual meaning. Do not add or remove claims. Return ONLY one valid JSON array of strings, same order and same length as input.',
-        messages:[{role:'user',content:JSON.stringify(strings)}]
-      }),
-      signal:controller.signal
-    });
-    if (!response.ok) {
-      const body = (await response.text()).slice(0,300);
-      const retryAfterRaw = response.headers.get('retry-after');
-      const retryAfterSeconds = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw) ? Number(retryAfterRaw) : null;
-      const error = new Error('Anthropic HTTP ' + response.status + ': ' + body);
-      error.status = response.status;
-      error.providerBody = body;
-      error.retryAfterMs = retryAfterSeconds === null ? null : Math.ceil(retryAfterSeconds * 1000);
-      throw error;
-    }
-    const payload = await response.json();
-    const raw = payload?.content?.map(x=>x?.type==='text'?x.text:'').join('') || '';
-    const out = parseTranslations(raw);
-    if (out.length !== strings.length || out.some(x=>typeof x!=='string')) throw new Error('Translation response shape mismatch');
-    return out;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function translateAll(strings) {
   const cache = loadCache();
   const result = new Map();
@@ -686,10 +647,9 @@ async function translateAll(strings) {
     return result;
   }
 
-  const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
-  const backupKey = String(process.env.OPENAI_API_KEY || '').trim();
-  if (!key && !backupKey) {
-    throw new Error('STATIC_I18N_APPROVED_PROVIDER_KEY_MISSING');
+  const key = String(process.env.OPENAI_API_KEY || '').trim();
+  if (!key) {
+    throw new Error('STATIC_I18N_OPENAI_KEY_MISSING');
   }
 
   const batches = [];
@@ -706,27 +666,9 @@ async function translateAll(strings) {
     let lastError;
     for (let attempt=0;attempt<6;attempt++) {
       try {
-        let translated;
-        if (!key) {
-          // No permission to publish partial translations: the backup must
-          // return a complete validated string batch before touching the cache.
-          translated = await translateBatchWithOpenAI(part,backupKey);
-        } else {
-          try {
-            translated = await translateBatch(part,key);
-          } catch (primaryError) {
-            const primaryStatus = Number(primaryError?.status);
-            const primaryBody = typeof primaryError?.providerBody === 'string' ? primaryError.providerBody : '';
-            const providerUnavailable = [401,403].includes(primaryStatus) ||
-              (primaryStatus === 400 && /credit balance is too low|insufficient quota|billing/i.test(primaryBody));
-            if (!providerUnavailable || !backupKey) throw primaryError;
-            console.warn('STATIC_I18N_APPROVED_PROVIDER_FAILOVER', JSON.stringify({
-              primary:'anthropic',backup:'openai',reason:primaryStatus===400?'BILLING_BLOCKED':'AUTH_UNAVAILABLE',
-              batch_size:part.length
-            }));
-            translated = await translateBatchWithOpenAI(part,backupKey);
-          }
-        }
+        // A complete, validated OpenAI response is required before any cache write.
+        // Retry-After (retry-after) is normalized by the OpenAI transport.
+        const translated = await translateBatchWithOpenAI(part,key);
         part.forEach((source,index)=>{
           cache[source]=translated[index];
           result.set(source,translated[index]);
