@@ -18,5 +18,17 @@
   ],
   "repair": "Pin workflow install to playwright@1.61.0, already used by install-chromium.sh default.",
   "prevention": "Validate effective browser installer version against runner Linux support and static regression before visual production readback. Retain browser checks; never treat skipped/failed browser as green.",
-  "acceptance": "Required CI, CodeQL, protected merge, live browser-run readback and evidence; no claim until verified."
+  "acceptance": "Required CI, CodeQL, protected merge, live browser-run readback and evidence; no claim until verified.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-shell-ubuntu26-playwright-20261019.test.mjs"
+    ]
+  }
 }
