@@ -92,6 +92,7 @@ jobs:
           DATE: ${{ steps.day.outputs.date }}
           SLUG: ${{ steps.render.outputs.slug }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # OpenAI is the sole approved translation provider for this publisher.
         run: |
           set -euo pipefail
           branch="automation/powerhouse-blog-$DATE"
@@ -147,6 +148,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # OpenAI is the sole approved translation provider for this publisher.
         run: |
           set -euo pipefail
           branch="automation/powerhouse-blog-$DATE"
