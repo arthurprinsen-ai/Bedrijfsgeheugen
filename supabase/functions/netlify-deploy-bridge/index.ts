@@ -54,6 +54,13 @@ async function getComposioContext() {
   let cursor = "";
   let pages = 0;
   let scannedAccounts = 0;
+  // Aggregate-only diagnostics: never log provider IDs, token material, user
+  // identities, auth config IDs or individual connected-account records.
+  const netlifyScan = {
+    slug_exact: 0, slug_like: 0, active_exact: 0, expired_exact: 0,
+    active_disabled: 0, active_missing_identity: 0, active_like: 0,
+    missing_toolkit_slug: 0,
+  };
   const seenCursors = new Set<string>();
   for (;;) {
     if (pages >= 20) throw new Error("composio connected accounts pagination incomplete");
@@ -73,6 +80,27 @@ async function getComposioContext() {
     if (!Array.isArray(payload?.items)) throw new Error("composio connected accounts invalid shape");
     pages++;
     scannedAccounts += payload.items.length;
+    for (const item of payload.items) {
+      const slug = String(item?.toolkit?.slug || "").trim().toLowerCase();
+      const status = String(item?.status || "").toUpperCase();
+      const exact = slug === "netlify_mcp";
+      const like = slug.includes("netlify");
+      if (!slug) netlifyScan.missing_toolkit_slug++;
+      if (exact) netlifyScan.slug_exact++;
+      if (like) netlifyScan.slug_like++;
+      if (exact && status === "ACTIVE") {
+        netlifyScan.active_exact++;
+        if (item?.is_disabled) netlifyScan.active_disabled++;
+        if (typeof item?.id !== "string" || !item.id.trim() ||
+            typeof item?.user_id !== "string" || !item.user_id.trim()) {
+          netlifyScan.active_missing_identity++;
+        }
+      }
+      if (exact && status === "EXPIRED") netlifyScan.expired_exact++;
+      if (like && status === "ACTIVE") netlifyScan.active_like++;
+    }
+    // Authorization is unchanged: only an ACTIVE, complete, enabled exact
+    // netlify_mcp account may be selected; never fall back to a test user.
     account = payload.items.find((item: any) =>
       String(item?.toolkit?.slug || "").toLowerCase() === "netlify_mcp" &&
       String(item?.status || "").toUpperCase() === "ACTIVE" &&
@@ -89,6 +117,7 @@ async function getComposioContext() {
   }
   console.log("NETLIFY_COMPOSIO_ACCOUNT_DISCOVERY", JSON.stringify({
     pages, scanned_accounts: scannedAccounts, authorized_netlify_found: Boolean(account),
+    netlify_scan: netlifyScan,
     // Deliberately omit account IDs, user IDs, API keys and OAuth details.
   }));
   const accountId = String(account?.id || "").trim();
