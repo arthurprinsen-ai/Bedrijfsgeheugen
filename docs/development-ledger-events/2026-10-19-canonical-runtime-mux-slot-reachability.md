@@ -25,3 +25,10 @@
 - Extended existing Supabase provider check diagnosis to classify this case and provider preview capacity exhaustion separately, both strictly red. Added regression coverage to existing `tests/brain-supabase-preview-diagnosis-v1.test.mjs`.
 - Persisted prevention in `brain/learning/2026-10-19-canonical-runtime-mux-cron-reachability-v1.json` and `.agents/skills/powerhouse-delivery-concurrency/SKILL.md`. No synthetic proof, no ledger manipulation, no bypass, and no duplicate scheduler.
 - Current rollout state is `PENDING_PROTECTED_MERGE_AND_PRODUCTION_READBACK`, and P0 incident #3742 remains open pending supported Supabase archive/replay reconciliation.
+
+
+## Corrected causal interpretation — 2026-10-19 15:xx UTC
+
+The prior section that proposed recreating three legacy cron jobs was **superseded and the unmerged migration and its test were removed**. The initial P0001 exception occurred on a *manually created* Supabase branch which reloaded production-archived migration `20261006085416` (MD5 `6e4aa572b4c8f5bb4091958db833eba3`, hard abort). Two existing **GitHub-linked** branches, read-only verified separately, contained SQL MD5 `69bebb24ab2651a4fd3f3bf92c5b9790` for the same migration version and did not contain the abort. Consequently a manual branch failing from the old parent archive does not demonstrate hosted GitHub Preview will fail on the current source. The earlier repair was based on the wrong source route and risked redundant jobs.
+
+Executed corrections: removed the two unmerged legacy bootstrap files, updated active Brain learning and project delivery skill to require source selection proof, retained real static regression and fail-closed preview classifications, and kept PR #4479 pending the official Supabase-owned exact-HEAD success. No production cron/migrations were modified and no preview gate was bypassed. This correction is append-only to preserve original diagnostic and its revision; never erase evidence of mistaken reasoning.
