@@ -149,6 +149,10 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
     body: JSON.stringify({
       user_id: context.userId,
       toolkits: { enable: ["netlify_mcp"] },
+      // Composio Tool Router exposes discovery/meta tools by default. A pinned
+      // direct app action must be explicitly preloaded or discovered first.
+      // Scope preload to the exact two reviewed Netlify actions.
+      preload: { tools: allowed },
       connected_accounts: { netlify_mcp: [context.accountId] },
       instant: false,
       manage_connections: { enable: false },
@@ -187,12 +191,27 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
   const raw = await executeRes.text();
   let parsed: any = null;
   try { parsed = JSON.parse(raw); } catch {}
-  if (!executeRes.ok || parsed?.successful !== true) {
-    console.error("NETLIFY_SESSION_TOOL_REJECTED",JSON.stringify({
+  // /tool_router/session/{id}/execute returns {data,error,log_id} (or
+  // {result_type,data,error}), not the older direct-tool {successful:boolean}
+  // envelope. Require HTTP 2xx, an actual data field and no provider error.
+  // Continue to accept the older explicit success envelope only when safe.
+  const hasData = Boolean(parsed && Object.prototype.hasOwnProperty.call(parsed, "data"));
+  const hasProviderError = Boolean(parsed?.error) ||
+    parsed?.successful === false || parsed?.data?.successful === false ||
+    (typeof parsed?.result_type === "string" && parsed.result_type !== "completed");
+  const complete = executeRes.ok && parsed && !hasProviderError &&
+    (hasData || parsed.successful === true);
+  if (!complete) {
+    // Never log provider response bodies: they may include account identifiers,
+    // scope details or bearer material. Keep only fixed-shape status evidence.
+    console.error("NETLIFY_SESSION_TOOL_REJECTED", JSON.stringify({
       http: executeRes.status,
       kind: slug === "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER" ? "read" : "deploy_authority",
       has_json: Boolean(parsed),
-      response_success: parsed?.successful === true,
+      has_data: hasData,
+      has_error: hasProviderError,
+      result_type: ["completed","failed","input_required"].includes(String(parsed?.result_type))
+        ? parsed.result_type : "other",
     }));
     throw new Error("composio pinned session execute " + executeRes.status);
   }
