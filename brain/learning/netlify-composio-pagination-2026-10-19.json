@@ -5,8 +5,8 @@
   "scope": "supabase/functions/netlify-deploy-bridge",
   "observation": "Run 39209401787 returned HTTP 420 after OIDC verification; code read only the first 100 connected accounts then mapped an empty match to not_public without distinguishing a truncated list from a truly absent project-authorized account.",
   "root_cause": "Project-scoped Composio Netlify discovery did not follow next_cursor; diagnostic did not log sanitized pagination counts. A mismatched Composio project is a separate unresolved possibility.",
-  "intervention": "Read up to 20 cursor pages with a strict bounded timeout; reject malformed JSON, repeating cursors and incomplete scans; log only counts and a boolean; preserve OIDC, exact site ID, provider gate and fail-closed behavior.",
-  "expected": "No silent false missing-connection classification caused by account pagination. If zero active Netlify accounts remain after a complete scan, retain a hard external authorization blocker and require a properly authorized service account.",
+  "intervention": "Read up to 20 cursor pages with a strict bounded timeout; reject malformed JSON, repeating cursors and incomplete scans; log only counts and a boolean; preserve OIDC, exact site ID, provider gate and fail-closed behavior. Added daily and workflow_dispatch OIDC-only backup health probe on the same protected workflow; probe does not build or publish.",
+  "expected": "No silent false missing-connection classification caused by account pagination. If zero active Netlify accounts remain after a complete scan, retain a hard external authorization blocker and require a properly authorized service account. A nightly health probe fails loudly for missing bridge authority without triggering a production build.",
   "compiler": {
     "failure_class": "AUTH",
     "scope": "CI",
