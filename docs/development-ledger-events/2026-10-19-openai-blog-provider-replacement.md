@@ -11,3 +11,5 @@ Change: dedicated `generate-openai-approved-blog.mjs` using OpenAI Responses str
 Regression: `tests/brain-openai-native-approved-blog-20261019.test.mjs`, `tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs`, `tests/delivery-powerhouse-blog-i18n-prepublish.integration.test.mjs`, plus historical i18n cache tests.
 
 Current state: changes committed to PR branch; CI and real production provider readbacks are required, not assumed. No external recipient messages or public article releases created by this engineering correction.
+
+Additional two distinct, existing editorial agents migrated: Weekblog and blog-bijwerken now call OpenAI Codex Action v1 instead of Anthropic Claude Action. Both preserve the original page editing instructions, deterministic changed-file allowlists, and candidate-only writer behavior. A trusted scheduled bot is allowed, but its filesystem privileges are restricted to the workspace, with sudo dropped; runtime proof and a provider-account execution are still required.
