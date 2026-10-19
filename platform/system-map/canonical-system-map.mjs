@@ -36,6 +36,28 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-immutable-browser-proof-bridge-only-successor-v1',
+      fingerprint:'powerhouse|delivery|portal-dom-bridge-only-successor|v1',
+      label:'Portal DOM production proof against immutable release when only independent deployment bridge advances',
+      owner:'ONE BRAIN / Protected Portal Production Readback',
+      authority:'GitHub protected approved PR + immutable Netlify release + verified Supabase deploy bridge source',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['previously published exact Netlify site SHA','approved merged Portal PR ancestry','current main changes without Portal/Netlify runtime changes','exact independent Supabase deploy bridge source']),
+      outputs:Object.freeze(['main-only manual Portal DOM browser proof','immutable production SHA and deploy identity','auditable non-bypass of portal/runtime release gates']),
+      runtime:Object.freeze({
+        workflow:'.github/workflows/portal-v2-production-dom-readback.yml',
+        regression:'tests/brain-portal-dom-proven-bridge-only-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-portal-readback-bridge-only-override.json',
+        documentation:'docs/changes/2026-10-19-portal-dom-immutable-acceptance-v1.md'
+      }),
+      invariants:Object.freeze({
+        singleSiteAuthority:true,approvedPRAncestryRequired:true,
+        immutableDeployMatchRequired:true,realBrowserRequired:true,
+        onlyExactlyNamedBridgeCanFollowRelease:true,noGenericEdgeFunctionOverride:true,
+        portalAndNetlifyRuntimeChangesBlocked:true,noSyntheticProductionGreen:true
+      })
+    }),
+    Object.freeze({
       id:'netlify-pinned-composio-session-health-v1',
       fingerprint:'netlify|composio|pinned-session-health|v1',
       label:'Netlify authorized session tool exposure and provider-health evidence',
