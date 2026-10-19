@@ -404,7 +404,7 @@ jobs:
 
       - name: Install production interaction browser
         if: steps.scope.outputs.deployment_required == 'true'
-        run: PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+        run: PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
 
       - name: Prove pricing toggles and English switch in production browser
         if: steps.scope.outputs.deployment_required == 'true'
