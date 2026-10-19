@@ -77,9 +77,9 @@ test('a specialist completing after page navigation cannot attach stale evidence
 });
 
 test('production specialist waits for lazy import before writing and checks active generation',()=>{
- for(const name of ['roadmap','canvassen','strategiemodellen']){
-   assert.match(source,new RegExp('if\\(contract\\.id===.+'+name+'.+if\\(isCurrent\\(\\)\\)module\\.mount'));
- }
- assert.doesNotMatch(source,/root\.dataset\.functionalDelegating/);
- assert.match(source,/const workspaceGeneration=new WeakMap\(\)/);
+ assert.ok(source.includes("if(contract.id==='canvassen'){const module=await import('./modules/canvas-workspace.js');if(isCurrent())module.mountCanvasWorkspace"));
+ assert.ok(source.includes("if(contract.id==='roadmap'){const module=await import('./modules/roadmap-workspace.js');if(isCurrent())module.mountRoadmapWorkspace"));
+ assert.ok(source.includes("const module=await import('./modules/strategic-model-workspace.js');if(isCurrent())module.mountStrategicModelWorkspace"));
+ assert.doesNotMatch(source,/root\\.dataset\\.functionalDelegating/);
+ assert.match(source,/const workspaceGeneration=new WeakMap\\(\\)/);
 });
