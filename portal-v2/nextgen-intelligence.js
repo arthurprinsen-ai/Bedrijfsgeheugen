@@ -14,12 +14,15 @@ const parseMetric=node=>{
 function verifiedForecast(metric){
   const f=metric?.canonicalForecast;
   if(!f || f.status!=='VERIFIED' || f.origin!=='authenticated_portal_forecast')return null;
-  if(!f.tenantId || !f.modelVersion || !Array.isArray(f.sourceRefs) || !f.sourceRefs.length)return null;
-  if(f.backtest?.status!=='PASS' || !Number.isFinite(Number(f.expected)) ||
-     !Number.isFinite(Number(f.lower)) || !Number.isFinite(Number(f.upper)))return null;
-  if(Number(f.lower)>Number(f.expected) || Number(f.expected)>Number(f.upper))return null;
-  const verifiedAt=Date.parse(f.verifiedAt||'');
-  if(!Number.isFinite(verifiedAt)||verifiedAt>Date.now()||Date.now()-verifiedAt>30*86400000)return null;
+  if(!metric?.tenantId || !metric?.metricKey || !f.tenantId || !f.metricKey ||
+     f.tenantId!==metric.tenantId || f.metricKey!==metric.metricKey)return null;
+  if(!f.modelVersion || !Array.isArray(f.sourceRefs) || !f.sourceRefs.length ||
+     f.sourceRefs.some(x=>typeof x!=='string'||!x.trim()))return null;
+  if(f.backtest?.status!=='PASS' || f.independentReview?.approved!==true ||
+     !['expected','lower','upper','currentValue'].every(k=>typeof f[k]==='number' && Number.isFinite(f[k])))return null;
+  if(f.lower>f.expected || f.expected>f.upper)return null;
+  const verifiedAt=Date.parse(f.verifiedAt||''),sourceAt=Date.parse(f.sourceUpdatedAt||'');
+  if(![verifiedAt,sourceAt].every(t=>Number.isFinite(t)&&t<=Date.now()&&Date.now()-t<=30*86400000))return null;
   return f;
 }
 function confidence(metric){
@@ -30,17 +33,17 @@ function confidence(metric){
 function project(metric,horizon,scenario){
   const f=verifiedForecast(metric);
   if(!f || scenario!=='base' || Number(f.horizonMonths)!==Number(horizon) ||
-     !Number.isFinite(metric?.value) || confidence(metric)===null)return null;
-  return {projected:Number(f.expected),change:Number(f.expected)-metric.value,
-    lower:Number(f.lower),upper:Number(f.upper),sourceRefs:f.sourceRefs};
+     confidence(metric)===null)return null;
+  return {current:f.currentValue,projected:f.expected,change:f.expected-f.currentValue,
+    lower:f.lower,upper:f.upper,sourceRefs:f.sourceRefs};
 }
 function forecastSvg(metric,horizon,scenario){
   const p=project(metric,horizon,scenario);
   if(!p)return '<div class="ng-empty">Geen geverifieerde prognose voor deze schermindicator. Raadpleeg de brongebonden Powerhouse-scenariostudio; zichtbare KPI-tekst is geen voorspelling.</div>';
-  const values=[metric.value,p.projected,p.lower,p.upper],min=Math.min(...values),max=Math.max(...values);
+  const values=[p.current,p.projected,p.lower,p.upper],min=Math.min(...values),max=Math.max(...values);
   const range=Math.max(0.001,max-min),y=v=>150-(v-min)/range*110;
   return `<svg viewBox="0 0 520 180" role="img" aria-label="Geverifieerde prognose voor ${esc(metric.label)}">
-    <line x1="32" y1="${y(metric.value)}" x2="488" y2="${y(p.projected)}" class="ng-line"/>
+    <line x1="32" y1="${y(p.current)}" x2="488" y2="${y(p.projected)}" class="ng-line"/>
     <line x1="488" y1="${y(p.lower)}" x2="488" y2="${y(p.upper)}" class="ng-band"/>
     <circle cx="32" cy="${y(metric.value)}" r="4" class="ng-dot"/><circle cx="488" cy="${y(p.projected)}" r="5" class="ng-dot ng-dot-end"/>
     <text x="32" y="173" class="ng-axis">Nu</text><text x="488" y="173" text-anchor="end" class="ng-axis">${horizon} mnd</text></svg>`;
