@@ -46,10 +46,10 @@ test('retired specialist workflows stay off direct PR admission and are preserve
 test('production snapshot reconciles governance changes without forcing deployment', async () => {
   const snapshot = await workflow('production-source-snapshot.yml');
   const readback = await workflow('production-release-readback.yml');
-  assert.match(snapshot, /push:\\s*\\n\\s*branches: \\[main\\]/);
-  assert.doesNotMatch(snapshot.split('permissions:')[0], /^\\s*paths-ignore:/m);
+  assert.match(snapshot, /push:\s*\n\s*branches: \[main\]/);
+  assert.doesNotMatch(snapshot.split('permissions:')[0], /^\s*paths-ignore:/m);
   assert.match(snapshot, /deriveNetlifyDeploymentApplicability/);
-  assert.match(snapshot, /steps\\.scope\\.outputs\\.deployment_required == 'true'/);
+  assert.match(snapshot, /steps\.scope\.outputs\.deployment_required == 'true'/);
   assert.match(readback, /deriveNetlifyDeploymentApplicability/);
 });
 
