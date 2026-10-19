@@ -1,5 +1,5 @@
-// Bounded, optional second-provider transport for approved static NL->EN publication
-// cache creation. Production deployment remains offline and requires full cache.
+// Sole approved OpenAI transport for static NL->EN publication cache preparation.
+// Production deployment remains offline and requires a complete validated cache.
 export function assertFaithfulTranslationBatch(sources, translated) {
   if (!Array.isArray(sources) || !Array.isArray(translated) ||
       translated.length !== sources.length ||
@@ -55,8 +55,15 @@ export async function translateBatchWithOpenAI(strings, key, {
       signal: controller.signal
     });
     if (!response.ok) {
+      // Capture only a bounded provider error; no token, recipient or source data.
+      const body = typeof response.text === 'function' ? (await response.text()).slice(0,1200) : '';
+      const retryAfterRaw = response.headers?.get?.('retry-after');
+      const retryAfterMs = retryAfterRaw && /^\\d+(?:\\.\\d+)?$/.test(retryAfterRaw)
+        ? Math.ceil(Number(retryAfterRaw)*1000) : null;
       const error = new Error('OPENAI_I18N_HTTP_' + response.status);
       error.status = response.status;
+      error.providerBody = body;
+      error.retryAfterMs = retryAfterMs;
       throw error;
     }
     const payload = await response.json();
