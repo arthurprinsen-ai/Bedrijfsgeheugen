@@ -15,10 +15,10 @@ function eventBlock(source,event){
 test('snapshot reconciles every main push while Netlify applicability avoids closure-only deployment', () => {
   const snapshot=read('production-source-snapshot.yml');
   const push=eventBlock(snapshot,'push');
-  assert.match(push,/branches: \\[main\\]/);
+  assert.match(push,/branches: \[main\]/);
   assert.doesNotMatch(push,/paths-ignore:/);
   assert.match(snapshot,/deriveNetlifyDeploymentApplicability/);
-  assert.match(snapshot,/steps\\.scope\\.outputs\\.deployment_required == 'true'/);
+  assert.match(snapshot,/steps\.scope\.outputs\.deployment_required == 'true'/);
   const readback=read('production-release-readback.yml');
   assert.match(readback,/deriveNetlifyDeploymentApplicability/);
 });
