@@ -9,7 +9,7 @@ The Netlify auth-config screenshot showed one active and one expired historical 
 - Composio `/api/v3.1/tool_router/session/{id}/execute` returns `data` / `error` / optional `result_type`, not obligatorily `successful:true`. Source: https://docs.composio.dev/reference/api-reference/tool-router/postToolRouterSessionBySessionIdExecute
 
 ## Correction and safety
-The existing Netlify deployment bridge preloads exactly the two reviewed Netlify tools and accepts only a successful HTTP response containing a result body with no provider error (including inner false success). The explicit exact active connected account pin and GitHub main-only OIDC validation remain unchanged. Health always performs read-only get-project with exact site ID; it cannot deploy. The production upload still requires a fresh provider proxy and downstream SHA/deploy-ID readback. No token, project/user identifier or response-body logging.
+The existing Netlify deployment bridge preloads exactly the two reviewed Netlify tools while retaining the already-merged strict v3.1 result_type=completed, result data and no provider error validation (including inner false success). The explicit exact active connected account pin and GitHub main-only OIDC validation remain unchanged. Health always performs read-only get-project with exact site ID; it cannot deploy. The production upload still requires a fresh provider proxy and downstream SHA/deploy-ID readback. No token, project/user identifier or response-body logging.
 
 ## Acceptance, not yet met
 1. Node regression `tests/brain-netlify-tool-router-execute-v1.test.mjs` plus full Required CI and CodeQL.
