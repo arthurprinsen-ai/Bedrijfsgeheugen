@@ -192,10 +192,12 @@ jobs:
 
       - name: Artikel bijwerken
         if: steps.kalender.outputs.gevonden == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
-        uses: anthropics/claude-code-action@v1
+        uses: openai/codex-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-5 --max-turns 40 --allowedTools Read,Write,Edit,Glob,Grep"
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ":workspace"
+          safety-strategy: drop-sudo
+          allow-bots: true
           prompt: |
             Werk één BESTAAND blogartikel bij op www.bedrijfsgeheugen.nl. Je schrijft geen nieuw
             artikel: je past een bestaand bestand aan omdat de zoekwoordstrategie is gewijzigd.
