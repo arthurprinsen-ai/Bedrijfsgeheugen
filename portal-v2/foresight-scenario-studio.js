@@ -1,6 +1,6 @@
 import { buildGoalForecast, GOAL_METRICS } from '../brain/context/goal-forecast-engine.mjs';
 import {buildTenantForesightEvidence,renderTenantForesightEvidence} from './foresight-tenant-evidence.js';
-import {buildDecisionTwinReceipt,renderDecisionTwinReceipt} from './decision-twin-receipt.js';
+import {buildDecisionTwinReceipt,renderDecisionTwinReceipt,buildScenarioRoadmapProposal} from './decision-twin-receipt.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const valueOf=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):null;
@@ -119,6 +119,7 @@ function chart(metric,scenario){
 }
 function markup(model,state){
   const m=model.active,s=model.scenario;
+  const proposal=buildScenarioRoadmapProposal(state,model);
   const choose=model.metrics.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===m.id?' selected':'')+'>'+esc(x.domain+' · '+x.label)+(x.forecast?'':' · bron ontbreekt')+'</option>').join('');
   const forecast=s?'<div class="pfs-stat-grid"><div><small>Laatste meting</small><strong>'+esc(fmt(m.current,m.unit))+'</strong></div><div><small>Trend op horizon</small><strong>'+esc(fmt(s.baseline,m.unit))+'</strong></div><div><small>Wat-als-variant</small><strong>'+esc(fmt(s.simulated,m.unit))+'</strong></div><div><small>Statistische band</small><strong>'+esc(fmt(s.lower,m.unit))+' – '+esc(fmt(s.upper,m.unit))+'</strong></div></div>':'<div class="pfs-gap">Voor '+esc(m.label)+' is nog geen onderbouwde tijdreeks beschikbaar. Scenarioresultaten blijven uit totdat minimaal drie chronologische metingen beschikbaar zijn.</div>';
   const variants=[['-10','Tegenvaller'],['0','Basispad'],['10','Meewind']].map(([pct,title])=>'<button type="button" data-pfs-preset="'+pct+'"'+(model.scenario?.sensitivity===Number(pct)?' aria-pressed="true"':' aria-pressed="false"')+'>'+title+'</button>').join('');
@@ -135,6 +136,8 @@ function markup(model,state){
     '<div><h4>Betrouwbaarheid en herkomst</h4><p>'+m.history.length+' historische meetpunten; '+m.evidenceCount+' bronverwijzingen. Status: '+esc(m.quality)+'.</p><p>'+esc(m.note)+'</p></div></div>'+
     '<details class="pfs-sources"><summary>Brein, Powerhouse en Heartbeat: aansluitstatus</summary><p>'+esc(model.intelligence.brain)+' · '+esc(model.intelligence.powerhouse)+' · '+esc(model.intelligence.heartbeat)+'.</p><p>Een platformbrede voorspelling is geen automatisch gevalideerde klantprognose. Eerst authenticatie, tenant-scope, versheid en modelkwaliteit controleren.</p></details>'+
     renderDecisionTwinReceipt(buildDecisionTwinReceipt(state,model))+
+    '<div class="pfs-roadmap"><button type="button" data-pfs-add-roadmap'+(proposal?'':' disabled')+'>Bewaar scenario als voorstel op de roadmap</button>'+
+    '<p><small>Alleen een concept ter beoordeling: er wordt niets uitgevoerd of gepubliceerd. '+(proposal?'':'Kies een afwijkend scenario met minimaal drie bronverwijzingen in een beveiligde klantcontext.')+'</small></p><p data-pfs-roadmap-status role="status" aria-live="polite"></p></div>'+
     '</section>';
 }
 export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',openPage}={}){
@@ -152,6 +155,33 @@ export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',o
     section.querySelector('[data-pfs-sensitivity]')?.addEventListener('input',event=>{selected.sensitivity=Number(event.target.value);draw();});
     section.querySelectorAll('[data-pfs-preset]').forEach(button=>button.addEventListener('click',()=>{selected.sensitivity=Number(button.dataset.pfsPreset);draw();}));
     section.querySelectorAll('[data-pfs-page]').forEach(button=>button.addEventListener('click',event=>openPage?.(event.currentTarget.dataset.pfsPage)));
+    section.querySelector('[data-pfs-add-roadmap]')?.addEventListener('click',async event=>{
+      const button=event.currentTarget;
+      const status=section.querySelector('[data-pfs-roadmap-status]');
+      const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
+      if(!domainState?.get||!domainState?.set||!domainState?.flush){
+        if(status)status.textContent='Beveiligde opslag ontbreekt; er is niets naar de roadmap verstuurd.';
+        return;
+      }
+      try{
+        button.disabled=true;
+        const liveState=domainState.get()||{};
+        const existing=domainState.get('portal.roadmap.items')||[];
+        const liveForesight=buildForesightStudioModel(liveState,selected);
+        const proposal=buildScenarioRoadmapProposal(liveState,liveForesight,existing);
+        if(!proposal){
+          if(status)status.textContent='Onvoldoende bronbewijs, andere klantcontext of een bestaand voorstel. Niet opgeslagen.';
+          return;
+        }
+        domainState.set('portal.roadmap.items',[...(Array.isArray(existing)?existing:[]),proposal]);
+        await domainState.flush();
+        if(status)status.textContent=domainState.status?.()==='saved'
+          ?'Concept opgeslagen op de roadmap. Toewijzing, toestemming en verificatie blijven verplicht.'
+          :'Opslag niet door de server bevestigd; controleer de roadmap voordat je verdergaat.';
+      }catch{
+        if(status)status.textContent='Opslag mislukt; er is geen bevestigde wijziging of uitvoering.';
+      }finally{button.disabled=false;}
+    });
     section.querySelector('[data-pfs-evidence-filter]')?.addEventListener('change',event=>{selected.signalMode=event.target.value;draw();});
     section.querySelector('[data-pfs-evidence-refresh]')?.addEventListener('click',()=>{void loadSources();});
   };
