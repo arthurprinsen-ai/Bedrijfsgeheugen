@@ -22,3 +22,7 @@ A passing regression test and required CI demonstrate wiring, not live publishin
 ## Legacy blog routes
 
 The separate `weekblog.yml` and `blog-bijwerken.yml` agent steps also migrated to the official `openai/codex-action@v1` using `OPENAI_API_KEY` with `permission-profile: ":workspace"`. The Weekblog Anthropic billing probe was replaced with a key-presence check; actual OpenAI authentication happens inside Codex. Existing deterministic changed-file allowlists, schema checks and protected candidate PRs remain required. This is a separate file-editing workflow from the direct JSON structured-output native supply.
+
+## Outbound data minimization (CodeQL security review)
+
+The OpenAI source generator no longer sends downloaded BRAIN learning JSON wholesale. It projects explicitly allowed aggregated numeric commercial outcomes and public `blog:<slug>` content identifiers, caps list lengths, and drops PII, email, contact/customer records, free-text instructions and URLs. An input containing no safe aggregate proof fails closed. Regression tests include injected private data and check that no forbidden values appear in the outbound request. Security review and CodeQL are reevaluated on the new head; this is not yet a provider send/readback.
