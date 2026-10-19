@@ -27,7 +27,7 @@ permissions:
 
 jobs:
   production-dom-readback:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04 # Pinned: Playwright 1.55 browser installer does not support Ubuntu 26.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v5
