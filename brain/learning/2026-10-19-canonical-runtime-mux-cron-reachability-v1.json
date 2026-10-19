@@ -22,7 +22,6 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
-      "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs",
       "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
     ]
   },
@@ -51,14 +50,19 @@
     "provider_archived_statement_has_hard_abort": true,
     "repository_migration_uses_optional_job_reconciliation": true,
     "provider_preview_required_gate": "FAILURE",
-    "provider_preview_capacity": "2 existing owned by PR #4370 and PR #4441, native provider SKIPPED on #4479"
+    "provider_preview_capacity": "2 existing owned by PR #4370 and PR #4441, native provider SKIPPED on #4479",
+    "git_linked_preview_archive_md5": "69bebb24ab2651a4fd3f3bf92c5b9790",
+    "git_linked_preview_archive_hard_abort": false,
+    "provider_git_linked_preview_migration_count": 715,
+    "previous_manual_preview_archive_drift": "Manual branch replay reproduced parent's hard-abort archive and is NOT equivalent to GitHub-linked preview; temporal pre-guard dummy recovered jobs removed",
+    "removed_false_replay_precondition": "supabase/migrations/20261006085100_legacy_cron_replay_preconditions.sql",
+    "archived_migration_source_authority": "Compared product and two existing Git-linked preview branches; same version contains different SQL. Git-linked branch replays modified source unlike isolated manual branch."
   },
   "tests": [
     "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
-    "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs",
     "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
   ],
-  "prevention_rule": "For every scheduler task prove registered cron minute reachability on exact runnable schedule. For hosted Supabase preview never equate Git migration contents with archived provider statement; require a successful provider-owned fresh replay on exact candidate HEAD, block on CRON_PRESSURE_CONTRACT_JOB_MISSING, archive drift or exhausted preview capacity. No ledger rewriting, dummy jobs, shadow schedulers, skipped-check promotion or release without protected merge and production readback.",
+  "prevention_rule": "For every scheduler task prove registered cron minute reachability on exact runnable schedule. For hosted Supabase preview never equate Git migration contents with archived provider statement; require a successful provider-owned fresh replay on exact candidate HEAD, block on CRON_PRESSURE_CONTRACT_JOB_MISSING, archive drift or exhausted preview capacity. No ledger rewriting, dummy jobs, shadow schedulers, skipped-check promotion or release without protected merge and production readback. Explicitly classify manual database branch source independently from GitHub-associated preview source. Never add legacy cron jobs from a failure reproduced only through different migration source.",
   "skill_targets": [
     "powerhouse-delivery-concurrency"
   ]
