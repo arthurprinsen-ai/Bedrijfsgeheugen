@@ -187,6 +187,8 @@ begin
 end
 $function$;
 
+REVOKE ALL ON FUNCTION public.powerhouse_runtime_scheduler_mux_v1(timestamptz) FROM PUBLIC, anon, authenticated;
+
 DO $scheduler_reachability$
 DECLARE
   v_jobid bigint;
