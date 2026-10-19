@@ -16,18 +16,18 @@
   "prevention_rule": "Use $$ (querySelectorAll) for repeated DOM targets, and execute the actual binder against a multi-route DOM stub to verify all route clicks are registered before releasing.",
   "evaluation": {
     "historical_replay": [
-      "scripts/portal-navigation-binder-contract.test.mjs"
+      "portal-v2/tests/portal-navigation-binder-contract.test.mjs"
     ],
     "shadow": [
-      "scripts/portal-navigation-binder-contract.test.mjs"
+      "portal-v2/tests/portal-navigation-binder-contract.test.mjs"
     ],
     "canary": [
-      "scripts/portal-navigation-binder-contract.test.mjs"
+      "portal-v2/tests/portal-navigation-binder-contract.test.mjs"
     ]
   },
   "production_verified": false,
   "test_evidence": {
-    "test_file": "scripts/portal-navigation-binder-contract.test.mjs",
+    "test_file": "portal-v2/tests/portal-navigation-binder-contract.test.mjs",
     "github_readback": "portal/app.mjs branch blob 116f7ddde627ba1794f37c8cf10f332b160ab968",
     "production_readback": "NOT_VERIFIED"
   }
