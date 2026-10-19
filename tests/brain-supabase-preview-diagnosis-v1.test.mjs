@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -111,4 +111,19 @@ test('newest Supabase-owned check remains the sole preview authority over a stal
   ]});
   assert.equal(result.code, 'MIGRATION_ARCHIVED_CRON_PRECONDITION');
   assert.equal(result.id, '212');
+});
+
+test('Supabase source provenance is mandatory: a manual branch replay cannot justify a Git-linked cron shim', () => {
+  const fs = readFileSync;
+  const skill = fs('.agents/skills/powerhouse-delivery-concurrency/SKILL.md','utf8');
+  const evidence = JSON.parse(fs('brain/learning/2026-10-19-canonical-runtime-mux-cron-reachability-v1.json','utf8'));
+  assert.match(skill,/manual.*branch.*GitHub.*branch/i);
+  assert.match(skill,/same.*migration.*version/i);
+  assert.equal(evidence.evidence.provider_archived_migration_version, '20261006085416');
+  assert.equal(evidence.evidence.provider_archived_statement_md5,'6e4aa572b4c8f5bb4091958db833eba3');
+  assert.equal(evidence.evidence.git_linked_preview_archive_md5,'69bebb24ab2651a4fd3f3bf92c5b9790');
+  assert.equal(evidence.evidence.git_linked_preview_archive_hard_abort,false);
+  assert.equal(evidence.evidence.live_rollout_proven,false);
+  assert.equal(existsSync('supabase/migrations/20261006085100_legacy_cron_replay_preconditions.sql'),false);
+  assert.equal(existsSync('tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs'),false);
 });
