@@ -4,7 +4,7 @@
   "fingerprint": "portal-v2-stage-chart-canonical-route-guard-20261019",
   "root_cause": "Two layers render the same Portal V2 screen. In addition to SVG components in portal-v2/visuals.js, the screenshot-producing portal-v2/modules/legacy-overview-complete.js still drew fixed SVG labels at 100-unit coordinates, a five-column CMMI ladder and fabricated adoption percentiles. /klantportaal redirects to /portaal; historic klantportaal.html is not the active source. The original legacy PR #4495 was retired.",
   "intervention": "Fix canonical Portal V2 primitives and also mount semantic touch/keyboard/click/hover native details/summary phase explorers inside the actual legacy-overview-complete cards. Hide the original SVG and CMMI labels visually but retain their source/data and event-contract DOM. Add container-query styling and adapt old tests to semantic interactive behavior.",
-  "prevention": "Verify _redirects, actual render module and screenshot labels before writing. Test both the canonical V2 components and the legacy-overview module from the displayed route; reject missing evidence, no unsourced quartiles, and retain required CI, CodeQL, browser and Netlify proof.",
+  "prevention": "Verify _redirects, actual render module and screenshot labels before writing. Test both the canonical V2 components and the legacy-overview module from the displayed route; reject missing evidence, no unsourced quartiles, and retain required CI, CodeQL, browser and Netlify proof. The canonical learning runner accepts only tests/brain-*.test.mjs; general legacy tests run separately in portal CI.",
   "compiler": {
     "failure_class": "PORTAL_V2_CHART_CANONICAL_ROUTE_OVERFLOW",
     "scope": "PORTAL",
@@ -15,16 +15,13 @@
   "prevention_rule": "PORTAL_V2_CANONICAL_STAGE_CHART_MOBILE_V1",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs",
-      "tests/portal-v2-legacy-interactive-graphs.test.mjs"
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
     ],
     "shadow": [
-      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs",
-      "tests/portal-v2-legacy-interactive-graphs.test.mjs"
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
     ],
     "canary": [
-      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs",
-      "tests/portal-v2-legacy-interactive-graphs.test.mjs"
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
     ]
   },
   "test_evidence": {
