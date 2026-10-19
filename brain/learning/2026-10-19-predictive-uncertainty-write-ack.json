@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-19",
+  "obligation": "predictive-calibration-uncertainty-retention-20261019",
+  "fingerprint": "predictive-uncertainty-write-ack-timeout-20261019",
+  "root_cause": "Actual8092 HTTP200 claimed12uncertain; per-result readback found10stored. Supabase edge logs identify last2 PATCH HTTP500/PostgREST57014, postgres row-lock waits at20:57. Caller ignored update.error. Existing canonical refresh also unnecessarily rewrote6913forecast obligations each cycle, retaining locks for its surrounding transaction.",
+  "intervention": "Acknowledge each uncertain write before incrementing/reporting success; require OPEN and same semantic revision, verify returned marker/due, retry the same computed assessment once only on transientSQL codes (including observed57014). No model retry. Prefilter unchanged canonical rows via MVCC comparison before INSERT/ON CONFLICT attempts row locks; preserve existing pure state merge and CLOSED proof.",
+  "prevention": "Provider/model HTTP200 is insufficient. Audit every claimed forecast ID, inject write timeouts and verify full durable ack. Unchanged refresh must touch0rows, preserve exact22existing uncertainty digest and keep7day backoff.",
+  "compiler": {
+    "failure_class": "CALIBRATION_UNCERTAINTY_WRITE_NOT_ACKNOWLEDGED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "PREDICTIVE_UNCERTAINTY_ACK_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-uncertainty-persistence-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-uncertainty-persistence-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-predictive-uncertainty-persistence-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "injected_sqlstate": "57014",
+    "claimed_uncertain": 12,
+    "actually_persisted_from8092": 10,
+    "stable_other_actual_uncertainty": 22,
+    "unchanged_refresh_previous_touched": 6913,
+    "real_uncertainty_digest": "c74bd4df6dc88c25eab73a92909e738d",
+    "public_closed_unchanged": 53,
+    "person_attempt_markers": 0
+  },
+  "status": "CANDIDATE_REQUIRES_NATIVE_PREVIEW_SOURCE_PARITY_AND_EXACT_PERSISTENCE_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4512",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  ]
+}
