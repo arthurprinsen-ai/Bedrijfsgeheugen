@@ -1,0 +1,34 @@
+{
+  "date": "2026-10-19",
+  "obligation": "openai-native-blog-and-i18n-provider-replacement-20261019",
+  "fingerprint": "anthropic-billing-blocks-blog-build|claude-code-oidc-missing|openai-primary-conversion",
+  "compiler": {
+    "failure_class": "EXTERNAL_PROVIDER",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "root_cause": "Hourly Powerhouse blog publisher failed at localized-routes because the translation pipeline attempted Anthropic first with credit balance too low; a separate approved blog supply workflow used Claude Code action requiring an unavailable OIDC token. Both stopped before valid protected blog publication.",
+  "intervention": "Replace native blog generation's Anthropic action with a bounded OpenAI Responses API call and strict JSON schema; route scoped bilingual prepublish translations exclusively through the existing OpenAI API translation transport, keeping the cache complete before protected merge.",
+  "prevention": "No Anthropic dependency in these two canonical active execution paths, no fallback to unapproved text, no publication from a generation artifact without Notion validation, full English cache, Required CI, protected merge, Netlify production provider and public URL evidence.",
+  "prevention_rule": "OPENAI_PRIMARY_NATIVE_BLOG_GENERATION_AND_I18N_STRICT_CACHE_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-openai-native-approved-blog-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-openai-native-approved-blog-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "failing_blog_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39174978217",
+    "failing_native_supply_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39236467385",
+    "runtime_validation": "pending protected CI",
+    "live_proof": "unverified"
+  },
+  "state": "CANDIDATE_AWAITING_REQUIRED_CI_AND_PRODUCTION_READBACK"
+}
