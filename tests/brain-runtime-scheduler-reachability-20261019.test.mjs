@@ -42,6 +42,9 @@ test('semantic 36-slot cron schedule equivalence accepts explicit canonical minu
   assert.deepEqual(explicit,reachable);
   assert.equal(explicit.length,36);
   assert.match(sql,/v_explicit_cadence boolean := false/);
+  assert.match(sql,/string_agg\(minute::text, ',' ORDER BY minute\)/);
+  assert.match(sql,/SELECT v_old_schedule = \(/);
+  assert.doesNotMatch(sql,/IF v_old_schedule ~/);
   assert.match(sql,/generate_series\(0, 59\)/);
   assert.match(sql,/minute % 5 IN \(1, 3, 4\)/);
   assert.match(sql,/v_old_schedule NOT IN[\s\S]*?AND NOT v_explicit_cadence/);
