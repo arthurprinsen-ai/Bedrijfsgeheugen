@@ -2082,3 +2082,17 @@ export const MIRA_FIXED_CHARACTER_VISUAL_IDENTITY_V1=Object.freeze({
   acceptanceTest:'tests/brain-mira-canonical-face-consistency-v1.test.mjs',
   parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
 });
+
+
+export const MIRA_MEDIA_PREFLIGHT_WORKER_CAS_V1=Object.freeze({
+  fingerprint:'mira-media-preflight-preserve-worker-cas-v1',
+  router:'supabase/functions/powerhouse-instagram-media-router/index.ts',
+  boundary:'supabase/functions/powerhouse-instagram-media-router/preflight-write.mjs',
+  preserve:['CLAIMED','GENERATING'],
+  existingRowCAS:['id','updated_at'],
+  staleOutcome:'STATE_CHANGED_RETRY_BEFORE_OBLIGATION_MUTATION',
+  sameCanonicalJobAndProviderHistory:true,
+  proofAndPublicationAuthorityUnchanged:true,
+  regression:'tests/brain-mira-media-preflight-cas-20261019.test.mjs',
+  parent:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
+});
