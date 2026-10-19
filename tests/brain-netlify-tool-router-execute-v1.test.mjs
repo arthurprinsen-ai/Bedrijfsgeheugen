@@ -13,8 +13,8 @@ test('Composio app tools are explicitly preloaded before a session execute call'
 });
 
 test('v3.1 tool-router completed data envelope is not falsely failed',()=>{
-  assert.match(bridge,/Object\.prototype\.hasOwnProperty\.call\(parsed, "data"\)/);
-  assert.match(bridge,/hasData \|\| parsed\.successful === true/);
+  assert.match(bridge,/resultType === "completed"/);
+  assert.match(bridge,/return JSON\\.stringify\\(parsed\\.data\\)/);
   assert.ok(!bridge.includes('if (!executeRes.ok || parsed?.successful !== true)'));
   // Regression: completed data is necessary; never accept a false-green envelope.
   const accepts=(http,reply)=>http>=200&&http<300&&reply?.result_type==='completed'&&
@@ -34,7 +34,7 @@ test('OIDC identity, exact site and production fail-closed controls remain manda
   assert.match(bridge,/payload\.repository !== expectedRepo \|\| payload\.ref !== expectedRef \|\| payload\.workflow_ref !== expectedWorkflowRef/);
   assert.match(bridge,/if \(!readResult\.includes\(siteId\)\) throw new Error/);
   assert.match(bridge,/if \(!match\) throw new Error\("fresh netlify proxy not issued"\)/);
-  assert.match(bridge,/if \(!complete\) \{/);
+  assert.match(bridge,/if \\(!accepted\\) \\{/);
 });
 
 test('no provider response body, account, key or access token is logged',()=>{
