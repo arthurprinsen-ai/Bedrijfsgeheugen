@@ -3,6 +3,7 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { parse, serialize } from 'parse5';
+import { translateBatchWithOpenAI } from './static-i18n-openai-fallback.mjs';
 
 const ROOT = process.cwd();
 const MODEL = 'claude-haiku-4-5-20251001';
@@ -686,8 +687,9 @@ async function translateAll(strings) {
   }
 
   const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
-  if (!key) {
-    throw new Error('ANTHROPIC_API_KEY is required when STATIC_I18N_NETWORK=1');
+  const backupKey = String(process.env.OPENAI_API_KEY || '').trim();
+  if (!key && !backupKey) {
+    throw new Error('STATIC_I18N_APPROVED_PROVIDER_KEY_MISSING');
   }
 
   const batches = [];
@@ -704,7 +706,27 @@ async function translateAll(strings) {
     let lastError;
     for (let attempt=0;attempt<6;attempt++) {
       try {
-        const translated = await translateBatch(part,key);
+        let translated;
+        if (!key) {
+          // No permission to publish partial translations: the backup must
+          // return a complete validated string batch before touching the cache.
+          translated = await translateBatchWithOpenAI(part,backupKey);
+        } else {
+          try {
+            translated = await translateBatch(part,key);
+          } catch (primaryError) {
+            const primaryStatus = Number(primaryError?.status);
+            const primaryBody = typeof primaryError?.providerBody === 'string' ? primaryError.providerBody : '';
+            const providerUnavailable = [401,403].includes(primaryStatus) ||
+              (primaryStatus === 400 && /credit balance is too low|insufficient quota|billing/i.test(primaryBody));
+            if (!providerUnavailable || !backupKey) throw primaryError;
+            console.warn('STATIC_I18N_APPROVED_PROVIDER_FAILOVER', JSON.stringify({
+              primary:'anthropic',backup:'openai',reason:primaryStatus===400?'BILLING_BLOCKED':'AUTH_UNAVAILABLE',
+              batch_size:part.length
+            }));
+            translated = await translateBatchWithOpenAI(part,backupKey);
+          }
+        }
         part.forEach((source,index)=>{
           cache[source]=translated[index];
           result.set(source,translated[index]);
