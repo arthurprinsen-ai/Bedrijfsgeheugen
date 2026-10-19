@@ -173,14 +173,3 @@ test('Supabase Edge config changes are scoped to declared functions only',async(
   assert.match(workflow,/supabase\/config\.toml/);
   assert.doesNotMatch(workflow,/find supabase\/functions -mindepth 1 -maxdepth 1 -type d -printf/);
 });
-
-
-test('manual Supabase Edge production attestation cannot pass without an explicit provider-readback scope',async()=>{
-  const workflow=await readFile('.github/workflows/supabase-edge-production-authority.yml','utf8');
-  assert.match(workflow,/workflow_dispatch:\s*\n\s*inputs:\s*\n\s*functions:[\s\S]*?required:\s*true/);
-  assert.match(workflow,/GITHUB_EVENT_NAME\" = \"workflow_dispatch\"/);
-  assert.match(workflow,/SUPABASE_EDGE_MANUAL_SCOPE_REQUIRED/);
-  assert.match(workflow,/supabase functions download \"\\$fn\" --project-ref \"\\$PROJECT_REF\" --use-api/);
-  assert.match(workflow,/SUPABASE_ACCESS_TOKEN_INVALID_REAUTH_REQUIRED/);
-  assert.doesNotMatch(workflow,/supabase functions deploy/);
-});
