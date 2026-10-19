@@ -462,3 +462,8 @@ Canonical code: `supabase/functions/_shared/mira-canonical-face.mjs`. Regression
 ## Mira image proof provider recovery — 19 October 2026
 Fingerprint: `mira-openai-exact-media-verification-20261019`.
 The existing image/temporal verifiers use the governance-approved OpenAI Responses route and OPENAI_API_KEY. Provider changes never alter identity confidence, frame continuity, dimensions, source references, exact hashes or publisher capability gates. Incomplete output, refusal, schema mismatch and provider errors fail closed. Preserve the generated OpenArt history/resource/URL in the same media job; retry verification of those bytes rather than generating another video. A provider outage is not evidence that the face differs. Both vision stages must migrate together; governance remains scoped to the fictional Mira use case. Never deploy Edge source outside protected main and its Supabase Integration.
+
+
+## Production registration and proof scope
+Fingerprint: `mira-production-stage-registration-20261019`.
+The router, image verifier and temporal verifier must all be explicitly enabled in supabase/config.toml before protected-main provider delivery can attest this chain. An attestation for other functions never proves Mira source parity. Shared-helper changes must retain explicitly edited undeclared slugs in the resolved scope so the existing registration guard rejects them; never silently drop the very function being repaired. Require exact function inventory/source parity plus a genuine same-video proof request after promotion.
