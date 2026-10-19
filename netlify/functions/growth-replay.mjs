@@ -53,23 +53,51 @@ async function markBrainQueue(queueId,delivery,attempts){
   return dataHubPost({action:'brain_delivery',queue_id:queueId,state,attempted:delivery.attempted,attempts,last_error:delivery.delivered?'':delivery.reason||''});
 }
 
-export async function drainGrowthQueue({maxReplay=MAX_REPLAY,includeOutcomes=true}={}){
-  let replayed=0,delivered=0,failed=0,persisted=0;
+// The scheduled HTTP observer disconnects near 15s in production. Start no new side effect
+// unless its worst-case provider timeouts fit a bounded runtime window.
+// This is a cooperative budget, NOT a distributed lease or an exactly-once guarantee.
+export async function drainGrowthQueue({
+  maxReplay=MAX_REPLAY,includeOutcomes=true,maxRunMs=10_500,reserveMs=8_000,
+  clock=Date.now,storeFactory=getStore,persistFn=persistToDataHub,
+  dispatchFn=deliver,brainQueueFn=markBrainQueue,
+  deliveryEnabledFn=()=>env('BG211_DELIVERY_ENABLED')==='true'&&Boolean(env('BG211_WEBHOOK_URL'))
+}={}){
+  let replayed=0,delivered=0,failed=0,persisted=0,scanned=0,pages=0,skippedPersisted=0;
   const results=[];
-  const stores=includeOutcomes?['bg-growth-events','bg-growth-outcomes']:['bg-growth-events'];
+  const startedAt=clock();
+  const budgetMs=Math.max(1_000,Math.min(12_000,Number(maxRunMs)||10_500));
+  const safetyReserveMs=Math.max(0,Math.min(budgetMs,Number(reserveMs)||8_000));
+  const canStart=()=>clock()-startedAt+safetyReserveMs<=budgetMs;
+  let budgetExpired=false;
+  // Alternate first store each minute to prevent an event backlog starving outcomes.
+  const stores=includeOutcomes?(Math.floor(startedAt/60_000)%2
+    ? ['bg-growth-outcomes','bg-growth-events']
+    : ['bg-growth-events','bg-growth-outcomes']):['bg-growth-events'];
 
   for(const storeName of stores){
-    const store=getStore(storeName);
-    const {blobs}=await store.list();
-    for(const blob of blobs){
-      if(replayed>=maxReplay)break;
+    if(!canStart()){budgetExpired=true;break;}
+    const store=storeFactory(storeName);
+    // Netlify's explicit pagination avoids downloading the entire historical blob catalog.
+    // Delivered items are immutable receipts; scanning never deletes or replays them.
+    for await(const page of store.list({paginate:true})){
+      pages++;
+      for(const blob of page.blobs||[]){
+        if(replayed>=maxReplay)break;
+        if(!canStart()){budgetExpired=true;break;}
+        scanned++;
       if(blob.key.startsWith('_control/'))continue;
       const record=await store.get(blob.key,{type:'json'}).catch(()=>null);
       if(!record?.envelope||record?.state==='delivered'||record?.delivery?.delivered)continue;
+      // Preserve the persisted receipt without repeating futile writes every minute.
+      // If an authorized delivery channel becomes configured later, the item is retried.
+      if(record?.datahub?.persisted&&record?.state==='datahub-persisted'&&
+        record?.delivery?.reason==='delivery-disabled'&&!deliveryEnabledFn()){
+        skippedPersisted++;continue;
+      }
       const kind=storeName==='bg-growth-events'?'event':'outcome';
       replayed++;
 
-      const datahub=await persistToDataHub(kind,record);
+      const datahub=await persistFn(kind,record);
       if(!datahub.persisted){
         failed++;
         await store.setJSON(blob.key,{
@@ -84,11 +112,11 @@ export async function drainGrowthQueue({maxReplay=MAX_REPLAY,includeOutcomes=tru
       }
       persisted++;
 
-      const delivery=record?.delivery?.delivered?record.delivery:await deliver(record.envelope);
+      const delivery=record?.delivery?.delivered?record.delivery:await dispatchFn(record.envelope);
       const attempts=Number(record?.attempts||0)+(delivery.attempted?1:0);
       const sourceId=kind==='event'?record.envelope.event_id:(record.outcome?.outcome_id||record.envelope.event_id);
       const queueId=datahub.readback?.queue_id||kind+':'+sourceId;
-      const brainQueue=await markBrainQueue(queueId,delivery,attempts);
+      const brainQueue=await brainQueueFn(queueId,delivery,attempts);
       const state=delivery.delivered?'delivered':'datahub-persisted';
 
       await store.setJSON(blob.key,{
@@ -103,11 +131,15 @@ export async function drainGrowthQueue({maxReplay=MAX_REPLAY,includeOutcomes=tru
       results.push({kind,source_id:sourceId,persisted:true,delivered:delivery.delivered,reason:delivery.reason});
       if(delivery.delivered)delivered++;
       if(delivery.attempted&&!delivery.delivered){failed++;break;}
+      }
+      if(failed||budgetExpired||replayed>=maxReplay)break;
     }
-    if(failed||replayed>=maxReplay)break;
+    if(failed||budgetExpired||replayed>=maxReplay)break;
   }
 
-  return {accepted:true,replayed,persisted,delivered,failed,results};
+  return {accepted:true,replayed,persisted,delivered,failed,results,
+    budgetExpired,elapsedMs:Math.max(0,clock()-startedAt),scanned,pages,skippedPersisted};
+
 }
 
 export default async function handler(request,context){
