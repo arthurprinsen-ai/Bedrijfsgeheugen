@@ -18,3 +18,7 @@ Native approved supply GitHub run `39236467385` failed because the Anthropic Cla
 ## Acceptance
 
 A passing regression test and required CI demonstrate wiring, not live publishing. Final production acceptance requires an actual authorized OpenAI request, valid article and durable EN cache, the protected merge and public production page identity readback. Without OpenAI API credit or credentials, fail closed and report the actual provider error.
+
+## Legacy blog routes
+
+The separate `weekblog.yml` and `blog-bijwerken.yml` agent steps also migrated to the official `openai/codex-action@v1` using `OPENAI_API_KEY` with `permission-profile: ":workspace"`. The Weekblog Anthropic billing probe was replaced with a key-presence check; actual OpenAI authentication happens inside Codex. Existing deterministic changed-file allowlists, schema checks and protected candidate PRs remain required. This is a separate file-editing workflow from the direct JSON structured-output native supply.
