@@ -36,6 +36,29 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-workspace-async-generation-v1',
+      fingerprint:'powerhouse|portal-v2|workspace-mount-generation|v1',
+      label:'Portal V2 stable workspace mounts after async navigation',
+      owner:'ONE BRAIN / Portal V2',
+      authority:'active DOM page root + canonical tenant domain state',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['current Portal V2 navigation target','lazy workspace style/module import','existing Powerhouse customer domain state']),
+      outputs:Object.freeze(['fresh workspace generation on each navigation','discard stale async render completions','original source-bound canvas save evidence']),
+      runtime:Object.freeze({
+        implementation:'portal-v2/workspace-shell.js',
+        unitRegression:'tests/brain-portal-workspace-generation-v1.test.mjs',
+        productionAcceptance:'tests/integration/portal-v2-production-canvassen.spec.js',
+        learning:'brain/learning/2026-10-19-portal-workspace-async-generation.json',
+        documentation:'docs/changes/2026-10-19-portal-workspace-generation-reliability.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true,staleMountCannotWrite:true,noNewRouter:true,
+        tenantStateAuthorityUnchanged:true,saveRequiresServerReceipt:true,
+        existingBrowserAcceptanceRequired:true,protectedMergeRequired:true,
+        exactProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'portal-immutable-browser-proof-bridge-only-successor-v1',
       fingerprint:'powerhouse|delivery|portal-dom-bridge-only-successor|v1',
       label:'Portal DOM production proof against immutable release when only independent deployment bridge advances',
