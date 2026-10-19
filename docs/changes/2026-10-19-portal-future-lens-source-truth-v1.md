@@ -23,3 +23,10 @@ De ondernemer ziet alleen claims die terug te voeren zijn op klantgebonden brond
 
 ## Tests
 `node --test portal-v2/tests/nextgen-intelligence.test.mjs`, plus verplicht exact-HEAD Required, CodeQL, Netlify- en Portal-productiebewijs. **Deze branch is niet gelijk aan een bewezen live wijziging.**
+
+## Omgevingsradar: bronversheid versus projectie en uitvoerbaarheid
+De bestaande `portal-v2/modules/entrepreneur-intelligence.js` berekende een stand uit `snapshot.status` en `snapshot.refreshed_at`, terwijl upstream Tavily sinds 14 oktober door HTTP 432 geen bronregels meer kon opleveren. De webinterface laat nu expliciet de laatst geladen bronwaarneming en de afzonderlijke herberekeningsdatum zien. Zonder in de laatste 24 uur geobserveerde signalen verschijnt een waarschuwing; een status CURRENT op de projectie is geen bewijs dat de leverancier werkt. De informatie over 24 uur komt uit werkelijk geladen signalen en niet uitsluitend uit een mogelijk verouderde teller.
+
+Actiekandidaten worden aflopend op signaalprioriteit getoond, met vastgelegde of ontbrekende eigenaar, streefdatum, verificatie als kandidaat versus canoniek gekoppelde actie en navigatie naar actieve acties wanneer de bestaande relatie is bewezen. Een generieke signaalscore is geen financiële of uitvoeringsprioriteit totdat klantexposure is gevalideerd.
+
+Extra regression: `portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs`.
