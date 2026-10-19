@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-19",
+  "obligation": "production-visual-browser-runtime-compat-20261019",
+  "fingerprint": "ci|production-visual|playwright155|ubuntu2604-unsupported|v1",
+  "compiler": {
+    "failure_class": "BROWSER_RUNTIME_UNSUPPORTED",
+    "scope": "CI_PRODUCTION_VISUAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "GitHub ubuntu-latest advanced to ubuntu26.04-x64, but the pinned Playwright 1.55.0 Chromium installer explicitly rejects that OS. Previously live site/SEO readback passed; browser proof did not run.",
+  "failure_evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39294416171",
+    "job": "production-readback",
+    "failed_step": "Install production visual readback browser",
+    "provider_error": "Playwright does not support chromium on ubuntu26.04-x64",
+    "retry_count": 3,
+    "site_validation_prior_to_failure": "live canonical shell + SEO order readback succeeded",
+    "browser_validation_status": "NOT_YET_PROVEN"
+  },
+  "remedy": {
+    "scope": ".github/workflows/canonical-brand-shell-live-readback.yml",
+    "change": "Pin production-readback job to ubuntu-24.04, leave real-browser proof fail-closed and unskipped.",
+    "prevention": "Whenever a Playwright version is pinned, production browser proof runs on a separately pinned Playwright-supported runner OS. Never promote page acceptance on HTTP/readback alone when actual visual proof is required.",
+    "regression": "tests/brain-production-browser-runner-compat-20261019.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "2026-10-19T17:30:43Z log `ubuntu26.04-x64` unsupported",
+      "2026-10-19T17:31:24Z same deterministic failure after 3 retries",
+      "tests/brain-production-browser-runner-compat-20261019.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_commit": "d328185b19c27913f290441bbf20e20a4bd974e6",
+    "release_required": [
+      "Protected PR exact-head Required CI",
+      "Powerhouse CodeQL",
+      "Provider native preview when applicable",
+      "Real browser install and visible-page render on deployed production SHA"
+    ],
+    "no_fake_green": true
+  },
+  "status": "CANDIDATE_NEEDS_CI_PROTECTED_MERGE_AND_LIVE_READBACK"
+}
