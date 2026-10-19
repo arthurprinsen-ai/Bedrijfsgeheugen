@@ -84,7 +84,7 @@ test('canonical approved blog workflows invoke Vault bridge only for the approve
   for(const yml of [daily,supply]){
     assert.match(yml,/SUPABASE_URL: \$\{\{ secrets\.SUPABASE_URL \}\}/);
     assert.match(yml,/SUPABASE_SERVICE_ROLE_KEY: \$\{\{ secrets\.SUPABASE_SERVICE_ROLE_KEY \}\}/);
-    assert.match(yml,/node tools\/ci\/load-openai-key-from-vault\.mjs\s+node tools\//);
+    assert.match(yml,/node tools\/ci\/load-openai-key-from-vault\.mjs(?:\s*\\)?\s+node tools\//);
     assert.doesNotMatch(yml,/OPENAI_API_KEY: \$\{\{ secrets\.OPENAI_API_KEY \}\}/);
     assert.doesNotMatch(yml,/ANTHROPIC_API_KEY|anthropics\/claude-code-action/);
   }
