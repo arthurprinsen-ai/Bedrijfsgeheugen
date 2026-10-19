@@ -7,16 +7,13 @@
   "prevention_rule": "Resolve plural and reversed Twinfield variants to existing /twinfield-koppeling money page before suggesting new pages.",
   "evaluation": {
     "historical_replay": [
-      {
-        "input": "twinfield koppelingen",
-        "expected_owner": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
-        "status": "pending CI verification"
-      },
-      {
-        "input": "koppeling twinfield",
-        "expected_owner": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
-        "status": "pending CI verification"
-      }
+      "tests/powerhouse-seo-opportunity-resolver.test.mjs"
+    ],
+    "shadow": [
+      "tests/powerhouse-seo-opportunity-resolver.test.mjs"
+    ],
+    "canary": [
+      "tests/powerhouse-seo-opportunity-resolver.test.mjs"
     ]
   },
   "evidence": {
