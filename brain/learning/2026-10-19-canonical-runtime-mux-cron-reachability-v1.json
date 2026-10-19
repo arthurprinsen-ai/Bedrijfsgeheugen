@@ -3,7 +3,6 @@
   "obligation": "canonical-mux-cron-reachability-20261019",
   "fingerprint": "scheduler|cron-slots|reachability|v1",
   "root_cause": "pg_cron five-minute residues 1 only, but v1/v2 workload predicates also require residues 3 and 4",
-  "preventive_rule": "Static reachability test must prove every registered task has at least one reachable cron minute; do not add shadow jobs, keep baseline frequency unchanged",
   "verified_before_deploy": {
     "canonical_job_id": 171,
     "original_slots_per_hour": 12,
@@ -38,5 +37,6 @@
   },
   "tests": [
     "tests/brain-runtime-scheduler-reachability-20261019.test.mjs"
-  ]
+  ],
+  "prevention_rule": "Static reachability test must prove every registered task has at least one reachable cron minute; do not add shadow jobs, keep baseline frequency unchanged"
 }
