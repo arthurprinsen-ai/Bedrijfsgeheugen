@@ -11,3 +11,5 @@ Observed provider failures:
 Committed remediation (candidate): native OpenAI-only blog generator, native blog workflow, canonical pre-publish OpenAI translation configuration and dedicated regression contract. The other publishing and approval surfaces are unchanged. No newsletter recipient permissions are altered and no unapproved email can be sent.
 
 Evidence boundary: only mark blog `LIVE_PROVEN` after provider-authorized publication plus public site content-identity readback. Regression tests and a green preflight cannot independently prove a public post.
+
+Supplementary legacy repair: removed Weekblog Anthropic HTTP-credit probe and both Weekblog/Blog bijwerken Claude Code actions, replacing with OpenAI Codex Action using least-privilege workspace permissions. All original file-scope publication checks retained. Full release still awaits Required CI and CodeQL.
