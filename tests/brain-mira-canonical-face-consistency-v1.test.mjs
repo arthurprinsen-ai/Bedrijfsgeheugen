@@ -42,7 +42,7 @@ test('actual two-image vision call receives master and candidate; provenance is 
  assert.match(verifier,/MIRA_CANONICAL_MASTER_UNAVAILABLE/);
 });
 test('existing router checks actual frames and refuses a nonmaster generation before provider truth',()=>{
- assert.match(router,/MIRA_FRESH_IMAGE2VIDEO_CANONICAL_MASTER_REQUIRED/);
+ assert.match(router,/MIRA_CANONICAL_REFERENCE_VIDEO_REQUIRED/);
  assert.match(router,/VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH/);
  assert.match(router,/MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES/);
  assert.match(router,/MIRA_SAME_FACE_EXACT_MEDIA_GATE_FAILED/);
