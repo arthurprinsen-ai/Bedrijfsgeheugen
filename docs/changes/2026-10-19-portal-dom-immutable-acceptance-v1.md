@@ -6,7 +6,7 @@ Customer portal and public site runtime are published at `1ede6008da2f2659410974
 The existing production workflow has a strict and appropriate runtime-change rejection, but it cannot account for an isolated, independently deployed Edge function that does not change the Netlify customer portal. An earlier SHA override fails despite correct site code. This blocks real Chromium acceptance of earlier protected features.
 
 ## Minimal repair
-Extend the single-file allowlist in `.github/workflows/portal-v2-production-dom-readback.yml` to include the known, independent `netlify-deploy-bridge/index.ts`. No wildcard other than existing documentation/test paths. Do not weaken:
+Extend the existing CI/evidence allowlist with the exact independent infrastructure and its own governance records in `.github/workflows/portal-v2-production-dom-readback.yml` to include the known, independent `netlify-deploy-bridge/index.ts`. No wildcard other than existing documentation/test paths. Do not weaken:
 - verified approved protected PR ancestry;
 - exact `main` input and published release SHA;
 - immutable Netlify deployment identity;
