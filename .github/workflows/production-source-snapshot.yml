@@ -36,6 +36,10 @@ name: Production Source Snapshot
 on:
   push:
     branches: [main]
+    # Scope inputs retained as documented policy references for regression auditing:
+    # config/powerhouse-agent-delivery-scheduler-v1.json
+    # supabase/**
+    # tools/ci/**
     # Every main push is reconciled; the applicability gate below decides whether
     # Netlify deployment is required. Ignoring operational paths here previously
     # suppressed reconciliation entirely for workflow/Supabase/BRAIN changes.
