@@ -50,4 +50,12 @@ test('both blog publication lanes have OpenAI keys and no Claude/Anthropic depen
   assert.doesNotMatch(daily,/ANTHROPIC_API_KEY/);
   assert.match(daily,/STATIC_I18N_REQUIRE_CACHE=1/);
   assert.match(daily,/gh pr merge "\$pr" --auto --squash/);
+  for (const workflow of ['weekblog.yml','blog-bijwerken.yml']) {
+    const source=fs.readFileSync(path.join(root,'.github/workflows',workflow),'utf8');
+    assert.ok(source.includes('uses: openai/codex-action@v1'));
+    assert.ok(source.includes('openai-api-key: ${{ secrets.OPENAI_API_KEY }}'));
+    assert.ok(source.includes('permission-profile: ":workspace"'));
+    assert.doesNotMatch(source,/ANTHROPIC_API_KEY|anthropics\/claude-code-action/);
+    assert.match(source,/Deterministic (publication|update) contract checks/);
+  }
 });
