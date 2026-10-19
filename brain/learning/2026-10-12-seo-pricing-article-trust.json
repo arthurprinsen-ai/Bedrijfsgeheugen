@@ -1,0 +1,104 @@
+{
+  "id": "seo-pricing-article-trust-2026-10-12",
+  "date": "2026-10-14",
+  "status": "CANDIDATE",
+  "authority": [
+    "config/seo-growth-loop.json",
+    "config/seo-optimization-allowlist.json",
+    "site/seo-order-map.json"
+  ],
+  "decision": "UPDATE_MONEY_PAGE_SUPPORT",
+  "canonical_owner": "https://www.bedrijfsgeheugen.nl/prijzen",
+  "support_page": "https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/",
+  "intent": "kosten digitalisering mkb",
+  "hypothesis": "Removing contradictory legacy pricing and matching schema plus price-intent CTA to current published offers reduces qualified buyer distrust",
+  "evidence": {
+    "production_checked_on": "2026-10-14",
+    "published_prices": {
+      "free_frisse_blik_minutes": 30,
+      "scan_eur": 2950,
+      "starter_eur_per_month": 99,
+      "build_sprint_from_eur": 14500
+    },
+    "conflict": "Support article still claimed €2900 paid Frisse Blik, €29/month maintenance and no software sales",
+    "gsc": {
+      "property": "sc-domain:bedrijfsgeheugen.nl",
+      "range": [
+        "2026-09-12",
+        "2026-10-09"
+      ],
+      "support_page_rows": 0,
+      "pricing_page_rows": 0,
+      "inspection_support": {
+        "verdict": "PASS",
+        "coverage": "Ingediend en geïndexeerd",
+        "last_crawled": "2026-08-10"
+      },
+      "inspection_pricing": {
+        "verdict": "NEUTRAL",
+        "coverage": "Gevonden - momenteel niet geïndexeerd"
+      },
+      "note": "Search Analytics zero rows does not imply zero demand; pricing index inspection is neutral and may lag."
+    },
+    "dataforseo": {
+      "query_terms": [
+        "wat kost digitalisering mkb",
+        "kosten digitalisering mkb",
+        "digitalisering mkb kosten"
+      ],
+      "location": "Netherlands",
+      "result_items": 0,
+      "note": "Reuse cached provider evidence; no new paid API call for this price-intent correction"
+    },
+    "first_party_outcomes": {
+      "growth_outcomes_lead_rows": 1,
+      "growth_outcomes_paid_order_rows": 0,
+      "growth_outcomes_revenue_eur": 0
+    }
+  },
+  "changes": [
+    "pricing-copy-truth",
+    "FAQ-schema-freshness",
+    "price-intent-CTA"
+  ],
+  "target_metrics": [
+    "organic_landing",
+    "primary_cta_click",
+    "qualified_lead",
+    "paid_order",
+    "realized_revenue"
+  ],
+  "rollback": "Restore previous article and cache if search, accessibility, trust or qualified conversions regress",
+  "guardrails": {
+    "max_daily_changes": 3,
+    "no_new_content": true,
+    "no_fake_roi": true,
+    "english_cache_required": true
+  },
+  "delivery": {
+    "state": "CANDIDATE_NOT_LIVE",
+    "production_readback": false,
+    "base_sha": "059849becbd2a916ea3cf7e057326fd1ee172cfc"
+  },
+  "outcomes": {
+    "qualified_leads": null,
+    "paid_orders": null,
+    "realized_revenue_eur": null
+  },
+  "learning_path": "BG211 -> BG168 -> BG166 -> BG167",
+  "compiler": {
+    "failure_class": "CONTENT_TRUST_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-pricing-trust.test.mjs"
+    ]
+  },
+  "fingerprint": "seo-pricing-trust-correction-20261014",
+  "root_cause": "Indexed supporting article and FAQ retained obsolete prices after canonical pricing changed.",
+  "prevention": "Historical replay test requires matching published pricing and rejects obsolete claims before release."
+}
