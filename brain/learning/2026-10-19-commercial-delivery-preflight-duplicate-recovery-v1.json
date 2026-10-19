@@ -25,7 +25,7 @@
       "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
     ],
     "canary": [
-      "tests/brain-powerhouse-autonomous-outreach-v1.test.mjs"
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs"
     ]
   },
   "test_evidence": {
@@ -39,7 +39,8 @@
     "branch_static_contract_checks": "8 assertions passed in connector readback",
     "required_ci": "required, not yet passed",
     "codeql_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39252240802",
-    "production_readback": "not yet proven"
+    "production_readback": "not yet proven",
+    "stale_legacy_canary": "tests/brain-powerhouse-autonomous-outreach-v1.test.mjs references a removed migration and cannot prove this change; keep it as independent historical suite maintenance, not an admission canary."
   },
   "state": "CANDIDATE_AWAITING_PROTECTED_REQUIRED_CI_MERGE_EDGE_RUNTIME_READBACK",
   "evidence_urls": [
