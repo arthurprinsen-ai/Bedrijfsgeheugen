@@ -30,13 +30,14 @@ const trouw=(d:string)=>{if(SOCIAAL.test(d))return 0.1;for(const[k,v]of Object.e
 
 
 const DATAFORSEO_ENDPOINT='https://api.dataforseo.com/v3/serp/google/organic/live/advanced';
+const DATAFORSEO_TIMEOUT_MS=35000; // Existing pg_net scheduler transport allows 120s; Tavily remains 12s.
 async function dataforseoSerp(query:string,login:string,password:string){
   if(!login||!password)throw new Error('DATAFORSEO_CREDENTIALS_UNAVAILABLE');
   const r=await fetch(DATAFORSEO_ENDPOINT,{
     method:'POST',
     headers:{authorization:'Basic '+btoa(login+':'+password),'content-type':'application/json'},
     body:JSON.stringify([{keyword:query,location_name:'Netherlands',language_code:'nl',depth:10}]),
-    signal:AbortSignal.timeout(TAVILY_TIMEOUT_MS)
+    signal:AbortSignal.timeout(DATAFORSEO_TIMEOUT_MS)
   });
   const b:any=await r.json().catch(()=>({}));
   if(!r.ok||Number(b.status_code)!==20000)throw new Error('DATAFORSEO_REMOTE_FAILURE');
