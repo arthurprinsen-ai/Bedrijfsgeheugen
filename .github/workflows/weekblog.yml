@@ -162,31 +162,25 @@ jobs:
         run: |
           echo "lijst=$(ls -d blog/*/ 2>/dev/null | sed 's|blog/||;s|/||' | paste -sd', ')" >> "$GITHUB_OUTPUT"
 
-      - name: Sleutel controleren
+      - name: OpenAI sleutel controleren
         if: steps.kalender.outputs.gevonden == 'true'
         env:
-          KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          if [ -z "$KEY" ]; then
-            echo "::error::ANTHROPIC_API_KEY is leeg of bestaat niet in de repo-secrets."
-            exit 1
-          fi
-          code=$(curl -s -o /tmp/resp.json -w "%{http_code}" https://api.anthropic.com/v1/messages \
-            -H "x-api-key: $KEY" -H "anthropic-version: 2023-06-01" -H "content-type: application/json" \
-            -d '{"model":"claude-sonnet-5","max_tokens":16,"messages":[{"role":"user","content":"ok"}]}')
-          echo "Antwoord van de API: HTTP $code"
-          if [ "$code" != "200" ]; then
-            echo "::error::De API antwoordde met HTTP $code."
-            cat /tmp/resp.json
+          set -euo pipefail
+          if [ -z "$OPENAI_API_KEY" ]; then
+            echo "::error::OPENAI_API_KEY ontbreekt voor de bestaande Weekblog-generator."
             exit 1
           fi
 
       - name: Artikel schrijven
         if: steps.kalender.outputs.gevonden == 'true'
-        uses: anthropics/claude-code-action@v1
+        uses: openai/codex-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: "--model claude-sonnet-5 --max-turns 60 --allowedTools Read,Write,Edit,Glob,Grep,WebSearch"
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          permission-profile: ":workspace"
+          safety-strategy: drop-sudo
+          allow-bots: true
           prompt: |
             Schrijf één blogartikel voor www.bedrijfsgeheugen.nl (statische HTML-site, Nederlands).
 
