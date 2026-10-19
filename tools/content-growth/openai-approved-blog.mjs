@@ -10,6 +10,63 @@ const SCHEMA = {
   additionalProperties: false,
 };
 
+
+function record(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+}
+
+function finiteMeasure(value) {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0 || value > 1e12) return null;
+  return value;
+}
+
+function allowMeasures(input, names) {
+  const source=record(input), result={};
+  for (const name of names) {
+    const value=finiteMeasure(source[name]);
+    if (value !== null) result[name]=value;
+  }
+  return result;
+}
+
+// Provider data-minimization boundary: NEVER forward the downloaded BRAIN JSON
+// itself. Only explicit numeric, aggregated marketing performance and public blog
+// content identifiers may leave the workflow. Email, contact, lead, customer,
+// free text, prompt instructions, URLs, and arbitrary nested source fields are
+// excluded even if a future API response adds them.
+export function publicBlogLearningSignals(raw) {
+  const root=record(raw);
+  const learn=Object.keys(record(root.learning)).length ? record(root.learning) : root;
+  const totals=allowMeasures(learn.commercial_totals,
+    ['orders','revenue','leads','qualified_leads','conversions','cta_clicks','engagement','reach']);
+  const confidence=allowMeasures(learn.confidence,['proven_items','observed_items']);
+  const candidates=Array.isArray(learn.exploit_candidates) ? learn.exploit_candidates : [];
+  const exploit_candidates=candidates.slice(0,12).flatMap(row=>{
+    const item=record(row);
+    const content_id=typeof item.content_id==='string' ? item.content_id : '';
+    if (!/^blog:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(content_id) || content_id.length>90) return [];
+    return [{content_id,...allowMeasures(item,['score','orders','revenue','conversions'])}];
+  });
+  const scoresSource=record(learn.candidate_scores);
+  const candidate_scores={};
+  for(const [key,value] of Object.entries(scoresSource).slice(0,32)){
+    if(!/^blog:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(key) || key.length>90) continue;
+    const n=finiteMeasure(value);
+    if(n!==null) candidate_scores[key]=n;
+  }
+  if(!Object.keys(totals).length && !Object.keys(confidence).length &&
+      !exploit_candidates.length && !Object.keys(candidate_scores).length) {
+    throw new Error('BRAIN_PUBLIC_AGGREGATES_MISSING');
+  }
+  return {learning:{
+    contract:'public-approved-aggregate-blog-intelligence-v1',
+    ...(Object.keys(totals).length?{commercial_totals:totals}:{}),
+    ...(Object.keys(confidence).length?{confidence}:{}),
+    ...(exploit_candidates.length?{exploit_candidates}:{}),
+    ...(Object.keys(candidate_scores).length?{candidate_scores}:{})
+  }};
+}
+
 function outputText(response) {
   if (response?.status !== 'completed') throw new Error('OPENAI_BLOG_RESPONSE_INCOMPLETE');
   const text = typeof response.output_text === 'string' ? response.output_text :
@@ -59,7 +116,7 @@ export async function generateApprovedBlog({learning, apiKey, fetchImpl=fetch, m
         'Verzin geen omzet, cases, klantresultaten, testimonials, providerbewijs of andere feiten. Gebruik geen eerdere tekst opnieuw, geen keyword stuffing of lege AI-beloftes.',
         'title: 12-80 tekens; slug: lowercase-kebab-case; keyword: 3-80 tekens; meta: 120-170 tekens; brain_reason: concrete onderbouwing vanuit learninggegevens.'
       ].join('\n'),
-      input:JSON.stringify(learning),
+      input:JSON.stringify(publicBlogLearningSignals(learning)),
       text:{format:{type:'json_schema',name:'approved_blog',strict:true,schema:SCHEMA}}
     })
   });
