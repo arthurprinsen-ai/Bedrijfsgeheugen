@@ -16,12 +16,13 @@
     "failure_class": "SCHEDULER_SLOT_GAP",
     "scope": "SCHEDULER",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-runtime-scheduler-reachability-20261019.test.mjs"
+      "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
+      "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs"
     ]
   },
   "evidence": {
@@ -33,10 +34,21 @@
       4
     ],
     "actual_learning_audit_observed_at": "2026-10-19T13:19:07.806831Z",
-    "prediction_resolution_debt": 247
+    "prediction_resolution_debt": 247,
+    "archive_version": "20261006085416",
+    "archive_root_cause": "Stored Supabase migration assertion references 3 canonical jobs not found in any preceding migration, whereas current GitHub replay file already skips missing production-only jobs",
+    "absent_prior_scheduled_jobs": [
+      "powerhouse-identity-graph-v1",
+      "powerhouse-connection-activation-daily-v1",
+      "powerhouse-content-orchestrator-daily-v1"
+    ],
+    "preview_applied_versions": 568,
+    "production_applied_versions": 714,
+    "live_rollout_proven": false
   },
   "tests": [
-    "tests/brain-runtime-scheduler-reachability-20261019.test.mjs"
+    "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
+    "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs"
   ],
   "prevention_rule": "Static reachability test must prove every registered task has at least one reachable cron minute; do not add shadow jobs, keep baseline frequency unchanged"
 }
