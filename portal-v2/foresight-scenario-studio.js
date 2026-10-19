@@ -1,5 +1,6 @@
 import { buildGoalForecast, GOAL_METRICS } from '../brain/context/goal-forecast-engine.mjs';
 import {buildTenantForesightEvidence,renderTenantForesightEvidence} from './foresight-tenant-evidence.js';
+import {buildDecisionTwinReceipt,renderDecisionTwinReceipt} from './decision-twin-receipt.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const valueOf=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):null;
@@ -116,7 +117,7 @@ function chart(metric,scenario){
     '<text x="46" y="20" font-size="11" fill="#67748d">'+esc(fmt(max,metric.unit))+'</text>'+
     '<text x="46" y="180" font-size="11" fill="#67748d">'+esc(fmt(min,metric.unit))+'</text></svg>';
 }
-function markup(model){
+function markup(model,state){
   const m=model.active,s=model.scenario;
   const choose=model.metrics.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===m.id?' selected':'')+'>'+esc(x.domain+' · '+x.label)+(x.forecast?'':' · bron ontbreekt')+'</option>').join('');
   const forecast=s?'<div class="pfs-stat-grid"><div><small>Laatste meting</small><strong>'+esc(fmt(m.current,m.unit))+'</strong></div><div><small>Trend op horizon</small><strong>'+esc(fmt(s.baseline,m.unit))+'</strong></div><div><small>Wat-als-variant</small><strong>'+esc(fmt(s.simulated,m.unit))+'</strong></div><div><small>Statistische band</small><strong>'+esc(fmt(s.lower,m.unit))+' – '+esc(fmt(s.upper,m.unit))+'</strong></div></div>':'<div class="pfs-gap">Voor '+esc(m.label)+' is nog geen onderbouwde tijdreeks beschikbaar. Scenarioresultaten blijven uit totdat minimaal drie chronologische metingen beschikbaar zijn.</div>';
@@ -133,6 +134,7 @@ function markup(model){
     '<button type="button" data-pfs-page="'+esc(m.page)+'">Bekijk bron en bijbehorende acties →</button></div>'+
     '<div><h4>Betrouwbaarheid en herkomst</h4><p>'+m.history.length+' historische meetpunten; '+m.evidenceCount+' bronverwijzingen. Status: '+esc(m.quality)+'.</p><p>'+esc(m.note)+'</p></div></div>'+
     '<details class="pfs-sources"><summary>Brein, Powerhouse en Heartbeat: aansluitstatus</summary><p>'+esc(model.intelligence.brain)+' · '+esc(model.intelligence.powerhouse)+' · '+esc(model.intelligence.heartbeat)+'.</p><p>Een platformbrede voorspelling is geen automatisch gevalideerde klantprognose. Eerst authenticatie, tenant-scope, versheid en modelkwaliteit controleren.</p></details>'+
+    renderDecisionTwinReceipt(buildDecisionTwinReceipt(state,model))+
     '</section>';
 }
 export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',openPage}={}){
@@ -144,12 +146,12 @@ export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',o
   const draw=()=>{
     const model=buildForesightStudioModel(state,selected);
     const evidence=intelligence?buildTenantForesightEvidence(intelligence,{metric:model.active.id,mode:selected.signalMode}):null;
-    section.innerHTML=markup(model)+renderTenantForesightEvidence(evidence,{status:sourceStatus});
+    section.innerHTML=markup(model,state)+renderTenantForesightEvidence(evidence,{status:sourceStatus});
     section.querySelector('[data-pfs-metric]')?.addEventListener('change',event=>{selected.metric=event.target.value;selected.sensitivity=0;draw();});
     section.querySelector('[data-pfs-days]')?.addEventListener('change',event=>{selected.days=Number(event.target.value);draw();});
     section.querySelector('[data-pfs-sensitivity]')?.addEventListener('input',event=>{selected.sensitivity=Number(event.target.value);draw();});
     section.querySelectorAll('[data-pfs-preset]').forEach(button=>button.addEventListener('click',()=>{selected.sensitivity=Number(button.dataset.pfsPreset);draw();}));
-    section.querySelector('[data-pfs-page]')?.addEventListener('click',event=>openPage?.(event.currentTarget.dataset.pfsPage));
+    section.querySelectorAll('[data-pfs-page]').forEach(button=>button.addEventListener('click',event=>openPage?.(event.currentTarget.dataset.pfsPage)));
     section.querySelector('[data-pfs-evidence-filter]')?.addEventListener('change',event=>{selected.signalMode=event.target.value;draw();});
     section.querySelector('[data-pfs-evidence-refresh]')?.addEventListener('click',()=>{void loadSources();});
   };
