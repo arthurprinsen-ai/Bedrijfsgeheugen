@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-19",
+  "obligation": "content-publication:2026-10-19:blog",
+  "fingerprint": "OPENAI_KEY_MISSING_BEFORE_REPO_SECRET|CANONICAL_BLOG_RETRY_PROTECTED_CANDIDATE",
+  "root_cause": [
+    "Canonical blog publisher required a repository-secret OPENAI_API_KEY after OpenAI-only translation was merged; the earlier run failed with STATIC_I18N_OPENAI_KEY_MISSING.",
+    "Before the key was added, the publisher could not prepare complete validated English translations for the daily source-backed blog. Publication was GENERATED but had no public proof.",
+    "After the user added the GitHub key, rerun attempt 2 of GitHub run 39272994778 completed the candidate and produced PR 4483 with its scoped English cache. Protected CI must still pass before merge and production readback."
+  ],
+  "intervention": "Reuse the existing OpenAI-only canonical publisher and newly configured GitHub repository secret, then create one dated PR with exact Dutch artifact, complete reviewed translation cache, testable change scope and required delivery evidence.",
+  "prevention": "Do not return to exhausted Anthropic, invent translated strings, bypass static English cache, promise public delivery without Netlify readback, commit any API keys, or skip required CI, CodeQL and protected merge. Gmail recipient authorization and social uniqueness gates remain independent.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "website",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "prevention_rule": "OPENAI_BLOG_SOURCE_BACKED_CANDIDATE_COMPLETE_CACHE_AND_LIVE_PROOF_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "previous_failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39272994778/attempts/1",
+    "retry_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39272994778/attempts/2",
+    "new_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4483",
+    "provider_key": "GitHub Actions secret configured by user; secret value never read or stored in Git",
+    "new_translation_patch": "config/bg-static-i18n-en.d/powerhouse-blog-2026-10-19.json",
+    "required_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39288571544",
+    "public_production_readback": "NOT_YET_PROVEN"
+  },
+  "state": "OPENAI_CANDIDATE_CREATED_AWAITING_PROTECTED_CI_MERGE_NETLIFY_AND_PUBLIC_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4483",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39272994778"
+  ]
+}
