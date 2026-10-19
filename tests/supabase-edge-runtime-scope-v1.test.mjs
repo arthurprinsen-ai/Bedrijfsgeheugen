@@ -25,3 +25,16 @@ test('direct function change stays narrow',()=>{
     configText:config
   }),['powerhouse-predictive-engine']);
 });
+
+test('shared changes never hide an explicitly edited undeclared function',()=>{
+  assert.deepEqual(resolveEdgeRuntimeFunctions({
+    changedPaths:['supabase/functions/_shared/example.mjs','supabase/functions/unregistered-proof/index.ts'],
+    configText:'[functions.existing]\nenabled = true\n'
+  }),['existing','unregistered-proof']);
+});
+
+test('existing Mira router and both proof stages participate in protected production delivery',()=>{
+  const declared=declaredFunctions(config);
+  for(const name of ['powerhouse-instagram-media-router','powerhouse-instagram-media-verifier','powerhouse-instagram-temporal-verifier'])
+    assert.ok(declared.includes(name),`production delivery excludes ${name}`);
+});
