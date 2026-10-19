@@ -36,3 +36,16 @@ test('Discovery logs only aggregate metadata, not credentials or account identit
   assert.match(diagnostic,/pages, scanned_accounts: scannedAccounts, authorized_netlify_found: Boolean\(account\)/);
   assert.doesNotMatch(diagnostic,/apiKey|accountId|userId|secret|oauth_token/);
 });
+
+
+test('backup authority is monitored by existing strict OIDC workflow, never by public or silent success',()=>{
+  const workflow=readFileSync('.github/workflows/production-source-snapshot.yml','utf8');
+  assert.match(workflow,/authority_probe:/);
+  assert.match(workflow,/cron: '35 6 \* \* \*'/);
+  assert.match(workflow,/github\.event_name == 'schedule'/);
+  assert.match(workflow,/audience=bedrijfsgeheugen-netlify-deploy-bridge/);
+  assert.match(workflow,/--data '\{"action":"health"\}'/);
+  assert.match(workflow,/NETLIFY_BACKUP_AUTHORITY_UNAVAILABLE/);
+  assert.match(workflow,/exit 78/);
+  assert.match(workflow,/not a deploy proof/);
+});
