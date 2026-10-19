@@ -4,7 +4,7 @@ The OpenAI blog generator and static translation preparation have replaced Anthr
 
 ## Minimal correction
 
-The existing GitHub Actions secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are made available exclusively to a trusted Vault resolver step. It calls only the canonical production project and only `bg_geheim('OPENAI_API_KEY')`. The resolver validates the scalar key, registers a GitHub Actions mask **before** writing `OPENAI_API_KEY` into ephemeral `GITHUB_ENV`, and never writes credentials to the repository, PR, test artifacts or console output. The native-approved and Powerhouse daily blog workflows reuse this same resolver. Blank `secrets.OPENAI_API_KEY` environment overrides have been removed.
+The existing GitHub Actions secrets `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` are made available exclusively to a trusted Vault resolver step. It calls only the canonical production project and only `bg_geheim('OPENAI_API_KEY')`. The resolver validates the scalar key and immediately launches only an explicitly allowlisted OpenAI blog generator or i18n preparation process with the key in its private process environment. It never writes the credential into `GITHUB_ENV`, GitHub output, repository, PR, test artifacts or logs. It strips the Supabase service-role credentials from the child process environment. The native-approved and Powerhouse daily blog workflows reuse this same resolver. Blank `secrets.OPENAI_API_KEY` environment overrides have been removed.
 
 ## Safety and acceptance
 
