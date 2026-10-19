@@ -36,6 +36,29 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'growth-drain-budget-replay-v1',
+      fingerprint:'powerhouse|growth|bounded-replay-resume|v1',
+      label:'Growth and Outcome bounded replay — delivery evidence, not invented success',
+      owner:'ONE BRAIN / Powerhouse Growth delivery',
+      authority:'Netlify Blobs persisted receipts + Supabase growth-datahub-ingest + external provider acknowledgment',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['existing growth-event and outcome blob receipts','canonical Supabase idempotent datahub ingress','explicitly authorized external webhook']),
+      outputs:Object.freeze(['bounded replay with progress checkpoints','fair event/outcome queue order','observable runtime, page and persisted-skip metrics']),
+      runtime:Object.freeze({
+        scheduler:'netlify/functions/growth-drain.mjs',
+        replay:'netlify/functions/growth-replay.mjs',
+        regression:'tests/brain-growth-drain-time-budget-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-growth-drain-budget-recovery.json',
+        documentation:'docs/changes/2026-10-19-growth-drain-runtime-reliability-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingSchedulerOnly:true,noNewSSOT:true,tenantScopedReceipts:true,
+        providerProofRequired:true,http499IsNotFailureProof:true,
+        replayPersistIdempotently:true,noDisabledDeliverySideEffect:true,
+        liveReadbackBeforeSuccess:true,cooperativeBudgetNotHardTimeout:true
+      })
+    }),
+    Object.freeze({
       id:'powerhouse-contextual-foresight-studio-v1',
       fingerprint:'powerhouse|portal-v2|cross-domain-foresight|v1',
       label:'Powerhouse Foresight — interactieve cross-domain scenarioverkenning',
