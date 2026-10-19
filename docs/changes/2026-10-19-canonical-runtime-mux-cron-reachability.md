@@ -11,14 +11,21 @@ Rollout gate: verify native Node reachability tests, Required CI + CodeQL, prote
 This migration intentionally does not solve Tavily HTTP 432 usage quota, stale external source evidence, revenue snapshot timeout, missing customer-finance forecasts, or portal PR #4475 production acceptance.
 
 
-## Hosted Supabase replay blocker and additive precondition
+## Supabase branch source divergence — true resolution boundary
 
-At 2026-10-19 14:33:59 UTC, a real provider-owned branch replay stopped on stored remote migration `20261006085416` with `CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1`. The remote archived migration contains an unconditional `RAISE EXCEPTION`, while the GitHub version already tolerates missing legacy jobs, so changing only the GitHub text of that historical file cannot by itself prove replay. The newly created branch had 568/714 production migration records; there were no preceding archived references to three asserted scheduled jobs.
+A manually-created isolated development branch on 2026-10-19 replayed production's historical migration record `20261006085416` and stopped on `CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1` (SQLSTATE P0001). That branch had 568/714 migrations. However, read-only inspection of two **existing GitHub-integrated branches** (for other PRs, not modified here) shows that the same migration has **different archived SQL** and no hard abort, despite having the same version/name. This distinguishes a manual branch replay source from the hosted GitHub PR preview source.
 
-The new, **additive and version-ordered** migration `20261006085100_legacy_cron_replay_preconditions.sql` attempts to reinstate the three *real* historical cron activities immediately before the archived assertion, only if the modern canonical scheduler is not present and the legacy jobs are absent. It cannot rewrite remote Supabase migration history, it does not create a second canonical mux, and production already has the modern mux, so replay of this migration must be a no-op there. The source-evidence replay contract is in `tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs` and canonical learning.
+| Environment | Archived SQL MD5 | Historical cron hard abort | Meaning |
+| --- | --- | --- | --- |
+| Production | `6e4aa572b4c8f5bb4091958db833eba3` | Yes | Production history was recorded with older body |
+| Git-linked branch for PR #4441 | `69bebb24ab2651a4fd3f3bf92c5b9790` | No | Version-controlled replay follows updated body |
+| Git-linked branch for PR #4370 | `69bebb24ab2651a4fd3f3bf92c5b9790` | No | Independent corroboration of the distinct source |
 
-**Acceptance remains RED until a fresh provider-owned Supabase branch proves this earlier migration is actually included before its stored historical 20261006085416 block**. Supabase provider check must be success on exact PR head (not skipped); run source security and protected checks before merge. Do not directly edit `supabase_migrations.schema_migrations`, use empty placeholder migration files, infer provider association from the branch name, or promote a successful static test as production proof. If the provider hydrates only its archived ledger before applying Git files, this migration will not unblock it; supported provider baseline/replay reconciliation is then the hard boundary.
+**Recovery correction:** the proposed earlier `20261006085100_legacy_cron_replay_preconditions.sql` and its test were removed from this PR. They attempted to recover three legacy cron tasks for an error only reproduced using a **different** migration source; adding such jobs to current Git-linked previews is unnecessary and risks duplicating scheduled work. No production data, migration ledger, existing branch, branch-protection requirement, or runtime cron job was mutated by this diagnostic correction.
 
+The canonical prevention in `tools/ci/supabase-preview-diagnosis.mjs` retains **fail-closed** classes `MIGRATION_ARCHIVED_CRON_PRECONDITION` and `PREVIEW_CAPACITY_EXHAUSTED`, both with regression tests. Before treating future errors as the same bug, inspect actual source selection and archived SQL by environment, not migration version alone. Do not promote a passing manual SQL rollback test to equivalent native GitHub Preview evidence.
+
+**Release still blocked** until the Supabase-owned `Supabase Preview` check is a genuine `success` on the exact candidate head. PR #4479's provider check remained `skipped` because of concurrent preview branch capacity / PR association; no synthetic check or override is permitted. Then require Required test, CodeQL, protected CAS merge, real database promotion and authenticated production runtime readback.
 
 ## Permanently enforced archived-source divergence diagnosis
 
