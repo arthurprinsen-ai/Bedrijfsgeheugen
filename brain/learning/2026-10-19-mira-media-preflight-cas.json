@@ -3,7 +3,7 @@
   "fingerprint": "mira-media-preflight-preserve-worker-cas-v1",
   "obligation": "mira-media-preflight-preserve-worker-cas-20261019",
   "root_cause": "Router preflight unconditionally upserted a snapshot and required assetMaterialized before preserving CLAIMED. An async OpenArt job has no asset URL while running; real complete RPC therefore failed MEDIA_JOB_NOT_CLAIMED:WAITING_ASSET. A worker may also claim between read and write.",
-  "intervention": "Preserve CLAIMED/GENERATING before writing. Existing-row updates use id+updated_at CAS; insert contention and stale snapshots return typed retry before obligation mutation. No change to proof, provider or publication authority. Preserve explicit bounded generation-exhaustion/provider failure instead of reopening generation.",
+  "intervention": "Preserve CLAIMED/GENERATING before writing. Existing-row updates use id+updated_at CAS; insert contention and stale snapshots return typed retry before obligation mutation; obligation projection also requires its original updated_at and no external provider ID. No change to proof, provider or publication authority. Preserve explicit bounded generation-exhaustion/provider failure instead of reopening generation.",
   "prevention_rule": "MEDIA_PREFLIGHT_CANNOT_REVOKE_CLAIM_OR_OVERWRITE_NEWER_RESULT_V1",
   "compiler": {
     "failure_class": "MEDIA_PREFLIGHT_REVOKED_ACTIVE_PRODUCER",
