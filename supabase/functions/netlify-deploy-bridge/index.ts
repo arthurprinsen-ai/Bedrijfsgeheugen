@@ -37,7 +37,7 @@ async function getVaultSecret(name: string) {
   }
 }
 
-async function getComposioContext() {
+async function getComposioCandidates() {
   const apiKey = await getVaultSecret("COMPOSIO_API_KEY");
   const base = "https://backend.composio.dev/api/v3.1";
   const toolSlug = "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER";
@@ -50,7 +50,7 @@ async function getComposioContext() {
   // Provider pagination is cursor-based. An active Netlify account may appear
   // beyond the first 100 accounts in this Composio project. Never interpret an
   // incomplete account scan as an authorization failure.
-  let account: any = null;
+  const accounts: any[] = [];
   let cursor = "";
   let pages = 0;
   let scannedAccounts = 0;
@@ -101,14 +101,17 @@ async function getComposioContext() {
     }
     // Authorization is unchanged: only an ACTIVE, complete, enabled exact
     // netlify_mcp account may be selected; never fall back to a test user.
-    account = payload.items.find((item: any) =>
+    const pageCandidates = payload.items.filter((item: any) =>
       String(item?.toolkit?.slug || "").toLowerCase() === "netlify_mcp" &&
       String(item?.status || "").toUpperCase() === "ACTIVE" &&
       !item?.is_disabled &&
       typeof item?.id === "string" && item.id.trim().length > 0 &&
       typeof item?.user_id === "string" && item.user_id.trim().length > 0
     );
-    if (account) break;
+    accounts.push(...pageCandidates);
+    // Never send an unlimited number of third-party provider requests. A
+    // larger eligible pool is an explicit ambiguity, not implicit authority.
+    if (accounts.length > 4) throw new Error("composio netlify candidate pool ambiguous");
     const nextCursor = String(payload?.next_cursor || "").trim();
     if (!nextCursor) break;
     if (seenCursors.has(nextCursor)) throw new Error("composio connected accounts repeated cursor");
@@ -116,15 +119,22 @@ async function getComposioContext() {
     cursor = nextCursor;
   }
   console.log("NETLIFY_COMPOSIO_ACCOUNT_DISCOVERY", JSON.stringify({
-    pages, scanned_accounts: scannedAccounts, authorized_netlify_found: Boolean(account),
+    pages, scanned_accounts: scannedAccounts, authorized_netlify_found: accounts.length > 0, eligible_candidates: accounts.length,
     netlify_scan: netlifyScan,
     // Deliberately omit account IDs, user IDs, API keys and OAuth details.
   }));
-  const accountId = String(account?.id || "").trim();
-  const userId = String(account?.user_id || "").trim();
-  if (!accountId || !userId) throw new Error("composio netlify connected account unavailable");
+  if (accounts.length === 0) throw new Error("composio netlify connected account unavailable");
 
-  return { apiKey, accountId, userId };
+  // Try a newly connected OAuth grant first, but never trust creation time
+  // alone: the actual Netlify read-only get-project must pass before use.
+  const age = (a: any) => {
+    const ms = Date.parse(String(a?.created_at || ""));
+    return Number.isFinite(ms) ? ms : 0;
+  };
+  accounts.sort((a: any, b: any) => age(b) - age(a));
+  return accounts.map((a: any) => ({
+    apiKey, accountId: String(a.id), userId: String(a.user_id),
+  }));
 }
 
 // Composio v3.1 session *request* uses {toolkits:{enable:[...]}}.
@@ -307,23 +317,42 @@ Deno.serve(async (req: Request) => {
     let body: Record<string, unknown> = {};
     try { body = await req.json(); } catch {}
     phase = "account_read";
-    const accountContext = await getComposioContext();
+    const candidateContexts = await getComposioCandidates();
     const action = String(body.action || "proxy");
+    // An ACTIVE connected account is metadata, not live provider access.
+    // Verify the exact site with a read-only tool call before considering
+    // either an authority probe or the write-capable production fallback.
+    phase = "provider_authority_selection";
+    let verifiedContext: (typeof candidateContexts)[number] | null = null;
+    for (const [index, candidate] of candidateContexts.entries()) {
+      try {
+        const readResult = await executePinnedComposioTool(candidate,
+          "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER", {
+            operation: "get-project",
+            params: { siteId },
+          });
+        if (readResult.includes(siteId)) {
+          verifiedContext = candidate;
+          console.log("NETLIFY_BACKUP_PROVIDER_READ_VERIFIED", JSON.stringify({
+            site_match:true, candidate_position:index+1,
+            eligible_candidates:candidateContexts.length,
+            elapsed_ms:Date.now()-startedAt,
+          }));
+          break;
+        }
+      } catch {
+        console.warn("NETLIFY_BACKUP_PROVIDER_CANDIDATE_REJECTED", JSON.stringify({
+          candidate_position:index+1,
+          eligible_candidates:candidateContexts.length,
+        }));
+      }
+    }
+    if (!verifiedContext) throw new Error("composio netlify site authority unverified");
     if (action === "health") {
-      // An actual Netlify provider read verifies credentials and site access.
-      // Never invoke deploy-site on a read-only health request.
-      phase = "provider_health";
-      const readResult = await executePinnedComposioTool(accountContext,
-        "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER", {
-          operation: "get-project",
-          params: { siteId },
-        });
-      if (!readResult.includes(siteId)) throw new Error("netlify project readback mismatch");
-      console.log("NETLIFY_BACKUP_PROVIDER_READ_VERIFIED", JSON.stringify({ site_match:true, elapsed_ms: Date.now()-startedAt }));
       return Response.json({ok:true,authority:"composio_project_scoped_netlify_read",provider_readback:true},{headers:{"Cache-Control":"no-store"}});
     }
     phase = "proxy_read";
-    const proxy = await getProxy(accountContext);
+    const proxy = await getProxy(verifiedContext);
     console.log("NETLIFY_DEPLOY_BRIDGE_PHASE", JSON.stringify({ phase:"proxy_ready", elapsed_ms:Date.now()-startedAt }));
 
     if (action === "trigger_build") {
@@ -369,6 +398,10 @@ Deno.serve(async (req: Request) => {
     } else if (!authPhase && /composio netlify connected account unavailable/i.test(message)) {
       errorCode = "composio_netlify_account_not_public";
       status = 420;
+    }
+    else if (!authPhase && /composio netlify site authority unverified|composio netlify candidate pool ambiguous/i.test(message)) {
+      errorCode = "composio_netlify_provider_authority_unverified";
+      status = 424;
     } else if (!authPhase && /composio connected accounts 401/i.test(message)) {
       errorCode = "composio_project_key_unauthorized";
       status = 431;

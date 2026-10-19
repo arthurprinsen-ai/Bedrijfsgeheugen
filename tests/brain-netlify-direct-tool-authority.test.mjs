@@ -16,13 +16,15 @@ test('Composio session uses documented request-side enable and exact existing us
 });
 
 test('health only reads fixed Netlify project, never invokes deploy',()=>{
-  const a=s.indexOf('if (action === "health")');
+  const a=s.indexOf('phase = "provider_authority_selection";');
   const b=s.indexOf('phase = "proxy_read";',a);
   assert.ok(a>0&&b>a);
   const health=s.slice(a,b);
   assert.match(health,/NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER/);
   assert.match(health,/operation: "get-project"/);
   assert.match(health,/readResult\.includes\(siteId\)/);
+  assert.match(health,/if \(!verifiedContext\) throw new Error/);
+  assert.match(health,/if \(action === "health"\)/);
   assert.doesNotMatch(health,/operation: "deploy-site"/);
 });
 

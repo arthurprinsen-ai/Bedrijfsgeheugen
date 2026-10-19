@@ -20,7 +20,8 @@ test('Account discovery is bounded, fail-closed and does not infer authorization
   assert.match(source,/!Array\.isArray\(payload\?\.items\)/);
   assert.match(source,/String\(item\?\.status \|\| ""\)\.toUpperCase\(\) === "ACTIVE"/);
   assert.match(source,/typeof item\?\.user_id === "string"/);
-  assert.match(source,/if \(!accountId \|\| !userId\) throw new Error/);
+  assert.match(source,/if \(accounts.length === 0\) throw new Error\("composio netlify connected account unavailable"\)/);
+  assert.match(source,/if \(accounts.length > 4\) throw new Error\("composio netlify candidate pool ambiguous"\)/);
   assert.match(source,/signal: AbortSignal\.timeout\(10000\)/);
 });
 
@@ -32,8 +33,8 @@ test('OIDC trust boundary and provider release proof are unchanged',()=>{
 });
 
 test('Discovery logs only aggregate metadata, not credentials or account identities',()=>{
-  const diagnostic=source.slice(source.indexOf('console.log("NETLIFY_COMPOSIO_ACCOUNT_DISCOVERY"'),source.indexOf('const accountId ='));
-  assert.match(diagnostic,/pages, scanned_accounts: scannedAccounts, authorized_netlify_found: Boolean\(account\)/);
+  const diagnostic=source.slice(source.indexOf('console.log("NETLIFY_COMPOSIO_ACCOUNT_DISCOVERY"'),source.indexOf('if (accounts.length === 0)'));
+  assert.match(diagnostic,/authorized_netlify_found: accounts.length > 0, eligible_candidates: accounts.length/);
   assert.doesNotMatch(diagnostic,/apiKey|accountId|userId|secret|oauth_token/);
 });
 

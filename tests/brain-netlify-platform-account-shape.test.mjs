@@ -19,7 +19,7 @@ test('the Netlify account discrepancy is counted, without expanding selection ri
 
 test('aggregate diagnostics do not emit account, user, config or credential values',()=>{
   const start=source.indexOf('console.log("NETLIFY_COMPOSIO_ACCOUNT_DISCOVERY"');
-  const end=source.indexOf('const accountId =',start);
+  const end=source.indexOf('if (accounts.length === 0)',start);
   const log=source.slice(start,end);
   assert.ok(start>0 && end>start);
   assert.match(log,/netlify_scan: netlifyScan/);
