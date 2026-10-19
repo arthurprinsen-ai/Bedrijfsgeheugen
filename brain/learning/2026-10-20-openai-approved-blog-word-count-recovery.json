@@ -1,0 +1,18 @@
+{
+  "date": "2026-10-20",
+  "obligation": "openai-approved-blog-word-count-recovery-20261020",
+  "incident_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39303086998",
+  "failure_class": "OPENAI_BLOG_WORD_COUNT_INVALID",
+  "root_cause": "Validated OpenAI JSON candidate contained a blogtext outside the hard 900-1500-word range; generation had no controlled attempt to revise an underlength or overlength draft.",
+  "correction": "Request a 1150-1300-word draft. When only word-count validation fails, retry up to two times with the preceding generated draft, aggregate public learning signals, and explicit target length; preserve strict validation and fail closed on exhaustion.",
+  "privacy": "Only whitelisted numeric marketing aggregates and public blog identifiers reach OpenAI. Revisions may include the previously OpenAI-generated draft; no downloaded raw Brain JSON or user/customer records.",
+  "guardrails": [
+    "No automated padding or fabricated filler",
+    "Retain minimum 900 and maximum 1500",
+    "Retry only on word-count error",
+    "Do not mutate published blogs or Notion approval gates",
+    "No duplicate-date publication"
+  ],
+  "test": "tests/brain-openai-approved-blog-word-count-retry-20261020.test.mjs",
+  "status": "FIX_CANDIDATE_NOT_YET_MERGED"
+}
