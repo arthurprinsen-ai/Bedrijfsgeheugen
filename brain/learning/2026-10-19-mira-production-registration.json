@@ -14,13 +14,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-edge-runtime-scope-v1.test.mjs"
+      "tests/brain-mira-production-stage-registration-20261019.test.mjs"
     ],
     "shadow": [
-      "tests/supabase-edge-runtime-scope-v1.test.mjs"
+      "tests/brain-mira-production-stage-registration-20261019.test.mjs"
     ],
     "canary": [
-      "tests/supabase-edge-runtime-scope-v1.test.mjs"
+      "tests/brain-mira-production-stage-registration-20261019.test.mjs"
     ]
   },
   "test_evidence": {
@@ -31,5 +31,6 @@
   "evidence_urls": [
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39302298702",
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4492"
-  ]
+  ],
+  "prevention_rule": "MIRA_STAGE_INVENTORY_AND_EXPLICIT_SCOPE_V1"
 }
