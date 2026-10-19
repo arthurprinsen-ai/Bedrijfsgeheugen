@@ -14,7 +14,9 @@ test('publisher extracts cache only after all canonical SEO transformations', ()
   assert.match(entry,/NETLIFY_I18N_CACHE_PREPARED/);
   assert.match(publisher,/--prepare-i18n-cache="powerhouse-blog-\$DATE\.json"/);
   const createCandidate=publisher.indexOf('      - name: Create exactly one protected candidate');
-  const prepare=publisher.indexOf('          STATIC_I18N_NETWORK=1 node tools/ci/netlify-build-entry.mjs',createCandidate);
+  const prepare=publisher.indexOf('          STATIC_I18N_NETWORK=1 node tools/ci/load-openai-key-from-vault.mjs',createCandidate);
+  const builder=publisher.indexOf('            node tools/ci/netlify-build-entry.mjs',prepare);
+  assert.ok(builder>prepare,'approved OpenAI bridge must invoke the real canonical production build');
   const createPr=publisher.indexOf('            gh pr create --base main',createCandidate);
   assert.ok(createCandidate>=0 && prepare>createCandidate && createPr>prepare,
     'all English strings are prepared before opening the PR');
