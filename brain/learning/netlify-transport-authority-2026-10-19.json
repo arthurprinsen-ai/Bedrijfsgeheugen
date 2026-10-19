@@ -43,5 +43,11 @@
     "functional_browser_readback": "not yet proven",
     "fallback_authorization": "blocked: HTTP420 project-scoped Composio account unavailable"
   },
-  "observation_update": "After the failed snapshot attempt, Git-native Netlify published main commit d0152328 via provider deploy 6ad5ba106bfc20fb52b8a159; backup transport authority remains unresolved."
+  "observation_update": "After the failed snapshot attempt, Git-native Netlify published main commit d0152328 via provider deploy 6ad5ba106bfc20fb52b8a159; backup transport authority remains unresolved.",
+  "delivery_admission": {
+    "obligation_id": "netlify-transport-authority-recovery-20261019",
+    "delivery_lane": "incident",
+    "candidate_type": "recovery",
+    "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4448"
+  }
 }
