@@ -243,13 +243,13 @@ def assert_reader_ready(data):
     if len(body.strip()) < 450:
         fail("BLOG_ARTIFACT_NOT_READER_READY:BODY_TOO_SHORT")
     checks = (
-        ("PUBLISH_FIRST_INSTRUCTION", body, r"(?im)^\\s*Voordat u publiceert\\s*:"),
-        ("RELEASE_STEP", body, r"(?im)^\\s*Publicatiestap\\s*\\(vereist v[oó]o?r live\\)"),
-        ("EDITORIAL_SEO_PLAN", body, r"(?im)^\\s*Publicatie-\\s*en\\s*SEO-aanpak\\s*\\("),
-        ("EDITORIAL_FOLLOWUP", body, r"(?im)^\\s*Wat te publiceren als follow-up documenten\\s*\\("),
+        ("PUBLISH_FIRST_INSTRUCTION", body, r"(?im)^\s*Voordat u publiceert\s*:"),
+        ("RELEASE_STEP", body, r"(?im)^\s*Publicatiestap\s*\(vereist (?:voor|vóór) live\)"),
+        ("EDITORIAL_SEO_PLAN", body, r"(?im)^\s*Publicatie-\s*en\s*SEO-aanpak\s*\("),
+        ("EDITORIAL_FOLLOWUP", body, r"(?im)^\s*Wat te publiceren als follow-up documenten\s*\("),
         ("DRAFT_PUBLICATION", body, r"(?im)Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie"),
         ("EDITORIAL_SOURCE_DIRECTION", body, r"(?im)Gebruik dit als technisch bewijs voor het algemene probleem"),
-        ("TITLE_DRAFT_MARKER", title, r"(?i)\\((?:canonieke pagina|canonieke upgrade|concept|draft)\\)"),
+        ("TITLE_DRAFT_MARKER", title, r"(?i)\((?:canonieke pagina|canonieke upgrade|concept|draft)\)"),
         ("CTA_PUBLISH_INSTRUCTION", cta, r"(?i)Voer eerst een canonieke URL-eigenaarschap-check uit"),
     )
     for code, value, pattern in checks:
