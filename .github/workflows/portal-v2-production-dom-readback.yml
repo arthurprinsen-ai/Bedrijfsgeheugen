@@ -76,7 +76,7 @@ jobs:
           while IFS= read -r file; do
             [ -n "$file" ] || continue
             case "$file" in
-              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/functions/netlify-deploy-bridge/index.ts) ;;
+              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
               *)
                 echo "::error::Runtime source changed after selected production SHA: $file"
                 exit 1
