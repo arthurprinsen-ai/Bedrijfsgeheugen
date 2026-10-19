@@ -9,3 +9,6 @@
 - Prevention: DOM is view, never evidentiary source; calibrated prediction quality comes from resolved outcomes; per-provider 2xx readback and source observation are separate from cron COMPLETED.
 - Regression: `portal-v2/tests/nextgen-intelligence.test.mjs`.
 - Release status: `CANDIDATE_PROTECTED_DELIVERY` until Required/CodeQL, protected merge, exact Netlify production readback and authenticated portal visual verification succeed.
+
+- Additional Portal V2 acceptance: Omgevingsradar separates actual source observation age from snapshot computation time and labels 24-hour observation gaps; source capabilities display available/connectable state. Candidate intelligence actions show ranked signal priority, owner/streefdatum and whether already materialized, with no pretend execution authority.
+- Regression: `portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs`.
