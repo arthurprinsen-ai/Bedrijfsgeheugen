@@ -506,6 +506,7 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
 .of-klaarstaat p{margin:0 0 .9rem;font-size:.92rem;line-height:1.55}
 .slotkaart p.klein{margin:.7rem 0 0;font-size:.82rem;color:var(--grijs,#5C646E)}
 </style>
+<link rel="stylesheet" href="/assets/css/portal-charts-v3.css?v=20261019" media="screen">
 </head>
 <body>
 
@@ -594,12 +595,12 @@ body.bg-dicht #p-overzicht .kaart:not(.of-start):not(.of-leegmelding):not(.of-vo
       </div>
 
       <div class="kaart" style="margin-top:1rem"><h3>De staat van je bedrijf</h3>
-        <p class="sub" style="margin:-.3rem 0 .6rem">Vijf stadia. Waar jij staat, waar je branche staat, en waar de bovenste kwart zit.</p>
+        <p class="sub" style="margin:-.3rem 0 .6rem">Vijf ontwikkelfasen, je huidige positie en een indicatieve branchevergelijking.</p>
         <svg id="staat" viewBox="0 0 900 250" role="img" aria-label="De staat van je bedrijf"></svg>
         <div class="sub" id="staatT"></div></div>
 
       <div class="kaarten k2">
-        <div class="kaart"><h3>Procesvolwassenheid (CMMI)</h3><svg id="ovCmmiGraf" viewBox="0 0 640 340" role="img" aria-label="CMMI-trap"></svg><div id="ovCmmi"></div></div>
+        <div class="kaart"><h3>Procesvolwassenheid</h3><p class="sub">Indicatieve fasen, geen formele CMMI-audit.</p><svg id="ovCmmiGraf" viewBox="0 0 640 340" role="img" aria-label="CMMI-trap"></svg><div id="ovCmmi"></div></div>
         <div class="kaart"><h3>Waar je staat op de adoptiecurve</h3>
           <svg id="curveMini" viewBox="0 0 780 260" role="img" aria-label="Adoptiecurve"></svg>
           <div class="sub" id="curveMiniT"></div></div>
@@ -13045,5 +13046,6 @@ window.__BG_LOOPT__ = function(K, slug){
 
 <script src="/assets/js/portaal-koppelingen.js" defer></script>
 <script defer src="https://www.bedrijfsgeheugen.nl/assets/klantportaal-scan-history.js"></script>
+<script src="/assets/js/portal-charts-v3.js?v=20261019" defer></script>
 </body>
 </html>
