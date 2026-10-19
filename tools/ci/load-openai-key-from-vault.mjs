@@ -76,7 +76,7 @@ export async function runWithVaultOpenAIKey({
   if (runtime!=='node' || !ALLOWED_COMMANDS.has(target) ||
       (target==='tools/content-growth/openai-approved-blog.mjs' && args.length!==0) ||
       (target==='tools/ci/netlify-build-entry.mjs' &&
-        (args.length!==1 || !/^--prepare-i18n-cache=powerhouse-blog-\\d{4}-\\d{2}-\\d{2}\\.json$/.test(args[0])))) {
+        (args.length!==1 || !/^--prepare-i18n-cache=powerhouse-blog-\d{4}-\d{2}-\d{2}\.json$/.test(args[0])))) {
     throw new Error('OPENAI_VAULT_COMMAND_NOT_ALLOWED');
   }
   const key=await resolveOpenAIKeyFromVault(options);
