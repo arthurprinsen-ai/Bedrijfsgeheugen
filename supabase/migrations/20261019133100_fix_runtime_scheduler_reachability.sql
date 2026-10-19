@@ -194,6 +194,7 @@ DECLARE
   v_jobid bigint;
   v_old_schedule text;
   v_command text;
+  v_explicit_cadence boolean := false;
 BEGIN
   SELECT jobid, schedule, command INTO v_jobid,v_old_schedule,v_command
   FROM cron.job
@@ -205,10 +206,34 @@ BEGIN
     IF position('powerhouse_runtime_scheduler_mux_v3' in v_command) = 0 THEN
       RAISE EXCEPTION 'Canonical mux command differs from expected v3 runner; refusing schedule edit';
     END IF;
-    IF v_old_schedule NOT IN ('1-59/5 * * * *','1-59/5,3-59/5,4-59/5 * * * *') THEN
+    -- pg_cron and older deployments may express the SAME 36 allowed minutes
+    -- as one explicit comma list. Prove exact set equality, not mere string equality.
+    IF v_old_schedule ~ '^[0-9]+(,[0-9]+)* \* \* \* \*
+  END IF;
+END;
+$scheduler_reachability$;
+ THEN
+      v_explicit_cadence := (
+        ARRAY(
+          SELECT token::integer
+          FROM unnest(string_to_array(split_part(v_old_schedule, ' ', 1), ',')) WITH ORDINALITY AS minute_token(token, position)
+          ORDER BY position
+        ) = ARRAY(
+          SELECT minute
+          FROM generate_series(0, 59) AS minute
+          WHERE minute % 5 IN (1, 3, 4)
+          ORDER BY minute
+        )
+      );
+    END IF;
+    IF v_old_schedule NOT IN ('1-59/5 * * * *','1-59/5,3-59/5,4-59/5 * * * *')
+       AND NOT v_explicit_cadence THEN
       RAISE EXCEPTION 'Unexpected canonical mux schedule: %; refusing overwrite',v_old_schedule;
     END IF;
-    PERFORM cron.alter_job(v_jobid, schedule => '1-59/5,3-59/5,4-59/5 * * * *');
+    -- The enumerated 36-minute cadence is already exact: no provider side-effect.
+    IF v_old_schedule = '1-59/5 * * * *' THEN
+      PERFORM cron.alter_job(v_jobid, schedule => '1-59/5,3-59/5,4-59/5 * * * *');
+    END IF;
   END IF;
 END;
 $scheduler_reachability$;
