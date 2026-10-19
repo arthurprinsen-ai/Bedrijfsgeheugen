@@ -9,7 +9,7 @@ const reachable = Array.from({length:60},(_,m)=>m).filter(m => [1,3,4].includes(
 test('existing canonical job is altered in place; original baseline cadence is unchanged',()=>{
   assert.match(sql,/cron\.alter_job\(v_jobid, schedule =>/);
   assert.doesNotMatch(sql,/cron\.schedule\(/);
-  assert.match(sql,/1-59\/5,3-59\/5,4-59\/5 \* \* \* \* /);
+  assert.match(sql,/1-59\/5,3-59\/5,4-59\/5 \* \* \* \*/);
   assert.equal(original.length,12);
   assert.equal(reachable.length,36);
   for(const m of original) assert.ok(reachable.includes(m));
@@ -23,7 +23,7 @@ test('every pre-existing mux subtask slot intersects the new cron schedule',()=>
   assert.ok(intersect(m => m%5===4));
   assert.ok(intersect(m => m%15===14));
   for(const minutes of [[11,26,41,56],[13,43],[4,19,34,49],[18,48],[23,53],[28,58],[6,21,36,51],[38],[39]]) {
-    assert.ok(minutes.some(m=>reachable.includes(m)), 'unreachable task: '+minutes.join(','));
+    assert.ok(minutes.every(m=>reachable.includes(m)), 'unreachable task: '+minutes.join(','));
   }
   assert.ok(reachable.includes(4), '06:04Z daily prediction-learning-audit must be reachable');
 });
