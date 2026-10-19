@@ -149,6 +149,9 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
     body: JSON.stringify({
       user_id: context.userId,
       toolkits: { enable: ["netlify_mcp"] },
+      // The session is constrained to two reviewed Netlify app tools. The
+      // session router otherwise exposes only discovery/meta tools by default.
+      preload: { tools: allowed },
       connected_accounts: { netlify_mcp: [context.accountId] },
       instant: false,
       manage_connections: { enable: false },
