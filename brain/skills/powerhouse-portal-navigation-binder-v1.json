@@ -1,0 +1,15 @@
+{
+  "skill": "powerhouse-portal-navigation-binder-v1",
+  "fingerprint": "powerhouse|portal|nav-binder-selector-safety|v1",
+  "owner": "Portal / Powerhouse Brein",
+  "instruction": "Before publishing portal controls, check the selector shape. The $ helper returns at most one Element and must only serve singular controls; $$ returns a collection and must be used for .forEach on repeated route/action selectors. The binder regression must register multiple routes and execute their handlers, not only inspect source text. Keep tenant data and forecast trust gates unchanged.",
+  "routing": [
+    "portal/app.mjs"
+  ],
+  "tests": [
+    "scripts/portal-navigation-binder-contract.test.mjs"
+  ],
+  "authority": "GitHub protected main + Netlify exact commit deployment + authenticated portal browser acceptance",
+  "terminalStatus": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442"
+}
