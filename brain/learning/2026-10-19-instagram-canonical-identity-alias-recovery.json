@@ -29,5 +29,7 @@
       "tests/brain-instagram-canonical-connection-alias-20261019.test.mjs"
     ]
   },
-  "canonical_eligible": false
+  "canonical_eligible": false,
+  "prevention_rule": "Canonical provider username must match bedrijfsgeheugen.nl AND exactly one verified approved alias wins; any ambiguous/foreign identity remains blocked. No unverified publication, model-score exception, or cross-account fallback.",
+  "regression_contract": "instagram-verified-canonical-alias-20261019"
 }
