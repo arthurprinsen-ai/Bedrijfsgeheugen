@@ -59,7 +59,7 @@ test('Powerhouse blog rejects editor-only source copy before protected publicati
     "check('Externe signalen (canonieke pagina)', body, 'Bekijk de Frisse blik', 'TITLE_DRAFT_MARKER')",
     "check('Externe signalen', body, 'Voer eerst een canonieke URL-eigenaarschap-check uit', 'CTA_PUBLISH_INSTRUCTION')",
     "print('BLOG_READER_READY_GUARD_OK')",
-  ].join('\\n');
+  ].join('\n');
   const result=spawnSync('python3',['-c',python],{cwd:REPO,encoding:'utf8'});
   assert.equal(result.status,0,result.stderr || result.stdout);
   assert.match(result.stdout,/BLOG_READER_READY_GUARD_OK/);
