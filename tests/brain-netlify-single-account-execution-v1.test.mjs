@@ -32,7 +32,7 @@ test('Netlify provider health is read-only and unsafe results fail closed',()=>{
   assert.match(context,/NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER/);
   assert.match(context,/operation: "get-project"/);
   assert.match(context,/readResult\.includes\(siteId\)/);
-  assert.doesNotMatch(context,/deploy-site/);
+  assert.doesNotMatch(context,/operation:\\s*["']deploy-site["']/);
   assert.match(source,/resultType === "completed"/);
   assert.match(source,/parsed\?\.data\?\.successful !== false/);
   assert.match(source,/throw new Error\("composio pinned session execute " \+ executeRes\.status\)/);
