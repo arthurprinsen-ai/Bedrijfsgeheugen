@@ -185,7 +185,10 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
     headers,
     body: JSON.stringify({
       tool_slug: slug,
-      account: context.accountId,
+      // The session already pins precisely one verified connected account.
+      // Explicit 'account' is reserved for multi-account execution in Composio
+      // and caused HTTP 400 in this single-account session. Do not broaden
+      // the session's connected_accounts or allowed tool slugs.
       arguments: { selectSchema: schema },
     }),
     signal: AbortSignal.timeout(25000),
