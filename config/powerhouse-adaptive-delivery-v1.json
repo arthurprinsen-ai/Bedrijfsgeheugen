@@ -196,6 +196,17 @@
         "tests/brain-predictive-openai-calibration-20261019.test.mjs",
         "tests/supabase-edge-runtime-scope-v1.test.mjs"
       ]
+    },
+    {
+      "id": "terminalizer-adaptive-routing",
+      "paths": [
+        "brain/contracts/production-readback-v1.json",
+        "tests/brain-terminalizer-adaptive-routing-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-terminalizer-adaptive-routing-20261019.test.mjs",
+        "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+      ]
     }
   ],
   "alwaysTests": [

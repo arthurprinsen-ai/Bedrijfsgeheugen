@@ -68,7 +68,8 @@
       "config/pr-trigger-baseline.json",
       "config/supabase-edge-functions.json",
       "supabase/migration-history.lock.json",
-      "config/powerhouse-runtime-backpressure-v1.json"
+      "config/powerhouse-runtime-backpressure-v1.json",
+      "config/powerhouse-adaptive-delivery-v1.json"
     ],
     "netlifyRuntimePrefixes": [
       "netlify/functions/",

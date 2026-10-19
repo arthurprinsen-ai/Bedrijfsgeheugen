@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-19",
+  "obligation": "predictive-openai-recovery-20261019",
+  "fingerprint": "delivery-terminalizer-adaptive-routing-20261019",
+  "root_cause": "After protected predictive release4503, terminalizer39314584961 classified config/powerhouse-adaptive-delivery-v1.json as unknown non-Netlify runtime although canonical delivery routes it as backend CI control-plane. Native source/provider and migrations succeeded; automatic terminal closure failed UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+  "intervention": "Add only the exact adaptive regression-routing configuration to the existing verifier-only contract. Use the existing immutable Terminal-Replay-PR4503 route from this protected recovery controller; do not rewrite the merged runtime candidate or race a second automatic owner.",
+  "prevention": "Align CI routing and terminal runtime classification; protect real mixed Edge/migration readback and unknown config fail-closed with behavioral regressions. Never mark a runtime green only because a control-plane path is fixed.",
+  "compiler": {
+    "failure_class": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "TERMINALIZER_EXACT_ADAPTIVE_ROUTING_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-adaptive-routing-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminalizer-adaptive-routing-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminalizer-adaptive-routing-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "new_behavioral_tests_passed": 3,
+    "immutable_replay_tests_passed": 3,
+    "inherited_failures": [
+      "delivery classification policy is governance rather than runtime deployment (stale workflow-literal assertion)",
+      "terminal evidence accepts provider-proven Supabase runtime modes (stale exact array before migration modes)"
+    ]
+  },
+  "status": "PROTECTED_REPLAY_CONTROLLER_CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39314584961",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39314585831"
+  ]
+}

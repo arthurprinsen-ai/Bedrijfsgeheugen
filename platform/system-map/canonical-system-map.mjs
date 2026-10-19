@@ -2114,3 +2114,15 @@ export const PREDICTIVE_OPENAI_PUBLIC_MARKET_V1=Object.freeze({
  learning:'brain/learning/2026-10-19-predictive-openai-recovery.json',
  documentation:'docs/changes/2026-10-19-predictive-openai-recovery.md'
 });
+
+export const PREDICTIVE_TERMINAL_CLASSIFIER_REPLAY_V1=Object.freeze({
+ fingerprint:'delivery-terminalizer-adaptive-routing-20261019',
+ authority:'brain/contracts/production-readback-v1.json',
+ verifierOnlyExactPath:'config/powerhouse-adaptive-delivery-v1.json',
+ recovery:'existing immutable Terminal-Replay-PR4503 under Powerhouse Obligation Terminalizer',
+ originalRuntimeMerge:'d64b4fa333d94b512305cc2c85da99691c88b03c',
+ actualEdgeAndMigrationReadbackRequired:true,unknownRuntimeFailClosed:true,
+ regression:'tests/brain-terminalizer-adaptive-routing-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-terminal-classifier-replay.json',
+ documentation:'docs/changes/2026-10-19-predictive-terminal-classifier-replay.md'
+});
