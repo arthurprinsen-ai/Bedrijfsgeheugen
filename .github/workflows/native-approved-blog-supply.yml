@@ -155,7 +155,7 @@ jobs:
             'Quality gate':{'select':{'name':'Geslaagd'}},
             'Herzien':{'select':{'name':'Goedgekeurd'}},
             'Publicatiedatum':{'date':{'start':date}},
-            'Titel':{'rich_text':rich(title)},
+            'Titel':{'title':rich(title)},
             'Slug':{'rich_text':rich(slug)},
             'Focus-zoekwoord':{'rich_text':rich(keyword)},
             'Meta-omschrijving':{'rich_text':rich(meta)},

@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-19",
+  "obligation": "native-blog-notion-title-recovery-20261019",
+  "fingerprint": "native-blog-notion-title-property-type-20261019",
+  "root_cause": "Workflow sent rich_text for the existing Notion Titel column whose observed type is title, causing HTTP 400 after successful AI generation.",
+  "intervention": "Encode Titel as title without changing the source schema or approval contract.",
+  "prevention": "Run the actual workflow payload builder against the observed provider property type; separate integration access denial from payload validation.",
+  "compiler": {
+    "failure_class": "NOTION_PAGE_TITLE_TYPE_MISMATCH",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "NOTION_TYPED_TITLE_PAYLOAD_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-blog-notion-title-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-blog-notion-title-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-blog-notion-title-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "focused_payload_passed": true,
+    "production_stock_verified": false
+  },
+  "status": "CODE_CANDIDATE_UNDER_PROTECTED_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39301488760"
+  ]
+}
