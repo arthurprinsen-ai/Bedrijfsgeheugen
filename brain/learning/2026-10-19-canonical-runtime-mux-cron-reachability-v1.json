@@ -24,5 +24,19 @@
     "historical_replay": [
       "tests/brain-runtime-scheduler-reachability-20261019.test.mjs"
     ]
-  }
+  },
+  "evidence": {
+    "prod_cron_job_id": 171,
+    "prod_cron_schedule_before": "1-59/5 * * * *",
+    "prod_scheduler_success_rows_per_slot_24h": "23-24",
+    "missing_minute_residues": [
+      3,
+      4
+    ],
+    "actual_learning_audit_observed_at": "2026-10-19T13:19:07.806831Z",
+    "prediction_resolution_debt": 247
+  },
+  "tests": [
+    "tests/brain-runtime-scheduler-reachability-20261019.test.mjs"
+  ]
 }
