@@ -17,3 +17,11 @@
 - New additive migration `20261006085100_legacy_cron_replay_preconditions.sql` explicitly precedes the old guard and restores only real legacy tasks if the modern mux does not exist. This cannot be declared production-proven without official provider-owned fresh replay and strict protected merge.
 - Prior temporary paid preview was deleted with independent branch-list readback; no accumulating paid preview environments left by this recovery.
 - Regression: `tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs`; existing reachability regression retained.
+
+
+## 2026-10-19 15:10 UTC — canonical prevention writeback
+
+- Read original archived Supabase `20261006085416` via the authorized production connector and compared against current repo. Archived SQL hard abort `CRON_PRESSURE_CONTRACT_JOB_MISSING` remains; production provider archive digest `6e4aa572b4c8f5bb4091958db833eba3`. Repo script with same migration version skips missing jobs, so version/name parity does not mean SQL or replay parity.
+- Extended existing Supabase provider check diagnosis to classify this case and provider preview capacity exhaustion separately, both strictly red. Added regression coverage to existing `tests/brain-supabase-preview-diagnosis-v1.test.mjs`.
+- Persisted prevention in `brain/learning/2026-10-19-canonical-runtime-mux-cron-reachability-v1.json` and `.agents/skills/powerhouse-delivery-concurrency/SKILL.md`. No synthetic proof, no ledger manipulation, no bypass, and no duplicate scheduler.
+- Current rollout state is `PENDING_PROTECTED_MERGE_AND_PRODUCTION_READBACK`, and P0 incident #3742 remains open pending supported Supabase archive/replay reconciliation.
