@@ -130,3 +130,9 @@ entrypoint = "./functions/powerhouse-instagram-media-verifier/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-instagram-temporal-verifier/index.ts"
+
+# Read-only Composio analytics ingestion; only the verified scheduler may invoke.
+[functions.bg-social-metrics-sync]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-social-metrics-sync/index.ts"
