@@ -16,21 +16,16 @@ test('v3.1 tool-router completed data envelope is not falsely failed',()=>{
   assert.match(bridge,/Object\.prototype\.hasOwnProperty\.call\(parsed, "data"\)/);
   assert.match(bridge,/hasData \|\| parsed\.successful === true/);
   assert.ok(!bridge.includes('if (!executeRes.ok || parsed?.successful !== true)'));
-  // Regression: a completed response is real evidence; error or missing data is not.
-  const accepts=(http,reply)=>{
-    const hasData=Boolean(reply&&Object.prototype.hasOwnProperty.call(reply,'data'));
-    const hasProviderError=Boolean(reply?.error)||reply?.successful===false||
-      reply?.data?.successful===false||
-      (typeof reply?.result_type==='string'&&reply.result_type!=='completed');
-    return http>=200&&http<300&&Boolean(reply)&&!hasProviderError&&(hasData||reply.successful===true);
-  };
+  // Regression: completed data is necessary; never accept a false-green envelope.
+  const accepts=(http,reply)=>http>=200&&http<300&&reply?.result_type==='completed'&&
+    reply.data!==undefined&&reply.data!==null&&!reply.error&&reply.data?.successful!==false;
   assert.equal(accepts(200,{result_type:'completed',data:{id:'site'}}),true);
-  assert.equal(accepts(200,{data:{id:'site'},error:null}),true);
-  assert.equal(accepts(200,{successful:true}),true);
-  assert.equal(accepts(400,{data:{id:'site'}}),false);
+  assert.equal(accepts(200,{result_type:'completed',data:{id:'site'},error:null}),true);
+  assert.equal(accepts(200,{result_type:'completed',data:{successful:false}}),false);
+  assert.equal(accepts(200,{successful:true}),false);
+  assert.equal(accepts(400,{result_type:'completed',data:{id:'site'}}),false);
   assert.equal(accepts(200,{result_type:'failed',data:{id:'site'}}),false);
-  assert.equal(accepts(200,{data:{id:'site'},error:{code:'unauthorized'}}),false);
-  assert.equal(accepts(200,{data:{successful:false}}),false);
+  assert.equal(accepts(200,{result_type:'completed',data:{id:'site'},error:'permission'}),false);
   assert.equal(accepts(200,{}),false);
 });
 
