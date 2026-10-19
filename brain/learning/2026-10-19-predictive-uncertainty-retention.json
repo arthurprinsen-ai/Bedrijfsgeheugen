@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-19",
+  "obligation": "predictive-calibration-uncertainty-retention-20261019",
+  "fingerprint": "predictive-calibration-uncertainty-retention-20261019",
+  "root_cause": "Actual OpenAI calibration8058 returned12 uncertain. Readback found0 durable last_attempt_at/last_result markers: the periodic refresh at19:57 rewrote314 public obligations. Both canonical refresh and forecast trigger replaced entire payload and due_at, erasing real attempts and the existing7-day backoff.",
+  "intervention": "One pure state-merge shared by both existing writers; bind attempts to semantic forecast revision including event,horizon,evidence IDs; preserve uncertainty and due backoff when unchanged, archive invalidated attempt evidence when revision changes, freeze CLOSED evidence. No new queue,scheduler,provider or synthetic calibration.",
+  "prevention": "A model receipt is insufficient: verify attempt metadata survives canonical refresh. Preserve actual evidence and distinguish revision invalidation from evidence deletion. Require native PostgreSQL fixture and real post-refresh readback.",
+  "compiler": {
+    "failure_class": "CALIBRATION_ATTEMPT_ERASED_BY_RECONCILER",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "PREDICTIVE_UNCERTAINTY_RETENTION_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "production_reproduction": "8058 HTTP200 12 uncertain; persisted marker count0 after19:57 sync",
+    "native_pg_cases_required": 6,
+    "provider_sql_fixture": "tests/supabase/predictive-uncertainty-retention-v1.sql",
+    "native_pg_cases_passed": false
+  },
+  "status": "CANDIDATE_REQUIRES_NATIVE_PREVIEW_AND_REFRESH_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4503"
+  ]
+}

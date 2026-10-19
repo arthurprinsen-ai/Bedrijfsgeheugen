@@ -1553,3 +1553,7 @@ The predictive engine and calibrator share the governance row: migrate and attes
 ## Terminal adaptive-routing classification recovery
 
 Adaptive regression-routing config is verifier-only under the canonical production-readback contract. Keep the allowlist exact; mixed Edge/migration releases still require real provider evidence and unknown config remains fail-closed. When a merged immutable terminal candidate failed only an outdated control-plane classifier, use the existing Terminal-Replay-PR controller; do not rewrite its source head or create a second automatic owner. Canonical learning: `brain/learning/2026-10-19-predictive-terminal-classifier-replay.json`.
+
+## Predictive uncertainty survives reconciliation
+
+Both existing calibration-obligation writers use one revision-bound state merge. Preserve real uncertainty and backoff across unchanged forecast refresh, archive invalidated attempt evidence when event/horizon/evidence changes, and never overwrite CLOSED outcome proof. Runtime acceptance requires real attempt markers surviving canonical refresh; model HTTP200 alone is insufficient. Learning: `brain/learning/2026-10-19-predictive-uncertainty-retention.json`.

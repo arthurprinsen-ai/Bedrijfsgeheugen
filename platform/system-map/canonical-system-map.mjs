@@ -2126,3 +2126,16 @@ export const PREDICTIVE_TERMINAL_CLASSIFIER_REPLAY_V1=Object.freeze({
  learning:'brain/learning/2026-10-19-predictive-terminal-classifier-replay.json',
  documentation:'docs/changes/2026-10-19-predictive-terminal-classifier-replay.md'
 });
+
+export const PREDICTIVE_UNCERTAINTY_RETENTION_V1=Object.freeze({
+ fingerprint:'predictive-calibration-uncertainty-retention-20261019',
+ authority:'existing revenue_learning_obligations, forecast trigger and periodic refresh',
+ merge:'powerhouse_merge_calibration_obligation_v1',
+ revision:'forecast ID/key/event/horizon/evidence IDs',
+ preservesUnchangedAttemptAndBackoff:true,archivesInvalidatedEvidence:true,closedEvidenceImmutable:true,
+ noNewQueueOrScheduler:true,noSyntheticCalibration:true,
+ regression:'tests/brain-predictive-uncertainty-retention-20261019.test.mjs',
+ nativeSQLFixture:'tests/supabase/predictive-uncertainty-retention-v1.sql',
+ learning:'brain/learning/2026-10-19-predictive-uncertainty-retention.json',
+ documentation:'docs/changes/2026-10-19-predictive-uncertainty-retention.md'
+});
