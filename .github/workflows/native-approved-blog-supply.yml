@@ -29,6 +29,11 @@ env:
 
 jobs:
   supply:
+    # anthropics/claude-code-action obtains a GitHub OIDC token before any model call.
+    # Keep the permission job-scoped; do not widen repository write authority.
+    permissions:
+      contents: read
+      id-token: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
