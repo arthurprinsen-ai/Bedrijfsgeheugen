@@ -1557,3 +1557,7 @@ Adaptive regression-routing config is verifier-only under the canonical producti
 ## Predictive uncertainty survives reconciliation
 
 Both existing calibration-obligation writers use one revision-bound state merge. Preserve real uncertainty and backoff across unchanged forecast refresh, archive invalidated attempt evidence when event/horizon/evidence changes, and never overwrite CLOSED outcome proof. Runtime acceptance requires real attempt markers surviving canonical refresh; model HTTP200 alone is insufficient. Learning: `brain/learning/2026-10-19-predictive-uncertainty-retention.json`.
+
+## Actual provider migration identity parity
+
+When native deployment rejects a remote version absent locally, restore its exact actual provider-applied source identity after byte-for-byte proof. Preserve separately Preview-applied revisions and prove compatibility replay idempotent. Never rewrite tracking rows or rename away an applied source. Learning: `brain/learning/2026-10-19-predictive-migration-identity-parity.json`.
