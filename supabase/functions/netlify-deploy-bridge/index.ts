@@ -101,14 +101,34 @@ async function getProxy() {
     body: JSON.stringify({
       user_id: userId,
       toolkits: { enabled: ["netlify_mcp"] },
+      // The account remains pinned to the originating user and sole Netlify
+      // toolkit. A tool_slug allowlist here caused provider-side session
+      // validation 400 with this MCP toolkit; execution below still hardcodes
+      // the one approved deploy-services action and never exports session_id.
       connected_accounts: { netlify_mcp: [accountId] },
-      tools: { netlify_mcp: { enabled: [toolSlug] } },
       search: { enable: false },
       execute: { enable_multi_execute: false },
     }),
   });
   const sessionRaw = await sessionRes.text();
-  if (!sessionRes.ok) throw new Error("composio session create " + sessionRes.status);
+  if (!sessionRes.ok) {
+    // Do not print raw provider body: it can contain account or user identifiers.
+    // Categorize validation failures without exposing project credentials.
+    const summary = String(sessionRaw || "").toLowerCase();
+    const reason = /tool[^\\n]{0,60}(?:slug|invalid|unknown)/i.test(summary)
+      ? "TOOL_ALLOWLIST_INVALID"
+      : /connected.account|connected_account/.test(summary)
+      ? "CONNECTED_ACCOUNT_CONSTRAINT"
+      : /user_id|user id/.test(summary)
+      ? "USER_ID_CONSTRAINT"
+      : /toolkit/.test(summary)
+      ? "TOOLKIT_CONSTRAINT"
+      : "SESSION_REQUEST_INVALID";
+    console.error("NETLIFY_COMPOSIO_SESSION_VALIDATION", JSON.stringify({
+      http: sessionRes.status, category: reason,
+    }));
+    throw new Error("composio session create " + sessionRes.status);
+  }
   let session: any = {};
   try { session = JSON.parse(sessionRaw); } catch {}
   const sessionId = String(session?.session_id || "").trim();
