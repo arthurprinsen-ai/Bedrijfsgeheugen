@@ -45,13 +45,16 @@ test('daily publisher prepares a durable minimal English patch, validates, and i
     fs.writeFileSync(preload,`
 globalThis.fetch = async (_url, options) => {
   const request = JSON.parse(options.body);
-  const inputs = JSON.parse(request.messages[0].content);
-  return {ok:true, json:async () => ({content:[{type:'text',
-    text:JSON.stringify(inputs.map(source => 'English: ' + source))}]})};
+  const inputs = JSON.parse(request.input);
+  return {ok:true,json:async () => ({
+    status:'completed',
+    output:[{type:'message',content:[{type:'output_text',
+      text:JSON.stringify({translations:inputs.map(source => 'English: ' + source)})}]}]
+  })};
 };`);
     const patchName='powerhouse-blog-fixture.json';
     const prepared=run(dir,['--require',preload,BUILDER,'--prepare-cache='+patchName],
-      {STATIC_I18N_NETWORK:'1',ANTHROPIC_API_KEY:'mock-only'});
+      {STATIC_I18N_NETWORK:'1',OPENAI_API_KEY:'mock-only'});
     assert.equal(prepared.status,0,prepared.stderr || prepared.stdout);
     const patchPath=path.join(dir,'config','bg-static-i18n-en.d',patchName);
     assert.ok(fs.existsSync(patchPath),'a scoped patch must be persisted');
