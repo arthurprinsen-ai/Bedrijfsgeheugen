@@ -152,6 +152,9 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
       // The session is constrained to two reviewed Netlify app tools. The
       // session router otherwise exposes only discovery/meta tools by default.
       preload: { tools: allowed },
+      // Declare the two approved app tools as an explicit positive allowlist.
+      // Session preload exposes tools but must not be the only authority filter.
+      tools: { netlify_mcp: { enable: allowed } },
       connected_accounts: { netlify_mcp: [context.accountId] },
       instant: false,
       manage_connections: { enable: false },
@@ -217,6 +220,35 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
     const providerLogId = typeof parsed?.log_id === "string" &&
       /^log_[a-zA-Z0-9_-]{3,100}$/.test(parsed.log_id)
       ? parsed.log_id : null;
+    // Composio may reject a direct call when the session exposes no such
+    // app tool; diagnose the session's public tool inventory without logging
+    // IDs, tool lists, account identities, response bodies or proxy URLs.
+    let requestedToolExposed: boolean|null = null;
+    if (executeRes.status === 400) {
+      try {
+        const toolsRes = await fetch(base + "/tool_router/session/" +
+          encodeURIComponent(sessionId) + "/tools?limit=100", {
+          headers, signal: AbortSignal.timeout(4000),
+        });
+        if (toolsRes.ok) {
+          const toolsPayload: any = await toolsRes.json();
+          const entries = Array.isArray(toolsPayload?.items) ? toolsPayload.items
+            : Array.isArray(toolsPayload?.tools) ? toolsPayload.tools : null;
+          if (entries) requestedToolExposed = entries.some((t:any) =>
+            String(t?.slug || t?.name || t?.tool_slug || "").toUpperCase() === slug);
+        }
+      } catch { /* A diagnostic fetch must never authorize a deployment. */ }
+    }
+    const validation = Array.isArray(parsed?.detail) ? parsed.detail : [];
+    const locationTokens = validation.flatMap((d:any)=>Array.isArray(d?.loc)?d.loc:[]);
+    const whitelistedLocation = locationTokens.find((t:any)=>
+      ["body","tool_slug","account","arguments","selectSchema","operation","params","siteId"]
+        .includes(String(t))) || null;
+    const firstType = validation.find((d:any)=>typeof d?.type==="string")?.type || "";
+    const safeValidationType = [
+      "missing","extra_forbidden","string_type","dict_type",
+      "list_type","literal_error","value_error","model_attributes_type"
+    ].includes(firstType) ? firstType : null;
     console.error("NETLIFY_SESSION_TOOL_REJECTED",JSON.stringify({
       http: executeRes.status,
       kind: slug === "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER" ? "read" : "deploy_authority",
@@ -224,6 +256,10 @@ async function executePinnedComposioTool(context: {apiKey:string,accountId:strin
       result_type: resultType,
       error_kind: errorKind,
       provider_log_id: providerLogId,
+      requested_tool_exposed: requestedToolExposed,
+      validation_type: safeValidationType,
+      validation_field: whitelistedLocation,
+      has_detail: parsed?.detail !== undefined,
     }));
     throw new Error("composio pinned session execute " + executeRes.status);
   }
