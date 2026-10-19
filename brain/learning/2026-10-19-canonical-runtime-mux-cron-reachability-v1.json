@@ -1,0 +1,80 @@
+{
+  "date": "2026-10-19",
+  "obligation": "canonical-mux-cron-reachability-20261019",
+  "fingerprint": "scheduler|cron-slots|reachability|v1",
+  "root_cause": "pg_cron five-minute residues 1 only, but v1/v2 workload predicates also require residues 3 and 4",
+  "verified_before_deploy": {
+    "canonical_job_id": 171,
+    "original_slots_per_hour": 12,
+    "expanded_slots_per_hour": 36,
+    "prediction_learning_audit_state": "RESOLUTION_DEBT_CRITICAL",
+    "overdue_forecasts": 385,
+    "unresolved_forecasts": 247
+  },
+  "status": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "compiler": {
+    "failure_class": "SCHEDULER_SLOT_GAP",
+    "scope": "SCHEDULER",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "prod_cron_job_id": 171,
+    "prod_cron_schedule_before": "1-59/5 * * * *",
+    "prod_scheduler_success_rows_per_slot_24h": "23-24",
+    "missing_minute_residues": [
+      3,
+      4
+    ],
+    "actual_learning_audit_observed_at": "2026-10-19T13:19:07.806831Z",
+    "prediction_resolution_debt": 247,
+    "archive_version": "20261006085416",
+    "archive_root_cause": "Stored Supabase migration assertion references 3 canonical jobs not found in any preceding migration, whereas current GitHub replay file already skips missing production-only jobs",
+    "absent_prior_scheduled_jobs": [
+      "powerhouse-identity-graph-v1",
+      "powerhouse-connection-activation-daily-v1",
+      "powerhouse-content-orchestrator-daily-v1"
+    ],
+    "preview_applied_versions": 568,
+    "production_applied_versions": 714,
+    "live_rollout_proven": false,
+    "provider_archived_migration_version": "20261006085416",
+    "provider_archived_statement_md5": "6e4aa572b4c8f5bb4091958db833eba3",
+    "provider_archived_statement_has_hard_abort": true,
+    "repository_migration_uses_optional_job_reconciliation": true,
+    "provider_preview_required_gate": "FRESH_NATIVE_RETRY_PENDING",
+    "provider_preview_capacity": "2 existing owned by PR #4370 and PR #4441, native provider SKIPPED on #4479",
+    "git_linked_preview_archive_md5": "69bebb24ab2651a4fd3f3bf92c5b9790",
+    "git_linked_preview_archive_hard_abort": false,
+    "provider_git_linked_preview_migration_count": 715,
+    "previous_manual_preview_archive_drift": "Manual branch replay reproduced parent's hard-abort archive and is NOT equivalent to GitHub-linked preview; temporal pre-guard dummy recovered jobs removed",
+    "removed_false_replay_precondition": "supabase/migrations/20261006085100_legacy_cron_replay_preconditions.sql",
+    "archived_migration_source_authority": "Compared product and two existing Git-linked preview branches; same version contains different SQL. Git-linked branch replays modified source unlike isolated manual branch.",
+    "provider_preview_slot_recovery": "Failed, ephemeral, data-less PR #4370 preview safely retired; existing Github PR preserved; reopened PR #4479 acquired native Supabase branch sbjboziktcsxgxygnswo.",
+    "native_preview_race_failure": "New provider-run after concurrent branch creation and Git main sync yielded SQLSTATE 23505: duplicate migration version 20260917123749. The same version was already inserted legitimately by parallel initial clone; branch subsequently reached all 714 parent migrations. No ledger tampering.",
+    "native_preview_recovery_action": "Quiesce failed initial run and submit exactly one new Git head to run pending migration 20261019133100. Native provider-owned fresh check must succeed before merge.",
+    "native_preview_migration_total_before_retry": 714,
+    "native_preview_scheduler_fix_applied_before_retry": false,
+    "native_preview_status_before_retry": "MIGRATIONS_FAILED",
+    "git_linked_preview_semantic_cadence": "At PR #4479 preview project sbjboziktcsxgxygnswo, 36-minute schedule was enumerated as 1,3,4,6,...,59; read-only SQL proved exact semantic equality with residues 1,3,4 modulo 5.",
+    "provider_preview_second_failure": "First native retry after serialized migration triggered a valid P0001 contract guard rejecting semantically equivalent enumerated pg_cron schedule. Updated guard accepts exact minute-set equality and still rejects any noncanonical schedule.",
+    "source_guard_acceptance": "Preserve hard rejection for any schedule other than original 12-slot, expanded textual 36-slot, or exact ordered enumerated 36-slot schedule; no parallel scheduler and no-op for already expanded.",
+    "provider_preview_sql_parser_regression": "Previous SQL-source draft accidentally injected a malformed regex fragment, producing SQLSTATE 42601; replaced with canonical string_agg comparison and checked true directly on actual preview pg_cron schedule.",
+    "preview_expanded_minute_expression": "SELECT j.schedule = (SELECT string_agg(minute::text, ',' ORDER BY minute) || ' * * * *' FROM generate_series(0, 59) minute WHERE minute % 5 IN (1,3,4)) yielded true on project sbjboziktcsxgxygnswo."
+  },
+  "tests": [
+    "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
+    "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+  ],
+  "prevention_rule": "For every scheduler task prove registered cron minute reachability on exact runnable schedule. For hosted Supabase preview never equate Git migration contents with archived provider statement; require a successful provider-owned fresh replay on exact candidate HEAD, block on CRON_PRESSURE_CONTRACT_JOB_MISSING, archive drift or exhausted preview capacity. No ledger rewriting, dummy jobs, shadow schedulers, skipped-check promotion or release without protected merge and production readback. Explicitly classify manual database branch source independently from GitHub-associated preview source. Never add legacy cron jobs from a failure reproduced only through different migration source. Do not update a GitHub-linked PR branch while the initial Supabase preview is still migrating; overlapping provider actions can both try inserting the same schema_migrations version (23505). Wait for quiescence and perform one serialized new-head retry; never delete applied migration history. Cron schedule comparisons must compare semantic minute coverage; an expanded enumerated expression is equivalent to the same minute set in step notation. Validate exact minute equality before no-op; reject every other schedule. Prefer a tested, exact generated comma-list comparison over hand-authored regex inside PL/pgSQL migration source; check balanced DO delimiters and fail closed on unexpected cron values.",
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ]
+}
