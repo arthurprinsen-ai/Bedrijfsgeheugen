@@ -10,7 +10,7 @@ const payload = translations => ({
   output:[{type:'message',content:[{type:'output_text',text:JSON.stringify({translations})}]}]
 });
 
-test('bounded OpenAI fallback returns exact validated translation array', async()=>{
+test('bounded OpenAI primary returns exact validated translation array', async()=>{
   let requested = null;
   const result = await translateBatchWithOpenAI(
     ['Boek nu op https://www.bedrijfsgeheugen.nl en bewaar {id}', 'Vrijblijvend overzicht'],
@@ -39,10 +39,10 @@ test('incomplete, missing or malformed responses cannot become accepted translat
   await assert.rejects(()=>translateBatchWithOpenAI(['Hoi'],'test',{fetchImpl:async()=>({ok:true,json:async()=>payload([])})}),/SHAPE_INVALID/);
 });
 
-test('blog-only failover preserves the protected source and production cache gates',()=>{
-  assert.match(build,/STATIC_I18N_APPROVED_PROVIDER_FAILOVER/);
-  assert.match(build,/translateBatchWithOpenAI\(part,backupKey\)/);
-  assert.match(build,/if \(!providerUnavailable \|\| !backupKey\) throw primaryError/);
+test('blog-only OpenAI provider preserves protected source and production cache gates',()=>{
+  assert.match(build,/translateBatchWithOpenAI\(part,key\)/);
+  assert.match(build,/STATIC_I18N_OPENAI_KEY_MISSING/);
+  assert.doesNotMatch(build,/ANTHROPIC_API_KEY|api\.anthropic\.com|translateBatch\(part,key\)/);
   assert.match(build,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(build,/STATIC_I18N_PREPARE_INCOMPLETE/);
   assert.match(build,/STATIC_I18N_REQUIRE_CACHE/);
