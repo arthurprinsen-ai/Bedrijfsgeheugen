@@ -231,6 +231,32 @@ def body_html(data):
         )
     return "\n".join(result)
 
+def assert_reader_ready(data):
+    """Fail closed on author/editor instructions accidentally exported as customer copy.
+
+    Do not quietly delete these paragraphs: such content must be corrected at the
+    source, then re-exported with the same canonical evidence and obligation.
+    """
+    body = str(data.get("body") or "")
+    title = str(data.get("title") or "")
+    cta = str(data.get("cta") or "")
+    if len(body.strip()) < 450:
+        fail("BLOG_ARTIFACT_NOT_READER_READY:BODY_TOO_SHORT")
+    checks = (
+        ("PUBLISH_FIRST_INSTRUCTION", body, r"(?im)^\\s*Voordat u publiceert\\s*:"),
+        ("RELEASE_STEP", body, r"(?im)^\\s*Publicatiestap\\s*\\(vereist v[oó]o?r live\\)"),
+        ("EDITORIAL_SEO_PLAN", body, r"(?im)^\\s*Publicatie-\\s*en\\s*SEO-aanpak\\s*\\("),
+        ("EDITORIAL_FOLLOWUP", body, r"(?im)^\\s*Wat te publiceren als follow-up documenten\\s*\\("),
+        ("DRAFT_PUBLICATION", body, r"(?im)Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie"),
+        ("EDITORIAL_SOURCE_DIRECTION", body, r"(?im)Gebruik dit als technisch bewijs voor het algemene probleem"),
+        ("TITLE_DRAFT_MARKER", title, r"(?i)\\((?:canonieke pagina|canonieke upgrade|concept|draft)\\)"),
+        ("CTA_PUBLISH_INSTRUCTION", cta, r"(?i)Voer eerst een canonieke URL-eigenaarschap-check uit"),
+    )
+    for code, value, pattern in checks:
+        if re.search(pattern, value):
+            fail("BLOG_ARTIFACT_NOT_READER_READY:" + code)
+
+
 def main():
     business_date = sys.argv[1] if len(sys.argv) > 1 else dt.date.today().isoformat()
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", business_date):
@@ -239,6 +265,7 @@ def main():
     if data is None:
         print(f"NO_ACTION:NO_APPROVED_BLOG_ARTIFACT:{business_date}")
         return
+    assert_reader_ready(data)
     slug = data["slug"]
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
         fail("INVALID_SLUG")
