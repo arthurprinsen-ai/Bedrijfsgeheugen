@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-19",
+  "fingerprint": "netlify-bridge|composio-scoped-account-pagination|missing-page-authority",
+  "obligation": "netlify-composio-account-scan-20261019",
+  "scope": "supabase/functions/netlify-deploy-bridge",
+  "observation": "Run 39209401787 returned HTTP 420 after OIDC verification; code read only the first 100 connected accounts then mapped an empty match to not_public without distinguishing a truncated list from a truly absent project-authorized account.",
+  "root_cause": "Project-scoped Composio Netlify discovery did not follow next_cursor; diagnostic did not log sanitized pagination counts. A mismatched Composio project is a separate unresolved possibility.",
+  "intervention": "Read up to 20 cursor pages with a strict bounded timeout; reject malformed JSON, repeating cursors and incomplete scans; log only counts and a boolean; preserve OIDC, exact site ID, provider gate and fail-closed behavior.",
+  "expected": "No silent false missing-connection classification caused by account pagination. If zero active Netlify accounts remain after a complete scan, retain a hard external authorization blocker and require a properly authorized service account.",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-composio-pagination.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-composio-pagination.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-composio-pagination.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "ci_status": "pending PR",
+    "production_readback": "not yet proven",
+    "regression_test": "tests/brain-netlify-composio-pagination.test.mjs"
+  },
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39209401787",
+    "https://docs.composio.dev/reference/api-reference/connected-accounts/getConnectedAccounts"
+  ]
+}
