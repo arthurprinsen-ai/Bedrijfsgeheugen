@@ -1,0 +1,18 @@
+{
+  "skill": "powerhouse-production-browser-proof-ubuntu26-v1",
+  "fingerprint": "powerhouse|ci|ubuntu26-playwright-browser-proof|v1",
+  "owner": "ONE BRAIN / Protected delivery / Browser readback",
+  "authority": "GitHub exact-runner OS + official Playwright compatibility + Netlify immutable production SHA",
+  "instruction": "When Playwright browser install fails because GitHub runner OS is unsupported, verify official compatible Playwright release and update the shared installer and all three dependent workflows atomically. Do not bypass Chromium verification or falsely reclassify a skipped browser run as provider-readback success. Require exact-HEAD Required CI+CodeQL, protected merge, immutable Netlify SHA and re-run of browser proof with visible regression evidence.",
+  "routing": [
+    "tools/ci/install-chromium.sh",
+    ".github/workflows/portal-v2-production-dom-readback.yml",
+    ".github/workflows/production-source-snapshot.yml",
+    ".github/workflows/production-release-readback.yml"
+  ],
+  "tests": [
+    "tests/brain-playwright-ubuntu26-production-readback-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442"
+}
