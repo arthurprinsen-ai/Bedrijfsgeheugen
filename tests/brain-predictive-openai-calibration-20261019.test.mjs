@@ -7,6 +7,7 @@ test('due loading selects public scopes before the bounded batch so person forec
  const source=readFileSync(new URL('../supabase/functions/powerhouse-forecast-calibrator/index.ts',import.meta.url),'utf8');
  assert.match(source,/db\.rpc\('powerhouse_public_market_calibration_due_v1',\{p_limit:12\}\)/);
  assert.doesNotMatch(source,/from\('revenue_learning_obligations'\)\.select\('\*'\)/);
+ assert.match(source,/if\(dueError\)throw new Error\('CALIBRATION_DUE_READ_FAILED'\)/);
 });
 test('calibration sends only public forecast fields and matching public evidence',()=>{
  assert.equal(typeof adapter.publicCalibrationPayload,'function');

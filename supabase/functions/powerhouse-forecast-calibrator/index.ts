@@ -14,12 +14,13 @@ Deno.serve(async(req:Request)=>{
   if(!url||!service) return json({ok:false,error:'CONFIG'},500);
   const db=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
   try{
-    const [{data:gov},{data:due},{data:external},{data:keywords}]=await Promise.all([
+    const [{data:gov},{data:due,error:dueError},{data:external},{data:keywords}]=await Promise.all([
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id',USE_CASE).maybeSingle(),
       db.rpc('powerhouse_public_market_calibration_due_v1',{p_limit:12}),
       db.from('bg_externe_signalen').select('url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,vertrouwen').eq('toegestaan',true).gte('gepubliceerd_op',new Date(Date.now()-30*86400000).toISOString()).order('vertrouwen',{ascending:false}).limit(60),
       db.from('bg_zoekwoordkansen').select('zoekwoord,zaadwoord,zoekvolume,concurrentie,kansscore,positie,rankende_url,opgehaald_op').is('afgewezen_reden',null).order('kansscore',{ascending:false}).limit(40)
     ]);
+    if(dueError)throw new Error('CALIBRATION_DUE_READ_FAILED');
     if(!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='OpenAI') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
     if(!due?.length){await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-forecast-calibrator',soort:'calibration-run',status:'ok',detail:'NO_DUE_CALIBRATIONS',gegevens:{contract:'predictive-first-mover-intelligence-v1'}});return json({ok:true,due:0,calibrated:0});}
     const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'OPENAI_API_KEY'})).data); if(!apiKey) throw new Error('AI_KEY_UNAVAILABLE');

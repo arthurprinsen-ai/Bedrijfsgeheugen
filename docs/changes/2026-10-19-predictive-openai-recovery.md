@@ -19,3 +19,5 @@ Broader legacy calibrator tests have the same five failures on baseline and cand
 Production-only aggregate readback found303 overdue calibration obligations:276 person,26 market,1 regulation. The provider migration is explicitly public-market scoped: a service-role-only bounded projection of the existing queue filters scopes before LIMIT12, preventing private/person transfer and starvation. The276 person obligations stay open with their separate governance/evidence boundary; they are not auto-closed or claimed repaired. No new queue or scheduler is created.
 
 The public calibration queue projection is a separate newly allocated migration20261019194349. Original governance migration20261019192838 remains byte-for-byte unchanged from its already-applied native preview revision. Never append SQL to an applied preview migration; preserve version/source identity and apply the missing delta under a new version.
+
+A failed public due-queue RPC returns an explicit error receipt instead of a false NO_DUE_CALIBRATIONS success. Regression is part of the same final calibration contract.
