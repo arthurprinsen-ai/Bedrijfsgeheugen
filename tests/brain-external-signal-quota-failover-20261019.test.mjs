@@ -30,3 +30,10 @@ test('never treats both providers failing as a successful run',()=>{
  assert.match(source,/return json\(out,ok\.length\?\(failed\.length\?207:200\):502\)/);
  assert.match(source,/await bewijs\(ok\.length>0,out/);
 });
+test('sanitizes upstream provider errors before public JSON or Brain evidence',()=>{
+ assert.match(source,/const safeFailure=/);
+ assert.match(source,/fallbackReason=safeFailure\(error\)/);
+ assert.match(source,/error:safeFailure\(e\)/);
+ assert.match(source,/contract:CONTRACT,error:safeFailure\(e\)/);
+ assert.doesNotMatch(source,/String\(b\.status_message\|\|'error'\)/);
+});
