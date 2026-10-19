@@ -7,7 +7,7 @@
     "repeat_count": 2,
     "security_sensitive": true
   },
-  "prevention_rule": "When LinkedIn provider create returns an immutable URN, a permission-limited subsequent GET must never relaunch the post or downgrade provider side-effect existence. A failed or blocked Instagram job retains the exact media review error and action across routine sync. Canonical proof health alone defines daily terminality; no synthetic successes.",
+  "prevention_rule": "When LinkedIn provider create returns an immutable URN, a permission-limited subsequent GET must never relaunch the post or downgrade provider side-effect existence. A failed or blocked Instagram job retains the exact media review error and action across routine sync. Canonical proof health alone defines daily terminality; no synthetic successes. The 20:35 assertion must consume the same canonical provider-proof health as the 20:30 watchdog; three internal SQL functions must keep service-role-only execute grants.",
   "regression_contract": "daily-publication-provider-truth-20261019-v2",
   "evaluation": {
     "historical_replay": [
@@ -23,7 +23,8 @@
   "root_cause": "Legacy watchdog treated missing optional GET as a missing publication and sync replaced specific Mira media rejection diagnostics with generic dispatch instructions.",
   "evidence": {
     "production_replay": "2026-10-19 four-channel proof gate returns 3 terminal, 1 blocked. Verified watchdog mutation count 0 for previously published personal LinkedIn provider URN; Instagram remains unproven.",
-    "migration": "supabase/migrations/20261019215000_publication_provider_proof_reliability_v2.sql"
+    "migration": "supabase/migrations/20261019215000_publication_provider_proof_reliability_v2.sql",
+    "scheduled_assert": "2026-10-19 production assert_content_publication_daily_invariant(date) now reads powerhouse_publication_proof_health; runtime readback confirmed anon EXECUTE false and service_role true."
   },
   "canonical_eligible": false,
   "tests": [
