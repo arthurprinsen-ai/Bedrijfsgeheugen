@@ -2051,6 +2051,8 @@ export const MIRA_FIXED_CHARACTER_VISUAL_IDENTITY_V1=Object.freeze({
   fingerprint:'mira-master-two-image-face-continuity-v1',
   master:'config/instagram-canonical-mira-identity-v1.json',
   masterReferenceId:'Yjqu4D7v76HABNPmQPj1',
+  productionDeliveryConfig:'supabase/config.toml',
+  productionProofFunctions:Object.freeze(['powerhouse-instagram-media-router','powerhouse-instagram-media-verifier','powerhouse-instagram-temporal-verifier']),
   code:'supabase/functions/_shared/mira-canonical-face.mjs',
   visionTransport:Object.freeze({provider:'OpenAI',api:'Responses',adapter:'supabase/functions/_shared/mira-openai-vision.mjs',governanceUseCase:'supabase-powerhouse-instagram-media-verifier-v1',store:false}),
   sourceStages:['powerhouse-instagram-media-verifier','powerhouse-instagram-media-router','powerhouse-content-orchestrator','powerhouse-social-publisher'],
