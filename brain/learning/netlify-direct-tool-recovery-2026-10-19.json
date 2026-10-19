@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-account-scoped-direct-tool-recovery-20261019",
+  "fingerprint": "netlify-oidc|composio-session-toolkit-unsupported|direct-account-tool",
+  "root_cause": "The project-visible, active netlify_mcp connected account could not be admitted by Composio's v3.1 tool_router/session toolkit allowlist (provider HTTP 400), despite OIDC success and an exact active connected account on the second page. The exact provider-specific policy reason is not disclosed; direct account-pinned tool execution is a documented supported alternative to the failing session interface.",
+  "failure_class": "AUTH",
+  "intervention": "Use only the official Composio v3.1 direct tool endpoint with the same Supabase Vault project key, explicit connected_account_id and user_id, fixed allowed Netlify tool slugs and fixed site ID. OIDC main repo/ref/workflow verification remains mandatory. For health, execute only Netlify get-project and require exact site identity; never invoke deploy-site on health. For runtime fallback, execute only deploy-site to issue a short-lived authorized proxy.",
+  "prevention": "Keep health/read-only and provider-deploy paths separate; reject provider auth, invalid schema, missing account, wrong site and failed tool response. Preserve protected GitHub CI/CodeQL and exact production provider readback before resolving the incident.",
+  "state": "CANDIDATE_NOT_YET_LIVE",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "tests": [
+      "tests/brain-netlify-direct-tool-authority.test.mjs"
+    ],
+    "protected_required_ci": "pending",
+    "provider_health": "pending",
+    "fallback_provider_deploy": "pending",
+    "production_readback": "pending"
+  },
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39221115055",
+    "https://docs.composio.dev/reference/api-reference/tools/postToolsExecuteByToolSlug"
+  ]
+}
