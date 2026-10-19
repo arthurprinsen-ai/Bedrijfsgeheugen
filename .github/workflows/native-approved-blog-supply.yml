@@ -29,9 +29,6 @@ env:
 
 jobs:
   supply:
-    # OpenAI HTTPS transport uses OPENAI_API_KEY; no GitHub OIDC permission.
-    permissions:
-      contents: read
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -102,17 +99,13 @@ jobs:
         if: steps.stock.outputs.covered == 'true'
         run: echo "NO_ACTION_APPROVED_STOCK_EXISTS:${{ steps.day.outputs.date }}"
 
-      - name: Generate one BRAIN-led approved blog candidate via OpenAI
+      - name: Generate one BRAIN-led approved blog candidate with OpenAI
         if: steps.stock.outputs.covered != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
           set -euo pipefail
-          if [ -z "${OPENAI_API_KEY:-}" ]; then
-            echo "::error::OPENAI_API_KEY is unavailable; stock remains unchanged."
-            exit 1
-          fi
-          node tools/content-growth/generate-approved-blog-openai.mjs
+          node tools/content-growth/openai-approved-blog.mjs
 
       - name: Build deterministic verification candidate
         if: steps.stock.outputs.covered != 'true' && github.event_name == 'workflow_dispatch' && inputs.verification_mode
