@@ -47,20 +47,50 @@ async function getProxy() {
     "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/7",
   };
 
-  const accountsRes = await fetch(base + "/connected_accounts?limit=100&account_type=ALL", {
-    method: "GET",
-    headers,
-  });
-  const accountsRaw = await accountsRes.text();
-  if (!accountsRes.ok) throw new Error("composio connected accounts " + accountsRes.status);
-  let accountsPayload: any = {};
-  try { accountsPayload = JSON.parse(accountsRaw); } catch {}
-  const items = Array.isArray(accountsPayload?.items) ? accountsPayload.items : [];
-  const account = items.find((item: any) =>
-    String(item?.toolkit?.slug || "").toLowerCase() === "netlify_mcp" &&
-    /active/i.test(String(item?.status || "")) &&
-    !item?.is_disabled
-  );
+  // Provider pagination is cursor-based. An active Netlify account may appear
+  // beyond the first 100 accounts in this Composio project. Never interpret an
+  // incomplete account scan as an authorization failure.
+  let account: any = null;
+  let cursor = "";
+  let pages = 0;
+  let scannedAccounts = 0;
+  const seenCursors = new Set<string>();
+  for (;;) {
+    if (pages >= 20) throw new Error("composio connected accounts pagination incomplete");
+    const endpoint = new URL(base + "/connected_accounts");
+    endpoint.searchParams.set("limit", "100");
+    endpoint.searchParams.set("account_type", "ALL");
+    if (cursor) endpoint.searchParams.set("cursor", cursor);
+    const accountsRes = await fetch(endpoint, {
+      method: "GET",
+      headers,
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!accountsRes.ok) throw new Error("composio connected accounts " + accountsRes.status);
+    const accountsRaw = await accountsRes.text();
+    let payload: any = {};
+    try { payload = JSON.parse(accountsRaw); } catch { throw new Error("composio connected accounts invalid JSON"); }
+    if (!Array.isArray(payload?.items)) throw new Error("composio connected accounts invalid shape");
+    pages++;
+    scannedAccounts += payload.items.length;
+    account = payload.items.find((item: any) =>
+      String(item?.toolkit?.slug || "").toLowerCase() === "netlify_mcp" &&
+      String(item?.status || "").toUpperCase() === "ACTIVE" &&
+      !item?.is_disabled &&
+      typeof item?.id === "string" && item.id.trim().length > 0 &&
+      typeof item?.user_id === "string" && item.user_id.trim().length > 0
+    );
+    if (account) break;
+    const nextCursor = String(payload?.next_cursor || "").trim();
+    if (!nextCursor) break;
+    if (seenCursors.has(nextCursor)) throw new Error("composio connected accounts repeated cursor");
+    seenCursors.add(nextCursor);
+    cursor = nextCursor;
+  }
+  console.log("NETLIFY_COMPOSIO_ACCOUNT_DISCOVERY", JSON.stringify({
+    pages, scanned_accounts: scannedAccounts, authorized_netlify_found: Boolean(account),
+    // Deliberately omit account IDs, user IDs, API keys and OAuth details.
+  }));
   const accountId = String(account?.id || "").trim();
   const userId = String(account?.user_id || "").trim();
   if (!accountId || !userId) throw new Error("composio netlify connected account unavailable");
