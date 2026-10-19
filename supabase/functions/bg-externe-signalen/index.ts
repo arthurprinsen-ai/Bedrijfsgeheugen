@@ -14,6 +14,15 @@ const BETROUWBAAR:Record<string,number>={
 const SOCIAAL=/(^|\.)(instagram|facebook|linkedin|tiktok|x|twitter|youtube|pinterest|reddit)\.com$/i;
 const RUIS_TITEL=/^(zoekresultaten|search results?|home|homepage|nieuws|inzichten.*|blog)$|\btop ?\d+\b|\bbeste\b.*\b(vergelijk|programma|software|tools?)\b|\bvergelijken\b|\|\s*(salaris|software|hr software|prijzen)/i;
 const RUIS_URL=/[?&](q|query|s|search)=|\/(search|zoeken|zoekresultaten|tag|categorie|category)\b|\/(prijzen|pricing|product|producten|features)\/?$/i;
+const safeFailure=(error:unknown)=>{
+  const detail=String((error as Error)?.message||error||'');
+  if(/HTTP_432|usage limit|quota/i.test(detail))return 'UPSTREAM_PLAN_LIMIT';
+  if(/HTTP_429|rate.limit/i.test(detail))return 'UPSTREAM_RATE_LIMIT';
+  if(/TimeoutError|TAVILY_TIMEOUT|timed? ?out/i.test(detail))return 'UPSTREAM_TIMEOUT';
+  if(/DATAFORSEO_CREDENTIALS_UNAVAILABLE/.test(detail))return 'DATAFORSEO_CREDENTIALS_UNAVAILABLE';
+  if(/DATAFORSEO/.test(detail))return 'DATAFORSEO_REMOTE_FAILURE';
+  return 'UPSTREAM_OR_VALIDATION_FAILURE';
+};
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const clean=(v:unknown)=>String(v??'').trim();
 const domeinVan=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return''}};
@@ -30,7 +39,7 @@ async function dataforseoSerp(query:string,login:string,password:string){
     signal:AbortSignal.timeout(TAVILY_TIMEOUT_MS)
   });
   const b:any=await r.json().catch(()=>({}));
-  if(!r.ok||Number(b.status_code)!==20000)throw new Error('DATAFORSEO_'+r.status+':'+String(b.status_message||'error').slice(0,100));
+  if(!r.ok||Number(b.status_code)!==20000)throw new Error('DATAFORSEO_REMOTE_FAILURE');
   const task=b.tasks?.[0];
   if(task&&Number(task.status_code)!==20000)throw new Error('DATAFORSEO_TASK_'+String(task.status_code));
   const items:any[]=task?.result?.[0]?.items||[];
@@ -82,7 +91,7 @@ Deno.serve(async(req:Request)=>{
             res=Array.isArray(b.results)?b.results:[];
           }catch(error){
             if(!dataforseoReady)throw error;
-            fallbackReason=String((error as Error)?.message||error).slice(0,130);
+            fallbackReason=safeFailure(error);
             provider='dataforseo';
             res=await dataforseoSerp(o.zoekvraag,dataforseoLogin,dataforseoPassword);
           }
@@ -104,7 +113,7 @@ Deno.serve(async(req:Request)=>{
         });
         if(rows.length){const {error:ue}=await db.from('bg_externe_signalen').upsert(rows,{onConflict:'url'});if(ue)throw new Error('UPSERT:'+ue.message)}
         return{ok:true,topic:o.onderwerp,provider,fallback_reason:fallbackReason,found:rows.length,allowed:rows.filter(x=>x.toegestaan).length,noise:rows.filter(x=>x.ruis_reden).length};
-      }catch(e:any){return{ok:false,topic:o.onderwerp,error:String(e?.name==='TimeoutError'?'TAVILY_TIMEOUT':e?.message||e).slice(0,180)}}
+      }catch(e:any){return{ok:false,topic:o.onderwerp,error:safeFailure(e)}}
     }));
     const ok=results.filter((x:any)=>x.ok),failed=results.filter((x:any)=>!x.ok);
     const found=ok.reduce((a:number,x:any)=>a+x.found,0),allowed=ok.reduce((a:number,x:any)=>a+x.allowed,0),noise=ok.reduce((a:number,x:any)=>a+x.noise,0);
@@ -120,7 +129,7 @@ Deno.serve(async(req:Request)=>{
     await bewijs(ok.length>0,out,ok.length?'PARTIAL':'REMOTE');
     return json(out,ok.length?(failed.length?207:200):502);
   }catch(e:any){
-    const out={ok:false,contract:CONTRACT,error:String(e?.message||e).slice(0,300)};
+    const out={ok:false,contract:CONTRACT,error:safeFailure(e)};
     await bewijs(false,out,'VALIDATION');return json(out,500);
   }
 });
