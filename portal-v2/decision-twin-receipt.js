@@ -100,3 +100,39 @@ export function renderDecisionTwinReceipt(receipt={}){
  ];
  return line.join('');
 }
+
+
+// The existing roadmap is the only write destination: proposals never dispatch.
+export function buildScenarioRoadmapProposal(state={},foresight={},existing=[]){
+ const receipt=buildDecisionTwinReceipt(state,foresight);
+ const metric=foresight?.active||{},scenario=foresight?.scenario||{};
+ const days=Number(foresight?.days),sensitivity=Number(scenario.sensitivity);
+ const goal=txt(metric.id),tenant=scopeFor(state);
+ if(!tenant||!receipt.tenantBound||
+   receipt.status==='INSUFFICIENT_EVIDENCE'||receipt.sourceRefs.length<3||
+   !/^[a-z][a-z0-9_]{1,63}$/.test(goal)||
+   ![30,90,180,365].includes(days)||
+   !Number.isInteger(sensitivity)||Math.abs(sensitivity)>30||
+   sensitivity===0||sensitivity%5!==0||
+   scenario.kind!=='WHAT_IF_NOT_PREDICTION'||!Number.isFinite(scenario.baseline)||
+   !Number.isFinite(scenario.simulated))return null;
+ const sourceFingerprint=['decision-twin',encodeURIComponent(tenant),goal,days,sensitivity].join(':');
+ if(list(existing).some(item=>item?.sourceFingerprint===sourceFingerprint))return null;
+ const sign=sensitivity>0?'+':'';
+ return Object.freeze({
+   id:'foresight-'+goal+'-'+days+'-'+String(sensitivity).replace('-','m'),
+   title:'Onderzoek '+txt(metric.label||goal).slice(0,90)+' · '+sign+sensitivity+'% / '+days+' dagen',
+   dimension:txt(metric.page)||'roadmap',
+   start:2,sprint:2,duration:1,progress:0,done:false,owner:'',
+   status:'Voorgesteld',priority:'P2',sourceFingerprint,
+   sourcePath:'portal-v2/foresight-scenario-studio.js',
+   tenantId:tenant,goalId:goal,
+   why:'Een met historische klantbronnen onderbouwde wat-als-hypothese; geen voorspelde of gerealiseerde impact.',
+   nextStep:'Wijs een eigenaar toe, verifieer aannames en bepaal vooraf wat en wanneer gemeten wordt.',
+   sourceRefs:receipt.sourceRefs,
+   scenarioAssumptions:Object.freeze({days,sensitivity,baseline:scenario.baseline,simulated:scenario.simulated,
+     kind:'WHAT_IF_NOT_PREDICTION'}),
+   expected_value:null,realized_value:null,financialStatus:'SCENARIO_ONLY',
+   reviewRequired:true,providerDispatchAllowed:false,outcomeVerified:false
+ });
+}
