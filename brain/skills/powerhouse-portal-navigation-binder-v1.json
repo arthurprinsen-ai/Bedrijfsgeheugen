@@ -7,7 +7,7 @@
     "portal/app.mjs"
   ],
   "tests": [
-    "tests/portal-navigation-binder-contract.test.mjs"
+    "tests/brain-portal-navigation-binder-v1.test.mjs"
   ],
   "authority": "GitHub protected main + Netlify exact commit deployment + authenticated portal browser acceptance",
   "terminalStatus": "CANDIDATE_NOT_RELEASED",
