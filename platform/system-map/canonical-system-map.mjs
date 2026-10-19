@@ -36,6 +36,29 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'netlify-last-live-revision-reconcile-v1',
+      fingerprint:'deployment|latest-push-cancels-running-upload|20261019',
+      label:'Protected Netlify release reconciliation against last verified production SHA',
+      owner:'ONE BRAIN / Production delivery control plane',
+      authority:'GitHub protected main + immutable Netlify release source identity',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['latest protected main commit','last verified production release.json commit','cumulative unpublished changed paths']),
+      outputs:Object.freeze(['no-cancel in-flight authorized upload','correct cumulative deployment applicability','fail-closed missing-provider-identity reconciliation']),
+      runtime:Object.freeze({
+        workflow:'.github/workflows/production-source-snapshot.yml',
+        helper:'tools/delivery/netlify-live-gap-reconcile.mjs',
+        regression:'tests/brain-netlify-live-gap-cancel-starvation-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-netlify-release-starvation.json',
+        documentation:'docs/changes/2026-10-19-netlify-release-starvation-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingReleaseAuthorityOnly:true,noParallelScheduler:true,
+        protectedMergeRequired:true,oidcAuthorizationPreserved:true,
+        liveCommitReadbackRequired:true,unknownLiveRevisionFailsClosed:true,
+        runningAuthorizedDeployNotCancelled:true,realBrowserProofRequired:true
+      })
+    }),
+    Object.freeze({
       id:'tenant-decision-twin-roadmap-proposal-v1',
       fingerprint:'powerhouse|portal-v2|decision-twin-roadmap-proposal|v1',
       label:'Evidence-backed what-if → tenant roadmap review-only proposal',
