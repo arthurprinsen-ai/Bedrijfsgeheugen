@@ -1,0 +1,34 @@
+{
+  "fingerprint": "portal|navigation|queryselector-foreach-runtime-failure|2026-10-19",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-intelligence-singleloop-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442",
+  "compiler": {
+    "failure_class": "CLIENT_BIND_ABORT_SELECTOR_SHAPE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The $ helper returns querySelector's single Element, but bindInteractions used .forEach. The exception aborts binding of the remaining portal controls after first render.",
+  "prevention_rule": "Use $$ (querySelectorAll) for repeated DOM targets, and execute the actual binder against a multi-route DOM stub to verify all route clicks are registered before releasing.",
+  "evaluation": {
+    "historical_replay": [
+      "scripts/portal-navigation-binder-contract.test.mjs"
+    ],
+    "shadow": [
+      "scripts/portal-navigation-binder-contract.test.mjs"
+    ],
+    "canary": [
+      "scripts/portal-navigation-binder-contract.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "scripts/portal-navigation-binder-contract.test.mjs",
+    "github_readback": "portal/app.mjs branch blob 116f7ddde627ba1794f37c8cf10f332b160ab968",
+    "production_readback": "NOT_VERIFIED"
+  }
+}
