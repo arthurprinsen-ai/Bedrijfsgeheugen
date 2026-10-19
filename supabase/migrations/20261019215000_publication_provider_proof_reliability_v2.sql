@@ -148,3 +148,10 @@ begin
 end;
 $function$
 ;
+
+-- Restore the exact production privilege boundary. The two SECURITY DEFINER
+-- routines are internal scheduler/service-role RPCs, never browser APIs.
+REVOKE ALL ON FUNCTION public.sync_content_publication_obligations(date,date) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.sync_content_publication_obligations(date,date) TO service_role;
+REVOKE ALL ON FUNCTION public.enforce_content_publication_daily_invariant(date,time without time zone,timestamp with time zone) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.enforce_content_publication_daily_invariant(date,time without time zone,timestamp with time zone) TO service_role;
