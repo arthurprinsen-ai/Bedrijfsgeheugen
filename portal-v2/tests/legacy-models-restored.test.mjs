@@ -59,7 +59,7 @@ test('DuPont ontleedt het rendement in marge, omloop en hefboom', () => {
 test('de drie nieuwe beeldvormen tekenen niets op lege data', () => {
   assert.equal(ladder([]), '');
   assert.equal(dupont({}), '');
-  assert.match(ladder(calc('cmmi-ladder', KLANT)), /^<figure class="v2visual(?:\\s|\")/);
+  assert.match(ladder(calc('cmmi-ladder', KLANT)), /^<figure class="v2visual v2-stage-chart"/);
   assert.match(ladder(calc('cmmi-ladder', KLANT)), /<summary aria-label=/);
   assert.match(dupont(calc('dupont-breakdown', KLANT)), /^<figure class="v2visual"/);
   assert.match(gauge(2.4, { min: 0, max: 6 }), /^<figure class="v2visual"/);
