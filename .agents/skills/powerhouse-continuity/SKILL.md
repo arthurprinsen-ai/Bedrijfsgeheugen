@@ -1561,3 +1561,7 @@ Both existing calibration-obligation writers use one revision-bound state merge.
 ## Actual provider migration identity parity
 
 When native deployment rejects a remote version absent locally, restore its exact actual provider-applied source identity after byte-for-byte proof. Preserve separately Preview-applied revisions and prove compatibility replay idempotent. Never rewrite tracking rows or rename away an applied source. Learning: `brain/learning/2026-10-19-predictive-migration-identity-parity.json`.
+
+## Acknowledged predictive assessment persistence
+
+Count/report uncertainty only after an OPEN and same-revision write is acknowledged with its actual marker and due date. A transientSQL retry reuses the computed assessment and never repeats model inference. Skip unchanged canonical rows before row-locking upsert; require per-result durable readback, not just aggregate/model success. Learning: `brain/learning/2026-10-19-predictive-uncertainty-write-ack.json`.

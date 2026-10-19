@@ -229,6 +229,19 @@
       "tests": [
         "tests/brain-predictive-migration-history-20261019.test.mjs"
       ]
+    },
+    {
+      "id": "predictive-uncertainty-ack",
+      "paths": [
+        "supabase/functions/powerhouse-forecast-calibrator/index.ts",
+        "supabase/functions/powerhouse-forecast-calibrator/persist-uncertainty.mjs",
+        "supabase/migrations/20261019210359_predictive_uncertainty_persistence_ack.sql",
+        "tests/brain-predictive-uncertainty-persistence-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-predictive-uncertainty-persistence-20261019.test.mjs",
+        "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
+      ]
     }
   ],
   "alwaysTests": [
