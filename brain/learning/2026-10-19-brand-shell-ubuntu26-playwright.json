@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-19",
+  "obligation": "brand-shell-ubuntu26-playwright-20261019",
+  "fingerprint": "browser-install|ubuntu26.04|playwright1.55|unsupported-platform",
+  "status": "CANDIDATE_PENDING_GATES",
+  "root_cause": "Workflow overrode supported installer default 1.61.0 with Playwright 1.55.0; GitHub runner is Ubuntu 26.04.",
+  "failure_evidence": {
+    "run": 39294416171,
+    "failed_step": "Install production visual readback browser",
+    "reason": "Playwright does not support chromium on ubuntu26.04-x64",
+    "upstream": "https://github.com/microsoft/playwright/issues/40117"
+  },
+  "change_scope": [
+    ".github/workflows/canonical-brand-shell-live-readback.yml",
+    "tests/brain-brand-shell-ubuntu26-playwright-20261019.test.mjs",
+    "docs/changes/2026-10-19-brand-shell-playwright-ubuntu26.md",
+    "brain/learning/2026-10-19-brand-shell-ubuntu26-playwright.json",
+    "docs/development-ledger-events/2026-10-19-brand-shell-ubuntu26-playwright.md"
+  ],
+  "repair": "Pin workflow install to playwright@1.61.0, already used by install-chromium.sh default.",
+  "prevention": "Validate effective browser installer version against runner Linux support and static regression before visual production readback. Retain browser checks; never treat skipped/failed browser as green.",
+  "acceptance": "Required CI, CodeQL, protected merge, live browser-run readback and evidence; no claim until verified.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-shell-ubuntu26-playwright-20261019.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39294416171",
+    "failure": "Playwright 1.55.0 refused Chromium installation on Ubuntu 26.04",
+    "regression_test": "tests/brain-brand-shell-ubuntu26-playwright-20261019.test.mjs",
+    "release_state": "CANDIDATE_NOT_YET_VERIFIED"
+  }
+}
