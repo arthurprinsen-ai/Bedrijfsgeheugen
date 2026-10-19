@@ -16,8 +16,7 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-openai-native-approved-blog-20261019.test.mjs",
-      "tests/brain-openai-legacy-blog-writers-20261019.test.mjs",
-      "tests/brain-openai-native-approved-blog-20261019.test.mjs#private BRAIN record fields never leave the workspace"
+      "tests/brain-openai-legacy-blog-writers-20261019.test.mjs"
     ],
     "shadow": [
       "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
@@ -32,7 +31,8 @@
     "runtime_validation": "pending protected CI",
     "live_proof": "unverified",
     "legacy_weekblog": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39238320820",
-    "codeql_security_review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/security/code-scanning/215"
+    "codeql_security_review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/security/code-scanning/215",
+    "private_data_regression": "tests/brain-openai-native-approved-blog-20261019.test.mjs"
   },
   "state": "CANDIDATE_ALL_FOUR_BLOG_PROVIDER_PATHS_AWAITING_CI_AND_PROVIDER_READBACK"
 }
