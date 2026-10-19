@@ -57,6 +57,10 @@ export async function translateBatchWithOpenAI(strings, key, {
     if (!response.ok) {
       const error = new Error('OPENAI_I18N_HTTP_' + response.status);
       error.status = response.status;
+      const retryAfterRaw = response.headers?.get?.('retry-after');
+      error.retryAfterMs = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw)
+        ? Math.ceil(Number(retryAfterRaw) * 1000) : null;
+      error.providerBody = (await response.text().catch(() => '')).slice(0,320);
       throw error;
     }
     const payload = await response.json();
