@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-19",
+  "obligation": "instagram-canonical-identity-alias-recovery-20261019",
+  "root_cause": "The Instagram setup recognized only alias bedrijfsgeheugen-mira-canonical, while provider-verified default connection for business identity bedrijfsgeheugen.nl advertises bedrijfsgeheugen-nl-canonical. Multiple active connections can yield ambiguous setup even with a correctly scoped canonical account.",
+  "action": "Accept either explicitly approved canonical alias only after live provider identity == bedrijfsgeheugen.nl, choosing only one unique approved account. Preserve ambiguity and deny publication if multiple canonical candidates are present. No media approval, provider moderation override, or post side effect.",
+  "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "provider_evidence": "Composio Instagram GET_USER_INFO: business @bedrijfsgeheugen.nl verified; @arthurprinsen is a distinct identity. Existing 2026-10-19 Mira video fails identity >=0.94 and final alternate generation failed provider moderation.",
+  "tests": [
+    "tests/brain-instagram-canonical-connection-alias-20261019.test.mjs"
+  ],
+  "production_accepted": false,
+  "follow_up": "Protected merge and exact Supabase Edge deployment/readback; run status identity probe and only then separate exact final video verification and publisher."
+}
