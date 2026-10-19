@@ -8,3 +8,6 @@
 - Assurance: `tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs`, existing `portal-visual-density` cadence.
 - Live claim prohibited until protected CI, Netlify deploy lineage and mobile browser proof.
 - Retired stale PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4495
+
+## Aanvullende bevinding: exact screenshot-pad
+De screenshotlabels `Handwerk`, `Geordend`, `bovenste 25%`, `Late majority` en CMMI worden daadwerkelijk gegenereerd door `portal-v2/modules/legacy-overview-complete.js`. Dit tweede renderpad is daarom in dezelfde PR gerepareerd: de oude SVG/rail blijft in de DOM voor bestaande broncontracten, maar wordt visueel vervangen door native `details/summary`-fases met containerqueries en concrete uitleg. De bestaande test `tests/portal-v2-legacy-interactive-graphs.test.mjs` is aangepast aan de nieuwe semantische interactie en behoudt het oude databroncontract. Browseracceptatie na merge blijft verplicht.
