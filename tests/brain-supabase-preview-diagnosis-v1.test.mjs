@@ -81,3 +81,34 @@ test('CLI emits a machine-readable skipped state and actionable provider reason'
     rmSync(dir, { recursive: true, force: true });
   }
 });
+
+
+test('archived cron replay failure remains fail-closed and identifies stored migration SQL drift', () => {
+  const result = diagnosePreviewCheckRuns({check_runs:[
+    check(210, 'failure', 'ERROR: CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1 SQLSTATE P0001')
+  ]});
+  assert.equal(result.code, 'MIGRATION_ARCHIVED_CRON_PRECONDITION');
+  assert.equal(result.terminal, true);
+  assert.equal(result.conclusion, 'failure');
+  assert.match(result.remediation, /archived.*Git SQL/i);
+  assert.match(result.remediation, /never rewrite the applied ledger/i);
+});
+
+test('provider preview quota exhaustion is NOT a successful preview or permission to remove someone else\'s branch', () => {
+  const result = diagnosePreviewCheckRuns({check_runs:[
+    check(211, 'skipped', 'This pull request has been ignored due to reaching the limit of concurrent preview branches.')
+  ]});
+  assert.equal(result.code, 'PREVIEW_CAPACITY_EXHAUSTED');
+  assert.equal(result.terminal, true);
+  assert.equal(result.conclusion, 'skipped');
+  assert.match(result.remediation, /Do not delete another PR owner/);
+});
+
+test('newest Supabase-owned check remains the sole preview authority over a stale success', () => {
+  const result = diagnosePreviewCheckRuns({check_runs:[
+    check(208, 'success', 'Old preview success, no longer current'),
+    check(212, 'failure', 'CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1')
+  ]});
+  assert.equal(result.code, 'MIGRATION_ARCHIVED_CRON_PRECONDITION');
+  assert.equal(result.id, '212');
+});
