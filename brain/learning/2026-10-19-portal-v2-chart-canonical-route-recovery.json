@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-19",
+  "obligation": "customer-portal-mobile-chart-overflow-recovery-20261019",
+  "fingerprint": "portal-v2-stage-chart-canonical-route-guard-20261019",
+  "root_cause": "The original SVG stage diagrams in portal-v2/visuals.js used fixed 780–900px SVG coordinates, outside-viewBox captions, and mouse-only SVG hit areas. A first recovery targeted retired klantportaal.html, while /klantportaal 301 redirects to /portaal, the canonical Portal V2. Browser identity CI correctly caught the wrong entrypoint.",
+  "intervention": "Retire legacy PR #4495. Target canonical portal-v2/visuals.js, add native details/summary stage interaction with touch/keyboard/click and hover, container query CSS loaded by portal-v2/index.html, and protect route in regression tests.",
+  "prevention": "Every chart repair must resolve canonical _redirects and deployed entrypoint before writing; forbid oversized fixed-position SVG labels on mobile; use semantic controls and verified profile evidence instead of synthetic quartiles. Require protected release and Netlify readback.",
+  "compiler": {
+    "failure_class": "PORTAL_V2_CHART_CANONICAL_ROUTE_OVERFLOW",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "PORTAL_V2_CANONICAL_STAGE_CHART_MOBILE_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "initial_wrong_route_browser_failed": true,
+    "static_regression_written": true,
+    "required_ci_passed": false,
+    "real_browser_mobile_verified": false,
+    "production_readback_verified": false
+  },
+  "status": "CODE_CANDIDATE_UNDER_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4495"
+  ]
+}
