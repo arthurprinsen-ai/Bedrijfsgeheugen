@@ -20,3 +20,7 @@ Een succesvolle GitHub-kandidaat is niet hetzelfde als publieke publicatie. GitH
 - De onafhankelijk geblokkeerde persoonlijke LinkedIn-, Instagram- en commerciële e-mailsporen behouden hun eigen bron-/media-/ontvangerscontroles.
 
 Controlepunten: [GitHub PR #4483](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4483); [opnieuw gestarte workflow](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39272994778).
+
+## GitHub required-check race 19 oktober
+
+Op exact dezelfde PR-head `2e32f1107ff819b7cdf922935eb80ab55c536241` registreerde een voortijdige Required CI-run [39288905478](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39288905478) een mislukte `test` nadat de bijbehorende Netlify-bouw was geannuleerd. De latere, volledige Required CI-run [39289096164](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39289096164) slaagde inclusief Netlify-build, browserregressie en laatste `test`; CodeQL [39288905455](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39288905455) slaagde eveneens. GitHub blokkeerde desondanks de beschermde merge met `Required status check "test" is failing` door het oude resultaat op dezelfde SHA. Dit is geen reden om de branchbescherming, de stale-failure-controle of het publicatiebewijs te omzeilen. Dezelfde kandidaat krijgt uitsluitend deze gedocumenteerde leeraanvulling op een nieuwe SHA, waarna de normale PR-checks de nieuwe exacte bron beoordelen. De publicatie wordt pas `LIVE_PROVEN` na merge, deploy en exacte publieke readback.
