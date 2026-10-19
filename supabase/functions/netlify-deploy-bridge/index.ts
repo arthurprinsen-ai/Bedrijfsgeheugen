@@ -37,7 +37,7 @@ async function getVaultSecret(name: string) {
   }
 }
 
-async function getProxy() {
+async function getComposioContext() {
   const apiKey = await getVaultSecret("COMPOSIO_API_KEY");
   const base = "https://backend.composio.dev/api/v3.1";
   const toolSlug = "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER";
@@ -95,94 +95,62 @@ async function getProxy() {
   const userId = String(account?.user_id || "").trim();
   if (!accountId || !userId) throw new Error("composio netlify connected account unavailable");
 
-  const sessionRes = await fetch(base + "/tool_router/session", {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      user_id: userId,
-      toolkits: { enabled: ["netlify_mcp"] },
-      // The account remains pinned to the originating user and sole Netlify
-      // toolkit. A tool_slug allowlist here caused provider-side session
-      // validation 400 with this MCP toolkit; execution below still hardcodes
-      // the one approved deploy-services action and never exports session_id.
-      connected_accounts: { netlify_mcp: [accountId] },
-      search: { enable: false },
-      execute: { enable_multi_execute: false },
-    }),
-  });
-  const sessionRaw = await sessionRes.text();
-  if (!sessionRes.ok) {
-    // Do not print raw provider body: it can contain account or user identifiers.
-    // Categorize validation failures without exposing project credentials.
-    // Interpret *fields* independently. The former /tool...invalid/ regex
-    // conflated toolkit names with a tool allowlist even after we removed the
-    // allowlist. No free-text response body or user/account/token reaches logs.
-    let validation: any = null;
-    try { validation = JSON.parse(sessionRaw); } catch {}
-    const providerText = String(sessionRaw || "").toLowerCase().slice(0, 12000);
-    const hasField = (word: string) =>
-      new RegExp("(^|[^a-z0-9_])" + word + "([^a-z0-9_]|$)", "i").test(providerText);
-    const details = Array.isArray(validation?.detail) ? validation.detail
-      : Array.isArray(validation?.errors) ? validation.errors : [];
-    const reportedField = ["connected_accounts","toolkits","tools","user_id","auth_configs","search","execute"]
-      .find((field) => details.some((entry: any) => {
-        const segments = Array.isArray(entry?.loc) ? entry.loc
-          : Array.isArray(entry?.path) ? entry.path : [];
-        return segments.some((part: any) => String(part) === field);
-      })) || null;
-    const signals = {
-      connected_accounts: /connected[_ .-]?accounts?/i.test(providerText),
-      toolkit: hasField("toolkit") || hasField("toolkits"),
-      tool_slug: /tool[_ .-]?slug|tool allowlist|invalid tools/i.test(providerText),
-      user_id: /user[_ .-]?id/i.test(providerText),
-      auth_config: /auth[_ .-]?config/i.test(providerText),
-    };
-    const category = reportedField === "connected_accounts" || signals.connected_accounts
-      ? "CONNECTED_ACCOUNT_CONSTRAINT"
-      : reportedField === "toolkits" || signals.toolkit
-      ? "TOOLKIT_CONSTRAINT"
-      : reportedField === "tools" || signals.tool_slug
-      ? "TOOL_ALLOWLIST_CONSTRAINT"
-      : reportedField === "user_id" || signals.user_id
-      ? "USER_ID_CONSTRAINT"
-      : reportedField === "auth_configs" || signals.auth_config
-      ? "AUTH_CONFIG_CONSTRAINT"
-      : "SESSION_REQUEST_INVALID";
-    console.error("NETLIFY_COMPOSIO_SESSION_VALIDATION", JSON.stringify({
-      http: sessionRes.status,
-      category, field: reportedField,
-      response_format: validation ? "json" : "non_json",
-      signals,
-    }));
-    throw new Error("composio session create " + sessionRes.status);
-  }
-  let session: any = {};
-  try { session = JSON.parse(sessionRaw); } catch {}
-  const sessionId = String(session?.session_id || "").trim();
-  if (!sessionId) throw new Error("composio session id missing");
+  return { apiKey, accountId, userId };
+}
 
-  const executeRes = await fetch(base + "/tool_router/session/" + encodeURIComponent(sessionId) + "/execute", {
+async function executePinnedComposioTool(context: {apiKey:string,accountId:string,userId:string}, slug:string, schema:Record<string,unknown>) {
+  // Composio's public v3.1 direct-tool API is separately authenticated and
+  // enforces the project-scoped connected account. The bridge controls both
+  // slugs and schemas; no caller-provided tool or account is accepted here.
+  const response = await fetch("https://backend.composio.dev/api/v3.1/tools/execute/" + encodeURIComponent(slug), {
     method: "POST",
-    headers,
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": context.apiKey,
+      "user-agent": "bedrijfsgeheugen-oidc-netlify-bridge/8",
+    },
     body: JSON.stringify({
-      tool_slug: toolSlug,
-      account: accountId,
-      arguments: {
-        selectSchema: {
-          operation: "deploy-site",
-          params: { siteId },
-          aiAgentName: "Powerhouse GitHub OIDC deploy bridge",
-          llmModelName: "gpt-5.6",
-        },
-      },
+      user_id: context.userId,
+      connected_account_id: context.accountId,
+      version: "latest",
+      arguments: { selectSchema: schema },
     }),
+    signal: AbortSignal.timeout(25000),
   });
-  const raw = await executeRes.text();
-  if (!executeRes.ok) throw new Error("composio session execute " + executeRes.status);
+  const raw = await response.text();
+  let parsed: any = null;
+  try { parsed = JSON.parse(raw); } catch {}
+  if (!response.ok || parsed?.successful === false) {
+    const content = String(raw || "").toLowerCase();
+    const signals = {
+      toolkit: /(^|[^a-z])toolkit([^a-z]|$)/.test(content),
+      connected_account: /connected[_ .-]?account/i.test(content),
+      permission: /forbidden|permission|scope|unauthorized/i.test(content),
+      invalid_schema: /schema|invalid arguments|validation/i.test(content),
+    };
+    console.error("NETLIFY_COMPOSIO_DIRECT_TOOL_FAILED", JSON.stringify({
+      http: response.status, provider_success: parsed?.successful === true, signals,
+      operation: slug === "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER" ? "read" : "deploy_authority",
+    }));
+    throw new Error("composio direct tool " + response.status);
+  }
+  if (!parsed || parsed.successful !== true) throw new Error("composio direct response missing success");
+  return raw;
+}
+
+async function getProxy(context:{apiKey:string,accountId:string,userId:string}) {
+  const raw = await executePinnedComposioTool(context,
+    "NETLIFY_MCP_NETLIFY_DEPLOY_SERVICES_UPDATER", {
+      operation: "deploy-site",
+      params: { siteId },
+      aiAgentName: "Powerhouse GitHub OIDC deploy bridge",
+      llmModelName: "gpt-5.6",
+    });
   const match = raw.match(/https:\/\/netlify-mcp\.netlify\.app\/proxy\/[A-Za-z0-9._~-]+/);
   if (!match) throw new Error("fresh netlify proxy not issued");
   return match[0];
 }
+
 const safe=(x:any)=>({
   id:x?.id||null,state:x?.state||null,done:x?.done??null,error:x?.error||null,
   error_message:x?.error_message||null,deploy_id:x?.deploy_id||null,build_id:x?.build_id||null,
@@ -207,13 +175,25 @@ Deno.serve(async (req: Request) => {
     }
     let body: Record<string, unknown> = {};
     try { body = await req.json(); } catch {}
-    phase = "proxy_read";
-    const proxy = await getProxy();
-    console.log("NETLIFY_DEPLOY_BRIDGE_PHASE", JSON.stringify({ phase:"proxy_ready", elapsed_ms:Date.now()-startedAt }));
+    phase = "account_read";
+    const accountContext = await getComposioContext();
     const action = String(body.action || "proxy");
     if (action === "health") {
-      return Response.json({ok:true,authority:"composio_jit"},{headers:{"Cache-Control":"no-store"}});
+      // An actual Netlify provider read verifies credentials and site access.
+      // Never invoke deploy-site on a read-only health request.
+      phase = "provider_health";
+      const readResult = await executePinnedComposioTool(accountContext,
+        "NETLIFY_MCP_NETLIFY_PROJECT_SERVICES_READER", {
+          operation: "get-project",
+          params: { siteId },
+        });
+      if (!readResult.includes(siteId)) throw new Error("netlify project readback mismatch");
+      console.log("NETLIFY_BACKUP_PROVIDER_READ_VERIFIED", JSON.stringify({ site_match:true, elapsed_ms: Date.now()-startedAt }));
+      return Response.json({ok:true,authority:"composio_project_scoped_netlify_read",provider_readback:true},{headers:{"Cache-Control":"no-store"}});
     }
+    phase = "proxy_read";
+    const proxy = await getProxy(accountContext);
+    console.log("NETLIFY_DEPLOY_BRIDGE_PHASE", JSON.stringify({ phase:"proxy_ready", elapsed_ms:Date.now()-startedAt }));
 
     if (action === "trigger_build") {
       const expectedSha = String(body.expected_sha || "").trim();
@@ -276,6 +256,13 @@ Deno.serve(async (req: Request) => {
     } else if (!authPhase && /composio session create/i.test(message)) {
       errorCode = "composio_session_create_failed";
       status = 422;
+    }
+    else if (!authPhase && /composio direct tool/i.test(message)) {
+      errorCode = "composio_project_scoped_tool_failed";
+      status = 422;
+    } else if (!authPhase && /netlify project readback mismatch/i.test(message)) {
+      errorCode = "netlify_provider_site_mismatch";
+      status = 403;
     } else if (!authPhase && /composio session execute/i.test(message)) {
       errorCode = "composio_session_execute_failed";
       status = 423;
