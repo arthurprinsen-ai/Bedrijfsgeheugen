@@ -1,6 +1,6 @@
 // Read one approved provider key inside a trusted GitHub Actions runner only.
-// No key is committed, printed in logs, or exposed to public/anonymous callers.
-import {appendFile} from 'node:fs/promises';
+// No key is committed, written to files, printed, or exposed to public/anonymous callers.
+import {spawnSync} from 'node:child_process';
 import {pathToFileURL} from 'node:url';
 
 const PROJECT_URL='https://adhjwmvyoixzjtmiroln.supabase.co';
@@ -59,24 +59,45 @@ export async function resolveOpenAIKeyFromVault({
   return value;
 }
 
-export async function loadOpenAIKeyForRunner({
-  envPath=process.env.GITHUB_ENV,
-  maskWriter=value=>process.stdout.write('::add-mask::'+value+'\n'),
-  appendFileImpl=appendFile,
+
+const ALLOWED_COMMANDS=new Set([
+  'tools/content-growth/openai-approved-blog.mjs',
+  'tools/ci/netlify-build-entry.mjs',
+]);
+
+// Run the approved producer in a single process lifetime. Vault material NEVER
+// goes through a GitHub environment file, output, artifact, or source repository.
+export async function runWithVaultOpenAIKey({
+  argv=process.argv.slice(2),
+  spawnImpl=spawnSync,
   ...options
 }={}) {
-  if (!ensureString(envPath)) throw new Error('OPENAI_VAULT_GITHUB_ENV_MISSING');
+  const [runtime,target,...args]=argv;
+  if (runtime!=='node' || !ALLOWED_COMMANDS.has(target) ||
+      (target==='tools/content-growth/openai-approved-blog.mjs' && args.length!==0) ||
+      (target==='tools/ci/netlify-build-entry.mjs' &&
+        (args.length!==1 || !/^--prepare-i18n-cache=powerhouse-blog-\\d{4}-\\d{2}-\\d{2}\\.json$/.test(args[0])))) {
+    throw new Error('OPENAI_VAULT_COMMAND_NOT_ALLOWED');
+  }
   const key=await resolveOpenAIKeyFromVault(options);
-  // GitHub's add-mask workflow command is processed by the Actions runner;
-  // it MUST precede writing the ephemeral job environment file.
-  maskWriter(key);
-  await appendFileImpl(envPath,'OPENAI_API_KEY='+key+'\n',{encoding:'utf8',mode:0o600});
-  return {contract:CONTRACT,ready:true};
+  const env={...process.env,OPENAI_API_KEY:key};
+  delete env.SUPABASE_SERVICE_ROLE_KEY;
+  delete env.SUPABASE_URL;
+  // No shell and no secret on argv. Child receives key in its private env
+  // only; a failing child cannot mark a blog published.
+  const result=spawnImpl(process.execPath,[target,...args],{
+    env,stdio:'inherit',shell:false,cwd:process.cwd(),
+  });
+  if (result?.error || !Number.isInteger(result?.status)) {
+    throw new Error('OPENAI_VAULT_CHILD_EXECUTION_FAILED');
+  }
+  return {contract:CONTRACT,status:result.status};
 }
 
 async function main() {
-  await loadOpenAIKeyForRunner();
-  console.log('BLOG_OPENAI_VAULT_CREDENTIAL_READY');
+  const result=await runWithVaultOpenAIKey();
+  console.log('BLOG_OPENAI_VAULT_RUN',result.status===0?'PASSED':'FAILED');
+  if(result.status!==0) process.exitCode=result.status;
 }
 
 if (process.argv[1] && import.meta.url===pathToFileURL(process.argv[1]).href) {
