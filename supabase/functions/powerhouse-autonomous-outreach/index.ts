@@ -84,7 +84,7 @@ Deno.serve(async(req)=>{
    if(qe)throw{code:'OUTREACH_PREVIEW_READ',message:qe.message};
    let authorized=0;
    for(const a of preview||[])if(await verifyRecipientAuthority(db,a,s(a?.evidence?.recipient_email)))authorized++;
-   return J({ok:true,dry_run:true,eligible:authorized,prepared:(preview||[]).length,recipient_authority_unverified:(preview||[]).length-authorized,external_outreach_executed:false,account_resolved:true,contract:C});
+   return J({ok:true,dry_run:true,eligible:authorized,prepared:(preview||[]).length,recipient_authority_unverified:(preview||[]).length-authorized,external_outreach_executed:false,account_resolved:Boolean(acct.id),account_user_resolved:Boolean(acct.userId),contract:C});
   }
   const composerResponse=await fetch(url+'/functions/v1/powerhouse-commercial-message-composer',{
     method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},
