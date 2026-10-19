@@ -34,5 +34,21 @@
     "live-readback",
     "new-social-provider-metrics",
     "verified-revenue-lineage"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 11,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-error-learning-contract.test.mjs"
+    ]
+  },
+  "fingerprint": "20261019-growth-daily-provider-freshness-and-revenue-false-green"
 }
