@@ -23,5 +23,18 @@
     "no new external content was ingested",
     "no validated customer finance forecast materialized",
     "no production deployment assumed"
-  ]
+  ],
+  "fingerprint": "portal|foresight|no-dom-derived-confidence-or-forecast|v1",
+  "compiler": {
+    "failure_class": "FABRICATED_FORECAST",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-source-truth-20261019.test.mjs"
+    ]
+  }
 }
