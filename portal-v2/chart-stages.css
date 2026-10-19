@@ -45,3 +45,8 @@
 .legacy-complete .legacy-stage-explorer .v2-stage-step .v2-stage-content{font-size:.8rem}
 @container (max-width:700px){.legacy-complete .legacy-stage-explorer .v2-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container (max-width:420px){.legacy-complete .legacy-stage-explorer .v2-stage-grid{grid-template-columns:1fr}}
+
+/* The older CMMI ladder styled every descendant div, not only its bars. */
+.legacy-complete .legacy-cmmi .legacy-stage-explorer,
+.legacy-complete .legacy-cmmi .legacy-stage-explorer .v2-stage-grid{background:transparent!important;padding:0!important;text-align:left!important;height:auto!important;font-size:inherit!important}
+.legacy-complete .legacy-cmmi .legacy-stage-explorer .v2-stage-content{height:auto!important;background:transparent!important;text-align:left!important;padding:0 .7rem .75rem!important;font-size:.8rem!important}
