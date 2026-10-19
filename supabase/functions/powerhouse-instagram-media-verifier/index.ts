@@ -1,3 +1,4 @@
+import {requestMiraVision} from '../_shared/mira-openai-vision.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,MIRA_FACE_CONSISTENCY_POLICY,MIRA_IDENTITY_MIN_CONFIDENCE} from '../_shared/mira-canonical-face.mjs';
 
@@ -80,26 +81,12 @@ async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaTy
       required:['face_identity_match','face_identity_confidence','facial_drift_reason','semantic_verified','mira_present','identity_class','evidence_method','placeholder_detected','visual_complete','daily_life_scene','mira_central_subject','text_dominant','brand_template_dominant','confidence','reason']
     }
   };
-  const response=await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},
-    body:JSON.stringify({
-      model,max_tokens:700,
-      system:'Two-image comparison for the SAME FICTIONAL character. Image 1 is the official canonical OpenArt Mira master; image 2 is the final candidate or a sampled Reel frame. Verify that the facial geometry, apparent age, eyes, nose, jaw, hairstyle and recognizable identity remain consistent, allowing changes of pose, expression, lighting and clothing. Do not infer identity from the prompt, text, names, filenames or backgrounds. If the face is hidden, replaced, altered, generic, or hard to compare, set face_identity_match=false and confidence low. Also reject text cards and brand creative. Be conservative: a different woman never counts as Mira.',
-      messages:[{role:'user',content:[
+  return await requestMiraVision({apiKey,model,name:tool.name,schema:tool.input_schema,instructions:'Two-image comparison for the SAME FICTIONAL character. Image 1 is the official canonical OpenArt Mira master; image 2 is the final candidate or a sampled Reel frame. Verify that the facial geometry, apparent age, eyes, nose, jaw, hairstyle and recognizable identity remain consistent, allowing changes of pose, expression, lighting and clothing. Do not infer identity from the prompt, text, names, filenames or backgrounds. If the face is hidden, replaced, altered, generic, or hard to compare, set face_identity_match=false and confidence low. Also reject text cards and brand creative. Be conservative: a different woman never counts as Mira.',content:[
         {type:'text',text:'IMAGE 1: official canonical fictional Mira master. IMAGE 2: exact candidate asset or video frame. Compare face identity, do not merely detect a human woman. Only approve when the same exact Mira appears clearly in image 2.'},
         {type:'image',source:{type:'base64',media_type:'image/jpeg',data:toBase64(masterBytes)}},
         {type:'image',source:{type:'base64',media_type:mediaType,data:toBase64(bytes)}},
         {type:'text',text:'Give separate boolean facial identity match and confidence, with explicit drift reason if uncertain. Require visible centered Mira and ordinary life scene; reject a different look-alike, text, template, placeholder or unclear face.'}
-      ]}],
-      tools:[tool],tool_choice:{type:'tool',name:'visual_verdict'}
-    })
-  });
-  const body=await response.json().catch(()=>({}));
-  if(!response.ok)throw new Error('VISION_PROVIDER_REQUEST_FAILED');
-  const item=(body.content||[]).find((x:any)=>x.type==='tool_use'&&x.name==='visual_verdict');
-  if(!item?.input)throw new Error('VISION_TOOL_OUTPUT_MISSING');
-  return item.input;
+      ]});
 }
 
 Deno.serve(async(req)=>{
@@ -130,8 +117,8 @@ Deno.serve(async(req)=>{
     const gov=await db.from('brain_ai_governance_registry')
       .select('model_id,provider,approved,lifecycle_status')
       .eq('tenant_id','canonical').eq('use_case_id',USE_CASE).maybeSingle();
-    if(!gov.data||gov.data.approved!==true||gov.data.lifecycle_status!=='ACTIVE'||gov.data.provider!=='Anthropic')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
-    const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'ANTHROPIC_API_KEY'})).data);
+    if(!gov.data||gov.data.approved!==true||gov.data.lifecycle_status!=='ACTIVE'||gov.data.provider!=='OpenAI')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
+    const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'OPENAI_API_KEY'})).data);
     if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
 
     let ct='',bytes:Uint8Array;
@@ -178,7 +165,7 @@ Deno.serve(async(req)=>{
       && verdict.face_identity_match===true
       && Number.isFinite(Number(verdict.face_identity_confidence))
       && Number(verdict.face_identity_confidence)>=MIRA_IDENTITY_MIN_CONFIDENCE;
-    const evidenceRef=`vision:anthropic:${gov.data.model_id}:face-compare:${masterSha.slice(0,16)}:${hash.slice(0,16)}`;
+    const evidenceRef=`vision:openai:${gov.data.model_id}:face-compare:${masterSha.slice(0,16)}:${hash.slice(0,16)}`;
     const visual={
       verified:pass,semantic_verified:verdict.semantic_verified===true,mira_present:verdict.mira_present===true,
       identity_class:clean(verdict.identity_class),evidence_method:'vision',

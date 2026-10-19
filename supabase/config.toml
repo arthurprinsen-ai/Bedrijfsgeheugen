@@ -114,3 +114,19 @@ entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-content-loop/index.ts"
+
+# Existing exact-Mira production stages. Entrypoints enforce the scheduler token.
+[functions.powerhouse-instagram-media-router]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-router/index.ts"
+
+[functions.powerhouse-instagram-media-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-verifier/index.ts"
+
+[functions.powerhouse-instagram-temporal-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-temporal-verifier/index.ts"

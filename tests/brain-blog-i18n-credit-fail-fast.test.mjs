@@ -10,7 +10,8 @@ test('daily blog cache gap report contains exact source keys only in scoped prep
   assert.match(builder,/if \(!missing\.length\) return result/);
 });
 test('provider credit exhaustion fails promptly without recursive splitting',()=>{
-  assert.match(builder,/if \(status === 400 && \/credit balance is too low\|insufficient quota\|billing\/i\.test\(providerBody \|\| ''\)\)/);
+  assert.match(builder,/status === 400 \|\| status === 402 \|\| status === 429/);
+  assert.match(builder,/credit balance is too low\|insufficient.quota\|billing/);
   assert.match(builder,/throw new Error\('STATIC_I18N_PROVIDER_BILLING_BLOCKED:/);
   assert.match(builder,/if \(part\.length > 1\)/);
 });

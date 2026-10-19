@@ -91,7 +91,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
           SLUG: ${{ steps.render.outputs.slug }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # OpenAI is the sole approved translation provider for this publisher.
         run: |
           set -euo pipefail
           branch="automation/powerhouse-blog-$DATE"
@@ -146,7 +147,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          # OpenAI is the sole approved translation provider for this publisher.
         run: |
           set -euo pipefail
           branch="automation/powerhouse-blog-$DATE"
