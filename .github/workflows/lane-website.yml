@@ -246,7 +246,7 @@ jobs:
           exit 1
       - name: Install shared website browser runtime
         run: |
-          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+          PLAYWRIGHT_PACKAGE=playwright@1.61.0 bash tools/ci/install-chromium.sh
       - name: Verify high-risk full website regression contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         run: >-
