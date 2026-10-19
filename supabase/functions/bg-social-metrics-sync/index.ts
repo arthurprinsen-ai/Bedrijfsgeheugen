@@ -31,6 +31,32 @@ async function accounts(apiKey:string,toolkit:string){
   const body=await request(apiKey,'/connected_accounts?toolkit_slugs='+encodeURIComponent(toolkit)+'&statuses=ACTIVE&account_type=ALL&limit=50');
   return (Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:[]).filter((x:any)=>clean(x?.status).toUpperCase()==='ACTIVE');
 }
+// Reuse the live-verified ONE BRAIN identity, not optional account-list metadata.
+async function verifiedBoundAccount(db:any,apiKey:string,toolkit:'instagram'|'linkedin'){
+  const recordId=toolkit==='instagram'?'instagram-composio-setup-current-state-v1':'linkedin-composio-setup-current-state-v1';
+  const {data:stored,error}=await db.from('brain_records')
+    .select('status,result,observed_at').eq('tenant_id','canonical').eq('record_id',recordId).maybeSingle();
+  if(error)throw new Error('PROVIDER_BINDING_PROOF_READ:'+error.message);
+  const proof=stored?.result||{};
+  if(stored?.status!=='ACTIVE'||proof.ready!==true||proof.health_verified!==true){
+    throw new Error(toolkit.toUpperCase()+'_VERIFIED_PROVIDER_PROOF_REQUIRED');
+  }
+  if(toolkit==='instagram'&&clean(proof.username).toLowerCase()!=='bedrijfsgeheugen.nl'){
+    throw new Error('IG_CANONICAL_IDENTITY_MISMATCH');
+  }
+  if(toolkit==='linkedin'&&proof.personal_ready!==true){
+    throw new Error('LINKEDIN_PERSONAL_PROOF_UNAVAILABLE');
+  }
+  const id=clean(proof.connected_account_id),userId=clean(proof.user_id);
+  if(!id||!userId)throw new Error('PROVIDER_BINDING_ID_MISSING');
+  // The active account list is a liveness readback; never select by alias,
+  // account order, a personal identity, or an unverified fallback.
+  const active=await accounts(apiKey,toolkit);
+  const matched=active.filter((a:any)=>clean(a?.id||a?.connected_account_id)===id
+    &&clean(a?.user_id)===userId&&!a?.is_disabled);
+  if(matched.length!==1)throw new Error(toolkit.toUpperCase()+'_VERIFIED_ACCOUNT_NOT_ACTIVE');
+  return matched[0];
+}
 async function snapshot(db:any,tenantId:string,postId:string,platform:string,providerId:string,day:string,metrics:any,quality:string){
   const now=new Date().toISOString();
   if(!Object.keys(metrics).length)throw new Error('EMPTY_PROVIDER_METRICS');
@@ -68,12 +94,7 @@ async function resolveInstagram(db:any,media:any){
   return {tenant_id:'bedrijfsgeheugen',post_id:postId};
 }
 async function instagram(db:any,apiKey:string,day:string){
-  const a=await accounts(apiKey,'instagram');
-  const eligible=a.filter((x:any)=>clean(x?.user_info?.username).toLowerCase()==='bedrijfsgeheugen.nl');
-  // A personal or Mira account is never a fallback for the business profile.
-  const canonical=eligible.filter((x:any)=>clean(x.alias)==='bedrijfsgeheugen-nl-canonical');
-  const chosen=canonical.length===1?canonical[0]:(eligible.length===1?eligible[0]:null);
-  if(!chosen)throw new Error('IG_CANONICAL_IDENTITY_UNAVAILABLE_OR_AMBIGUOUS');
+  const chosen=await verifiedBoundAccount(db,apiKey,'instagram');
   const response=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_USER_MEDIA',{
     ig_user_id:'me',limit:12,fields:'id,timestamp,permalink,media_type,media_product_type,like_count,comments_count,view_count'
   });
@@ -104,10 +125,7 @@ async function instagram(db:any,apiKey:string,day:string){
   return {status:observed>0?'OBSERVED':'UNAVAILABLE',media_examined:posts.length,snapshots:observed,failures:failures.slice(0,12)};
 }
 async function linkedin(db:any,apiKey:string,day:string){
-  const a=await accounts(apiKey,'linkedin');
-  const eligible=a.filter((x:any)=>clean(x?.alias)==='bedrijfsgeheugen-org-publishing-reauth-20261010');
-  if(eligible.length!==1)throw new Error('LINKEDIN_BOUND_CONNECTION_AMBIGUOUS_OR_UNAVAILABLE');
-  const chosen=eligible[0];
+  const chosen=await verifiedBoundAccount(db,apiKey,'linkedin');
   const {data:posts,error}=await db.from('social_posts')
     .select('tenant_id,post_id,external_post_id,published_at')
     .eq('tenant_id','canonical').eq('platform','linkedin').ilike('post_id','linkedin-personal%')
