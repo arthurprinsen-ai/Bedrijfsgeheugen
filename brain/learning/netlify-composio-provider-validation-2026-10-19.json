@@ -35,5 +35,7 @@
   "evidence_urls": [
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39219312774"
-  ]
+  ],
+  "root_cause": "The provider HTTP 400 rejection remains unresolved; the definite diagnostic defect was that /tool...invalid/ interpreted toolkit validation text as a tool allowlist failure after the tool-level filter had been removed. The classifier could not reliably identify the invalid request field.",
+  "prevention": "Require independently matched toolkit versus tool field parsing and schema-restricted diagnostic logs on provider errors, without disabling OIDC, account pinning, Required CI or source/deploy proof."
 }
