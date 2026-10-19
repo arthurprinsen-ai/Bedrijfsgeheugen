@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-19",
+  "obligation": "blog-openai-vault-runner-key-20261019",
+  "fingerprint": "openai-blog|github-actions|missing-repository-secret|existing-supabase-vault",
+  "root_cause": "GitHub Actions has no OPENAI_API_KEY repository secret, although the protected blog publication workflow now needs OpenAI to prepare 24 uncached English translation segments; run 39272994778 stopped with STATIC_I18N_OPENAI_KEY_MISSING. The key exists in the service-role-only Supabase Vault.",
+  "intervention": "Call the pre-existing public.bg_geheim('OPENAI_API_KEY') RPC using existing SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY GitHub Actions secrets inside a trusted first-party runner step, pin project URL, validate key format, mask the credential before writing job-scoped GITHUB_ENV, and remove blank secret mappings that shadow it. Reuse this one helper in both approved blog supply and canonical daily publisher.",
+  "prevention": "Do not introduce a new parallel generator, copy a credential into source, expose it to a public role, print response bodies, weaken publication uniqueness or Notion approval, or mark an unproven article as live. Fail closed on missing Vault secret, missing authorized token or provider rejection.",
+  "compiler": {
+    "failure_class": "CREDENTIAL_BOUNDARY_CONFIGURATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "prevention_rule": "BLOG_OPENAI_VAULT_SERVICE_ROLE_RUNNER_MASKED_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-openai-vault-runner-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-openai-vault-runner-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-openai-vault-runner-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "github_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39272994778",
+    "error_class": "STATIC_I18N_OPENAI_KEY_MISSING",
+    "vault_openai_present": true,
+    "github_repo_openai_secret_present": false,
+    "github_service_role_secret_present": true,
+    "role_acl": "postgres,service_role",
+    "anon_can_execute": false,
+    "authenticated_can_execute": false,
+    "service_can_execute": true,
+    "run_time_verified": false,
+    "public_blog_live_verified": false
+  },
+  "status": "SOURCE_CANDIDATE_AWAITING_REQUIRED_TESTS_PROTECTED_MERGE_AND_LIVE_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39272994778"
+  ]
+}
