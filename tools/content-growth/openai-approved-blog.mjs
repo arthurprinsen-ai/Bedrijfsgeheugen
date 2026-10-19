@@ -76,6 +76,32 @@ function outputText(response) {
   return text;
 }
 
+// Correct only length drift in the optional SEO summary. Reuse the author's
+// own metadata or source article introduction; never fabricate claims or
+// shorten the actual article, and never weaken the final quality validator.
+export function repairApprovedBlogMeta(item) {
+  if (!item || typeof item !== 'object' || Array.isArray(item) ||
+      typeof item.meta !== 'string') return item;
+  const compact=value=>String(value ?? '').replace(/\s+/g,' ').trim();
+  const original=compact(item.meta);
+  if (original.length >= 120 && original.length <= 170) return item;
+  const paragraphs=typeof item.blogtext === 'string'
+    ? item.blogtext.split(/\n\s*\n/).map(compact).filter(Boolean) : [];
+  const source=original.length>170 ? original
+    : paragraphs.find(paragraph=>paragraph.length>=120 && !/^#{1,6}\s/.test(paragraph)) || '';
+  if (source.length<120) return item; // refuse an unverifiable repair
+  let excerpt=source;
+  if (excerpt.length>170) {
+    excerpt=excerpt.slice(0,165);
+    const lastSpace=excerpt.lastIndexOf(' ');
+    if (lastSpace>=120) excerpt=excerpt.slice(0,lastSpace);
+    excerpt=excerpt.replace(/[\s,;:\/-]+$/,'');
+    if (!/[.!?]$/.test(excerpt)) excerpt+='.';
+  }
+  if (excerpt.length<120 || excerpt.length>170) return item;
+  return {...item,meta:excerpt};
+}
+
 export function validateApprovedBlog(item) {
   if (!item || typeof item !== 'object' || Array.isArray(item) ||
       Object.keys(SCHEMA.properties).some(k => typeof item[k] !== 'string')) {
@@ -125,7 +151,7 @@ export async function generateApprovedBlog({learning, apiKey, fetchImpl=fetch, m
   let parsed;
   try { parsed = JSON.parse(outputText(body)); }
   catch(e) { if (e?.message?.startsWith('OPENAI_BLOG_')) throw e; throw new Error('OPENAI_BLOG_JSON_INVALID'); }
-  return validateApprovedBlog(parsed);
+  return validateApprovedBlog(repairApprovedBlogMeta(parsed));
 }
 
 async function main() {
