@@ -4,7 +4,7 @@ import { ensureIdentityWidget } from '../portal-state.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const nlDate=value=>{if(!value)return '—';try{return new Intl.DateTimeFormat('nl-NL',{day:'numeric',month:'short',year:'numeric'}).format(new Date(value));}catch{return String(value)}};
-const isFresh=(value,days=45)=>{if(!value)return false;const t=new Date(value).getTime();return Number.isFinite(t)&&Date.now()-t<=days*86400000};
+const isFresh=(value,days=45)=>{if(!value)return false;const t=new Date(value).getTime();return Number.isFinite(t)&&t<=Date.now()&&Date.now()-t<=days*86400000};
 const sourceName=(sourceMap,id)=>sourceMap.get(id)?.naam||sourceMap.get(id)?.uitgever||'Externe bron';
 const sourcePublisher=(sourceMap,id)=>sourceMap.get(id)?.uitgever||'Onbekend';
 
@@ -71,7 +71,8 @@ function intelligenceSignalCard(item,domains){
 }
 function sourceCapabilityCard(item){
   const mode=item.activation_mode==='PUBLIC_ALWAYS'?'publieke bron':item.activation_mode==='CONNECTOR_REQUIRED'?'koppeling nodig':item.activation_mode==='PROVIDER_REQUIRED'?'provider nodig':'handmatig bewijs';
-  return `<article class="eicard compact"><div class="eimeta"><span>${esc(item.scope==='internal'?'Binnen bedrijf':'Buiten bedrijf')}</span><span class="eistatus">${esc(mode)}</span></div><h4>${esc(item.label)}</h4><p>${esc(item.publisher||'')} · authority ${esc(item.authority_tier||'—')}/5</p><footer><span>${esc(arr(item.domain_keys).length)} domeinen</span>${item.canonical_url?`<a href="${esc(item.canonical_url)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>`:''}</footer></article>`;
+  const availability=item.availability_state||'CATALOGUED';
+  return `<article class="eicard compact"><div class="eimeta"><span>${esc(item.scope==='internal'?'Binnen bedrijf':'Buiten bedrijf')}</span><span class="eistatus">${esc(mode)} · ${esc(availability)}</span></div><h4>${esc(item.label)}</h4><p>${esc(item.publisher||'')} · authority ${esc(item.authority_tier||'—')}/5</p><footer><span>${esc(arr(item.domain_keys).length)} domeinen</span>${item.canonical_url?`<a href="${esc(item.canonical_url)}" target="_blank" rel="noopener noreferrer">Bron ↗</a>`:''}</footer></article>`;
 }
 function renderEnvironmentRadar(data){
   const {intelligence}=enrich(data),domains=arr(intelligence.domains),catalog=arr(intelligence.sourceCatalog),signals=arr(intelligence.signals),actions=arr(intelligence.actionCandidates),snap=intelligence.snapshot||{};
@@ -81,14 +82,17 @@ function renderEnvironmentRadar(data){
   const knownValue=snap.known_opportunity_value_eur==null?'Nog niet bewezen':euro(snap.known_opportunity_value_eur);
   const knownRisk=snap.known_risk_value_eur==null?'Nog niet bewezen':euro(snap.known_risk_value_eur);
   const sinceYesterday=signals.filter(s=>isFresh(s.observed_at,1));
+  const latestObservedAt=signals.map(s=>s.observed_at).filter(Boolean).sort((a,b)=>new Date(b)-new Date(a))[0]||null;
+  const noFreshObservations=sinceYesterday.length===0;
+  const prioritizedActions=[...actions].sort((a,b)=>(Number(b.priority_score)||0)-(Number(a.priority_score)||0));
   const companyImpact=signals.filter(s=>s.impact_status==='SCORED');
   const opportunities=signals.filter(s=>/(OPPORTUNITY|SEARCH_DEMAND|DEMAND_CHANGE|TECH_CHANGE|IP_CHANGE)/.test(String(s.signal_type||'').toUpperCase()));
   const risks=signals.filter(s=>/(RISK|CYBER|FRAUD|DISRUPTION|PHYSICAL|SUPPLY_RISK)/.test(String(s.signal_type||'').toUpperCase()));
   const contextGaps=signals.filter(s=>s.impact_status!=='SCORED'&&score(s.signal_score)>=65);
-  const body=`${nav()}<section class="eikpis">
+  const body=`${nav()}<section class="eistate${noFreshObservations?' error':''}" data-source-freshness="${noFreshObservations?'STALE_OR_UNVERIFIED':'OBSERVED_24H'}"><b>${noFreshObservations?'Geen nieuwe bronwaarnemingen aangetoond in 24 uur':'Nieuwe bronwaarnemingen ontvangen in 24 uur'}</b><p>Laatste geladen bronwaarneming: ${esc(nlDate(latestObservedAt))}. Projectie herberekend: ${esc(nlDate(snap.refreshed_at))}. Een nieuwe berekening of status CURRENT maakt verouderd bronmateriaal niet actueel.</p></section><section class="eikpis">
     <button type="button"><small>Domeinen</small><strong>${esc(snap.domain_count??domains.length)}</strong><span>extern + intern</span></button>
     <button type="button"><small>Bronmogelijkheden</small><strong>${esc(snap.catalog_source_count??catalog.length)}</strong><span>publiek + koppelingen</span></button>
-    <button type="button"><small>Sinds gisteren</small><strong>${esc(snap.signals_24h??sinceYesterday.length)}</strong><span>nieuwe signalen</span></button>
+    <button type="button"><small>Sinds gisteren</small><strong>${esc(sinceYesterday.length)}</strong><span>waargenomen in geladen bronnen</span></button>
     <button type="button"><small>Aandacht</small><strong>${esc(snap.high_attention_count??signals.filter(s=>score(s.signal_score)>=70).length)}</strong><span>score ≥ 70</span></button>
     <button type="button"><small>Kansen €</small><strong>${esc(knownValue)}</strong><span>alleen bewezen bedragen</span></button>
     <button type="button"><small>Risico €</small><strong>${esc(knownRisk)}</strong><span>alleen bewezen bedragen</span></button>
@@ -99,10 +103,10 @@ function renderEnvironmentRadar(data){
   ${section('Kansen',opportunities.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele kanssignalen met voldoende bronbewijs.')}
   ${section('Risico’s',risks.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Nog geen actuele risicosignalen met voldoende bronbewijs.')}
   ${section('Context nodig vóór impactclaim',contextGaps.slice(0,10).map(x=>intelligenceSignalCard(x,domainMap)),'Geen open contextgaten bij hoog scorende signalen.')}
-  ${section('Volgende acties',actions.slice(0,10).map(a=>`<article class="eicard"><div class="eimeta"><span>${esc(domainMap.get(a.domain_key)?.label||a.domain_key)}</span><span class="eistatus">${esc(score(a.priority_score))}/100</span></div><h4>${esc(a.title)}</h4><p>${esc(a.rationale)}</p><footer><span>${esc(a.status)}</span><span>${a.due_at?`voor ${esc(nlDate(a.due_at))}`:'geen harde deadline'}</span></footer></article>`),'Nog geen action candidates. Een kandidaat ontstaat alleen bij voldoende signaalbewijs.')}
+  ${section('Geprioriteerde beoordeling en opvolging',prioritizedActions.slice(0,10).map(a=>`<article class="eicard"><div class="eimeta"><span>${esc(domainMap.get(a.domain_key)?.label||a.domain_key)}</span><span class="eistatus">Signaalprioriteit ${esc(score(a.priority_score))}/100</span></div><h4>${esc(a.title)}</h4><p>${esc(a.rationale)}</p><p><b>Volgende stap:</b> ${a.canonical_action_ref?'Open de toegewezen actie en leg het resultaat vast.':'Beoordeel eerst bedrijfsspecifieke relevantie, maak daarna pas een uitvoerbare actie.'}</p><footer><span>${a.canonical_action_ref?'Gekoppeld aan bestaande actie':'Voorstel · nog geen uitvoeringsactie'}</span><span>${a.owner_hint?`Eigenaar: ${esc(a.owner_hint)}`:'Eigenaar nog niet toegewezen'}</span><span>${a.due_at?`Streefdatum ${esc(nlDate(a.due_at))}`:'Geen streefdatum vastgelegd'}</span>${a.canonical_action_ref?'<button type="button" data-open-page="actieve-acties">Bekijk actieve acties →</button>':''}</footer></article>`),'Nog geen action candidates. Een kandidaat ontstaat alleen bij voldoende signaalbewijs.')}
   ${section('Volledig domeinuniversum',domainGroups)}
   ${section('Bronuniversum',catalog.slice(0,24).map(sourceCapabilityCard),'Nog geen broncatalogus beschikbaar.')}
-  <p class="eifootnote">${esc(snap.status||'EMPTY')} · bijgewerkt ${esc(nlDate(snap.refreshed_at||data.stats?.generatedAt))} · catalogus betekent mogelijkheid, niet automatisch een actieve koppeling.</p>`;
+  <p class="eifootnote">Projectie: ${esc(snap.status||'EMPTY')} · herberekend ${esc(nlDate(snap.refreshed_at||data.stats?.generatedAt))} · laatste geladen bronsignaal ${esc(nlDate(latestObservedAt))} · bronactualiteit ${noFreshObservations?'niet aangetoond in de laatste 24 uur':'bronsignaal waargenomen in laatste 24 uur'}. Catalogus ≠ live provider. Prioriteit van een signaal ≠ bewezen bedrijfsimpact.</p>`;
   return shell(VIEWS.omgevingsradar.title,VIEWS.omgevingsradar.subtitle,body);
 }
 function renderHub(data){

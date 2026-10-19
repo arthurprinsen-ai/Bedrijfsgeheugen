@@ -36,6 +36,27 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-future-lens-source-truth-v1',
+      fingerprint:'portal|foresight|no-dom-derived-confidence-or-forecast|v1',
+      label:'Portal Future Lens uses evidence-backed tenant forecasts only',
+      owner:'ONE BRAIN / Portal V2 / Powerhouse Foresight',
+      authority:'authenticated canonical tenant forecast + independent quality proof',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['tenant-bound verified source references','validated model version and backtest','latest provenance date','canonical customer forecast']),
+      outputs:Object.freeze(['numerical forecast only with source proof','unknown instead of synthetic confidence','existing contextual foresight and action navigation']),
+      runtime:Object.freeze({
+        implementation:'portal-v2/nextgen-intelligence.js',
+        regression:'portal-v2/tests/nextgen-intelligence.test.mjs',
+        learning:'brain/learning/2026-10-19-portal-future-lens-source-truth-v1.json',
+        documentation:'docs/changes/2026-10-19-portal-future-lens-source-truth-v1.md'
+      }),
+      invariants:Object.freeze({
+        noDomForecast:true,noFabricatedConfidence:true,sourceAndTenantRequired:true,
+        independentBacktestRequired:true,noAutomaticFinancialClaims:true,protectedMergeRequired:true,
+        authenticatedProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'portal-workspace-async-generation-v1',
       fingerprint:'powerhouse|portal-v2|workspace-mount-generation|v1',
       label:'Portal V2 stable workspace mounts after async navigation',
