@@ -99,10 +99,15 @@ jobs:
         if: steps.stock.outputs.covered == 'true'
         run: echo "NO_ACTION_APPROVED_STOCK_EXISTS:${{ steps.day.outputs.date }}"
 
-      - name: Generate one BRAIN-led approved blog candidate with OpenAI
+      - name: Resolve OpenAI credential from protected Supabase Vault
         if: steps.stock.outputs.covered != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node tools/ci/load-openai-key-from-vault.mjs
+
+      - name: Generate one BRAIN-led approved blog candidate with OpenAI
+        if: steps.stock.outputs.covered != 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         run: |
           set -euo pipefail
           node tools/content-growth/openai-approved-blog.mjs
