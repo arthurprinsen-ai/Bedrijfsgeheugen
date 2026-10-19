@@ -43,37 +43,15 @@ test('retired specialist workflows stay off direct PR admission and are preserve
 });
 
 
-test('governance-only prevention registry does not trigger production deploy/readback workflows', async () => {
-  for (const workflow of [
-    '.github/workflows/production-source-snapshot.yml',
-    '.github/workflows/production-release-readback.yml',
-  ]) {
-    const text = await readFile(workflow, 'utf8');
-    const triggerBlock = text.split(/\npermissions:/, 1)[0];
-    assert.match(triggerBlock, /paths-ignore:/);
-    assert.match(triggerBlock, /config\/delivery-prevention-rules\.json/);
-  }
+test('production snapshot reconciles governance changes without forcing deployment', async () => {
+  const snapshot = await workflow('production-source-snapshot.yml');
+  const readback = await workflow('production-release-readback.yml');
+  assert.match(snapshot, /push:\\s*\\n\\s*branches: \\[main\\]/);
+  assert.doesNotMatch(snapshot.split('permissions:')[0], /^\\s*paths-ignore:/m);
+  assert.match(snapshot, /deriveNetlifyDeploymentApplicability/);
+  assert.match(snapshot, /steps\\.scope\\.outputs\\.deployment_required == 'true'/);
+  assert.match(readback, /deriveNetlifyDeploymentApplicability/);
 });
-
-
-test('production workflows ignore control-plane-only paths', async () => {
-  for (const workflow of [
-    '.github/workflows/production-source-snapshot.yml',
-    '.github/workflows/production-release-readback.yml',
-  ]) {
-    const source = await readFile(workflow, 'utf8');
-    const triggerBlock = source.split(/\npermissions:/, 1)[0];
-    for (const expected of [
-      "AGENTS.md",
-      "brain/policies/**",
-      "tools/delivery/**",
-      "tools/site-shell/verify-targeted-website-routes.mjs",
-    ]) {
-      assert.ok(triggerBlock.includes(expected), `${workflow} must ignore ${expected}`);
-    }
-  }
-});
-
 
 test('portal production readback only auto-runs for deployable portal runtime changes', async () => {
   const source = await workflow('portal-v2-production-dom-readback.yml');
