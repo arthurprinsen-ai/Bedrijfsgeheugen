@@ -1334,6 +1334,17 @@ Deno.serve(async (req) => {
         results.push({ channel: row.channel, status: 'blocked', reason: 'PERSONAL_SOURCE_UNVERIFIED' }); continue;
       }
       reviewPayload = { ...evidence, personal_truth_verified: personalTruthMode, observational_personal_theme_verified: observationalMode, ai_native_builder_story_verified: builderMode, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash), final_copy_approved:art.generation_evidence?.final_copy_approved===true,editorial_policy_version:clean(art.generation_evidence?.editorial_policy_version) };
+    } else if (row.channel === 'linkedin_company') {
+      // Never rely on the legacy automatic final_copy_approved flag alone.
+      // The independent pre-publish function rechecks this exact text and
+      // historical published company stories before any provider side effect.
+      reviewPayload = {
+        channel: COMPANY, channel_kind:'linkedin_company',
+        post_text:art.body,run_date:runDate,
+        hook_type:clean(art.generation_evidence?.hook_type)||'Probleem',
+        editorial_policy_version:clean(art.generation_evidence?.editorial_policy_version),
+        final_copy_approved:art.generation_evidence?.final_copy_approved===true,
+      };
     } else if (row.channel === 'instagram_company') {
       const proof = row.delivery_evidence?.instagram_media_proof || art.generation_evidence?.instagram_media_proof || {};
       reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, hook_type: clean(art.generation_evidence?.hook_type) || 'Probleem', mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), final_asset_url: clean(proof.media_url), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
@@ -1485,7 +1496,7 @@ Deno.serve(async (req) => {
     let uniqueness:any;
     try{
       const storyFingerprint=await publicationStoryFingerprint(db,row,art);
-      const uniquenessBody=clean(art.body);
+      const uniquenessBody=row.channel==='linkedin_company'?canonicalPublicationStorySource(art.body):clean(art.body);
       uniqueness=await reserveGlobalUniquePublication(db,runDate,row.channel,uniquenessBody,storyFingerprint);
       const uniquenessEvidence={...gatePassedEvidence,global_uniqueness_gate:'passed',global_uniqueness_fingerprint:'powerhouse-global-post-story-uniqueness-v2',global_uniqueness:uniqueness,story_fingerprint:storyFingerprint,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
       await db.from('powerhouse_channel_decisions').update({delivery_evidence:uniquenessEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
