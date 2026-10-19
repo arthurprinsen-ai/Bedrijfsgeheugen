@@ -277,7 +277,7 @@ jobs:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
         run: |
-          POWERHOUSE_I18N_REQUIRE_RUNTIME=1 node --test tests/brain-powerhouse-blog-i18n-prepublish.test.mjs tests/delivery-powerhouse-blog-i18n-prepublish.integration.test.mjs
+          POWERHOUSE_I18N_REQUIRE_RUNTIME=1 node --test tests/brain-powerhouse-blog-i18n-prepublish.test.mjs tests/delivery-powerhouse-blog-i18n-prepublish.integration.test.mjs tests/brain-openai-blog-reader-ready-20261019.test.mjs
           # Verify the translated, canonical transformed pages in an isolated
           # checkout: production transforms mutate working files, and running
           # unrelated source-contract tests on that mutated tree causes false
