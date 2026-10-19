@@ -16,13 +16,14 @@
     "failure_class": "SCHEDULER_SLOT_GAP",
     "scope": "SCHEDULER",
     "machine_enforceable": true,
-    "repeat_count": 2,
+    "repeat_count": 3,
     "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
-      "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs"
+      "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs",
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
     ]
   },
   "evidence": {
@@ -44,11 +45,21 @@
     ],
     "preview_applied_versions": 568,
     "production_applied_versions": 714,
-    "live_rollout_proven": false
+    "live_rollout_proven": false,
+    "provider_archived_migration_version": "20261006085416",
+    "provider_archived_statement_md5": "6e4aa572b4c8f5bb4091958db833eba3",
+    "provider_archived_statement_has_hard_abort": true,
+    "repository_migration_uses_optional_job_reconciliation": true,
+    "provider_preview_required_gate": "FAILURE",
+    "provider_preview_capacity": "2 existing owned by PR #4370 and PR #4441, native provider SKIPPED on #4479"
   },
   "tests": [
     "tests/brain-runtime-scheduler-reachability-20261019.test.mjs",
-    "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs"
+    "tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs",
+    "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
   ],
-  "prevention_rule": "Static reachability test must prove every registered task has at least one reachable cron minute; do not add shadow jobs, keep baseline frequency unchanged"
+  "prevention_rule": "For every scheduler task prove registered cron minute reachability on exact runnable schedule. For hosted Supabase preview never equate Git migration contents with archived provider statement; require a successful provider-owned fresh replay on exact candidate HEAD, block on CRON_PRESSURE_CONTRACT_JOB_MISSING, archive drift or exhausted preview capacity. No ledger rewriting, dummy jobs, shadow schedulers, skipped-check promotion or release without protected merge and production readback.",
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ]
 }
