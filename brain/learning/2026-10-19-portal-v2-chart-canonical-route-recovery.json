@@ -2,9 +2,9 @@
   "date": "2026-10-19",
   "obligation": "customer-portal-mobile-chart-overflow-recovery-20261019",
   "fingerprint": "portal-v2-stage-chart-canonical-route-guard-20261019",
-  "root_cause": "The original SVG stage diagrams in portal-v2/visuals.js used fixed 780–900px SVG coordinates, outside-viewBox captions, and mouse-only SVG hit areas. A first recovery targeted retired klantportaal.html, while /klantportaal 301 redirects to /portaal, the canonical Portal V2. Browser identity CI correctly caught the wrong entrypoint.",
-  "intervention": "Retire legacy PR #4495. Target canonical portal-v2/visuals.js, add native details/summary stage interaction with touch/keyboard/click and hover, container query CSS loaded by portal-v2/index.html, and protect route in regression tests.",
-  "prevention": "Every chart repair must resolve canonical _redirects and deployed entrypoint before writing; forbid oversized fixed-position SVG labels on mobile; use semantic controls and verified profile evidence instead of synthetic quartiles. Require protected release and Netlify readback.",
+  "root_cause": "Two layers render the same Portal V2 screen. In addition to SVG components in portal-v2/visuals.js, the screenshot-producing portal-v2/modules/legacy-overview-complete.js still drew fixed SVG labels at 100-unit coordinates, a five-column CMMI ladder and fabricated adoption percentiles. /klantportaal redirects to /portaal; historic klantportaal.html is not the active source. The original legacy PR #4495 was retired.",
+  "intervention": "Fix canonical Portal V2 primitives and also mount semantic touch/keyboard/click/hover native details/summary phase explorers inside the actual legacy-overview-complete cards. Hide the original SVG and CMMI labels visually but retain their source/data and event-contract DOM. Add container-query styling and adapt old tests to semantic interactive behavior.",
+  "prevention": "Verify _redirects, actual render module and screenshot labels before writing. Test both the canonical V2 components and the legacy-overview module from the displayed route; reject missing evidence, no unsourced quartiles, and retain required CI, CodeQL, browser and Netlify proof.",
   "compiler": {
     "failure_class": "PORTAL_V2_CHART_CANONICAL_ROUTE_OVERFLOW",
     "scope": "PORTAL",
@@ -15,13 +15,16 @@
   "prevention_rule": "PORTAL_V2_CANONICAL_STAGE_CHART_MOBILE_V1",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs",
+      "tests/portal-v2-legacy-interactive-graphs.test.mjs"
     ],
     "shadow": [
-      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs",
+      "tests/portal-v2-legacy-interactive-graphs.test.mjs"
     ],
     "canary": [
-      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs"
+      "tests/brain-portal-v2-stage-charts-mobile-20261019.test.mjs",
+      "tests/portal-v2-legacy-interactive-graphs.test.mjs"
     ]
   },
   "test_evidence": {
@@ -30,7 +33,8 @@
     "static_regression_written": true,
     "required_ci_passed": false,
     "real_browser_mobile_verified": false,
-    "production_readback_verified": false
+    "production_readback_verified": false,
+    "initial_old_portal_test_failure_observed": true
   },
   "status": "CODE_CANDIDATE_UNDER_REQUIRED_CI",
   "evidence_urls": [
