@@ -32,5 +32,16 @@
     "ci_status": "pending on PR",
     "production_readback": "not yet proven"
   },
-  "acceptance": "Protected merge of tested change, approved Netlify/Composio account binding, successful transport/build only when applicable, published Netlify deploy SHA and public release.json readback, functional production check."
+  "acceptance": "Protected merge of tested change, approved Netlify/Composio account binding, successful transport/build only when applicable, published Netlify deploy SHA and public release.json readback, functional production check.",
+  "native_git_reconciliation": {
+    "provider_deploy_id": "6ad5ba106bfc20fb52b8a159",
+    "provider_commit_ref": "d015232819caabe212c703de8ff832a05baf6c57",
+    "published_at": "2026-10-19T06:37:04.149Z",
+    "provider_status": "ready",
+    "github_main_parity": "identical",
+    "production_readback_scope": "Netlify published deploy metadata and GitHub main comparison only",
+    "functional_browser_readback": "not yet proven",
+    "fallback_authorization": "blocked: HTTP420 project-scoped Composio account unavailable"
+  },
+  "observation_update": "After the failed snapshot attempt, Git-native Netlify published main commit d0152328 via provider deploy 6ad5ba106bfc20fb52b8a159; backup transport authority remains unresolved."
 }
