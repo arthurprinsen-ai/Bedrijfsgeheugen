@@ -155,3 +155,31 @@ REVOKE ALL ON FUNCTION public.sync_content_publication_obligations(date,date) FR
 GRANT EXECUTE ON FUNCTION public.sync_content_publication_obligations(date,date) TO service_role;
 REVOKE ALL ON FUNCTION public.enforce_content_publication_daily_invariant(date,time without time zone,timestamp with time zone) FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.enforce_content_publication_daily_invariant(date,time without time zone,timestamp with time zone) TO service_role;
+
+-- Align the existing scheduled 20:35 assertion with the same canonical
+-- provider-proof predicate as its 20:30 watchdog, preserving real error detection.
+CREATE OR REPLACE FUNCTION public.assert_content_publication_daily_invariant(p_publication_date date DEFAULT (timezone('Europe/Amsterdam'::text, now()))::date)
+ RETURNS void
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_catalog'
+AS $function$
+declare
+ v_health jsonb;
+begin
+ if p_publication_date is null then
+  raise exception 'PUBLICATION_DATE_REQUIRED';
+ end if;
+ v_health:=public.powerhouse_publication_proof_health(p_publication_date);
+ if coalesce((v_health->>'healthy')::boolean,false) is not true then
+  raise exception 'DAILY_PUBLICATION_INVARIANT_FAILED date=% expected=% non_terminal=% evidence=%',
+    p_publication_date,
+    coalesce((v_health->>'expected_count')::integer,0),
+    coalesce((v_health->>'blocking_count')::integer,0),
+    coalesce(v_health->'blocking','[]'::jsonb);
+ end if;
+end;
+$function$
+;
+REVOKE ALL ON FUNCTION public.assert_content_publication_daily_invariant(date) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.assert_content_publication_daily_invariant(date) TO service_role;
