@@ -36,6 +36,30 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'tenant-decision-twin-receipt-v1',
+      fingerprint:'powerhouse|portal-v2|decision-twin-proof-receipt|v1',
+      label:'Decision Twin — scenario-to-action-to-outcome evidence receipt',
+      owner:'ONE BRAIN / Portal V2 / Foresight',
+      authority:'existing authenticated tenant portal state, Powerhouse authorized provider receipts and independently verified outcomes',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['tenant-scoped source-backed goal history','existing tenant+goal action','provider-confirmed action receipts','independent tenant outcome evidence']),
+      outputs:Object.freeze(['five-level evidence chain','honest what-if differentiation','existing next-best-actions navigation']),
+      runtime:Object.freeze({
+        receipts:'portal-v2/decision-twin-receipt.js',
+        studio:'portal-v2/foresight-scenario-studio.js',
+        test:'tests/brain-decision-twin-receipt-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-decision-twin-proof-chain.json',
+        documentation:'docs/changes/2026-10-19-decision-twin-receipt-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true,tenantScopeRequiredForAction:true,
+        scenarioNotCausal:true,verifiedHistoryRequired:true,
+        providerProofRequiredForExecution:true,independentOutcomeProofRequired:true,
+        noSyntheticMoney:true,noConnectorAutoActivation:true,
+        noParallelDecisionStore:true,productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'growth-drain-budget-replay-v1',
       fingerprint:'powerhouse|growth|bounded-replay-resume|v1',
       label:'Growth and Outcome bounded replay — delivery evidence, not invented success',
