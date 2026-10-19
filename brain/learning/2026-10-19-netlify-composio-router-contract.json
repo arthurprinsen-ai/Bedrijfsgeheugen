@@ -12,8 +12,8 @@
     "repeat_count": 2,
     "security_sensitive": true
   },
-  "root_cause": "After reconnecting Netlify, production Edge now sees one complete ACTIVE exact toolkit in the Composio project. OIDC and account discovery succeed. The Composio session create succeeds but its /tool_router/session/{id}/execute returns 400; source did not preload either app tool and falsely assumed a direct-tools successful:true response envelope when v3.1 sessions return data/error/result_type.",
-  "prevention_rule": "In a narrowly allowlisted Composio Tool Router session, explicitly preload the two reviewed Netlify tool slugs; accept only successful HTTP, an actual result data envelope or legacy explicit-success envelope, and no provider errors. Keep the exact connected-account pin, main-only GitHub OIDC claims, site-match readback, no secret logging and fail-closed deploy.",
+  "root_cause": "After reconnecting Netlify, production Edge sees one complete ACTIVE toolkit account. OIDC/account discovery passed; Composio session execute returned HTTP400. App tool execution was attempted without preloading either app tool. A parallel protected main commit separately corrected v3.1 session result parsing, which is retained; this candidate adds the missing explicit tool preload.",
+  "prevention_rule": "Explicitly preload exactly the two reviewed Netlify app actions into the pinned v3.1 session. Preserve the existing strict result_type=completed, actual data and no provider error contract. Never broaden toolkit access or bypass same-user account binding, protected main GitHub OIDC, exact site and immutable Netlify provider readback.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-netlify-tool-router-execute-v1.test.mjs"
