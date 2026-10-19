@@ -2096,3 +2096,18 @@ export const MIRA_MEDIA_PREFLIGHT_WORKER_CAS_V1=Object.freeze({
   regression:'tests/brain-mira-media-preflight-cas-20261019.test.mjs',
   parent:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
 });
+
+export const PREDICTIVE_OPENAI_PUBLIC_MARKET_V1=Object.freeze({
+ fingerprint:'predictive-openai-recovery-20261019',
+ engine:'supabase/functions/powerhouse-predictive-engine/index.ts',
+ transport:'supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs',
+ governanceUseCase:'supabase-powerhouse-predictive-first-mover-v1',
+ provider:'OpenAI',api:'Responses',model:'gpt-5-mini',store:false,
+ sourceAuthority:'existing canonical public market and search-demand signals',
+ mutationAuthority:'protected main + Supabase GitHub Integration',
+ privateContextExcluded:true,noAdditionalScheduler:true,noProviderFallback:true,
+ independentSourcesRequired:true,realProductionReadbackRequired:true,
+ regression:'tests/brain-predictive-openai-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-openai-recovery.json',
+ documentation:'docs/changes/2026-10-19-predictive-openai-recovery.md'
+});

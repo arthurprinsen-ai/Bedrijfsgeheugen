@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-19",
+  "obligation": "predictive-openai-recovery-20261019",
+  "fingerprint": "predictive-openai-recovery-20261019",
+  "root_cause": "Canonical predictive runtime remained hardcoded to Anthropic claude-sonnet-5 after user-directed OpenAI replacement. Actual production returned AI_400 credit balance; source still forwarded internal forecasts and free-text revenue learning to its old provider.",
+  "intervention": "Replace only existing approved canonical public-market use case with strict OpenAI Responses and explicit public-market payload; no alternate provider, scheduler or customer activation.",
+  "prevention": "Provider migration must cover live engine, governance, strict response validation, public-only egress, current regressions and exact protected-main runtime readback together. Never recommend topping up a retired provider as completion of user-requested replacement. Preserve validated opaque SHA-256 evidence identifiers byte-for-byte; contact redaction applies only to prose.",
+  "compiler": {
+    "failure_class": "PREDICTIVE_RETIRED_PROVIDER_CREDIT_FAILURE",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "PREDICTIVE_OPENAI_PUBLIC_MARKET_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-openai-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-openai-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-predictive-openai-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "focused_tests_passed": 38,
+    "production_verified": false,
+    "delivery_and_scope_tests_passed": 104,
+    "independent_review": "Fixed digit-heavy SHA evidence identifier corruption; regression observed red then green; no other important findings."
+  },
+  "status": "CODE_CANDIDATE_REQUIRES_PROTECTED_DELIVERY",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198#issuecomment-6275475069"
+  ]
+}

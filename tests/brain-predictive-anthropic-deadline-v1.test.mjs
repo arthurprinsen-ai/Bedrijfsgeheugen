@@ -5,17 +5,18 @@ import {fileURLToPath} from 'node:url';
 import {dirname,resolve} from 'node:path';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const transport=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs'),'utf8');
 const src=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predictive-engine/index.ts'),'utf8');
 
 test('real provider tool inference retains a finite timeout below the 120s scheduled HTTP budget',()=>{
- assert.match(src,/const ANTHROPIC_FORECAST_TIMEOUT_MS=90000;/);
- assert.match(src,/signal:AbortSignal\.timeout\(ANTHROPIC_FORECAST_TIMEOUT_MS\)/);
+ assert.match(transport,/signal:AbortSignal\.timeout\(90000\)/);
+ assert.match(transport,/max_output_tokens:6000/);
  assert.doesNotMatch(src,/AbortSignal\.timeout\(45000\)/);
 });
-test('deadline change preserves approved Anthropic-only route and strict forecast evidence guards',()=>{
- assert.match(src,/gov\.provider!=='Anthropic'/);
- assert.match(src,/tool_choice:\{type:'tool',name:'forecast_plan'\}/);
- assert.match(src,/generationProvider='Anthropic'/);
+test('deadline change preserves approved OpenAI-only route and strict forecast evidence guards',()=>{
+ assert.match(src,/gov\.provider!=='OpenAI'/);
+ assert.match(transport,/tool_choice:\{type:'function',name:'forecast_plan'\}/);
+ assert.match(src,/generationProvider='OpenAI'/);
  assert.match(src,/uniqueSources\.size<minRefs/);
  assert.match(src,/authorizePowerhouseScheduler\(req\)/);
  assert.match(src,/const toWrite=signalRows\.filter/);
