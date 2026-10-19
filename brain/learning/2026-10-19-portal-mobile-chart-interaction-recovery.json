@@ -1,0 +1,38 @@
+{
+  "date": "2026-10-19",
+  "obligation": "customer-portal-mobile-chart-overflow-recovery-20261019",
+  "fingerprint": "portal-mobile-svg-collision-touch-20261019",
+  "root_cause": "Three customer-portal visualisations used fixed viewBox positions and inline SVG labels; the screens visibly overlap on narrow iPhone layouts. Mouse/touch affordances are inconsistent and the displayed adopter percentages lack verified market sourcing.",
+  "intervention": "Introduce a mobile-first accessible phase explorer in the existing klantportaal.html using dedicated CSS and JS assets, while retaining existing S/DIM/B model inputs.",
+  "prevention": "Bound visual layout and text wrapping; provide pointer, keyboard and touch controls; explicitly disclose unverified benchmark values and prohibit invented distributions. A live mobile browser screenshot and Netlify readback remain required before production closure.",
+  "compiler": {
+    "failure_class": "PORTAL_MOBILE_CHART_OVERFLOW",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "PORTAL_MOBILE_CHART_INTERACTIVE_RESPONSIVE_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-charts-v3-mobile.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-charts-v3-mobile.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-charts-v3-mobile.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "js_syntax_parsed": true,
+    "contract_test_ci_passed": false,
+    "visual_mobile_browser_verified": false,
+    "production_readback_verified": false
+  },
+  "status": "CODE_CANDIDATE_UNDER_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4495"
+  ]
+}
