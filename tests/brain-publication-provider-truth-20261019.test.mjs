@@ -25,3 +25,11 @@ test('does not reset FAILED or BLOCKED instruction during sync',()=>{
  assert.match(sql,/content_publication_obligations\.next_action/);
  assert.doesNotMatch(sql,/Buffer dispatch/);
 });
+
+test('scheduled 20:35 assertion accepts only same canonical provider proof',()=>{
+ assert.match(sql,/assert_content_publication_daily_invariant/);
+ const section=sql.slice(sql.indexOf('CREATE OR REPLACE FUNCTION public.assert_content_publication_daily_invariant'));
+ assert.match(section,/powerhouse_publication_proof_health\(p_publication_date\)/);
+ assert.match(section,/DAILY_PUBLICATION_INVARIANT_FAILED/);
+ assert.match(section,/REVOKE ALL ON FUNCTION public.assert_content_publication_daily_invariant\(date\) FROM PUBLIC,anon,authenticated/i);
+});
