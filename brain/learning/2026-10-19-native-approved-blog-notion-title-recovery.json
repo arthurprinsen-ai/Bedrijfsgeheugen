@@ -7,5 +7,24 @@
   "change": "Correct Titel payload to {'title':rich(title)} while keeping existing quality, approval, date and deduplication constraints.",
   "prevention": "Static regression test of the Notion property contract; do not relax CI checks or auto-publication governance.",
   "acceptance": "Required CI and CodeQL, protected merge, successful native approved blog supply workflow, Notion readback of created stock.",
-  "publication_verified": false
+  "publication_verified": false,
+  "fingerprint": "native-approved-blog-supply|NOTION_CREATE_PAGE_TITLE_TYPE_MISMATCH|2026-10-19",
+  "compiler": {
+    "failure_class": "NOTION_CREATE_PAGE_TITLE_TYPE_MISMATCH",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-blog-notion-title-contract-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-blog-notion-title-contract-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-blog-notion-title-contract-20261019.test.mjs"
+    ]
+  }
 }
