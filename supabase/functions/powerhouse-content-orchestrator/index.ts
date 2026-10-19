@@ -1,5 +1,6 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
+import {amsterdamScheduledFor} from '../_shared/social-publication-schedule.mjs';
 import {selectNextContentChannel,contentGenerationCooldown} from '../_shared/content-generation-fairness.mjs';
 import {incompleteStructuredArtifactReason,largerArtifactTokenBudget} from '../_shared/content-artifact-incomplete-retry.mjs';
 import postgres from 'npm:postgres@3.4.7';
@@ -543,7 +544,7 @@ Deno.serve(async (req) => {
         personal_truth_verified:channel==='linkedin_personal'?personalSource?.evidence?.personal_truth_verified===true:null,
         stale_delivery_ref:false,recovery_from_provider_missing:stale };
       const {error} = await db.from('powerhouse_channel_decisions').upsert({ run_date:runDate,channel,decision:decision.decision,state:decision.state,priority:decision.priority,
-        confidence:decision.confidence,topic_key:decision.topic_key,rationale:decision.rationale,scheduled_for:`${runDate}T${hour}:00:00+02:00`,delivery_ref:stale?null:previous?.delivery_ref||null,
+        confidence:decision.confidence,topic_key:decision.topic_key,rationale:decision.rationale,scheduled_for:amsterdamScheduledFor(runDate,Number(hour)),delivery_ref:stale?null:previous?.delivery_ref||null,
         delivery_evidence:evidence,source_recommendation_ids:recs.map((r:any)=>r.recommendation_id),updated_at:new Date().toISOString() });
       if (error) throw new Error(`DECISION_WRITE:${channel}`);
     }
