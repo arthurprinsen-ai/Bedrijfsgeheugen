@@ -1,5 +1,6 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {canRecoverExpiredCompanyClaim} from '../_shared/social-publish-claim-recovery.mjs';
+import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
@@ -1261,6 +1262,21 @@ Deno.serve(async (req) => {
     const art: any = artifactByChannel.get(row.channel) || null;
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
+      continue;
+    }
+    const dispatchReady=linkedinDispatchReadiness(row.channel,row.scheduled_for);
+    if(dispatchReady.status==='not_due'){
+      // Do not start review, claim an authority or call an external provider before due.
+      // The existing canonical hourly loop will retry this same content_ready decision.
+      results.push({channel:row.channel,status:'deferred_until_due',due_at:dispatchReady.due_at});
+      continue;
+    }
+    if(dispatchReady.status==='invalid_schedule'){
+      const evidence={...row.delivery_evidence,error:'LINKEDIN_SCHEDULE_INVALID',provider_create_success:false,possible_provider_side_effect:false,republish_forbidden:false};
+      await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,
+        'Repair the canonical LinkedIn scheduled_for timestamp; never publish without a valid due time.',
+        'LINKEDIN_SCHEDULE_INVALID');
+      results.push({channel:row.channel,status:'blocked_invalid_schedule',reason:'LINKEDIN_SCHEDULE_INVALID'});
       continue;
     }
     if(row.channel==='linkedin_company'){
