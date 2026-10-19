@@ -10,12 +10,13 @@
     "security_sensitive": true
   },
   "root_cause": "Hourly Powerhouse blog publisher failed at localized-routes because the translation pipeline attempted Anthropic first with credit balance too low; a separate approved blog supply workflow used Claude Code action requiring an unavailable OIDC token. Both stopped before valid protected blog publication.",
-  "intervention": "Replace native blog generation's Anthropic action with a bounded OpenAI Responses API call and strict JSON schema; route scoped bilingual prepublish translations exclusively through the existing OpenAI API translation transport, keeping the cache complete before protected merge.",
+  "intervention": "Replace native blog generation's Anthropic action with a bounded OpenAI Responses API call and strict JSON schema; route scoped bilingual prepublish translations exclusively through the existing OpenAI API translation transport, keeping the cache complete before protected merge. Migrate the separately scheduled Weekblog and blog-bijwerken agent actions to the official OpenAI Codex GitHub Action (trusted bot, drop-sudo, restricted workspace) without changing their deterministic candidate-PR validation.",
   "prevention": "No Anthropic dependency in these two canonical active execution paths, no fallback to unapproved text, no publication from a generation artifact without Notion validation, full English cache, Required CI, protected merge, Netlify production provider and public URL evidence.",
   "prevention_rule": "OPENAI_PRIMARY_NATIVE_BLOG_GENERATION_AND_I18N_STRICT_CACHE_V1",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-openai-native-approved-blog-20261019.test.mjs"
+      "tests/brain-openai-native-approved-blog-20261019.test.mjs",
+      "tests/brain-openai-legacy-blog-writers-20261019.test.mjs"
     ],
     "shadow": [
       "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
@@ -28,7 +29,8 @@
     "failing_blog_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39174978217",
     "failing_native_supply_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39236467385",
     "runtime_validation": "pending protected CI",
-    "live_proof": "unverified"
+    "live_proof": "unverified",
+    "legacy_weekblog": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39238320820"
   },
-  "state": "CANDIDATE_AWAITING_REQUIRED_CI_AND_PRODUCTION_READBACK"
+  "state": "CANDIDATE_ALL_FOUR_BLOG_PROVIDER_PATHS_AWAITING_CI_AND_PROVIDER_READBACK"
 }
