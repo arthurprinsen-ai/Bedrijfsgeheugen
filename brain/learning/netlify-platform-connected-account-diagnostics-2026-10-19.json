@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-platform-connected-account-diagnostics-20261019",
+  "fingerprint": "netlify-backup|platform-auth-config-active|bridge-active-count-zero",
+  "root_cause": "Owner's Composio Platform Auth Configs screenshot shows a Netlify_mcp DCR OAuth configuration, including an ACTIVE connected account under a pg-test user and an expired historical connection. Platform Users screenshot shows pg-test has 20 active accounts, bedrijfsgeheugen-owner has none, and bedrijfsgeheugen-owner-canonical has 10 active but no visible Netlify icon. In contrast, the existing OIDC-authenticated Supabase bridge's project API key returned 54 accounts across two cursor pages and no eligible ACTIVE exact netlify_mcp account at 08:53-08:54 UTC. Exact cause (different Platform project, toolkit slug shape/status, disabled/identity fields) remains undetermined. The bridge already accepts any user ID; pg-test prefix alone is NOT the cause.",
+  "failure_class": "AUTH",
+  "intervention": "Count only totals of exact/like Netlify toolkit slugs, ACTIVE/EXPIRED status and eligible-field completeness in the existing authorized backend scan. Preserve existing exact ACTIVE account rule; never auto-bind pg-test or reassign canonical user. Logs contain only aggregate counts, no OAuth, project key, user ID or connected account ID.",
+  "prevention": "For any provider auth incident where dashboard and project API disagree, emit bounded structured aggregate shape diagnostics before recommending account deletion/reauthentication or rotating full-access keys. Maintain OIDC strict identity checks, protected CI and exact production/provider proof.",
+  "state": "WAITING_FOR_PROTECTED_RELEASE_AND_AGGREGATE_READBACK",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-platform-account-shape.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-platform-account-shape.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-platform-account-shape.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "tests": [
+      "tests/brain-netlify-platform-account-shape.test.mjs"
+    ],
+    "readback": "pending",
+    "provider_authority": "not proven",
+    "runtime_fallback": "not proven"
+  },
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39225906308",
+    "https://docs.composio.dev/reference/api-reference/connected-accounts/getConnectedAccounts"
+  ]
+}
