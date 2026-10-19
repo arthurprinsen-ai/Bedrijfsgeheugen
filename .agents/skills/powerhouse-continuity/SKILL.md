@@ -1543,3 +1543,9 @@ For daily blogs, the approved content artifact is the immutable input to the exi
 Fingerprint: `github|obligation-terminal-closure|pr-body-context|v1`.
 
 The post-merge terminal closure must forward the canonical merged PR body from the resolved GitHub PR context into obligation identity parsing. A `pull_request: closed` or manual recovery run may never assume `PR_BODY` is implicitly present in the shell environment. Resolve PR → encode body → explicitly bind `PR_BODY_B64` → decode → parse `Obligation-ID` / `Delivery-Lane`. Missing forwarding is a control-plane defect and must fail in regression before terminalization.
+
+## Predictive OpenAI public-market boundary
+
+Use the existing canonical predictive engine and approved use case. Its OpenAI Responses adapter accepts only explicit public market/search evidence, never internal forecasts or revenue-learning free text; redact embedded contacts, validate strict completed tool output and retain independent-source/score gates. Do not reactivate Anthropic/Groq after user-directed replacement or add another scheduler. Provider health is separate from customer forecast acceptance. Require protected main, native Integration authority and real forecast readback before live claims. Canonical learning: `brain/learning/2026-10-19-predictive-openai-recovery.json`.
+
+The predictive engine and calibrator share the governance row: migrate and attest both together. Calibration uses opaque outbound refs, restores exact refs locally, rejects impossible/out-of-horizon dates and unverified negative outcomes, and cannot attribute global revenue to a forecast. Shared transport edits must include both consumers in production authority scope.

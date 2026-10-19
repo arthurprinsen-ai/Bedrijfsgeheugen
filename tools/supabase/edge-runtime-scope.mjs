@@ -50,6 +50,8 @@ export function resolveEdgeRuntimeFunctions({changedPaths=[],configText='',baseC
   const sharedChanged=paths.some(path=>path.startsWith('supabase/functions/_shared/'));
 
   const direct=new Set();
+  // Both consumers must attest the same shared, side-effect-free transport.
+  if(paths.includes('supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs'))direct.add('powerhouse-forecast-calibrator');
   for(const path of paths){
     const match=path.match(/^supabase\/functions\/([^/]+)\//);
     if(!match)continue;

@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {dirname,resolve} from 'node:path';
 
 const ROOT=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const transport=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs'),'utf8');
 const src=readFileSync(resolve(ROOT,'supabase/functions/powerhouse-predictive-engine/index.ts'),'utf8');
 
 test('skip unchanged signals before PostgREST forecast/calibration triggers',()=>{
@@ -31,10 +32,10 @@ test('bounded batches retain every changed signal without duplicating rows',()=>
   assert.deepEqual(batches.flat(),original);
  }
 });
-test('approved Anthropic, scheduler and evidence-bound forecasts remain unchanged',()=>{
+test('approved OpenAI, scheduler and evidence-bound forecasts remain unchanged',()=>{
  assert.match(src,/authorizePowerhouseScheduler\(req\)/);
- assert.match(src,/gov\.provider!=='Anthropic'/);
- assert.match(src,/fetch\('https:\/\/api\.anthropic\.com\/v1\/messages'/);
+ assert.match(src,/gov\.provider!=='OpenAI'/);
+ assert.match(transport,/fetchImpl\('https:\/\/api\.openai\.com\/v1\/responses'/);
  assert.match(src,/signal_key:key,observed_at/);
  assert.match(src,/\.upsert\(row,\{onConflict:'forecast_key'\}\)/);
 });

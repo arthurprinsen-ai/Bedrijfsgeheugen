@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs';
 import { declaredFunctions, resolveEdgeRuntimeFunctions } from '../tools/supabase/edge-runtime-scope.mjs';
 
 const config=readFileSync('supabase/config.toml','utf8');
+test('predictive transport changes also attest its calibration consumer',()=>{
+ assert.deepEqual(resolveEdgeRuntimeFunctions({changedPaths:['supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs'],configText:config}),['powerhouse-forecast-calibrator','powerhouse-predictive-engine']);
+});
 
 test('shared and config changes expand to declared functions',()=>{
   const declared=declaredFunctions(config);
