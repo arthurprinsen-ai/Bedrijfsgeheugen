@@ -27,3 +27,21 @@
 @container (max-width:700px){.v2-stage-chart .v2-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container (max-width:420px){.v2-stage-chart .v2-stage-grid{grid-template-columns:1fr}.v2-stage-chart .v2-stage-step summary{min-height:48px;padding:.55rem .65rem}.v2-stage-chart .v2-stage-step .v2-stage-name{font-size:.88rem}}
 @media(prefers-reduced-motion:reduce){.v2-stage-chart *{scroll-behavior:auto}}
+
+/* The screenshot issue is produced by the canonical legacy-overview-complete
+   module inside Portal V2. Preserve its model and old event-contract DOM,
+   but hide its nonresponsive SVG and show semantic, explorable stage cards. */
+.legacy-complete .legacy-state-svg,
+.legacy-complete .legacy-state-detail,
+.legacy-complete .legacy-adoption-svg,
+.legacy-complete .legacy-adoption-detail,
+.legacy-complete .legacy-state-track,
+.legacy-complete .legacy-cmmi > [data-cmmi-level]{display:none!important}
+.legacy-complete .legacy-cmmi{display:block!important;height:auto!important;min-width:0}
+.legacy-complete .legacy-stage-explorer{display:block;container-type:inline-size;width:100%;max-width:100%;min-width:0;overflow:visible!important;touch-action:pan-y}
+.legacy-complete .legacy-stage-explorer .v2-stage-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:.45rem}
+.legacy-complete .legacy-stage-explorer .v2-stage-step{height:auto!important;min-height:0!important;padding:0!important;text-align:left!important;outline:0}
+.legacy-complete .legacy-stage-explorer .v2-stage-step summary{height:auto!important;min-height:48px!important;line-height:1.3}
+.legacy-complete .legacy-stage-explorer .v2-stage-step .v2-stage-content{font-size:.8rem}
+@container (max-width:700px){.legacy-complete .legacy-stage-explorer .v2-stage-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container (max-width:420px){.legacy-complete .legacy-stage-explorer .v2-stage-grid{grid-template-columns:1fr}}
