@@ -37,7 +37,7 @@ test('OpenAI native blog candidate uses only Responses structured output',async(
 });
 test('missing key and incomplete OpenAI response fail closed',async()=>{
   await assert.rejects(()=>generateApprovedBlog({learning:{learning:{}},apiKey:''}),/OPENAI_API_KEY_MISSING/);
-  await assert.rejects(()=>generateApprovedBlog({learning:{learning:{}},apiKey:'test',fetchImpl:async()=>({ok:true,json:async()=>({status:'incomplete'})})}),/OPENAI_BLOG_RESPONSE_INCOMPLETE/);
+  await assert.rejects(()=>generateApprovedBlog({learning:{learning:{commercial_totals:{orders:0}}},apiKey:'test',fetchImpl:async()=>({ok:true,json:async()=>({status:'incomplete'})})}),/OPENAI_BLOG_RESPONSE_INCOMPLETE/);
   assert.throws(()=>validateApprovedBlog({...article,blogtext:'## Zwaar tekort'}),/OPENAI_BLOG_WORD_COUNT_INVALID/);
 });
 test('both blog publication lanes have OpenAI keys and no Claude/Anthropic dependencies',()=>{
