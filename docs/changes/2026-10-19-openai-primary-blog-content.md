@@ -16,3 +16,6 @@ Geschikte `OPENAI_API_KEY` als GitHub Actions secret, geslaagde regressietests, 
 
 ## Scope
 Deze correctie betreft de twee geobserveerde productieblokkades (dagblog en native approved blog supply). Andere historische AI-writers worden niet stilzwijgend uitgezet; eventuele Anthropic-afhankelijkheden buiten deze kanalen vereisen eigen reconciliatie.
+
+## Weekblog en bestaande artikelen bijwerken
+De afzonderlijk ingeplande workflows `weekblog.yml` en `blog-bijwerken.yml` gebruiken voortaan `openai/codex-action@v1`, met `OPENAI_API_KEY`, `permission-profile: ":workspace"`, `safety-strategy: drop-sudo` en uitsluitend de vertrouwde `github-actions[bot]` via `allow-bots: true`. De oude Anthropic API-test uit Weekblog is verwijderd. De agent mag alleen via de bestaande exact-bestands-allowlists en candidate-PR-paden werken; geen directe wijziging op `main` en geen bypass van SEO/JSON-LD checks. Voor Weekblog is de oude mislukking aangetoond in [run 39238320820](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39238320820).
