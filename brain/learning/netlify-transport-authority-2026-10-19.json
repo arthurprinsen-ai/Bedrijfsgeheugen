@@ -24,11 +24,11 @@
   "expected": "No false green, no blind repeat, explicit owner and action on authority failure; native Git and authorized fallback checked before deployment acceptance.",
   "evaluation": {
     "historical_replay": [
-      "tests/netlify-transport-authority-regression.test.mjs"
+      "tests/brain-netlify-transport-authority-regression.test.mjs"
     ]
   },
   "test_evidence": {
-    "historical_replay": "tests/netlify-transport-authority-regression.test.mjs",
+    "historical_replay": "tests/brain-netlify-transport-authority-regression.test.mjs",
     "ci_status": "pending on PR",
     "production_readback": "not yet proven"
   },
