@@ -17,19 +17,19 @@
   "prevention_rule": "Manual Supabase Edge Production Authority runs must supply nonempty comma-separated registered function slugs; reject blank input with SUPABASE_EDGE_MANUAL_SCOPE_REQUIRED. Keep automatic push diff scoping, protected-main ancestry, Management API credential authentication and byte-for-byte provider parity intact.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-runtime-authority-governance.test.mjs"
+      "tests/supabase-edge-manual-attestation-scope.test.mjs"
     ],
     "shadow": [
-      "tests/brain-runtime-authority-governance.test.mjs"
+      "tests/supabase-edge-manual-attestation-scope.test.mjs"
     ],
     "canary": [
-      "tests/brain-runtime-authority-governance.test.mjs"
+      "tests/supabase-edge-manual-attestation-scope.test.mjs"
     ]
   },
   "test_evidence": {
     "github_latest_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39236976601",
     "last_known_failure": "HTTP 401 Invalid access token",
-    "targeted_test": "PENDING_CI",
+    "targeted_test": "PENDING_CI_TARGETED_NEGATIVE_BASH_REPLAY",
     "protected_merge": "NOT_YET_MERGED",
     "provider_readback": "MANUAL_SOURCE_PARITY_SEPARATE_FROM_FAILED_GITHUB_RUN",
     "secret_rotation": "REQUIRES_AUTHORIZED_ACCOUNT_OWNER",
