@@ -351,7 +351,7 @@ function instagramVisibleIdentityProven(proof:any) {
 function plannedDecision(channel:string, recs:any[], personalSource:any, instagramProof:any, excludedRecommendationIds:string[]=[]) {
   if (!executor_capabilities[channel]?.executable) return hardBoundary(channel);
   if (channel === 'linkedin_personal') {
-    if (!personalSource) return hardBoundary(channel,'PERSONAL_TRUTH_SOURCE_UNVERIFIED');
+    if (!personalSource) return hardBoundary(channel,excludedRecommendationIds.length ? 'NO_UNIQUE_VERIFIED_PERSONAL_SOURCE' : 'PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     return { channel,decision:'publish',state:'decided',priority:Math.max(70,num(personalSource.priority)),confidence:1,topic_key:clean(personalSource.topic_key),
       rationale:'Verified personal truth source available.',scheduled_hour_local:11,content_brief:clean(personalSource.reason),capability_state:'READY',capability_reason:null,
       decision_source:'verified-personal-source',fallback_recommendation_id:personalSource.recommendation_id };
@@ -470,7 +470,22 @@ Deno.serve(async (req) => {
     const apiKey = clean((await db.rpc('bg_geheim',{p_naam:'OPENAI_API_KEY'})).data);
 
 
-    const personalSource = recs.filter(validPersonalSource)[0] || null;
+    // A pre-provider semantic-duplicate rejection must rotate to a DIFFERENT,
+    // independently verified personal source. Retrying the same source in a new
+    // paraphrase loops forever and can never satisfy global story uniqueness.
+    const priorPersonal = existing.find((row:any)=>clean(row.channel)==='linkedin_personal') || null;
+    const personalDuplicateRecovery = recoverableUniquenessDenial(priorPersonal);
+    const personalRejectedSourceIds = personalDuplicateRecovery
+      ? [...new Set([
+          ...(Array.isArray(priorPersonal?.delivery_evidence?.rejected_recommendation_ids)
+            ? priorPersonal.delivery_evidence.rejected_recommendation_ids : []),
+          priorPersonal?.delivery_evidence?.personal_source_recommendation_id,
+          priorPersonal?.delivery_evidence?.fallback_recommendation_id,
+        ].map(clean).filter(Boolean))]
+      : [];
+    const personalSource = recs.filter(validPersonalSource).find((source:any)=>
+      !personalRejectedSourceIds.includes(clean(source.recommendation_id))
+    ) || null;
     const instagramObligation = obligations.find((o:any) => o.channel === 'instagram') || null;
     const instagramProof = {
       ...(instagramObligation?.evidence || {}),
@@ -496,7 +511,7 @@ Deno.serve(async (req) => {
         ? [...new Set([...priorRejected,clean(previous?.delivery_evidence?.fallback_recommendation_id)].filter(Boolean))]
         : [];
       const decision:any = plannedDecision(channel,recs,personalSource,instagramProof,
-        channel==='linkedin_company'?rejectedRecommendationIds:[]);
+        channel==='linkedin_company'||channel==='linkedin_personal'?rejectedRecommendationIds:[]);
       const personalNoGapReopen = channel === 'linkedin_personal' && clean(previous?.state) === 'skipped' && !!personalSource
         && (clean(previous?.delivery_evidence?.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(previous?.delivery_evidence?.invalid_candidate));
       const stale = personalNoGapReopen || recoverableDuplicate || previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
@@ -508,7 +523,7 @@ Deno.serve(async (req) => {
         daily_winner_score_version:channel==='instagram_company'?instagramWinner?.score_version||null:null,
         daily_winner_format:channel==='instagram_company'?instagramWinner?.selected_format||null:null,
         personal_source_recommendation_id:channel==='linkedin_personal'?personalSource?.recommendation_id||null:null,
-        rejected_recommendation_ids:channel==='linkedin_company' ? rejectedRecommendationIds : [],
+        rejected_recommendation_ids:channel==='linkedin_company'||channel==='linkedin_personal' ? rejectedRecommendationIds : [],
         personal_truth_verified:channel==='linkedin_personal'?personalSource?.evidence?.personal_truth_verified===true:null,
         stale_delivery_ref:false,recovery_from_provider_missing:stale };
       const {error} = await db.from('powerhouse_channel_decisions').upsert({ run_date:runDate,channel,decision:decision.decision,state:decision.state,priority:decision.priority,
