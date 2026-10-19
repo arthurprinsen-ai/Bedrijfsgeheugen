@@ -85,14 +85,19 @@ jobs:
           echo "changed=true" >> "$GITHUB_OUTPUT"
           echo "slug=$slug" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve OpenAI credential from protected Supabase Vault
+        if: steps.render.outputs.changed == 'true' || steps.writer.outputs.existing_pr != ''
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node tools/ci/load-openai-key-from-vault.mjs
+
       - name: Create exactly one protected candidate
         if: steps.render.outputs.changed == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
           SLUG: ${{ steps.render.outputs.slug }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          # OpenAI is the sole approved translation provider for this publisher.
         run: |
           set -euo pipefail
           branch="automation/powerhouse-blog-$DATE"
@@ -147,8 +152,6 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           DATE: ${{ steps.day.outputs.date }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          # OpenAI is the sole approved translation provider for this publisher.
         run: |
           set -euo pipefail
           branch="automation/powerhouse-blog-$DATE"
