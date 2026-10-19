@@ -6,6 +6,21 @@ import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} f
 import {selectMiraProblem,miraCaption,miraProductionEvidence,validateMiraCaptionForDelivery} from '../_shared/mira-entrepreneur-caption.mjs';
 
 const STEERING_BRAND_CONTRACT='Merkcategorie: dagelijkse ondernemingssturing, geen afzonderlijke AI-tool, chatbot, dashboard of automatiseringspakket. Leg in menselijke ondernemerstermen uit hoe interne én externe veranderingen worden verbonden met strategie, doelen, geld, processen, mensen en risico’s; benoem vervolgens een passende beslissing, de eigenaar van een actie en een controleerbare uitkomst of meetpunt. Het onderscheid is de gesloten verbeterlus: signaal → context → gevolg → beslissing → actie → resultaat → leren. POWERHOUSE is de motor, niet het hoofdproduct. AI-agenten, modelnamen en modulelijsten zijn hoogstens uitleg ná concrete ondernemerswaarde. Nooit verzonnen klantbewijs, gegarandeerde omzet, automatische beslissingen zonder toestemming of onbewezen productcapaciteit. Gebruik per uiting één aantoonbare bron of waarheidsgetrouw voorbeeld en een andere invalshoek dan vorige posts.';
+const BLOG_READER_READY_POLICY='openai-blog-reader-ready-v1';
+const BLOG_READER_READY_PROMPT="Schrijf uitsluitend definitieve, voor bezoekers geschikte Nederlandstalige blogcontent voor ondernemers. Lever een helder lezersgericht title, body, cta, hook_type, focus_keyword en meta_description. Minimaal 3 concrete ## tussenkoppen en voldoende inhoud om een toepasbaar stappenplan uit te leggen. Geen redactienotities, publicatie-instructies, URL-eigenaarschap-checks, SEO-plannen voor de uitgever, concept/draft-verwijzingen, reviewer-to-do's of stappen die nog vóór publicatie moeten gebeuren. Zet '(canonieke pagina)' of '(concept)' nooit in de titel. Een CTA is een nuttige volgende stap voor de ondernemer, geen taak voor een contentbeheerder. Bewijs externe feiten uit de meegeleverde recommendation.evidence, gebruik geen verzonnen statistieken, cases of onafhankelijk onbewezen leveranciersclaims. Een productaankondiging is een claim van de leverancier, geen gemeten klantresultaat. Schrijf het artikel als openbare tekst, niet als briefing aan een redacteur.";
+function blogReaderReadyViolations(artifact:any):string[]{
+  const title=String(artifact?.title||'').trim(),body=String(artifact?.body||'').trim(),cta=String(artifact?.cta||'').trim();
+  const errors:string[]=[];
+  if(body.length<1600)errors.push('BODY_TOO_SHORT');
+  if((body.match(/^##\s+/gm)||[]).length<3)errors.push('READER_STRUCTURE_MISSING');
+  if(/(?:^|\n)\s*(?:Voordat u publiceert\s*:|Publicatiestap\s*\(vereist|Publicatie-\s*en\s*SEO-aanpak\s*\(|Wat te publiceren als follow-up documenten\s*\()/im.test(body))errors.push('EDITORIAL_PUBLICATION_INSTRUCTIONS');
+  if(/Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie|Gebruik dit als technisch bewijs voor het algemene probleem/i.test(body))errors.push('EDITORIAL_SOURCE_DIRECTIONS');
+  if(/\((?:canonieke pagina|canonieke upgrade|concept|draft)\)/i.test(title))errors.push('DRAFT_TITLE');
+  if(/URL-eigenaarschap-check|plan één content.upgrade of publicatie/i.test(cta))errors.push('EDITORIAL_CTA');
+  if(!title||!cta)errors.push('TITLE_OR_CTA_MISSING');
+  return errors;
+}
+
 const PERSONAL_STEERING_STORY='In een geverifieerd ondernemersbouwverhaal is AI het technische middel, niet de propositie. Mijn overtuiging gaat over bedrijven die continu veranderen en daarom iedere dag beter moeten kunnen anticiperen, besluiten, uitvoeren en leren. Alleen bronbevestigde persoonlijke ervaringen; geen reclame, jargon of ongevraagde salespitch.';
 
 function compactLinkedInCommentary(value:string,maxLength=2800):string{
@@ -591,6 +606,7 @@ Deno.serve(async (req) => {
         : `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`)
       : pending.channel==='linkedin_company'
       ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
+      : pending.channel==='blog' ? BLOG_READER_READY_PROMPT
       : pending.channel==='instagram_company' ? 'Mira verbeeldt één canoniek PH-P ondernemersprobleem. Verplichte caption: herkenbare scène, oorzaak, potentieel gevolg, concrete portaalcapaciteit/actie/eigenaar, meetpunt en menselijke pointe. Gebruik uitsluitend mira_entrepreneur_context, verzin geen klantresultaat, en claim geen onbewezen portalfeature. Laat in de bijschrifttekst zien wat het portaal doet; het beeld blijft één echte Mira-scène, geen corporate tekstkaart.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
     const editorialSystem = pending.channel==='linkedin_personal'
@@ -663,6 +679,21 @@ Deno.serve(async (req) => {
       if(editorialViolations.length) throw new Error('PERSONAL_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map(x=>x.code).join(','));
       if(!personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     }
+    if(pending.channel==='blog'){
+      let violations=blogReaderReadyViolations({...artifact,body:bodyText});
+      if(violations.length && generationProvider==='OpenAI' && apiKey){
+        const revised=await callAI(apiKey,gov.model_id,
+          editorialSystem+' EINDREDACTIE HERZIEN: de vorige versie bevat geen lezersklare tekst ('+violations.join(', ')+'). Schrijf een geheel afgerond publiek artikel zonder uitgeversinstructies, met een duidelijke ondernemerstitel, ten minste drie ## koppen en een passende lezers-CTA. Gebruik uitsluitend de al gevalideerde recommendation-evidence. Maak geen onbewezen claims en geef geen technisch release- of SEO-werk aan de lezer.',
+          {...artifactInput,rejected_draft:bodyText,editorial_rejection_codes:violations},artifactTool,6500);
+        const revisedBody=clean(revised?.body);
+        if(blogReaderReadyViolations({...revised,body:revisedBody}).length===0){
+          artifact={...artifact,...revised,body:revisedBody};
+          bodyText=revisedBody;
+          violations=[];
+        }
+      }
+      if(violations.length)throw new Error('BLOG_READER_READY_CONTRACT_FAILED:'+violations.join(','));
+    }
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
       if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
@@ -690,7 +721,7 @@ Deno.serve(async (req) => {
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
       daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
-      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
+      final_copy_approved:pending.channel==='linkedin_company'||pending.channel==='linkedin_personal',editorial_policy_version:pending.channel==='linkedin_personal'?PERSONAL_EDITORIAL_POLICY:pending.channel==='blog'?BLOG_READER_READY_POLICY:null,automated_blog_reader_ready:pending.channel==='blog'?blogReaderReadyViolations({...artifact,body:bodyText}).length===0:null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence,...(miraBusinessProblem?miraProductionEvidence(miraBusinessProblem):{})},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
