@@ -8,7 +8,12 @@
 
 const arr = value => (Array.isArray(value) ? value : []);
 const txt = value => (value == null ? '' : String(value));
-const measuredNumber = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
+const measuredNumber = value => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+};
 const laatste = items => arr(items).map(x => x?.occurredAt || x?.recordedAt || x?.observedAt || x?.at).filter(Boolean).sort().pop() || '';
 
 export const BREIN_STAPPEN = Object.freeze([
