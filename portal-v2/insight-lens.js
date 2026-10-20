@@ -121,6 +121,22 @@ function selectedMark(target){
 }
 function init(){
  ensureDialog();enhanceInsightLens();
+ // Lightweight hover and keyboard context without changing chart values or events.
+ const preview=make('div','bg-il-hover');preview.hidden=true;preview.setAttribute('role','tooltip');document.body.append(preview);
+ const place=event=>{
+  const maxLeft=Math.max(8,innerWidth-Math.min(300,innerWidth-16));
+  preview.style.left=Math.max(8,Math.min(maxLeft,event.clientX+14))+'px';
+  preview.style.top=Math.max(8,Math.min(innerHeight-84,event.clientY+14))+'px';
+ };
+ document.addEventListener('pointerover',event=>{
+  if(event.pointerType==='touch'||!dialog.hidden)return;
+  const mark=selectedMark(event.target);
+  if(!mark||!shown(mark.mark)){preview.hidden=true;return}
+  preview.textContent=mark.label;place(event);preview.hidden=false;
+ },{passive:true});
+ document.addEventListener('pointermove',event=>{if(!preview.hidden)place(event)},{passive:true});
+ document.addEventListener('pointerout',event=>{if(event.target.closest?.('svg'))preview.hidden=true},{passive:true});
+
  document.addEventListener('click',e=>{
   if(e.target.closest?.('button,a,input,textarea,select,summary,[role="button"],#bgInsightLens'))return;
   const info=selectedMark(e.target),row=e.target.closest?.('tbody tr');
