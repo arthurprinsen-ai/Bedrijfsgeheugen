@@ -1,7 +1,9 @@
 
 import {buildBusinessContext} from '../brain/context/business-context-engine.mjs';
+import {mountForesightScenarioStudio} from './foresight-scenario-studio.js';
+import {contextualCardsForPage,toRoadmapProposal,inventoryPortalCustomerFields,CONTEXTUAL_ACTION_PAGES} from './contextual-action-cards.js';
 
-const CONTEXT_PAGES=new Set(['bedrijfssituatie','cijfers-maatstaven','businesscase','waarde-financiering','branche-markt','roadmap','actieve-acties','due-diligence','exit','outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center']);
+const CONTEXT_PAGES=new Set(['bedrijfssituatie','cijfers-maatstaven','businesscase','waarde-financiering','branche-markt','roadmap','actieve-acties','due-diligence','exit','outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center',...CONTEXTUAL_ACTION_PAGES]);
 const QUALITY_PAGES=new Set(['outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center']);
 const SCENARIO_PAGES=new Set(['businesscase','waarde-financiering','due-diligence','exit','roadmap','actieve-acties']);
 
@@ -80,6 +82,7 @@ function selfImprovementPanel(s={}){
 function ensureStyles(doc=document){
   if(!doc||doc.querySelector('link[data-foresight-context-ui]'))return;
   const link=doc.createElement('link');link.rel='stylesheet';link.href='./foresight-context.css';link.dataset.foresightContextUi='true';doc.head.appendChild(link);
+  const studio=doc.createElement('link');studio.rel='stylesheet';studio.href='./foresight-scenario-studio.css';studio.dataset.powerhouseForesightStudio='true';doc.head.appendChild(studio);
 }
 function contextModel(state={}){try{return buildBusinessContext(state||{});}catch{return null;}}
 export function buildContextualForesightModel(pageId,state={},quality=null,{overview=false}={}){
@@ -111,13 +114,84 @@ function sectionMarkup({pageId,state,quality,overview=false}={}){
     '</section>';
 }
 function bind(section,openPage){section?.querySelectorAll?.('[data-fsv-page]').forEach(btn=>btn.addEventListener('click',()=>openPage?.(btn.dataset.fsvPage)));}
+
+const CARD_TITLES={P1:'Hoog — direct beoordelen',P2:'Middel — plannen',P3:'Laag — bewaken'};
+function contextualActionMarkup(pageId,state){
+  const cards=contextualCardsForPage(pageId,state);
+  const inventory=pageId==='gegevens-invullen'?inventoryPortalCustomerFields():[];
+  if(!cards.length&&!inventory.length)return '';
+  const header='<div class="fsv-head"><div><span class="fsv-kicker">Van invoer naar besluit</span><h3>Wat betekent dit voor jouw bedrijf?</h3><p>Automatisch afgeleide voorstellen, geen definitieve risico-oordelen, juridische conclusies of gerealiseerde besparingen.</p></div></div>';
+  const inventoryHtml=inventory.length?
+    '<p><strong>'+inventory.length+' unieke invoerpaden</strong> in de geregistreerde native V2-formulierschema’s. Standalone, legacy en connectorvelden vereisen apart verificatiebewijs.</p>'+
+    '<details class="fsv-input-trace"><summary>Bekijk per veld de bronpagina, betrokken modellen en gevolgen</summary><div class="fsv-reviewlist">'+
+    inventory.map(field=>'<article><strong>'+esc(field.label)+'</strong><p><small>'+esc(field.path)+'</small></p>'+
+      '<p>Invoer: '+esc(field.pages.join(', '))+' · Modellen: '+esc(field.modelFamilies.join(', '))+'</p>'+
+      '<p>Impact: '+esc(field.affectedPages.join(', '))+' · Opslagstatus: niet afzonderlijk met klant-ACK bewezen</p></article>').join('')+
+    '</div></details>':'';
+  const cardsHtml=cards.slice(0,12).map(card=>{
+    const pages=card.pages.filter(id=>id!==pageId).slice(0,card.regulatoryImpact?card.pages.length:8);
+    return '<article class="fsv-card" data-context-card="'+esc(card.id)+'"><header><div><span class="fsv-kicker">'+esc(card.priority)+' · '+esc(card.sourcePath)+'</span><h4>'+esc(card.title)+'</h4></div><b class="fsv-pill warn">'+esc(CARD_TITLES[card.priority]||'Beoordelen')+'</b></header>'+
+      '<p>'+esc(card.description)+'</p><p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
+      (card.regulatoryImpact?
+        '<p><strong>Wettelijk onderwerp:</strong> '+esc(card.regulatoryImpact.framework)+
+        ' · <strong>Ingangsdatum:</strong> '+esc(card.regulatoryImpact.effectiveDate||'nog te verifiëren')+
+        ' · <strong>Toepasselijkheid:</strong> menselijke beoordeling vereist</p>'+
+        '<p><strong>Risico- en uitvoeringsimpact:</strong> '+esc(card.regulatoryImpact.domainLabels.join('; ')||'Nog niet in een domein geclassificeerd')+'</p>'+
+        '<p><strong>Te beoordelen:</strong> '+esc(card.regulatoryImpact.requiredReviews.join(' · '))+'</p>'+
+        (card.regulatoryImpact.missingEvidence.length?'<p><strong>Ontbrekend bewijs:</strong> '+esc(card.regulatoryImpact.missingEvidence.join(' · '))+'</p>':'')+
+        '<p><strong>Geraakte pagina’s en waarom:</strong> '+card.regulatoryImpact.impactByPage.map(x=>'<span>'+esc(x.page)+' ('+esc(x.why)+')</span>').join(' · ')+'</p>'+
+        (card.regulatoryImpact.sourceUrl?'<p><small>Opgegeven bron: '+esc(card.regulatoryImpact.sourceUrl)+'</small></p>':'')+
+        '<p><small>€-effect, juridische plicht, sancties en gerealiseerde gevolgen: niet vastgesteld.</small></p>':'')+
+      '<p><small>'+(card.financialImpact?.status==='SCENARIO_ONLY'&&Number.isFinite(card.financialImpact.amount)?'Financieel scenario (geen gerealiseerde besparing): '+new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(card.financialImpact.amount)+' · '+esc(card.financialImpact.label||'Indicatie'):'Financiële impact: niet gekwantificeerd')+' · voorstel ter beoordeling · bron: klantinvoer / geprojecteerd signaal.</small></p>'+
+      '<div class="fsv-actions">'+pages.map(id=>'<button type="button" data-fsv-page="'+esc(id)+'">'+esc(id.replaceAll('-',' '))+' →</button>').join('')+
+      '<button type="button" data-context-add-roadmap="'+esc(card.id)+'">Als voorstel op roadmap →</button></div></article>';
+  }).join('');
+  return '<section class="fsv-context" data-contextual-impact-cards="'+esc(pageId)+'">'+header+inventoryHtml+'<div class="fsv-grid">'+cardsHtml+'</div><p data-contextual-save-status aria-live="polite"></p></section>';
+}
+function mountContextualActionCandidates(host,pageId,openPage){
+  host.querySelector?.('[data-contextual-impact-cards]')?.remove();
+  const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
+  const state=domainState?.get?.()||{};
+  const html=contextualActionMarkup(pageId,state);
+  if(!html)return null;
+  const holder=(host.ownerDocument||document).createElement('div');
+  holder.innerHTML=html;
+  const panel=holder.firstElementChild;
+  host.appendChild(panel);
+  bind(panel,openPage);
+  panel.querySelectorAll('[data-context-add-roadmap]').forEach(button=>button.addEventListener('click',async()=>{
+    const status=panel.querySelector('[data-contextual-save-status]');
+    const existing=domainState?.get?.('portal.roadmap.items')||[];
+    const card=contextualCardsForPage(pageId,domainState?.get?.()||{}).find(row=>row.id===button.dataset.contextAddRoadmap);
+    if(!domainState?.set||!domainState?.flush||!card){if(status)status.textContent='Beveiligde klantcontext ontbreekt: geen kaart aangemaakt.';return;}
+    const proposal=toRoadmapProposal(card,existing);
+    if(!proposal){if(status)status.textContent='Dit voorstel staat al op de roadmap.';return;}
+    try{
+      button.disabled=true;
+      if(status)status.textContent='Voorstel wordt opgeslagen…';
+      domainState.set('portal.roadmap.items',[...existing,proposal]);
+      await domainState.flush();
+      if(status)status.textContent=domainState.status?.()==='saved'?'Voorstel opgeslagen. Controleer de roadmap voor prioriteit en eigenaar.':'Nog niet volledig bevestigd: controleer de opslagstatus.';
+    }catch{
+      if(status)status.textContent='Opslaan niet bevestigd. Voorstel blijft in de huidige sessie staan.';
+    }finally{button.disabled=false;}
+  }));
+  return panel;
+}
+
 export async function mountContextualForesight(host,{pageId,state={},openPage,fetchImpl=globalThis.fetch}={}){
   if(!host||!CONTEXT_PAGES.has(pageId))return null;
   ensureStyles(host.ownerDocument||document);
+  host.__contextualActionAbort?.abort();
+  const controller=new AbortController();
+  host.__contextualActionAbort=controller;
   host.querySelector?.('[data-foresight-context]')?.remove();
+  mountContextualActionCandidates(host,pageId,openPage);
+  globalThis.addEventListener?.('bg:portal-impact',()=>mountContextualActionCandidates(host,pageId,openPage),{signal:controller.signal});
   const quality=QUALITY_PAGES.has(pageId)?await loadPredictionQuality(fetchImpl):null;
   const html=sectionMarkup({pageId,state,quality});
-  if(!html)return null;
+  mountForesightScenarioStudio(host,{state,pageId,openPage});
+  if(!html)return host.querySelector?.('[data-pfs-studio]')||host.querySelector?.('[data-contextual-impact-cards]')||null;
   const holder=(host.ownerDocument||document).createElement('div');holder.innerHTML=html;
   const section=holder.firstElementChild;host.appendChild(section);bind(section,openPage);return section;
 }
@@ -125,11 +199,16 @@ export async function mountOverviewForesight(root,{state={},openPage,fetchImpl=g
   const main=root?.querySelector?.('.main');if(!main)return null;
   ensureStyles(root.ownerDocument||document);
   main.querySelector?.('[data-foresight-context]')?.remove();
+  main.__contextualActionAbort?.abort();
+  const controller=new AbortController();
+  main.__contextualActionAbort=controller;
+  mountContextualActionCandidates(main,'overzicht',openPage);
+  globalThis.addEventListener?.('bg:portal-impact',()=>mountContextualActionCandidates(main,'overzicht',openPage),{signal:controller.signal});
   const quality=await loadPredictionQuality(fetchImpl);
   const holder=(root.ownerDocument||document).createElement('div');holder.innerHTML=sectionMarkup({pageId:'overzicht',state,quality,overview:true});
   const section=holder.firstElementChild;if(!section)return null;
   const anchor=main.querySelector('[data-business-journey-overview]')||main.querySelector('#companyDecisionCockpit')||main.querySelector('.dashboard');
   if(anchor?.parentNode===main)anchor.after(section);else main.appendChild(section);
-  bind(section,openPage);return section;
+  bind(section,openPage);mountForesightScenarioStudio(main,{state,pageId:'overzicht',openPage});return section;
 }
 export const FORESIGHT_CONTEXT_PAGES=Object.freeze([...CONTEXT_PAGES]);

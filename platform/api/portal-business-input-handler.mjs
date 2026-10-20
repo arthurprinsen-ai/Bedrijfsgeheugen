@@ -56,6 +56,9 @@ export function createPortalBusinessInputHandler({getUser,store,authority,maxByt
     try{result=await store.putCanonical(tenantId,canonical);}
     catch(error){return json({error:'CANONICAL_PROJECTION_WRITE_FAILED',authorityStored:true,powerhouseFeedStored:true,brainRecordId,currentStateRecordId,sourceRevision,message:error instanceof Error?error.message:String(error)},502)}
     const record=result?.record||canonical;
-    return json({stored:Boolean(result?.stored),stale:Boolean(result?.stale),authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,rawSourceObservationId:rawSourceObservation.id,organismImpactRecordId:organism.impactRecordId,organismDomains:[...organism.effects.recomputeDomains],authority:authorityResult?.authority||'supabase:brain_records',brainRecordId,currentStateRecordId,objectId:object.id,truthClass:object.truthClass,sourceRevision,sourceUpdatedAt:record.sourceUpdatedAt});
+    // An accepted Brain write is not sufficient when its canonical projection failed.
+    if(result?.stale===true)return json({error:'CANONICAL_PROJECTION_STALE',authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,brainRecordId,currentStateRecordId,sourceRevision},409);
+    if(result?.stored!==true)return json({error:'CANONICAL_PROJECTION_NOT_STORED',authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,brainRecordId,currentStateRecordId,sourceRevision},503);
+    return json({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,rawSourceObservationId:rawSourceObservation.id,organismImpactRecordId:organism.impactRecordId,organismDomains:[...organism.effects.recomputeDomains],authority:authorityResult?.authority||'supabase:brain_records',brainRecordId,currentStateRecordId,objectId:object.id,truthClass:object.truthClass,sourceRevision,sourceUpdatedAt:record.sourceUpdatedAt});
   };
 }

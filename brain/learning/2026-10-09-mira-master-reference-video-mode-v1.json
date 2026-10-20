@@ -1,0 +1,54 @@
+{
+  "fingerprint": "powerhouse|mira|reference-video-generation-mode-rejected-v1",
+  "obligationId": "p0-4198-mira-reference-video-mode-20261009",
+  "parentP0": 4198,
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "The existing canonical Mira media router hardcoded generation_mode=image2video, while a new scene featuring the same OpenArt master character requires OpenArt element2video with the master as an identity reference. The real Google-backed OpenArt attempt n7ynDEY78rcusspUWLwU independently FAILED upstream_error (1002), so there was no asset to verify or publish.",
+  "observed": {
+    "router_source": "supabase/functions/powerhouse-instagram-media-router/index.ts",
+    "master_guard": "supabase/functions/_shared/mira-canonical-face.mjs",
+    "openart_attempt": "n7ynDEY78rcusspUWLwU",
+    "openart_result": "FAILED",
+    "failed_code": "upstream_error",
+    "instagram_asset_publish_proven": false
+  },
+  "changes": [
+    "Permit only element2video and image2video in canonical master-anchored video-reference lineage",
+    "Keep exact canonical source master ID and URL plus nonempty generation history",
+    "Expose supported modes in preflight and failure response",
+    "Regression test rejects wrong master, missing history, unsupported text2video, missing frames and identity drift"
+  ],
+  "prevention": [
+    "Preserve actual Anthropic two-image identity and temporal checks before publisher",
+    "Preserve daily idempotency, source scene matching and provider proof",
+    "Switch video model only within existing OpenArt provider, never add extra publisher"
+  ],
+  "failureModes": [
+    "MIRA_APPROVED_NEW_SCENE_VIDEO_REJECTED_BY_MODE_GUARD",
+    "OPENART_UPSTREAM_VIDEO_ERROR"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-generation-reference-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MIRA_REFERENCE_MODE_MISMATCH",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "protected_pr": 4281,
+    "provider_history": "n7ynDEY78rcusspUWLwU",
+    "asset_generated": false,
+    "instagram_published": false
+  },
+  "required": [
+    "Protected Required/CodeQL/preview",
+    "Exact protected-main Supabase Edge parity and authorized preflight",
+    "Successful media generation; start/middle/end 0.94 face proof; canonical publication and provider readback",
+    "Real sales outcomes and Brain learning independently confirmed before closing P0 #4198"
+  ]
+}

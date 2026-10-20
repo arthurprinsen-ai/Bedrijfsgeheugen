@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|site|production-visibility-navigation-race-null-response-v1",
+  "obligationId": "portal-public-visibility-navigation-race-readback-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "GitHub protected main and canonical Netlify public visibility browser",
+  "root_causes": [
+    "Exact-main public website visibility run 37892820886 failed 3 checks after PR #4229 despite reduced traffic: /en/help phone Playwright execution context destroyed by navigation, /en/ai-automatisering-mkb tablet and /en/ai-ecosysteem tablet browser navigation returned no HTTP response",
+    "The first browser URL can be replaced between DOMContentLoaded and evaluation; zero navigation response may occur during same-document redirects and must not be implicitly accepted"
+  ],
+  "prevention": [
+    "Only for confirmed context-destroyed navigation races, load the same route again once and re-evaluate visible DOM under unchanged sitemap route coverage",
+    "When navigation response is null, explicitly match exact browser origin + canonical path and require independent successful GET before accepting, then continue mandatory visible main, H1, text and CLS assertions",
+    "Retain provider 403/404 failure when not independently resolved: no broad status bypass, auth relaxation or fake customer evidence"
+  ],
+  "tests": [
+    "tests/brain-standalone-visibility-navigation-race-v1.test.mjs",
+    "tests/brain-standalone-visibility-boundedness-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_VISIBILITY_NAVIGATION_CONTEXT_INVALIDATION",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected exact-head Required+CodeQL",
+    "Netlify immutable preview and live exact-main ready",
+    "production terminal green public shell visibility and Portal V2 DOM",
+    "parent P0 real authenticated two-tenant Brain plus official CSRD source legal applicability evidence"
+  ]
+}

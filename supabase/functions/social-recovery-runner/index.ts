@@ -7,6 +7,12 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
   headers: { "content-type": "application/json", "cache-control": "no-store" },
 });
 const clean = (value: unknown) => String(value ?? "").trim();
+// GitHub recovery supplies the service role as a Bearer token. Fail closed on malformed auth.
+const bearer = (req: Request) => {
+  const authorization = clean(req.headers.get("authorization"));
+  const match = /^Bearer\s+(.+)$/i.exec(authorization);
+  return match ? clean(match[1]) : "";
+};
 const todayAmsterdam = () => new Intl.DateTimeFormat("en-CA", {
   timeZone: "Europe/Amsterdam", year: "numeric", month: "2-digit", day: "2-digit",
 }).format(new Date());

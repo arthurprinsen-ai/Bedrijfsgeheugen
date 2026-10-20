@@ -42,7 +42,6 @@ test('production executes representative AI, finance, compliance and execution l
  for(const [pageId,ids] of [
   ['ai-scan',['annual-task-cost','opportunity-score']],
   ['waarde-financiering',['dcf','altman-z','dscr']],
-  ['compliance-governance',['compliance-risk']],
   ['strategie-naar-maandagochtend',['priority-filter']],
   ['due-diligence',['red-flags']],
   ['advies',['cross-model-weight']],
@@ -51,4 +50,13 @@ test('production executes representative AI, finance, compliance and execution l
   const parity=await openAnalysis(page,pageId);
   for(const id of ids)await expect(parity.getByText(id,{exact:true}),`${pageId}:${id}`).toBeVisible();
  }
+});
+
+test('anonymous production cannot open the protected compliance workspace', async ({page}) => {
+ const response=await page.goto(`${BASE_URL}/portal-v2/?page=compliance-governance&bg_auth_denial=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
+ expect(response?.status()).toBeLessThan(400);
+ await expect(page.locator('#portalView')).not.toHaveAttribute('data-page-id','compliance-governance');
+ await expect(page.locator('[data-functional-workspace="compliance-governance"]')).toHaveCount(0);
+ // Authenticated compliance algorithms are an independent customer session
+ // acceptance gate. Never inject synthetic tokens into public production.
 });

@@ -13,6 +13,15 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
+    # Provider-applied 2026-10-14 runtime mux SQL; immutable historical source.
+    # Live pg_proc ACL verified: anon=false, authenticated=false, service_role=true;
+    # explicit fixed search_path. Arbitrary SQL executor remains restricted to service role.
+    "supabase/migrations/20261014162635_restore_runtime_mux_statement_timeout_20261014.sql": "9609cd69f89dbe746bd36b96b8bb7c0aaeca38f7",
+    # Provider-applied 2026-10-10/11 SQL, read back from schema_migrations.statements.
+    # Production ACL verified 2026-10-15 for BOTH security-definer functions:
+    # anon=false, authenticated=false, service_role=true; deterministic search_path.
+    # Exact immutable Git blob SHA; edited SQL is rejected by this security gate.
+    "supabase/migrations/20261010070959_filter_expired_content_signals_v1_20261010.sql": "f391cbdeea0ca5afa14103d8ab172cea46b9868f",
     # Original applied production statements, reconstructed byte-for-byte from the
     # Supabase migration ledger. The preceding 20261007094500 migration already
     # revoked browser/PUBLIC EXECUTE; CREATE OR REPLACE preserves those ACLs.

@@ -1543,3 +1543,25 @@ For daily blogs, the approved content artifact is the immutable input to the exi
 Fingerprint: `github|obligation-terminal-closure|pr-body-context|v1`.
 
 The post-merge terminal closure must forward the canonical merged PR body from the resolved GitHub PR context into obligation identity parsing. A `pull_request: closed` or manual recovery run may never assume `PR_BODY` is implicitly present in the shell environment. Resolve PR → encode body → explicitly bind `PR_BODY_B64` → decode → parse `Obligation-ID` / `Delivery-Lane`. Missing forwarding is a control-plane defect and must fail in regression before terminalization.
+
+## Predictive OpenAI public-market boundary
+
+Use the existing canonical predictive engine and approved use case. Its OpenAI Responses adapter accepts only explicit public market/search evidence, never internal forecasts or revenue-learning free text; redact embedded contacts, validate strict completed tool output and retain independent-source/score gates. Do not reactivate Anthropic/Groq after user-directed replacement or add another scheduler. Provider health is separate from customer forecast acceptance. Require protected main, native Integration authority and real forecast readback before live claims. Canonical learning: `brain/learning/2026-10-19-predictive-openai-recovery.json`.
+
+The predictive engine and calibrator share the governance row: migrate and attest both together. Calibration uses opaque outbound refs, restores exact refs locally, rejects impossible/out-of-horizon dates and unverified negative outcomes, and cannot attribute global revenue to a forecast. Shared transport edits must include both consumers in production authority scope.
+
+## Terminal adaptive-routing classification recovery
+
+Adaptive regression-routing config is verifier-only under the canonical production-readback contract. Keep the allowlist exact; mixed Edge/migration releases still require real provider evidence and unknown config remains fail-closed. When a merged immutable terminal candidate failed only an outdated control-plane classifier, use the existing Terminal-Replay-PR controller; do not rewrite its source head or create a second automatic owner. Canonical learning: `brain/learning/2026-10-19-predictive-terminal-classifier-replay.json`.
+
+## Predictive uncertainty survives reconciliation
+
+Both existing calibration-obligation writers use one revision-bound state merge. Preserve real uncertainty and backoff across unchanged forecast refresh, archive invalidated attempt evidence when event/horizon/evidence changes, and never overwrite CLOSED outcome proof. Runtime acceptance requires real attempt markers surviving canonical refresh; model HTTP200 alone is insufficient. Learning: `brain/learning/2026-10-19-predictive-uncertainty-retention.json`.
+
+## Actual provider migration identity parity
+
+When native deployment rejects a remote version absent locally, restore its exact actual provider-applied source identity after byte-for-byte proof. Preserve separately Preview-applied revisions and prove compatibility replay idempotent. Never rewrite tracking rows or rename away an applied source. Learning: `brain/learning/2026-10-19-predictive-migration-identity-parity.json`.
+
+## Acknowledged predictive assessment persistence
+
+Count/report uncertainty only after an OPEN and same-revision write is acknowledged with its actual marker and due date. A transientSQL retry reuses the computed assessment and never repeats model inference. Skip unchanged canonical rows before row-locking upsert; require per-result durable readback, not just aggregate/model success. Learning: `brain/learning/2026-10-19-predictive-uncertainty-write-ack.json`.

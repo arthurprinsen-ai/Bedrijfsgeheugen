@@ -1,0 +1,66 @@
+{
+  "fingerprint": "powerhouse|revenue|seven-leaks-internal-activation|v1",
+  "date": "2026-10-09",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "The protected-merged free 7-leaks worksheet is live and its first pageview was observed, but discoverability from the existing organic homepage and selfscan is missing. Provider company social posting requires org permissions, so the website cannot rely solely on new external posts for visits.",
+  "root_cause": "The launch deliberately kept the existing selfscan and homepage unchanged after the required static EN cache rejected a new unapproved Dutch string. This prevented a first-party offer entry from two proven high-intent website routes.",
+  "fix": "Preserve both existing primary CTAs. Add exactly one low-friction direct PDF download link to the already live assets/downloads/7-verborgen-bedrijfslekken.pdf on homepage and selfscan. This is an SEO-safe static asset link, not an internal hyperlink to an HTML route excluded by the canonical scanner. Existing privacy-aware bg_interacties click events include the source page path. Supply the exact minimal NL/EN cache patch.",
+  "prevention": [
+    "Never add untranslated public text to localized protected pages.",
+    "Never replace the existing primary free selfscan or product CTA.",
+    "Do not introduce contact capture, a second PDF, second sales pipeline or a publisher.",
+    "Do not infer conversions or revenue from a pageview or link.",
+    "Use the already deployed fixed-value source and one canonical UTM campaign.",
+    "Do not add tracking query strings on canonical internal SEO links; attribute origin from observed first-party click source path.",
+    "Do not link from indexable SEO pages to HTML routes absent from the canonical SEO route registry; use existing downloadable PDF directly for the tertiary give-first offer."
+  ],
+  "evidence": {
+    "parent_issue": 4198,
+    "existing_offer_merged_sha": "bc994bacb40725f70930e2a85a22e357b3f6cf5c",
+    "existing_offer_deploy": "6ac935afd365540008bcb39d",
+    "source_link_paths": [
+      "index.html",
+      "zelfscan.html"
+    ],
+    "i18n_patch": "config/bg-static-i18n-en.d/2026-10-09-seven-leaks-internal-activation.json",
+    "existing_pdf": "assets/downloads/7-verborgen-bedrijfslekken.pdf",
+    "test": "tests/brain-seven-leaks-internal-activation-v1.test.mjs"
+  },
+  "outcome": "Candidate internal discovery paths; production link visibility, clickthrough, scan completion, paid order and Brain learning remain unproven until independently observed.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seven-leaks-internal-activation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seven-leaks-internal-activation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seven-leaks-internal-activation-v1.test.mjs"
+    ],
+    "invariants": [
+      "existing scan primary CTA unchanged",
+      "first-party homepage and selfscan tertiary links target the original public ungated PDF directly",
+      "NL/EN approved translation available",
+      "page-scoped first-party static PDF click attribution without non-canonical internal HTML routes",
+      "no new content executor or new lead database",
+      "no simulated paid outcome"
+    ],
+    "regressions": [
+      "tests/brain-seven-leaks-internal-activation-v1.test.mjs"
+    ],
+    "productionCriteria": [
+      "protected website CI and NL/EN cache validation",
+      "main merge and exact production SHA ready",
+      "homepage and selfscan direct downloadable PDF links tested on mobile and desktop",
+      "real outbound click event followed by scan and actual paid order evidence",
+      "changed next best action only on verified realized outcome"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FREE_VALUE_OFFER_MISSING_FIRST_PARTY_ENTRYPOINT",
+    "scope": "WEBSITE_COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

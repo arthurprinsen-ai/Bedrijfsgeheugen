@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|portal|anonymous-protected-dom-readback-v1",
+  "obligationId": "portal-production-dom-auth-aware-20261008-v1",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Portal V2 existing protected trust authorization and production DOM readback",
+  "root_causes": [
+    "Anonymous browser parity required compliance-governance to render even though the protected trust contract correctly rejects unauthenticated access"
+  ],
+  "prevention": [
+    "Assert fail-closed for protected pages in anonymous production browser checks",
+    "Keep authenticated tenant browser proof separate and mandatory; never mock or bypass trust access"
+  ],
+  "tests": [
+    "tests/integration/portal-v2-production-full-parity.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "ANONYMOUS_BROWSER_EXPECTS_PROTECTED_TRUST_WORKSPACE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected PR merge",
+    "exact Netlify production release",
+    "green production DOM readback",
+    "authenticated tenant trust workspace readback"
+  ]
+}

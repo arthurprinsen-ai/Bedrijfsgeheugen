@@ -3,9 +3,10 @@ import path from 'node:path';
 import { createHash } from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { parse, serialize } from 'parse5';
+import { translateBatchWithOpenAI } from './static-i18n-openai-fallback.mjs';
 
 const ROOT = process.cwd();
-const MODEL = 'claude-haiku-4-5-20251001';
+// OpenAI Responses is the sole network translation provider; production deploy remains cache-only.
 const SITE = 'https://www.bedrijfsgeheugen.nl';
 const LOCALES = ['nl','en'];
 const EXCLUDED_TOP = new Set(['.git','.github','node_modules','assets','components','email','intern','preview','site','tools','tests','docs','brain','platform','config','.netlify','dist','nl','en']);
@@ -14,6 +15,11 @@ const SKIP_TAGS = new Set(['script','style','code','pre','noscript','svg','texta
 const ATTRS = new Set(['placeholder','title','aria-label','alt']);
 const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json');
 const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
+const PREPARE_CACHE_ARG = process.argv.find(arg=>arg.startsWith('--prepare-cache='));
+const PREPARE_CACHE_PATCH_NAME = PREPARE_CACHE_ARG ? PREPARE_CACHE_ARG.slice('--prepare-cache='.length) : '';
+if (PREPARE_CACHE_ARG && !/^[a-z0-9][a-z0-9-]{0,79}\.json$/i.test(PREPARE_CACHE_PATCH_NAME)) {
+  throw new Error('STATIC_I18N_CACHE_PATCH_NAME_INVALID');
+}
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
 const SEO_LOCALE_REVENUE_MAP_FILE = path.join(ROOT,'site','seo-locale-revenue-map.json');
 const STATIC_I18N_BUILD_CACHE_DIR = String(process.env.STATIC_I18N_BUILD_CACHE_DIR || '').trim()
@@ -559,6 +565,31 @@ function loadCache() {
 }
 
 function saveCache(cache) {
+  if (PREPARE_CACHE_PATCH_NAME) {
+    // Keep generated translations with the originating publication, not in a
+    // rewritten global cache. Reuse the loader's canonical patch precedence.
+    const existing = loadCache();
+    const additions = Object.fromEntries(Object.entries(cache).filter(([source,value]) =>
+      typeof value === 'string' && value.trim() &&
+      (typeof existing[source] !== 'string' || !existing[source].trim())
+    ));
+    if (!Object.keys(additions).length) return;
+    const file = path.join(TRANSLATION_CACHE_PATCH_DIR,PREPARE_CACHE_PATCH_NAME);
+    // Read once rather than checking existence first: avoids a TOCTOU race.
+    // Only ENOENT means a new patch; parse or permission errors stay fatal.
+    let previousPatch = {};
+    try {
+      previousPatch = JSON.parse(fs.readFileSync(file,'utf8'));
+    } catch (error) {
+      if (error?.code !== 'ENOENT') throw error;
+    }
+    if (!previousPatch || typeof previousPatch !== 'object' || Array.isArray(previousPatch)) {
+      throw new Error('STATIC_I18N_CACHE_PATCH_INVALID: ' + PREPARE_CACHE_PATCH_NAME);
+    }
+    ensureDir(file);
+    fs.writeFileSync(file,JSON.stringify({...previousPatch,...additions},null,2)+'\n');
+    return;
+  }
   ensureDir(TRANSLATION_CACHE_FILE);
   fs.writeFileSync(TRANSLATION_CACHE_FILE,JSON.stringify(cache,null,2)+'\n');
 }
@@ -579,45 +610,6 @@ function parseTranslations(raw) {
   throw new Error('Translation provider returned invalid JSON');
 }
 
-async function translateBatch(strings,key) {
-  const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(),60000);
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'content-type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01'
-      },
-      body:JSON.stringify({
-        model:MODEL,
-        max_tokens:6000,
-        system:'Translate Dutch website UI and marketing copy faithfully into natural English. Preserve Bedrijfsgeheugen, product names, URLs, numbers, currencies, placeholders and factual meaning. Do not add or remove claims. Return ONLY one valid JSON array of strings, same order and same length as input.',
-        messages:[{role:'user',content:JSON.stringify(strings)}]
-      }),
-      signal:controller.signal
-    });
-    if (!response.ok) {
-      const body = (await response.text()).slice(0,300);
-      const retryAfterRaw = response.headers.get('retry-after');
-      const retryAfterSeconds = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw) ? Number(retryAfterRaw) : null;
-      const error = new Error('Anthropic HTTP ' + response.status + ': ' + body);
-      error.status = response.status;
-      error.providerBody = body;
-      error.retryAfterMs = retryAfterSeconds === null ? null : Math.ceil(retryAfterSeconds * 1000);
-      throw error;
-    }
-    const payload = await response.json();
-    const raw = payload?.content?.map(x=>x?.type==='text'?x.text:'').join('') || '';
-    const out = parseTranslations(raw);
-    if (out.length !== strings.length || out.some(x=>typeof x!=='string')) throw new Error('Translation response shape mismatch');
-    return out;
-  } finally {
-    clearTimeout(timer);
-  }
-}
-
 async function translateAll(strings) {
   const cache = loadCache();
   const result = new Map();
@@ -628,6 +620,16 @@ async function translateAll(strings) {
     else missing.push(source);
   }
   if (!missing.length) return result;
+
+  // Public marketing-copy cache keys only. Preserve an exact, bounded review
+  // list when the approved translation provider cannot serve today's article.
+  if (PREPARE_CACHE_PATCH_NAME) {
+    console.log('STATIC_I18N_CACHE_GAPS_V1', JSON.stringify({
+      patch: PREPARE_CACHE_PATCH_NAME,
+      total: missing.length,
+      sources: missing.slice(0,80)
+    }));
+  }
 
   const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
   if (cacheRequired) {
@@ -645,9 +647,9 @@ async function translateAll(strings) {
     return result;
   }
 
-  const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
+  const key = String(process.env.OPENAI_API_KEY || '').trim();
   if (!key) {
-    throw new Error('ANTHROPIC_API_KEY is required when STATIC_I18N_NETWORK=1');
+    throw new Error('STATIC_I18N_OPENAI_KEY_MISSING');
   }
 
   const batches = [];
@@ -664,7 +666,9 @@ async function translateAll(strings) {
     let lastError;
     for (let attempt=0;attempt<6;attempt++) {
       try {
-        const translated = await translateBatch(part,key);
+        // Approved NL->EN content is translated with OpenAI only.
+        // A complete validated batch is required before any cache write.
+        const translated = await translateBatchWithOpenAI(part,key);
         part.forEach((source,index)=>{
           cache[source]=translated[index];
           result.set(source,translated[index]);
@@ -688,6 +692,12 @@ async function translateAll(strings) {
           provider_body: providerBody,
           delay_ms: transient ? delay : 0
         }));
+        // Payment/credit exhaustion is terminal, not a batch-size error.
+        // Do not bisect the same 402-like billing problem into dozens of calls.
+        if ((status === 400 || status === 402 || status === 429) &&
+            /credit balance is too low|insufficient.quota|billing/i.test(providerBody || '')) {
+          throw new Error('STATIC_I18N_PROVIDER_BILLING_BLOCKED: ' + (error?.message || String(error)));
+        }
         if (!transient && status >= 400 && status < 500) break;
         await new Promise(r=>setTimeout(r,delay));
       }
@@ -853,6 +863,24 @@ for (const file of files) {
   const doc = parse(html,{sourceCodeLocationInfo:false});
   const refs = collectTranslatables(doc);
   refs.forEach(ref=>allStrings.add(ref.source));
+}
+
+if (PREPARE_CACHE_PATCH_NAME) {
+  const before = loadCache();
+  const missingBefore = [...allStrings].filter(source => typeof before[source] !== 'string' || !before[source].trim());
+  if (missingBefore.length && String(process.env.STATIC_I18N_NETWORK || '').trim() !== '1') {
+    throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s)');
+  }
+  if (missingBefore.length) await translateAll([...allStrings]);
+  const persisted = loadCache();
+  const missingAfter = [...allStrings].filter(source => typeof persisted[source] !== 'string' || !persisted[source].trim());
+  if (missingAfter.length) {
+    throw new Error('STATIC_I18N_PREPARE_INCOMPLETE: ' + missingAfter.length + ' untranslated source(s)');
+  }
+  console.log('STATIC_I18N_PREPARE_COMPLETE',JSON.stringify({
+    patch:PREPARE_CACHE_PATCH_NAME, newlyTranslated:missingBefore.length, missing:0
+  }));
+  process.exit(0);
 }
 
 const cacheValidationOnly = process.argv.includes('--validate-cache');

@@ -1,0 +1,35 @@
+{
+  "fingerprint": "netlify-bridge|composio-v3.1|tool-preload-execute-envelope|20261019",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "netlify-bridge-composio-router-v31-contract-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4437",
+  "compiler": {
+    "failure_class": "COMPOSIO_TOOL_ROUTER_SESSION_EXECUTE_CONTRACT_DRIFT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "After reconnecting Netlify, production Edge sees one complete ACTIVE toolkit account. OIDC/account discovery passed; Composio session execute returned HTTP400. App tool execution was attempted without preloading either app tool. A parallel protected main commit separately corrected v3.1 session result parsing, which is retained; this candidate adds the missing explicit tool preload.",
+  "prevention_rule": "Explicitly preload exactly the two reviewed Netlify app actions into the pinned v3.1 session. Preserve the existing strict result_type=completed, actual data and no provider error contract. Never broaden toolkit access or bypass same-user account binding, protected main GitHub OIDC, exact site and immutable Netlify provider readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-tool-router-execute-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-tool-router-execute-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-tool-router-execute-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-netlify-tool-router-execute-v1.test.mjs",
+    "failure_probe": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39228816062",
+    "composio_reference": "https://docs.composio.dev/docs/configuring-sessions",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

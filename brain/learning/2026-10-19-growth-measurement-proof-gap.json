@@ -1,0 +1,54 @@
+{
+  "contract": "powerhouse-growth-source-daily-learning-v1",
+  "date": "2026-10-19",
+  "incident": "Daily provider activity was reported green even though social metrics stopped on 2026-10-08, social evaluations stopped on 2026-09-19, and GA4 campaign batches were frequently empty or unmatched.",
+  "cause": [
+    "scheduler_success_not_data_freshness",
+    "legacy_buffer_disabled_without_replacement",
+    "ga4_batch_import_count_not_full_site_analytics",
+    "revenue_goal_not_grounded_in_observed_booked_revenue"
+  ],
+  "prevention": [
+    "store dated source observations with provider authority",
+    "distinguish missing, late, empty and observed sources",
+    "exclude robot interactions from human performance learning",
+    "never treat forecast or suggested action as earned revenue",
+    "preserve existing Brein/Powerhouse decision and Heartbeat authorities",
+    "reconcile 6-hourly in existing Supabase pg_cron"
+  ],
+  "owned_by": "Powerhouse/Heartbeat",
+  "evidence": {
+    "gsc_latest_provider_date": "2026-10-16",
+    "ga4_latest_nonempty_day": "2026-10-16",
+    "social_latest": "2026-10-08",
+    "social_learning_latest": "2026-09-19",
+    "observed_revenue_positive_count": 0
+  },
+  "verified": false,
+  "acceptance": [
+    "required-ci",
+    "codeql",
+    "supabase-preview",
+    "protected-merge",
+    "production-migration",
+    "live-readback",
+    "new-social-provider-metrics",
+    "verified-revenue-lineage"
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 11,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-error-learning-contract.test.mjs"
+    ]
+  },
+  "fingerprint": "20261019-growth-daily-provider-freshness-and-revenue-false-green"
+}

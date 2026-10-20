@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|bedrijfslek|real-production-scan-provider-proof|v1",
+  "date": "2026-10-09",
+  "obligation_id": "bedrijfslek-live-production-provider-proof-v1",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-production-provider-proof-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The existing green production Powerhouse scan smoke verified the canonical Frisse Blik path but did not submit the new Bedrijfslek source kind, leaving a source-specific public-to-Brain proof gap.",
+  "change": "Extend the existing Powerhouse Scan Production Proof workflow with a bounded no-PII Bedrijfslek POST/repeat and exact scan/event ID equality readback; re-run for Supabase config changes.",
+  "prevention": "Do not claim a newly supported public scan source as production E2E-proven until the canonical public ingress has successfully persisted that exact source twice with matching immutable provider receipts and unverified tenant identity.",
+  "evidence": {
+    "legacy_scan_proof": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37977917243",
+    "production_edge_source_version": 12,
+    "edge_authority_recovery_commit": "9a3eecd6afad3099649401c860bfdfdc5c9ea333",
+    "exact_bedrijfslek_prod_smoke": "PENDING_PROTECTED_MERGE_AND_PROVIDER_RUN"
+  },
+  "safety": {
+    "fixture": "__PRODUCTION_SMOKE__",
+    "contact_pii": false,
+    "tenant_identity": "unverified",
+    "no_new_sender": true,
+    "no_parallel_store": true
+  },
+  "commercial_boundary": "Scan receipts alone never equal a paid order, verified prospect, realized revenue or full commercial Heartbeat learning."
+}

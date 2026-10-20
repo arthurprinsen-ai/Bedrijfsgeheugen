@@ -24,4 +24,8 @@ export async function runBufferCollection({apiKey,organizationId=null,channelIds
   return {ok:true,organizationId:scope.organizationId,channels:scope.channels.map(channel=>({id:channel.id,service:channel.service,name:channel.displayName||channel.name||null,kind:channelMetadata[channel.id]?.channelKind||null})),...result};
 }
 export default async function bufferCollect(input={}){const dependencyInjection=input&&typeof input==='object'&&!(input instanceof Request)&&('apiKey' in input||'store' in input||'ingest' in input);const options=dependencyInjection?input:envConfig();try{const result=await runBufferCollection(options);if(!result.ok)return Response.json(result,{status:503,headers:{'cache-control':'no-store'}});return Response.json(result,{status:200,headers:{'cache-control':'no-store'}});}catch(error){console.error('BUFFER_SOCIAL_COLLECTION_FAILED',error);return Response.json({ok:false,error:'BUFFER_SOCIAL_COLLECTION_FAILED',message:error.message},{status:503,headers:{'cache-control':'no-store'}});}}
-export const config={schedule:'15 */6 * * *'};
+// Legacy Buffer collection remains callable for explicit historical diagnostics only.
+// The canonical provider-native social collection/Heartbeat must never be replaced
+// or duplicated by a scheduled Buffer fallback (which returns HTTP 401 in production).
+// Removing the Netlify schedule disables only this legacy timer, not the handler.
+export const config={};

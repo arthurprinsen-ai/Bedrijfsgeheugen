@@ -64,7 +64,7 @@ const CHILD_TIMEOUTS: Record<string, number> = {
   'powerhouse-instagram-media-router': 10_000,
   'powerhouse-composio-linkedin-setup': 8_000,
   'powerhouse-social-publisher:audit': 12_000,
-  'powerhouse-content-orchestrator': 40_000,
+  'powerhouse-content-orchestrator': 110_000,
   'powerhouse-social-publisher': 25_000,
   'powerhouse-blog-queue': 25_000,
 };
@@ -197,10 +197,10 @@ async function releaseLoopLease(runDate:string, holder:string) {
            verified=true,
            observed_at=$1::timestamptz,
            payload=jsonb_build_object(
-             'holder',$2,
-             'run_date',$3,
-             'expires_at',$1,
-             'released_at',$1,
+             'holder',$2::text,
+             'run_date',$3::text,
+             'expires_at',$1::timestamptz,
+             'released_at',$1::timestamptz,
              'lease','content-closed-loop-v1'
            ),
            updated_at=$1
@@ -249,23 +249,38 @@ Deno.serve(async (req) => {
   if (!leaseAcquired) return json({ ok:true, runDate, skipped:true, reason:'ALREADY_RUNNING' }, 202);
 
   const stepResults: any[] = [];
+  const loopStartedAt = Date.now();
 
   try {
     const first = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
-    if (first.error) throw new Error('RECONCILE_PRE_FAILED');
-    stepResults.push({ name: 'reconcile_pre', ok: true });
+    // Readback is observational: a readback fault cannot cancel other safe
+    // publication lanes or grant any of them additional publishing rights.
+    if (first.error) {
+      stepResults.push({ name:'reconcile_pre', ok:false, degraded:true, error:'RECONCILE_PRE_FAILED' });
+    } else {
+      stepResults.push({ name:'reconcile_pre', ok:true });
+    }
 
     // Freeze one ex-ante Mira winner before any media generation or publication work.
     const winner = await db.rpc('powerhouse_select_instagram_daily_winner_v1', { p_date: runDate });
-    if (winner.error) throw new Error('INSTAGRAM_DAILY_WINNER_SELECTION_FAILED');
-    stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, selected: winner.data?.selected === true, recommendation_id: clean(winner.data?.recommendation_id), format: clean(winner.data?.format), reason: clean(winner.data?.reason) });
+    if (winner.error) {
+      stepResults.push({ name:'instagram_daily_winner', ok:false, degraded:true,
+        error:'INSTAGRAM_DAILY_WINNER_SELECTION_FAILED' });
+    } else {
+      stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, selected: winner.data?.selected === true, recommendation_id: clean(winner.data?.recommendation_id), format: clean(winner.data?.format), reason: clean(winner.data?.reason) });
+    }
     // Channel isolation: Instagram readiness may degrade Instagram, but must never block
     // blog/LinkedIn generation and delivery. Blog has its own no-gap obligation.
     if (winner.data?.selected !== true) {
       stepResults.push({ name: 'instagram_daily_winner_gate', ok: false, degraded: true, error: 'INSTAGRAM_DAILY_WINNER_REQUIRED' });
     }
-    const mediaJob = await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
-    if (mediaJob.error || mediaJob.data?.ok !== true) {
+    const mediaJob: any = winner.error || winner.data?.selected !== true
+      ? { data:null, error:null, skipped:true }
+      : await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
+    if (mediaJob.skipped === true) {
+      stepResults.push({ name:'instagram_winner_media_job', ok:true, skipped:true,
+        degraded:true, reason:'INSTAGRAM_WINNER_NOT_READY' });
+    } else if (mediaJob.error || mediaJob.data?.ok !== true) {
       stepResults.push({ name: 'instagram_winner_media_job', ok: false, degraded: true, error: 'INSTAGRAM_WINNER_MEDIA_JOB_FAILED', status: clean(mediaJob.data?.status), next_action: clean(mediaJob.data?.next_action) });
     } else {
       stepResults.push({ name: 'instagram_winner_media_job', ok: true, status: clean(mediaJob.data?.status), job_id: clean(mediaJob.data?.job_id) });
@@ -282,39 +297,122 @@ Deno.serve(async (req) => {
     stepResults.push(await invoke(url, expected, 'powerhouse-composio-linkedin-setup', { action: 'status', runDate }));
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
-    // Bounded generation: only invoke the heavyweight orchestrator when a publish claim
-    // still needs an artifact. Existing content_ready claims go straight to delivery.
-    const { data: pendingGeneration, error: pendingGenerationError } = await db
+    // Drain all currently decided channel artifacts before dispatch. The orchestrator
+    // creates at most one per invocation; a single invocation stranded today's
+    // lower-priority LinkedIn personal post even when the canonical cron succeeded.
+    // Keep this bounded within the existing single supervisor/lease. Do not bypass
+    // prepublish, unique-publication, identity or media proof gates.
+    // Bootstrap the canonical daily decision set exactly once when the scheduled
+    // revenue runtime has not materialized it. Without this step the supervisor
+    // sees zero pending decisions and silently skips every publishing lane.
+    // Use the EXISTING orchestrator under the EXISTING content-loop lease.
+    const requiredDecisionChannels = ['linkedin_personal', 'linkedin_company', 'instagram_company', 'blog'];
+    const { data: initialDecisions, error: initialDecisionsError } = await db
       .from('powerhouse_channel_decisions')
-      .select('channel')
+      .select('channel,state,decision,delivery_ref,delivery_evidence')
       .eq('run_date', runDate)
-      .eq('decision', 'publish')
-      .eq('state', 'decided')
-      .limit(1);
-    if (pendingGenerationError) throw new Error('PENDING_GENERATION_READ_FAILED');
-    if (Array.isArray(pendingGeneration) && pendingGeneration.length > 0) {
-      stepResults.push(await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate }));
-    } else {
-      stepResults.push({ name:'powerhouse-content-orchestrator', ok:true, skipped:true, reason:'NO_PENDING_ARTIFACT' });
+      .in('channel', requiredDecisionChannels)
+      .limit(4);
+    if (initialDecisionsError) throw new Error('INITIAL_DECISION_READ_FAILED');
+    const existingDecisionChannels = new Set((initialDecisions || []).map((decision: any) => clean(decision.channel)));
+    // A unique-content failure with no provider side effect can be safely
+    // reconsidered after fresher source materialization. Never retry a
+    // published/ambiguous side effect or bypass the uniqueness gate.
+    const retryableContentBlock = (initialDecisions || []).some((decision: any) => {
+      const evidence = decision.delivery_evidence || {};
+      const reason = clean(evidence.error);
+      return decision.decision === 'publish'
+        && decision.state === 'blocked'
+        && !clean(decision.delivery_ref)
+        && evidence.possible_provider_side_effect !== true
+        // Historical uniqueness refusals wrongly persisted republish_forbidden=true
+        // before any transport call. Reopen ONLY proven unconsumed capabilities.
+        && (evidence.republish_forbidden !== true || (
+          reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:')
+          && evidence.global_uniqueness_gate === 'blocked'
+          && evidence.publication_authority?.issued === true
+          && evidence.publication_authority?.consumed === false
+        ))
+        && evidence.provider_create_success !== true
+        && evidence.provider_publication_ack_verified !== true
+        && evidence.provider_truth_verified !== true
+        && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED');
+    });
+    let bootstrapStillInFlight = false;
+    // A completed bootstrap is one of the normal bounded generation rounds.
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock) {
+      const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
+      stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
+      // When the child may still be running, do not invoke it a second time in
+      // this tick. Existing lease, next-hour retry and provider-id dedupe apply.
+      // An explicit failed bootstrap is terminal for that invocation, not
+      // an in-flight lease. Existing ready/decided lanes must keep progressing.
+      bootstrapStillInFlight = seeded.timed_out === true || seeded.http === 0;
+      if (!seeded.ok) {
+        stepResults.push({
+          name: 'content-decision-bootstrap',
+          ok: false,
+          degraded: true,
+          error: 'INITIAL_DECISION_MATERIALIZATION_FAILED'
+        });
+      }
     }
 
-    // Independent delivery lanes execute in parallel, once per tick.
-    const [socialDispatch, blogDispatch] = await Promise.all([
-      invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'publish_only' }),
-      invoke(url, expected, 'powerhouse-blog-queue', { runDate }),
-    ]);
-    stepResults.push(socialDispatch, blogDispatch);
+    // Fan out bounded generation by channel. Each worker reads shared Brain
+    // decisions but can only generate its own artifact. One failure does not
+    // consume other channels' generation budget or prevent ready publication.
+    const {data:pendingGeneration,error:pendingGenerationError}=await db
+      .from('powerhouse_channel_decisions')
+      .select('channel')
+      .eq('run_date',runDate)
+      .eq('decision','publish')
+      .eq('state','decided')
+      .in('channel',requiredDecisionChannels)
+      .limit(4);
+    if(pendingGenerationError){
+      stepResults.push({name:'pending-generation-read',ok:false,degraded:true,error:'PENDING_GENERATION_READ_FAILED'});
+    }else if(!bootstrapStillInFlight){
+      const pendingChannels=[...new Set((pendingGeneration||[]).map((item:any)=>clean(item.channel)))]
+        .filter(channel=>requiredDecisionChannels.includes(channel));
+      if(!pendingChannels.length){
+        stepResults.push({name:'powerhouse-content-orchestrator',ok:true,skipped:true,reason:'NO_PENDING_ARTIFACT'});
+      }else{
+        const generated=await Promise.all(pendingChannels.map(async channel=>{
+          const result=await invoke(url,expected,'powerhouse-content-orchestrator',{runDate,channel});
+          return {...result,name:'powerhouse-content-orchestrator:'+channel,channel};
+        }));
+        stepResults.push(...generated);
+      }
+    }else{
+      stepResults.push({name:'targeted-generation',ok:false,degraded:true,reason:'BOOTSTRAP_MAY_STILL_BE_RUNNING'});
+    }
 
-    // Commercial engagement is a separate non-publication lane: preserve cockpit automation
-    // without putting Composio comment execution back onto the publication critical path.
-    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'cockpit_autopilot' }));
+    // Existing provider publisher already supports exact channel selection.
+    // It is called separately for each social channel, in parallel with blog
+    // and engagement. Each call keeps its own auth, identity, media, uniqueness
+    // and provider-proof gates. No new sender or scheduler is introduced.
+    const deliveryLanes=[
+      ['linkedin_personal','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_personal']}],
+      ['linkedin_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_company']}],
+      ['instagram_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['instagram_company']}],
+      ['blog','powerhouse-blog-queue',{runDate}],
+      ['linkedin_engagement','powerhouse-social-publisher',{runDate,mode:'cockpit_autopilot'}]
+    ] as const;
+    const dispatchResults=await Promise.all(deliveryLanes.map(async ([channel,name,payload])=>{
+      const result=await invoke(url,expected,name,payload);
+      return {...result,name:name+':'+channel,channel};
+    }));
+    stepResults.push(...dispatchResults);
 
     // Buffer is legacy telemetry only and is deliberately absent from the critical path.
     stepResults.push({ name:'bg-buffer-sync', ok:true, skipped:true, non_blocking:true, linkedin_authority:'composio', reason:'LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH' });
 
     const final = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
-    if (final.error) throw new Error('RECONCILE_POST_FAILED');
-    stepResults.push({ name: 'reconcile_post', ok: true });
+    if (final.error) {
+      stepResults.push({ name:'reconcile_post', ok:false, degraded:true, error:'RECONCILE_POST_FAILED' });
+    } else {
+      stepResults.push({ name:'reconcile_post', ok:true });
+    }
 
     const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
@@ -333,7 +431,10 @@ Deno.serve(async (req) => {
       && !(d.delivery_evidence?.provider_truth_verified===true && !!clean(d.delivery_ref))
     ).map((d: any) => ({ channel: d.channel, reason: d.delivery_evidence?.capability_reason || d.rationale }));
     const allOperationalGreen = (obligations || []).length === OPERATIONAL_CHANNELS.length && (obligations || []).every((o: any) => obligationTerminal(o));
-    const loopState = blocked > 0 ? 'RED' : allOperationalGreen ? 'GREEN' : 'AMBER';
+    const reconciliationDegraded = stepResults.some((step:any) =>
+      (step.name === 'reconcile_pre' || step.name === 'reconcile_post') && step.ok !== true);
+    // Keep dispatch alive; never misrepresent incomplete readback as GREEN.
+    const loopState = blocked > 0 ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
       const status=clean(o.status),channel=clean(o.channel),evidence=o.evidence||{};
       if(channel==='linkedin_company'&&['DISPATCHED','PUBLISHED'].includes(status)){
@@ -368,13 +469,14 @@ Deno.serve(async (req) => {
       updated_at: d.updated_at,
     }));
     const result = {
-      ok: loopState !== 'RED' && providerTruthHealthy,
+      ok: loopState !== 'RED' && providerTruthHealthy && !reconciliationDegraded,
       loop_state: loopState,
       runDate,
       truth_contract: 'GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED',
       outcomeVerified,
       providerTruthVerified,
       providerTruthHealthy,
+      reconciliationDegraded,
       blocked,
       hardBoundaries,
       obligations: obligationSummary,

@@ -91,16 +91,25 @@ test('V2 matches the legacy golden master at level 1 for the same inputs',()=>{
   assert.equal(actual.capacityNotCash,true);
 });
 
-test('V2 matches the legacy baseline when maturity values are still missing',()=>{
+test('legacy level-2 benchmark is a reference, not a substitute for missing tenant maturity',()=>{
   const profile={employees:24,hourlyCost:52,maturity:{}};
-  const actual=profileOverviewMetrics({portal:{profile}});
   const expected=legacyMetrics(profile);
-
   close(expected.averageMaturity,2);
   close(expected.weeklyManualHours,21.918);
   close(expected.annualManualHours,1008.228);
   close(expected.fteLost,0.6301425);
   close(expected.annualManualCost,52427.856);
+
+  const unknown=profileOverviewMetrics({portal:{profile}});
+  assert.equal(unknown.evidenceStatus,'INCOMPLETE_CUSTOMER_INPUTS');
+  for(const metric of ['averageMaturity','weeklyManualHours','annualManualHours','fteLost','annualManualCost']){
+    assert.equal(unknown[metric],null,metric+' cannot inherit legacy defaults');
+  }
+  // When the customer actually enters every level as 2, model arithmetic
+  // remains bit-for-bit compatible with the legacy golden master.
+  const complete={...profile,maturity:Object.fromEntries(PROFILE_DIMENSIONS.map(item=>[item.id,2]))};
+  const actual=profileOverviewMetrics({portal:{profile:complete}});
+  assert.equal(actual.evidenceStatus,'MODEL_ESTIMATE_FROM_ENTERED_INPUTS');
   close(actual.averageMaturity,expected.averageMaturity);
   close(actual.weeklyManualHours,expected.weeklyManualHours);
   close(actual.annualManualHours,expected.annualManualHours);

@@ -6,6 +6,10 @@ import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 import { deriveRequiredTestSuites } from '../tools/delivery-required-test-suites.mjs';
 
 const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+test('adaptive regression routing alone remains backend control-plane work',()=>{
+ const plan=createDeliveryPlan({changedPaths:['config/powerhouse-adaptive-delivery-v1.json'],headSha:'abcdef1234567890',policy});
+ assert.deepEqual(plan.lanes.map(lane=>lane.id),['backend']);
+});
 
 function suitesFor(paths, sha = 'abcdef1234567890') {
   const plan = createDeliveryPlan({ changedPaths: paths, headSha: sha, policy });

@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|notion|contact-pull-native|v1",
+  "obligationId": "notion-salesrobot-canonical-contact-pull-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "Notion signed webhook route was deployed without an active provider subscription, leaving canonical CRM contact context unsynchronized.",
+  "failureModes": [
+    "No verified Notion contact event",
+    "Missing canonical commercial contact intelligence",
+    "Unbounded polling could time out",
+    "Unsafe assumption of send permission"
+  ],
+  "prevention": [
+    "Reuse existing bounded bg-notion-sync",
+    "Persist page cursor and checkpoint each successful page",
+    "Match existing CRM identities only",
+    "Never authorize outreach from imported metadata"
+  ],
+  "compiler": {
+    "failure_class": "CONNECTOR_FAILURE",
+    "scope": "NOTION_SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-notion-contact-pull-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-notion-contact-pull-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-notion-contact-pull-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "test_evidence": [
+      "tests/brain-notion-contact-pull-v1.test.mjs"
+    ],
+    "source_inventory": "8,888 Notion contact rows, existing Supabase CRM",
+    "production_readback": "PENDING",
+    "provider_delivered_messages": 0
+  },
+  "next_action": "Protected merge and prove a real Notion-to-CRM metadata update; SalesRobot remains independent."
+}

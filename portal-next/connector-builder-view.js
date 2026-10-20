@@ -1,6 +1,22 @@
 import {CONNECTOR_TEMPLATES,SOURCE_ADAPTERS,LOOKUP_ADAPTERS,TARGET_ADAPTERS} from './connector-templates.js';
 import {activationEligibility} from './connector-model.js';
 
+// Source-owned UI field catalogue for the separate connector draft authority.
+// These are selectors and dynamic path templates, not canonical portal.* business inputs.
+// Real per-connector field keys and provider evidence require authenticated readback.
+export const CONNECTOR_BUILDER_FIELD_CONTRACTS=Object.freeze([
+  Object.freeze({selector:'data-source-config',pathTemplate:'source.config',kind:'PROVIDER_DRAFT_CONFIG',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-schema-name',pathTemplate:'documentSchema.name',kind:'PROVIDER_DRAFT_FIELD',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-field-key',pathTemplate:'documentSchema.fields[*].key',kind:'DYNAMIC_PROVIDER_ROW',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-field-label',pathTemplate:'documentSchema.fields[*].label',kind:'DYNAMIC_PROVIDER_ROW',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-field-type',pathTemplate:'documentSchema.fields[*].type',kind:'DYNAMIC_PROVIDER_ROW',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-field-required',pathTemplate:'documentSchema.fields[*].required',kind:'DYNAMIC_PROVIDER_ROW',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-field-confidence',pathTemplate:'documentSchema.fields[*].confidenceThreshold',kind:'DYNAMIC_PROVIDER_ROW',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-map-target',pathTemplate:'mappings[*].targetField',kind:'DYNAMIC_PROVIDER_ROW',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-review-threshold',pathTemplate:'reviewPolicy.requiredBelowConfidence',kind:'PROVIDER_DRAFT_FIELD',writeContract:'CONNECTOR_DRAFT_API'}),
+  Object.freeze({selector:'data-test-sample',pathTemplate:'testSampleText',kind:'EPHEMERAL_SAFE_TEST_INPUT',writeContract:'SAFE_TEST_ONLY'})
+]);
+
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const STAGES=['Bron','Document/data type','Velden','Database & matching','Mapping','Doel','Review & regels','Test','Activeren','Monitoren'];
 const statusLabel=state=>state==='Active'?'Actief':state==='Paused'?'Gepauzeerd':state||'Draft';

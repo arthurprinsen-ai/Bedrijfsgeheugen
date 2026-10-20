@@ -2,6 +2,7 @@ import {createHmac,timingSafeEqual} from 'node:crypto';
 import {invokeVerifiedAiRuntime,AiRuntimeDenied} from '../brain/verified-ai-runtime.mjs';
 import {validateCustomerAiDeployment} from '../policy/customer-ai-deployment.mjs';
 import {createAttestedVertexAdapter} from './attested-vertex-adapter.mjs';
+import {createAttestedBedrockAdapter} from './attested-bedrock-adapter.mjs';
 
 // Private server-side contract. Signing is reserved for an independently verified,
 // audited provisioning/readback authority; the customer configuration is never a proof.
@@ -45,7 +46,7 @@ export function verifySignedRuntimeProof({signed,key,tenantId,useCaseId,policyVe
  if(claim.deploymentMode!=='MANAGED_CLOUD'||desired.deploymentMode!=='MANAGED_CLOUD')
   reject('RUNTIME_DEPLOYMENT_UNSUPPORTED');
  // This shared Netlify gateway is not a local or air-gapped management plane.
- if(!exact(desired.provider,['MISTRAL_API','AZURE_OPENAI','GOOGLE_VERTEX']))
+ if(!exact(desired.provider,['MISTRAL_API','AZURE_OPENAI','GOOGLE_VERTEX','AWS_BEDROCK']))
   reject('RUNTIME_PROVIDER_UNSUPPORTED');
  return Object.freeze(claim);
 }
@@ -62,16 +63,20 @@ const assertResponse=async(response,provider)=>{
 };
 const validIdentifier=(v,max=100)=>typeof v==='string'&&v.length>=2&&v.length<=max&&/^[a-zA-Z0-9_-]+$/.test(v);
 const validModelId=v=>typeof v==='string'&&v.length>=2&&v.length<=120&&new RegExp('^[a-zA-Z0-9._:/-]+$').test(v);
-export function createVerifiedCloudAdapters({fetchFn,config}={}){
+export function createVerifiedCloudAdapters({fetchFn,config,now=Date.now()}={}){
  if(typeof fetchFn!=='function'||!config||typeof config!=='object')reject('RUNTIME_TRANSPORT_UNAVAILABLE');
  const registry=Object.create(null);
  if(config.MISTRAL_API){
   const c=config.MISTRAL_API;
   registry.MISTRAL_API=async({route,request})=>{
+   // Mistral's global API does not guarantee regional inference. The EU route
+   // must use the EU-regional hostname, authorized by a separately attested
+   // region-specific tenant profile and allowlisted endpoint proof.
    if(!c.apiKey||c.endpointId!==route.endpointId||!validModelId(route.modelId)
-      ||route.region!=='AUTO')
+      ||!['AUTO','EU'].includes(route.region))
     reject('MISTRAL_RUNTIME_NOT_PROVISIONED');
-   const response=await fetchFn('https://api.mistral.ai/v1/chat/completions',{
+   const regionalHost=route.region==='EU'?'https://api.eu.mistral.ai':'https://api.mistral.ai';
+   const response=await fetchFn(regionalHost+'/v1/chat/completions',{
     method:'POST',signal:AbortSignal.timeout(12_000),headers:{authorization:'Bearer '+c.apiKey,'content-type':'application/json'},
     body:JSON.stringify({model:route.modelId,messages:request.messages,max_tokens:request.maxTokens,temperature:0})
    });
@@ -95,6 +100,7 @@ export function createVerifiedCloudAdapters({fetchFn,config}={}){
   };
  }
  if(config.GOOGLE_VERTEX)registry.GOOGLE_VERTEX=createAttestedVertexAdapter({config:config.GOOGLE_VERTEX,fetchFn});
+ if(config.AWS_BEDROCK)registry.AWS_BEDROCK=createAttestedBedrockAdapter({config:config.AWS_BEDROCK,fetchFn,now});
  return Object.freeze(registry);
 }
 const validRequest=request=>request&&Array.isArray(request.messages)&&request.messages.length>0&&request.messages.length<=16
@@ -108,7 +114,17 @@ export async function runAttestedTenantChat({tenantId,useCaseId,profile,policyVe
  if(!provision||provision.providerReadbackEvidenceId!==receipt.providerReadbackEvidenceId
      ||provision.egressEvidenceId!==receipt.egressEvidenceId)
   reject('RUNTIME_PROVISIONING_EVIDENCE_MISMATCH');
- const adapters=createVerifiedCloudAdapters({fetchFn,config});
+ // EU regional inference is a separately provisioned, provider-confirmed
+ // capability; a catalog EU label or signed tenant wish is insufficient.
+ if(receipt.provider==='MISTRAL_API'&&receipt.computeRegion==='EU'&&(
+   provision.processingRegion!=='EU'||
+   provision.residencyEvidenceId!==receipt.residencyEvidenceId))
+  reject('MISTRAL_EU_REGION_PROVISION_NOT_VERIFIED');
+ if(receipt.provider==='AWS_BEDROCK'&&(
+  provision.awsRegion!==receipt.awsRegion||provision.modelId!==receipt.modelId||
+  provision.residencyEvidenceId!==receipt.residencyEvidenceId))
+  reject('BEDROCK_REGIONAL_EVIDENCE_MISMATCH');
+ const adapters=createVerifiedCloudAdapters({fetchFn,config,now});
  // Separate server-held authorities: a provider proof is not CSRD/customer approval.
  // Neither receipt nor an endpoint URL is passed as authorization to the core router.
  const endpointRegistry=new Map();

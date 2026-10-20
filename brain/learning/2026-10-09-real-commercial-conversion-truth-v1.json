@@ -1,0 +1,62 @@
+{
+  "fingerprint": "powerhouse|commercial|noncommercial-events-false-realized-value|2026-10-09-v1",
+  "obligationId": "p0-4198-commercial-conversion-truth-20261009",
+  "parentP0": 4198,
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "total_noncommercial_outcomes": {
+      "not_executed": 1254,
+      "execution_completed": 61,
+      "sent": 20,
+      "no_response": 10,
+      "no_reply_observed": 2
+    },
+    "false_realized_conversion_count": 1349,
+    "false_derived_growth_leads_count": 1349,
+    "realized_revenue_eur": 0,
+    "salesrobot_provider_verified_deliveries_today": 5,
+    "salesrobot_provider_verified_responses_today": 0
+  },
+  "root_cause": "The existing AFTER outcome trigger powerhouse_sales_outcome_close_loop_v2 assigned a realized conversion count 1 and growth_outcomes lead stage to all outcome types without qualifying business evidence; operational statuses and historical test responses inflated Brain and Control Center outcomes.",
+  "changes": [
+    "Stop downstream economic conversion and lead materialization for non-qualified administrative/send/no-response/test and reply-status events before advancing commercial cycle; retain original outcome and message learning triggers",
+    "Remove only scoped derived false growth leads and realized_value records; preserve sales outcome rows and append-only decision cycle evidence",
+    "Write immutable reconciliation counts to bg_gezondheid and Brain learning contract"
+  ],
+  "prevention": [
+    "Default deny non-economic outcome types for realized value; only explicit qualifying events or actual positive revenue may qualify",
+    "Enforce original provider events and evidence readback before claiming revenue",
+    "Run regression and reconcile counts with raw outcome ledger"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-real-commercial-conversion-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-real-commercial-conversion-truth-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FALSE_POSITIVE_OUTCOME",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1349,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "source_trigger": "powerhouse_sales_outcome_close_loop_v2",
+    "observed_false_growth": 1349,
+    "observed_false_realized": 1349,
+    "external_order_proof": 0,
+    "migration": "supabase/migrations/20261009190000_fix_noncommercial_conversion_projection_v1.sql",
+    "test": "tests/brain-real-commercial-conversion-truth-v1.test.mjs",
+    "post_migration_readback": false
+  },
+  "required": [
+    "Protected Required/CodeQL/Supabase preview",
+    "Protected merge, exact production migration readback",
+    "Old false records absent from realized value and growth projections",
+    "Future unqualified status cannot create economic conversions",
+    "Existing externally verified replies and paid revenue flow into Brain only with exact provider receipts"
+  ]
+}

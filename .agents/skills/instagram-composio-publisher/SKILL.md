@@ -438,3 +438,39 @@ Hard rules:
 - Once a daily winner exists it remains immutable; provider/media recovery must reuse it.
 - Social outcomes and learning write back to the exact source/recommendation/winner lineage.
 - Provider search fallback is bounded Tavily -> DataForSEO; no Make.
+
+
+## Mira ondernemingsprobleem → portal caption, harde publicatiepoort (2026-10-09)
+
+Fingerprint: `mira-entrepreneur-problem-to-portal-caption-v1`. Deze recente expliciete opdracht heeft voorrang op de oudere private-consumer-complaint only-regel. Mira blijft een openlijk fictief, herkenbaar mens in een gewone scène; haar caption gaat nu over één **bestaand canoniek PH-Pxxx ondernemersprobleem**, niet een willekeurige consumentenklacht.
+
+Elke Mira-publicatie bestaat uit exact één passende, origineel geverifieerde Mira-visual/Reel én één volledige Nederlandstalige caption: herkenbare concrete scène → aantoonbare oorzaak of probleemhypothese → **potentieel** zakelijk gevolg → relevante Bedrijfsgeheugen-portaalpagina met capaciteit en voorgestelde actie/eigenaar → te volgen resultaat/meetpunt + begrijpelijke pointe. De caption vermeldt dat Mira fictief is; geen verzonnen klantervaring, geldbedrag of bewezen live-portaalfunctie. De bestaande `config/powerhouse-problem-library.json` is de enige canonieke probleemtaxonomie; ondersteunende externe signalen zijn context, nooit ongetoetst feit.
+
+De bestaande content-orchestrator produceert de source-bound caption, de bestaande Instagram-media-router retourneert de PH-P-scène aan OpenArt en weigert media zonder die lineage, en de bestaande social-publisher voert de machinecheck uit vóór elke provider-side-effect. De bron/portal/scene moeten overeenkomen. Geen extra executor, scheduler, Buffer/Make fallback of tweede taxonomie. De bevroren dagwinnaar wordt niet herschreven; ongeschikte bestaande assets worden niet 'goed' verklaard.
+
+Canonical runtime: `supabase/functions/_shared/mira-entrepreneur-caption.mjs` en test `tests/brain-mira-entrepreneur-caption-v1.test.mjs`. Succes vraagt nog steeds exacte provider-ID, permalink, readback en outcome-evidence.
+
+## Immutable fictional Mira face — same person in every episode (2026-10-09)
+
+Fingerprint: `mira-master-two-image-face-continuity-v1`. The sole canonical fictional OpenArt master is `Yjqu4D7v76HABNPmQPj1`, at `config/instagram-canonical-mira-identity-v1.json`. Original pixels (not text prompts) are authoritative. The same source image is required as the actual OpenArt `image2video` reference for new Reels. Do not select a different stock woman, regenerated master, user photo or unrelated uploaded reference.
+
+After generating, compare exact final media (or each start/middle/end frame in an MP4) alongside the original Mira master using the existing approved vision verifier. Approve only if `face_identity_match=true`, confidence >=0.94, and all three Reel frames match the same canonical SHA; face/age/hairline/identity must not drift. Clothes, gestures, setting and expression may vary. If the comparison is uncertain, hold rather than post. All original exact-media, PH-P entrepreneur problem, full caption, scene-match, dedupe, provider-ack and independent permalink-readback checks remain mandatory.
+
+Canonical code: `supabase/functions/_shared/mira-canonical-face.mjs`. Regressions: `tests/brain-mira-canonical-face-consistency-v1.test.mjs`. No new scheduler, publisher, CRM, or alternate Instagram identity.
+
+
+## Mira image proof provider recovery — 19 October 2026
+Fingerprint: `mira-openai-exact-media-verification-20261019`.
+The existing image/temporal verifiers use the governance-approved OpenAI Responses route and OPENAI_API_KEY. Provider changes never alter identity confidence, frame continuity, dimensions, source references, exact hashes or publisher capability gates. Incomplete output, refusal, schema mismatch and provider errors fail closed. Preserve the generated OpenArt history/resource/URL in the same media job; retry verification of those bytes rather than generating another video. A provider outage is not evidence that the face differs. Both vision stages must migrate together; governance remains scoped to the fictional Mira use case. Never deploy Edge source outside protected main and its Supabase Integration.
+
+
+## Production registration and proof scope
+Fingerprint: `mira-production-stage-registration-20261019`.
+The router, image verifier and temporal verifier must all be explicitly enabled in supabase/config.toml before protected-main provider delivery can attest this chain. An attestation for other functions never proves Mira source parity. Shared-helper changes must retain explicitly edited undeclared slugs in the resolved scope so the existing registration guard rejects them; never silently drop the very function being repaired. Require exact function inventory/source parity plus a genuine same-video proof request after promotion.
+
+
+## Producer claim preservation under readiness polling
+
+Fingerprint: `mira-media-preflight-preserve-worker-cas-v1`.
+
+A CLAIMED/GENERATING media job legitimately has no final URL while the external provider runs. Readiness/preflight must preserve its owner/history and never reset it to WAITING_ASSET. All other existing-job projections require exact id+updated_at CAS; if state changed, reread before touching obligation evidence. Concurrent first insert is a typed retry. Completion remains owner-bound and proof remains verifier-owned. Never generate a duplicate because a poll lost a worker claim.

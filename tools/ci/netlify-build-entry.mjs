@@ -28,6 +28,7 @@ const phases = Object.freeze([
   ['commercial-pricing','tools/site-shell/apply-commercial-pricing-v1.mjs'],
   ['revenue-links','tools/seo-order-engine/apply-revenue-links.mjs'],
   ['website-coherence','tools/site-shell/finalize-website-coherence-v1.mjs'],
+  ['daily-steering-positioning','tools/site-shell/apply-daily-steering-positioning.mjs'],
   ['cms-runtime','tools/site-shell/apply-cms-runtime.mjs'],
   ['sitemap','tools/genereer-sitemap.mjs'],
   ['locale-validation','tools/seo-order-engine/validate-locales.mjs'],
@@ -66,12 +67,13 @@ async function runPrebuiltReuse() {
   }));
 }
 
-async function runFullBuild() {
+async function runFullBuild({cacheOnlyPatch=''}={}) {
   const started=Date.now();
   const timings=[];
   for(const [name,script,...args] of phases) {
     const phaseStarted=Date.now();
-    const result=spawnSync(process.execPath,[script,...args],{
+    const effectiveArgs = cacheOnlyPatch && name==='localized-routes' ? [...args,'--prepare-cache='+cacheOnlyPatch] : args;
+    const result=spawnSync(process.execPath,[script,...effectiveArgs],{
       cwd:process.cwd(),
       env:process.env,
       stdio:'inherit',
@@ -80,6 +82,12 @@ async function runFullBuild() {
     timings.push({name,script,args,elapsed_ms,status:result.status});
     if(result.error) throw result.error;
     if(result.status!==0) throw new Error(`NETLIFY_BUILD_PHASE_FAILED:${name}:${result.status}`);
+    if(cacheOnlyPatch && name==='localized-routes'){
+      console.log('NETLIFY_I18N_CACHE_PREPARED',JSON.stringify({
+        patch:cacheOnlyPatch, phaseCount:timings.length,
+      }));
+      return;
+    }
   }
   const profile={
     contract:'NETLIFY_BUILD_PROFILE_V1',
@@ -97,10 +105,18 @@ async function runFullBuild() {
   console.log('NETLIFY_BUILD_PROFILE',JSON.stringify(profile));
 }
 
-try {
-  await readFile(PREBUILT_MARKER,'utf8');
-  await runPrebuiltReuse();
-} catch (error) {
-  if(error?.code==='ENOENT') await runFullBuild();
-  else throw error;
+// Reuse the exact production transforms up to i18n. The publisher records
+// only a scoped translation patch; it never commits generated website outputs.
+const prepareArg=process.argv.find(arg=>arg.startsWith('--prepare-i18n-cache='));
+if(prepareArg){
+  const patchName=prepareArg.slice('--prepare-i18n-cache='.length);
+  await runFullBuild({cacheOnlyPatch:patchName});
+}else{
+  try {
+    await readFile(PREBUILT_MARKER,'utf8');
+    await runPrebuiltReuse();
+  } catch (error) {
+    if(error?.code==='ENOENT') await runFullBuild();
+    else throw error;
+  }
 }

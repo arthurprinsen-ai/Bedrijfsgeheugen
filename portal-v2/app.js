@@ -5,6 +5,7 @@ import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
 import { groupedHubPages, hubDefinition } from './hubs.js';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
+import { createScanClaimBridge } from './scan-claim-bridge.js';
 import { createPortalDomainState } from './domain-state.js';
 import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
@@ -223,15 +224,52 @@ fetchPortalPlan().then(subscription=>{
 }).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
 
 const portalStateClient=createPortalStateClient();
+const scanClaimBridge=createScanClaimBridge({
+ authHeaders:()=>portalStateClient.authHeaders(),
+ // A server-verified Frisse Blik/Bedrijfslek claim already lives in the same
+ // tenant's canonical Brain layer. Refresh that read-model immediately, rather
+ // than leaving every open dashboard on the anonymous pre-claim snapshot.
+ onClaimed:async({tenantIdentity})=>{
+  const current=portalStateClient.currentUser?.();
+  if(!current?.id||String(current.id)!==String(tenantIdentity))
+   return {applied:false,reason:'TENANT_SWITCHED'};
+  return portalDomainState.refresh();
+ }
+});
 const portalDomainState=createPortalDomainState(portalStateClient);
+// The authenticated portal uses the same canonical read API for periodic
+// revalidation. No new scheduler, browser store or duplicate source of truth.
+const PORTAL_REVALIDATION_INTERVAL_MS=15*60*1000;
+let revalidationRequestedAt=0;
+let pendingRevalidation=null;
+function revalidateVisibleCustomer(){
+ if(document.visibilityState==='hidden'||portalStateClient.isDemo()
+    ||!portalDomainState.initialized?.()||!portalStateClient.currentUser?.())return;
+ if(pendingRevalidation)return pendingRevalidation;
+ if(Date.now()-revalidationRequestedAt<60*1000)return;
+ revalidationRequestedAt=Date.now();
+ pendingRevalidation=portalDomainState.refresh().catch(()=>null).finally(()=>{pendingRevalidation=null});
+ return pendingRevalidation;
+}
+
 const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
 configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
+// Close tenant-bound visual detail whenever the authenticated subject changes.
+// Do not expose user identifiers through the DOM event payload.
+let portalVisualAuthSubject=null;
 portalStateClient.subscribe(snap=>{
+ const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
+   ? String(snap.user.id||'') : '';
+ if(nextVisualSubject!==portalVisualAuthSubject){
+   portalVisualAuthSubject=nextVisualSubject;
+   document.dispatchEvent(new Event('bg:portal-identity-boundary'));
+ }
  applyCustomerBranding({state:snap.state||{},user:snap.user});
- const authenticated=snap.mode==='authenticated'&&!portalStateClient.isDemo();
+ const authenticated=(snap.mode==='authenticated'||snap.mode==='empty')&&!!snap.user&&!portalStateClient.isDemo();
  document.documentElement.classList.toggle('portal-customer-authenticated',authenticated);
+ scanClaimBridge.setAuthenticated(authenticated,snap.user?.id);
  mountCanonicalDesktopNavigation();
  if(el('allPages')?.classList.contains('open'))renderHubGroups(el('allPages').dataset.hub||'portal');
  const requested=new URL(location.href).searchParams.get('page');
@@ -261,6 +299,11 @@ el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overz
 el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('resize',render);render();
+// Revalidate when the user returns and every 15 minutes while the portal is
+// visible. Domain refresh rejects dirty state and never overwrites a pending ACK.
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void revalidateVisibleCustomer();});
+globalThis.addEventListener('focus',()=>void revalidateVisibleCustomer());
+globalThis.setInterval(()=>void revalidateVisibleCustomer(),PORTAL_REVALIDATION_INTERVAL_MS);
 ensureIdentityWidget().then(identity=>{
  const refreshDomainState=()=>portalDomainState.init().catch(()=>null);
  identity?.on?.('login',refreshDomainState);

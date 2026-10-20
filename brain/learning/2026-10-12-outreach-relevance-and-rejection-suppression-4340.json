@@ -1,0 +1,23 @@
+{
+  "fingerprint": "powerhouse|4340|outreach-vendor-fatigue|2026-10-12",
+  "compiler": {
+    "failure_class": "GENERIC_REPEAT_OUTREACH_WITH_MISSING_SOURCE_PROOF",
+    "scope": "OUTREACH",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "Repeated generic process-question outreach was sent despite missing source relevance; polite reply was not yet automatically suppressed for all channels.",
+  "prevention_rule": "Require real prospect-specific source proof, semantic novelty and new evidence for follow-ups before provider dispatch. Recognize declines, use existing cross-channel suppression and Brain outcome lineage. Never circumvent authorization or duplicate messages.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-outreach-4340-canonical-quality.test.mjs"],
+    "shadow": ["tests/brain-outreach-4340-canonical-quality.test.mjs"],
+    "canary": ["tests/brain-outreach-4340-canonical-quality.test.mjs"]
+  },
+  "outcome": {
+    "pr": 4341,
+    "production_merge_pending": true,
+    "production_readback_pending": true,
+    "no_fabricated_deliveries": true
+  }
+}

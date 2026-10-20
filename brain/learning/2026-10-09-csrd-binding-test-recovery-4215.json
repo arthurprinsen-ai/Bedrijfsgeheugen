@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|portal|csrd-state-binding-regex-contract-recovery-v1",
+  "obligationId": "portal-csrd-binding-contract-recovery-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Portal V2 state binding regression at exact PR head",
+  "root_causes": [
+    "Existing regex in CSRD state binding test required a single argument and did not accept explicit demo authorization context",
+    "PR #4225 reached main despite the portal-specialist CI test failing; main must regain green test proof"
+  ],
+  "prevention": [
+    "Assert canonical source state and explicit no-customer-data demo guard instead of pinning an obsolete call signature",
+    "Require portal-specialist regression success before treating delivery as fully green",
+    "Retain native Netlify exact-main readback and separate authenticated tenant CSRD legal evidence"
+  ],
+  "tests": [
+    "portal-v2/tests/csrd-state-binding.test.mjs",
+    "portal-v2/tests/csrd-impact.test.mjs",
+    "tests/integration/portal-v2-production-csrd.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "STALE_SOURCE_ASSERTION_CSRD_TENANT_MODE_PARAMETER",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "green portal specialist",
+    "protected CodeQL+Required",
+    "exact-main Netlify readback",
+    "independent CSRD and two-tenant proof under #4215"
+  ]
+}

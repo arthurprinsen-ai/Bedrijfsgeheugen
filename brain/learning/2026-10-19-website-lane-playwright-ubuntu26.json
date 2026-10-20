@@ -1,0 +1,35 @@
+{
+  "fingerprint": "delivery|website-lane|playwright-1.55-explicit-pin|ubuntu26-20261019",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "website-browser-required-ci-ubuntu26-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4455",
+  "compiler": {
+    "failure_class": "BROWSER_RUNTIME_OVERRIDE_INCOMPATIBLE",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "The required website browser job explicitly pins playwright@1.55.0 in .github/workflows/lane-website.yml, overriding the shared installer default. Ubuntu26.04-x64 does not support this version, so Required CI fails even when the shared installer is updated.",
+  "prevention_rule": "Pin the required website browser job to an official Ubuntu26.04-supported Playwright version and gate against reverting to 1.55.0. Never disable website browser proof or weaken Required CI.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-lane-ubuntu26-playwright-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-website-lane-ubuntu26-playwright-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-website-lane-ubuntu26-playwright-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-website-lane-ubuntu26-playwright-v1.test.mjs",
+    "failed_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39218740644",
+    "support_source": "https://github.com/microsoft/playwright/blob/main/docs/src/release-notes-js.md",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

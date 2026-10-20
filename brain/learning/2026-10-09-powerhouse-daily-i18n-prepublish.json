@@ -1,0 +1,19 @@
+{
+  "fingerprint": "powerhouse-daily-blog-static-i18n-cache-closure-2026-10-09",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE"
+  },
+  "root_cause": "The canonical daily blog writer created a Dutch page and protected PR without adding its 23 new English static-cache strings. Required CI correctly failed after PR creation, while hourly reconciliation skipped any existing PR.",
+  "prevention_rule": "For every existing or new daily blog candidate, materialize only missing English strings as a scoped durable patch on the same candidate branch, then validate the complete public static i18n cache before required CI is dispatched. Missing provider credentials or failed translation must block publication, not produce partially translated /en output.",
+  "evidence": {
+    "incident_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4230",
+    "incident_fixed_commit": "3965d6173b8ee706de9160c1aab22dd12569d42f",
+    "previous_failing_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37896426059",
+    "structural_production": "PENDING_PROTECTED_MERGE_AND_MAIN_READBACK"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ]
+  }
+}

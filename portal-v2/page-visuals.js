@@ -31,9 +31,10 @@ const BUILDERS=Object.freeze({
     const capacity=arr(calc('dimension-costs',state)).map(item=>({label:item.label||item.id||'Onderdeel',value:n(item.kosten)}));
     const blockers=arr(calc('blocker-ranking',state)).map(item=>({label:item.name||item.title||'Blokkade',value:n(item.score)||n(item.impact)}));
     const progress=n(calc('progress',state));
-    const avg=maturityValues.length?maturityValues.reduce((a,b)=>a+b,0)/maturityValues.length:1;
-    const current=Math.max(1,Math.min(5,avg||1));
-    const benchmark=Math.max(1,Math.min(5,n(at(state,'portal.market.maturityBenchmark'))||3));
+    const avg=maturityValues.length?maturityValues.reduce((a,b)=>a+b,0)/maturityValues.length:null;
+    const current=avg===null?null:Math.max(1,Math.min(5,avg));
+    const verifiedBenchmark=n(at(state,'portal.market.maturityBenchmark'));
+    const benchmark=verifiedBenchmark>0?Math.max(1,Math.min(5,verifiedBenchmark)):null;
     return [companyStateRail({current,benchmark,upperQuartile:4},{title:'De staat van je bedrijf'}),
       ladder(arr(calc('cmmi-ladder',state)),{title:'Procesvolwassenheid (CMMI)'}),
       adoptionBell({current,benchmark,upperQuartile:4},{title:'Waar je staat op de adoptiecurve'}),

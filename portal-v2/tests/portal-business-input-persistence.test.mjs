@@ -20,7 +20,7 @@ test('authenticated write stores canonical business input before portal projecti
   const calls=[];
   const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,options={})=>{
     calls.push({url,options});
-    if(url==='/api/portal-business-input')return response({stored:true,authorityStored:true});
+    if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'revision-1',brainRecordId:'brain-input-1',currentStateRecordId:'brain-state-1',organismImpactRecordId:'brain-impact-1'});
     if(url==='/api/portal-state'&&options.method==='POST')return response({stored:true});
     if(url==='/api/portal-state'&&options.method==='GET')return response({portal:{profile:{employees:24}}});
     throw new Error(`unexpected ${url}`);
@@ -41,4 +41,24 @@ test('canonical failure is fail-closed and prevents portal projection write',asy
   }});
   await assert.rejects(()=>client.write({portal:{profile:{employees:24}}}),/CANONICAL_AUTHORITY_WRITE_FAILED/);
   assert.deepEqual(calls.map(call=>call.url),['/api/portal-business-input']);
+});
+
+
+test('HTTP 200 without durable canonical and Brain acknowledgement never proceeds to portal projection',async()=>{
+  const cases=[
+    {stored:false,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'input',currentStateRecordId:'state',organismImpactRecordId:'impact'},
+    {stored:true,stale:true,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'input',currentStateRecordId:'state',organismImpactRecordId:'impact'},
+    {stored:true,stale:false,authorityStored:true,powerhouseFeedStored:false,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'input',currentStateRecordId:'state',organismImpactRecordId:'impact'},
+    {stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true}
+  ];
+  for(const acknowledgement of cases){
+    const calls=[];
+    const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url)=>{
+      calls.push(url);
+      if(url==='/api/portal-business-input')return response(acknowledgement);
+      throw new Error('Projection must never run without canonical acknowledgement');
+    }});
+    await assert.rejects(()=>client.write({portal:{profile:{employees:24}}}),/PORTAL_BUSINESS_INPUT_ACK_INCOMPLETE/);
+    assert.deepEqual(calls,['/api/portal-business-input']);
+  }
 });

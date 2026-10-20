@@ -30,17 +30,38 @@ Deno.serve(async(req)=>{
   const runDate=clean(input.runDate)||localDate();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(runDate)) return json({ok:false,error:'INVALID_DATE'},400);
 
-  const [{data:a,error:ae},{data:d,error:de}]=await Promise.all([
+  const [{data:a,error:ae},{data:d,error:de},{data:o,error:oe}]=await Promise.all([
     db.from('powerhouse_content_artifacts').select('title,body,cta,content_brief,generation_evidence,status').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
-    db.from('powerhouse_channel_decisions').select('decision,state,delivery_evidence').eq('run_date',runDate).eq('channel','blog').maybeSingle()
+    db.from('powerhouse_channel_decisions').select('decision,state,delivery_evidence').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
+    db.from('content_publication_obligations').select('status,slug,external_id,published_at,live_proven_at,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
   ]);
-  if(ae||de) return json({ok:false,error:'READ_FAILED'},500);
+  if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
 
   const generationEvidence=jsonObject(a.generation_evidence);
   const deliveryEvidence=jsonObject(d.delivery_evidence);
   const slug=clean(generationEvidence.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
+
+  // Safe same-date recovery: update only GENERATED/unpublished metadata.
+  // A live, dispatched or ambiguous provider side effect must NEVER be rebound.
+  if(o && clean(o.slug)!==slug){
+    const provenance=jsonObject(o.evidence);
+    if(clean(o.status)!=='GENERATED' || clean(o.external_id) || o.published_at || o.live_proven_at
+        || provenance.provider_create_success===true || provenance.republish_forbidden===true
+        || provenance.possible_provider_side_effect===true){
+      return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_EXTERNAL_STATE',recovery_required:true,runDate},409);
+    }
+    const {data:rebound,error:reboundError}=await db.from('content_publication_obligations')
+      .update({slug,content_id:'blog:'+slug,canonical_url:canonical,updated_at:new Date().toISOString()})
+      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog')
+      .eq('status','GENERATED').eq('slug',clean(o.slug))
+      .is('external_id',null).is('published_at',null).is('live_proven_at',null)
+      .select('slug,content_id,canonical_url').maybeSingle();
+    if(reboundError || !rebound || clean(rebound.slug)!==slug){
+      return json({ok:false,error:'BLOG_LINEAGE_REBIND_FAILED',recovery_required:true,runDate},409);
+    }
+  }
   const evidence={
     ...deliveryEvidence,
     provider:'github-protected-daily-blog',

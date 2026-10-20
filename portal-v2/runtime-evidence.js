@@ -8,6 +8,12 @@
 
 const arr = value => (Array.isArray(value) ? value : []);
 const txt = value => (value == null ? '' : String(value));
+const measuredNumber = value => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+};
 const laatste = items => arr(items).map(x => x?.occurredAt || x?.recordedAt || x?.observedAt || x?.at).filter(Boolean).sort().pop() || '';
 
 export const BREIN_STAPPEN = Object.freeze([
@@ -34,10 +40,12 @@ function emptyPortfolio() {
 function economics(value) {
   const source = value && typeof value === 'object' ? value : {};
   return {
-    expectedValue: Number(source.expectedValue) || 0,
-    actualCost: Number(source.actualCost) || 0,
-    realizedValue: Number(source.realizedValue) || 0,
-    realizedProfit: Number(source.realizedProfit) || 0,
+    // A missing authoritative monetary measurement is unknown, never zero.
+    // Preserve an explicitly observed 0 (including string '0').
+    expectedValue: measuredNumber(source.expectedValue),
+    actualCost: measuredNumber(source.actualCost),
+    realizedValue: measuredNumber(source.realizedValue),
+    realizedProfit: measuredNumber(source.realizedProfit),
     currency: txt(source.currency || 'EUR')
   };
 }
@@ -187,7 +195,7 @@ export function mapRuntimeProjection(projection) {
       naam: txt(item.title || item.action),
       status: txt(item.priority || 'open'),
       healthy: false,
-      waarde: Number(item.value) || 0
+      waarde: measuredNumber(item.value)
     })), bijgewerkt),
 
     recovery: slice(arr(cockpit.openKnowledgeObligations).map(item => ({
@@ -199,7 +207,7 @@ export function mapRuntimeProjection(projection) {
       naam: txt(item.subjectId || item.title),
       status: item.status === 'VERIFIED' ? 'ok' : 'aandacht',
       healthy: item.status === 'VERIFIED',
-      waarde: Number(item.value || item.amount) || 0
+      waarde: measuredNumber(item.value ?? item.amount)
     })), bijgewerkt, { totals: waarde.totals || {} }),
 
     learning: slice(arr(geheugen.memories || geheugen.records).map(item => ({
@@ -235,16 +243,24 @@ export function mapRuntimeProjection(projection) {
   };
 }
 
-export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}) } = {}) {
+export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}), validateSession = () => true } = {}) {
   try {
     const auth = typeof authHeadersProvider === 'function' ? await authHeadersProvider() : {};
+    // Server projection is tenant-specific; without an authenticated bearer, do
+    // not even request it, and never promote anonymous/demo runtime into state.
+    if(!/^Bearer\s+\S+/i.test(String(auth?.authorization||'')))return null;
     const response = await fetchImpl('/api/brain-operating-loop', {
       headers: { accept: 'application/json', ...(auth || {}) }, credentials: 'same-origin'
     });
+    // If permissions were revoked, discard the previous session's transient view.
+    if(response.status===401||response.status===403){
+      if(validateSession()&&typeof domainState?.setDerived==='function')domainState.setDerived('portal.runtime',null);
+      return null;
+    }
     if (!response.ok) return null;
     const projection = await response.json();
     const runtime = mapRuntimeProjection(projection);
-    if (!Object.keys(runtime).length) return null;
+    if (!Object.keys(runtime).length || !validateSession()) return null;
     if (typeof domainState?.setDerived === 'function') domainState.setDerived('portal.runtime', runtime);
     if (typeof globalThis.dispatchEvent === 'function' && typeof globalThis.CustomEvent === 'function') {
       globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',updatedAt:runtime?.observability?.updatedAt||null}}));

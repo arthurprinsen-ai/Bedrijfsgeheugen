@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-19",
+  "fingerprint": "netlify-bridge|composio-session-create-400|scoped-toolkit-compat",
+  "obligation": "netlify-composio-session-400-20261019",
+  "observation": "OIDC health run 39217630002 after v163 pagination found an ACTIVE project-visible Netlify account on page 2 (54 records scanned) then Composio tool_router/session rejected existing account+tool-level filter request with HTTP 400, mapped by bridge to HTTP 422.",
+  "root_cause": "The exact reason for Composio's 400 was not exposed in the original implementation. A tool-slug allowlist combined with an MCP toolkit is a probable session schema/tool compatibility failure; this is a hypothesis, not proof. Strict session restriction is retained at user, toolkit and pinned connected-account scope.",
+  "intervention": "Remove redundant per-tool filter only from session creation, keeping sole Netlify toolkit, exact account/user and fixed deploy-site execution. Log only a coarse categorized validation code when the provider still rejects the session.",
+  "expected": "Composio should either create a toolkit-bound session or report a safe category with the underlying authorization still enforced. Real provider deploy and production readback remain mandatory.",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-composio-session-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-composio-session-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-composio-session-contract.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "ci_status": "pending protected PR",
+    "production_readback": "not yet proven",
+    "oidc_probe": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39217630002"
+  },
+  "evidence_urls": [
+    "https://docs.composio.dev/reference/api-reference/tool-router/postToolRouterSession",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447"
+  ]
+}

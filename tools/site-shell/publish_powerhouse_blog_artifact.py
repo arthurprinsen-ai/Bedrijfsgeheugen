@@ -210,6 +210,19 @@ def body_html(data):
         result.append(f"<p{css}>{inline_markdown(paragraph)}</p>")
         lead_written = True
     result.append(functional_figures(focus_plain))
+    # Visible, verified source links are required for claims about laws and
+    # external events; never synthesize a citation or remove the SEO proof gate.
+    sources = [source for source in data.get("sources", []) if isinstance(source, dict)
+               and str(source.get("url", "")).startswith("https://")]
+    if sources:
+        lines = ['<section class="artikel-bronnen" data-bg-evidence="publieke-bron"><h2>Bronnen en actualiteit</h2>',
+                 '<p>Controleer bij veranderende wetgeving altijd de meest actuele versie van de oorspronkelijke bron.</p><ul>']
+        for source in sources[:3]:
+            title = html.escape(str(source.get("title") or "Oorspronkelijke bron"))
+            url = html.escape(str(source["url"]), quote=True)
+            lines.append(f'<li><a href="{url}" rel="noopener noreferrer">{title}</a></li>')
+        lines.append('</ul></section>')
+        result.append("\n".join(lines))
     if data.get("cta"):
         result.append(
             '<p class="artikel-cta">'
@@ -217,6 +230,32 @@ def body_html(data):
             + ' <a href="/frisse-blik">Bekijk de Frisse blik &rarr;</a></p>'
         )
     return "\n".join(result)
+
+def assert_reader_ready(data):
+    """Fail closed on author/editor instructions accidentally exported as customer copy.
+
+    Do not quietly delete these paragraphs: such content must be corrected at the
+    source, then re-exported with the same canonical evidence and obligation.
+    """
+    body = str(data.get("body") or "")
+    title = str(data.get("title") or "")
+    cta = str(data.get("cta") or "")
+    if len(body.strip()) < 450:
+        fail("BLOG_ARTIFACT_NOT_READER_READY:BODY_TOO_SHORT")
+    checks = (
+        ("PUBLISH_FIRST_INSTRUCTION", body, r"(?im)^\s*Voordat u publiceert\s*:"),
+        ("RELEASE_STEP", body, r"(?im)^\s*Publicatiestap\s*\(vereist (?:voor|vóór) live\)"),
+        ("EDITORIAL_SEO_PLAN", body, r"(?im)^\s*Publicatie-\s*en\s*SEO-aanpak\s*\("),
+        ("EDITORIAL_FOLLOWUP", body, r"(?im)^\s*Wat te publiceren als follow-up documenten\s*\("),
+        ("DRAFT_PUBLICATION", body, r"(?im)Deze tekst is bedoeld als canonieke, zakelijke uitleg en publicatieversie"),
+        ("EDITORIAL_SOURCE_DIRECTION", body, r"(?im)Gebruik dit als technisch bewijs voor het algemene probleem"),
+        ("TITLE_DRAFT_MARKER", title, r"(?i)\((?:canonieke pagina|canonieke upgrade|concept|draft)\)"),
+        ("CTA_PUBLISH_INSTRUCTION", cta, r"(?i)Voer eerst een canonieke URL-eigenaarschap-check uit"),
+    )
+    for code, value, pattern in checks:
+        if re.search(pattern, value):
+            fail("BLOG_ARTIFACT_NOT_READER_READY:" + code)
+
 
 def main():
     business_date = sys.argv[1] if len(sys.argv) > 1 else dt.date.today().isoformat()
@@ -226,6 +265,7 @@ def main():
     if data is None:
         print(f"NO_ACTION:NO_APPROVED_BLOG_ARTIFACT:{business_date}")
         return
+    assert_reader_ready(data)
     slug = data["slug"]
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
         fail("INVALID_SLUG")

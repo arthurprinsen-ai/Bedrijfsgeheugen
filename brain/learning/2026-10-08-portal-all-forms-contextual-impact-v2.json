@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|portal-v2|all-native-input-impact-context-and-wizard-writeback|v2",
+  "obligationId": "portal-all-form-context-action-coverage-20261008-v2",
+  "date": "2026-10-08",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "canonical tenant Portal V2 domain state → existing Brain BusinessInput",
+  "root_causes": [
+    "native customer form schema documented fields but lacked a complete field-path-to-model-family and affected-page inventory",
+    "customer recommendations were confined to selected MTO, AI governance, DSO and balance observations, omitting operations, customer, knowledge, AI task, CSRD and due-diligence context",
+    "change wizard invoked the canonical domainState.set API with the wrong argument shape rather than a path/value pair and did not await persistence confirmation",
+    "business change impact quantity was incorrectly conflatable with a normalized 1–5 materiality score"
+  ],
+  "prevention": [
+    "classify every schema-declared native portal input and expose related model families and relevant pages with explicit unverified readback markers",
+    "route broad tenant-scoped state through a pure deterministic context-action projection with source fields, reason, priority, financial uncertainty and explicit roadmap consent",
+    "never label customer-provided assumptions as legal applicability, execution, verified savings or realized cashflow",
+    "change wizard writes portal.changes.items with the supported signature, idempotent retry and awaited canonical flush",
+    "preserve distinct impact count versus impact rating semantics, fail closed when the Brain acknowledgement is pending"
+  ],
+  "tests": [
+    "tests/brain-portal-all-forms-contextual-impact-writeback.test.mjs",
+    "portal-v2/tests/all-forms-contextual-impact.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-all-forms-contextual-impact-writeback.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_INPUT_CROSS_MODEL_CONTEXT_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "closureRequired": [
+    "protected GitHub merge and current source parity",
+    "exact Netlify production deploy with source-aligned readback",
+    "authenticated tenant-specific Brain writeback and portal DOM readback",
+    "full legacy/standalone/connector field-by-field audit remains in issue #4215"
+  ],
+  "externalActionEvidence": "NOT_PROVEN"
+}

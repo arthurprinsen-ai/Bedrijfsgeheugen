@@ -1,0 +1,45 @@
+{
+  "contract": "powerhouse-composio-salesrobot-account-identity-v1",
+  "date": "2026-10-20",
+  "fingerprint": "commercial|salesrobot|composio-user-id-required|20261020",
+  "parent_issue": 4198,
+  "compiler": {
+    "failure_class": "COMPOSIO_EXECUTE_USER_ID_MISSING",
+    "scope": "CODE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Composio v3.1 tool-execute request omitted the connected account's user_id. Production read-only SalesRobot probe returned HTTP 400; the API's connected-account inventory provides the correct user_id.",
+  "evidence": {
+    "production_canary_response": "HTTP 200 dry_run, but provider_probe_error COMPOSIO_SALESROBOT_LIST_LINKEDIN_ACCOUNTS_400",
+    "provider_api_user_id_probes": "Both existing active SalesRobot connected accounts returned successful HTTP 200 read-only tool responses when user_id from the same account was supplied",
+    "actual_provider_health": "DISCONNECTED",
+    "license": "TRIAL_EXPIRED",
+    "cookie_expired": true,
+    "external_sends": 0
+  },
+  "tests": [
+    "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+  ],
+  "prevention": [
+    "Never execute a Composio v3.1 tool without exact connected_account_id and user_id bound from the same connection.",
+    "Enforce missing user_id fail-closed before provider API call.",
+    "Keep independent provider result proof, consent, suppression and anti-duplicate send safeguards."
+  ],
+  "change": "Include user_id in existing Composio execute helper for SalesRobot account probe and any approved outbound DM, with a bounded timeout and sanitized error details. No new provider, sender or scheduler.",
+  "verification_required": [
+    "Required CI and learning closure",
+    "CodeQL",
+    "Supabase Preview",
+    "protected merge",
+    "Supabase Edge exact source readback",
+    "safe dry_run provider result after deployment"
+  ],
+  "state": "SOURCE_CANDIDATE_NOT_VERIFIED"
+}

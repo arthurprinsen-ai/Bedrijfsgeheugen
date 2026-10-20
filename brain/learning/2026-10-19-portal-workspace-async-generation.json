@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse|portal-v2|workspace-async-delegate-race|2026-10-19",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-workspace-delegation-race-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442",
+  "compiler": {
+    "failure_class": "STALE_WORKSPACE_ASYNC_DELEGATE_SKIP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A root-wide data-functional-delegating in-flight flag couples unrelated mount generations across SPA navigation. The next openPortalPage can replace a workspace while the previous styles/import is unresolved, leaving a skeleton missing its specialist. Exact-current-main production test run 39242832614 failed 1/16 on canvassen writeback due to no [data-functional-workspace=canvassen], although Netlify main SHA parity and 14 tests passed.",
+  "prevention_rule": "Every portal workspace mount must own a unique active generation on the existing root; asynchronous stylesheet/module import and parity-attachment may only mutate the still-current generation. Navigation must not inherit a stale root-level in-flight lock. A test asserting server-confirmed demo canvas writeback remains mandatory; never skip or relax its UI assertion.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-workspace-generation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-workspace-generation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-workspace-generation-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "reproduction_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39242832614",
+    "production_deploy": "6ad5f4a3cdc6d23b784395e5",
+    "expected_main": "a3c025d1c56aa7854e2c0d689dbd54f51fe3bed6",
+    "regression": "tests/brain-portal-workspace-generation-v1.test.mjs",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

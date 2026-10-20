@@ -100,9 +100,11 @@ export function withResourceFootprint(footprint={},base=DEFAULT_IMPACT_SNAPSHOT)
   };
 }
 
-export function impactSnapshotFromPortalState(state={}){
+export function impactSnapshotFromPortalState(state={}, {demo=true}={}){
   const resourceBusinessValue=state?.resourceBusinessValue;
-  if(!resourceBusinessValue) return structuredClone(DEFAULT_IMPACT_SNAPSHOT);
+  // The example cockpit is only allowed in explicit demo/anonymous context.
+  // A real authenticated tenant with no footprint must see unknown, not demo KPIs.
+  if(!resourceBusinessValue) return structuredClone(demo?DEFAULT_IMPACT_SNAPSHOT:UNKNOWN_LIVE_IMPACT_SNAPSHOT);
   const intelligence=resourceBusinessValue.resource_intelligence||{};
   const liveBase=withResourceIntelligence(intelligence,withBusinessValueEvidence(resourceBusinessValue,UNKNOWN_LIVE_IMPACT_SNAPSHOT));
   const footprint=resourceBusinessValue.resource_footprint;

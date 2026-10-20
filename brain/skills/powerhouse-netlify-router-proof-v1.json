@@ -1,0 +1,16 @@
+{
+  "skill": "powerhouse-netlify-router-proof-v1",
+  "fingerprint": "powerhouse|netlify-bridge|v31-tool-router-proof|v1",
+  "owner": "ONE BRAIN / Production transport",
+  "authority": "protected GitHub main OIDC + pinned Composio Netlify account + exact Netlify provider/site readback",
+  "instruction": "Preload the exact, reviewed app tools in a Composio v3.1 session and parse its completed data/error/result_type envelope. A tool result is not a successful external Netlify deploy until the independent expected site and exact immutable production commit match. Do not broaden toolkit, remove connected-account selection, weaken OIDC, read or log provider credentials, auto-publish or mark green from an HTTP 200 envelope alone.",
+  "routing": [
+    "supabase/functions/netlify-deploy-bridge/index.ts",
+    "tests/brain-netlify-tool-router-execute-v1.test.mjs"
+  ],
+  "tests": [
+    "tests/brain-netlify-tool-router-execute-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4437"
+}

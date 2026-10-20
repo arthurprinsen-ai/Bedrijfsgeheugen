@@ -1,0 +1,39 @@
+{
+  "id": "p0-4198-instagram-migration-syntax-fix-20261010-v1",
+  "date": "2026-10-10",
+  "fingerprint": "powerhouse|instagram|sql-migration-function-terminator|v1",
+  "root_cause": "Source migration for the exact-final Instagram media-preservation function omitted semicolon after dollar-quoted PL/pgSQL function definition before REVOKE ACL statements. SQL migration could not be deployed.",
+  "prevention": [
+    "Require a terminated $$ or $function$; definition before any post-function grants/revocations.",
+    "Retain SECURITY DEFINER permission revocation to PUBLIC, anon, authenticated, and scoped EXECUTE only for service_role.",
+    "Keep an exact SQL apply/readback proof and the media-job no-overwrite regression before release.",
+    "Never bypass protected CI to accommodate a broken migration."
+  ],
+  "compiler": {
+    "failure_class": "PLPGSQL_FUNCTION_TERMINATOR_MISSING",
+    "scope": "INSTAGRAM_MEDIA_JOB_SQL_MIGRATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "canonical_eligible": false
+  },
+  "evidence": {
+    "parent_p0": 4198,
+    "related_protected_pr": 4312,
+    "initial_migration_error": "42601 syntax error at or near REVOKE",
+    "resolving_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4313",
+    "regression": "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+  },
+  "production_claim": "No production rollout claim until protected checks, merge, SQL application, pg_get_functiondef readback and runtime media preservation test."
+}

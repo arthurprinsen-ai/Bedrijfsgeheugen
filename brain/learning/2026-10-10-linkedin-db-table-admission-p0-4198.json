@@ -1,0 +1,39 @@
+{
+  "id": "p0-4198-linkedin-direct-db-admission-20261010-v1",
+  "date": "2026-10-10",
+  "fingerprint": "powerhouse|linkedin|orchestrator-capability-ledger-direct-db-admission|v1",
+  "root_cause": "Protected PR #4310 introduced a read-only SELECT of powerhouse_social_publish_capabilities_v1 into the direct Postgres orchestrator, but forgot to extend DIRECT_TABLES. The adapter threw DB_TABLE_REJECTED at load-context, preventing all channel generation.",
+  "prevention": [
+    "Add capability ledger to the explicit canonical direct-DB table allowlist without changing privileges or widening the adapter to arbitrary tables.",
+    "Keep post-publication consumed authority guard fail-closed and never reset the existing daily claim to hide an error.",
+    "Enforce the allowlist and read-only semantics with an automated regression before protected merge."
+  ],
+  "compiler": {
+    "failure_class": "ORCHESTRATOR_DB_TABLE_ADMISSION_MISSING",
+    "scope": "SOCIAL_PUBLICATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-capability-ledger-read-admitted-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-capability-ledger-read-admitted-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-capability-ledger-read-admitted-p0-4198.test.mjs"
+    ],
+    "canonical_eligible": false
+  },
+  "evidence": {
+    "regression": "tests/brain-linkedin-capability-ledger-read-admitted-p0-4198.test.mjs",
+    "source": "bg_gezondheid detail 2026-10-10T10:17:12Z load-context:DB_TABLE_REJECTED:powerhouse_social_publish_capabilities_v1",
+    "runDate": "2026-10-10",
+    "error_response": "ORCHESTRATOR_INTERNAL_ERROR",
+    "parent_p0": 4198,
+    "pr_parent": 4310
+  },
+  "production_claim": "Not green without required checks, merge, deployed source parity, successful authenticated orchestrator execution, and separate LinkedIn provider ID proofs."
+}

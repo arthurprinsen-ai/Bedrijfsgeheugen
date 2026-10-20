@@ -7,6 +7,7 @@ on:
       - 'netlify/functions/powerhouse-scan-ingest.mjs'
       - 'netlify/functions/portal-scans.mjs'
       - 'supabase/functions/powerhouse-scan-ingest/index.ts'
+      - 'supabase/config.toml'
       - 'supabase/migrations/*scan*'
       - '.github/workflows/powerhouse-scan-production-proof.yml'
   workflow_dispatch:
@@ -88,3 +89,24 @@ jobs:
           echo >> "$GITHUB_STEP_SUMMARY"
           echo 'second_response:' >> "$GITHUB_STEP_SUMMARY"
           cat "$second" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Prove real Bedrijfslek → ONE BRAIN scan persistence and idempotency
+        shell: bash
+        run: |
+          set -euo pipefail
+          key="bedrijfslek-prod-smoke-${GITHUB_SHA:0:12}"
+          url='https://www.bedrijfsgeheugen.nl/api/powerhouse-scan-ingest'
+          payload="$(jq -nc --arg key "$key" '{submission_key:$key,canonical:"https://www.bedrijfsgeheugen.nl/zelfscan",scan:{score:58,niveau:3,dimAvg:{verkoop:1.75,continuiteit:2.5},source_kind:"bedrijfslek_scan",stempel:"__PRODUCTION_SMOKE__",doel:"__PRODUCTION_SMOKE__",omvang:"verification-only"}}')"
+          first=/tmp/bedrijfslek-first.json
+          second=/tmp/bedrijfslek-second.json
+          first_code="$(curl --silent --show-error --max-time 20 -o "$first" -w '%{http_code}' -H 'content-type: application/json' --data "$payload" "$url")"
+          case "$first_code" in 200|201) ;; *) echo "::error::Bedrijfslek ingest returned HTTP $first_code"; cat "$first"; exit 1;; esac
+          jq -e '.ok == true and .stored == true and .tenant_identity_status == "unverified" and (.scan_id|length) > 0 and (.event_id|length) > 0' "$first" >/dev/null
+          second_code="$(curl --silent --show-error --max-time 20 -o "$second" -w '%{http_code}' -H 'content-type: application/json' --data "$payload" "$url")"
+          test "$second_code" = '200'
+          jq -e '.ok == true and .stored == true and .deduped == true' "$second" >/dev/null
+          test "$(jq -r '.scan_id' "$first")" = "$(jq -r '.scan_id' "$second")"
+          test "$(jq -r '.event_id' "$first")" = "$(jq -r '.event_id' "$second")"
+          echo "bedrijfslek_submission_key=$key" >> "$GITHUB_STEP_SUMMARY"
+          echo "bedrijfslek_scan_id=$(jq -r '.scan_id' "$first")" >> "$GITHUB_STEP_SUMMARY"
+          echo "bedrijfslek_event_id=$(jq -r '.event_id' "$first")" >> "$GITHUB_STEP_SUMMARY"

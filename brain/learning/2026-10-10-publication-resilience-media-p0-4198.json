@@ -1,0 +1,44 @@
+{
+  "id": "p0-4198-publication-resilience-media-20261010-v1",
+  "date": "2026-10-10",
+  "fingerprint": "powerhouse|publication|media-preservation-multi-channel-drain-stale-errors|v1",
+  "root_cause": "Every daily social channel must actually publish, but canonical content-loop generated only one artifact per tick, media-job ensure destroyed exact OpenArt assets while verifying, media router downgraded in-flight status, and personal LinkedIn successful provider acknowledgment retained stale failure labels.",
+  "prevention": [
+    "Preserve one existing content-loop supervisor lease and sequentially generate pending artifacts with a bounded wall-clock budget before the original per-channel provider writers dispatch.",
+    "Never overwrite exact OpenArt media manifests or provider provenance during CLAIMED/GENERATING/VERIFYING/WAITING_PROOF; keep immutable Mira business scene and visual identity checks.",
+    "Media router preflight never downgrades materialized in-flight or provider-proven state and never upgrades unverified video to proof.",
+    "After a real provider-created LinkedIn personal post remove outdated preflight errors; still require canonical exact provider ID and independent public proof before LIVE_PROVEN.",
+    "Never add Make/Buffer fallback or bypass OAuth, global story-family uniqueness, Instagram media digest or single-writer daily publication authority."
+  ],
+  "compiler": {
+    "failure_class": "PUBLICATION_MEDIA_LINEAGE_AND_PENDING_CHANNEL_STARVATION",
+    "scope": "OMNICHANNEL_PUBLICATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+    ],
+    "canonical_eligible": false
+  },
+  "evidence": {
+    "parent_p0": 4198,
+    "production_date": "2026-10-10",
+    "instagram_media_job_state": "VERIFYING",
+    "media_proof_verified": false,
+    "linkedin_personal": "LIVE_PROVEN",
+    "linkedin_company": "LIVE_PROVEN",
+    "blog": "LIVE_PROVEN",
+    "preexisting_generator_rounds": 1,
+    "required_regression": "tests/brain-publication-resilience-media-and-delivery-p0-4198.test.mjs"
+  },
+  "production_claim": "Candidate until protected CI, merge, matching Supabase Edge deployment, and exact existing-media lineage regression after SQL migration. Instagram not live without Mira video identity proof and provider ID."
+}

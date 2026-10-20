@@ -1,0 +1,28 @@
+{
+  "fingerprint": "powerhouse|portal-v2|2026-10-12|new-portal-category-old-production-test-marker",
+  "compiler": {
+    "failure_class": "PORTAL_PRODUCTION_READBACK_STALE_TEXT_EXPECTATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Production Portal V2 new daily operating category was released in protected PR #4347, and the exact Netlify deploy was verified. Two separate production Playwright tests still asserted the old technical 'Portal V2 bevat alle portalonderdelen standaard' title, while the page now deliberately says 'Alle onderdelen van je ondernemingssturing'. No runtime page failure was observed in those two failures.",
+  "prevention_rule": "Production readback must assert the canonical customer-facing category, active operating loop, hidden fictional example metrics, native routes, and absence of legacy portal traffic. Do not restore AI-first legacy title just to placate stale tests; do not relax protected mobile/visual/security assertions.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "production_published_commit": "51bdf9deec401c0f59e548a938f4b11542c1703d",
+    "production_deploy": "6accb2b9f4de3f939ce63151",
+    "readback_contract_patch_pending": true
+  }
+}
