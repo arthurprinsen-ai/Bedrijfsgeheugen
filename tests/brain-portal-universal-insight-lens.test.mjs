@@ -22,6 +22,10 @@ test('unknown evidence and scenario hypotheses are never represented as verified
 });
 test('dynamic visuals, keyboard and mobile interactions stay supported',()=>{
  assert.match(js,/MutationObserver/);
+ assert.match(js,/bg:portal-identity-boundary/);
+ const app=read('portal-v2/app.js');
+ assert.match(app,/portalVisualAuthSubject/);
+ assert.match(app,/new Event\('bg:portal-identity-boundary'\)/);
  assert.match(js,/e\.key==='Escape'/);
  assert.match(js,/e\.key==='Tab'/);
  assert.match(read('portal-v2/insight-lens.css'),/min-height:44px/);

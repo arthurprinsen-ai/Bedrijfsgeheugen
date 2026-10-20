@@ -136,6 +136,11 @@ function init(){
  },{passive:true});
  document.addEventListener('pointermove',event=>{if(!preview.hidden)place(event)},{passive:true});
  document.addEventListener('pointerout',event=>{if(event.target.closest?.('svg'))preview.hidden=true},{passive:true});
+ document.addEventListener('scroll',()=>{preview.hidden=true},{passive:true,capture:true});
+ document.addEventListener('bg:portal-identity-boundary',()=>{
+   // One session's pinned business data must never survive a tenant switch.
+   state.pins=[];preview.hidden=true;closeInsightLens(false);
+ });
 
  document.addEventListener('click',e=>{
   if(e.target.closest?.('button,a,input,textarea,select,summary,[role="button"],#bgInsightLens'))return;
@@ -157,9 +162,20 @@ function init(){
   if(host&&shown(host)){e.preventDefault();openInsightLens(host,{label:info.label},info.mark)}
  });
  const root=document.querySelector('.app')||document.body;
+ const pending=new Set();
  new MutationObserver(records=>{
-  if(!records.some(r=>[...r.addedNodes].some(n=>n.nodeType===1)))return;
-  if(queued)return;queued=true;requestAnimationFrame(()=>{queued=false;enhanceInsightLens()});
+  if(state.host&&!state.host.isConnected)closeInsightLens(false);
+  for(const record of records)for(const node of record.addedNodes){
+   if(node.nodeType!==1)continue;
+   pending.add(node);
+   const surface=node.closest?.(SELECTOR);if(surface)pending.add(surface);
+  }
+  if(!pending.size||queued)return;
+  queued=true;requestAnimationFrame(()=>{
+   queued=false;
+   const targets=[...pending];pending.clear();
+   for(const node of targets)if(node.isConnected)enhanceInsightLens(node);
+  });
  }).observe(root,{childList:true,subtree:true});
  window.addEventListener('popstate',()=>closeInsightLens(false));
 }
