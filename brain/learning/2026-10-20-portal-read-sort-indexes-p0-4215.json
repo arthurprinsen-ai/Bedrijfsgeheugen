@@ -1,0 +1,37 @@
+{
+  "fingerprint": "portal|entrepreneur-intelligence|missing-global-sort-indexes|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|authenticated-read-index-optimization|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "PORTAL_READ_SORT_INDEX_MISSING_PREVIEW",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Preview has no globally sortable index on bronpublicaties(publicatiedatum DESC NULLS LAST) and no permitted-signal partial sort index for bg_externe_signalen. Production index state unverified due connection timeouts; this is not established as the sole root cause of authenticated HTTP 504.",
+  "prevention_rule": "Enforce matching sort/index migrations for the two exact bounded portal read paths. Keep read errors and tenant boundaries fail-closed; benchmark under production-like data and monitor connection pressure. Do not equate a successful migration with HTTP 200 or multi-tenant acceptance.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-portal-read-sort-indexes.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-portal-read-sort-indexes.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-portal-read-sort-indexes.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "preview_schema_indexes": "MISSING_CONFIRMED",
+    "preview_data_rows": "0; performance not measurable",
+    "production_schema_indexes": "UNVERIFIED_CONNECTION_TIMEOUT",
+    "production_http_200": "PENDING",
+    "two_tenant_acceptance": "PENDING"
+  },
+  "production_verified": false,
+  "production_scope": "INDEX_MIGRATION_ONLY"
+}
