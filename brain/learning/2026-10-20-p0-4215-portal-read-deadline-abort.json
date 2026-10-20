@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-20",
+  "obligation": "p0-4215-portal-read-deadline-abort-v1",
+  "fingerprint": "p0-4215-portal-postgrest-deadline-abort-v1",
+  "root_cause": "Entrepreneur intelligence first batch SOURCES/PUBLICATIONS/EXTERNAL_SIGNALS exceeded 90-197 s under a degraded Supabase database connection pool; existing concurrency was bounded but no read deadline or transport abortion applied.",
+  "intervention": "Add AbortSignal propagation into all ten lazy PostgREST queries, 6s per-stage deadline, two-request maximum per batch, abort all concurrent reads when one fails, fail closed with HTTP 503 instead of waiting for edge 504; zero invented data.",
+  "prevention": "Every new Portal Edge read must propagate a cancellable signal and a short explicit budget. Keep tenant auth/RLS, full evidence, source metadata and lack-of-evidence unknown.",
+  "compiler": {
+    "failure_class": "PORTAL_POSTGREST_UNBOUNDED_EXECUTION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "PORTAL_EU_POSTGREST_ABORT_DEADLINE_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-eu-bounded-reads.test.mjs",
+      "tests/brain-p0-4215-portal-read-deadline.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "static_gate_added": true,
+    "edge_runtime_acceptance": false,
+    "production_http200_proven": false
+  },
+  "status": "CODE_CANDIDATE_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+  ]
+}

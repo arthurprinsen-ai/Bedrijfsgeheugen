@@ -125,9 +125,12 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
 }
 function readRows(label:string,query:any){
   // Lazy: database requests are issued only when boundedReads schedules a job.
-  return async()=>{
-    const {data,error}=await query;
-    if(error)throw new Error(label);
+  return async(signal:AbortSignal)=>{
+    // PostgREST's query builder is lazy. Propagate the deadline into fetch so
+    // a failed request releases the database connection instead of continuing.
+    if(!query||typeof query.abortSignal!=='function')throw new Error('PORTAL_ABORTABLE_QUERY_REQUIRED');
+    const {data,error}=await query.abortSignal(signal);
+    if(error)throw new Error(signal.aborted?'PORTAL_READ_ABORTED':label);
     return Array.isArray(data)?data:[];
   };
 }
@@ -479,7 +482,7 @@ Deno.serve(async(req:Request)=>{
         readRows('INTELLIGENCE_SNAPSHOT',client.from('powerhouse_intelligence_snapshot_v1')
           .select('tenant_id,refreshed_at,catalog_source_count,public_source_count,connector_source_count,domain_count,observed_signal_count,signals_24h,signals_7d,high_attention_count,scored_impact_count,action_candidate_count,known_opportunity_value_eur,known_risk_value_eur,top_domains,source_health,status,evidence,updated_at')
           .eq('tenant_id','canonical').limit(1))
-      ],{maxConcurrent:3});
+      ],{maxConcurrent:2,slowStageMs:1500,readTimeoutMs:6000});
       const intelligenceSignals=mergeEntrepreneurSignals(signalsCanonical,tenantImpacts);
       const actionCandidates=mergeEntrepreneurActions(canonicalActions,tenantActions);
       const snapshot=buildEntrepreneurSnapshot(baseSnapshots[0]||null,domains,sourceCatalog,intelligenceSignals,tenantImpacts,actionCandidates);
@@ -519,7 +522,10 @@ Deno.serve(async(req:Request)=>{
         }
       });
     }catch(error){
-      return json({error:'ENTREPRENEUR_INTELLIGENCE_READ_FAILED',source:String(error instanceof Error?error.message:'UNKNOWN').slice(0,80)},500);
+      // An exhausted database budget is an explicit retryable service error,
+      // never a fabricated zero-valued entrepreneur snapshot.
+      const timeout=error instanceof Error&&/PORTAL_READ_TIMEOUT|PORTAL_READ_ABORTED/.test(error.message);
+      return json({error:timeout?'ENTREPRENEUR_INTELLIGENCE_TEMPORARILY_UNAVAILABLE':'ENTREPRENEUR_INTELLIGENCE_READ_FAILED'},timeout?503:500);
     }
   }
 

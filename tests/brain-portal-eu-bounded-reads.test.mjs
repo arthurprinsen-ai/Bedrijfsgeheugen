@@ -31,3 +31,30 @@ test('no uncapped fan-out or eager query invocation is allowed',async()=>{
  await assert.rejects(()=>boundedReads([async()=>1],{maxConcurrent:0}),/READ_CONCURRENCY_INVALID/);
  await assert.rejects(()=>boundedReads([async()=>1],{maxConcurrent:11}),/READ_CONCURRENCY_INVALID/);
 });
+
+
+test('deadline aborts the underlying request and halts subsequent batches',async()=>{
+ const visited=[],signals=[];
+ const jobs=[
+  signal=>new Promise(resolve=>{signals.push(signal);signal.addEventListener('abort',()=>resolve('aborted'),{once:true})}),
+  async signal=>{signals.push(signal);return 'ok'},
+  async()=>{visited.push('third');return 'must-not-execute'}
+ ];
+ await assert.rejects(()=>boundedReads(jobs,{maxConcurrent:2,slowStageMs:20,readTimeoutMs:45,onSlow:()=>{}}),/PORTAL_READ_TIMEOUT/);
+ assert.ok(signals[0].aborted);
+ assert.deepEqual(visited,[]);
+});
+test('failure aborts other in-flight readers and never schedules following batches',async()=>{
+ const signals=[],visited=[];
+ const jobs=[
+  signal=>new Promise(resolve=>{signals.push(signal);signal.addEventListener('abort',()=>resolve('cancelled'),{once:true})}),
+  async()=>{throw new Error('DB_BUSY')},
+  async()=>{visited.push('next-batch');return 3}
+ ];
+ await assert.rejects(()=>boundedReads(jobs,{maxConcurrent:2,slowStageMs:20,readTimeoutMs:100,onSlow:()=>{}}),/DB_BUSY/);
+ assert.equal(signals[0].aborted,true);
+ assert.deepEqual(visited,[]);
+});
+test('invalid deadline is rejected instead of launching uncontrolled reads',async()=>{
+ await assert.rejects(()=>boundedReads([async()=>1],{slowStageMs:2000,readTimeoutMs:1000}),/READ_DEADLINE_INVALID/);
+});
