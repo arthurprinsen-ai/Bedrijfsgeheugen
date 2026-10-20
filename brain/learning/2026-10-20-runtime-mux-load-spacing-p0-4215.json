@@ -1,0 +1,37 @@
+{
+  "fingerprint": "database|cron171|excessive-start-pressure|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "database|existing-scheduler-start-spacing|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "PG_CRON_STARTUP_TIMEOUT_UNDER_POOL_PRESSURE",
+    "scope": "DATABASE_SCHEDULER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Observed live PostgreSQL cron171 startup timeouts during intermittent connection and statement timeouts. This scheduling collision is a contributor candidate; total pool saturation root cause requires further tracing.",
+  "prevention_rule": "Keep original scheduler job, command, active flag and catch-up semantics. Apply only guarded spacing after protected approval and prove live readback, completed tasks, bounded backlog and no missed commercial outcomes. Do not claim index or portal recovery from schedule spacing.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-runtime-mux-load-spacing.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-runtime-mux-load-spacing.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-runtime-mux-load-spacing.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "postgres_cron171_startup_timeouts": "PRODUCTION_OBSERVED_2026-10-20_10:34Z",
+    "protected_ci": "PENDING",
+    "production_cron_readback": "PENDING",
+    "production_portal_http_200": "PENDING",
+    "post_change_backlog": "PENDING"
+  },
+  "production_verified": false,
+  "production_scope": "JOB171_CADENCE_ONLY"
+}
