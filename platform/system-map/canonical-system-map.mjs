@@ -2246,3 +2246,18 @@ export const SALESROBOT_PROVIDER_RECEIPT_CLOSED_LOOP_20261020=Object.freeze({
  regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
  learning:'brain/learning/2026-10-20-salesrobot-receipt-before-done.json'
 });
+
+// Existing hourly assurance performs a provider-read-only SalesRobot probe; no duplicate publisher.
+export const SALESROBOT_EXISTING_HOURLY_PROVIDER_PROBE_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|existing-hourly-provider-preflight|20261020',
+ scheduler:'powerhouse-autonomous-outreach-assurance-hourly-v1',
+ existingJobName:'powerhouse-autonomous-outreach-assurance-hourly-v1',
+ edgeFunction:'powerhouse-linkedin-sales-machine',
+ mode:'provider_preflight',
+ capabilityRegistry:'powerhouse_channel_capabilities_v1',
+ sourceOfProviderTruth:'SALESROBOT_LIST_LINKEDIN_ACCOUNTS',
+ healthFields:['provider_health','payment_status','cookie_expired','execution_days_remaining','active_campaign_present'],
+ noNewCron:true,noOutboundSend:true,existingRecipientApprovalPreserved:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-existing-hourly-preflight.json'
+});
