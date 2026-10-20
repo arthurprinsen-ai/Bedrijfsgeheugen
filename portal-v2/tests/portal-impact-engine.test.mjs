@@ -32,3 +32,23 @@ test('compliance mutation changes risk and final synthesis consumers',()=>{
   assert.ok(impact.changes.some(x=>x.id==='compliance-risk'));
   assert.ok(impact.affectedPages.includes('eindconclusie'));
 });
+
+test('model activation preference changes have explicit causal page mapping and independent review',()=>{
+  for(const [path,payload] of [
+    ['portal.aiModelPreferences',{defaultModelId:'selected-model',models:[{modelId:'selected-model',routeId:'eu-private'}]}],
+    ['portal.aiModelActivationRequest',{requestState:'REQUESTED',modelId:'selected-model',routeId:'eu-private',requestedAt:'2026-10-20T12:00:00Z'}]
+  ]){
+    const before={portal:{}},after={portal:{[path.split('.')[1]]:payload}};
+    const impact=impactForMutation({path,before,after});
+    assert.equal(impact.sourcePage,'ai-modelkeuze',path);
+    assert.equal(impact.mappingStatus,'MAPPED',path);
+    assert.equal(impact.changed,true,path);
+    for(const page of ['ai-modelkeuze','data-ai-passport','trust-center','koppelingen','businesscase','advies'])
+      assert.ok(impact.affectedPages.includes(page),`${path} -> ${page}`);
+    for(const domain of ['ai-runtime','supplier','data-residency','finance','ai-governance'])
+      assert.ok(impact.reviewDomains.includes(domain),`${path} -> ${domain}`);
+    assert.equal(impact.evidenceStatus,'OBSERVED_NOT_VERIFIED');
+    assert.equal(impact.externalExecutionAuthorized,false);
+    assert.equal(impact.changes.length,0,'AI model selection must not synthesize a monetary calculation');
+  }
+});
