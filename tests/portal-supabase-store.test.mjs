@@ -117,3 +117,31 @@ test('entrepreneur response missing authenticated scope fails closed instead of 
   const store=createSupabasePortalProjectionStore({fetchFn:malformed.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
   await assert.rejects(()=>store.getEntrepreneurIntelligence('tenant-1'),/response shape invalid/);
 });
+
+test('entrepreneur Edge stage diagnostics are finite and never include tenant or arbitrary upstream text',async()=>{
+  const safe=fakeClient(()=>response({
+    error:'ENTREPRENEUR_INTELLIGENCE_READ_FAILED',
+    source:'PUBLICATIONS',
+    tenantId:'private-tenant',
+    detail:'token-secret-must-not-appear'
+  },500));
+  const store=createSupabasePortalProjectionStore({
+    fetchFn:safe.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'
+  });
+  await assert.rejects(
+    store.getEntrepreneurIntelligence('tenant-private'),
+    error=>error.message==='EU portal store gateway failed (500) [PUBLICATIONS]'
+  );
+
+  const malicious=fakeClient(()=>response({
+    error:'ENTREPRENEUR_INTELLIGENCE_READ_FAILED',
+    source:'private-tenant-secret'
+  },500));
+  const other=createSupabasePortalProjectionStore({
+    fetchFn:malicious.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'
+  });
+  await assert.rejects(
+    other.getEntrepreneurIntelligence('tenant-private'),
+    error=>error.message==='EU portal store gateway failed (500)'
+  );
+});
