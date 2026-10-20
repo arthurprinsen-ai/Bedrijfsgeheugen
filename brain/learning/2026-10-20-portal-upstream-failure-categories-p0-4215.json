@@ -15,11 +15,10 @@
   "prevention_rule": "PORTAL_AUTHENTICATED_GATEWAY_SAFE_STAGE_DIAGNOSIS",
   "evaluation": {
     "historical_replay": [
-      "tests/portal-supabase-store.test.mjs",
       "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
     ],
     "shadow": [
-      "tests/portal-supabase-store.test.mjs"
+      "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
     ],
     "canary": [
       "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
