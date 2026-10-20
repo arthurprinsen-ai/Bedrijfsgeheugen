@@ -2367,3 +2367,18 @@ export const POWERHOUSE_AUTHORITY_QUEUE_GUARD_20261020=Object.freeze({
  preservesApprovalAndSuppression:true,externalMessagesSent:0,
  learning:'brain/learning/2026-10-20-authority-queue-bounded.json'
 });
+
+
+export const EMAIL_LEARNING_SCOPED_REFRESH_20261020=Object.freeze({
+ fingerprint:'powerhouse|email-learning-scoped-refresh|20261020',
+ owner:'public.powerhouse_refresh_email_learning_stats()',
+ executor:'powerhouse-email-reply-loop',
+ sourceTables:['powerhouse_sales_actions','powerhouse_email_reply_events','powerhouse_sales_outcomes'],
+ derivedTable:'powerhouse_email_learning_stats',
+ retentionDays:180,scope:'email + exact learning contract',
+ preservesOtherOwners:true,preservesSourceEvidence:true,preservesInvokerAndPrivateGrants:true,
+ noNewScheduler:true,noOutboundSend:true,
+ migration:'supabase/migrations/20261020174501_email_learning_stats_scoped_refresh_v1.sql',
+ regression:'tests/fixtures/email-learning-scoped-refresh-v1.sql',
+ learning:'brain/learning/2026-10-20-email-learning-scoped-refresh.json'
+});
