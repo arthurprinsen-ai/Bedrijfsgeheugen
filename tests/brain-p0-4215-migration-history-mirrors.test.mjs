@@ -20,3 +20,14 @@ test('newly observed contact function version and protected original preserve ex
     assert.equal(createHash('sha256').update(sql).digest('hex'), '467ef79cfbea084fcdc5954d3a6d9b2c8682d9f9cdbc6e79abc3e2ff06ab1346');
   }
 });
+test('successful production economics index retry preserves provider version and protected SQL', () => {
+  const provider = readFileSync(new URL('../supabase/migrations/20261020132933_p0_4215_economics_candidate_index_guarded_retry.sql', import.meta.url));
+  const protectedSql = readFileSync(new URL('../supabase/migrations/20261020112221_p0_4215_economics_candidate_index_before_portal_indexes.sql', import.meta.url));
+  assert.deepEqual(provider, protectedSql);
+  assert.equal(createHash('sha256').update(provider).digest('hex'), '6fc393681c29bd28bf3af41b88f31d8b6e5a180622b4820a7f6e90b534a3751b');
+});
+test('concurrent portal index provider identity preserves its protected source', () => {
+  const provider = readFileSync(new URL('../supabase/migrations/20261020133013_p0_4215_portal_read_sort_indexes.sql', import.meta.url));
+  const protectedSql = readFileSync(new URL('../supabase/migrations/20261020113000_p0_4215_portal_read_sort_indexes.sql', import.meta.url));
+  assert.deepEqual(provider, protectedSql);
+});
