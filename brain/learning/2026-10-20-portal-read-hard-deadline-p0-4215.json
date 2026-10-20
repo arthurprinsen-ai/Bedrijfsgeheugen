@@ -17,7 +17,21 @@
   "test_evidence": {
     "production_before": "PORTAL_READ_FAILED stage=SOURCES elapsed_ms=197056; EXTERNAL_SIGNALS elapsed_ms=149745; Netlify portal data API HTTP504",
     "production_after": "PENDING",
-    "tenant_isolation": "UNPROVEN"
+    "tenant_isolation": "UNPROVEN",
+    "local_smoke": {
+      "node_version": "22.16.0",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "runner": "node --test",
+      "git_hash_object": "7e09c609e83386e014e7e7023fb072d6d6c1e50c",
+      "verified_remote_sha": "7e09c609e83386e014e7e7023fb072d6d6c1e50c",
+      "cases": [
+        "ten job ordered three-concurrency",
+        "abort-aware stalled read",
+        "abort-ignoring stalled read"
+      ],
+      "not_sufficient_for_production_acceptance": true
+    }
   },
   "evaluation": {
     "historical_replay": [
