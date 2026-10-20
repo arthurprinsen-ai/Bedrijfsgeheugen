@@ -12,7 +12,8 @@
     "regression_engine": "PGlite 0.3.14 (PostgreSQL)",
     "baseline_result": "EMAIL_LEARNING_FOREIGN_OWNER_LOSS",
     "candidate_result": "PASS",
-    "full_migration_and_repeat_privilege_readback": "PASS (PostgreSQL engine; role ACLs and baseline hash verified)"
+    "full_migration_and_repeat_privilege_readback": "PASS (PostgreSQL engine; role ACLs and baseline hash verified)",
+    "transactional_sql_fixture": "supabase/tests/email_learning_scoped_refresh_v1.sql"
   },
   "prevention": [
     "No unqualified deletion or WHERE TRUE workaround",
@@ -30,12 +31,12 @@
   },
   "truth_boundary": "Code validation does not prove provider delivery, approved recipient eligibility, Instagram media or forecast outcomes.",
   "compiler": {
-    "failure_class": "DERIVED_LEARNING_REFRESH_UNQUALIFIED_DELETE"
+    "failure_class": "DERIVED_LEARNING_REFRESH_UNQUALIFIED_DELETE",
+    "scope": "DATABASE"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/revenue-content-cockpit-outcome-loop-contract.test.mjs",
-      "supabase/tests/email_learning_scoped_refresh_v1.sql"
+      "tests/brain-email-learning-scoped-refresh-v1.test.mjs"
     ],
     "baseline": "PostgreSQL fixture fails EMAIL_LEARNING_FOREIGN_OWNER_LOSS",
     "candidate": "PostgreSQL fixture passes aggregation, preservation, repeat, expiry and foreign-key-collision checks"
