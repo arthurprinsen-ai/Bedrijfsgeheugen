@@ -219,14 +219,17 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
     globalThis.dispatchEvent(new CustomEvent('bg:portal-impact',{detail:enriched}));
     globalThis.dispatchEvent(new CustomEvent('bg:portal-pages-invalidated',{detail:{path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],effectDetails:[...enriched.effectDetails]}}));
-    if(impact.changed)globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
+    if(impact.changed){
+      globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
+      globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{impact:enriched,pendingChanges:pendingImpacts.length}}));
+     }
    }
   }
   return enriched;
  }
- function set(path,value){const before=domain.get();const result=domain.set(path,value);track(path);publishImpact(path,before,domain.get());return result;}
+ function set(path,value){const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  function setDerived(path,value){return domain.setDerived(path,value);}
- function patch(path,value){const before=domain.get();const result=domain.patch(path,value);track(path);publishImpact(path,before,domain.get());return result;}
+ function patch(path,value){const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  async function performPortalFlush(){
   // Snapshot causal lineage before any await: edits made during the state or
   // Brain write must remain pending and cannot be reported as synchronized.
