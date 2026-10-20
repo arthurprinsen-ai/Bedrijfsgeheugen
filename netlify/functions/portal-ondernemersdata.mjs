@@ -26,10 +26,12 @@ export default async request=>{
     const configMissing=/configuration missing/i.test(message);
     const timedOut=/PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT/.test(message);
     // Operator-only failure categories, never raw messages, tenant IDs, credentials or query payloads.
-    const upstreamStatus=/^EU portal store gateway failed \((401|403|429|500|502|503|504)\)$/.exec(message)?.[1]||null;
+    const upstreamMatch=/^EU portal store gateway failed \\((401|403|429|500|502|503|504)\\)(?: \\[(SOURCES|PUBLICATIONS|EXTERNAL_SIGNALS|DOMAIN_REGISTRY|SOURCE_CATALOG|SIGNAL_PROJECTION|COMPANY_IMPACT|CANONICAL_ACTIONS|TENANT_ACTIONS|INTELLIGENCE_SNAPSHOT|PORTAL_READ_DEADLINE_EXCEEDED)\\])?$/.exec(message);
+    const upstreamStatus=upstreamMatch?.[1]||null;
+    const upstreamStage=upstreamMatch?.[2]||null;
     const failureCategory=configMissing?'CONFIG_MISSING'
       :timedOut?'UPSTREAM_DEADLINE'
-      :upstreamStatus?'UPSTREAM_HTTP_'+upstreamStatus
+      :upstreamStatus?'UPSTREAM_HTTP_'+upstreamStatus+(upstreamStage?'_STAGE_'+upstreamStage:'')
       :/tenant scope mismatch/i.test(message)?'TENANT_SCOPE_MISMATCH'
       :/response shape invalid/i.test(message)?'UPSTREAM_RESPONSE_SHAPE'
       :error?.name==='TypeError'?'UPSTREAM_NETWORK_FETCH'
