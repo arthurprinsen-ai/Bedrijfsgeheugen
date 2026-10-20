@@ -1,0 +1,46 @@
+{
+  "fingerprint": "portal|brain-runtime|unknown-monetary-values-never-zero|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|runtime-financial-truth|unknown-not-zero|20261020",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "scope": "PORTAL",
+  "root_cause": "The existing authoritative Portal V2 runtime projector coerced missing monetary values with Number(value)||0, turning absent, empty and null source measurements into a claimed €0. The decision cockpit separately defaulted all missing economics to zero and selected zero value leakage without evidence; an absent realized result was therefore displayed as a financial fact.",
+  "prevention_rule": "Only finite, explicit numeric source values may be projected as measurements. Preserve source-reported numeric zero, including string '0'. Null/undefined/empty/invalid monetary values must propagate as null through Brain projector, decision leakage, executive cockpit and UI currency renderer, never as derived €0 or fabricated realized value. Do not substitute revenue snapshot global records for tenant-verified forecasts; keep #4215 open until two-tenant authenticated production evidence.",
+  "compiler": {
+    "failure_class": "UNKNOWN_MONETARY_VALUE_FABRICATED_ZERO",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/company-decisions.test.mjs",
+      "portal-v2/tests/company-cockpit-ui.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/company-decisions.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/company-cockpit-ui.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "code_contract": [
+      "portal-v2/runtime-evidence.js",
+      "portal-v2/company-cockpit.js",
+      "portal-v2/company-decisions.js"
+    ],
+    "regression": [
+      "portal-v2/tests/company-decisions.test.mjs",
+      "portal-v2/tests/company-cockpit-ui.test.mjs"
+    ],
+    "production_financial_forecasts": "0 verified tenant forecasts observed on 2026-10-20",
+    "production_readback": "PENDING_PROTECTED_MERGE_AND_BROWSER",
+    "learning_state": "CANDIDATE"
+  },
+  "production_verified": false,
+  "created_at": "2026-10-20"
+}
