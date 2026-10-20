@@ -119,3 +119,18 @@ test('customer page shell exposes impacted pages without mislabelling pending Br
  assert.match(shell,/Opgeslagen in het bedrijfsbrein/);
  assert.match(shell,/Niet alle gevolgen zijn al bewezen/);
 });
+
+test('selected AI model and activation request reach canonical Brain input with pending review',async()=>{
+  const {domain,calls}=harness();
+  await domain.init();
+  domain.set('portal.aiModelPreferences',{defaultModelId:'proposed',models:[{modelId:'proposed',routeId:'eu'}]});
+  await domain.flush();
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].metadata.causalImpacts[0].sourcePage,'ai-modelkeuze');
+  assert.ok(calls[0].metadata.causalImpacts[0].affectedPages.includes('data-ai-passport'));
+  domain.set('portal.aiModelActivationRequest',{requestState:'REQUESTED',modelId:'proposed',routeId:'eu',requestedAt:'2026-10-20T12:00:00Z'});
+  await domain.flush();
+  assert.equal(calls.length,2);
+  assert.equal(calls[1].metadata.causalImpacts[0].sourcePage,'ai-modelkeuze');
+  assert.equal(calls[1].metadata.causalImpacts[0].evidenceStatus,'OBSERVED_NOT_VERIFIED');
+});
