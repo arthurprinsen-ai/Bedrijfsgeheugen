@@ -59,3 +59,9 @@ begin
   );
 end
 $function$;
+
+-- SECURITY DEFINER is internal: no direct Data API/RPC access from clients.
+revoke all on function public.powerhouse_runtime_scheduler_mux_v3(timestamptz)
+  from public, anon, authenticated;
+grant execute on function public.powerhouse_runtime_scheduler_mux_v3(timestamptz)
+  to service_role;
