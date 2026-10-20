@@ -13,7 +13,7 @@
     "security_sensitive": true
   },
   "root_cause": "Live pg_cron 57014 statement timeout context identified the unbounded FOR over SELECT in powerhouse_backfill_internal_research_economics_v1; the current predicate scans done internal research actions with an anti-join on economics each canonical scheduler pass. Catalog readback showed roughly 7003 estimated sales actions and no exact partial candidate index. This is a specific contributor, not a confirmed complete root cause of portal HTTP 504.",
-  "prevention_rule": "Bound each existing canonical scheduler economics backfill invocation to 50 eligible rows, preserve all original predicates/unique economics idempotency, retain unobserved costs as UNKNOWN, add a protected partial candidate index, never drop unprocessed historical rows or run a parallel cron. Alert on backlog/timeout recurrence and maintain provider/tenant evidence gates.",
+  "prevention_rule": "Bound each existing canonical scheduler economics backfill invocation to 50 eligible rows, preserve all original predicates/unique economics idempotency, retain unobserved costs as UNKNOWN, add a protected partial candidate index, never drop unprocessed historical rows or run a parallel cron. Alert on backlog/timeout recurrence and maintain provider/tenant evidence gates. Because the existing backfill is SECURITY DEFINER, revoke PUBLIC/anon/authenticated direct EXECUTE, retain service_role and owner-side canonical scheduler authority, and verify effective grants.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-p0-4215-internal-research-economics-bounded.test.mjs"
@@ -33,7 +33,8 @@
     "production_migration": "PENDING",
     "runtime_backlog": "PENDING",
     "signed_portal_http_200": "PENDING",
-    "two_tenant": "PENDING"
+    "two_tenant": "PENDING",
+    "security_grants": "PENDING_RUNTIME_READBACK"
   },
   "production_verified": false
 }
