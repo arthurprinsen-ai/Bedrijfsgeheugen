@@ -36,6 +36,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-economics-null-not-zero-v1',
+      fingerprint:'portal|brain-runtime|unknown-monetary-values-never-zero|v1',
+      label:'Portal economics distinguishes absent source amounts from actual measured zero',
+      owner:'ONE BRAIN / existing authenticated Portal V2 runtime',
+      authority:'tenant-bound Brain operating-loop decisionEconomics',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['source economic measurements','explicit measured zero','absence of source data']),
+      outputs:Object.freeze(['null unknown economics','no fabricated value leakage','visible unavailable money state']),
+      evidence:'portal-v2/tests/company-decisions.test.mjs',
+      learning:'brain/learning/2026-10-20-portal-unknown-financial-values-v1.json',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215'
+    }),
+    Object.freeze({
       id:'source-universe-existing-mux-stage-v1',
       fingerprint:'powerhouse|source-universe|scheduler-v3-dropped-refresh-stage|v1',
       label:'Canonical Source Universe refresh stays in the existing Powerhouse runtime mux',
