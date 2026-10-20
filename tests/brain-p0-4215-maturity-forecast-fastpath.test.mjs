@@ -48,3 +48,23 @@ test('forward-only branch readback enforces unchanged internal view security',()
  const executableSql=readback.replace(/^[ \t]*--[^\r\n]*/gm,'');
  assert.doesNotMatch(executableSql,/\bGRANT\s+|cron\.(?:schedule|alter_job|unschedule)|\bDROP\s+TABLE/i);
 });
+
+
+test('full 51-column parity verifier is fail-closed and compares tenants, status, channel and financial totals',()=>{
+ const runner=readFileSync(new URL('./brain-p0-4215-maturity-full-parity.mjs',import.meta.url),'utf8');
+ assert.match(runner,/P0_4215_PARITY_ENV.*isolated-preview/);
+ assert.match(runner,/PREVIEW_PROJECT_REF/);
+ assert.match(runner,/BASELINE_IS_NOT_PRE_MIGRATION_VIEW/);
+ assert.match(runner,/51/);
+ assert.match(runner,/FULL_COLUMN_SCHEMA_MISMATCH_OR_NOT_51/);
+ assert.match(runner,/EMPTY_OR_ROW_COUNT_MISMATCH/);
+ assert.match(runner,/AT_LEAST_TWO_DISTINCT_REAL_TEST_TENANTS_REQUIRED/);
+ assert.match(runner,/FULL_51_COLUMN_BIDIRECTIONAL_ROW_PARITY_FAILED/);
+ assert.match(runner,/TENANT_CHANNEL_AND_FINANCIAL_AGGREGATE_PARITY_FAILED/);
+ assert.match(runner,/EXCEPT ALL/);
+ assert.match(runner,/CREATE TEMP TABLE p0_4215_old_rows/);
+ assert.match(runner,/CREATE TEMP VIEW p0_4215_maturity_candidate/);
+ assert.match(runner,/REPEATABLE READ/);
+ assert.match(runner,/ROLLBACK/);
+ assert.doesNotMatch(runner,/CREATE OR REPLACE VIEW public\.powerhouse_action_evidence_maturity_v1 WITH/);
+});
