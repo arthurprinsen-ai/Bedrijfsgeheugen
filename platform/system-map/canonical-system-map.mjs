@@ -36,6 +36,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'verified-scan-claim-immediate-brain-readback-v1',
+      fingerprint:'portal|verified-frisseblik-claim|canonical-brain-readback|v1',
+      label:'Verified Frisse Blik/Bedrijfslek claims refresh existing tenant-specific Brain dashboards',
+      owner:'ONE BRAIN / original scan-ingest and Portal V2 read-model',
+      authority:'Netlify Identity-bound scan claim ACK, Supabase canonical-brain projection, Portal V2 state refresh',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['verified same-tenant provider claim receipt','canonical projection persistence','authenticated unchanged tenant principal']),
+      outputs:Object.freeze(['live read-model update for existing portal dashboards','no duplicate scan claim','unsaved customer edits preserved']),
+      evidence:'tests/brain-portal-claim-propagation-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-frisseblik-verified-claim-live-brain-readback-v1.json'
+    }),
+    Object.freeze({
       id:'portal-profile-no-fake-input-defaults-v1',
       fingerprint:'portal|customer-profile|no-fabricated-maturity-and-financial-benchmark|v1',
       label:'Real customer profile KPI is unknown until every source input is explicitly entered',
