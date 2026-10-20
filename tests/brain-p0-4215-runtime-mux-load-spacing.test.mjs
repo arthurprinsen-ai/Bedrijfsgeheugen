@@ -24,3 +24,16 @@ test('migration fails closed on drift and confirms active unchanged', () => {
   assert.match(sql, /SET LOCAL statement_timeout = '10s'/);
   assert.doesNotMatch(sql, /\b(?:DELETE\s+FROM|TRUNCATE|DROP\s+TABLE|CREATE\s+EXTENSION|ALTER\s+POLICY|REVOKE)\b/i);
 });
+
+test('must preserve minute-4 reachable tasks in the original scheduler', () => {
+  const source = readFileSync(
+    new URL('../supabase/migrations/20261019133100_fix_runtime_scheduler_reachability.sql', import.meta.url),
+    'utf8'
+  );
+  assert.match(source, /if \(m % 5\) = 4 then[\s\S]*?'content-closed-loop'/);
+  assert.match(source, /if m in \(4,19,34,49\) then[\s\S]*?'revenue-attribution-snapshot'/);
+  assert.match(source, /if \(m % 15\) = 14 then[\s\S]*?'loop-assurance'/);
+  const target = sql.match(/v_target CONSTANT text := '([^']+)'/);
+  assert.ok(target, 'the candidate schedule must be explicit and auditable');
+  assert.match(target[1], /4-59\/5/, 'cannot drop all minute-4 slots: this starves content, attribution, assurance, audit');
+});
