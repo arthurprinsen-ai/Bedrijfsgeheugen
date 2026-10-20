@@ -15,3 +15,17 @@ Never merge without Supabase Preview success on the exact PR SHA. Compare full r
 
 ## Forward-only preview security readback
 The first preview execution had already recorded migration version 20261020163500 before the security_invoker correction. To avoid editing applied history, migration 20261020163501 enforces `ALTER VIEW ... SET (security_invoker=true)` and `REVOKE ALL FROM PUBLIC, anon, authenticated`, then verifies both privileges and the service-role boundary transactionally. The observed production view already has these exact settings. Stop if readback differs; no merge until preview matches.
+
+
+## Required full semantic parity gate (added 2026-10-20)
+- The live original view has **51** ordered columns. Static SQL-pattern assertions and identical-looking output names **do not** prove equivalence.
+- Execute tests/brain-p0-4215-maturity-full-parity.mjs against an **isolated, pre-migration Supabase Preview** populated with authorized data representing at least two distinct tenant IDs. This is a shadow-SELECT comparison, not an instruction to reapply migration SQL.
+- Example command (using secrets supplied in an approved CI/private execution context; never commit credentials):
+
+    P0_4215_PARITY_ENV=isolated-preview P0_4215_PREVIEW_PROJECT_REF=<preview-project-ref> P0_4215_PREVIEW_DATABASE_URL=<preview-postgresql-url> node tests/brain-p0-4215-maturity-full-parity.mjs
+
+- The runner parses the actual candidate view from the same versioned migration, creates a **temporary** candidate view, snapshots old and candidate under one repeatable-read database snapshot, and checks exact ordered column names/types, nonempty equal row cardinalities, bidirectional full 51-field EXCEPT ALL comparisons including NULL/array/forecast values, and tenant/channel/status/maturity/calibration/financial aggregations.
+- It refuses production project credentials, refuses an already-replaced baseline, refuses empty results or fewer than two distinct represented tenants, prints no customer data, creates no persistent schema changes, and rolls back its temporary objects.
+- A pass is valid only against the **exact PR head**, with a provider-owned preview migration/readback on that same commit; rerun after any candidate SQL changes.
+- **Separate mandatory acceptance** remains: role-level readback (security_invoker, anon/authenticated denied, internal service account approved), two distinct *authenticated customer* HTTP 200 portal sessions proving no cross-tenant data disclosure, measured execution latency without HTTP 504, refreshed revenue snapshot, Required CI + CodeQL, protected merge, and post-deploy production readback.
+- A with_data=false Supabase preview has zero business rows and **cannot** pass the semantic or tenant gate. Obtain permitted representative preview data and run the gate before marking the PR ready; no zero-row waiver, forced merge or production DDL.
