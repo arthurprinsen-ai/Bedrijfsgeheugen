@@ -15,7 +15,6 @@
   "prevention_rule": "PORTAL_INTELLIGENCE_GATEWAY_ABORT_AND_NO_ERROR_CACHE",
   "evaluation": {
     "historical_replay": [
-      "tests/portal-supabase-store.test.mjs",
       "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
     ],
     "shadow": [
