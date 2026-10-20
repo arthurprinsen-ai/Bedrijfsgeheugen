@@ -16,17 +16,17 @@
   "prevention_rule": "Log only anonymous stage names, trace and latency when slow or failed; preserve full result or failure; do not fake tenant projections.",
   "evaluation": {
     "historical_replay": [
-      "tests/portal-state-read-stage-telemetry-p0-4215.test.mjs"
+      "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs"
     ],
     "shadow": [
-      "tests/portal-state-read-stage-telemetry-p0-4215.test.mjs"
+      "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs"
     ],
     "canary": [
-      "tests/portal-state-read-stage-telemetry-p0-4215.test.mjs"
+      "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs"
     ]
   },
   "test_evidence": {
-    "regression": "tests/portal-state-read-stage-telemetry-p0-4215.test.mjs",
+    "regression": "tests/brain-portal-state-read-stage-telemetry-p0-4215.test.mjs",
     "production_endpoint_ack": "PENDING",
     "deploy_readback": "PENDING",
     "two_authenticated_tenants": "PENDING"
