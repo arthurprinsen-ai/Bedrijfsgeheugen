@@ -38,3 +38,9 @@ test('bounded Supabase source declares both read breakers and limits queried row
   assert.match(src,/DATA_API_CIRCUIT_OPEN/);
   assert.match(src,/x-bg-service-token/);
 });
+
+test('observed nonempty provider evidence remains intact and is not zeroed',async()=>{
+  const expected=[{contentId:'li:provider-receipt-1',windowHours:24,channel:'linkedin_company'}];
+  const out=await createStore({candidates:expected},200).listProjectionCandidates('2026-10-20T11:00:00Z');
+  assert.deepEqual(out,expected);
+});
