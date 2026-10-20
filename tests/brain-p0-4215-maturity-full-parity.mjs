@@ -121,4 +121,6 @@ const proc = spawnSync('psql', ['-X', '-v', 'ON_ERROR_STOP=1', '-q', '-d', datab
 if (proc.error) refuse(proc.error.code === 'ENOENT' ? 'psql client not installed' : proc.error.message);
 if (proc.status !== 0) refuse((proc.stderr || 'SQL execution failed').slice(-2500));
 // psql does not print rows; the script above intentionally emits only aggregate acceptance notices.
-process.stdout.write((proc.stderr || '').split('\n').filter(line => line.includes('P0_4215_FULL_PARITY_PASSED')).join('\n') + '\n');
+const receipt = (proc.stderr || '').split('\n').filter(line => line.includes('P0_4215_FULL_PARITY_PASSED')).join('\n');
+if (!receipt) refuse('missing positive SQL parity receipt');
+process.stdout.write(receipt + '\n');
