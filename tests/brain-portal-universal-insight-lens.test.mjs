@@ -11,7 +11,7 @@ test('contextual insight explorer is in the one canonical portal',()=>{
  assert.match(html,/insight-lens\.js/);
  assert.match(html,/insight-lens\.css/);
  assert.match(js,/import \{navigatePortal\} from '\.\/router\.js'/);
- for(const type of ['figure.v2visual','.pfs-chart','.pvtablewrap','#portalView table','[data-canvas]','.roadmap-board'])
+ for(const type of ['figure.v2visual','.pfs-chart','.pvtablewrap','#portalView table','[data-canvas]','[data-strategy-board]','[data-roadmap-board]','.canvas-summary'])
   assert.ok(js.includes(type),type);
 });
 test('unknown evidence and scenario hypotheses are never represented as verified',()=>{

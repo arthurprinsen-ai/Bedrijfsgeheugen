@@ -1,7 +1,7 @@
 /** Read-only context explorer for canonical Portal V2. No fabricated provenance or projections. */
 import {navigatePortal} from './router.js';
 export const INSIGHT_LENS_VERSION='2026-10-20-v1';
-const SELECTOR='figure.v2visual,.pvvisual,.pfs-chart,[data-chart],.pvtablewrap,.table-wrap,#portalView table,.main table,[data-canvas],.roadmap-board,.strategy-board';
+const SELECTOR='figure.v2visual,.pvvisual,.pfs-chart,[data-chart],.pvtablewrap,.table-wrap,#portalView table,.main table,[data-canvas],.canvas-summary,.canvas-card,[data-strategy-board],[data-roadmap-board],.v2roadmapintel,.v2-stage-chart,.roadmap-board,.strategy-board';
 const state={host:null,selected:null,pins:[],returnFocus:null};
 let dialog,shade,body,heading,closeButton,queued=false;
 const make=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e};
@@ -103,11 +103,11 @@ function enhance(host){
  if(!shown(host)||host.dataset.bgIlEnhanced||host.closest('#bgInsightLens'))return;
  if(host.matches('table')&&host.closest('.pvtablewrap,.table-wrap,[data-chart]'))return;
  if(host.matches('[data-chart]')&&host.closest('figure.v2visual,.pvvisual'))return;
- if(!host.matches('table,[data-canvas],.pfs-chart,.roadmap-board,.strategy-board')&&!host.querySelector('svg,canvas,table,input,textarea'))return;
+ if(!host.matches('table,[data-canvas],.canvas-summary,.canvas-card,[data-strategy-board],[data-roadmap-board],.v2roadmapintel,.v2-stage-chart,.pfs-chart,.roadmap-board,.strategy-board')&&!host.querySelector('svg,canvas,table,input,textarea'))return;
  host.dataset.bgIlEnhanced='true';
  const btn=make('button','bg-il-trigger','✦ Verken');btn.type='button';btn.setAttribute('aria-label','Verken '+nameOf(host));
  btn.addEventListener('click',()=>openInsightLens(host,null,btn));
- if(host.matches('table'))host.before(btn);else host.append(btn);
+ if(host.matches('table,[data-canvas],.canvas-card,[data-strategy-board],[data-roadmap-board],.v2roadmapintel'))host.before(btn);else host.append(btn);
 }
 export function enhanceInsightLens(scope=document){
  if(scope.nodeType===1&&scope.matches(SELECTOR))enhance(scope);
