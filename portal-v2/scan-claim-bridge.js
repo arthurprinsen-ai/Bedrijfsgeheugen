@@ -28,7 +28,7 @@ function element(doc,tag,cls,text){
   if(text)x.textContent=text;
   return x;
 }
-export function createScanClaimBridge({doc=document,fetcher=fetch,storage=globalThis.localStorage,session=globalThis.sessionStorage,authHeaders=async()=>null}={}){
+export function createScanClaimBridge({doc=document,fetcher=fetch,storage=globalThis.localStorage,session=globalThis.sessionStorage,authHeaders=async()=>null,onClaimed=async()=>{}}={}){
   const mount=doc.querySelector('.main .executive-glance')||doc.querySelector('.main');
   if(!mount)return {setAuthenticated(){}};
   const section=element(doc,'section','portal-canonical-scans');
