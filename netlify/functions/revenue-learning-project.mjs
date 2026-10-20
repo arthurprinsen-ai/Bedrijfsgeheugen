@@ -1,3 +1,4 @@
+import {createHash} from 'node:crypto';
 import {createRevenueLearningStore} from './_revenue-learning-store.mjs';
 
 const num=v=>v===undefined||v===null||v===''?null:(Number.isFinite(Number(v))?Number(v):null);
@@ -39,7 +40,7 @@ export function createRevenueProjector({source,store,now=()=>new Date()}={}){
           projected+=batch.length;
         }catch(error){
           await activeStore.recordObligation({
-            id:`projection-batch:${now().toISOString().slice(0,13)}:${offset}`,
+            id:`projection-batch:${createHash('sha256').update(batch.map(item=>item.evidenceId).join('|')).digest('hex').slice(0,24)}`,
             type:'PROJECTION_BATCH_FAILED',status:'OPEN',
             evidenceIds:batch.map(item=>item.evidenceId),
             error:String(error?.message||error)
