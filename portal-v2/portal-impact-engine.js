@@ -8,6 +8,8 @@ import { PORTAL_PAGE_INDEX } from './page-registry.js';
 const REGISTERED_PAGES=Object.freeze(new Set(Object.keys(PORTAL_PAGE_INDEX)));
 const OBSERVATION_SURFACES=Object.freeze(['overzicht','advies','wijzigingen','audittrail','learning-writeback','powerhouse-control-center']);
 const REVIEW_RULES=Object.freeze([
+  // A model choice or request is a tenant preference, NOT provider activation.
+  {pattern:/^portal\\.(?:aiModelPreferences|aiModelActivationRequest)(?:\\.|$)/,domains:['ai-runtime','supplier','data-residency','privacy-security','finance','ai-governance'],pages:['ai-modelkeuze','data-ai-passport','trust-center','koppelingen','compliance-governance','eu-ai-act-audit','businesscase','roadmap','advies','powerhouse-control-center']},
   // Size is an applicability input, not evidence that a legal threshold is met.
   {pattern:/^portal\.profile\.(?:employees|sector)(?:\.|$)/,domains:['organization-size','regulatory-applicability','csrd-esrs'],pages:['profiel','compliance-governance','csrd-impact','wet-regelgeving','due-diligence','advies']},
   {pattern:/^portal\.(?:data-ai-passport|dataAi|aiScan|aiCapabilities|aiCapabilitySources|aiAct|ai-capabilities|ai-technologie-actueel|koppelingen|trust-center|eu-ai-act-audit|csrd-impact|instellingen)(?:\.|$)/,domains:['ai-runtime','data-residency','privacy-security','supplier','finance','csrd-esrs'],pages:['data-ai-passport','koppelingen','trust-center','compliance-governance','csrd-impact','businesscase','roadmap','data-ai','ai-capabilities','powerhouse-control-center','wet-regelgeving']},
@@ -36,6 +38,7 @@ const SECTION_PAGE=Object.freeze({
   strategyDna:'strategy-dna',canvases:'canvassen',finalConclusion:'eindconclusie',dueDiligence:'due-diligence',
   freshness:'actueel-houden',changes:'wijzigingen',advice:'advies',offer:'offerte',roadmap:'roadmap',tasks:'taken-werkstromen',
   project:'overzicht',integrations:'koppelingen',connections:'koppelingen',documents:'documenten',notes:'documenten',access:'gebruikers',
+  aiModelPreferences:'ai-modelkeuze',aiModelActivationRequest:'ai-modelkeuze',
   external:'ondernemersdata',regulatory:'wet-regelgeving',sources:'bronnenbibliotheek'
 });
 
@@ -51,10 +54,12 @@ const PAGE_EFFECT_LABELS=Object.freeze({
   'ai-capabilities':'AI-capabilities','strategie-naar-maandagochtend':'Strategie → uitvoering',canvassen:'Canvassen',
   eindconclusie:'Eindconclusie','due-diligence':'Due diligence','strategy-dna':'Strategy DNA','actueel-houden':'Actueel houden',
   wijzigingen:'Wijzigingen',advies:'Advies',offerte:'Offerte',roadmap:'Roadmap',uitvoeringsladder:'Uitvoeringsladder',
-  'taken-werkstromen':'Taken & werkstromen',koppelingen:'Koppelingen'
+  'taken-werkstromen':'Taken & werkstromen',koppelingen:'Koppelingen','ai-modelkeuze':'AI-modelkeuze','data-ai-passport':'Data & AI Passport', 'trust-center':'Trust Center'
 });
 const PATH_EFFECT_RULES=Object.freeze([
   // Field-level cross-domain propagation: mark reviews/invalidation, never fabricate a financial or legal conclusion.
+  Object.freeze({pattern:/^portal\\.(?:aiModelPreferences|aiModelActivationRequest)(?:\\.|$)/,kind:'tenant-ai-model-runtime-review',reason:'Modelkeuze of activeringsaanvraag vraagt onafhankelijke toetsing van provideraccount, AI Act, contract, kosten, soevereiniteit en technische uitvoering. Zonder runtimebewijs is niets geactiveerd.',targets:['ai-modelkeuze','data-ai-passport','trust-center','koppelingen','compliance-governance','eu-ai-act-audit','csrd-impact','waarde-financiering','businesscase','roadmap','advies','powerhouse-control-center']}),
+
   Object.freeze({pattern:/^portal\.profile\.(?:employees|hourlyCost)(?:\.|$)/,kind:'workforce-capacity-financial-basis',reason:'Omvang en uurkosten beïnvloeden capaciteitswaarde, personeelsplanning, businesscases, financiering en eventuele omvangsafhankelijke regelgeving; wettelijke toepasselijkheid vergt afzonderlijk bewijs.',targets:['mensen','waarde-financiering','businesscase','strategie-naar-maandagochtend','compliance-governance','csrd-impact','roadmap','advies']}),
   Object.freeze({pattern:/^portal\.metrics\.(?:largestCustomer|nps|satisfaction|repeat|complaints|performance\.churn)(?:\.|$)/,kind:'customer-retention-and-concentration',reason:'Klantconcentratie, tevredenheid of verloop kan omzetzekerheid, groeiscenario, risicoprofiel en waardering beïnvloeden; zonder onderliggende data is impact niet gekwantificeerd.',targets:['branche-markt','businesscase','due-diligence','waarde-financiering','exit','advies','roadmap']}),
   Object.freeze({pattern:/^portal\.dataAi\.(?:aiRiskClass|aiVendor|aiDataLocation|aiPurpose|aiHumanOversight)(?:\.|$)/,kind:'ai-governance-supplier-residency',reason:'AI-gebruik, leverancier en datalocatie vragen toetsing van veiligheid, doorgifte, AI Act, contracten, ESG-materiële effecten, kosten en implementatieprioriteit; geen automatische juridische conclusie.',targets:['data-ai-passport','trust-center','eu-ai-act-audit','compliance-governance','csrd-impact','koppelingen','waarde-financiering','due-diligence','businesscase','roadmap','advies']}),
