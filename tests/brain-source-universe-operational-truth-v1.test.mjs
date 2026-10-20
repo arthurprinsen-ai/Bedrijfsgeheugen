@@ -31,3 +31,28 @@ test('historical object-only learning evaluation is rejected rather than rubber-
   const invalid={...record,evaluation:{historical_replay:[{scenario:'catalog!=ingestion'}]}};
   assert.throws(()=>validateEvaluationContract(invalid,compileLearningEvaluationPlan(invalid)),/LEARNING_EVALUATION_TEST_PATH_INVALID/);
 });
+
+
+const recovery=readFileSync('supabase/migrations/20261020080000_restore_external_intelligence_existing_mux_v3.sql','utf8');
+test('historical replay: existing hourly mux recovers missing canonical Source Universe stage',()=>{
+ assert.match(recovery,/create or replace function public\.powerhouse_runtime_scheduler_mux_v3/i);
+ assert.match(recovery,/powerhouse_runtime_scheduler_mux_v2\(p_now\)/);
+ assert.match(recovery,/v_utc_minute\s*=\s*54/);
+ assert.match(recovery,/powerhouse_runtime_mux_task_v1\(/);
+ assert.match(recovery,/external-intelligence-universe/);
+ assert.match(recovery,/powerhouse_refresh_external_intelligence_universe_v1\(''canonical'',200\)/);
+ assert.doesNotMatch(recovery,/\b(select|perform)\s+cron\.schedule\s*\(/i);
+ assert.doesNotMatch(recovery,/\bcreate\s+(table|sequence|schema)\b/i);
+});
+test('failed Source Universe refresh is reported as unhealthy and never silently green',()=>{
+ assert.match(recovery,/coalesce\(\(v_universe_task->>'ok'\)::boolean,false\)/);
+ assert.match(recovery,/v_existing_healthy\s+and\s+coalesce/);
+ assert.match(recovery,/jsonb_build_array\(v_universe_task\)/);
+ assert.match(recovery,/\{tasks\}/);
+});
+test('existing Infinity and source mux remain authoritative; bounded, no parallel worker',()=>{
+ assert.match(recovery,/powerhouse_infinity_operating_loop_v1\(null,v_local::date\)/);
+ assert.match(recovery,/10000\s*\)/);
+ assert.match(recovery,/set search_path to 'public', 'pg_catalog'/);
+ assert.doesNotMatch(recovery,/pg_net|net\.http_post|create\s+trigger/i);
+});

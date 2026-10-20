@@ -1,0 +1,13 @@
+# 20 Oct 2026 — Restore Source Universe to the existing runtime scheduler
+
+**Canonical parent:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215
+**Fingerprint:** `powerhouse|source-universe|scheduler-v3-dropped-refresh-stage|v1`
+
+## Reproduced root cause
+External source observations continued, but the canonical `powerhouse_intelligence_snapshot_v1` was last refreshed on 19 October, while the 20 October source table had new observations. The active existing pg_cron job 171 invokes `powerhouse_runtime_scheduler_mux_v3`; this v3 replacement calls v2 and the Infinity stage but lost the Source Universe call from the October 7 migration. The scheduler can therefore report HEALTHY without refreshing the external intelligence stage. This is a regression of composition, **not** a missing pg_cron service.
+
+## Minimal canonical recovery
+Restore UTC minute 54 in `powerhouse_runtime_scheduler_mux_v3` via the existing `powerhouse_runtime_mux_task_v1` wrapper, 10-second stage budget, and bounded canonical refresh 200. Append its return to `tasks` and conjunct with the existing healthy flag: error/timeout must not become green. Preserve delegated v2 work, Infinity day trigger, existing 171 schedule, RLS and tenant boundaries. Explicitly revoke public/anon/authenticated EXECUTE on the SECURITY DEFINER mux and permit only service_role plus its database owner. No new cron job, queue, duplicated action graph or fabricated € output. The original refresh function already guards `p_tenant_id='canonical'`; customer impacts and actual financial outcomes remain separately evidence-backed.
+
+## Verification and open limits
+Before this candidate, manual invocation of the existing canonical function succeeded at 2026-10-20T06:44:39 UTC and updated the snapshot from 155 to 169 signals, with 104 candidates and null financial claims. This **does not** establish autonomous recurrence. Release requires exact-head Required CI + CodeQL, migration apply, on-database function-definition readback, latest mux run at UTC :54 showing task `external-intelligence-universe` succeeded, refreshed snapshot timestamp, and independent portal production readback when required. The broader issue #4215 remains OPEN: customer forecasts still lack tenant source series, outbound verified outcomes do not close the loop, and every input route is not yet two-tenant live-proven.
