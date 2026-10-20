@@ -37,7 +37,31 @@
       "known_monetary_claims": "NULL_WHEN_NO_EVIDENCE"
     },
     "production_scheduler_post_merge_readback": "PENDING",
-    "authoritative_learning": "CANDIDATE_UNTIL_POSTMERGE_CRON_AND_PRODUCTION_CHECKS"
+    "authoritative_learning": "CANDIDATE_UNTIL_POSTMERGE_CRON_AND_PRODUCTION_CHECKS",
+    "production_sql_migrations": [
+      "20261020070155",
+      "20261020080000"
+    ],
+    "exact_source_mirror": true,
+    "production_function_readback": "EXTERNAL_UNIVERSE_STAGE_PRESENT",
+    "production_mux_canary": {
+      "utc_slot": "2026-10-20T06:54:00Z",
+      "observed_run": "2026-10-20T07:02:56Z",
+      "source_task_ok": true,
+      "elapsed_ms": 3097,
+      "aggregate_healthy": true
+    },
+    "source_snapshot": {
+      "refreshed_at": "2026-10-20T07:02:56.38006Z",
+      "signals": 169,
+      "actions": 104,
+      "unverified_finance_values": null
+    },
+    "scheduled_cron_job": 171,
+    "scheduled_next_slot_verified": false
   },
-  "production_verified": false
+  "production_verified": false,
+  "production_scope": "CANONICAL_SOURCE_REFRESH_CANARY_VERIFIED; SCHEDULED_NEXT_SLOT_PENDING; FULL_TENANT_LOOP_NOT_VERIFIED",
+  "incident_prevention": "Never start a manual Supabase migration while the exact GitHub integration's production migration status is still converging. Read applied migration versions and live pg_get_functiondef after convergence first; if both transports have already applied the idempotent SQL, mirror actual provider version identities in GitHub without deleting history.",
+  "manual_production_canary_verified": true
 }

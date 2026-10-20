@@ -56,3 +56,13 @@ test('existing Infinity and source mux remain authoritative; bounded, no paralle
  assert.match(recovery,/set search_path to 'public', 'pg_catalog'/);
  assert.doesNotMatch(recovery,/pg_net|net\.http_post|create\s+trigger/i);
 });
+
+
+test('the two real production migration versions mirror identical scheduler SQL, not two cron writers',()=>{
+ const providerVersion=readFileSync('supabase/migrations/20261020070155_restore_external_intelligence_existing_mux_v3.sql','utf8');
+ const canonicalVersion=readFileSync('supabase/migrations/20261020080000_restore_external_intelligence_existing_mux_v3.sql','utf8');
+ assert.equal(providerVersion,canonicalVersion);
+ assert.match(providerVersion,/powerhouse_runtime_scheduler_mux_v3/);
+ assert.doesNotMatch(providerVersion,/\b(select|perform)\s+cron\.schedule\s*\(/i);
+ assert.doesNotMatch(providerVersion,/\bcreate\s+table\b/i);
+});

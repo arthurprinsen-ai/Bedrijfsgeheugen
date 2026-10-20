@@ -41,7 +41,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Canonical Source Universe refresh stays in the existing Powerhouse runtime mux',
       owner:'Powerhouse runtime scheduler v3 / existing pg_cron job 171',
       authority:'existing source universe, source observations and signal/action/outcome lineage',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'MANUAL_PROVIDER_CANARY_PASSED_SCHEDULED_RECEIPT_PENDING',
       inputs:Object.freeze(['bounded external source observations','UTC minute 54 existing mux slot','canonical tenant scope']),
       outputs:Object.freeze(['refreshed external intelligence snapshot','bounded materialization and outcome reconciliation','source task receipt and aggregate fail-closed health']),
       regression:'tests/brain-source-universe-operational-truth-v1.test.mjs',
