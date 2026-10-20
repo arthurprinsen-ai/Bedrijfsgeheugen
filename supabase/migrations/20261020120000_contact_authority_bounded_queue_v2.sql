@@ -56,7 +56,13 @@ declare
 begin
   select jobid,command into v_id,v_cmd from cron.job
     where jobname='powerhouse-identity-graph-v1' and active=true;
-  if v_id is null then raise exception 'IDENTITY_GRAPH_CANONICAL_CRON_MISSING';end if;
+  -- Native Supabase preview replays migration history without production-only
+  -- externally installed cron owners. Do not create another scheduler there.
+  -- Production acceptance separately REQUIRES active original job #138.
+  if v_id is null then
+    raise notice 'IDENTITY_GRAPH_OWNER_ABSENT_IN_SCHEMA_PREVIEW';
+    return;
+  end if;
   if strpos(v_cmd,v_bound)>0 and strpos(v_cmd,'for i in 1..1 loop')>0
     and strpos(v_cmd,'powerhouse_contact_authority_review_batch_v1(')>0
     then return;end if;
