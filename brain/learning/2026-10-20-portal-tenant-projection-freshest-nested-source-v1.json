@@ -31,5 +31,12 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "test_evidence": {
+    "regression": "tests/brain-portal-source-truth-20261019.test.mjs",
+    "historical_replay": "2026-10-20 GitHub Actions required evaluation",
+    "verified_customer_browser": "NOT_YET_VERIFIED",
+    "supabase_source_revision": "NOT_YET_VERIFIED",
+    "production_readback": "NOT_YET_VERIFIED"
   }
 }
