@@ -7,8 +7,21 @@
     "Refresh source inventories in the same protected candidate.",
     "Review semantics separately from fingerprints.",
     "Never infer production from source registration or documentation recency.",
-    "Keep existing assurance schedule and owner; no parallel scheduler."
+    "Keep existing assurance schedule and owner; no parallel scheduler.",
+    "Validate learning compiler/evaluation schema before publishing the candidate."
   ],
   "regression": "tests/brain-portal-explanation-autosync-v1.test.mjs",
-  "production_status": "CANDIDATE_NOT_YET_VERIFIED"
+  "production_status": "CANDIDATE_NOT_YET_VERIFIED",
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-explanation-autosync-v1.test.mjs",
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-powerhouse-system-map-governance-v1.test.mjs"
+    ]
+  }
 }

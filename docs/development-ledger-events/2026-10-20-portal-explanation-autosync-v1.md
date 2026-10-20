@@ -12,3 +12,5 @@ Validation: 16 focused tests pass including temp-repository add/delete/content d
 Release status: candidate, protected promotion and exact live readback still required; no production success claimed here.
 
 Additional audit: two legacy suites have seven failures reproduced unchanged on an isolated HEAD baseline: brain-powerhouse-observability-command-center-v1 (obsolete hubs/copy assertions, 2 failures); brain-powerhouse-observability-outcome-contract (5 references to a migration moved out of supabase/migrations). These pre-existing suite failures do not constitute new regressions and are not hidden or counted as passed.
+
+Candidate admission found missing learning compiler metadata (LEARNING_FAILURE_CLASS_REQUIRED). Corrected the existing record with METADATA_DRIFT/CI and real historical-replay test paths; canonicalization evaluation passes before retry. No gate relaxed.
