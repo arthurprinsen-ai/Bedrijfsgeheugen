@@ -1,0 +1,36 @@
+{
+  "fingerprint": "portal|customer-profile|no-fabricated-maturity-and-financial-benchmark|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|profile-input-backed-kpis|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "FICTIONAL_PROFILE_DEFAULTS_IN_CUSTOMER_METRICS",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Legacy profileOverviewMetrics used hardcoded 24 employee and €52/hour defaults plus maturity level 2 whenever a customer's fields were missing, then rendered their derived monetary and efficiency metrics in live customer dashboard/profile views. The figures looked customer-specific but were calculated from silent sample assumptions.",
+  "prevention_rule": "All 13 maturity dimensions and customer employee headcount and hourly cost must be explicitly recorded before any customer profile maturity/capacity/monetary KPI is calculated. Unknown must be null/em dash, never zero or a legacy benchmark. Even with complete inputs output is MODEL_ESTIMATE_FROM_ENTERED_INPUTS (46-week/legacy benchmark assumptions), not observed cash savings; never silently treat a model estimate as realized outcome.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "regression": "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs",
+    "production_browser": "PENDING_EXACT_SOURCE",
+    "tenant_readback": "PENDING_TWO_TENANT",
+    "financial_outcome_truth": "NOT_SYNTHESIZED",
+    "source_authority": "authenticated portal.profile customer input"
+  },
+  "production_verified": false
+}
