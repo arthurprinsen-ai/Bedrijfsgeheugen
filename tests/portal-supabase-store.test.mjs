@@ -106,3 +106,14 @@ test('an uncooperative upstream cannot hold the entrepreneur request beyond hard
 test('invalid gateway deadline configuration rejected without serving fake data',()=>{
  assert.throws(()=>createSupabasePortalProjectionStore({fetchFn:async()=>response({}),baseUrl:'https://example.supabase.co',serviceToken:'service',entrepreneurTimeoutMs:0}),/PORTAL_INTELLIGENCE_TIMEOUT_INVALID/);
 });
+
+test('entrepreneur gateway preserves exact safe upstream HTTP status for operator classification',async()=>{
+  const upstream=fakeClient(()=>response({error:'internal source failure',tenantId:'private'},503));
+  const store=createSupabasePortalProjectionStore({fetchFn:upstream.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
+  await assert.rejects(()=>store.getEntrepreneurIntelligence('tenant-private'),/EU portal store gateway failed \(503\)/);
+});
+test('entrepreneur response missing authenticated scope fails closed instead of accepting malformed data',async()=>{
+  const malformed=fakeClient(()=>response({sources:[],publications:[],intelligence:{tenantId:'tenant-1'}}));
+  const store=createSupabasePortalProjectionStore({fetchFn:malformed.fetchFn,baseUrl:'https://example.supabase.co',serviceToken:'service'});
+  await assert.rejects(()=>store.getEntrepreneurIntelligence('tenant-1'),/response shape invalid/);
+});
