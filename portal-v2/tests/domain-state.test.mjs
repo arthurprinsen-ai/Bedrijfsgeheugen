@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { createDomainState, createPortalDomainState } from '../domain-state.js';
 
 const clone = value => structuredClone(value);
@@ -139,4 +140,127 @@ test('legacy browser migration is strictly scoped to the authenticated email', a
   await store.init();
   assert.equal(store.get('portal.profile.employees'),20);
   assert.equal(store.get('portal.profile.hourlyCost'),undefined);
+});
+
+
+test('authenticated server refresh updates the same tenant without a new customer write',async()=>{
+ let persisted={portal:{profile:{employees:12},metrics:{revenue:200}}};
+ let reads=0,writes=0;
+ const client={
+  load:async()=>{reads++;return {mode:'authenticated',state:clone(persisted)};},
+  write:async next=>{writes++;persisted=clone(next);return {mode:'authenticated',state:clone(next)};},
+  isDemo:()=>false,currentUser:()=>({id:'tenant-a'}),
+  authHeaders:async()=>({authorization:'Bearer tenant-a'})
+ };
+ const domain=createPortalDomainState(client,{businessInputSaver:async()=>({stored:true})});
+ await domain.init();
+ persisted={portal:{profile:{employees:15},metrics:{revenue:250}}};
+ const result=await domain.refresh();
+ assert.deepEqual(result,{applied:true,changed:true});
+ assert.equal(domain.get('portal.profile.employees'),15);
+ assert.equal(domain.get('portal.metrics.revenue'),250);
+ assert.equal(domain.status(),'idle');
+ assert.equal(writes,0,'provider refresh cannot persist duplicate customer edits');
+ assert.equal(reads,2);
+ assert.deepEqual(await domain.refresh(),{applied:true,changed:false},'unchanged payload does not rebuild forms');
+});
+
+test('periodic revalidation never overwrites dirty input or input changed during the readback',async()=>{
+ let persisted={profile:{name:'Original'}};let resolver=null;
+ const state=createDomainState({
+  load:async()=>clone(persisted),
+  refreshLoad:async()=>new Promise(resolve=>{resolver=resolve}),
+  save:async next=>clone(next)
+ });
+ await state.init();
+ state.set('profile.name','Unsaved');
+ assert.equal((await state.refresh()).reason,'UNSAVED_OR_UNAUTHORIZED');
+ assert.equal(state.get('profile.name'),'Unsaved');
+ await state.flush();
+ const pending=state.refresh();
+ await Promise.resolve();
+ state.set('profile.name','Typed after request');
+ resolver({profile:{name:'Stale server'}});
+ assert.equal((await pending).reason,'CHANGED_DURING_READBACK');
+ assert.equal(state.get('profile.name'),'Typed after request');
+ assert.equal(state.status(),'dirty');
+});
+
+test('refresh readback failure retains last verified state and cannot claim a new state',async()=>{
+ const state=createDomainState({load:async()=>({profile:{employees:8}}),refreshLoad:async()=>{throw new Error('PROVIDER_OFFLINE');},save:async x=>x});
+ await state.init();
+ await assert.rejects(state.refresh(),/PROVIDER_OFFLINE/);
+ assert.equal(state.get('profile.employees'),8);
+ assert.equal(state.status(),'idle');
+});
+
+test('a response from an old authenticated tenant can never enter a new tenant state',async()=>{
+ let principal={id:'tenant-a'},release=null,refreshPending=false;
+ const client={
+  load:async()=>{
+   if(!refreshPending)return {mode:'authenticated',state:{portal:{profile:{employees:10}}}};
+   return new Promise(resolve=>{release=()=>resolve({mode:'authenticated',state:{portal:{profile:{employees:99}}}})});
+  },
+  write:async state=>({mode:'authenticated',state}),
+  currentUser:()=>principal,isDemo:()=>false,
+  authHeaders:async()=>({authorization:'Bearer current-tenant'})
+ };
+ const domain=createPortalDomainState(client,{businessInputSaver:async()=>({stored:true})});
+ await domain.init();
+ refreshPending=true;
+ const pending=domain.refresh();
+ await Promise.resolve();
+ principal={id:'tenant-b'};
+ release();
+ const outcome=await pending;
+ assert.equal(outcome.applied,false);
+ assert.equal(domain.get('portal.profile.employees'),10);
+});
+
+test('unacknowledged Brain inputs block revalidation even if customer state was already saved',async()=>{
+ let releaseBrain;
+ const brainWait=new Promise(resolve=>{releaseBrain=resolve});
+ let current={portal:{profile:{employees:10}}};
+ const client={
+  load:async()=>({mode:'authenticated',state:clone(current)}),
+  write:async state=>{current=clone(state);return {mode:'authenticated',state:clone(current)};},
+  currentUser:()=>({id:'tenant-a'}),isDemo:()=>false,
+  authHeaders:async()=>({authorization:'Bearer tenant-a'})
+ };
+ const domain=createPortalDomainState(client,{businessInputSaver:async()=>{await brainWait;return {stored:true}}});
+ await domain.init();
+ domain.set('portal.profile.employees',11);
+ const pendingSave=domain.flush();
+ await Promise.resolve();
+ assert.equal((await domain.refresh()).applied,false);
+ releaseBrain();
+ await pendingSave;
+ assert.equal(domain.get('portal.profile.employees'),11);
+});
+
+test('portal listens for fresh server readbacks without adding a second backend scheduler',()=>{
+ const app=fs.readFileSync(new URL('../app.js',import.meta.url),'utf8');
+ const shell=fs.readFileSync(new URL('../page-shell.js',import.meta.url),'utf8');
+ assert.match(app,/PORTAL_REVALIDATION_INTERVAL_MS=15\*60\*1000/);
+ assert.match(app,/visibilitychange/);
+ assert.match(app,/revalidateVisibleCustomer/);
+ assert.match(shell,/bg:portal-server-refreshed/);
+ assert.match(shell,/root\.contains\(active\)/);
+});
+
+
+test('provider auth expiry cannot replace the previously confirmed portal snapshot',async()=>{
+ let invalid=false;
+ const client={
+  load:async()=>invalid?{mode:'error',error:'AUTH_TOKEN_UNAVAILABLE',state:null}:{mode:'authenticated',state:{portal:{profile:{employees:17}}}},
+  write:async state=>({mode:'authenticated',state}),
+  isDemo:()=>false,currentUser:()=>({id:'tenant-a'}),
+  authHeaders:async()=>({authorization:'Bearer tenant-a'})
+ };
+ const domain=createPortalDomainState(client,{businessInputSaver:async()=>({stored:true})});
+ await domain.init();
+ invalid=true;
+ await assert.rejects(domain.refresh(),/PORTAL_REFRESH_AUTHENTICATED_READBACK_REQUIRED/);
+ assert.equal(domain.get('portal.profile.employees'),17);
+ assert.equal(domain.status(),'idle');
 });

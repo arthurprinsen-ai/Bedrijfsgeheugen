@@ -36,6 +36,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-safe-canonical-revalidation-v1',
+      fingerprint:'portal|authenticated-refresh|safe-domain-state-revalidation|v1',
+      label:'Visible Portal V2 pages revalidate authenticated tenant Brain data without erasing edits',
+      owner:'ONE BRAIN / Portal V2 existing tenant-state authority',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'existing signed-in Netlify /api/portal-state → canonical Supabase state → tenant BusinessInput and organism ACK',
+      inputs:Object.freeze(['authenticated tenant readback','verified current principal','unchanged local revision','no pending business input']),
+      outputs:Object.freeze(['changed server data reflected in dashboard and open page','stale cross-tenant response blocked','dirty customer input preserved']),
+      evidence:'tests/brain-portal-live-revalidation-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-portal-server-live-revalidation-v1.json'
+    }),
+    Object.freeze({
       id:'portal-economics-null-not-zero-v1',
       fingerprint:'portal|brain-runtime|unknown-monetary-values-never-zero|v1',
       label:'Portal economics distinguishes absent source amounts from actual measured zero',

@@ -424,6 +424,20 @@ export function enhancePortalShell(){
       // pagina's mogen direct opnieuw renderen, net als teken() in het oude portaal.
       if(current!==impact.sourcePage)requestAnimationFrame(()=>openPortalPage(current));
     });
+    // A fresh authenticated server projection invalidates open derived pages.
+    // Do not replace active form controls while the customer is editing them.
+    globalThis.addEventListener?.('bg:portal-server-refreshed',()=>{
+      const root=document.getElementById('portalView');
+      if(!root?.classList.contains('open'))return;
+      if(portalContext.domainState?.status?.()==='dirty'||portalContext.domainState?.status?.()==='saving')return;
+      const active=document.activeElement;
+      if(active&&root.contains(active)&&active.matches?.('input, textarea, select, [contenteditable="true"]'))return;
+      const page=root.dataset.pageId;
+      if(page)requestAnimationFrame(()=>{
+        if(root.classList.contains('open')&&root.dataset.pageId===page
+           &&!['dirty','saving'].includes(portalContext.domainState?.status?.()))openPortalPage(page);
+      });
+    });
     globalThis.addEventListener?.('bg:portal-brain-synced',event=>{
       const impact=event.detail?.impact;
       globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact||{}}));
