@@ -15,6 +15,12 @@ export function createRevenueLearningStore({fetchFn=globalThis.fetch,baseUrl=pro
   return Object.freeze({
     listProjectionCandidates:async(now)=>(await gateway({action:'list_projection_candidates',now})).candidates||[],
     upsertEvidence:evidence=>gateway({action:'upsert_evidence',evidence,idempotencyKey:`evidence:${evidence.evidenceId}`}),
+    upsertEvidenceBatch:async(evidences)=>{
+      if(!Array.isArray(evidences)||evidences.length<1||evidences.length>50)throw new Error('REVENUE_EVIDENCE_BATCH_SIZE_INVALID');
+      const result=await gateway({action:'upsert_evidence_batch',evidences});
+      if(result?.stored!==true||Number(result.count)!==evidences.length)throw new Error('REVENUE_EVIDENCE_BATCH_ACK_MISMATCH');
+      return result;
+    },
     listDueEvidence:async(now)=>(await gateway({action:'list_due_evidence',now})).evidence||[],
     listCohort:async(query)=>(await gateway({action:'list_cohort',query})).evidence||[],
     markEvidenceEvaluated:(evidenceId,evaluatedAt)=>gateway({action:'mark_evidence_evaluated',evidenceId,evaluatedAt,idempotencyKey:`evaluated:${evidenceId}:${evaluatedAt}`}),
