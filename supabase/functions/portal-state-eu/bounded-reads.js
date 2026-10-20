@@ -22,9 +22,11 @@ export async function boundedReads(jobs,{maxConcurrent=2,slowStageMs=1500,readTi
        let slowTimer,deadlineTimer,wasSlow=false;
        const deadline=new Promise((_,reject)=>{
          deadlineTimer=setTimeout(()=>{
+           // Settle the budget failure before notifying the transport so a
+           // provider resolving on abort cannot masquerade as successful data.
+           reject(new Error('PORTAL_READ_TIMEOUT'));
            controller.abort();
            onSlow('PORTAL_READ_TIMEOUT trace='+traceId+' stage='+stage+' elapsed_ms='+Math.max(0,Date.now()-started));
-           reject(new Error('PORTAL_READ_TIMEOUT'));
          },readTimeoutMs);
        });
        slowTimer=setTimeout(()=>{
