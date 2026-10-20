@@ -34,3 +34,31 @@ test('supervisor safely resumes single existing orchestrator and never skips ful
   assert.match(loop,/\['linkedin_personal','powerhouse-social-publisher',\{runDate,mode:'publish_only',channels:\['linkedin_personal'\]\}\]/);
   assert.match(loop,/\['linkedin_company','powerhouse-social-publisher',\{runDate,mode:'publish_only',channels:\['linkedin_company'\]\}\]/);
 });
+
+
+test('canonical obligation duplicate denial reopens one blocked hold only with unconsumed authority and no side effect',()=>{
+ assert.match(orchestrator,/function recoverableObligationUniquenessDenial\(row:any,obligation:any,consumedCapability:boolean\)/);
+ assert.match(orchestrator,/clean\(obligation\.status\)\.toUpperCase\(\)!=='BLOCKED'/);
+ assert.match(orchestrator,/clean\(obligation\.external_id\)/);
+ assert.match(orchestrator,/clean\(obligation\.last_error\)\.startsWith\('GLOBAL_POST_DUPLICATE_BLOCKED:'\)/);
+ assert.match(orchestrator,/evidence\.global_uniqueness_gate!=='blocked'/);
+ assert.match(orchestrator,/authority\.issued!==true\|\|authority\.consumed!==false/);
+ assert.match(orchestrator,/candidate\.provider_create_success===true/);
+ assert.match(orchestrator,/candidate\.possible_provider_side_effect===true/);
+ assert.match(orchestrator,/candidate\.republish_forbidden===true/);
+ assert.match(orchestrator,/consumedCapabilityChannels\.has\(channel\)/);
+ assert.match(orchestrator,/select\('channel,evidence,status,last_error,external_id'\)/);
+ assert.match(orchestrator,/priorPersonalObligation=obligations\.find/);
+ assert.match(orchestrator,/personalDuplicateRecovery = recoverableUniquenessDenial\(priorPersonal\)/);
+ assert.match(orchestrator,/currentObligation=obligations\.find/);
+ assert.match(orchestrator,/obligationRejected/);
+});
+
+test('obligation-only duplicates keep different personal source lineage and cannot requeue same source forever',()=>{
+ assert.match(orchestrator,/priorPersonalObligation\?\.evidence\?\.personal_source_recommendation_id/);
+ assert.match(orchestrator,/priorPersonalObligation\?\.evidence\?\.fallback_recommendation_id/);
+ assert.match(orchestrator,/currentObligation\?\.evidence\?\.personal_source_recommendation_id/);
+ assert.match(orchestrator,/currentObligation\?\.evidence\?\.fallback_recommendation_id/);
+ assert.match(orchestrator,/personalRejectedSourceIds\.includes\(clean\(source\.recommendation_id\)\)/);
+ assert.match(orchestrator,/recs\.filter\(validPersonalSource\)/);
+});

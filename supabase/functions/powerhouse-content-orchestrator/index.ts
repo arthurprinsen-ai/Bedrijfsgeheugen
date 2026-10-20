@@ -397,13 +397,35 @@ function recoverableUniquenessDenial(row:any){
     && evidence.possible_provider_side_effect!==true;
 }
 
-function shouldPreserveExisting(row:any, channel:string, personalSource:any, consumedCapabilityChannels:Set<string>) {
+// Recover a pre-provider duplicate even if the channel decision was normalized to "hold"
+// while the authoritative daily publication obligation retained the actual denial.
+// Fail closed on consumed capabilities, unknown authority or any possible provider send.
+function recoverableObligationUniquenessDenial(row:any,obligation:any,consumedCapability:boolean){
+  if(!row||clean(row.state)!=='blocked'||clean(row.delivery_ref)||consumedCapability)return false;
+  if(!obligation||clean(obligation.status).toUpperCase()!=='BLOCKED'||clean(obligation.external_id))return false;
+  const evidence=obligation.evidence||{},rowEvidence=row.delivery_evidence||{};
+  const authority=evidence.publication_authority||{};
+  if(!clean(obligation.last_error).startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:')||
+     evidence.global_uniqueness_gate!=='blocked'||
+     authority.issued!==true||authority.consumed!==false)return false;
+  for(const candidate of [evidence,rowEvidence]){
+    if(candidate.provider_create_success===true||
+       candidate.provider_publication_ack_verified===true||
+       candidate.provider_truth_verified===true||
+       candidate.possible_provider_side_effect===true||
+       candidate.republish_forbidden===true)return false;
+  }
+  return true;
+}
+
+function shouldPreserveExisting(row:any, channel:string, personalSource:any, consumedCapabilityChannels:Set<string>,obligation:any=null) {
   if (!row) return false;
   // A consumed daily authority is not proof of a post, but it IS evidence of a
   // possibly attempted provider mutation. Never re-decide or resend until
   // provider-side reconciliation resolves that exact earlier attempt.
   if(consumedCapabilityChannels.has(channel) && !clean(row.delivery_ref)) return true;
   if(recoverableUniquenessDenial(row)) return false;
+  if(recoverableObligationUniquenessDenial(row,obligation,consumedCapabilityChannels.has(channel))) return false;
   const evidence=row.delivery_evidence||{};
   const personalNoGapReopen = channel === 'linkedin_personal'
     && clean(row.state) === 'skipped'
@@ -461,7 +483,7 @@ Deno.serve(async (req) => {
       db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status').eq('status','actief').order('vertrouwen',{ascending:false}).order('bijgewerkt_op',{ascending:false}).limit(30),
       db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle(),
       db.from('powerhouse_channel_decisions').select('channel,decision,state,priority,delivery_ref,delivery_evidence').eq('run_date',runDate),
-      db.from('content_publication_obligations').select('channel,evidence').eq('tenant_id','canonical').eq('publication_date',runDate),
+      db.from('content_publication_obligations').select('channel,evidence,status,last_error,external_id').eq('tenant_id','canonical').eq('publication_date',runDate),
       (!channelScope || channelScope==='instagram_company')
         ? db.from('powerhouse_media_proof_evidence_v1').select('exact_media_retrievable,exact_media_sha256,identity_gate_result,media_url,proof_lineage,fingerprint').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle()
         : Promise.resolve({data:null,error:null}),
@@ -491,13 +513,19 @@ Deno.serve(async (req) => {
     // independently verified personal source. Retrying the same source in a new
     // paraphrase loops forever and can never satisfy global story uniqueness.
     const priorPersonal = existing.find((row:any)=>clean(row.channel)==='linkedin_personal') || null;
-    const personalDuplicateRecovery = recoverableUniquenessDenial(priorPersonal);
+    const priorPersonalObligation=obligations.find((row:any)=>clean(row.channel)==='linkedin_personal')||null;
+    const personalDuplicateRecovery = recoverableUniquenessDenial(priorPersonal)
+      || recoverableObligationUniquenessDenial(priorPersonal,priorPersonalObligation,consumedCapabilityChannels.has('linkedin_personal'));
     const personalRejectedSourceIds = personalDuplicateRecovery
       ? [...new Set([
           ...(Array.isArray(priorPersonal?.delivery_evidence?.rejected_recommendation_ids)
             ? priorPersonal.delivery_evidence.rejected_recommendation_ids : []),
           priorPersonal?.delivery_evidence?.personal_source_recommendation_id,
           priorPersonal?.delivery_evidence?.fallback_recommendation_id,
+          priorPersonalObligation?.evidence?.personal_source_recommendation_id,
+          priorPersonalObligation?.evidence?.fallback_recommendation_id,
+          ...(Array.isArray(priorPersonalObligation?.evidence?.rejected_recommendation_ids)
+            ? priorPersonalObligation.evidence.rejected_recommendation_ids : []),
         ].map(clean).filter(Boolean))]
       : [];
     const personalSource = recs.filter(validPersonalSource).find((source:any)=>
@@ -520,12 +548,20 @@ Deno.serve(async (req) => {
     stage = 'reconcile-decisions';
     for (const channel of (channelScope ? [] : CHANNELS)) {
       const previous:any = existingByChannel.get(channel);
-      if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels)) continue;
-      const recoverableDuplicate=recoverableUniquenessDenial(previous);
+      const currentObligation=obligations.find((item:any)=>clean(item.channel)===(channel==='instagram_company'?'instagram':channel))||null;
+      if (shouldPreserveExisting(previous,channel,personalSource,consumedCapabilityChannels,currentObligation)) continue;
+      const recoverableDuplicate=recoverableUniquenessDenial(previous)
+        || recoverableObligationUniquenessDenial(previous,currentObligation,consumedCapabilityChannels.has(channel));
       const priorRejected=Array.isArray(previous?.delivery_evidence?.rejected_recommendation_ids)
         ? previous.delivery_evidence.rejected_recommendation_ids.map(clean).filter(Boolean) : [];
+      const obligationRejected=Array.isArray(currentObligation?.evidence?.rejected_recommendation_ids)
+        ? currentObligation.evidence.rejected_recommendation_ids.map(clean).filter(Boolean) : [];
       const rejectedRecommendationIds=recoverableDuplicate
-        ? [...new Set([...priorRejected,clean(previous?.delivery_evidence?.fallback_recommendation_id)].filter(Boolean))]
+        ? [...new Set([...priorRejected,...obligationRejected,
+            clean(previous?.delivery_evidence?.fallback_recommendation_id),
+            clean(previous?.delivery_evidence?.personal_source_recommendation_id),
+            clean(currentObligation?.evidence?.personal_source_recommendation_id),
+            clean(currentObligation?.evidence?.fallback_recommendation_id)].filter(Boolean))]
         : [];
       const decision:any = plannedDecision(channel,recs,personalSource,instagramProof,
         channel==='linkedin_company'||channel==='linkedin_personal'?rejectedRecommendationIds:[]);

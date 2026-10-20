@@ -2300,3 +2300,15 @@ export const SALESROBOT_EXISTING_HOURLY_PROVIDER_PROBE_20261020=Object.freeze({
  regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
  learning:'brain/learning/2026-10-20-salesrobot-existing-hourly-preflight.json'
 });
+
+
+export const SOCIAL_OBLIGATION_HOLD_DUPLICATE_RECOVERY_20261020=Object.freeze({
+  fingerprint:'social|linkedin-personal|obligation-hold-dedupe-reconciliation|20261020',
+  executor:'powerhouse-content-orchestrator',
+  decisionTable:'powerhouse_channel_decisions',
+  obligationTable:'content_publication_obligations',
+  requirement:'unconsumed authority and no provider side effect',
+  preserveGlobalUniqueness:true,noNewScheduler:true,
+  regression:'tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs',
+  learning:'brain/learning/2026-10-20-social-obligation-hold-duplicate-recovery.json'
+});
