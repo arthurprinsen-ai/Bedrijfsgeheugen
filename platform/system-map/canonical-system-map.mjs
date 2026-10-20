@@ -2188,3 +2188,17 @@ export const SALESROBOT_EARLY_READINESS_CANARY_20261020=Object.freeze({
  regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
  learning:'brain/learning/2026-10-20-salesrobot-early-readiness-canary.json'
 });
+
+
+// Composio v3.1 execution must bind provider connected account and its owner user_id.
+export const SALESROBOT_COMPOSIO_IDENTITY_TRANSPORT_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|composio-user-id-required|20261020',
+ owner:'powerhouse-linkedin-sales-machine',
+ transport:'/api/v3.1/tools/execute',
+ requiredParameters:['connected_account_id','user_id','arguments'],
+ source:'composio.connected_accounts',
+ noStaticCredentials:true,
+ providerReadbackRequired:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-composio-user-id.json'
+});
