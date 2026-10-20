@@ -25,6 +25,16 @@ export default async request=>{
     const message=String(error?.message||error||'');
     const configMissing=/configuration missing/i.test(message);
     const timedOut=/PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT/.test(message);
+    // Operator-only failure categories, never raw messages, tenant IDs, credentials or query payloads.
+    const upstreamStatus=/^EU portal store gateway failed \\((401|403|429|500|502|503|504)\\)$/.exec(message)?.[1]||null;
+    const failureCategory=configMissing?'CONFIG_MISSING'
+      :timedOut?'UPSTREAM_DEADLINE'
+      :upstreamStatus?'UPSTREAM_HTTP_'+upstreamStatus
+      :/tenant scope mismatch/i.test(message)?'TENANT_SCOPE_MISMATCH'
+      :/response shape invalid/i.test(message)?'UPSTREAM_RESPONSE_SHAPE'
+      :error?.name==='TypeError'?'UPSTREAM_NETWORK_FETCH'
+      :'UPSTREAM_UNKNOWN_FAILURE';
+    console.error('PORTAL_ENTREPRENEUR_GATEWAY_FAILED category='+failureCategory);
     const code=configMissing?'PORTAL_GATEWAY_CONFIG_MISSING'
       :timedOut?'PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT':'ENTREPRENEUR_INTELLIGENCE_GATEWAY_FAILED';
     return json({error:code},configMissing||timedOut?503:502);
