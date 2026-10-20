@@ -1,0 +1,33 @@
+{
+  "fingerprint": "portal|stalled-postgrest-requests|hard-stage-abort|p0-4215",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|database-read-hard-deadline|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "EDGE_READ_CONCURRENCY_WITHOUT_TIMEOUT",
+    "scope": "PORTAL",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Production Supabase Edge v217 PORTAL_READ_SLOW stage SOURCES, PUBLICATIONS, EXTERNAL_SIGNALS at 2002ms; failed reads at 90-197 seconds. boundedReads limited concurrency but did not abort pending Supabase PostgREST queries.",
+  "prevention_rule": "Pass actual AbortSignal to each lazy Supabase PostgREST builder and race each read against a 5-second deadline with signal abort, preserving the 3-at-once cap, original auth and fail-closed no-partial-results behavior. Do not substitute zero or stale data for missing live results. Database indices/pool must still be repaired and two tenants validated.",
+  "test_evidence": {
+    "production_before": "PORTAL_READ_FAILED stage=SOURCES elapsed_ms=197056; EXTERNAL_SIGNALS elapsed_ms=149745; Netlify portal data API HTTP504",
+    "production_after": "PENDING",
+    "tenant_isolation": "UNPROVEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-portal-read-deadline.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-portal-read-deadline.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-portal-read-deadline.test.mjs"
+    ]
+  }
+}
