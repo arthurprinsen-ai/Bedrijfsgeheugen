@@ -55,7 +55,8 @@ export function createSupabasePortalProjectionStore({
   async function getEntrepreneurIntelligence(tenantId){
     const expectedTenant=String(tenantId);
     const data=await gateway({action:'entrepreneur_intelligence',tenantId:expectedTenant},{timeoutMs:entrepreneurTimeoutMs});
-    if(data?.scope?.authenticatedTenant!==expectedTenant)throw new Error('EU portal intelligence tenant scope mismatch');
+    if(!data?.scope||typeof data.scope.authenticatedTenant!=='string')throw new Error('EU portal intelligence response shape invalid');
+    if(data.scope.authenticatedTenant!==expectedTenant)throw new Error('EU portal intelligence tenant scope mismatch');
     return data;
   }
   async function getValidatedFinancialForecasts(tenantId){
