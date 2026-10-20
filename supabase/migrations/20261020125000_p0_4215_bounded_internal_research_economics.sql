@@ -69,4 +69,10 @@ begin
   return v_count;
 end;
 $function$;
+-- The production function is only invoked by the server-side canonical mux.
+-- SECURITY DEFINER must never be directly executable by browser roles.
+REVOKE ALL ON FUNCTION public.powerhouse_backfill_internal_research_economics_v1(timestamp with time zone)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_backfill_internal_research_economics_v1(timestamp with time zone)
+  TO service_role;
 COMMIT;
