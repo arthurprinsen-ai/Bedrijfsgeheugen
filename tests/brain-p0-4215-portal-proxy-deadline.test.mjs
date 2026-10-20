@@ -28,6 +28,11 @@ test('operator gateway failure category is safe, finite and does not expose cust
  assert.match(route,/PORTAL_ENTREPRENEUR_GATEWAY_FAILED category=/);
  assert.doesNotMatch(route,/console\.error\([^\n]*(?:tenantId|token|message|JSON\.stringify)/);
  assert.match(store,/response shape invalid/);
+ assert.match(store,/safeStages=new Set/);
+ assert.match(store,/ENTREPRENEUR_INTELLIGENCE_READ_FAILED/);
+ assert.match(route,/const upstreamStage=upstreamMatch/);
+ assert.match(route,/_STAGE_/);
+ assert.doesNotMatch(route,/console\.error\([^\n]*(?:tenantId|token|message|JSON\.stringify)/);
  assert.match(route,/ENTREPRENEUR_INTELLIGENCE_GATEWAY_FAILED/);
  assert.match(route,/status>=400\?'no-store'/);
 });
