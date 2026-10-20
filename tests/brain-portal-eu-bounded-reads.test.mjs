@@ -31,3 +31,22 @@ test('no uncapped fan-out or eager query invocation is allowed',async()=>{
  await assert.rejects(()=>boundedReads([async()=>1],{maxConcurrent:0}),/READ_CONCURRENCY_INVALID/);
  await assert.rejects(()=>boundedReads([async()=>1],{maxConcurrent:11}),/READ_CONCURRENCY_INVALID/);
 });
+
+test('a timed-out PostgREST stage aborts and subsequent batches never start',async()=>{
+ const seen=[];
+ const jobs=[
+  async(signal)=>new Promise((resolve,reject)=>{
+   seen.push('A');
+   signal.addEventListener('abort',()=>reject(new Error('ABORTED_AT_TRANSPORT')),{once:true});
+  }),
+  async()=>{seen.push('B');return 'ok'},
+  async()=>{seen.push('C');return 'should not start'}
+ ];
+ await assert.rejects(()=>boundedReads(jobs,{maxConcurrent:2,perStageTimeoutMs:500,slowStageMs:150,onSlow:()=>{}}),/ABORTED_AT_TRANSPORT/);
+ assert.deepEqual(seen,['A','B']);
+});
+test('stage budgets reject invalid values',async()=>{
+ await assert.rejects(()=>boundedReads([],{perStageTimeoutMs:-1}),/READ_STAGE_TIMEOUT_INVALID/);
+ await assert.rejects(()=>boundedReads([],{perStageTimeoutMs:400}),/READ_STAGE_TIMEOUT_INVALID/);
+ await assert.rejects(()=>boundedReads([],{perStageTimeoutMs:30001}),/READ_STAGE_TIMEOUT_INVALID/);
+});

@@ -124,9 +124,11 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
   };
 }
 function readRows(label:string,query:any){
-  // Lazy: database requests are issued only when boundedReads schedules a job.
-  return async()=>{
-    const {data,error}=await query;
+  // Lazy dispatch + actual HTTP abort: never leave orphaned PostgREST fetches.
+  return async(signal?:AbortSignal)=>{
+    const request=signal?query.abortSignal(signal):query;
+    const {data,error}=await request;
+    if(signal?.aborted)throw new Error('PORTAL_READ_TIMEOUT');
     if(error)throw new Error(label);
     return Array.isArray(data)?data:[];
   };
@@ -479,7 +481,7 @@ Deno.serve(async(req:Request)=>{
         readRows('INTELLIGENCE_SNAPSHOT',client.from('powerhouse_intelligence_snapshot_v1')
           .select('tenant_id,refreshed_at,catalog_source_count,public_source_count,connector_source_count,domain_count,observed_signal_count,signals_24h,signals_7d,high_attention_count,scored_impact_count,action_candidate_count,known_opportunity_value_eur,known_risk_value_eur,top_domains,source_health,status,evidence,updated_at')
           .eq('tenant_id','canonical').limit(1))
-      ],{maxConcurrent:3});
+      ],{maxConcurrent:2,perStageTimeoutMs:3800,slowStageMs:1500});
       const intelligenceSignals=mergeEntrepreneurSignals(signalsCanonical,tenantImpacts);
       const actionCandidates=mergeEntrepreneurActions(canonicalActions,tenantActions);
       const snapshot=buildEntrepreneurSnapshot(baseSnapshots[0]||null,domains,sourceCatalog,intelligenceSignals,tenantImpacts,actionCandidates);

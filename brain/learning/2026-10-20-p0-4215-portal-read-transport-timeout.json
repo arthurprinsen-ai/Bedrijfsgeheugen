@@ -1,0 +1,31 @@
+{
+  "fingerprint": "portal-http-orphan-timeout-p0-4215-20261020",
+  "date": "2026-10-20",
+  "obligation": "p0-4215-portal-read-transport-timeout-20261020",
+  "root_cause": "Production traces show the first three PostgREST calls SOURCES, PUBLICATIONS, EXTERNAL_SIGNALS taking 90-197 s before failure; bounded concurrency without a request deadline allows connections to remain occupied.",
+  "intervention": "Send AbortSignal.timeout to the real PostgREST request, reduce stage concurrency from 3 to 2, 3800 ms max per stage, preserve ten data stages and existing tenant filter; fail closed on missing data.",
+  "prevention": "No orphan PostgREST queries, no partial success, no fake values or tenant intermixing; production acceptance still requires recovered database capacity.",
+  "compiler": {
+    "failure_class": "PORTAL_POSTGREST_ORPHAN_TIMEOUT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "PORTAL_READ_TRANSPORT_ABORT_3800MS",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-eu-bounded-reads.test.mjs",
+      "tests/brain-p0-4215-portal-timeboxed-transport.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "production_observation": "SOURCES/PUBLICATIONS/EXTERNAL_SIGNALS 90-197 s, portal HTTP 504",
+    "required_ci": "pending",
+    "production": "not proven"
+  },
+  "status": "CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+  ]
+}
