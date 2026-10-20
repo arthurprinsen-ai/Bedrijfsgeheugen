@@ -246,3 +246,20 @@ test('portal listens for fresh server readbacks without adding a second backend 
  assert.match(shell,/bg:portal-server-refreshed/);
  assert.match(shell,/root\.contains\(active\)/);
 });
+
+
+test('provider auth expiry cannot replace the previously confirmed portal snapshot',async()=>{
+ let invalid=false;
+ const client={
+  load:async()=>invalid?{mode:'error',error:'AUTH_TOKEN_UNAVAILABLE',state:null}:{mode:'authenticated',state:{portal:{profile:{employees:17}}}},
+  write:async state=>({mode:'authenticated',state}),
+  isDemo:()=>false,currentUser:()=>({id:'tenant-a'}),
+  authHeaders:async()=>({authorization:'Bearer tenant-a'})
+ };
+ const domain=createPortalDomainState(client,{businessInputSaver:async()=>({stored:true})});
+ await domain.init();
+ invalid=true;
+ await assert.rejects(domain.refresh(),/PORTAL_REFRESH_AUTHENTICATED_READBACK_REQUIRED/);
+ assert.equal(domain.get('portal.profile.employees'),17);
+ assert.equal(domain.status(),'idle');
+});
