@@ -286,3 +286,8 @@ Verplicht:
 
 Fingerprint: `commercial|linkedin-salesrobot|ambiguous-provider-send-no-resend|20261020`.
 Een SalesRobot-fout na het versturen kan betekenen dat de provider de DM al heeft geplaatst. De canonieke `powerhouse-linkedin-sales-machine` moet de oorspronkelijke action-ID op `waiting` houden en `needs_readback=true`, `republish_forbidden=true` registreren. Geen fallback-kanaal, automatisch opnieuw verzenden of status `done` zonder onafhankelijke ontvangst-/inbox-ID. Pas bij echte providerreadback mag de bestaande outcome-reconciler afronden. Als de providerlicentie/cookie/campagne ontbreekt: `UNAVAILABLE/CONFIG_REQUIRED`, nooit groen. Bestaande consent, human approval, suppressions, cooldown, berichtkwaliteit en één scheduler blijven bindend. P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
+## Provider readiness onafhankelijk van content en AI — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|early-truth-readonly-canary|20261020`.
+De bestaande `powerhouse-linkedin-sales-machine` moet de werkelijke SalesRobot-licentie, cookie, actieve campagne en uitvoeringsdagen vóór voorbereidende AI-/composer-acties controleren en de bestaande `powerhouse_channel_capabilities_v1` registraties voor DM én campagnes bijwerken. Een upstream AI-storing mag de providerstatus niet bevriezen. Een `dry_run` is alleen lezen: geen SQL-materialisatie, composer, send of evidence-mutatie. Geen tweede scheduler, sender of CRM. Echte verzending blijft afhankelijk van individuele toestemming, human approval, kwaliteit, suppressions, cooldown, providerbevestiging en onafhankelijke readback. Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
