@@ -224,7 +224,7 @@ fetchPortalPlan().then(subscription=>{
 }).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
 
 const portalStateClient=createPortalStateClient();
-const scanClaimBridge=createScanClaimBridge({authHeaders:()=>portalStateClient.authHeaders()});
+const scanClaimBridge=createScanClaimBridge({authHeaders:()=>portalStateClient.authHeaders(),onClaimed:()=>portalDomainState.refresh()});
 const portalDomainState=createPortalDomainState(portalStateClient);
 // The authenticated portal uses the same canonical read API for periodic
 // revalidation. No new scheduler, browser store or duplicate source of truth.
