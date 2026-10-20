@@ -7,10 +7,31 @@ async function readJson(response){const body=await response.json().catch(()=>({}
 function providerName(p){return p?.name||p?.displayName||p?.providerKey||'Provider';}
 function status(v){return '<span class="trust-status '+tone(v)+'">'+esc(v||'UNKNOWN')+'</span>';}
 function evidenceLinks(urls=[]){return arr(urls).map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Officiële bron ↗</a>').join('');}
-function renderSovereignty(root,data,security,scope){
+
+function renderModelContext(data,state,saveStatus,activation){
+ const prefs=state?.portal?.aiModelPreferences||{},runtime=state?.portal?.runtime||{};
+ const pending=!['idle','saved'].includes(saveStatus);
+ return '<section class="trust-section" data-model-passport><header><h3>Jouw AI-keuze en de geregistreerde verwerking</h3><p>Een modelkeuze is een aanvraag; een registratie is geen uitvoeringsbewijs. Werkelijk gebruik vereist afzonderlijke geverifieerde runtime-evidence.</p></header>'+
+ '<p><b>Standaardmodel aangevraagd:</b> '+esc(prefs.defaultModelId||'Nog niet gekozen')+' · <b>Datavoorkeur:</b> '+esc(prefs.policy||'Niet vastgelegd')+' · '+(pending?'Wijziging nog niet bevestigd opgeslagen':'Klantstaat geladen')+'</p>'+
+ '<p><b>Doel:</b> '+esc(prefs.useCase||'Nog niet vastgelegd')+' · <b>Keuze bijgewerkt:</b> '+esc(prefs.updatedAt||'Onbekend')+'</p>'+
+ '<div class="trust-list">'+(arr(prefs.models).map(m=>'<p><b>'+esc(m.modelId)+'</b> · aangevraagde route: '+esc(m.routeId||'Nog niet gekozen')+'</p>').join('')||'<p>Geen modellen aangevraagd.</p>')+'</div>'+
+ '<p><b>Taaktoewijzingen:</b> '+(Object.entries(prefs.assignments||{}).map(([task,model])=>esc(task)+': '+esc(model)).join(' · ')||'Geen uitzonderingen vastgelegd')+'</p>'+
+ '<p><a href="https://www.bedrijfsgeheugen.nl/portaal?page=ai-modelkeuze" data-passport-model-choice>AI-modelkeuze aanpassen →</a></p>'+
+ '<h4>Aansluitstatus voor jouw opgeslagen modelkeuze</h4><p>'+
+ (activation?.readyForTest===true?'Servercontrole: klaar voor een handmatige test; nog geen uitvoeringsbewijs.':'Aansluiting niet volledig bewezen; zie de afzonderlijke controles.')+'</p>'+
+ '<div class="trust-list">'+(arr(activation?.checks).map(c=>'<p><b>'+esc(c.label)+'</b> · '+esc(c.status||'UNKNOWN')+' · '+esc(c.detail||'')+'</p>').join('')||'<p>Actuele aansluitcontrole niet beschikbaar.</p>')+'</div>'+
+ '<h4>AI-routes in het beveiligde register</h4><div class="trust-list">'+
+ (arr(data?.aiRoutes).map(r=>'<details><summary><span><b>'+esc(r.name||r.useCaseId||'AI-toepassing')+'</b><small>'+esc(r.provider)+' · '+esc(r.modelId||'Model onbekend')+'</small></span><span class="trust-status warn">Geregistreerd; uitvoering niet bewezen</span></summary><div class="trust-detail">'+
+ [['Doel',r.purpose],['Gegevens',arr(r.dataCategories).join(', ')],['Verwerking',r.processingScope],['Training',r.trainingUse],['Bewaren',r.retentionPolicy],['Doorgifte',r.crossBorderTransfer],['Subverwerkers',arr(r.subprocessors).join(', ')],['Beoordeeld',r.lastReviewedAt],['Herbeoordeling',r.nextReviewAt]].map(([label,value])=>'<p><b>'+label+':</b> '+esc(value||'Onbekend')+'</p>').join('')+evidenceLinks(r.evidenceUrls)+'</div></details>').join('')||'<p>Geen geregistreerde AI-routes beschikbaar; actief model niet bewezen.</p>')+
+ '</div><p><b>Datapaspoort bronmoment:</b> '+esc(data?.generatedAt||'Onbekend')+' · <b>Brein / Powerhouse bronmoment:</b> '+esc(runtime.observability?.updatedAt||'Onbekend')+'</p>'+
+ '<p>Het paspoort leest dezelfde klantstaat en beveiligde snapshots. De bestaande Heartbeat vernieuwt de provider-evidence; ontbrekend bewijs blijft onbekend.</p></section>';
+}
+
+function renderSovereignty(root,data,security,scope,state={},saveStatus='idle',activation=null){
  const providers=arr(data?.providers),flows=arr(data?.dataFlows),summary=data?.summary||{},policy=data?.policy||{};
  root.innerHTML=`<section class="trust-workspace">
   <div class="trust-hero"><div><span class="trust-kicker">Alleen ingelogde klantomgeving</span><h2>Data & AI Sovereignty</h2><p>Waar je data staat, waar verwerking plaatsvindt, welke AI/providers betrokken zijn en welke beperkingen aantoonbaar gelden.</p></div><div class="trust-scope"><small>Weergave</small><strong>${scope}</strong><span>Tenant-scoped en server-side geautoriseerd</span></div></div>
+  ${renderModelContext(data,state,saveStatus,activation)}
   <div class="trust-questionbar">
    <button data-answer="storage">Waar staat mijn data?</button><button data-answer="processing">Waar wordt verwerkt?</button><button data-answer="ai">Welke AI kijkt mee?</button><button data-answer="border">Gaat data buiten Europa?</button><button data-answer="training">Wordt data gebruikt voor training?</button>
   </div>
@@ -62,27 +83,89 @@ function renderSecurity(root,security,sovereignty,scope){
   </section>
  </section>`;
 }
-export async function mountSecurityTrustWorkspace(root,{pageId='trust-center',stateClient}={}){
+
+// Read-only projection of canonical state; never starts a scheduler or inference.
+const workspaces=new WeakMap();
+export function disposeSecurityTrustWorkspace(root){workspaces.get(root)?.();}
+export async function mountSecurityTrustWorkspace(root,{pageId='trust-center',stateClient,domainState,openPage,fetchImpl=globalThis.fetch,eventTarget=globalThis.window,documentTarget=globalThis.document,now=Date.now}={}){
  if(!root)throw new TypeError('SECURITY_TRUST_ROOT_REQUIRED');
  if(!stateClient?.authHeaders)throw new Error('SECURITY_TRUST_AUTH_CONTEXT_REQUIRED');
+ disposeSecurityTrustWorkspace(root);
  root.innerHTML='<div class="trust-loading">Beveiligde trustdata laden…</div>';
- const user=stateClient.currentUser?.();
- if(!user||stateClient.isDemo?.()){root.innerHTML='<div class="trust-denied">Log in als klant of Bedrijfsgeheugen-beheerder om deze pagina te openen.</div>';return;}
- const headers=await stateClient.authHeaders();
- if(!headers?.authorization){root.innerHTML='<div class="trust-denied">Je sessie bevat geen geldige autorisatie.</div>';return;}
- const internal=isInternal(user);
- const suffix=internal?'?scope=bedrijfsgeheugen':'';
- try{
-  const [sovBody,secBody]=await Promise.all([
-   fetch('/api/data-sovereignty'+suffix,{headers,credentials:'same-origin'}).then(readJson),
-   fetch('/api/security-trust'+suffix,{headers,credentials:'same-origin'}).then(readJson)
-  ]);
-  const sovereignty=sovBody.snapshot||sovBody;
-  const security=secBody.snapshot||secBody;
-  const scope=internal?'Bedrijfsgeheugen · canonical':'Jouw organisatie';
-  if(pageId==='data-ai-passport')renderSovereignty(root,sovereignty,security,scope);
-  else renderSecurity(root,security,sovereignty,scope);
- }catch(error){
-  root.innerHTML='<div class="trust-denied"><b>Trustdata kon niet veilig worden geladen.</b><span>'+esc(error.message)+'</span></div>';
- }
+ const initialUser=stateClient.currentUser?.(),subject=initialUser?.id;
+ let alive=true,inFlight=null,lastRead=-Infinity,sovereignty=null,security=null,activation=null,refreshAgain=false,controller=null;
+ const removers=[];
+ const dispose=()=>{if(!alive)return;alive=false;controller?.abort();for(const off of removers)off?.();workspaces.delete(root);};
+ workspaces.set(root,dispose);
+ const authorized=()=>alive&&Boolean(subject)&&stateClient.currentUser?.()?.id===subject&&!stateClient.isDemo?.();
+ const deny=()=>{root.innerHTML='<div class="trust-denied">Log opnieuw in om actuele trustdata te laden.</div>';dispose();};
+ if(!authorized()){deny();return;}
+ // Preferences and passport use the same tenant, including for administrators.
+ const internal=pageId!=='data-ai-passport'&&isInternal(initialUser),suffix=internal?'?scope=bedrijfsgeheugen':'';
+ const scope=internal?'Bedrijfsgeheugen · canonical':'Jouw organisatie';
+ const preferences=()=>JSON.stringify(domainState?.get?.()?.portal?.aiModelPreferences);
+ const saved=()=>['idle','saved'].includes(domainState?.status?.()||'idle');
+ const render=()=>{
+  if(!authorized()){if(alive)deny();return;}
+  if(!sovereignty||!security)return;
+  if(pageId==='data-ai-passport'){
+   renderSovereignty(root,sovereignty,security,scope,domainState?.get?.()||{},domainState?.status?.()||'idle',activation);
+   root.querySelector('[data-passport-model-choice]')?.addEventListener('click',event=>{if(openPage){event.preventDefault();openPage('ai-modelkeuze');}});
+  }else renderSecurity(root,security,sovereignty,scope);
+ };
+ const refresh=({force=false}={})=>{
+  if(!authorized()){if(alive)deny();return Promise.resolve();}
+  if(inFlight){if(force)refreshAgain=true;return inFlight;}
+  if(!force&&now()-lastRead<30000)return Promise.resolve();
+  lastRead=now();
+  const selectionAtRead=preferences(),savedAtRead=saved();
+  controller=new AbortController();
+  const timeout=setTimeout(()=>controller?.abort(),15000);
+  inFlight=(async()=>{
+   try{
+    const headers=await stateClient.authHeaders();
+    if(!authorized())return;
+    if(!headers?.authorization)throw new Error('AUTHORIZATION_REQUIRED');
+    const options={headers,credentials:'same-origin',cache:'no-store',signal:controller.signal};
+    const [sovBody,secBody,activationBody]=await Promise.all([
+     fetchImpl('/api/data-sovereignty'+suffix,options).then(readJson),
+     fetchImpl('/api/security-trust'+suffix,options).then(readJson),
+     pageId==='data-ai-passport'&&savedAtRead?fetchImpl('/api/tenant-ai-activation-status',options).then(readJson).catch(()=>null):null
+    ]);
+    if(!authorized())return;
+    sovereignty=sovBody.snapshot||sovBody;security=secBody.snapshot||secBody;
+    activation=savedAtRead&&saved()&&selectionAtRead===preferences()?activationBody:null;
+    render();
+   }catch(error){
+    if(!authorized())return;
+    sovereignty=null;security=null;activation=null;
+    root.innerHTML='<div class="trust-denied"><b>Trustdata kon niet veilig worden geladen.</b><span>'+esc(error.message)+'</span></div>';
+   }
+  })().finally(()=>{
+   clearTimeout(timeout);inFlight=null;controller=null;
+   if(refreshAgain&&alive){refreshAgain=false;void refresh({force:true});}
+  });
+  return inFlight;
+ };
+ const watch=(target,event,fn)=>{target?.addEventListener?.(event,fn);removers.push(()=>target?.removeEventListener?.(event,fn));};
+ const signature=()=>JSON.stringify([preferences(),domainState?.get?.()?.portal?.runtime?.observability?.updatedAt,domainState?.status?.()]);
+ let previous=signature(),previousPreferences=preferences(),needsSelectionRead=!saved();
+ let previousRuntime=domainState?.get?.()?.portal?.runtime?.observability?.updatedAt;
+ if(domainState?.subscribe)removers.push(domainState.subscribe(()=>{
+  if(!authorized()){if(alive)deny();return;}
+  const next=signature();if(next===previous)return;previous=next;
+  const currentPreferences=preferences(),changed=currentPreferences!==previousPreferences;previousPreferences=currentPreferences;
+  if(changed){activation=null;needsSelectionRead=true;}
+  const runtime=domainState?.get?.()?.portal?.runtime?.observability?.updatedAt;
+  const runtimeChanged=runtime!==previousRuntime;previousRuntime=runtime;
+  const savedChoiceChanged=needsSelectionRead&&saved();if(savedChoiceChanged)needsSelectionRead=false;
+  render();if(savedChoiceChanged||runtimeChanged)void refresh({force:true});
+ }));
+ if(stateClient.subscribe)removers.push(stateClient.subscribe(()=>{if(!authorized()&&alive)deny();}));
+ watch(eventTarget,'focus',()=>void refresh());
+ watch(documentTarget,'visibilitychange',()=>{if(!documentTarget.hidden)void refresh();});
+ watch(documentTarget,'bg:runtime-evidence',()=>void refresh({force:true}));
+ watch(documentTarget,'bg:portal-identity-boundary',()=>{if(!authorized()&&alive)deny();});
+ await refresh({force:true});
+ return {dispose,refresh};
 }

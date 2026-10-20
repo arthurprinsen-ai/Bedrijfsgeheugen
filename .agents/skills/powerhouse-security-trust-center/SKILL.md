@@ -31,3 +31,14 @@ Fingerprint: `powerhouse|security-trust|evidence-first|v1`.
 - `public.security_trust_snapshot_v1`
 - `public.security_database_posture_v1()`
 - `public.powerhouse_refresh_data_sovereignty_v1()`
+
+## Tenant model choice → live passport (2026-10-20)
+Fingerprint: `portal|ai-passport|tenant-model-choice-live-projection|v1`.
+- Bind passport to existing tenant `portal.aiModelPreferences`, same-tenant sovereignty AI registry, and `/api/tenant-ai-activation-status`.
+- Requested preference, registered route, ready-for-test and actual execution remain separate claims.
+- Reuse canonical domain-state/BusinessInput/organism writes and the existing sovereignty Heartbeat; no second scheduler.
+- Revalidate after successful save ACK, including when mounted during a save. Hide readiness for pending/changed selections.
+- Authoritative runtime events force a coalesced refresh; passive focus/visibility is throttled. Queue one follow-up during a read.
+- Clear details on identity change; abort/dispose and reject late responses on navigation.
+- Even admin model preferences require same-tenant evidence, never a join to canonical admin inventory.
+- Regression: `tests/brain-portal-ai-passport-model-binding-v1.test.mjs`.

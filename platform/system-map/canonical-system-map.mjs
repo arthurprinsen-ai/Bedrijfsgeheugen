@@ -1,8 +1,8 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-10-20T17:22:06.774Z',
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'4724f0f759f308dcb06f10b109d6a2e57ab1b73c7c68305c5bda489a48cffea8',authority:'repository-source',providerRuntimeVerified:false}),
+  observedAt:'2026-10-20T17:38:41.280Z',
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'8a824af9efcc1f6d4cfdce6161de663af009aece91c207fadab595ed0f2655bc',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -36,6 +36,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({id:'portal-ai-passport-model-binding-v1',fingerprint:'portal|ai-passport|tenant-model-choice-live-projection|v1',label:'Tenant AI choice and data passport share canonical state and evidence',owner:'ONE BRAIN / existing Portal tenant state and sovereignty Heartbeat',status:'CANDIDATE_PROTECTED_DELIVERY',authority:'authenticated tenant domainState + sovereignty/security registry + AI activation readiness',inputs:Object.freeze(['portal.aiModelPreferences','data-sovereignty.aiRoutes','tenant-ai-activation-status','portal.runtime.observability.updatedAt']),outputs:Object.freeze(['requested default and workload models','model-specific data-processing facts','readiness separate from execution','identity-safe coalesced readback']),evidence:'tests/brain-portal-ai-passport-model-binding-v1.test.mjs',obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4152',learning:'brain/learning/2026-10-20-ai-passport-model-binding-v1.json'}),
     Object.freeze({
       id:'portal-explanation-autosync-v1',
       fingerprint:'portal-explanation-autosync-20261020-v1',

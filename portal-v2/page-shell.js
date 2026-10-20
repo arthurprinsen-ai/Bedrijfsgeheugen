@@ -26,7 +26,7 @@ import { mountBusinessContextWorkspace } from './modules/business-context-worksp
 import { mountContextualForesight } from './foresight-context-ui.js';
 import {mountWinstnavigator} from './winstnavigator.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
-import { mountSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
+import { mountSecurityTrustWorkspace, disposeSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
 import { mountAiModelChoice } from './modules/ai-model-choice.js';
 
 const COPY = {
@@ -182,6 +182,7 @@ function ensureShell(){
 
 export function closePortalPage(){
   const root=document.getElementById('portalView');if(!root)return;
+  disposeSecurityTrustWorkspace(root.querySelector('#pvNative'));
   root.classList.remove('open','impact-mode');root.setAttribute('aria-hidden','true');
   document.documentElement.classList.remove('portalview-open');
 }
@@ -316,6 +317,7 @@ export function openPortalPage(pageId){
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
   root.dataset.pageId=pageId;
   const native=root.querySelector('#pvNative');
+  disposeSecurityTrustWorkspace(native);
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
     const snapshot=impactSnapshotFromPortalState(portalStateSnapshot(),{
@@ -350,7 +352,7 @@ export function openPortalPage(pageId){
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
   else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
    else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
-  else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,stateClient:portalContext.stateClient,openPage:openPortalPage});}
+  else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
   else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
