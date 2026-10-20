@@ -22,7 +22,21 @@ export function createSupabasePortalProjectionStore({
         ...(controller?{signal:controller.signal}:{})
       });
       const data=await response.json().catch(()=>null);
-      if(!response.ok)throw new Error(`EU portal store gateway failed (${response.status})`);
+      if(!response.ok){
+        // The Edge error includes a stage label; permit only its finite, audited
+        // vocabulary. Never propagate an arbitrary response, tenant or query value.
+        const safeStages=new Set([
+          'SOURCES','PUBLICATIONS','EXTERNAL_SIGNALS','DOMAIN_REGISTRY',
+          'SOURCE_CATALOG','SIGNAL_PROJECTION','COMPANY_IMPACT',
+          'CANONICAL_ACTIONS','TENANT_ACTIONS','INTELLIGENCE_SNAPSHOT',
+          'PORTAL_READ_DEADLINE_EXCEEDED'
+        ]);
+        const stage=Number(response.status)===500 &&
+          data?.error==='ENTREPRENEUR_INTELLIGENCE_READ_FAILED' &&
+          typeof data?.source==='string' && safeStages.has(data.source)
+          ?data.source:null;
+        throw new Error(`EU portal store gateway failed (${response.status})${stage?' ['+stage+']':''}`);
+      }
       return data||{};
     };
     if(!controller)return run();
