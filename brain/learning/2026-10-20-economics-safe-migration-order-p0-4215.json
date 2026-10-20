@@ -1,0 +1,26 @@
+{
+  "fingerprint": "database|economics-recovery|early-independent-migration-order|20261020",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|bounded-internal-research-economics|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {"failure_class":"DEPENDENCY_ORDERING","scope":"DATABASE","machine_enforceable":true,"repeat_count":1,"security_sensitive":true},
+  "root_cause": "After exact history recovery #4548, production Git integration on a1024c15c9c14c3f66b42b148e082b18a02e5684 reached migration 20261020113000 and failed SQLSTATE 57014 at CREATE INDEX bronpublicaties_portal_latest_p04215_idx. Economics function-first source was at 20261020143000, after that unrelated blocker; canonical replay therefore never reached it.",
+  "prevention_rule": "A recovery called function-first must precede every observed pending blocking migration in actual replay order. Project the exact already-approved bounded function before the unrelated blocker, commit it independently, then attempt only its own exact candidate index in a separate guarded transaction. Preserve original protected source identities, all provider history, existing active scheduler authority, recipient/security gates and unknown-cost truth; never force an unrelated DDL or increase timeouts to claim green.",
+  "function_source_sha256": "b65873be407cfe472cdfdb2f93dde0e6711fb854b502e9dae8dcb3335bd64561",
+  "evaluation": {
+    "historical_replay": ["tests/brain-p0-4215-economics-early-order.test.mjs"],
+    "shadow": ["tests/brain-p0-4215-economics-early-order.test.mjs"],
+    "canary": ["tests/brain-p0-4215-economics-early-order.test.mjs"]
+  },
+  "test_evidence": {
+    "provider_failure": "VERIFIED exact production check 118618278557, 2026-10-20T12:08:19Z, SQLSTATE 57014 at statement 3 / unrelated publication index",
+    "red": "VERIFIED: both early recovery files absent, 2 failed and 1 passed",
+    "green": "VERIFIED: exact source equality, migration order and independent guarded index transaction tests pass",
+    "existing_runtime_canary": "Actual unchanged economics body previously proved [50,50,23,0] on 123 rollback-only historical preview actions with all triggers enabled",
+    "production_early_function": "PENDING",
+    "production_economics_index": "PENDING"
+  },
+  "production_verified": false
+}
