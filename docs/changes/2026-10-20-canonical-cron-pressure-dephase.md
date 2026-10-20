@@ -20,7 +20,7 @@ Wijzig uitsluitend de schedules van de twee reeds bestaande actieve eigenaren:
 - #130: `:12` -> `:45` (ieder uur).
 - #46: `:52` -> `:55` (ieder uur).
 
-Geen sender, commerciële stage, provider-token, tenant-data, job-ID, runfrequentie, jobcommand, privacyregel of nieuwe scheduler verandert. De migratie weigert onverwachte schedules/commands, is idempotent en doet niets wanneer de originele jobs in preview niet zijn geïnstalleerd. Verminderde gelijktijdige startdruk is de bedoeling, niet reeds gemeten resultaat.
+Geen sender, commerciële stage, provider-token, tenant-data, job-ID, runfrequentie, jobcommand, privacyregel of nieuwe scheduler verandert. De migratie weigert onverwachte schedules/commands en is idempotent. In de beschikbare preview bestaat de oudere revenue-snapshotowner nog 4× per uur op minuten 7,22,37,52; de migratie herkent en **behoudt** deze afwijkende frequentie expliciet, in plaats van 4 runs stilzwijgend tot 1 run te reduceren. In productie is de actuele owner aantoonbaar 1× per uur op minuut 52 en wordt alleen die owner naar minuut 55 gezet. Afwezige previewowners worden niet gereconstrueerd. Verminderde gelijktijdige startdruk is de bedoeling, niet reeds gemeten resultaat.
 
 ## Acceptatie / geen kunstmatig groen
 1. Required CI, CodeQL, Supabase Preview contract en protected merge op exact head.
