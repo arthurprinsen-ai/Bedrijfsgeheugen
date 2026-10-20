@@ -2215,3 +2215,19 @@ export const SALESROBOT_COMPOSIO_IDENTITY_TRANSPORT_20261020=Object.freeze({
  regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
  learning:'brain/learning/2026-10-20-salesrobot-composio-user-id.json'
 });
+
+
+// One verified receipt closes the original outbound action; a provider send ACK never proves delivery.
+export const SALESROBOT_PROVIDER_RECEIPT_CLOSED_LOOP_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|receipt-before-done|20261020',
+ executor:'powerhouse-linkedin-sales-machine',
+ actions:'powerhouse_sales_actions',
+ outcomes:'powerhouse_sales_outcomes',
+ providerEvents:'powerhouse_runtime_events',
+ receiptEventType:'salesrobot_linkedin_dm_sent',
+ requiredEvidence:['inbox_message_id','provider_prospect_uuid','provider_inbox_readback','inbox_message_sent_by_me','provider_step_status'],
+ requiresRecipientCrmApproval:true,providerAckIsNotDelivery:true,
+ noRetryOnAmbiguousSend:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-receipt-before-done.json'
+});
