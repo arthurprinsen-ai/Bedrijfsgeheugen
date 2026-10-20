@@ -26,7 +26,7 @@ export default async request=>{
     const configMissing=/configuration missing/i.test(message);
     const timedOut=/PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT/.test(message);
     // Operator-only failure categories, never raw messages, tenant IDs, credentials or query payloads.
-    const upstreamStatus=/^EU portal store gateway failed \\((401|403|429|500|502|503|504)\\)$/.exec(message)?.[1]||null;
+    const upstreamStatus=/^EU portal store gateway failed \((401|403|429|500|502|503|504)\)$/.exec(message)?.[1]||null;
     const failureCategory=configMissing?'CONFIG_MISSING'
       :timedOut?'UPSTREAM_DEADLINE'
       :upstreamStatus?'UPSTREAM_HTTP_'+upstreamStatus
