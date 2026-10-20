@@ -279,6 +279,11 @@ el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overz
 el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
 addEventListener('resize',render);render();
+// Revalidate when the user returns and every 15 minutes while the portal is
+// visible. Domain refresh rejects dirty state and never overwrites a pending ACK.
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void revalidateVisibleCustomer();});
+globalThis.addEventListener('focus',()=>void revalidateVisibleCustomer());
+globalThis.setInterval(()=>void revalidateVisibleCustomer(),PORTAL_REVALIDATION_INTERVAL_MS);
 ensureIdentityWidget().then(identity=>{
  const refreshDomainState=()=>portalDomainState.init().catch(()=>null);
  identity?.on?.('login',refreshDomainState);
