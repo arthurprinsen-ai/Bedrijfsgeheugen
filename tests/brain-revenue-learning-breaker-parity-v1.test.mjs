@@ -44,3 +44,8 @@ test('observed nonempty provider evidence remains intact and is not zeroed',asyn
   const out=await createStore({candidates:expected},200).listProjectionCandidates('2026-10-20T11:00:00Z');
   assert.deepEqual(out,expected);
 });
+
+test('canonical preview config registers the existing revenue Edge without changing its auth boundary',()=>{
+  const config=readFileSync(new URL('../supabase/config.toml',import.meta.url),'utf8');
+  assert.match(config,/\[functions\.revenue-learning-store\][\s\S]*?enabled = true\s+verify_jwt = false\s+entrypoint = "\.\/functions\/revenue-learning-store\/index\.ts"/);
+});
