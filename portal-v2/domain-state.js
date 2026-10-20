@@ -221,7 +221,7 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
     globalThis.dispatchEvent(new CustomEvent('bg:portal-pages-invalidated',{detail:{path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],effectDetails:[...enriched.effectDetails]}}));
     if(impact.changed){
       globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
-      globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{impact:enriched,pendingChanges:pendingImpacts.length,pendingInputs:pendingBusinessInputs.size}}));
+      globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{impact:enriched,pendingChanges:pendingImpacts.length}}));
      }
    }
   }
