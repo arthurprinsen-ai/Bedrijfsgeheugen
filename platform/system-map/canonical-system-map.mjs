@@ -2338,3 +2338,32 @@ export const SOCIAL_OBLIGATION_HOLD_DUPLICATE_RECOVERY_20261020=Object.freeze({
   regression:'tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs',
   learning:'brain/learning/2026-10-20-social-obligation-hold-duplicate-recovery.json'
 });
+
+
+export const IDENTITY_REVIEW_BOUNDED_CANONICAL_CRON_20261020=Object.freeze({
+ fingerprint:'commercial|contacts|bounded-review-cron|20261020',
+ existingCronName:'powerhouse-identity-graph-v1',
+ finalSchedule:'2,17,32,42,47,57 * * * *',
+ originalProcess:['2x 500 connection pulses','4x 500 email authority updates'],
+ boundedProcess:['1x 200 connection pulse','1x 200 authority review batch'],
+ dailyPerStreamTheoreticalCapacity:28800,
+ independentOutreachAssuranceMinute:52,
+ identityGraphHourMinute:32,
+ preservesOriginalOwner:true,noNewCron:true,noSend:true,noAutoConsent:true,
+ evidenceRequiresActualDailyReviewCounts:true,
+ migration:'supabase/migrations/20261020114500_identity_review_bounded_cron_v1.sql',
+ regression:'tests/brain-identity-review-bounded-cron-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-identity-review-bounded-cron.json'
+});
+
+// Bounded canonical authority review: source-backed CRM queue under heavy scheduler pressure.
+export const POWERHOUSE_AUTHORITY_QUEUE_GUARD_20261020=Object.freeze({
+ fingerprint:'commercial|authority|queue-preselect-skip-locked|20261020',
+ migration:'supabase/migrations/20261020120000_contact_authority_bounded_queue_v2.sql',
+ owner:'powerhouse_contact_authority_review_batch_v1',
+ existingScheduler:'powerhouse-identity-graph-v1',
+ queue:'powerhouse_connection_enrichment_state_v1',
+ selectBeforeJoin:true,skipLocked:true,oneExistingCron:true,
+ preservesApprovalAndSuppression:true,externalMessagesSent:0,
+ learning:'brain/learning/2026-10-20-authority-queue-bounded.json'
+});
