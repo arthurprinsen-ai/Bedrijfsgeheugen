@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const sql=readFileSync(new URL('../supabase/migrations/20261020163500_p0_4215_evidence_forecast_direct_lookup.sql',import.meta.url),'utf8');
 test('evidence maturity uses only direct forecast source and preserves forecasts sorting policy',()=>{
- assert.match(sql,/CREATE OR REPLACE VIEW public\.powerhouse_action_evidence_maturity_v1 AS/);
+ assert.match(sql,/CREATE OR REPLACE VIEW public\.powerhouse_action_evidence_maturity_v1 WITH \(security_invoker=true\) AS/);
  assert.match(sql,/LEFT JOIN public\.powerhouse_opportunities opp ON opp\.opportunity_key=bv\.opportunity_key/);
  assert.match(sql,/LEFT JOIN LATERAL \(/);
  assert.match(sql,/pf\.status IN \('active','claimed'\)/);
@@ -23,5 +23,6 @@ test('source proof and migration remain fail closed without role or scheduler ch
  assert.match(sql,/human_feedback AS/);
  assert.match(sql,/LEFT JOIN channel_counts cc ON/);
  assert.match(sql,/calibration_eligible/);
- assert.doesNotMatch(sql,/(?:GRANT\s+|REVOKE\s+|cron\.alter_job|cron\.unschedule|DROP TABLE|TRUNCATE)/i);
+ assert.match(sql,/REVOKE ALL ON public\.powerhouse_action_evidence_maturity_v1 FROM PUBLIC, anon, authenticated/);
+ assert.doesNotMatch(sql,/(?:GRANT\s+|cron\.alter_job|cron\.unschedule|DROP TABLE|TRUNCATE)/i);
 });

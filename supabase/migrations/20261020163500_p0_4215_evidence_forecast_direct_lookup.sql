@@ -20,7 +20,7 @@ BEGIN
   END IF;
 END
 $guard$;
-CREATE OR REPLACE VIEW public.powerhouse_action_evidence_maturity_v1 AS
+CREATE OR REPLACE VIEW public.powerhouse_action_evidence_maturity_v1 WITH (security_invoker=true) AS
 WITH constants AS (
          SELECT 5::bigint AS minimum_comparable_outcomes
         ), forecast_calibration AS (
@@ -197,4 +197,6 @@ WITH constants AS (
    FROM base b
      CROSS JOIN constants c
      LEFT JOIN channel_counts cc ON cc.channel = b.channel;
+-- Restore existing tenant-safe internal view boundary on every deployment.
+REVOKE ALL ON public.powerhouse_action_evidence_maturity_v1 FROM PUBLIC, anon, authenticated;
 COMMIT;
