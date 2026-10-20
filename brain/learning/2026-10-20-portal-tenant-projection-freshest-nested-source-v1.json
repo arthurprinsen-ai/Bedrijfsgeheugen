@@ -1,0 +1,28 @@
+{
+  "fingerprint": "portal|tenant-projection|nested-freshest-source-readback|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|tenant-projection|freshest-nested-merge|20261020",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "scope": "PORTAL",
+  "root_cause": "composePortalProjectionLayers used a shallow portal spread, giving any canonical portal.profile or aiAct object precedence over the entire nested customer object even when its sourceUpdatedAt predates an authenticated customer update. This loses confirmed customer input on cross-page navigation/reload, producing inconsistent dashboard and governance values.",
+  "prevention_rule": "Preserve all non-overlapping nested fields across legacy customer and canonical Brain portal projections. Resolve conflicting nested keys by verified projection source timestamps, preserving explicit null/false/0/empty arrays. Reject mismatched tenant identities; canonical signals and recommendations remain separately authoritative. Never invent forecast figures or claim complete E2E until two-tenant authenticated writeback/browser tests pass.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-source-truth-20261019.test.mjs"
+    ],
+    "acceptance_pending": [
+      "authenticated portal profile/AI Act/CSRD write-read-navigate roundtrip for two tenants",
+      "latest main required tests and CodeQL",
+      "Netlify immutable production source and Chrome readback",
+      "Supabase canonical Brain ACK and source revision"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "production_verified": false,
+  "learned_at": "2026-10-20",
+  "live_state": "CANDIDATE_NOT_VERIFIED"
+}
