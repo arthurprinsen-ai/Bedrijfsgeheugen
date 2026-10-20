@@ -224,7 +224,18 @@ fetchPortalPlan().then(subscription=>{
 }).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
 
 const portalStateClient=createPortalStateClient();
-const scanClaimBridge=createScanClaimBridge({authHeaders:()=>portalStateClient.authHeaders()});
+const scanClaimBridge=createScanClaimBridge({
+ authHeaders:()=>portalStateClient.authHeaders(),
+ // A server-verified Frisse Blik/Bedrijfslek claim already lives in the same
+ // tenant's canonical Brain layer. Refresh that read-model immediately, rather
+ // than leaving every open dashboard on the anonymous pre-claim snapshot.
+ onClaimed:async({tenantIdentity})=>{
+  const current=portalStateClient.currentUser?.();
+  if(!current?.id||String(current.id)!==String(tenantIdentity))
+   return {applied:false,reason:'TENANT_SWITCHED'};
+  return portalDomainState.refresh();
+ }
+});
 const portalDomainState=createPortalDomainState(portalStateClient);
 // The authenticated portal uses the same canonical read API for periodic
 // revalidation. No new scheduler, browser store or duplicate source of truth.
