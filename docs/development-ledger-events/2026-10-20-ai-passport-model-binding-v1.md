@@ -15,3 +15,5 @@ Review found and corrected lost evidence notifications, readiness before save AC
 Regression cases are included through the already registered model-choice CI lane. No release/security gates are weakened.
 
 Delivery status: SOURCE_CANDIDATE, not production proven. Protected merge, exact deployment identity and authenticated same-tenant functional readback remain required. This change does not establish whole-system acceptance.
+
+Admission recovery: Required run 39468083173 rejected the initial noncanonical test filename. The same behavioral regression was renamed to tests/brain-portal-ai-passport-model-binding-v1.test.mjs, retaining historical/shadow/canary evaluation and both CI imports. The gate remains unchanged.

@@ -16,13 +16,13 @@
   "prevention_rule": "Project tenant model preferences, workload assignments, authenticated sovereignty registry and server activation checklist together. Distinguish request, registration, ready-for-test and verified execution. Wait for save ACK before readiness; track mounting during an existing save. Force/coalesce canonical runtime notifications, throttle passive focus, abort/dispose on navigation or identity change. Reuse existing Heartbeat and BusinessInput/organism writes.",
   "evaluation": {
     "historical_replay": [
-      "tests/portal-ai-passport-model-binding.test.mjs"
+      "tests/brain-portal-ai-passport-model-binding-v1.test.mjs"
     ],
     "shadow": [
-      "tests/portal-ai-passport-model-binding.test.mjs"
+      "tests/brain-portal-ai-passport-model-binding-v1.test.mjs"
     ],
     "canary": [
-      "tests/portal-ai-passport-model-binding.test.mjs"
+      "tests/brain-portal-ai-passport-model-binding-v1.test.mjs"
     ]
   },
   "test_evidence": {
@@ -33,5 +33,11 @@
     "baseline_comparison": "Four wider-suite failures reproduced on unchanged base 08a6af19da00972857fd76ff96a290f059ad5617: System Map inventory, admin default tab, existing trust links, one-Portal legacy surface",
     "production": "PENDING_PROTECTED_DELIVERY_AND_AUTHENTICATED_READBACK"
   },
-  "production_verified": false
+  "production_verified": false,
+  "delivery_recovery": {
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39468083173",
+    "root_cause": "Canonical learning evaluation only accepts tests/brain-*.test.mjs; the initial behavioral test path did not satisfy that existing contract.",
+    "fix": "Rename behavioral regression to the canonical brain test path; preserve native Portal and model-choice imports and all historical/shadow/canary modes.",
+    "prevention": "Validate canonical evaluation path schema before commit; never weaken the learning admission gate."
+  }
 }

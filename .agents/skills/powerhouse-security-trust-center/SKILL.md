@@ -41,4 +41,4 @@ Fingerprint: `portal|ai-passport|tenant-model-choice-live-projection|v1`.
 - Authoritative runtime events force a coalesced refresh; passive focus/visibility is throttled. Queue one follow-up during a read.
 - Clear details on identity change; abort/dispose and reject late responses on navigation.
 - Even admin model preferences require same-tenant evidence, never a join to canonical admin inventory.
-- Regression: `tests/portal-ai-passport-model-binding.test.mjs`.
+- Regression: `tests/brain-portal-ai-passport-model-binding-v1.test.mjs`.
