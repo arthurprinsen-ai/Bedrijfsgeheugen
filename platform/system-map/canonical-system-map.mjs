@@ -36,6 +36,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-profile-no-fake-input-defaults-v1',
+      fingerprint:'portal|customer-profile|no-fabricated-maturity-and-financial-benchmark|v1',
+      label:'Real customer profile KPI is unknown until every source input is explicitly entered',
+      owner:'ONE BRAIN / Portal V2 dashboard and profile models',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'same-tenant authenticated portal.profile explicit customer values',
+      inputs:Object.freeze(['employees','hourlyCost','13 maturity fields']),
+      outputs:Object.freeze(['null when incomplete','assumption-based estimate when complete','no fictitious baseline cash savings']),
+      evidence:'tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-profile-input-backed-kpis-v1.json'
+    }),
+    Object.freeze({
       id:'portal-safe-canonical-revalidation-v1',
       fingerprint:'portal|authenticated-refresh|safe-domain-state-revalidation|v1',
       label:'Visible Portal V2 pages revalidate authenticated tenant Brain data without erasing edits',

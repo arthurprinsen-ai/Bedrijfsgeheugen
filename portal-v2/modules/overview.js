@@ -30,6 +30,7 @@ export function legacyOverviewInsights(state={}){
  const profile=state?.portal?.profile||{};
  if(!profile.maturity||typeof profile.maturity!=='object')return null;
  const metrics=profileOverviewMetrics(state);
+ if(metrics.evidenceStatus!=='MODEL_ESTIMATE_FROM_ENTERED_INPUTS')return null;
  const dimensions=PROFILE_DIMENSION_LABELS.map(([id,label])=>({id,label,level:Number(profile.maturity?.[id])||2}));
  const blockers=[...dimensions].sort((a,b)=>a.level-b.level).slice(0,3);
  const level=Math.max(1,Math.min(5,Math.round(metrics.averageMaturity)));
@@ -46,13 +47,14 @@ export function overviewViewModel(state={}){
  const profile=state?.portal?.profile;
  if(!profile||typeof profile!=='object'||!profile.maturity)return null;
  const metrics=profileOverviewMetrics(state);
+ if(metrics.evidenceStatus!=='MODEL_ESTIMATE_FROM_ENTERED_INPUTS')return null;
  return Object.freeze({
   weeksPerYear:metrics.weeksPerYear,
   capacityNotCash:metrics.capacityNotCash,
   cards:Object.freeze([
-   Object.freeze({label:'Gemiddelde volwassenheid',value:`${nl1(metrics.averageMaturity)}/5`,note:'gemiddeld over 13 bedrijfsonderdelen'}),
-   Object.freeze({label:'Handmatig werk per jaar',value:`${nl0(metrics.annualManualHours)} uur`,note:'46 weken als conservatieve jaarbasis'}),
-   Object.freeze({label:'Vermijdbare capaciteit',value:`${nl1(metrics.fteLost)} fte`,note:'ruimte die je terugkrijgt'}),
+   Object.freeze({label:'Gemiddelde volwassenheid',value:`${nl1(metrics.averageMaturity)}/5`,note:'modelberekend uit 13 ingevulde bedrijfsonderdelen'}),
+   Object.freeze({label:'Handmatig werk per jaar',value:`${nl0(metrics.annualManualHours)} uur`,note:'modelaanname: 46 werkweken; geen gemeten tijd'}),
+   Object.freeze({label:'Vermijdbare capaciteit',value:`${nl1(metrics.fteLost)} fte`,note:'indicatieve capaciteit, niet gerealiseerd'}),
    Object.freeze({label:'Indicatieve capaciteitswaarde',value:euro(metrics.annualManualCost),note:'capaciteitswaarde; geen cashbesparing'})
   ])
  });

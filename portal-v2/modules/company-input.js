@@ -38,28 +38,38 @@ function safeLevel(value){const n=Math.round(Number(value)||LEGACY_DEFAULT_MATUR
 
 export function profileOverviewMetrics(state={}){
  const profile=state?.portal?.profile||{};
- const employees=Math.max(1,Number(profile.employees)||24);
- const hourlyCost=Math.max(0,Number(profile.hourlyCost)||52);
- let weeklyManualHours=0;let maturityTotal=0;
+ const employees=Number(profile.employees),hourlyCost=Number(profile.hourlyCost);
+ // Legacy benchmark factors (24 employees/€52/hour/level 2) are not customer data.
+ // No numerical customer KPI unless each underlying input was explicitly entered.
+ const verifiedNumber=value=>value!==null&&value!==undefined&&value!==''
+   &&Number.isFinite(Number(value));
+ const mature=PROFILE_DIMENSIONS.every(item=>verifiedNumber(profile.maturity?.[item.id])
+   &&Number.isInteger(Number(profile.maturity[item.id]))
+   &&Number(profile.maturity[item.id])>=1&&Number(profile.maturity[item.id])<=5);
+ const complete=verifiedNumber(profile.employees)&&employees>=1
+   &&verifiedNumber(profile.hourlyCost)&&hourlyCost>0&&mature;
+ if(!complete)return Object.freeze({
+  averageMaturity:null,weeklyManualHours:null,annualManualHours:null,
+  annualManualCost:null,fteLost:null,weeksPerYear:46,capacityNotCash:true,
+  evidenceStatus:'INCOMPLETE_CUSTOMER_INPUTS'
+ });
+ let weeklyManualHours=0,maturityTotal=0;
  for(const item of PROFILE_DIMENSIONS){
-  const level=safeLevel(profile.maturity?.[item.id]);
+  const level=Number(profile.maturity[item.id]);
   maturityTotal+=level;
   weeklyManualHours+=item.weeklyHours*FACTOR[level]*(employees/24);
  }
  const annualManualHours=weeklyManualHours*46;
  return Object.freeze({
   averageMaturity:maturityTotal/PROFILE_DIMENSIONS.length,
-  weeklyManualHours,
-  annualManualHours,
-  annualManualCost:annualManualHours*hourlyCost,
-  fteLost:annualManualHours/1600,
-  weeksPerYear:46,
-  capacityNotCash:true
+  weeklyManualHours,annualManualHours,
+  annualManualCost:annualManualHours*hourlyCost,fteLost:annualManualHours/1600,
+  weeksPerYear:46,capacityNotCash:true,evidenceStatus:'MODEL_ESTIMATE_FROM_ENTERED_INPUTS'
  });
 }
 
-function euro(value){return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value||0)}
-function number(value,digits=0){return new Intl.NumberFormat('nl-NL',{maximumFractionDigits:digits,minimumFractionDigits:digits}).format(value||0)}
+function euro(value){if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value||0)}
+function number(value,digits=0){if(value===null||value===undefined||!Number.isFinite(Number(value)))return '—';return new Intl.NumberFormat('nl-NL',{maximumFractionDigits:digits,minimumFractionDigits:digits}).format(value||0)}
 
 function profileRadarSvg(state){
  const maturity=state?.portal?.profile?.maturity||{},cx=170,cy=170,r=125;
@@ -72,16 +82,16 @@ function profileRadarSvg(state){
 function nextLevelBenefits(state){
  const profile=state?.portal?.profile||{},employees=Number(profile.employees||profile.headcount)||0,cost=Number(profile.hourlyCost)||0;
  if(!employees||!cost)return [];
- return PROFILE_DIMENSIONS.map(item=>{const current=safeLevel(profile.maturity?.[item.id]),next=Math.min(5,current+1),base=item.weeklyHours*(employees/24)*46*cost;return{...item,current,next,value:Math.max(0,base*(FACTOR[current]-FACTOR[next]))}}).sort((a,b)=>b.value-a.value);
+ return PROFILE_DIMENSIONS.filter(item=>profile.maturity?.[item.id]!==undefined&&profile.maturity?.[item.id]!==null&&profile.maturity?.[item.id]!==''&&Number.isInteger(Number(profile.maturity[item.id]))&&Number(profile.maturity[item.id])>=1&&Number(profile.maturity[item.id])<=5).map(item=>{const current=safeLevel(profile.maturity?.[item.id]),next=Math.min(5,current+1),base=item.weeklyHours*(employees/24)*46*cost;return{...item,current,next,value:Math.max(0,base*(FACTOR[current]-FACTOR[next]))}}).sort((a,b)=>b.value-a.value);
 }
 function renderAnalysis(root,state){
  const metrics=profileOverviewMetrics(state),profile=state?.portal?.profile||{},benefits=nextLevelBenefits(state);
  const maturity=profile.maturity||{};
  root.innerHTML=`<div class="v2profilemetrics"><article><small>Gemiddeld niveau</small><strong>${number(metrics.averageMaturity,1)}</strong><span>over 13 onderdelen</span></article><article><small>Handmatig werk per jaar</small><strong>${number(metrics.annualManualHours)} uur</strong><span>46 weken als conservatieve jaarbasis</span></article><article><small>Capaciteit</small><strong>${number(metrics.fteLost,1)} fte</strong><span>ruimte die je terugkrijgt, geen cashbesparing</span></article><article><small>Indicatieve uurwaarde</small><strong>${euro(metrics.annualManualCost)}</strong><span>capaciteitswaarde op basis van ingevoerde uurkosten</span></article></div>
  <div class="v2legacyprofilegrid">
-  <section class="v2legacyprofilecard"><h3>Profiel tegenover de bovenste 25%</h3><p>Jouw niveau per onderdeel tegenover het legacy referentiedoel.</p><div class="v2legacybars">${PROFILE_DIMENSIONS.map(d=>{const v=safeLevel(maturity[d.id]);return`<div><span>${d.label}</span><div><i style="width:${v/5*100}%"></i><em style="left:${d.top/5*100}%"></em></div><b>${v}/5</b></div>`}).join('')}</div></section>
-  <section class="v2legacyprofilecard"><h3>Alles in één beeld</h3><p>De binnenste vorm ben jij; de stippellijn is niveau 4 — het doel voor het mkb.</p>${profileRadarSvg(state)}</section>
-  <section class="v2legacyprofilecard" style="grid-column:1/-1"><h3>Wat een niveau erbij oplevert</h3>${benefits.length?`<div class="v2legacybenefits">${benefits.slice(0,13).map(x=>`<div><span><b>${x.label}</b><small> ${x.current} → ${x.next}</small></span><strong>${euro(x.value)}</strong></div>`).join('')}</div><p>Indicatieve capaciteitswaarde op basis van je medewerkers, uurkosten en 46 werkweken. Geen cashbesparing.</p>`:'<p>Vul medewerkers en uurkosten in om de opbrengst van één niveau verbetering per onderdeel te berekenen.</p>'}</section>
+  <section class="v2legacyprofilecard"><h3>Profiel tegenover de bovenste 25%</h3><p>Jouw niveau per onderdeel tegenover het legacy referentiedoel.</p><div class="v2legacybars">${PROFILE_DIMENSIONS.map(d=>{const raw=maturity[d.id],valid=raw!==null&&raw!==undefined&&raw!==''&&Number.isInteger(Number(raw))&&Number(raw)>=1&&Number(raw)<=5;const v=valid?Number(raw):null;return`<div><span>${d.label}</span><div><i style="width:${v===null?0:v/5*100}%"></i><em style="left:${d.top/5*100}%"></em></div><b>${v===null?'—':v+'/5'}</b></div>`}).join('')}</div></section>
+  <section class="v2legacyprofilecard"><h3>Alles in één beeld</h3><p>De binnenste vorm ben jij; de stippellijn is niveau 4 — het doel voor het mkb.</p>${metrics.evidenceStatus==='MODEL_ESTIMATE_FROM_ENTERED_INPUTS'?profileRadarSvg(state):'<p>Vul eerst alle profielonderdelen in; een onafgemaakte radar is geen bedrijfsmeting.</p>'}</section>
+  <section class="v2legacyprofilecard" style="grid-column:1/-1"><h3>Wat een niveau erbij oplevert</h3>${benefits.length?`<div class="v2legacybenefits">${benefits.slice(0,13).map(x=>`<div><span><b>${x.label}</b><small> ${x.current} → ${x.next}</small></span><strong>${euro(x.value)}</strong></div>`).join('')}</div><p>Indicatieve capaciteitswaarde op basis van je medewerkers, uurkosten en 46 werkweken. Geen cashbesparing.</p>`:'<p>Vul medewerkers, uurkosten en het betreffende volwassenheidsniveau expliciet in voor een indicatieve modelberekening; dit is geen gerealiseerde besparing.</p>'}</section>
  </div>`;
 }
 
