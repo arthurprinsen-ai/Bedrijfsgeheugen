@@ -27,13 +27,35 @@ export function createRevenueProjector({source,store,now=()=>new Date()}={}){
   return async()=>{
     const activeStore=store||createRevenueLearningStore();const activeSource=source||activeStore;
     const candidates=await activeSource.listProjectionCandidates(now().toISOString());let projected=0;
-    for(const candidate of candidates){
-      try{await activeStore.upsertEvidence(projectRevenueCandidate(candidate));projected++;}
-      catch(error){await activeStore.recordObligation({id:`projection:${candidate.contentId}:${candidate.windowHours}`,type:'PROJECTION_FAILED',status:'OPEN',contentId:candidate.contentId,windowHours:candidate.windowHours,error:String(error?.message||error)});}
+    if(typeof activeStore.upsertEvidenceBatch==='function'){
+      // All source candidates are retained. A failed atomic batch is recorded
+      // and retried by the existing next hourly run; it is never a success.
+      const evidence=candidates.map(projectRevenueCandidate);
+      for(let offset=0;offset<evidence.length;offset+=50){
+        const batch=evidence.slice(offset,offset+50);
+        try{
+          const result=await activeStore.upsertEvidenceBatch(batch);
+          if(result?.stored!==true||Number(result.count)!==batch.length)throw new Error('REVENUE_EVIDENCE_BATCH_ACK_MISMATCH');
+          projected+=batch.length;
+        }catch(error){
+          await activeStore.recordObligation({
+            id:`projection-batch:${now().toISOString().slice(0,13)}:${offset}`,
+            type:'PROJECTION_BATCH_FAILED',status:'OPEN',
+            evidenceIds:batch.map(item=>item.evidenceId),
+            error:String(error?.message||error)
+          });
+        }
+      }
+    }else{
+      // Existing injection contract for older stores stays intact.
+      for(const candidate of candidates){
+        try{await activeStore.upsertEvidence(projectRevenueCandidate(candidate));projected++;}
+        catch(error){await activeStore.recordObligation({id:`projection:${candidate.contentId}:${candidate.windowHours}`,type:'PROJECTION_FAILED',status:'OPEN',contentId:candidate.contentId,windowHours:candidate.windowHours,error:String(error?.message||error)});}
+      }
     }
     return {projected,total:candidates.length};
   };
 }
 
-export default async()=>{await createRevenueProjector()();return new Response(null,{status:204});};
+export default async()=>{const result=await createRevenueProjector()();if(result.projected!==result.total)return Response.json({ok:false,error:'REVENUE_PROJECTION_INCOMPLETE',...result},{status:503});return new Response(null,{status:204});};
 export const config={schedule:'@hourly'};
