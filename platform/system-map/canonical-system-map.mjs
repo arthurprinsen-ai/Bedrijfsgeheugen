@@ -2355,3 +2355,15 @@ export const IDENTITY_REVIEW_BOUNDED_CANONICAL_CRON_20261020=Object.freeze({
  regression:'tests/brain-identity-review-bounded-cron-v1.test.mjs',
  learning:'brain/learning/2026-10-20-identity-review-bounded-cron.json'
 });
+
+// Bounded canonical authority review: source-backed CRM queue under heavy scheduler pressure.
+export const POWERHOUSE_AUTHORITY_QUEUE_GUARD_20261020=Object.freeze({
+ fingerprint:'commercial|authority|queue-preselect-skip-locked|20261020',
+ migration:'supabase/migrations/20261020120000_contact_authority_bounded_queue_v2.sql',
+ owner:'powerhouse_contact_authority_review_batch_v1',
+ existingScheduler:'powerhouse-identity-graph-v1',
+ queue:'powerhouse_connection_enrichment_state_v1',
+ selectBeforeJoin:true,skipLocked:true,oneExistingCron:true,
+ preservesApprovalAndSuppression:true,externalMessagesSent:0,
+ learning:'brain/learning/2026-10-20-authority-queue-bounded.json'
+});
