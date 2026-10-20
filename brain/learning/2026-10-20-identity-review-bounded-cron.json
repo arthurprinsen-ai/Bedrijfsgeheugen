@@ -15,11 +15,11 @@
       "tests/brain-identity-review-bounded-cron-v1.test.mjs"
     ]
   },
-  "root_cause": "Existing active identity graph job 138 processed 2x500 connection pulses and 4x500 contact authority reviews on 4 quarter-hour slots while commercial scheduler, database mux, CRM and social workloads contended for PostgreSQL resources; repeated connection timeout, statement timeout, cron startup timeout prevented actual daily delivery even as schedule health appeared ok.",
+  "root_cause": "Existing active identity graph job 138 processed 2x500 connection pulses and 4x500 contact authority reviews on 4 quarter-hour slots while commercial scheduler, database mux, CRM and social workloads contended for PostgreSQL resources; repeated connection timeout, statement timeout, cron startup timeout prevented actual daily delivery even as schedule health appeared ok. Additional verified hotfix defect: prior string replacement changed only v_date,500 to 200, not (now() at time zone...)::date,500 in contact authority call, leaving 500 per run despite asserted 200.",
   "evidence": {
     "provider_logs": "2026-10-20 commercial contact authority review, heartbeat, email, like, comment, DM statement/lock timeouts and Cron startup timeouts",
     "prior_cron": "job 138 active: 2,17,32,47 with 2 pulse(500) and 4 authority(500)",
-    "intermediate_production": "job 138 active: 2,17,32,42,52,57 with 1 pulse(200) + 1 authority(200); independent SQL readback; BUSY advisory lock returned on overlapping verification attempt",
+    "intermediate_production": "job 138 active: 2,17,32,42,52,57 with 1 pulse(200) + 1 authority(500); code readback revealed earlier replacement missed authority function argument after ::date,500; corrected migration updates BOTH, plus dephases 52 to 47",
     "today_instagram": "MEDIA_ASSET_REQUIRED",
     "today_personal": "GLOBAL_POST_DUPLICATE_BLOCKED",
     "today_company": "LIVE_PROVEN",
@@ -31,7 +31,8 @@
     "One pre-existing canonical job, no second executor; bound SQL work per slot, keep every-day throughput theoretically above current 23k contacts.",
     "Do not report commercial delivered on cron success, use provider receipts, daily review and consent readbacks.",
     "No unauthorized re-send or Gmail mail authority inference.",
-    "Read back cron job ID, owner, schedule, bounded statements, pipeline and provider receipts before claiming production proof."
+    "Read back cron job ID, owner, schedule, bounded statements, pipeline and provider receipts before claiming production proof.",
+    "Regression must verify exact contact-authority argument ::date,200, not infer it from loop count or connection pulse size."
   ],
   "tests": [
     "tests/brain-identity-review-bounded-cron-v1.test.mjs"

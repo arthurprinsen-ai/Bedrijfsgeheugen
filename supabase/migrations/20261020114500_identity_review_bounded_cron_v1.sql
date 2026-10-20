@@ -32,16 +32,20 @@ begin
      v_new:=replace(v_new,v_orig_pulse||E'\n    '||v_orig_pulse,v_bound_pulse);
      v_new:=replace(v_new,'for i in 1..4 loop','for i in 1..1 loop');
      v_new:=replace(v_new,'v_date,500);','v_date,200);');
+     v_new:=replace(v_new,'::date,500);','::date,200);');
   elsif strpos(v_old,v_bound_pulse)>0
     and strpos(v_old,'for i in 1..1 loop')>0
     and strpos(v_old,'v_date,200);')>0
-  then null;
+  then
+    v_new:=replace(v_new,'::date,500);','::date,200);');
   else
     raise exception 'CANONICAL_IDENTITY_GRAPH_BOUNDED_SOURCE_DRIFT';
   end if;
 
   if strpos(v_new,v_orig_pulse)>0 or strpos(v_new,'for i in 1..4 loop')>0
      or strpos(v_new,'v_date,500);')>0
+     or strpos(v_new,'::date,500);')>0
+     or strpos(v_new,'::date,200);')=0
      or strpos(v_new,'powerhouse_contact_authority_review_batch_v1(')=0
      or strpos(v_new,v_bound_pulse)=0
      or strpos(v_new,'if extract(minute from now())::integer=32 then')=0

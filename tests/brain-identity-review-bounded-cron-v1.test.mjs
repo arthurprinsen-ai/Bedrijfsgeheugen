@@ -32,3 +32,10 @@ test('idempotent recovery accepts original and already-live bounded state and fa
 test('no inferred consent, message sends or direct channel mutators in cron bounding',()=>{
   assert.doesNotMatch(migration,/human_approved\s*=|SEND_MESSAGE|gmail\.send|linkedin\.post|instagram\.publish|bg_connecties\s+set/i);
 });
+
+test('authority review size, not only connection pulse, is actually bounded to 200',()=>{
+ assert.match(migration,/replace\(v_new,'::date,500\);','::date,200\);'\)/);
+ assert.match(migration,/or strpos\(v_new,'::date,500\);'\)>0/);
+ assert.match(migration,/or strpos\(v_new,'::date,200\);'\)=0/);
+ assert.match(migration,/v_bound_pulse/);
+});
