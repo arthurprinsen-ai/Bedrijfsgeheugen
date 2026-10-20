@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-20",
+  "fingerprint": "portal|authenticated-api-repeated-502|upstream-classification-v1",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "parentIssue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "obligation_id": "portal|upstream-failure-classification|20261020",
+  "root_cause": "Official release readback run #39430198530 attempt 3 executed 30 authenticated portal checks returning AUTHENTICATED_PORTAL_API_HTTP_502, even after protected portal sort indices applied. Existing tenant-bound Netlify route collapses upstream cases into generic 502 and logs no safe reason category.",
+  "repair": "Existing Netlify route and service-token transport preserved; operator-only enumerated failure categories distinguish upstream HTTP status, deadline, malformed shape, tenant scope, network fetch and config. Preserve fail-closed HTTP, no-store, per-tenant auth, and no PII logging.",
+  "prevention_rule": "Generic HTTP502 without bounded safe operator classification is not terminal root-cause evidence. Require tests, protected preview/merge, production readback, signed two-tenant verification. Never log tenant identifiers, tokens or raw upstream bodies.",
+  "test_evidence": {
+    "Required_CI": "PENDING",
+    "CodeQL": "PENDING",
+    "Netlify_preview": "PENDING",
+    "provider_runtime": "PENDING",
+    "authenticated_tenant1": "NOT_PROVEN",
+    "authenticated_tenant2": "NOT_PROVEN"
+  },
+  "production_verified": false
+}
