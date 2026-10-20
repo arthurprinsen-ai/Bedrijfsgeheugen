@@ -36,6 +36,21 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'source-universe-existing-mux-stage-v1',
+      fingerprint:'powerhouse|source-universe|scheduler-v3-dropped-refresh-stage|v1',
+      label:'Canonical Source Universe refresh stays in the existing Powerhouse runtime mux',
+      owner:'Powerhouse runtime scheduler v3 / existing pg_cron job 171',
+      authority:'existing source universe, source observations and signal/action/outcome lineage',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['bounded external source observations','UTC minute 54 existing mux slot','canonical tenant scope']),
+      outputs:Object.freeze(['refreshed external intelligence snapshot','bounded materialization and outcome reconciliation','source task receipt and aggregate fail-closed health']),
+      regression:'tests/brain-source-universe-operational-truth-v1.test.mjs',
+      migration:'supabase/migrations/20261020080000_restore_external_intelligence_existing_mux_v3.sql',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-source-universe-scheduler-mux-stage-recovery-v1.json',
+      invariants:Object.freeze({noParallelScheduler:true,neverFabricateMoney:true,externalActionNotAuthorized:true,taskFailureNotGreen:true})
+    }),
+    Object.freeze({
       id:'portal-tenant-source-freshness-v1',
       fingerprint:'portal|tenant-projection|nested-freshest-source-readback|v1',
       label:'Portal V2 merges nested tenant inputs by verified source revision without losing unrelated fields',
