@@ -29,3 +29,8 @@ test('Brain learning contains replay, root cause and explicit non-green boundari
   assert.ok(learning.evaluation.historical_replay.length>0);
   assert.equal(learning.production_verified,false);
 });
+
+test('SECURITY DEFINER is server-only and browser roles are explicitly denied direct EXECUTE',()=>{
+  assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_backfill_internal_research_economics_v1\(timestamp with time zone\)[\s\S]*?FROM PUBLIC, anon, authenticated/);
+  assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_backfill_internal_research_economics_v1\(timestamp with time zone\)[\s\S]*?TO service_role/);
+});
