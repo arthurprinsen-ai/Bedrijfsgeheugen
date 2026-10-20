@@ -36,6 +36,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-entrepreneur-source-freshness-v1',
+      fingerprint:'portal|entrepreneur-source|stale-current-and-null-eur-zero|v1',
+      label:'Tenant entrepreneurship projections preserve canonical refresh timestamp, source staleness, and unknown monetary values',
+      owner:'ONE BRAIN / existing Supabase EU portal-state-eu read-model',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'canonical Source Universe source revision + authenticated tenant impact and action scope',
+      inputs:Object.freeze(['powerhouse_intelligence_snapshot_v1.refreshed_at','actual observed external signals','authenticated company impacts','known monetary evidence']),
+      outputs:Object.freeze(['CURRENT only after verified <=2h canonical refresh','STALE/PARTIAL/EMPTY fail-closed status','NULL for unknown euro values']),
+      evidence:'tests/brain-portal-entrepreneur-source-freshness-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-portal-entrepreneur-source-freshness-v1.json'
+    }),
+    Object.freeze({
       id:'verified-scan-claim-immediate-brain-readback-v1',
       fingerprint:'portal|verified-frisseblik-claim|canonical-brain-readback|v1',
       label:'Verified Frisse Blik/Bedrijfslek claims refresh existing tenant-specific Brain dashboards',

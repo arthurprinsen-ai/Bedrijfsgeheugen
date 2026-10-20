@@ -3,6 +3,7 @@ import { repairBusinessInputsFromAuthority } from './business-input-read-repair.
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 import { boundedReads } from './bounded-reads.js';
+import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
@@ -36,9 +37,9 @@ async function sha256(value:string){const bytes=new TextEncoder().encode(value);
 const cleanUnique=(values:any[])=>[...new Set(values.map(value=>String(value??'').trim()).filter(Boolean))];
 
 const list=(value:any)=>Array.isArray(value)?value:[];
-const finite=(value:any)=>{const n=Number(value);return Number.isFinite(n)?n:null};
-const sumKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?known.reduce((a,b)=>a+b,0):null};
-const maxKnown=(values:any[])=>{const known=values.map(finite).filter(value=>value!==null) as number[];return known.length?Math.max(...known):null};
+const finite=finiteEvidence;
+const sumKnown=sumKnownEvidence;
+const maxKnown=maxKnownEvidence;
 function groupBy(rows:any[],key:string){
   const map=new Map<any,any[]>();
   for(const row of list(rows)){
@@ -94,6 +95,7 @@ function mergeEntrepreneurActions(canonicalActions:any[],tenantActions:any[]){
 }
 function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:any[],tenantImpacts:any[],actions:any[]){
   const now=Date.now();
+  const sourceTruth=entrepreneurSnapshotFreshness({base,signals,now});
   const ageDays=(value:any)=>{
     if(!value)return Infinity;
     const time=new Date(value).getTime();
@@ -104,7 +106,7 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
   return {
     ...(base||{}),
     tenant_id:'authenticated',
-    refreshed_at:base?.refreshed_at||new Date().toISOString(),
+    refreshed_at:sourceTruth.refreshed_at,
     catalog_source_count:catalog.length,
     public_source_count:catalog.filter((item:any)=>item.activation_mode==='PUBLIC_ALWAYS').length,
     connector_source_count:catalog.filter((item:any)=>item.activation_mode==='CONNECTOR_REQUIRED').length,
@@ -117,8 +119,8 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
     action_candidate_count:actions.filter((item:any)=>['CANDIDATE','READY','MATERIALIZED'].includes(item.status)).length,
     known_opportunity_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_value_eur)),
     known_risk_value_eur:sumKnown(tenantImpacts.map((item:any)=>item.estimated_loss_eur)),
-    source_health:{...(base?.source_health||{}),availability},
-    status:signals.length?'CURRENT':'EMPTY'
+    source_health:{...(base?.source_health||{}),availability,snapshot_freshness:sourceTruth},
+    status:sourceTruth.status
   };
 }
 function readRows(label:string,query:any){
