@@ -37,3 +37,12 @@ test('provider preview reconciliation preserves explicit invoker-only view contr
  assert.match(fs,/lock_timeout = '2s'/);
  assert.doesNotMatch(fs,/(?:\bGRANT\b|cron\.alter_job|\bDROP\b|\bTRUNCATE\b)/i);
 });
+
+test('forward-only branch readback enforces unchanged internal view security',()=>{
+ const readback=readFileSync(new URL('../supabase/migrations/20261020163501_p0_4215_maturity_view_invoker_readback.sql',import.meta.url),'utf8');
+ assert.match(readback,/ALTER VIEW public\.powerhouse_action_evidence_maturity_v1 SET \(security_invoker=true\)/);
+ assert.match(readback,/REVOKE ALL ON public\.powerhouse_action_evidence_maturity_v1 FROM PUBLIC, anon, authenticated/);
+ assert.match(readback,/MATURITY_VIEW_SECURITY_READBACK_FAILED/);
+ assert.match(readback,/lock_timeout = '2s'/);
+ assert.doesNotMatch(readback,/GRANT\s+|cron\.(?:schedule|alter_job|unschedule)|DROP\s+TABLE/i);
+});

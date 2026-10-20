@@ -11,3 +11,7 @@ One existing view's join is optimized; existing output columns, action lineage, 
 
 ## Critical deployment gate
 Never merge without Supabase Preview success on the exact PR SHA. Compare full row count, action_id, forecast_id, calibration-eligible and channel counters from old and new on isolated preview, and post-change revenue snapshot + tenant separation. This draft static contract does not by itself prove parity. Then check Required CI and CodeQL, protected merge, exact production migration readback, materialized snapshot refresh and authenticated portal HTTP 200. Document discrepancies and abort if any.
+
+
+## Forward-only preview security readback
+The first preview execution had already recorded migration version 20261020163500 before the security_invoker correction. To avoid editing applied history, migration 20261020163501 enforces `ALTER VIEW ... SET (security_invoker=true)` and `REVOKE ALL FROM PUBLIC, anon, authenticated`, then verifies both privileges and the service-role boundary transactionally. The observed production view already has these exact settings. Stop if readback differs; no merge until preview matches.
