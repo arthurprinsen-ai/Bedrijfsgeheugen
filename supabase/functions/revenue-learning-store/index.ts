@@ -112,6 +112,24 @@ Deno.serve(async(req)=>{
     if(action==='upsert_evidence'){
       const row=evidenceRow(tenant,body.evidence);const {data,error}=await db.from('revenue_learning_evidence').upsert(row,{onConflict:'tenant_id,evidence_id'}).select().single();if(error)throw error;return json({stored:true,evidence:evidenceOut(data)});
     }
+    if(action==='upsert_evidence_batch'){
+      // One atomic, tenant-scoped PostgREST write per bounded workset.
+      // The exact stable evidence key and existing uniqueness contract are retained.
+      const evidences=body.evidences;
+      if(!Array.isArray(evidences)||evidences.length<1||evidences.length>50)return json({error:'INVALID_EVIDENCE_BATCH'},400);
+      const seen=new Set<string>();
+      const rows:any[]=[];
+      for(const evidence of evidences){
+        const id=typeof evidence?.evidenceId==='string'?evidence.evidenceId.trim():'';
+        const contentId=typeof evidence?.contentId==='string'?evidence.contentId.trim():'';
+        if(!id||!contentId||seen.has(id))return json({error:'INVALID_EVIDENCE_BATCH_ITEM'},400);
+        seen.add(id);
+        rows.push(evidenceRow(tenant,evidence));
+      }
+      const {error}=await db.from('revenue_learning_evidence').upsert(rows,{onConflict:'tenant_id,evidence_id'});
+      if(error)throw error;
+      return json({stored:true,count:rows.length});
+    }
     if(action==='list_due_evidence'){
       const {data,error}=await db.from('revenue_learning_evidence').select('*').eq('tenant_id',tenant).order('updated_at',{ascending:false}).limit(150);if(error)throw error;
       return json({evidence:(data||[]).filter(r=>!r.evaluated_at||new Date(r.updated_at)>new Date(r.evaluated_at)).map(evidenceOut)});
