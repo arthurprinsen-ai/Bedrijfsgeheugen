@@ -2187,3 +2187,17 @@ export const SALESROBOT_UNCERTAIN_DM_DELIVERY_POLICY_20261020=Object.freeze({
  regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
  learning:'brain/learning/2026-10-20-salesrobot-no-duplicate-dm.json'
 });
+
+
+// Live account-readiness and side-effect-free canary use the existing Powerhouse sales machine.
+export const SALESROBOT_EARLY_READINESS_CANARY_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|early-truth-readonly-canary|20261020',
+ authority:'powerhouse_channel_capabilities_v1',
+ executionOwner:'powerhouse-linkedin-sales-machine',
+ canonicalCRM:'bg_connecties',
+ channels:['linkedin_dm','salesrobot.campaign_outreach'],
+ preflightBeforeComposer:true,canaryMustNotMutate:true,
+ permissionRequired:true,independentProviderReadback:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-early-readiness-canary.json'
+});
