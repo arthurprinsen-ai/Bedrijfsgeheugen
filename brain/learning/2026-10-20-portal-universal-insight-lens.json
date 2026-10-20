@@ -1,0 +1,18 @@
+{
+  "id": "portal-universal-insight-lens-20261020",
+  "date": "2026-10-20",
+  "state": "candidate",
+  "rootCause": "Inconsistent exploration of multiple visual families in canonical portal V2",
+  "preventiveRule": "A single progressive interactive layer; never infer evidence, outcome, causality, or forecast from visual content",
+  "sources": [
+    "portal-v2/insight-lens.js",
+    "portal-v2/insight-lens.css"
+  ],
+  "acceptance": [
+    "CI",
+    "CodeQL",
+    "responsive preview",
+    "authenticated tenant acceptance",
+    "exact production readback"
+  ]
+}
