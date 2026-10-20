@@ -11,7 +11,7 @@ const count=(content,needle)=>content.split(needle).length-1;
 test('daily canonical article is present exactly once in blog listing and sitemap',()=>{
   const html=read('blog/index.html');
   const sitemap=read('sitemap.xml');
-  assert.equal(count(html,'href="/blog/'+slug+'/”'.replace('”','"')),1);
+  assert.equal(count(html,'href="'+url+'"'),1);
   assert.equal(count(sitemap,'<loc>'+url+'</loc>'),1);
   assert.ok(sitemap.includes('<lastmod>2026-10-20</lastmod>'));
 });
