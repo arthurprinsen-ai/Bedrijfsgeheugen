@@ -1,0 +1,41 @@
+{
+  "contract": "powerhouse-salesrobot-readiness-preflight-v1",
+  "date": "2026-10-20",
+  "fingerprint": "commercial|salesrobot|early-truth-readonly-canary|20261020",
+  "parent_issue": 4198,
+  "compiler": {
+    "failure_class": "PROVIDER_READINESS_STALE_ON_UPSTREAM_FAILURE",
+    "scope": "CODE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ]
+  },
+  "observed": {
+    "health": "DISCONNECTED",
+    "expired_cookie": true,
+    "subscription": "TRIAL_EXPIRED",
+    "campaign_status": "PAUSED",
+    "execution_days": 0,
+    "crm_contacts": 23295,
+    "approved_email_recipients": 0
+  },
+  "root_cause": "Provider health was probed only after mutating preparatory SQL, refreshing message plans, calling composer and validating unrelated AI model governance; failures in these steps left channel capability stale. dry_run also executed those preparations.",
+  "change": "Run one independent read-only provider preflight before other work, persist real capability truth in the existing registry only for normal runs, and return a genuinely side-effect-free dry-run result before SQL/AI mutation.",
+  "prevention": [
+    "No false green from an active Composio connector",
+    "Retain same canonical scheduler and recipient authorization controls",
+    "Never replace provider readback with an internal status"
+  ],
+  "verification_required": [
+    "Required CI + CodeQL + Supabase Preview",
+    "protected merge",
+    "exact Edge production source readback",
+    "true provider status readback, no sends"
+  ],
+  "current_state": "CANDIDATE_NOT_YET_LIVE"
+}

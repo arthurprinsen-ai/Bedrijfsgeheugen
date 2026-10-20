@@ -49,10 +49,11 @@ async function salesRobotContext(db:any){
   return {apiKey,connectedAccountId,linkedinAccountUuid:clean(healthy.linkedinAccountUuid),healthStatus:clean(healthy.healthStatus),subscription:clean(healthy.subscription||healthy.paymentStatus)};
 }
 async function recordCapability(db:any,capability:string,status:string,evidence:any){
-  await db.from('powerhouse_channel_capabilities_v1').upsert({
+  const {error}=await db.from('powerhouse_channel_capabilities_v1').upsert({
     capability_key:capability,provider:'salesrobot',channel:'linkedin_dm',status,
-    checked_at:new Date().toISOString(),expires_at:new Date(Date.now()+6*60*60*1000).toISOString(),evidence
+    checked_at:new Date().toISOString(),expires_at:new Date(Date.now()+60*60*1000).toISOString(),evidence
   },{onConflict:'capability_key'});
+  if(error)throw new Error('SALESROBOT_CAPABILITY_WRITE:'+error.message);
 }
 function salesRobotAddress(action:any){
   const e=action?.evidence||{};
@@ -99,6 +100,35 @@ Deno.serve(async(req:Request)=>{
   const now=new Date().toISOString();
 
   try{
+    // Probe transport before AI, drafting or daily SQL; a composer failure must not hide provider loss.
+    // Dry-run may inspect the external provider but must never mutate CRM, message plans or capability state.
+    let srPreflight:any=null, srPreflightError='';
+    try{ srPreflight=await salesRobotContext(db); }
+    catch(err:any){ srPreflightError=clean(err?.message||err).slice(0,240); }
+    const providerStatus=srPreflight?'CONFIG_REQUIRED':
+      (/^SALESROBOT_(CONNECTION_UNAVAILABLE|LINKEDIN_ACCOUNT_NOT_HEALTHY)$/.test(srPreflightError)?'UNAVAILABLE':'CONFIG_REQUIRED');
+    if(dryRun){
+      const [comments,dms]=await Promise.all([
+        db.from('powerhouse_sales_actions').select('action_id',{count:'exact',head:true})
+          .eq('action_type','reply_post').eq('channel','linkedin_personal').eq('status','prepared'),
+        db.from('powerhouse_sales_actions').select('action_id',{count:'exact',head:true})
+          .eq('channel','linkedin_dm').in('status',['prepared','suggested'])
+      ]);
+      if(comments.error||dms.error)throw new Error('LINKEDIN_DRY_RUN_READ:'+clean(comments.error?.message||dms.error?.message));
+      return json({ok:true,dry_run:true,contract:CONTRACT,
+        comment_candidates:comments.count||0,dm_candidates:dms.count||0,
+        dm_capability:providerStatus,dm_provider:'salesrobot',provider_probe_error:srPreflightError||null,
+        external_side_effects:false,canonical_mutations:false});
+    }
+    const providerEvidence={
+      contract:'powerhouse-capability-routing-v1',checked_at:now,
+      provider_preflight_before_composer:true,provider_probe_error:srPreflightError||null,
+      account_transport_healthy:!!srPreflight,subscription:srPreflight?.subscription||null,
+      human_approval_required:true,provider_readback_required:true,send_proof:false,
+      reason:srPreflightError||'RECIPIENT_APPROVAL_AND_PROVIDER_RECEIPT_REQUIRED'
+    };
+    await recordCapability(db,'salesrobot.linkedin_dm',providerStatus,providerEvidence);
+    await recordCapability(db,'salesrobot.campaign_outreach',providerStatus,providerEvidence);
     const {data:prep,error:prepError}=await db.rpc('powerhouse_prepare_linkedin_sales_machine_v1',{p_run_date:runDate});
     if(prepError)throw new Error('LINKEDIN_SALES_PREP:'+prepError.message);
 
@@ -120,7 +150,7 @@ Deno.serve(async(req:Request)=>{
       .order('priority',{ascending:false}).limit(3);
     if(dmErr)throw new Error('LINKEDIN_DM_READ:'+dmErr.message);
 
-    if(dryRun)return json({ok:true,dry_run:true,prepared:prep,comment_candidates:(actions||[]).length,dm_candidates:(dmActions||[]).length,external_side_effects:false});
+
 
     const aiKey=await secret(db,'ANTHROPIC_API_KEY');
     if(!aiKey)throw new Error('ANTHROPIC_API_KEY_MISSING');
@@ -168,10 +198,11 @@ Deno.serve(async(req:Request)=>{
     const dmResults:any[]=[];
     let dmCapability='UNAVAILABLE';
     try{
-      const sr=await salesRobotContext(db);
+      const sr=srPreflight;
+      if(!sr)throw new Error(srPreflightError||'SALESROBOT_PROVIDER_PREFLIGHT_UNAVAILABLE');
       // Account health is not recipient eligibility nor a verified DM delivery receipt.
       dmCapability='CONFIG_REQUIRED';
-      await recordCapability(db,'salesrobot.linkedin_dm','CONFIG_REQUIRED',{health_status:sr.healthStatus,subscription:sr.subscription,verified_at:now,account_transport_healthy:true,recipient_authority_unverified:true,provider_inbox_readback_required:true,tool:'SALESROBOT_SEND_MESSAGE',proof_boundary:'account_health_is_not_send_or_readback_proof'});
+
       for(const action of dmActions||[]){
         const composerProof=action?.evidence?.commercial_intelligence?.composer||{};
         const strategy=clean(action?.evidence?.commercial_intelligence?.message_strategy);
@@ -239,7 +270,9 @@ Deno.serve(async(req:Request)=>{
       // Keep it non-sendable while preserving the last known provider-health distinction.
       const confirmedDisconnected=/^SALESROBOT_(CONNECTION_UNAVAILABLE|LINKEDIN_ACCOUNT_NOT_HEALTHY)$/.test(reason);
       dmCapability=confirmedDisconnected?'UNAVAILABLE':'CONFIG_REQUIRED';
-      await recordCapability(db,'salesrobot.linkedin_dm',dmCapability,{error:reason,checked_at:now,send_proof:false,account_health_unverified:true,provider_probe_failed:true,retryable:!confirmedDisconnected,requires_exact_provider_readback:true,proof_boundary:'probe_error_is_not_verified_disconnection'});
+      // Preflight is authoritative for capability. Do not downgrade a verified healthy
+      // account because a later unrelated action/composer/database operation failed.
+      if(!srPreflight)await recordCapability(db,'salesrobot.linkedin_dm',dmCapability,{error:reason,checked_at:now,send_proof:false,account_health_unverified:true,provider_probe_failed:true,retryable:!confirmedDisconnected,requires_exact_provider_readback:true,proof_boundary:'probe_error_is_not_verified_disconnection'});
       dmResults.push({status:'held',reason:confirmedDisconnected?'SALESROBOT_PROVIDER_DISCONNECTED':'SALESROBOT_PROBE_OR_ELIGIBILITY_UNVERIFIED'});
     }
     return json({ok:true,contract:CONTRACT,prepared:prep,generated,autopilot,dm_capability:dmCapability,dm_provider:'salesrobot',dm_results:dmResults,dm_fallback:'REQUIRES_SEPARATE_EXECUTION_PROOF'});

@@ -56,3 +56,27 @@ test('existing human approval, message quality, and exact send acknowledgment ar
  assert.match(source,/provider_ack_verified:true/);
  assert.match(source,/status:'waiting'/);
 });
+
+test('read-only canary returns before mutating preparatory SQL or composer',()=>{
+ const preflight=source.indexOf('let srPreflight:any=null');
+ const dry=source.indexOf('if(dryRun){');
+ const prep=source.indexOf("db.rpc('powerhouse_prepare_linkedin_sales_machine_v1'");
+ const composer=source.indexOf("const composerResponse=await fetch(");
+ assert.ok(preflight>0&&dry>preflight&&prep>dry&&composer>prep);
+ const segment=source.slice(dry,prep);
+ assert.match(segment,/canonical_mutations:false/);
+ assert.match(segment,/external_side_effects:false/);
+ assert.doesNotMatch(segment,/\.update\(|\.upsert\(|\.insert\(|powerhouse_refresh_message_plans_v1|powerhouse_prepare_linkedin_sales_machine_v1/);
+ assert.ok(source.indexOf("await recordCapability(db,'salesrobot.linkedin_dm',providerStatus")>dry);
+});
+
+test('provider readiness is recorded before AI/composer failures; errors propagate',()=>{
+ const readiness=source.indexOf("await recordCapability(db,'salesrobot.linkedin_dm',providerStatus");
+ const composer=source.indexOf('const composerResponse=await fetch(');
+ const aiKey=source.indexOf("secret(db,'ANTHROPIC_API_KEY')");
+ assert.ok(readiness>0&&composer>readiness&&aiKey>readiness);
+ assert.match(source,/if\(error\)throw new Error\('SALESROBOT_CAPABILITY_WRITE:'/);
+ assert.match(source,/await recordCapability\(db,'salesrobot.campaign_outreach',providerStatus/);
+ assert.match(source,/const sr=srPreflight/);
+ assert.doesNotMatch(source,/const sr=await salesRobotContext\(db\)/);
+});
