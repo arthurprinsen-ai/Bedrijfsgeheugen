@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "fingerprint": "revenue|netlify-hourly-499|per-candidate-serial-write-amplification|v1",
+  "obligation_id": "commercial|bounded-revenue-evidence-projection|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Existing hourly revenue-learning-project fetches a bounded but potentially large candidate set and serially performs an individual PostgREST upsert for EVERY candidate. Production Netlify scheduler calls at 14:01:18 and 14:02:44 UTC ended HTTP 499 after ~14.99 s, with function invocation confirmed. Supabase source logged several HTTP200 writes and live revenue_learning_evidence had 134 unique rows with 111 updates within 2h. Unbounded HTTP fan-out is a measurable contributor, but not proven to be the sole cause of 499.",
+  "prevention_rule": "In the existing canonical hourly projector, send at most 50 unique stable tenant-scoped evidence rows per single atomic upsert; retry whole failed batches in later existing runs with a stable fingerprinted OPEN obligation containing every pending evidence ID. Never invent a success if the Edge acknowledgement is absent/mismatched, never drop or truncate candidates, retain original per-item compatibility and no alternate scheduler/sender.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4198-revenue-evidence-batch-projection.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4198-revenue-evidence-batch-projection.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4198-revenue-evidence-batch-projection.test.mjs"
+    ]
+  },
+  "evidence": {
+    "netlify_request_ids": [
+      "01M5CSVNTPJ7VY25JJHPKX9Q6A",
+      "01M5CSY90XTCVXF2PVZK6784VS"
+    ],
+    "netlify_http": 499,
+    "client": "Netlify Functions Scheduler",
+    "invocation_seconds": 14.9,
+    "db_evidence_count": 134,
+    "db_recent_writes": 111,
+    "source_regression": "PENDING",
+    "required_ci": "PENDING",
+    "codeql": "PENDING",
+    "supabase_preview": "NOT_REQUESTED_NEW_BILLABLE",
+    "production_deploy": "NOT_LIVE",
+    "provider_receipts": "NOT_PROVEN"
+  },
+  "security": {
+    "auth": "existing x-bg-service-token only",
+    "tenant": "server supplied per envelope; evidenceRow overrides tenant_id for every row",
+    "idempotency": "existing unique (tenant_id,evidence_id) upsert",
+    "source_freshness": "No generated zero or synthetic outcomes"
+  },
+  "production_verified": false
+}
