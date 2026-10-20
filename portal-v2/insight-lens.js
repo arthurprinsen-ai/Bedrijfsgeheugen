@@ -107,7 +107,7 @@ function enhance(host){
  host.dataset.bgIlEnhanced='true';
  const btn=make('button','bg-il-trigger','✦ Verken');btn.type='button';btn.setAttribute('aria-label','Verken '+nameOf(host));
  btn.addEventListener('click',()=>openInsightLens(host,null,btn));
- if(host.matches('table,[data-canvas],.canvas-card,[data-strategy-board],[data-roadmap-board],.v2roadmapintel'))host.before(btn);else host.append(btn);
+ if(host.matches('table,[data-strategy-board],[data-roadmap-board],.v2roadmapintel'))host.before(btn);else host.append(btn);
 }
 export function enhanceInsightLens(scope=document){
  if(scope.nodeType===1&&scope.matches(SELECTOR))enhance(scope);
