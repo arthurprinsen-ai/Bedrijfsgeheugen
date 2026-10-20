@@ -47,7 +47,7 @@ test('historical replay: existing hourly mux recovers missing canonical Source U
 test('failed Source Universe refresh is reported as unhealthy and never silently green',()=>{
  assert.match(recovery,/coalesce\(\(v_universe_task->>'ok'\)::boolean,false\)/);
  assert.match(recovery,/v_existing_healthy\s+and\s+coalesce/);
- assert.match(recovery,/jsonb_array\(v_universe_task\)/);
+ assert.match(recovery,/jsonb_build_array\(v_universe_task\)/);
  assert.match(recovery,/\{tasks\}/);
 });
 test('existing Infinity and source mux remain authoritative; bounded, no parallel worker',()=>{
