@@ -44,5 +44,17 @@
     "tests/brain-runtime-scheduler-gap-evidence-20261020.test.mjs"
   ],
   "issue_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4478",
-  "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4565"
+  "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4565",
+  "compiler": {
+    "failure_class": "SCHEDULER_SLOT_GAP",
+    "scope": "SCHEDULER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-scheduler-gap-evidence-20261020.test.mjs"
+    ]
+  }
 }
