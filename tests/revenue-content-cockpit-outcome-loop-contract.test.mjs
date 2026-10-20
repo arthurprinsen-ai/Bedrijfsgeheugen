@@ -39,6 +39,7 @@ test('email learning refresh cannot clear other owners or disable database guard
  }
  assert.doesNotMatch(emailLearningScopedRefresh,/\btruncate\b|disable\s+(?:trigger|row\s+level\s+security)|set\s+session_replication_role|security\s+definer/i);
  assert.doesNotMatch(emailLearningScopedRefresh,/delete\s+from\s+public\.powerhouse_(?:sales_actions|email_reply_events|sales_outcomes)/i);
+ assert.match(emailLearningScopedRefresh,/\$function\$;\s+DO \$readback\$/);
  assert.match(emailLearningScopedRefresh,/EMAIL_LEARNING_REFRESH_BASELINE_DRIFT/);
  assert.match(emailLearningScopedRefresh,/EMAIL_LEARNING_REFRESH_PRIVILEGE_DRIFT/);
 });

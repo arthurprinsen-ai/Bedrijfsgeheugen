@@ -144,7 +144,7 @@ begin
     and s.evidence->>'contract'='powerhouse-email-reply-learning-v1'
     and not (s.learning_key=any(v_active_keys));
 end;
-$function$
+$function$;
 
 DO $readback$
 BEGIN
