@@ -28,7 +28,7 @@ function element(doc,tag,cls,text){
   if(text)x.textContent=text;
   return x;
 }
-export function createScanClaimBridge({doc=document,fetcher=fetch,storage=globalThis.localStorage,session=globalThis.sessionStorage,authHeaders=async()=>null}={}){
+export function createScanClaimBridge({doc=document,fetcher=fetch,storage=globalThis.localStorage,session=globalThis.sessionStorage,authHeaders=async()=>null,onClaimed=async()=>{}}={}){
   const mount=doc.querySelector('.main .executive-glance')||doc.querySelector('.main');
   if(!mount)return {setAuthenticated(){}};
   const section=element(doc,'section','portal-canonical-scans');
@@ -106,6 +106,25 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
       if(!response.ok||data?.ok!==true||data?.claimed!==true||data?.scan?.tenant_identity_status!=='verified'){status.textContent='Koppelen is niet gelukt; de scan blijft ongewijzigd. Probeer het opnieuw.';return}
       try{storage?.removeItem(RECEIPT_KEY);session?.removeItem(KEY)}catch{}
       await refresh();
+      // The Supabase claim endpoint has already stored the verified, tenant-
+      // scoped canonical Brain projection. It is now safe to revalidate all
+      // dashboards through the existing customer state client. Never send the
+      // anonymous receipt or mark a failed refresh as a failed provider claim.
+      if(current===revision&&authenticated){
+        try{
+          const result=await onClaimed(Object.freeze({
+            tenantIdentity:identityKey,
+            serverVerified:true,
+            portalProjected:data?.bedrijfslek_portal_projected===true
+              ||data?.portal_preprovisioned===true
+          }));
+          if(current===revision&&result?.applied===false)
+            status.textContent='Scan gekoppeld. Andere pagina’s worden bijgewerkt zodra je openstaande invoer is opgeslagen.';
+        }catch{
+          if(current===revision&&authenticated)
+            status.textContent='Scan gekoppeld. Herlaad de pagina om de nieuwe Brain-gegevens te zien.';
+        }
+      }
     }catch(error){if(current===revision&&authenticated)status.textContent=error?.message==='AUTH_TOKEN_UNAVAILABLE'?'Je sessie is verlopen. Log opnieuw in om te koppelen.':'Koppelen is niet gelukt. De scan is niet als gekoppeld gemarkeerd.'}
     finally{claim.disabled=false}
   });
