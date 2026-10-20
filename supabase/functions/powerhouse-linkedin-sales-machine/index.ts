@@ -208,9 +208,29 @@ Deno.serve(async(req:Request)=>{
           await db.from('powerhouse_sales_actions').update({status:'done',executed_at:new Date().toISOString(),evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','waiting');
           dmResults.push({action_id:action.action_id,status:'executed',provider:'salesrobot',provider_ack_verified:true});
         }catch(dmError:any){
-          const evidence={...(action.evidence||{}),capability_routing:{contract:'powerhouse-capability-routing-v1',preferred:'linkedin_dm',provider:'salesrobot',status:'PROVIDER_FAILED',fallback_required:true,error:clean(dmError?.message||dmError).slice(0,240),checked_at:new Date().toISOString()}};
-          await db.from('powerhouse_sales_actions').update({status:'suggested',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','waiting');
-          dmResults.push({action_id:action.action_id,status:'fallback',reason:'SALESROBOT_PROVIDER_FAILED'});
+          // A network/adapter exception may happen AFTER provider delivery: never unlock for a second send.
+          const attemptedAt=new Date().toISOString();
+          const evidence={...(action.evidence||{}),
+            salesrobot_execution:{
+              contract:'powerhouse-capability-routing-v1',provider:'salesrobot',tool:'SALESROBOT_SEND_MESSAGE',
+              provider_ack_verified:false,provider_readback_verified:false,needs_readback:true,
+              republish_forbidden:true,attempted_at:attemptedAt,uncertainty_code:'SALESROBOT_SEND_OUTCOME_AMBIGUOUS'
+            },
+            capability_routing:{
+              contract:'powerhouse-capability-routing-v1',preferred:'linkedin_dm',provider:'salesrobot',
+              status:'PROVIDER_OUTCOME_UNCERTAIN',fallback_required:false,checked_at:attemptedAt,
+              reason:'INDEPENDENT_PROVIDER_READBACK_REQUIRED'
+            }
+          };
+          // Claim already has status waiting. A failed checkpoint still leaves the original claim locked.
+          const {data:checkpoint,error:checkpointError}=await db.from('powerhouse_sales_actions')
+            .update({status:'waiting',evidence,updated_at:attemptedAt})
+            .eq('action_id',action.action_id).eq('status','waiting').select('action_id').maybeSingle();
+          dmResults.push({
+            action_id:action.action_id,status:'unverified',reason:'SALESROBOT_SEND_OUTCOME_AMBIGUOUS',
+            checkpoint_written:!checkpointError&&!!checkpoint,requires_provider_readback:true,
+            republish_forbidden:true
+          });
         }
       }
     }catch(srError:any){

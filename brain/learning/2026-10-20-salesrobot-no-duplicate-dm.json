@@ -1,0 +1,42 @@
+{
+  "contract": "powerhouse-no-duplicate-provider-dm-v1",
+  "date": "2026-10-20",
+  "parent_issue": 4198,
+  "fingerprint": "commercial|linkedin-salesrobot|ambiguous-provider-send-no-resend|20261020",
+  "observed": {
+    "salesrobot_subscription": "TRIAL_EXPIRED",
+    "linkedin_health": "DISCONNECTED",
+    "cookie_expired": true,
+    "execution_days_remaining": 0,
+    "campaign_status": "PAUSED",
+    "campaign_prospects": 8,
+    "canonical_connection_count": 23295
+  },
+  "root_cause": "The existing SalesRobot sender reset a waiting action to suggested after any exception from provider transport or subsequent acknowledgement write; the provider may already have sent the message, so a later reattempt could duplicate it.",
+  "change": "Keep the existing original action claimed/waiting on any ambiguous provider result. Record needs_readback and republish_forbidden without marking a delivery successful. Require existing independent provider evidence before reconciling the original action.",
+  "not_changed": [
+    "canonical sender and scheduler",
+    "contact identity/consent/human approval",
+    "quality/suppression/cooldown",
+    "provider license",
+    "campaign state",
+    "customer outcomes"
+  ],
+  "prevention": [
+    "Never promote an uncertain external side effect to a retryable send.",
+    "No replacement channel for an ambiguous addressed send.",
+    "Provider authorization, inbox evidence, pipeline tests and production readback required."
+  ],
+  "tests": [
+    "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+  ],
+  "current_state": "SOURCE_CANDIDATE_NOT_YET_ACCEPTED",
+  "requires": [
+    "Required CI",
+    "CodeQL",
+    "protected merge",
+    "Supabase Edge production readback",
+    "SalesRobot license/reactivation and authentic independent provider receipt"
+  ],
+  "truth_boundary": "No provider message sent as part of this code change; no paid subscription, connection repair or end-to-end green asserted."
+}

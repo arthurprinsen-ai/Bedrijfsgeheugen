@@ -2158,3 +2158,19 @@ export const PREDICTIVE_UNCERTAINTY_ACK_V1=Object.freeze({
  regression:'tests/brain-predictive-uncertainty-persistence-20261019.test.mjs',
  learning:'brain/learning/2026-10-19-predictive-uncertainty-write-ack.json'
 });
+
+
+// Canonical outbound authority remains powerhouse-linkedin-sales-machine; this policy records the
+// side-effect uncertainty boundary and adds no second CRM, sender, scheduler or action store.
+export const SALESROBOT_UNCERTAIN_DM_DELIVERY_POLICY_20261020=Object.freeze({
+ fingerprint:'commercial|linkedin-salesrobot|ambiguous-provider-send-no-resend|20261020',
+ decisionAuthority:'powerhouse_sales_actions',
+ executor:'powerhouse-linkedin-sales-machine',
+ provider:'salesrobot',
+ uncertainStatus:'waiting',
+ needsIndependentReadback:true,
+ republishForbidden:true,
+ noAutomaticFallbackOnUnknownOutcome:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-no-duplicate-dm.json'
+});
