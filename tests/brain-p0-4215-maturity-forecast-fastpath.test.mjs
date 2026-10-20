@@ -26,3 +26,14 @@ test('source proof and migration remain fail closed without role or scheduler ch
  assert.match(sql,/REVOKE ALL ON public\.powerhouse_action_evidence_maturity_v1 FROM PUBLIC, anon, authenticated/);
  assert.doesNotMatch(sql,/(?:GRANT\s+|cron\.alter_job|cron\.unschedule|DROP TABLE|TRUNCATE)/i);
 });
+
+test('provider preview reconciliation preserves explicit invoker-only view contract',()=>{
+ const fs=readFileSync(new URL('../supabase/migrations/20261020164000_p0_4215_maturity_view_security_readback.sql',import.meta.url),'utf8');
+ assert.match(fs,/ALTER VIEW public\.powerhouse_action_evidence_maturity_v1[\s\S]*?SET \(security_invoker = true\)/);
+ assert.match(fs,/REVOKE ALL ON public\.powerhouse_action_evidence_maturity_v1[\s\S]*?FROM PUBLIC, anon, authenticated/);
+ assert.match(fs,/P0_4215_VIEW_INVOKER_READBACK_FAILED/);
+ assert.match(fs,/P0_4215_VIEW_BROWSER_ACCESS_READBACK_FAILED/);
+ assert.match(fs,/P0_4215_VIEW_SERVICE_ROLE_READBACK_FAILED/);
+ assert.match(fs,/lock_timeout = '2s'/);
+ assert.doesNotMatch(fs,/(?:\bGRANT\b|cron\.alter_job|\bDROP\b|\bTRUNCATE\b)/i);
+});
