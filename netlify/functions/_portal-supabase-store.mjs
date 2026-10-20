@@ -22,7 +22,21 @@ export function createSupabasePortalProjectionStore({
         ...(controller?{signal:controller.signal}:{})
       });
       const data=await response.json().catch(()=>null);
-      if(!response.ok)throw new Error(`EU portal store gateway failed (${response.status})`);
+      if(!response.ok){
+        // The Edge error includes a stage label; permit only its finite, audited
+        // vocabulary. Never propagate an arbitrary response, tenant or query value.
+        const safeStages=new Set([
+          'SOURCES','PUBLICATIONS','EXTERNAL_SIGNALS','DOMAIN_REGISTRY',
+          'SOURCE_CATALOG','SIGNAL_PROJECTION','COMPANY_IMPACT',
+          'CANONICAL_ACTIONS','TENANT_ACTIONS','INTELLIGENCE_SNAPSHOT',
+          'PORTAL_READ_DEADLINE_EXCEEDED'
+        ]);
+        const stage=Number(response.status)===500 &&
+          data?.error==='ENTREPRENEUR_INTELLIGENCE_READ_FAILED' &&
+          typeof data?.source==='string' && safeStages.has(data.source)
+          ?data.source:null;
+        throw new Error(`EU portal store gateway failed (${response.status})${stage?' ['+stage+']':''}`);
+      }
       return data||{};
     };
     if(!controller)return run();
@@ -55,7 +69,8 @@ export function createSupabasePortalProjectionStore({
   async function getEntrepreneurIntelligence(tenantId){
     const expectedTenant=String(tenantId);
     const data=await gateway({action:'entrepreneur_intelligence',tenantId:expectedTenant},{timeoutMs:entrepreneurTimeoutMs});
-    if(data?.scope?.authenticatedTenant!==expectedTenant)throw new Error('EU portal intelligence tenant scope mismatch');
+    if(!data?.scope||typeof data.scope.authenticatedTenant!=='string')throw new Error('EU portal intelligence response shape invalid');
+    if(data.scope.authenticatedTenant!==expectedTenant)throw new Error('EU portal intelligence tenant scope mismatch');
     return data;
   }
   async function getValidatedFinancialForecasts(tenantId){
