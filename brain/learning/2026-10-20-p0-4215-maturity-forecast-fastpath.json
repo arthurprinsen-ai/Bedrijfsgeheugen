@@ -18,12 +18,10 @@
       "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
     ],
     "shadow": [
-      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs",
-      "tests/brain-p0-4215-maturity-full-parity.mjs"
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
     ],
     "canary": [
-      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs",
-      "tests/brain-p0-4215-maturity-full-parity.mjs"
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
     ]
   },
   "test_evidence": {
@@ -34,7 +32,8 @@
     "security_parity": "forward-only security_invoker readback pending provider execution",
     "preview_schema": "Production and preview show identical 51-column ordered name/type fingerprint 86328924f18155095270db76a88ecf3f",
     "preview_data": "Preview: 0 opportunities, 0 forecasts, 0 action-business-value rows; full-row and two-tenant acceptance cannot yet pass",
-    "full_semantic_parity": "PENDING: require nonempty old/new full 51-column EXCEPT ALL parity and at least two represented tenants on an isolated pre-migration preview"
+    "full_semantic_parity": "PENDING: require nonempty old/new full 51-column EXCEPT ALL parity and at least two represented tenants on an isolated pre-migration preview",
+    "manual_preview_parity_runner": "tests/brain-p0-4215-maturity-full-parity.mjs (must be executed externally on populated isolated pre-migration preview; intentionally not an ordinary Node unit test)"
   },
   "status": "CANDIDATE",
   "evidence_urls": [
