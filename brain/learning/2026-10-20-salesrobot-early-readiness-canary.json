@@ -37,5 +37,16 @@
     "exact Edge production source readback",
     "true provider status readback, no sends"
   ],
-  "current_state": "CANDIDATE_NOT_YET_LIVE"
+  "current_state": "CANDIDATE_NOT_YET_LIVE",
+  "tests": [
+    "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+  ],
+  "evidence": {
+    "provider_verified": "SalesRobot live API read-only account and campaign",
+    "observed_subscription": "TRIAL_EXPIRED",
+    "observed_linkedin_cookie_expired": true,
+    "observed_health": "DISCONNECTED",
+    "outbound_proof": "NONE",
+    "regression_test": "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+  }
 }
