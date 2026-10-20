@@ -8,6 +8,7 @@
 
 const arr = value => (Array.isArray(value) ? value : []);
 const txt = value => (value == null ? '' : String(value));
+const measuredNumber = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value)) ? Number(value) : null;
 const laatste = items => arr(items).map(x => x?.occurredAt || x?.recordedAt || x?.observedAt || x?.at).filter(Boolean).sort().pop() || '';
 
 export const BREIN_STAPPEN = Object.freeze([
@@ -34,10 +35,12 @@ function emptyPortfolio() {
 function economics(value) {
   const source = value && typeof value === 'object' ? value : {};
   return {
-    expectedValue: Number(source.expectedValue) || 0,
-    actualCost: Number(source.actualCost) || 0,
-    realizedValue: Number(source.realizedValue) || 0,
-    realizedProfit: Number(source.realizedProfit) || 0,
+    // A missing authoritative monetary measurement is unknown, never zero.
+    // Preserve an explicitly observed 0 (including string '0').
+    expectedValue: measuredNumber(source.expectedValue),
+    actualCost: measuredNumber(source.actualCost),
+    realizedValue: measuredNumber(source.realizedValue),
+    realizedProfit: measuredNumber(source.realizedProfit),
     currency: txt(source.currency || 'EUR')
   };
 }
@@ -187,7 +190,7 @@ export function mapRuntimeProjection(projection) {
       naam: txt(item.title || item.action),
       status: txt(item.priority || 'open'),
       healthy: false,
-      waarde: Number(item.value) || 0
+      waarde: measuredNumber(item.value)
     })), bijgewerkt),
 
     recovery: slice(arr(cockpit.openKnowledgeObligations).map(item => ({
@@ -199,7 +202,7 @@ export function mapRuntimeProjection(projection) {
       naam: txt(item.subjectId || item.title),
       status: item.status === 'VERIFIED' ? 'ok' : 'aandacht',
       healthy: item.status === 'VERIFIED',
-      waarde: Number(item.value || item.amount) || 0
+      waarde: measuredNumber(item.value ?? item.amount)
     })), bijgewerkt, { totals: waarde.totals || {} }),
 
     learning: slice(arr(geheugen.memories || geheugen.records).map(item => ({
