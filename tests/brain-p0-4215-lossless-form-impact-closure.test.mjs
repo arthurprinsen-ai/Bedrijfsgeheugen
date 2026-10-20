@@ -23,6 +23,11 @@ test('finance and external changes map to downstream review without inventing ou
  assert.match(impact,/impact-economics/);
  assert.match(shell,/Niet alle gevolgen zijn al bewezen/);
 });
+test('only exact acknowledged causal impacts are shown as persisted',()=>{
+ assert.ok(shell.includes("const impact=event.detail?.impacts?.at?.(-1)||null;"));
+ assert.ok(domain.includes("acknowledged.has(pendingImpacts[index].generation)"));
+ assert.ok(!domain.includes("pendingImpacts.splice(0,impactSnapshot.length)"));
+});
 test('tenant/customer acceptance is not inferred from unit-test green',()=>{
  const evidence=readFileSync(new URL('../brain/learning/2026-10-20-p0-4215-lossless-form-impacts.json',import.meta.url),'utf8');
  const e=JSON.parse(evidence);
