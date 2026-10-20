@@ -101,7 +101,8 @@ test('all protected legacy workspaces render natively without legacy portal traf
   await gotoPortalPage(page,pageId);
   const view=page.locator('#portalView');
   if(pageId==='overzicht'){
-   await expect(page.getByText('Portal V2 bevat alle portalonderdelen standaard',{exact:true}),'overzicht must remain the canonical dashboard').toBeAttached();
+   await expect(page.getByText('Alle onderdelen van je ondernemingssturing',{exact:true}),'overzicht must remain the canonical dashboard').toBeAttached();
+   await expect(page.locator('[data-bg-portal-daily-steering="v1"]')).toBeAttached();
    await expect(view).toHaveAttribute('aria-hidden','true');
   }else if(isProtectedTrustPage(pageId)){
    await expect(view,`${pageId} must fail closed in anonymous readback`).not.toHaveAttribute('data-page-id',pageId);

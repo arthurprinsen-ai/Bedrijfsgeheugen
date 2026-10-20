@@ -1,4 +1,4 @@
-import {mkdirSync,writeFileSync} from 'node:fs';
+import {mkdirSync,writeFileSync,readFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {allPageIds,findPage} from '../../portal-v2/page-registry.js';
@@ -7,6 +7,7 @@ import {companyInputSchema} from '../../portal-v2/modules/company-input.js';
 import {fullCompanyInputSchema} from '../../portal-v2/modules/full-company-input.js';
 import {fieldMarkup} from '../../portal-v2/form-primitives.js';
 import {sourcePageForPath} from '../../portal-v2/portal-impact-engine.js';
+import {CONNECTOR_BUILDER_FIELD_CONTRACTS} from '../../portal-next/connector-builder-view.js';
 import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from '../../portal-v2/input-impact-coverage.js';
 
 // This is a generated declaration/render contract, NOT an authenticated browser,
@@ -81,14 +82,31 @@ export function buildPortalInputCoverageMatrix(){
     if(!surface.module||!surface.writeContract||!surface.readback)errors.push({code:'SUPPLEMENTAL_CONTRACT_MISSING',page:surface.page});
     const paths=Array.isArray(surface.paths)?surface.paths:[];
     if(paths.length===0){
+      if(surface.page==='koppelingen'){
+        const sourceText=readFileSync(fileURLToPath(new URL('../../portal-next/connector-builder-view.js',import.meta.url)),'utf8');
+        for(const contract of CONNECTOR_BUILDER_FIELD_CONTRACTS){
+          const present=sourceText.includes(contract.selector);
+          if(!present)errors.push({code:'CONNECTOR_FORM_SELECTOR_NOT_RENDERED',page:surface.page,selector:contract.selector});
+          supplementary.push({
+            surface:'SEPARATE_AUTHORITY_FORM',page:surface.page,moduleOwner:surface.module,
+            fieldId:contract.selector,path:null,pathTemplate:contract.pathTemplate,
+            writeContract:contract.writeContract,writeEndpoint:contract.writeContract==='SAFE_TEST_ONLY'?null:'/api/connectors/{id}/draft',
+            readbackEndpoint:contract.writeContract==='SAFE_TEST_ONLY'?null:'/api/connectors/{id}',
+            sourceRevision:'CONNECTOR_PROVIDER_VERSION_NOT_OBSERVED',brainConsumerAck:'NOT_OBSERVED',
+            tenantContext:'PROVIDER_AUTH_REQUIRED',access:'DYNAMIC_CONNECTOR_FIELDS_UNVERIFIED',
+            rendererControlVerified:present,browserDomVerified:false,authenticatedWriteVerified:false,
+            status:contract.writeContract==='SAFE_TEST_ONLY'?'EPHEMERAL_SAFE_TEST_ONLY':'DECLARED_PROVIDER_WRITE_UNVERIFIED'
+          });
+        }
+      }
       supplementary.push({
-        surface:'DYNAMIC_OR_EXTERNAL',page:surface.page,moduleOwner:surface.module,
+        surface:surface.readOnlyProjection?'READ_ONLY_INPUT_ADAPTER':'DYNAMIC_OR_EXTERNAL',page:surface.page,moduleOwner:surface.module,
         fieldId:null,path:null,writeContract:surface.writeContract,
         writeEndpoint:null,readbackEndpoint:null,
         sourceRevision:'NOT_OBSERVED',brainConsumerAck:'NOT_OBSERVED',
-        tenantContext:'MUST_VERIFY',access:'MUST_CLASSIFY',
+        tenantContext:'MUST_VERIFY',access:surface.readOnlyProjection?'READ_ONLY_ADAPTER_NOT_WHOLE_PAGE':'MUST_CLASSIFY',
         browserDomVerified:false,authenticatedWriteVerified:false,
-        status:'UNENUMERATED_FIELDS_REVIEW_REQUIRED'
+        status:surface.readOnlyProjection?'NO_EDITOR_IN_ADAPTER':'UNENUMERATED_FIELDS_REVIEW_REQUIRED'
       });
       continue;
     }
@@ -123,7 +141,9 @@ export function buildPortalInputCoverageMatrix(){
     declaredNativePages:nativePages.size,
     supplementalSurfaces:SUPPLEMENTAL_PORTAL_INPUT_SURFACES.length,
     supplementalFieldsDeclared:supplementary.filter(row=>row.path).length,
-    unenumeratedDynamicSurfaces:supplementary.filter(row=>!row.path).length,
+    separateAuthorityEditorFieldsDeclared:supplementary.filter(row=>row.surface==='SEPARATE_AUTHORITY_FORM').length,
+    readOnlyInputAdapters:supplementary.filter(row=>row.surface==='READ_ONLY_INPUT_ADAPTER').length,
+    unenumeratedDynamicSurfaces:supplementary.filter(row=>row.surface==='DYNAMIC_OR_EXTERNAL').length,
     pagesWithoutDeclaredFields:pagesWithoutDeclaredFields.length,
     declarationErrors:errors.length,
     authenticatedTenantReadbacks:0,

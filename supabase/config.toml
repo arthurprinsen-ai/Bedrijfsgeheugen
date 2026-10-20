@@ -25,6 +25,13 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/supabase-migration-repair-bridge/index.ts"
 
+# Independent reviewer; preserve currently deployed unauthenticated-JWT mode.
+# The publisher must receive an explicit PASS and exact final-text hash before sending.
+[functions.bg-pre-publish-review]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-pre-publish-review/index.ts"
+
 [functions.powerhouse-social-publisher]
 enabled = true
 verify_jwt = false
@@ -81,3 +88,59 @@ entrypoint = "./functions/powerhouse-composio-linkedin-setup/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-autonomous-outreach/index.ts"
+
+[functions.powerhouse-salesrobot-ingest]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-salesrobot-ingest/index.ts"
+
+# Canonical public-proxy-only scan endpoint; existing SHA-256 service-token gate
+# enforces authentication within the Edge function. No direct anonymous claims.
+[functions.powerhouse-scan-ingest]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-scan-ingest/index.ts"
+
+# Canonical content generator: required for protected-main provider source parity.
+# Authentication is enforced inside this function via the existing scheduler token.
+[functions.powerhouse-content-orchestrator]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
+
+# Existing canonical content-loop; custom x-powerhouse-token authentication is
+# implemented in its entrypoint, so preserve its current verify_jwt=false.
+[functions.powerhouse-content-loop]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-content-loop/index.ts"
+
+# Existing exact-Mira production stages. Entrypoints enforce the scheduler token.
+[functions.powerhouse-instagram-media-router]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-router/index.ts"
+
+[functions.powerhouse-instagram-media-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-verifier/index.ts"
+
+[functions.powerhouse-instagram-temporal-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-temporal-verifier/index.ts"
+
+# Read-only Composio analytics ingestion; only the verified scheduler may invoke.
+[functions.bg-social-metrics-sync]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-social-metrics-sync/index.ts"
+
+# Existing revenue learning store: preserve its current non-JWT invocation
+# because its entrypoint requires a validated x-bg-service-token SHA-256 hash.
+# Register it in canonical preview and release deployment for source parity.
+[functions.revenue-learning-store]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/revenue-learning-store/index.ts"

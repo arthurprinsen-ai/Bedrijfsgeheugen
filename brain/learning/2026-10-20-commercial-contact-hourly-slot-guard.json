@@ -1,0 +1,36 @@
+{
+  "fingerprint": "commercial|repeated-heartbeat-authority-review-500|bounded-slot-v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "commercial|contact-review-quarterhour-deduplication|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "linked_portal_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "REPEATED_SUPAVISOR_500_CONTACT_REVIEW_TIMEOUT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Provider production logs show 500-contact authority review on multiple Heartbeat invocations, despite existing canonical identity cron #138 reviewing smaller batches. Repeated 16s timeouts coincide with portal 504 and database lock/migration failures.",
+  "prevention_rule": "No independent bulk authority review per Heartbeat tick: preserve canonical identity cron #138, claim one supplemental 15-minute slot using existing event dedupe, cap query to 200 with 12s budget, do not mark failed receipts verified, and continue independent send lanes. When connection permits, deploy the preselect/skip-locked canonical SQL queue in protected migration.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-quarterhour-authority-guard.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-quarterhour-authority-guard.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-quarterhour-authority-guard.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "production_before": "500-contact calls with 57014 in Supavisor and Edge logs 2026-10-20",
+    "production_after": "UNPROVEN",
+    "canonical_scheduler": "ACTIVE",
+    "portal_http_200": "PENDING"
+  },
+  "production_verified": false
+}

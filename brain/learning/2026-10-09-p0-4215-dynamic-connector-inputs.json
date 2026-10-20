@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|portal|connector-editor-missing-change-handler-v1",
+  "obligationId": "p0-4215-dynamic-connector-inputs-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_PENDING_PRODUCTION_PROOF",
+  "compiler": {
+    "failure_class": "CONNECTOR_EDITOR_CHANGE_NOT_PERSISTED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_causes": [
+    "Visible connector source and target mapping inputs were not handled by element onChange; saving would keep stale draft data.",
+    "AI capability leaf inputs were only declared as two aggregate paths, hiding 172 distinct tenant-scoped score and scan provenance edits.",
+    "Separate connector draft authority was absent from form inventory; read-only compliance input adapter was misclassified as dynamic writable input."
+  ],
+  "prevention": [
+    "Source-owned field selector contract for provider draft UI and existing authority.",
+    "Derive 172 AI paths from existing immutable AI_CAPABILITY_CATALOG.",
+    "Negative tests for malformed JSON, invalid mapping indices and missing DOM selectors."
+  ],
+  "tests": [
+    "tools/ci/p0-4215-portal-input-coverage-matrix.mjs",
+    "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-input-surface-coverage-v1.test.mjs"
+    ]
+  },
+  "closureRequired": [
+    "Protected Required and CodeQL pass, merge, exact SHA Netlify production readback",
+    "Authenticated provider-side connector draft save reload and mutation audit",
+    "Two isolated customer Brain ACK to contextual cards/reload",
+    "Transactional outbox resilience and official legal applicability review"
+  ]
+}

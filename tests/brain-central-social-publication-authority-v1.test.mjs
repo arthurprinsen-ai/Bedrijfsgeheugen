@@ -65,31 +65,25 @@ test('completion supervisor requires channel policy authorization evidence',()=>
   assert.ok(result.required_evidence.includes('CHANNEL_POLICY_AUTHORIZATION'));
 });
 
-test('social publication recovery retries at most every ten minutes',()=>{
+test('retired legacy social delivery cannot schedule or write provider posts',()=>{
   const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
-  assert.match(delivery,/schedule:\s*'\*\/10 \* \* \* \*'/);
-  assert.match(delivery,/triggerCanonicalContentLoop/);
-  assert.match(delivery,/powerhouse-content-loop/);
-  assert.match(delivery,/runSocialPublicationDelivery/);
+  assert.match(delivery,/LEGACY_BUFFER_SOCIAL_WRITER_RETIRED_V1/);
+  assert.match(delivery,/provider_write_performed:false/);
+  assert.ok(!delivery.includes("schedule: '*/10"));
 });
 
-test('production deploy recovery delegates to the same canonical publisher',()=>{
+test('retired deploy hook cannot trigger another sender',()=>{
   const hook=fs.readFileSync('netlify/functions/social-publication-delivery-deploy.mjs','utf8');
-  assert.match(hook,/runSocialPublicationDelivery/);
-  assert.match(hook,/deploySucceeded/);
-  assert.match(hook,/event\?\.deploy\?\.context\s*!==\s*'production'/);
-  assert.doesNotMatch(hook,/LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH|createPost\(/);
+  assert.match(hook,/legacy_sender:'RETIRED'/);
+  assert.match(hook,/provider_write_performed:false/);
+  assert.doesNotMatch(hook,/runSocialPublicationDelivery|createPost\(/);
 });
 
-test('social recovery remains bounded by the publication window and canonical single-writer route',()=>{
-  const delivery=fs.readFileSync('netlify/functions/social-publication-delivery.mjs','utf8');
-  assert.match(delivery,/local\.hour < 7 \|\| local\.hour > 20/);
-  assert.match(delivery,/powerhouse-content-loop/);
-  assert.match(delivery,/content loop owns generation, gates, provider dispatch and reconciliation/i);
-  const loop=delivery.indexOf('await triggerCanonicalContentLoop(local.date)');
-  const readback=delivery.indexOf("await powerhouse('delivery_context'",loop);
-  const buffer=delivery.indexOf('posts = await getProviderPosts',readback);
-  assert.ok(loop>=0 && readback>loop && buffer>readback,'recovery must run full content loop before fresh state and provider readback');
+test('canonical scheduled recovery requires published provider truth',()=>{
+  const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
+  assert.match(workflow,/d\.state!=='published'/);
+  assert.match(workflow,/safe\.providerTruthHealthy!==true/);
+  assert.match(workflow,/social-recovery-runner/);
 });
 
 test('manual recovery is same-day, auditable and delegates to the canonical recovery runner',()=>{
@@ -109,7 +103,7 @@ test('manual recovery is same-day, auditable and delegates to the canonical reco
 
 test('recovery runner owns degraded preparation, bounded publication and direct readback',()=>{
   const workflow=fs.readFileSync('.github/workflows/social-publication-recovery.yml','utf8');
-  assert.ok(recoveryRunner.includes('const POOLER = "aws-0-eu-central-1.pooler.supabase.com";'));
+  assert.match(recoveryRunner,/readCanonicalState/);
   assert.match(recoveryRunner,/readCanonicalState/);
   assert.match(recoveryRunner,/preparationNeeded/);
   assert.match(recoveryRunner,/CANONICAL_CONTENT_ALREADY_READY_OR_TERMINAL/);

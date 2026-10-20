@@ -1,0 +1,51 @@
+{
+  "id": "p0-4198-safe-content-recovery-20261010-v1",
+  "date": "2026-10-10",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|content-loop|blocked-source-outcome-recovery-v1",
+  "root_cause": "Canonical supervisor only invoked the source-backed orchestrator when pending decisions were missing or already decided. After the publisher safely blocked 2026-10-10 LinkedIn content for duplicate story family, the blocked decisions were never reconsidered even after the external source was corrected to live KVK Wet DBA signal. A stale CPNL blog draft also remained in content-ready until explicitly excluded.",
+  "change": "In existing supervisor, under existing lease, seed one bounded recovery through existing orchestrator for blocked publication decisions that have no provider ID and have source-deadline-expired or global-post-duplicate reasons. Preserve pre-publish identity, uniqueness, source, provider and media gates.",
+  "existing_authorities": {
+    "supervisor": "powerhouse-content-loop",
+    "content": "powerhouse-content-orchestrator",
+    "publications": "powerhouse-social-publisher",
+    "media": "powerhouse-instagram-media-router",
+    "measurement": "content_publication_obligations and Brain outcome loop"
+  },
+  "safety": {
+    "no_new_executor": true,
+    "no_new_schedule": true,
+    "no_buffer_fallback": true,
+    "no_duplicate_override": true,
+    "provider_side_effect_fail_closed": true,
+    "receipts_not_fabricated": true
+  },
+  "compiler": {
+    "failure_class": "CONTENT_SUPERVISOR_BLOCKED_DECISION_RETRY_DEADLOCK",
+    "scope": "CANONICAL_CONTENT_CLOSED_LOOP",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-safe-content-recovery-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-safe-content-recovery-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-safe-content-recovery-p0-4198.test.mjs"
+    ],
+    "production_claim": "not proven until protected merge, live Edge readback, post provider readback"
+  },
+  "evidence": {
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "predecessor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4299",
+    "regulatory_source_correction": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4301"
+  },
+  "prevention": [
+    "Don't silence blocked publication decisions with no provider outcome; route through existing source-backed recovery.",
+    "Never retry a possible provider side effect, preserve identity and uniqueness gates.",
+    "Do not assert social delivery until real provider ID, external readback and observable metric."
+  ]
+}

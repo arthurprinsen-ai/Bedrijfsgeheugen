@@ -1,0 +1,69 @@
+{
+  "fingerprint": "powerhouse|predictive|postgres-57014-trigger-fanout|bounded-signal-batches|v1",
+  "obligationId": "p0-4198-predictive-postgrest-timeout-batching-20261009",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "statement_timeout_seconds": 8,
+    "postgrest_role": "authenticator",
+    "http_request_id": 1684,
+    "http_status": 500,
+    "sqlstate": "57014",
+    "failed_step": "bulk upsert powerhouse_predictive_signals",
+    "trigger_chain": [
+      "powerhouse_sync_predictive_signal_forecast",
+      "powerhouse_sync_forecast_calibration_obligation"
+    ],
+    "persist_target": "revenue_learning_obligations",
+    "anthropic_smoke_http_status": 200
+  },
+  "root_cause": "A single unbounded PostgREST signal upsert synchronously invokes two nested forecast and calibration triggers until the authenticator's eight-second statement timeout aborts the statement.",
+  "changes": [
+    "Skip unmodified signalRows using keyed database source/evidence comparisons",
+    "Write only changed rows sequentially in groups of five",
+    "Preserve the original signal_key conflict target, forecast/calibration obligations, Anthropic governance and scheduler",
+    "Version the two already-suspended Groq-only content and calibration fallback registry entries without changing approved Anthropic primary"
+  ],
+  "guardrails": [
+    "No SQL role timeout relaxation",
+    "No disabled database trigger",
+    "No secondary executor",
+    "No fabricated prediction or green production proof"
+  ],
+  "failureModes": [
+    "PREDICTIVE_ENGINE_DATABASE_STATEMENT_TIMEOUT",
+    "POSTGREST_BULK_UPSERT_TRIGGER_FANOUT"
+  ],
+  "prevention": [
+    "Avoid trigger cascade for unchanged source signals",
+    "Keep genuinely changed writes below eight-second statement budget",
+    "Do not disable triggers, relax database timeouts or bypass the scheduler",
+    "Replay-safe and specific AI governance suspension only for two Groq fallback use cases"
+  ],
+  "required": [
+    "Protected CI and CodeQL",
+    "Production Edge source parity",
+    "Real authorized Anthropic run",
+    "Persisted forecast and Brain obligation readback",
+    "True external omnichannel outcomes before P0 closure"
+  ],
+  "compiler": {
+    "failure_class": "PREDICTIVE_DATABASE_TIMEOUT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-postgrest-batching-v1.test.mjs",
+      "tests/brain-predictive-approved-fallback-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "postgres_log_at": "2026-10-09T14:28:11Z",
+    "provider_check": "Anthropic real provider HTTP 200 request 1686",
+    "runtime_predictive_green": false,
+    "changed_function": "supabase/functions/powerhouse-predictive-engine/index.ts",
+    "groq_content_calibration_fallbacks": "Two exact existing Groq fallback use cases are SUSPENDED through independently pre-applied guarded production DML; SQL is versioned in the same proposal"
+  }
+}

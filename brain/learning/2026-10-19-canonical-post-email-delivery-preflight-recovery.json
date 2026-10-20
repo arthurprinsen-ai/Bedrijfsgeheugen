@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|email-preflight-identity-and-personal-story-repetition|2026-10-19",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "powerhouse-email-and-personal-social-delivery-p0-20261019",
+  "compiler": {
+    "failure_class": "CONTRACT_MISMATCH",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": false
+  },
+  "root_cause": "Gmail dry-run gave account_resolved without required account_user_resolved, so the canonical provider-preflight reconciler reported RED despite a resolved account. The personal LinkedIn content path kept generating the same founder story family and failed the historical uniqueness guard while ignoring rejected personal-source recommendation IDs.",
+  "prevention_rule": "The Gmail dry-run must return separately derived connected account and user identity booleans; do not send during a dry-run. On a pre-provider, provably unconsumed uniqueness refusal, only select a distinct independently verified personal-source recommendation, otherwise block as NO_UNIQUE_VERIFIED_PERSONAL_SOURCE. Never loosen duplicate, personal truth, recipient approval, or provider-readback safety gates.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "tests": [
+      "tests/brain-canonical-delivery-preflight-personal-dedupe-20261019.test.mjs"
+    ],
+    "production_readback": "NOT_VERIFIED",
+    "historical_provider_evidence": [
+      "Gmail preflight on 2026-10-19 returned HTTP 200 and account_resolved true without account_user_resolved; CRM 0 contacts with human_approved true.",
+      "LinkedIn personal Oct 17-19 repeated STORY_FAMILY_DUPLICATE against 2026-10-15 while Company had provider URN on Oct 19."
+    ]
+  },
+  "production_verified": false
+}

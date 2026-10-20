@@ -10,6 +10,7 @@ const PAGE_MIN_PLAN=Object.freeze({
   'koppelingen':'pro',
   'brain-verwerking':'pro',
   'ai-capabilities':'pro',
+  'ai-modelkeuze':'pro',
   'taken-werkstromen':'pro',
   'businesscase':'pro',
   'due-diligence':'pro',

@@ -1,0 +1,47 @@
+{
+  "id": "p0-4198-personal-linkedin-editorial-compliance-20261010-v1",
+  "date": "2026-10-10",
+  "fingerprint": "powerhouse|personal-linkedin|notion-founder-voice-markdown-unverified-claims|v1",
+  "status": "PROTECTED_CANDIDATE",
+  "root_cause": "A personal LinkedIn post on 2026-10-10 contained literal ** emphasis and --- separators, an unsourced 'zeven op de tien mkb-bedrijven' statistic, internal operational delivery status and too many words. The generator only required first person + a build keyword and set final_copy_approved=false. The identity review checked truth anchors but not canonical Notion editorial contract, and the publisher did not enforce editorial approval before consuming publication authority.",
+  "prevention": [
+    "Use the existing Notion personal founder journey and voice rules as a hard 130–200 word, plain-text, first-person authentic story with an open conversational question, not a technical report or corporate pitch.",
+    "Reject Markdown delimiters, inline promotional links, emoji, system/protocol status dumps, unverified numerical public claims, and unverifiable delivery-status bragging before computing final text hash.",
+    "Require exact independent public-source verification for every numeric public claim, and never treat source_backed:true as proof of an unrelated statistic.",
+    "Apply one shared pure editorial validator inside the canonical Anthropic/Composio generator, independent pre-publish reviewer, and existing social publisher before daily capability issuance, global uniqueness reservation, or external provider mutation.",
+    "Persist final_copy_approved=true and editorial policy version only when the checked final text passes, while preserving all existing identity, OAuth, provider receipt and single-writer safeguards.",
+    "Never duplicate the already published 2026-10-10 personal post; correction must be an in-place edit only when actually authorized and provider-supported."
+  ],
+  "compiler": {
+    "failure_class": "PERSONAL_LINKEDIN_EDITORIAL_CONTRACT_BYPASS",
+    "scope": "SOCIAL_PUBLICATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs"
+    ],
+    "canonical_eligible": false
+  },
+  "evidence": {
+    "user_screenshot": true,
+    "notion_sources": [
+      "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+      "https://app.notion.com/p/3b9da36aac8a81779e00ffecaa340fd5"
+    ],
+    "published_urn": "urn:li:share:7514640470329778176",
+    "stored_final_copy_approved": false,
+    "original_post_len": 2674,
+    "required_test": "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+    "existing_p0": 4198
+  },
+  "production_claim": "Only protected CI, merged branch, exact production Edge parity, and authenticated review API replay may show prevention live. This does not constitute correction of already published external LinkedIn post."
+}

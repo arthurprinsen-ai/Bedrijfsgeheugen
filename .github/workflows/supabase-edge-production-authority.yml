@@ -12,8 +12,8 @@ on:
   workflow_dispatch:
     inputs:
       functions:
-        description: 'Comma-separated function slugs to attest from exact current main; blank derives from the current main commit'
-        required: false
+        description: 'Required for manual runs: comma-separated registered function slugs, e.g. netlify-deploy-bridge'
+        required: true
         type: string
 
 permissions:
@@ -74,6 +74,13 @@ jobs:
           : > /tmp/functions.txt
           target_pr=""
           target_merge_sha=""
+          # A manual run without explicit functions can silently skip provider parity if
+          # the latest main commit only modified Portal or other non-Edge files.
+          # Prevent a vacuous green status before the Supabase PAT is exercised.
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -z "${REQUESTED_FUNCTIONS//[[:space:]]/}" ]; then
+            echo "::error::SUPABASE_EDGE_MANUAL_SCOPE_REQUIRED"
+            exit 78
+          fi
           if [ -n "${REQUESTED_FUNCTIONS// /}" ]; then
             tr ',' '\n' <<<"$REQUESTED_FUNCTIONS" | sed 's/^ *//;s/ *$//' | grep -E '^[a-z0-9][a-z0-9-]*$' | sort -u > /tmp/functions.txt
           else
@@ -234,8 +241,16 @@ jobs:
               mkdir -p "$root"
               if ! (
                 cd "$root"
-                supabase functions download "$fn" --project-ref "$PROJECT_REF" --use-api
+                # Retain the diagnostic for classification without exposing credentials.
+                supabase functions download "$fn" --project-ref "$PROJECT_REF" --use-api 2>&1 | tee "$root/download.log"
               ); then
+                # Authentication failures cannot recover through retries; require a
+                # renewed GitHub Actions SUPABASE_ACCESS_TOKEN. Preserve the release
+                # gate and stop immediately instead of repeating the same 401 24 times.
+                if grep -Eiq 'Error status 401|Invalid access token' "$root/download.log"; then
+                  echo "::error::SUPABASE_ACCESS_TOKEN_INVALID_REAUTH_REQUIRED"
+                  exit 78
+                fi
                 attempt_ok=false
                 break
               fi

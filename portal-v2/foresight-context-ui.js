@@ -1,5 +1,6 @@
 
 import {buildBusinessContext} from '../brain/context/business-context-engine.mjs';
+import {mountForesightScenarioStudio} from './foresight-scenario-studio.js';
 import {contextualCardsForPage,toRoadmapProposal,inventoryPortalCustomerFields,CONTEXTUAL_ACTION_PAGES} from './contextual-action-cards.js';
 
 const CONTEXT_PAGES=new Set(['bedrijfssituatie','cijfers-maatstaven','businesscase','waarde-financiering','branche-markt','roadmap','actieve-acties','due-diligence','exit','outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center',...CONTEXTUAL_ACTION_PAGES]);
@@ -81,6 +82,7 @@ function selfImprovementPanel(s={}){
 function ensureStyles(doc=document){
   if(!doc||doc.querySelector('link[data-foresight-context-ui]'))return;
   const link=doc.createElement('link');link.rel='stylesheet';link.href='./foresight-context.css';link.dataset.foresightContextUi='true';doc.head.appendChild(link);
+  const studio=doc.createElement('link');studio.rel='stylesheet';studio.href='./foresight-scenario-studio.css';studio.dataset.powerhouseForesightStudio='true';doc.head.appendChild(studio);
 }
 function contextModel(state={}){try{return buildBusinessContext(state||{});}catch{return null;}}
 export function buildContextualForesightModel(pageId,state={},quality=null,{overview=false}={}){
@@ -188,7 +190,8 @@ export async function mountContextualForesight(host,{pageId,state={},openPage,fe
   globalThis.addEventListener?.('bg:portal-impact',()=>mountContextualActionCandidates(host,pageId,openPage),{signal:controller.signal});
   const quality=QUALITY_PAGES.has(pageId)?await loadPredictionQuality(fetchImpl):null;
   const html=sectionMarkup({pageId,state,quality});
-  if(!html)return host.querySelector?.('[data-contextual-impact-cards]')||null;
+  mountForesightScenarioStudio(host,{state,pageId,openPage});
+  if(!html)return host.querySelector?.('[data-pfs-studio]')||host.querySelector?.('[data-contextual-impact-cards]')||null;
   const holder=(host.ownerDocument||document).createElement('div');holder.innerHTML=html;
   const section=holder.firstElementChild;host.appendChild(section);bind(section,openPage);return section;
 }
@@ -206,6 +209,6 @@ export async function mountOverviewForesight(root,{state={},openPage,fetchImpl=g
   const section=holder.firstElementChild;if(!section)return null;
   const anchor=main.querySelector('[data-business-journey-overview]')||main.querySelector('#companyDecisionCockpit')||main.querySelector('.dashboard');
   if(anchor?.parentNode===main)anchor.after(section);else main.appendChild(section);
-  bind(section,openPage);return section;
+  bind(section,openPage);mountForesightScenarioStudio(main,{state,pageId:'overzicht',openPage});return section;
 }
 export const FORESIGHT_CONTEXT_PAGES=Object.freeze([...CONTEXT_PAGES]);

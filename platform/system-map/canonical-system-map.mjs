@@ -36,6 +36,327 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-entrepreneur-source-freshness-v1',
+      fingerprint:'portal|entrepreneur-source|stale-current-and-null-eur-zero|v1',
+      label:'Tenant entrepreneurship projections preserve canonical refresh timestamp, source staleness, and unknown monetary values',
+      owner:'ONE BRAIN / existing Supabase EU portal-state-eu read-model',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'canonical Source Universe source revision + authenticated tenant impact and action scope',
+      inputs:Object.freeze(['powerhouse_intelligence_snapshot_v1.refreshed_at','actual observed external signals','authenticated company impacts','known monetary evidence']),
+      outputs:Object.freeze(['CURRENT only after verified <=2h canonical refresh','STALE/PARTIAL/EMPTY fail-closed status','NULL for unknown euro values']),
+      evidence:'tests/brain-portal-entrepreneur-source-freshness-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-portal-entrepreneur-source-freshness-v1.json'
+    }),
+    Object.freeze({
+      id:'verified-scan-claim-immediate-brain-readback-v1',
+      fingerprint:'portal|verified-frisseblik-claim|canonical-brain-readback|v1',
+      label:'Verified Frisse Blik/Bedrijfslek claims refresh existing tenant-specific Brain dashboards',
+      owner:'ONE BRAIN / original scan-ingest and Portal V2 read-model',
+      authority:'Netlify Identity-bound scan claim ACK, Supabase canonical-brain projection, Portal V2 state refresh',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['verified same-tenant provider claim receipt','canonical projection persistence','authenticated unchanged tenant principal']),
+      outputs:Object.freeze(['live read-model update for existing portal dashboards','no duplicate scan claim','unsaved customer edits preserved']),
+      evidence:'tests/brain-portal-claim-propagation-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-frisseblik-verified-claim-live-brain-readback-v1.json'
+    }),
+    Object.freeze({
+      id:'portal-profile-no-fake-input-defaults-v1',
+      fingerprint:'portal|customer-profile|no-fabricated-maturity-and-financial-benchmark|v1',
+      label:'Real customer profile KPI is unknown until every source input is explicitly entered',
+      owner:'ONE BRAIN / Portal V2 dashboard and profile models',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'same-tenant authenticated portal.profile explicit customer values',
+      inputs:Object.freeze(['employees','hourlyCost','13 maturity fields']),
+      outputs:Object.freeze(['null when incomplete','assumption-based estimate when complete','no fictitious baseline cash savings']),
+      evidence:'tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-profile-input-backed-kpis-v1.json'
+    }),
+    Object.freeze({
+      id:'portal-safe-canonical-revalidation-v1',
+      fingerprint:'portal|authenticated-refresh|safe-domain-state-revalidation|v1',
+      label:'Visible Portal V2 pages revalidate authenticated tenant Brain data without erasing edits',
+      owner:'ONE BRAIN / Portal V2 existing tenant-state authority',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'existing signed-in Netlify /api/portal-state → canonical Supabase state → tenant BusinessInput and organism ACK',
+      inputs:Object.freeze(['authenticated tenant readback','verified current principal','unchanged local revision','no pending business input']),
+      outputs:Object.freeze(['changed server data reflected in dashboard and open page','stale cross-tenant response blocked','dirty customer input preserved']),
+      evidence:'tests/brain-portal-live-revalidation-v1.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-portal-server-live-revalidation-v1.json'
+    }),
+    Object.freeze({
+      id:'portal-economics-null-not-zero-v1',
+      fingerprint:'portal|brain-runtime|unknown-monetary-values-never-zero|v1',
+      label:'Portal economics distinguishes absent source amounts from actual measured zero',
+      owner:'ONE BRAIN / existing authenticated Portal V2 runtime',
+      authority:'tenant-bound Brain operating-loop decisionEconomics',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['source economic measurements','explicit measured zero','absence of source data']),
+      outputs:Object.freeze(['null unknown economics','no fabricated value leakage','visible unavailable money state']),
+      evidence:'portal-v2/tests/company-decisions.test.mjs',
+      learning:'brain/learning/2026-10-20-portal-unknown-financial-values-v1.json',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215'
+    }),
+    Object.freeze({
+      id:'source-universe-existing-mux-stage-v1',
+      fingerprint:'powerhouse|source-universe|scheduler-v3-dropped-refresh-stage|v1',
+      label:'Canonical Source Universe refresh stays in the existing Powerhouse runtime mux',
+      owner:'Powerhouse runtime scheduler v3 / existing pg_cron job 171',
+      authority:'existing source universe, source observations and signal/action/outcome lineage',
+      status:'MANUAL_PROVIDER_CANARY_PASSED_SCHEDULED_RECEIPT_PENDING',
+      inputs:Object.freeze(['bounded external source observations','UTC minute 54 existing mux slot','canonical tenant scope']),
+      outputs:Object.freeze(['refreshed external intelligence snapshot','bounded materialization and outcome reconciliation','source task receipt and aggregate fail-closed health']),
+      regression:'tests/brain-source-universe-operational-truth-v1.test.mjs',
+      migration:'supabase/migrations/20261020080000_restore_external_intelligence_existing_mux_v3.sql',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-source-universe-scheduler-mux-stage-recovery-v1.json',
+      invariants:Object.freeze({noParallelScheduler:true,neverFabricateMoney:true,externalActionNotAuthorized:true,taskFailureNotGreen:true})
+    }),
+    Object.freeze({
+      id:'portal-tenant-source-freshness-v1',
+      fingerprint:'portal|tenant-projection|nested-freshest-source-readback|v1',
+      label:'Portal V2 merges nested tenant inputs by verified source revision without losing unrelated fields',
+      owner:'ONE BRAIN / existing Supabase EU portal-state projection',
+      authority:'authenticated tenant-scoped BusinessInput ACK, original canonical projection timestamps',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['legacy-migration sourceUpdatedAt','canonical-brain sourceUpdatedAt','same-tenant portal fields']),
+      outputs:Object.freeze(['lossless tenant portal read model','cross-page field consistency','tenant-mismatch rejection']),
+      evidence:'tests/brain-portal-source-truth-20261019.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-portal-tenant-projection-freshest-nested-source-v1.json'
+    }),
+    Object.freeze({
+      id:'portal-future-lens-source-truth-v1',
+      fingerprint:'portal|foresight|no-dom-derived-confidence-or-forecast|v1',
+      label:'Portal Future Lens uses evidence-backed tenant forecasts only',
+      owner:'ONE BRAIN / Portal V2 / Powerhouse Foresight',
+      authority:'authenticated canonical tenant forecast + independent quality proof',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['tenant-bound verified source references','validated model version and backtest','latest provenance date','canonical customer forecast']),
+      outputs:Object.freeze(['numerical forecast only with source proof','unknown instead of synthetic confidence','existing contextual foresight and action navigation']),
+      runtime:Object.freeze({
+        implementation:'portal-v2/nextgen-intelligence.js',
+        regression:'portal-v2/tests/nextgen-intelligence.test.mjs',
+        learning:'brain/learning/2026-10-19-portal-future-lens-source-truth-v1.json',
+        documentation:'docs/changes/2026-10-19-portal-future-lens-source-truth-v1.md'
+      }),
+      invariants:Object.freeze({
+        noDomForecast:true,noFabricatedConfidence:true,sourceAndTenantRequired:true,
+        independentBacktestRequired:true,noAutomaticFinancialClaims:true,protectedMergeRequired:true,
+        authenticatedProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
+      id:'portal-workspace-async-generation-v1',
+      fingerprint:'powerhouse|portal-v2|workspace-mount-generation|v1',
+      label:'Portal V2 stable workspace mounts after async navigation',
+      owner:'ONE BRAIN / Portal V2',
+      authority:'active DOM page root + canonical tenant domain state',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['current Portal V2 navigation target','lazy workspace style/module import','existing Powerhouse customer domain state']),
+      outputs:Object.freeze(['fresh workspace generation on each navigation','discard stale async render completions','original source-bound canvas save evidence']),
+      runtime:Object.freeze({
+        implementation:'portal-v2/workspace-shell.js',
+        unitRegression:'tests/brain-portal-workspace-generation-v1.test.mjs',
+        productionAcceptance:'tests/integration/portal-v2-production-canvassen.spec.js',
+        learning:'brain/learning/2026-10-19-portal-workspace-async-generation.json',
+        documentation:'docs/changes/2026-10-19-portal-workspace-generation-reliability.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true,staleMountCannotWrite:true,noNewRouter:true,
+        tenantStateAuthorityUnchanged:true,saveRequiresServerReceipt:true,
+        existingBrowserAcceptanceRequired:true,protectedMergeRequired:true,
+        exactProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
+      id:'portal-immutable-browser-proof-bridge-only-successor-v1',
+      fingerprint:'powerhouse|delivery|portal-dom-bridge-only-successor|v1',
+      label:'Portal DOM production proof against immutable release when only independent deployment bridge advances',
+      owner:'ONE BRAIN / Protected Portal Production Readback',
+      authority:'GitHub protected approved PR + immutable Netlify release + verified Supabase deploy bridge source',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['previously published exact Netlify site SHA','approved merged Portal PR ancestry','current main changes without Portal/Netlify runtime changes','exact independent Supabase deploy bridge source']),
+      outputs:Object.freeze(['main-only manual Portal DOM browser proof','immutable production SHA and deploy identity','auditable non-bypass of portal/runtime release gates']),
+      runtime:Object.freeze({
+        workflow:'.github/workflows/portal-v2-production-dom-readback.yml',
+        regression:'tests/brain-portal-dom-proven-bridge-only-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-portal-readback-bridge-only-override.json',
+        documentation:'docs/changes/2026-10-19-portal-dom-immutable-acceptance-v1.md'
+      }),
+      invariants:Object.freeze({
+        singleSiteAuthority:true,approvedPRAncestryRequired:true,
+        immutableDeployMatchRequired:true,realBrowserRequired:true,
+        onlyExactlyNamedBridgeCanFollowRelease:true,noGenericEdgeFunctionOverride:true,
+        portalAndNetlifyRuntimeChangesBlocked:true,noSyntheticProductionGreen:true
+      })
+    }),
+    Object.freeze({
+      id:'netlify-pinned-composio-session-health-v1',
+      fingerprint:'netlify|composio|pinned-session-health|v1',
+      label:'Netlify authorized session tool exposure and provider-health evidence',
+      owner:'ONE BRAIN / protected production delivery',
+      authority:'GitHub main-only OIDC, Supabase Vault project-scope Composio key, pre-authorized Netlify site',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['active account from same Composio project','two fixed approved Netlify tool slugs','authenticated OIDC read-only provider health']),
+      outputs:Object.freeze(['strict positive tool allowlist','privacy-safe HTTP 400 session diagnostics','no provider write without verified authorization']),
+      runtime:Object.freeze({
+        edge:'supabase/functions/netlify-deploy-bridge/index.ts',
+        regression:'tests/brain-netlify-session-tool-exposure-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-netlify-session-tool-exposure.json',
+        documentation:'docs/changes/2026-10-19-netlify-composio-session-health-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingBridgeOnly:true,oidcRepositoryAndMainOnly:true,
+        vaultProjectAuthorityRequired:true,fixedSiteOnly:true,
+        readOnlyHealthBeforeWrite:true,noCredentialLogging:true,
+        protectedDeploymentAndProviderProofRequired:true
+      })
+    }),
+    Object.freeze({
+      id:'netlify-last-live-revision-reconcile-v1',
+      fingerprint:'deployment|latest-push-cancels-running-upload|20261019',
+      label:'Protected Netlify release reconciliation against last verified production SHA',
+      owner:'ONE BRAIN / Production delivery control plane',
+      authority:'GitHub protected main + immutable Netlify release source identity',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['latest protected main commit','last verified production release.json commit','cumulative unpublished changed paths']),
+      outputs:Object.freeze(['no-cancel in-flight authorized upload','correct cumulative deployment applicability','fail-closed missing-provider-identity reconciliation']),
+      runtime:Object.freeze({
+        workflow:'.github/workflows/production-source-snapshot.yml',
+        helper:'tools/delivery/netlify-live-gap-reconcile.mjs',
+        regression:'tests/brain-netlify-live-gap-cancel-starvation-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-netlify-release-starvation.json',
+        documentation:'docs/changes/2026-10-19-netlify-release-starvation-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingReleaseAuthorityOnly:true,noParallelScheduler:true,
+        protectedMergeRequired:true,oidcAuthorizationPreserved:true,
+        liveCommitReadbackRequired:true,unknownLiveRevisionFailsClosed:true,
+        runningAuthorizedDeployNotCancelled:true,realBrowserProofRequired:true
+      })
+    }),
+    Object.freeze({
+      id:'tenant-decision-twin-roadmap-proposal-v1',
+      fingerprint:'powerhouse|portal-v2|decision-twin-roadmap-proposal|v1',
+      label:'Evidence-backed what-if → tenant roadmap review-only proposal',
+      owner:'ONE BRAIN / Portal V2 / Foresight',
+      authority:'existing tenant-specific Portal domain-state and roadmap persisted with authenticated flush',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['three independently referenced historical measurements','bounded nonzero scenario assumption','current authenticated tenant state']),
+      outputs:Object.freeze(['idempotent roadmap draft','review and owner assignment requirement','explicit zero external-provider dispatch']),
+      runtime:Object.freeze({
+        studio:'portal-v2/foresight-scenario-studio.js',
+        builder:'portal-v2/decision-twin-receipt.js',
+        regression:'tests/brain-decision-twin-roadmap-proposal-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-decision-twin-roadmap-proposal.json',
+        documentation:'docs/changes/2026-10-19-decision-twin-roadmap-proposal-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true,noNewBackend:true,realTenantRequired:true,
+        distinctEvidenceRequired:true,simulationNeverRealization:true,
+        approvedExternalProviderNotInferred:true,clientClickRequired:true,
+        domainStateServerAckRequired:true,noSyntheticRevenue:true,
+        protectedMergeAndProductionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
+      id:'tenant-decision-twin-receipt-v1',
+      fingerprint:'powerhouse|portal-v2|decision-twin-proof-receipt|v1',
+      label:'Decision Twin — scenario-to-action-to-outcome evidence receipt',
+      owner:'ONE BRAIN / Portal V2 / Foresight',
+      authority:'existing authenticated tenant portal state, Powerhouse authorized provider receipts and independently verified outcomes',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['tenant-scoped source-backed goal history','existing tenant+goal action','provider-confirmed action receipts','independent tenant outcome evidence']),
+      outputs:Object.freeze(['five-level evidence chain','honest what-if differentiation','existing next-best-actions navigation']),
+      runtime:Object.freeze({
+        receipts:'portal-v2/decision-twin-receipt.js',
+        studio:'portal-v2/foresight-scenario-studio.js',
+        test:'tests/brain-decision-twin-receipt-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-decision-twin-proof-chain.json',
+        documentation:'docs/changes/2026-10-19-decision-twin-receipt-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true,tenantScopeRequiredForAction:true,
+        scenarioNotCausal:true,verifiedHistoryRequired:true,
+        providerProofRequiredForExecution:true,independentOutcomeProofRequired:true,
+        noSyntheticMoney:true,noConnectorAutoActivation:true,
+        noParallelDecisionStore:true,productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
+      id:'growth-drain-budget-replay-v1',
+      fingerprint:'powerhouse|growth|bounded-replay-resume|v1',
+      label:'Growth and Outcome bounded replay — delivery evidence, not invented success',
+      owner:'ONE BRAIN / Powerhouse Growth delivery',
+      authority:'Netlify Blobs persisted receipts + Supabase growth-datahub-ingest + external provider acknowledgment',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['existing growth-event and outcome blob receipts','canonical Supabase idempotent datahub ingress','explicitly authorized external webhook']),
+      outputs:Object.freeze(['bounded replay with progress checkpoints','fair event/outcome queue order','observable runtime, page and persisted-skip metrics']),
+      runtime:Object.freeze({
+        scheduler:'netlify/functions/growth-drain.mjs',
+        replay:'netlify/functions/growth-replay.mjs',
+        regression:'tests/brain-growth-drain-time-budget-v1.test.mjs',
+        learning:'brain/learning/2026-10-19-growth-drain-budget-recovery.json',
+        documentation:'docs/changes/2026-10-19-growth-drain-runtime-reliability-v1.md'
+      }),
+      invariants:Object.freeze({
+        existingSchedulerOnly:true,noNewSSOT:true,tenantScopedReceipts:true,
+        providerProofRequired:true,http499IsNotFailureProof:true,
+        replayPersistIdempotently:true,noDisabledDeliverySideEffect:true,
+        liveReadbackBeforeSuccess:true,cooperativeBudgetNotHardTimeout:true
+      })
+    }),
+    Object.freeze({
+      id:'powerhouse-contextual-foresight-studio-v1',
+      fingerprint:'powerhouse|portal-v2|cross-domain-foresight|v1',
+      label:'Powerhouse Foresight — interactieve cross-domain scenarioverkenning',
+      owner:'ONE BRAIN / Portal V2 / authenticated Brain operating loop',
+      authority:'tenant-specific portal goal histories and tenant-authenticated Brain observations only',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['customer historical metrics with provenance','customer strategic goals','authenticated tenant Brain runtime observations']),
+      outputs:Object.freeze(['7-domain goal and trend explorer','30/90/180/365 day trend horizons','transparent hypothesis-based what-if scenario charts','contextual dependencies and existing action routes']),
+      runtime:Object.freeze({
+        model:'portal-v2/foresight-scenario-studio.js',
+        mount:'portal-v2/foresight-context-ui.js',
+        test:'portal-v2/tests/foresight-scenario-studio.test.mjs',
+        learning:'brain/learning/2026-10-15-cross-domain-foresight-4420.json',
+        documentation:'docs/changes/2026-10-15-cross-domain-foresight-4420.md'
+      }),
+      invariants:Object.freeze({
+        existingPortalOnly:true, customerHistoryRequired:true, noGlobalForecastLeak:true,
+        noSyntheticKpis:true, noScenarioAsPrediction:true, noCausalOrRealizedClaims:true,
+        unknownHeartbeatIsNotGreen:true, tenantAuthorizationRequired:true,
+        backtestAndIndependentReviewForVerifiedForecast:true
+      })
+    }),
+    Object.freeze({
+      id:'daily-entrepreneur-steering-v1',
+      fingerprint:'powerhouse|one-brain|daily-entrepreneur-steering|v1',
+      label:'Daily entrepreneur steering — know, decide, do, measure, learn',
+      owner:'ONE BRAIN / Portal V2 / Outcome Memory',
+      authority:'existing-tenant-brain-projection+company-decision-api+verified-outcomes',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['canonical authenticated tenant executive projection','source references and freshness','existing next-best-actions','verified outcomes and learning evidence']),
+      outputs:Object.freeze(['daily five-stage human experience','existing decision actions','evidence-backed measurement and learning status']),
+      runtime:Object.freeze({
+        view:'portal-v2/operating-system/executive-cockpit.js',
+        evidence:'portal-v2/operating-system/executive-projection.js',
+        decisions:'portal-v2/company-cockpit-ui.js',
+        regression:'portal-v2/tests/daily-entrepreneur-steering.test.mjs',
+        productContract:'docs/changes/2026-10-09-daily-entrepreneur-steering-v1.md'
+      }),
+      invariants:Object.freeze({
+        noNewModule:true,noNewScheduler:true,oneBrain:true,
+        tenantScopedEvidence:true,executedNotRealized:true,
+        outcomeReceiptRequired:true,learningEvidenceAndNextDecisionRequired:true,
+        noFalseGreen:true,noInertButtonsWithoutAuth:true
+      })
+    }),
+    Object.freeze({
       id:'self-evolving-business-engineering-os-v1',
       fingerprint:'powerhouse|cross-domain-evolution|canonical-evidence|protected-delivery|v1',
       label:'Self-Evolving Business & Engineering OS — cross-domain decision policy',
@@ -1803,4 +2124,246 @@ export const COMMERCIAL_RECIPIENT_AUTHORITY_P0_V1 = Object.freeze({
   zeroPreparedEmailDoesNotProveSent:true,
   publicPublicationCannotProveRecipientOutreach:true
  })
+});
+
+export const COMMERCIAL_EMAIL_CHANNEL_FAULT_ISOLATION_P0_V1 = Object.freeze({
+  fingerprint:'powerhouse|commercial|independent-email-lane-within-single-scheduler|v1',
+  parentIssue:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+  schedulerAuthority:'existing pg_cron job 116 / powerhouse-commercial-learning-v1',
+  enrichment:'powerhouse_commercial_intelligence_context_stage_v1 (when graph freshness is behind)',
+  normalCommercialCycle:'powerhouse_trigger_based_mkb_acquisition_cycle_v1',
+  emailFallback:Object.freeze({
+    condition:'normal commercial cycle raised an exception (and was rolled back)',
+    prepare:'powerhouse_prepare_autonomous_outreach_v1',
+    optimize:'powerhouse_optimize_prepared_outreach_v1',
+    dispatch:'powerhouse_dispatch_autonomous_outreach_v1',
+    actualProvider:'powerhouse-autonomous-outreach',
+    noAdditionalScheduler:true,noParallelSender:true,noDuplicateDispatchOnMainCycleSuccess:true,
+    recipientPermissionAndQualityUnchanged:true,providerSentReadbackRequired:true
+  }),
+  regression:'tests/brain-email-lane-fault-isolation-v1.test.mjs',
+  migration:'supabase/migrations/20261009135700_commercial_email_lane_fault_isolation_4198.sql',
+  latestObservedState:'2026-10-09: 23295 enriched; zero prepared eligible e-mail recipients; no provider-confirmed sends claimed'
+});
+
+
+export const MIRA_ENTREPRENEUR_PORTAL_CAPTION_CONTRACT_V1 = Object.freeze({
+  fingerprint:'mira-entrepreneur-problem-to-portal-caption-v1',
+  source:'config/powerhouse-problem-library.json',
+  sourceType:'canonical-PH-Pxxx-problem-catalog',
+  mirror:'supabase/functions/_shared/mira-entrepreneur-caption.mjs',
+  generator:'supabase/functions/powerhouse-content-orchestrator/index.ts',
+  mediaRouter:'supabase/functions/powerhouse-instagram-media-router/index.ts',
+  singleWriter:'supabase/functions/powerhouse-social-publisher/index.ts',
+  caption:['concrete-scene','source-backed-problem','potential-consequence','portal-capability-and-action','metric-and-pointe','fiction-disclosure'],
+  safeguards:['one-immutable-day-winner','matching-asset-scene','real-mira-visual','exact-final-media-proof','pre-provider-validation','readback-before-live','no-fabricated-tenant-result'],
+  test:'tests/brain-mira-entrepreneur-caption-v1.test.mjs',
+  parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
+});
+
+export const MIRA_FIXED_CHARACTER_VISUAL_IDENTITY_V1=Object.freeze({
+  fingerprint:'mira-master-two-image-face-continuity-v1',
+  master:'config/instagram-canonical-mira-identity-v1.json',
+  masterReferenceId:'Yjqu4D7v76HABNPmQPj1',
+  productionDeliveryConfig:'supabase/config.toml',
+  productionProofFunctions:Object.freeze(['powerhouse-instagram-media-router','powerhouse-instagram-media-verifier','powerhouse-instagram-temporal-verifier']),
+  code:'supabase/functions/_shared/mira-canonical-face.mjs',
+  visionTransport:Object.freeze({provider:'OpenAI',api:'Responses',adapter:'supabase/functions/_shared/mira-openai-vision.mjs',governanceUseCase:'supabase-powerhouse-instagram-media-verifier-v1',store:false}),
+  sourceStages:['powerhouse-instagram-media-verifier','powerhouse-instagram-media-router','powerhouse-content-orchestrator','powerhouse-social-publisher'],
+  proof:['openart-canonical-master-image-to-video','compare-master-pixels-with-final-image','video-start-middle-end-face-match','min-confidence-0.94','exact-media-sha','pre-provider-second-verification'],
+  never:['user-upload-mira-identity','text-only-mira-identity-proof','new-scheduler','duplicate-provider-post'],
+  acceptanceTest:'tests/brain-mira-canonical-face-consistency-v1.test.mjs',
+  parentP0:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
+});
+
+
+export const MIRA_MEDIA_PREFLIGHT_WORKER_CAS_V1=Object.freeze({
+  fingerprint:'mira-media-preflight-preserve-worker-cas-v1',
+  router:'supabase/functions/powerhouse-instagram-media-router/index.ts',
+  boundary:'supabase/functions/powerhouse-instagram-media-router/preflight-write.mjs',
+  preserve:['CLAIMED','GENERATING'],
+  existingRowCAS:['id','updated_at'],
+  staleOutcome:'STATE_CHANGED_RETRY_BEFORE_OBLIGATION_MUTATION',
+  sameCanonicalJobAndProviderHistory:true,
+  proofAndPublicationAuthorityUnchanged:true,
+  regression:'tests/brain-mira-media-preflight-cas-20261019.test.mjs',
+  parent:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'
+});
+
+export const PREDICTIVE_OPENAI_PUBLIC_MARKET_V1=Object.freeze({
+ fingerprint:'predictive-openai-recovery-20261019',
+ engine:'supabase/functions/powerhouse-predictive-engine/index.ts',
+ transport:'supabase/functions/powerhouse-predictive-engine/openai-forecast.mjs',
+ calibrator:'supabase/functions/powerhouse-forecast-calibrator/index.ts',
+ calibrationQueueProjection:'powerhouse_public_market_calibration_due_v1 (service-role only, existing queue, public scopes before limit)',
+ calibrationBoundary:'opaque source refs, two actual sources, verified ISO horizon, no unverified negative outcome or global revenue attribution',
+ governanceUseCase:'supabase-powerhouse-predictive-first-mover-v1',
+ provider:'OpenAI',api:'Responses',model:'gpt-5-mini',store:false,
+ sourceAuthority:'existing canonical public market and search-demand signals',
+ mutationAuthority:'protected main + Supabase GitHub Integration',
+ privateContextExcluded:true,noAdditionalScheduler:true,noProviderFallback:true,
+ independentSourcesRequired:true,realProductionReadbackRequired:true,
+ regression:'tests/brain-predictive-openai-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-openai-recovery.json',
+ documentation:'docs/changes/2026-10-19-predictive-openai-recovery.md'
+});
+
+export const PREDICTIVE_TERMINAL_CLASSIFIER_REPLAY_V1=Object.freeze({
+ fingerprint:'delivery-terminalizer-adaptive-routing-20261019',
+ authority:'brain/contracts/production-readback-v1.json',
+ verifierOnlyExactPath:'config/powerhouse-adaptive-delivery-v1.json',
+ recovery:'existing immutable Terminal-Replay-PR4503 under Powerhouse Obligation Terminalizer',
+ originalRuntimeMerge:'d64b4fa333d94b512305cc2c85da99691c88b03c',
+ actualEdgeAndMigrationReadbackRequired:true,unknownRuntimeFailClosed:true,
+ regression:'tests/brain-terminalizer-adaptive-routing-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-terminal-classifier-replay.json',
+ documentation:'docs/changes/2026-10-19-predictive-terminal-classifier-replay.md'
+});
+
+export const PREDICTIVE_UNCERTAINTY_RETENTION_V1=Object.freeze({
+ fingerprint:'predictive-calibration-uncertainty-retention-20261019',
+ authority:'existing revenue_learning_obligations, forecast trigger and periodic refresh',
+ merge:'powerhouse_merge_calibration_obligation_v1',
+ revision:'forecast ID/key/event/horizon/evidence IDs',
+ preservesUnchangedAttemptAndBackoff:true,archivesInvalidatedEvidence:true,closedEvidenceImmutable:true,
+ noNewQueueOrScheduler:true,noSyntheticCalibration:true,
+ regression:'tests/brain-predictive-uncertainty-retention-20261019.test.mjs',
+ nativeSQLFixture:'tests/supabase/predictive-uncertainty-retention-v1.sql',
+ learning:'brain/learning/2026-10-19-predictive-uncertainty-retention.json',
+ documentation:'docs/changes/2026-10-19-predictive-uncertainty-retention.md'
+});
+
+export const PREDICTIVE_MIGRATION_IDENTITY_PARITY_V1=Object.freeze({
+ fingerprint:'predictive-production-migration-identity-parity-20261019',
+ actualAppliedVersion:'20261019203052',compatibilityVersion:'20261019223000',
+ sourceSha256:'f267cda0725f4020c47e4ec6511e84a4f4e527327f1b417490a80564f74fb521',
+ trackingHistoryImmutable:true,providerDeploymentRequired:true,
+ regression:'tests/brain-predictive-migration-history-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-migration-identity-parity.json'
+});
+
+export const PREDICTIVE_UNCERTAINTY_ACK_V1=Object.freeze({
+ fingerprint:'predictive-uncertainty-write-ack-timeout-20261019',
+ persistence:'supabase/functions/powerhouse-forecast-calibrator/persist-uncertainty.mjs',
+ refresh:'supabase/migrations/20261019210359_predictive_uncertainty_persistence_ack.sql',
+ openAndSameRevisionRequired:true,acknowledgedReadbackRequired:true,
+ maxPersistenceAttempts:2,modelRetry:false,unchangedRowsFilteredBeforeUpsert:true,
+ regression:'tests/brain-predictive-uncertainty-persistence-20261019.test.mjs',
+ learning:'brain/learning/2026-10-19-predictive-uncertainty-write-ack.json'
+});
+
+
+// Canonical outbound authority remains powerhouse-linkedin-sales-machine; this policy records the
+// side-effect uncertainty boundary and adds no second CRM, sender, scheduler or action store.
+export const SALESROBOT_UNCERTAIN_DM_DELIVERY_POLICY_20261020=Object.freeze({
+ fingerprint:'commercial|linkedin-salesrobot|ambiguous-provider-send-no-resend|20261020',
+ decisionAuthority:'powerhouse_sales_actions',
+ executor:'powerhouse-linkedin-sales-machine',
+ provider:'salesrobot',
+ uncertainStatus:'waiting',
+ needsIndependentReadback:true,
+ republishForbidden:true,
+ noAutomaticFallbackOnUnknownOutcome:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-no-duplicate-dm.json'
+});
+
+
+// Live account-readiness and side-effect-free canary use the existing Powerhouse sales machine.
+export const SALESROBOT_EARLY_READINESS_CANARY_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|early-truth-readonly-canary|20261020',
+ authority:'powerhouse_channel_capabilities_v1',
+ executionOwner:'powerhouse-linkedin-sales-machine',
+ canonicalCRM:'bg_connecties',
+ channels:['linkedin_dm','salesrobot.campaign_outreach'],
+ preflightBeforeComposer:true,canaryMustNotMutate:true,
+ permissionRequired:true,independentProviderReadback:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-early-readiness-canary.json'
+});
+
+
+// Composio v3.1 execution must bind provider connected account and its owner user_id.
+export const SALESROBOT_COMPOSIO_IDENTITY_TRANSPORT_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|composio-user-id-required|20261020',
+ owner:'powerhouse-linkedin-sales-machine',
+ transport:'/api/v3.1/tools/execute',
+ requiredParameters:['connected_account_id','user_id','arguments'],
+ source:'composio.connected_accounts',
+ noStaticCredentials:true,
+ providerReadbackRequired:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-composio-user-id.json'
+});
+
+
+// One verified receipt closes the original outbound action; a provider send ACK never proves delivery.
+export const SALESROBOT_PROVIDER_RECEIPT_CLOSED_LOOP_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|receipt-before-done|20261020',
+ executor:'powerhouse-linkedin-sales-machine',
+ actions:'powerhouse_sales_actions',
+ outcomes:'powerhouse_sales_outcomes',
+ providerEvents:'powerhouse_runtime_events',
+ receiptEventType:'salesrobot_linkedin_dm_sent',
+ requiredEvidence:['inbox_message_id','provider_prospect_uuid','provider_inbox_readback','inbox_message_sent_by_me','provider_step_status'],
+ requiresRecipientCrmApproval:true,providerAckIsNotDelivery:true,
+ noRetryOnAmbiguousSend:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-receipt-before-done.json'
+});
+
+// Existing hourly assurance performs a provider-read-only SalesRobot probe; no duplicate publisher.
+export const SALESROBOT_EXISTING_HOURLY_PROVIDER_PROBE_20261020=Object.freeze({
+ fingerprint:'commercial|salesrobot|existing-hourly-provider-preflight|20261020',
+ scheduler:'powerhouse-autonomous-outreach-assurance-hourly-v1',
+ existingJobName:'powerhouse-autonomous-outreach-assurance-hourly-v1',
+ edgeFunction:'powerhouse-linkedin-sales-machine',
+ mode:'provider_preflight',
+ capabilityRegistry:'powerhouse_channel_capabilities_v1',
+ sourceOfProviderTruth:'SALESROBOT_LIST_LINKEDIN_ACCOUNTS',
+ healthFields:['provider_health','payment_status','cookie_expired','execution_days_remaining','active_campaign_present'],
+ noNewCron:true,noOutboundSend:true,existingRecipientApprovalPreserved:true,
+ regression:'tests/brain-salesrobot-linkedin-readiness-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-salesrobot-existing-hourly-preflight.json'
+});
+
+
+export const SOCIAL_OBLIGATION_HOLD_DUPLICATE_RECOVERY_20261020=Object.freeze({
+  fingerprint:'social|linkedin-personal|obligation-hold-dedupe-reconciliation|20261020',
+  executor:'powerhouse-content-orchestrator',
+  decisionTable:'powerhouse_channel_decisions',
+  obligationTable:'content_publication_obligations',
+  requirement:'unconsumed authority and no provider side effect',
+  preserveGlobalUniqueness:true,noNewScheduler:true,
+  regression:'tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs',
+  learning:'brain/learning/2026-10-20-social-obligation-hold-duplicate-recovery.json'
+});
+
+
+export const IDENTITY_REVIEW_BOUNDED_CANONICAL_CRON_20261020=Object.freeze({
+ fingerprint:'commercial|contacts|bounded-review-cron|20261020',
+ existingCronName:'powerhouse-identity-graph-v1',
+ finalSchedule:'2,17,32,42,47,57 * * * *',
+ originalProcess:['2x 500 connection pulses','4x 500 email authority updates'],
+ boundedProcess:['1x 200 connection pulse','1x 200 authority review batch'],
+ dailyPerStreamTheoreticalCapacity:28800,
+ independentOutreachAssuranceMinute:52,
+ identityGraphHourMinute:32,
+ preservesOriginalOwner:true,noNewCron:true,noSend:true,noAutoConsent:true,
+ evidenceRequiresActualDailyReviewCounts:true,
+ migration:'supabase/migrations/20261020114500_identity_review_bounded_cron_v1.sql',
+ regression:'tests/brain-identity-review-bounded-cron-v1.test.mjs',
+ learning:'brain/learning/2026-10-20-identity-review-bounded-cron.json'
+});
+
+// Bounded canonical authority review: source-backed CRM queue under heavy scheduler pressure.
+export const POWERHOUSE_AUTHORITY_QUEUE_GUARD_20261020=Object.freeze({
+ fingerprint:'commercial|authority|queue-preselect-skip-locked|20261020',
+ migration:'supabase/migrations/20261020120000_contact_authority_bounded_queue_v2.sql',
+ owner:'powerhouse_contact_authority_review_batch_v1',
+ existingScheduler:'powerhouse-identity-graph-v1',
+ queue:'powerhouse_connection_enrichment_state_v1',
+ selectBeforeJoin:true,skipLocked:true,oneExistingCron:true,
+ preservesApprovalAndSuppression:true,externalMessagesSent:0,
+ learning:'brain/learning/2026-10-20-authority-queue-bounded.json'
 });

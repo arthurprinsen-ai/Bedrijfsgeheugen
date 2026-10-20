@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-18",
+  "obligation": "production-reconcile-main-push-20261018",
+  "observation": "GitHub push paths-ignore suppressed production reconciliation for changes to workflow, Supabase, and BRAIN paths.",
+  "intervention": "Remove push paths-ignore, retain existing deploy applicability gate.",
+  "expected": "Every main push invokes snapshot reconciliation, only deploy-eligible changes proceed to Netlify.",
+  "validation": "Required CI, CodeQL, protected merge, exact production readback required; no deployment claimed.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-reconciliation.test.mjs"
+    ]
+  },
+  "fingerprint": "production-reconciliation-main-push-20261018",
+  "root_cause": "Workflow-level paths-ignore prevented GitHub Actions dispatch for operational-path changes, bypassing the existing internal deployment applicability check.",
+  "prevention_rule": "All main pushes must enter the reconciliation workflow; deployment applicability remains evaluated inside the workflow. Regression test verifies both conditions.",
+  "test_evidence": {
+    "historical_replay": "tests/brain-production-reconciliation.test.mjs",
+    "ci_status": "pending on this revision",
+    "production_readback": "not yet proven"
+  }
+}

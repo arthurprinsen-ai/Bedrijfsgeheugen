@@ -1,3 +1,5 @@
+import {readLegacyPortalStateForUser} from './legacy-state-migration.js';
+
 const DEFAULT_ENDPOINT='/api/portal-business-input';
 
 function identityBearer(identity=globalThis.netlifyIdentity){
@@ -24,23 +26,23 @@ export async function savePortalBusinessInput(input,{fetchFn=globalThis.fetch,en
   return payload;
 }
 
-export function readLegacyPortalBusinessInputs(storage=globalThis.localStorage){
-  if(!storage||typeof storage.length!=='number')return [];
-  const inputs=[];
-  for(let index=0;index<storage.length;index+=1){
-    const key=storage.key(index);
-    if(!key||!key.startsWith('bg_portaal_')||['bg_portaal_open','bg_portaal_lead'].includes(key))continue;
-    try{
-      const answers=JSON.parse(storage.getItem(key)||'null');
-      if(!answers||typeof answers!=='object'||Array.isArray(answers))continue;
-      inputs.push({inputType:'LegacyPortalState',modelId:key,instanceId:'primary',schemaVersion:1,answers,sourcePortal:'legacy-klantportaal',metadata:{legacyStorageKey:key}});
-    }catch{}
-  }
-  return inputs;
+// The caller must supply the current authenticated identity. Never scan the
+// browser cache: shared devices can retain other customers' bg_portaal_* keys.
+// The existing legacy-state reader is the sole exact-key source authority.
+export function readLegacyPortalBusinessInputs(storage=globalThis.localStorage,user=null){
+  const email=String(user?.email||'').trim().toLowerCase();
+  if(!email)return [];
+  const answers=readLegacyPortalStateForUser(storage,user);
+  if(!answers||typeof answers!=='object'||Array.isArray(answers))return [];
+  const key=`bg_portaal_${email}`;
+  return [{inputType:'LegacyPortalState',modelId:key,instanceId:'primary',schemaVersion:1,answers,sourcePortal:'legacy-klantportaal',metadata:{legacyStorageKey:key}}];
 }
 
-export async function migrateLegacyPortalBusinessInputs({storage=globalThis.localStorage,fetchFn=globalThis.fetch,endpoint=DEFAULT_ENDPOINT,authorization=identityBearer()}={}){
-  const inputs=readLegacyPortalBusinessInputs(storage);
+export async function migrateLegacyPortalBusinessInputs({storage=globalThis.localStorage,fetchFn=globalThis.fetch,endpoint=DEFAULT_ENDPOINT,identity=globalThis.netlifyIdentity,user=identity?.currentUser?.(),authorization=identityBearer(identity)}={}){
+  // This is an authenticated write: no tenant identity or bearer means no
+  // side effects, even if another customer has left a legacy record behind.
+  if(!authorization||!String(user?.email||'').trim())throw new Error('PORTAL_LEGACY_MIGRATION_AUTH_REQUIRED');
+  const inputs=readLegacyPortalBusinessInputs(storage,user);
   const results=[];
   for(const input of inputs){
     try{results.push({modelId:input.modelId,ok:true,result:await savePortalBusinessInput(input,{fetchFn,endpoint,authorization})});}

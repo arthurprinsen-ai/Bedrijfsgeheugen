@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -80,4 +80,50 @@ test('CLI emits a machine-readable skipped state and actionable provider reason'
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+
+test('archived cron replay failure remains fail-closed and identifies stored migration SQL drift', () => {
+  const result = diagnosePreviewCheckRuns({check_runs:[
+    check(210, 'failure', 'ERROR: CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1 SQLSTATE P0001')
+  ]});
+  assert.equal(result.code, 'MIGRATION_ARCHIVED_CRON_PRECONDITION');
+  assert.equal(result.terminal, true);
+  assert.equal(result.conclusion, 'failure');
+  assert.match(result.remediation, /archived.*Git SQL/i);
+  assert.match(result.remediation, /never rewrite the applied ledger/i);
+});
+
+test('provider preview quota exhaustion is NOT a successful preview or permission to remove someone else\'s branch', () => {
+  const result = diagnosePreviewCheckRuns({check_runs:[
+    check(211, 'skipped', 'This pull request has been ignored due to reaching the limit of concurrent preview branches.')
+  ]});
+  assert.equal(result.code, 'PREVIEW_CAPACITY_EXHAUSTED');
+  assert.equal(result.terminal, true);
+  assert.equal(result.conclusion, 'skipped');
+  assert.match(result.remediation, /Do not delete another PR owner/);
+});
+
+test('newest Supabase-owned check remains the sole preview authority over a stale success', () => {
+  const result = diagnosePreviewCheckRuns({check_runs:[
+    check(208, 'success', 'Old preview success, no longer current'),
+    check(212, 'failure', 'CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1')
+  ]});
+  assert.equal(result.code, 'MIGRATION_ARCHIVED_CRON_PRECONDITION');
+  assert.equal(result.id, '212');
+});
+
+test('Supabase source provenance is mandatory: a manual branch replay cannot justify a Git-linked cron shim', () => {
+  const fs = readFileSync;
+  const skill = fs('.agents/skills/powerhouse-delivery-concurrency/SKILL.md','utf8');
+  const evidence = JSON.parse(fs('brain/learning/2026-10-19-canonical-runtime-mux-cron-reachability-v1.json','utf8'));
+  assert.match(skill,/manual.*branch.*GitHub.*branch/i);
+  assert.match(skill,/same.*migration.*version/i);
+  assert.equal(evidence.evidence.provider_archived_migration_version, '20261006085416');
+  assert.equal(evidence.evidence.provider_archived_statement_md5,'6e4aa572b4c8f5bb4091958db833eba3');
+  assert.equal(evidence.evidence.git_linked_preview_archive_md5,'69bebb24ab2651a4fd3f3bf92c5b9790');
+  assert.equal(evidence.evidence.git_linked_preview_archive_hard_abort,false);
+  assert.equal(evidence.evidence.live_rollout_proven,false);
+  assert.equal(existsSync('supabase/migrations/20261006085100_legacy_cron_replay_preconditions.sql'),false);
+  assert.equal(existsSync('tests/brain-runtime-scheduler-legacy-replay-preconditions-20261019.test.mjs'),false);
 });

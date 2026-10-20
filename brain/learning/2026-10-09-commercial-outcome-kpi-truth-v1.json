@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|brain|false-outcome-kpi-raw-operational-count|2026-10-09-v1",
+  "obligationId": "p0-4198-commercial-kpi-semantic-truth-20261009",
+  "parentP0": 4198,
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed": {
+    "full_cycle_raw_outcomes_90d": 1369,
+    "autonomous_growth_raw_outcomes_90d": 1369,
+    "raw_outcome_types": "Includes not_executed, execution_completed, sent, no_response, historical e2e-test replies",
+    "existing_derived_false_growth_removed": 1349,
+    "existing_derived_false_realized_removed": 1349,
+    "actual_eur_revenue_90d": 0
+  },
+  "root_cause": "Two independent existing Brain/Control Center RPCs continued reporting raw powerhouse_sales_outcomes row counts as business outcomes, after source-level false conversion projections were corrected. Opportunity attributed_touchpoints also included internal nonexecution/no-reply events.",
+  "changes": [
+    "Retain raw operational activity as audit; count only qualifying outcome types or positive revenue in both existing RPC commercial outcome counters",
+    "Exclude not_executed, execution_completed and no_response from attributed commercial touchpoints",
+    "Reuse existing two functions and exact scheduling, no duplicate database object or sender"
+  ],
+  "prevention": [
+    "Business KPI must derive from verified economic lifecycle rather than operational event row count",
+    "Maintain source lineage and actual response / order proof distinction",
+    "Re-run full-cycle proof and autonomous growth cycle after protected release and check 90-day count"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-outcome-kpi-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-outcome-kpi-truth-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FALSE_POSITIVE_OUTCOME",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1369,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "source_readback": "powerhouse_full_cycle_production_proof('2026-10-09')",
+    "observed_raw_90d": 1369,
+    "realized_eur_90d": 0,
+    "production_source_main_verified": false,
+    "migration": "supabase/migrations/20261009193000_filter_real_commercial_outcome_kpis_v1.sql"
+  },
+  "required": [
+    "Protected tests, CodeQL, Supabase Preview",
+    "Protected merge then production migration readback",
+    "Compare both RPC business counts to source-qualified count",
+    "No invented prospect replies, orders or realized revenue"
+  ]
+}

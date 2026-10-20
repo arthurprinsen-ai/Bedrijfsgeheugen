@@ -1,3 +1,4 @@
+import {mergePreservedBusinessInputAnswers} from '../../supabase/functions/_shared/portal-business-input-answer-merge.js';
 export const PORTAL_LAYERS=Object.freeze({LEGACY:'legacy-migration',CANONICAL:'canonical-brain'});
 const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
 const arr=v=>Array.isArray(v)?v:[];
@@ -5,14 +6,40 @@ const identity=(x,i)=>String(x?.id??x?.key??x?.label??x?.title??x?.name??JSON.st
 function mergeArray(legacy,canonical){const map=new Map();arr(legacy).forEach((x,i)=>map.set(identity(x,i),x));arr(canonical).forEach((x,i)=>{const k=identity(x,i);map.set(k,typeof x==='object'&&typeof map.get(k)==='object'?{...map.get(k),...x}:x)});return [...map.values()]}
 function mergeGraph(a,b){const left=obj(a),right=obj(b);return{...left,...right,nodes:mergeArray(left.nodes,right.nodes),edges:[...new Map([...arr(left.edges),...arr(right.edges)].map(x=>[JSON.stringify(x),x])).values()]}}
 function mergeAdmin(a,b){const left=obj(a),right=obj(b);const out={...left,...right};for(const k of new Set([...Object.keys(left),...Object.keys(right)]))if(typeof left[k]==='object'&&typeof right[k]==='object'&&!Array.isArray(left[k])&&!Array.isArray(right[k]))out[k]={...left[k],...right[k]};return out}
+
+// Tenant portal values are customer-owned; canonical Brain observations remain
+// authoritative in their separate read-model arrays. When both projections
+// contain a portal object, reconcile nested fields by source revision rather
+// than letting a stale top-level object replace a confirmed customer edit.
+const sourceClock=record=>{
+ const candidates=[record?.sourceUpdatedAt,record?.data?.sourceMeta?.updatedAt,record?.updatedAt];
+ for(const candidate of candidates){
+  const time=Date.parse(candidate||'');
+  if(Number.isFinite(time))return time;
+ }
+ return null;
+};
+function mergeCustomerPortal(legacy,canonical,legacyRecord,canonicalRecord){
+ const legacyAt=sourceClock(legacyRecord),canonicalAt=sourceClock(canonicalRecord);
+ const legacyNewer=legacyAt!==null&&(canonicalAt===null||legacyAt>canonicalAt);
+ return legacyNewer
+   ?mergePreservedBusinessInputAnswers(obj(canonical),obj(legacy))
+   :mergePreservedBusinessInputAnswers(obj(legacy),obj(canonical));
+}
 const ARRAY_KEYS=new Set(['healthCards','roadmap','recommendedActions','monthlyImpact','activities','quickLinks','signals','decisions','actions','valueItems','memories','agents','audit','businessInputs']);
 export function composePortalProjectionLayers({legacy=null,canonical=null}={}){
+ const legacyTenant=String(legacy?.tenantId||'').trim(),canonicalTenant=String(canonical?.tenantId||'').trim();
+ if(legacyTenant&&canonicalTenant&&legacyTenant!==canonicalTenant)throw new Error('PORTAL_PROJECTION_TENANT_MISMATCH');
  const l=obj(legacy?.data||legacy),c=obj(canonical?.data||canonical);const out={...l};
  for(const [key,value] of Object.entries(c)){
    if(ARRAY_KEYS.has(key))out[key]=mergeArray(l[key],value);
    else if(key==='company')out.company={...obj(l.company),...obj(value)};
    else if(key==='graph')out.graph=mergeGraph(l.graph,value);
    else if(key==='admin')out.admin=mergeAdmin(l.admin,value);
+   // Nested customer-owned settings follow the newest confirmed source
+   // revision. Distinct fields survive; canonical signals/decisions stay in
+   // their separate authoritative read-model fields.
+   else if(key==='portal')out.portal=mergeCustomerPortal(l.portal,value,legacy,canonical);
    else if(key==='sourceMeta')out.sourceMeta={...obj(l.sourceMeta),...obj(value)};
    else out[key]=value;
  }
@@ -26,8 +53,12 @@ export function projectCanonicalObject(layerState={},canonicalObject){
  if(!canonicalObject?.id||!canonicalObject?.tenantId||!canonicalObject?.type)throw new TypeError('canonical object id, tenantId and type are required');
  const d=obj(canonicalObject.data),next={...obj(layerState)};const id=canonicalObject.id;const updatedAt=canonicalObject.updatedAt||canonicalObject.createdAt||new Date().toISOString();
  switch(canonicalObject.type){
-  case 'BusinessInput':
-   next.businessInputs=upsert(next.businessInputs,{id,inputType:d.inputType||'Unknown',modelId:d.modelId||id,instanceId:d.instanceId||'primary',schemaVersion:Number(d.schemaVersion)||1,answers:obj(d.answers),metadata:obj(d.metadata),sourcePortal:d.sourcePortal||'',submittedBy:d.submittedBy||canonicalObject.ownerId||'',submittedAt:d.submittedAt||updatedAt,truthClass:canonicalObject.truthClass,provenance:canonicalObject.provenance,updatedAt});break;
+  case 'BusinessInput': {
+   const previous=arr(next.businessInputs).find(item=>item?.id===id);
+   const preserveMissing=d.metadata?.preserveMissing===true;
+   const answers=preserveMissing&&previous?mergePreservedBusinessInputAnswers(obj(previous.answers),obj(d.answers)):obj(d.answers);
+   next.businessInputs=upsert(next.businessInputs,{id,inputType:d.inputType||'Unknown',modelId:d.modelId||id,instanceId:d.instanceId||'primary',schemaVersion:Number(d.schemaVersion)||1,answers,metadata:obj(d.metadata),sourcePortal:d.sourcePortal||'',submittedBy:d.submittedBy||canonicalObject.ownerId||'',submittedAt:d.submittedAt||updatedAt,truthClass:canonicalObject.truthClass,provenance:canonicalObject.provenance,updatedAt});break;
+  }
   case 'ExternalSignal':case 'Signal':case 'Risk':
    next.signals=upsert(next.signals,{id,category:d.category||canonicalObject.type,title:d.title||d.text||id,source:canonicalObject.provenance?.sourceRef||canonicalObject.provenance?.sourceType||'Brain',status:d.status||canonicalObject.lifecycle||'Active',confidence:Number(d.confidence)||null,impact:d.impact||priorityFromRisk(canonicalObject.risk),affected:arr(d.affected),summary:d.summary||d.text||'',updatedAt});break;
   case 'Recommendation':

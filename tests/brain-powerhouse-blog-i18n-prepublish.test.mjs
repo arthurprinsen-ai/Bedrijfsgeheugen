@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import * as childProcess from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -36,4 +37,30 @@ test('scoped patch cache is durable and complete before merge, not a global rewr
   assert.match(source,/error\?\.code !== 'ENOENT'/,
     'only a missing patch is recoverable; malformed and inaccessible files stay fatal');
   assert.match(source,/process\.exit\(0\)/);
+});
+
+test('Powerhouse blog rejects editor-only source copy before protected publication', () => {
+  const {spawnSync} = childProcess;
+  const python = [
+    "import importlib.util",
+    "spec=importlib.util.spec_from_file_location('publisher', 'tools/site-shell/publish_powerhouse_blog_artifact.py')",
+    "publisher=importlib.util.module_from_spec(spec)",
+    "spec.loader.exec_module(publisher)",
+    "body=('Externe signalen vragen om een controleerbaar besluit, met eigenaar en meetpunt. ' * 16)",
+    "def check(title, text, cta, expected=None):",
+    "    try:",
+    "        publisher.assert_reader_ready({'title':title,'body':text,'cta':cta})",
+    "        assert expected is None, f'expected failure: {expected}'",
+    "    except SystemExit as exc:",
+    "        assert expected is not None and expected in str(exc), f'unexpected: {exc}'",
+    "check('Externe signalen naar besluiten', body, 'Bekijk de Frisse blik')",
+    "check('Externe signalen naar besluiten', 'Voordat u publiceert: voer eerst een URL-check uit.\\n' + body, 'Bekijk de Frisse blik', 'PUBLISH_FIRST_INSTRUCTION')",
+    "check('Externe signalen naar besluiten', body+'\\nPublicatiestap (vereist vóór live)\\n1) publiceer', 'Bekijk de Frisse blik', 'RELEASE_STEP')",
+    "check('Externe signalen (canonieke pagina)', body, 'Bekijk de Frisse blik', 'TITLE_DRAFT_MARKER')",
+    "check('Externe signalen', body, 'Voer eerst een canonieke URL-eigenaarschap-check uit', 'CTA_PUBLISH_INSTRUCTION')",
+    "print('BLOG_READER_READY_GUARD_OK')",
+  ].join('\n');
+  const result=spawnSync('python3',['-c',python],{cwd:REPO,encoding:'utf8'});
+  assert.equal(result.status,0,result.stderr || result.stdout);
+  assert.match(result.stdout,/BLOG_READER_READY_GUARD_OK/);
 });

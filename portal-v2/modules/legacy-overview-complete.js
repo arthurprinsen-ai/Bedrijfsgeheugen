@@ -171,8 +171,27 @@ function adoptionCurveMarkup(model){
  <line x1="8" x2="94" y1="82" y2="82" class="legacy-adoption-axis"/><path d="M8 82 C20 82 24 31 48 20 C68 10 76 56 94 82 L94 82 Z" class="legacy-adoption-curve"/>${points}
  <line x1="${target}" x2="${target}" y1="25" y2="82" class="legacy-adoption-marker" stroke="#229c5a" stroke-dasharray="2 2"/><text x="${target}" y="20" text-anchor="middle" class="legacy-adoption-label">bovenste 25% / doel</text>${branchMarkup}
  <g data-adoption-current><line data-adoption-current-line x1="${current}" x2="${current}" y1="${bell(current)}" y2="82" class="legacy-adoption-marker" stroke="#ff4f17"/><circle data-adoption-current-halo cx="${current}" cy="${bell(current)}" r="5.5" fill="#ff4f17" opacity=".13"/><circle data-adoption-current-dot class="legacy-adoption-dot legacy-adoption-handle" cx="${current}" cy="${bell(current)}" r="3.5" fill="#ff4f17"/><text data-adoption-current-label x="${current}" y="${Math.max(11,bell(current)-7)}" text-anchor="middle" class="legacy-adoption-label" font-weight="800">jij</text></g>
- ${stages}</svg><div class="legacy-adoption-detail" data-adoption-detail><b>Niveau ${detail.level} · ${esc(detail.stage.name)}</b> <span>· ${esc(detail.stage.segment)}</span><br>${esc(detail.action)} <span style="color:#68748c">Klik een fase of sleep de oranje bol om te verkennen.</span></div>`;
+ ${stages}</svg><div class="legacy-adoption-detail" data-adoption-detail><b>Niveau ${detail.level} · ${esc(detail.stage.name)}</b> <span>· ${esc(detail.stage.segment)}</span><br>${esc(detail.action)} <span style="color:#68748c">Klik een fase of sleep de oranje bol om te verkennen.</span></div>`+legacyStageExplorer('adoption',STAGES.map((st,i)=>({label:st.segment,detail:st.name,next:stageDetail(i+1).action})),model.avg,'De adoptiefasen zijn een illustratief model; marktpercentielen zijn niet gemeten.');
 }
+/* Native responsive alternative to legacy oversized SVG. The originals remain
+   hidden behind the new visual layer, preserving legacy event/data contracts. */
+function legacyStageExplorer(kind,items,level,note){
+ const current=Number(level)>0&&Number(level)<=5?Math.round(Number(level)):null;
+ const cells=items.slice(0,5).map((item,i)=>{
+   const selected=i+1===current;
+   return '<details class="v2-stage-step'+(selected?' is-current':'')+'"'+(selected?' open':'')+'>'
+     +'<summary title="'+esc(item.detail)+'" aria-label="Niveau '+(i+1)+', '+esc(item.label)+'. '+esc(item.detail)+'">'
+     +'<span class="v2-stage-number" aria-hidden="true">'+(i+1)+'</span><span class="v2-stage-name">'+esc(item.label)+'</span>'
+     +(selected?'<span class="v2-stage-you">Jij</span>':'')
+     +'<span class="v2-stage-hovertext" aria-hidden="true">'+esc(item.detail)+'</span></summary>'
+     +'<div class="v2-stage-content"><p>'+esc(item.detail)+'</p><p><b>Volgende stap:</b> '+esc(item.next)+'</p></div></details>';
+ }).join('');
+ return '<div class="v2-stage-chart legacy-stage-explorer" data-v2-stage-chart="'+esc(kind)+'">'
+   +'<p class="v2-stage-now">'+(current?'Jouw niveau: '+current+'/5':'Huidig niveau nog niet met brongegevens onderbouwd')+'</p>'
+   +'<div class="v2-stage-grid" role="group" aria-label="Vijf interactieve fasen">'+cells+'</div>'
+   +'<p class="v2-stage-note">'+esc(note)+' Tik voor uitleg of gebruik hover en toetsenbord op desktop.</p></div>';
+}
+
 function stateMarkup(model){
  const stateNames=['Handwerk','Geordend','Ingericht','Verbonden','Sturend'];
  const desc=['Mensen en losse bestanden dragen het proces.','Afspraken bestaan, maar er is nog geen één waarheid.','Systemen doen hun werk; ertussen zit nog handwerk.','Gegevens worden één keer ingevoerd en stromen door.','Afwijkingen worden automatisch gesignaleerd.'];
@@ -181,9 +200,9 @@ function stateMarkup(model){
  const blocks=stateNames.map((name,i)=>`<g class="legacy-state-block" tabindex="0" role="button" data-state-level="${i+1}" aria-label="${name}, niveau ${i+1}"><rect x="${x(i)}" y="30" width="18" height="28" rx="3" fill="${fills[i]}" ${Math.round(model.avg||1)===i+1?'stroke="#111827" stroke-width=".7"':''}/><text x="${x(i)+9}" y="43" text-anchor="middle" class="legacy-state-label">${name}</text><text x="${x(i)+9}" y="51" text-anchor="middle" class="legacy-state-level">niveau ${i+1}</text><title>${esc(desc[i])}</title></g>`).join('');
  const pin=(level,label,color,y,above=true)=>{if(level==null)return'';const xx=4+(clamp(level,1,5)-1)*76.8/4+9.6;return `<g class="legacy-state-marker"><path d="M${xx},${above?29:60} l-2.2,${above?-4:4} l4.4,0 Z" fill="${color}"/><text x="${xx}" y="${y}" text-anchor="middle" fill="${color}">${esc(label)}</text></g>`;};
  const cur=Math.round(model.avg||1)-1;
- return `<svg class="legacy-state-svg" viewBox="0 0 100 75" role="img" aria-label="De staat van je bedrijf met eigen positie, branche en bovenste 25%">${blocks}${pin(model.avg||1,'jij','#ff4f17',20,true)}${pin(model.branchLevel,'branche','#111827',71,false)}${pin(model.targetLevel||4,'bovenste 25%','#229c5a',71,false)}</svg><div class="legacy-state-detail" data-state-detail><b>Niveau ${cur+1} · ${stateNames[cur]}</b> — ${desc[cur]} Beweeg of klik op een stadium voor uitleg.</div>`;
+ return `<svg class="legacy-state-svg" viewBox="0 0 100 75" role="img" aria-label="De staat van je bedrijf met eigen positie, branche en bovenste 25%">${blocks}${pin(model.avg||1,'jij','#ff4f17',20,true)}${pin(model.branchLevel,'branche','#111827',71,false)}${pin(model.targetLevel||4,'bovenste 25%','#229c5a',71,false)}</svg><div class="legacy-state-detail" data-state-detail><b>Niveau ${cur+1} · ${stateNames[cur]}</b> — ${desc[cur]} Beweeg of klik op een stadium voor uitleg.</div>`+legacyStageExplorer('company-state',stateNames.map((name,i)=>({label:name,detail:desc[i],next:['Leg proceseigenaarschap vast.','Kies één bron van waarheid.','Verminder dubbele invoer.','Monitor overdrachten en uitzonderingen.','Meet effecten en stuur bij.'][i]})),model.avg,'Berekening uit het beschikbare profiel, geen geverifieerd branchepercentiel.');
 }
-function cmmiMarkup(model){return STAGES.map((s,i)=>`<div class="${i+1<=model.cmmi?'active':''} ${i+1===model.cmmi?'current':''}" tabindex="0" role="button" data-cmmi-level="${i+1}" title="Niveau ${i+1}: ${esc(s.name)}"><b>${i+1}</b><span>${esc(s.name)}</span></div>`).join('')}
+function cmmiMarkup(model){return STAGES.map((s,i)=>`<div class="${i+1<=model.cmmi?'active':''} ${i+1===model.cmmi?'current':''}" tabindex="0" role="button" data-cmmi-level="${i+1}" title="Niveau ${i+1}: ${esc(s.name)}"><b>${i+1}</b><span>${esc(s.name)}</span></div>`).join('')+legacyStageExplorer('cmmi',STAGES.map((st,i)=>({label:st.name,detail:st.segment,next:['Leg je proces vast.','Maak werkwijzen herhaalbaar.','Beleg KPI-eigenaarschap.','Koppel acties aan signalen.','Meet en verbeter structureel.'][i]})),model.cmmi,'Indicatief procesmodel; dit is geen formele CMMI-audit.');}
 
 function impactDeltaText(change){
  if(change?.delta==null)return `${esc(change?.from??'—')} → ${esc(change?.to??'—')}`;
@@ -235,14 +254,14 @@ export function renderLegacyOverviewComplete(root,state={},openPage=()=>{},domai
    </article>`).join(''):'<div class="legacy-priority-empty">Vul profiel, cijfers of andere bedrijfsdata aan. Zodra er voldoende bewijs is verschijnen hier de echte prioriteiten.</div>'}
   </div>
  </article>
- <div class="legacy-card"><div class="legacy-kicker"><small>De staat van je bedrijf</small><strong>${m.avg?m.avg.toFixed(1):'—'}/5</strong></div><h3>${esc(m.stage?.name||'Nog niet bepaald')}</h3><p>Vijf stadia. Waar jij staat, waar je branche staat en waar de bovenste kwart zit.</p>${stateMarkup(m)}</div>
+ <div class="legacy-card"><div class="legacy-kicker"><small>De staat van je bedrijf</small><strong>${m.avg?m.avg.toFixed(1):'—'}/5</strong></div><h3>${esc(m.stage?.name||'Nog niet bepaald')}</h3><p>Vijf ontwikkelfasen op basis van de beschikbare bedrijfsgegevens. Verken elk niveau.</p>${stateMarkup(m)}</div>
  <div class="legacy-grid2">
   <article class="legacy-card"><h3>Handwerk per jaar</h3><div class="legacy-kicker"><small>Berekende capaciteitswaarde</small><strong>${m.manualAnnual?euro(m.manualAnnual):'—'}</strong></div></article>
   <article class="legacy-card"><h3>Bezetting</h3><div class="legacy-kicker"><small>Capaciteitsverlies in fte</small><strong>${m.fteLost?m.fteLost.toFixed(1)+' fte':'—'}</strong></div></article>
  </div>
  <div class="legacy-grid2">
   <article class="legacy-card"><div class="legacy-kicker"><small>Procesvolwassenheid (CMMI)</small><strong>Niveau ${m.cmmi}/5</strong></div><div class="legacy-cmmi">${cmmiMarkup(m)}</div></article>
-  <article class="legacy-card"><div class="legacy-kicker"><small>Waar je staat op de adoptiecurve</small><strong>${esc(m.stage?.segment||'Nog niet bepaald')}</strong></div><p>${esc(m.stage?.name||'Vul je profiel in')}${m.branchLevel?` · branche ${m.branchLevel.toFixed(1)}/5`:''}</p>${adoptionCurveMarkup(m)}<div class="legacy-state-track">${adoptionMarkup(m)}</div></article>
+  <article class="legacy-card"><div class="legacy-kicker"><small>Waar je staat op de adoptiecurve</small><strong>${esc(m.stage?.segment||'Nog niet bepaald')}</strong></div><p>${esc(m.stage?.name||'Vul je profiel in')}</p>${adoptionCurveMarkup(m)}<div class="legacy-state-track">${adoptionMarkup(m)}</div></article>
  </div>
  <div class="legacy-grid2">
   <article class="legacy-card"><h3>Waar de tijd weglekt</h3><p>Capaciteitswaarde per onderdeel op basis van uren × niveau × medewerkers × 46 weken × uurkosten.</p><div class="legacy-donut-row">${donutMarkup(m)}<div class="legacy-cost-list">${m.costs.slice(0,8).map(x=>`<div class="legacy-cost-row"><button type="button" data-legacy-page="businesscase"><span><b>${esc(x.label)}</b><br><small>${esc(LEVEL_LABELS[x.niveau]||'onbekend')}</small></span><strong>${euro(x.kosten)}</strong></button></div>`).join('')||'<p>Nog onvoldoende gegevens voor een bedrag.</p>'}</div></div></article>

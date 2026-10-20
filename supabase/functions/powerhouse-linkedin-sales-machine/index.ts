@@ -10,13 +10,25 @@ async function secret(db:any,name:string){
   return clean(data);
 }
 const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
-async function composioExecuteArgs(apiKey:string,connectedAccountId:string,toolSlug:string,args:Record<string,unknown>){
+class SalesRobotProviderBlock extends Error{
+  evidence:any;
+  constructor(code:string,evidence:any){super(code);this.evidence=evidence;}
+}
+async function composioExecuteArgs(apiKey:string,connectedAccountId:string,userId:string,toolSlug:string,args:Record<string,unknown>){
+  // Composio v3.1 must bind both connected_account_id and its exact user_id.
+  // Without user_id the live SalesRobot read-only tool returned HTTP 400 even for ACTIVE connections.
+  if(!clean(userId)||!clean(connectedAccountId))throw new Error('SALESROBOT_COMPOSIO_IDENTITY_MISSING');
   const response=await fetch(COMPOSIO_BASE+'/tools/execute/'+toolSlug,{
     method:'POST',headers:{'content-type':'application/json','x-api-key':apiKey},
-    body:JSON.stringify({connected_account_id:connectedAccountId,version:'latest',arguments:args})
+    body:JSON.stringify({connected_account_id:connectedAccountId,user_id:userId,version:'latest',arguments:args}),
+    signal:AbortSignal.timeout(18000)
   });
   const body:any=await response.json().catch(()=>({}));
-  if(!response.ok||body?.successful!==true)throw new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+clean(body?.error||body?.message||body?.data?.message||JSON.stringify(body)).slice(0,240));
+  if(!response.ok||body?.successful!==true){
+    const err=body?.error||body?.message||body?.data?.message||body;
+    const detail=typeof err==='string'?err:JSON.stringify(err);
+    throw new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+clean(detail).slice(0,240));
+  }
   return body;
 }
 function salesRobotExecutionBlock(account:any):string|null{
@@ -39,20 +51,44 @@ async function salesRobotContext(db:any){
   active.sort((a:any,b:any)=>Number(clean(b?.alias)==='powerhouse-linkedin-dm-direct')-Number(clean(a?.alias)==='powerhouse-linkedin-dm-direct'));
   const connected=active[0]; if(!connected)throw new Error('SALESROBOT_CONNECTION_UNAVAILABLE');
   const connectedAccountId=clean(connected?.id||connected?.connected_account_id);
-  const probe=await composioExecuteArgs(apiKey,connectedAccountId,'SALESROBOT_LIST_LINKEDIN_ACCOUNTS',{limit:25});
+  const userId=clean(connected?.user_id);
+  if(!userId)throw new Error('SALESROBOT_COMPOSIO_USER_ID_MISSING');
+  const probe=await composioExecuteArgs(apiKey,connectedAccountId,userId,'SALESROBOT_LIST_LINKEDIN_ACCOUNTS',{limit:25});
   const data:any=probe?.data||probe;
-  const accounts=Array.isArray(data?.items)?data.items:Array.isArray(data?.data?.data)?data.data.data:[];
+  const accounts=Array.isArray(data?.items)?data.items:Array.isArray(data?.data?.items)?data.data.items:Array.isArray(data?.data?.data)?data.data.data:[];
   const healthy=accounts.find((x:any)=>clean(x?.healthStatus).toUpperCase()==='HEALTHY'&&x?.cookieExpired!==true&&x?.connectionTempPaused!==true&&x?.connectionLimitReached!==true);
-  if(!healthy)throw new Error('SALESROBOT_LINKEDIN_ACCOUNT_NOT_HEALTHY');
+  // Persist exact provider-reported blockers, not merely the health of an ACTIVE Composio adapter.
+  const observed=healthy||accounts[0]||{};
+  const payment=clean(observed?.paymentStatus||observed?.subscription).toUpperCase();
+  const observedHealth=clean(observed?.healthStatus).toUpperCase();
+  const readinessEvidence={
+    provider_health:observedHealth||'MISSING',payment_status:payment||'MISSING',
+    cookie_expired:observed?.cookieExpired===true,
+    execution_days_remaining:Number.isFinite(Number(observed?.daysOfExecutionRemaining))?Number(observed.daysOfExecutionRemaining):null,
+    campaign_present:observed?.hasCampaigns===true,
+    active_campaign_present:observed?.hasActiveCampaigns===true,
+    linked_account_observed:accounts.length>0,
+    provider_probe_verified:true,
+    send_proof:false
+  };
+  const problems:string[]=[];
+  if(!['ACTIVE','TRIAL_ACTIVE'].includes(payment))problems.push('SALESROBOT_BILLING_INACTIVE');
+  if(Number(readinessEvidence.execution_days_remaining)<=0||readinessEvidence.execution_days_remaining===null)problems.push('SALESROBOT_EXECUTION_DAYS_EXHAUSTED');
+  if(readinessEvidence.cookie_expired)problems.push('SALESROBOT_COOKIE_EXPIRED');
+  if(observedHealth!=='HEALTHY')problems.push('SALESROBOT_LINKEDIN_ACCOUNT_NOT_HEALTHY');
+  if(observed?.hasActiveCampaigns!==true)problems.push('SALESROBOT_ACTIVE_CAMPAIGN_REQUIRED');
+  if(!healthy)throw new SalesRobotProviderBlock('SALESROBOT_LINKEDIN_ACCOUNT_NOT_HEALTHY',{...readinessEvidence,blockers:problems});
   const blocked=salesRobotExecutionBlock(healthy);
-  if(blocked)throw new Error(blocked);
-  return {apiKey,connectedAccountId,linkedinAccountUuid:clean(healthy.linkedinAccountUuid),healthStatus:clean(healthy.healthStatus),subscription:clean(healthy.subscription||healthy.paymentStatus)};
+  if(blocked)throw new SalesRobotProviderBlock(blocked,{...readinessEvidence,blockers:problems});
+  return {apiKey,connectedAccountId,userId,linkedinAccountUuid:clean(healthy.linkedinAccountUuid),healthStatus:clean(healthy.healthStatus),subscription:clean(healthy.subscription||healthy.paymentStatus),
+    readinessEvidence:{...readinessEvidence,blockers:[]}};
 }
 async function recordCapability(db:any,capability:string,status:string,evidence:any){
-  await db.from('powerhouse_channel_capabilities_v1').upsert({
+  const {error}=await db.from('powerhouse_channel_capabilities_v1').upsert({
     capability_key:capability,provider:'salesrobot',channel:'linkedin_dm',status,
-    checked_at:new Date().toISOString(),expires_at:new Date(Date.now()+6*60*60*1000).toISOString(),evidence
+    checked_at:new Date().toISOString(),expires_at:new Date(Date.now()+60*60*1000).toISOString(),evidence
   },{onConflict:'capability_key'});
+  if(error)throw new Error('SALESROBOT_CAPABILITY_WRITE:'+error.message);
 }
 function salesRobotAddress(action:any){
   const e=action?.evidence||{};
@@ -63,6 +99,74 @@ function salesRobotAddress(action:any){
     unipile_sales_nav_chat_id:clean(e?.salesrobot_sales_nav_chat_id||e?.unipile_sales_nav_chat_id)
   };
 }
+// The action's human-approval bit alone cannot authorize a person addressed by LinkedIn.
+async function approvedLinkedinRecipient(db:any,action:any):Promise<boolean>{
+  const identity=clean(action?.person_key);
+  if(!identity||action?.evidence?.human_approved!==true)return false;
+  let result=await db.from('bg_connecties').select('sleutel,linkedin_url,extra').eq('sleutel',identity).limit(2);
+  if(result.error)throw new Error('LINKEDIN_CONTACT_AUTHORITY_READ:'+result.error.message);
+  if(!result.data?.length)result=await db.from('bg_connecties').select('sleutel,linkedin_url,extra').eq('linkedin_url',identity).limit(2);
+  if(result.error)throw new Error('LINKEDIN_CONTACT_AUTHORITY_READ:'+result.error.message);
+  if(result.data?.length!==1)return false;
+  const contact=result.data[0],authority=contact?.extra||{};
+  return (clean(contact.sleutel)===identity||clean(contact.linkedin_url)===identity)
+    &&authority.human_approved===true
+    &&authority.do_not_contact!==true
+    &&authority.linkedin_dm_allowed!==false;
+}
+
+// Reconcile against an independent observed inbox receipt, never against provider send response alone.
+// The five historical verified SalesRobot receipts already use this canonical runtime event contract.
+async function reconcileVerifiedSalesRobotReceipts(db:any){
+  const {data:pending,error}=await db.from('powerhouse_sales_actions')
+    .select('action_id,person_key,company_key,evidence')
+    .eq('channel','linkedin_dm').eq('status','waiting')
+    .contains('evidence',{salesrobot_execution:{needs_readback:true}}).limit(10);
+  if(error)throw new Error('SALESROBOT_RECEIPT_RECONCILE_READ:'+error.message);
+  const resolved:any[]=[];
+  for(const action of pending||[]){
+    const old=action.evidence?.salesrobot_execution||{};
+    const messageId=clean(old.provider_message_id),prospectId=clean(old.prospect_uuid);
+    if(!messageId||!prospectId||old.republish_forbidden!==true)continue;
+    const {data:events,error:receiptError}=await db.from('powerhouse_runtime_events')
+      .select('event_id,occurred_at,evidence')
+      .eq('event_type','salesrobot_linkedin_dm_sent').eq('source','salesrobot')
+      .eq('channel','linkedin_dm')
+      .eq('evidence->>inbox_message_id',messageId)
+      .eq('evidence->>provider_prospect_uuid',prospectId).limit(2);
+    if(receiptError)throw new Error('SALESROBOT_PROVIDER_RECEIPT_READ:'+receiptError.message);
+    if(events?.length!==1)continue;
+    const receipt=events[0],proof=receipt.evidence||{};
+    if(proof.provider_inbox_readback!==true||proof.inbox_message_sent_by_me!==true||
+       clean(proof.provider_step_status).toUpperCase()!=='SENT'||
+       clean(proof.inbox_message_id)!==messageId||clean(proof.provider_prospect_uuid)!==prospectId)continue;
+    const attemptedMs=Date.parse(clean(old.attempted_at||old.executed_at)),proofMs=Date.parse(clean(receipt.occurred_at));
+    if(!Number.isFinite(attemptedMs)||!Number.isFinite(proofMs)||proofMs<attemptedMs-300000)continue;
+    const canonicalEventId=clean(receipt.event_id);
+    const {error:outcomeError}=await db.from('powerhouse_sales_outcomes').upsert({
+      dedupe_key:'salesrobot-verified-inbox:'+action.action_id,action_id:action.action_id,
+      outcome_type:'sent',subject_key:'relationship:'+clean(action.person_key),
+      person_key:action.person_key,company_key:action.company_key,
+      channel:'linkedin_dm',revenue_eur:0,occurred_at:receipt.occurred_at,
+      evidence:{contract:CONTRACT,provider:'salesrobot',provider_readback_verified:true,
+        provider_message_id:messageId,provider_event_id:canonicalEventId,provider_prospect_uuid:prospectId}
+    },{onConflict:'dedupe_key'});
+    if(outcomeError)throw new Error('SALESROBOT_VERIFIED_OUTCOME_WRITE:'+outcomeError.message);
+    const verifiedEvidence={...(action.evidence||{}),salesrobot_execution:{
+      ...old,provider_ack_verified:true,provider_readback_verified:true,
+      provider_event_id:canonicalEventId,readback_at:new Date().toISOString(),
+      needs_readback:false,republish_forbidden:true
+    }};
+    const {data:confirmed,error:writeError}=await db.from('powerhouse_sales_actions')
+      .update({status:'done',executed_at:receipt.occurred_at,
+        evidence:verifiedEvidence,updated_at:new Date().toISOString()})
+      .eq('action_id',action.action_id).eq('status','waiting').select('action_id').maybeSingle();
+    if(writeError)throw new Error('SALESROBOT_VERIFIED_ACTION_WRITE:'+writeError.message);
+    if(confirmed)resolved.push({action_id:action.action_id,provider_readback_verified:true});
+  }
+  return resolved;
+}
+
 async function generateComment(apiKey:string,model:string,action:any){
   const evidence=action.evidence||{};
   const response=await fetch('https://api.anthropic.com/v1/messages',{
@@ -99,6 +203,56 @@ Deno.serve(async(req:Request)=>{
   const now=new Date().toISOString();
 
   try{
+    // Probe transport before AI, drafting or daily SQL; a composer failure must not hide provider loss.
+    // Dry-run may inspect the external provider but must never mutate CRM, message plans or capability state.
+    let srPreflight:any=null, srPreflightError='', srPreflightDetails:any={};
+    try{ srPreflight=await salesRobotContext(db);srPreflightDetails=srPreflight?.readinessEvidence||{}; }
+    catch(err:any){ srPreflightError=clean(err?.message||err).slice(0,240);srPreflightDetails=err?.evidence||{}; }
+    const providerStatus=srPreflight?'CONFIG_REQUIRED':
+      (/^SALESROBOT_(CONNECTION_UNAVAILABLE|LINKEDIN_ACCOUNT_NOT_HEALTHY)$/.test(srPreflightError)?'UNAVAILABLE':'CONFIG_REQUIRED');
+    if(dryRun){
+      const [comments,dms]=await Promise.all([
+        db.from('powerhouse_sales_actions').select('action_id',{count:'exact',head:true})
+          .eq('action_type','reply_post').eq('channel','linkedin_personal').eq('status','prepared'),
+        db.from('powerhouse_sales_actions').select('action_id,action_type,person_key,evidence,message_draft',{count:'exact'})
+          .eq('channel','linkedin_dm').in('status',['prepared','suggested'])
+          .order('priority',{ascending:false}).limit(100)
+      ]);
+      if(comments.error||dms.error)throw new Error('LINKEDIN_DRY_RUN_READ:'+clean(comments.error?.message||dms.error?.message));
+      const candidateRows=dms.data||[];
+      const approvedRows=candidateRows.filter((a:any)=>a?.evidence?.human_approved===true);
+      const addressedRows=candidateRows.filter((a:any)=>Object.values(salesRobotAddress(a)).some(Boolean));
+      let verifiedRecipientCount=0;
+      for(const action of approvedRows.filter((a:any)=>Object.values(salesRobotAddress(a)).some(Boolean))){
+        if(await approvedLinkedinRecipient(db,action))verifiedRecipientCount++;
+      }
+      return json({ok:true,dry_run:true,contract:CONTRACT,
+        comment_candidates:comments.count||0,dm_candidates:dms.count||0,
+        dm_candidate_sample_count:candidateRows.length,dm_action_approved:approvedRows.length,
+        dm_provider_addressable:addressedRows.length,dm_crm_recipient_approved:verifiedRecipientCount,
+        dm_ready_for_send:srPreflight?verifiedRecipientCount:0,
+        dm_capability:providerStatus,dm_provider:'salesrobot',provider_probe_error:srPreflightError||null,
+        provider_evidence:srPreflightDetails,external_side_effects:false,canonical_mutations:false});
+    }
+    const providerEvidence={
+      contract:'powerhouse-capability-routing-v1',checked_at:now,
+      provider_preflight_before_composer:true,provider_probe_error:srPreflightError||null,
+      account_transport_healthy:!!srPreflight,subscription:srPreflight?.subscription||null,
+      human_approval_required:true,provider_readback_required:true,send_proof:false,
+      reason:srPreflightError||'RECIPIENT_APPROVAL_AND_PROVIDER_RECEIPT_REQUIRED',
+      ...srPreflightDetails
+    };
+    await recordCapability(db,'salesrobot.linkedin_dm',providerStatus,providerEvidence);
+    await recordCapability(db,'salesrobot.campaign_outreach',providerStatus,providerEvidence);
+    if(input?.mode==='provider_preflight'){
+      return json({ok:true,contract:CONTRACT,mode:'provider_preflight',
+        dm_capability:providerStatus,provider_probe_error:srPreflightError||null,
+        provider_evidence:srPreflightDetails,
+        external_side_effects:false,commercial_outbound_sent:false,composer_called:false,
+        existing_canonical_scheduler:true});
+    }
+    // Reconcile existing verified receipts even while SalesRobot's license/cookie is unavailable.
+    const reconciledDms=await reconcileVerifiedSalesRobotReceipts(db);
     const {data:prep,error:prepError}=await db.rpc('powerhouse_prepare_linkedin_sales_machine_v1',{p_run_date:runDate});
     if(prepError)throw new Error('LINKEDIN_SALES_PREP:'+prepError.message);
 
@@ -120,7 +274,7 @@ Deno.serve(async(req:Request)=>{
       .order('priority',{ascending:false}).limit(3);
     if(dmErr)throw new Error('LINKEDIN_DM_READ:'+dmErr.message);
 
-    if(dryRun)return json({ok:true,dry_run:true,prepared:prep,comment_candidates:(actions||[]).length,dm_candidates:(dmActions||[]).length,external_side_effects:false});
+
 
     const aiKey=await secret(db,'ANTHROPIC_API_KEY');
     if(!aiKey)throw new Error('ANTHROPIC_API_KEY_MISSING');
@@ -168,13 +322,15 @@ Deno.serve(async(req:Request)=>{
     const dmResults:any[]=[];
     let dmCapability='UNAVAILABLE';
     try{
-      const sr=await salesRobotContext(db);
-      dmCapability='AVAILABLE';
-      await recordCapability(db,'salesrobot.linkedin_dm','AVAILABLE',{health_status:sr.healthStatus,subscription:sr.subscription,verified_at:now,tool:'SALESROBOT_SEND_MESSAGE'});
+      const sr=srPreflight;
+      if(!sr)throw new Error(srPreflightError||'SALESROBOT_PROVIDER_PREFLIGHT_UNAVAILABLE');
+      // Account health is not recipient eligibility nor a verified DM delivery receipt.
+      dmCapability='CONFIG_REQUIRED';
+
       for(const action of dmActions||[]){
         const composerProof=action?.evidence?.commercial_intelligence?.composer||{};
         const strategy=clean(action?.evidence?.commercial_intelligence?.message_strategy);
-        if(composerProof?.contract!=='powerhouse-human-commercial-message-composer-v2'||composerProof?.quality_passed!==true||!strategy||!clean(action.message_draft)){
+        if(composerProof?.contract!=='powerhouse-human-commercial-message-composer-v2'||composerProof?.quality_passed!==true||composerProof?.source_specific_evidence_ok!==true||composerProof?.semantic_novelty_ok!==true||composerProof?.new_followup_evidence_ok!==true||!strategy||!clean(action.message_draft)){
           const evidence={...(action.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composerProof?.quality_passed===true,composer_contract:clean(composerProof?.contract)||null}};
           await db.from('powerhouse_sales_actions').update({evidence,updated_at:now}).eq('action_id',action.action_id);
           dmResults.push({action_id:action.action_id,status:'held',reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN'});
@@ -188,6 +344,10 @@ Deno.serve(async(req:Request)=>{
           dmResults.push({action_id:action.action_id,status:'awaiting_human_approval',reason:'UNSOLICITED_OUTBOUND_APPROVAL_REQUIRED'});
           continue;
         }
+        if(!await approvedLinkedinRecipient(db,action)){
+          dmResults.push({action_id:action.action_id,status:'held',reason:'LINKEDIN_RECIPIENT_CRM_APPROVAL_NOT_PROVEN'});
+          continue;
+        }
         if(!message){dmResults.push({action_id:action.action_id,status:'fallback',reason:'MESSAGE_MISSING'});continue;}
         const hasAddress=!!(address.prospect_uuid||address.thread_id||address.unipile_chat_id||address.unipile_sales_nav_chat_id);
         if(!hasAddress){
@@ -198,28 +358,72 @@ Deno.serve(async(req:Request)=>{
         }
         const {data:claimed}=await db.from('powerhouse_sales_actions').update({status:'waiting',updated_at:now}).eq('action_id',action.action_id).in('status',['prepared','suggested']).select('action_id').maybeSingle();
         if(!claimed){dmResults.push({action_id:action.action_id,status:'skipped',reason:'ALREADY_CLAIMED'});continue;}
+        let tentativeAck:any=null;
         try{
           const args:any={linkedin_account_uuid:sr.linkedinAccountUuid,message};
           for(const [k,v] of Object.entries(address))if(v)args[k]=v;
-          const sent=await composioExecuteArgs(sr.apiKey,sr.connectedAccountId,'SALESROBOT_SEND_MESSAGE',args);
+          const sent=await composioExecuteArgs(sr.apiKey,sr.connectedAccountId,sr.userId,'SALESROBOT_SEND_MESSAGE',args);
           const providerData:any=sent?.data||sent;
-          const evidence={...(action.evidence||{}),salesrobot_execution:{contract:'powerhouse-capability-routing-v1',provider:'salesrobot',tool:'SALESROBOT_SEND_MESSAGE',provider_ack_verified:true,executed_at:new Date().toISOString(),provider_response:providerData}};
-          await db.from('powerhouse_sales_actions').update({status:'done',executed_at:new Date().toISOString(),evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','waiting');
-          dmResults.push({action_id:action.action_id,status:'executed',provider:'salesrobot',provider_ack_verified:true});
+          const messageId=clean(providerData?.message_id||providerData?.messageId||
+            providerData?.data?.message_id||providerData?.data?.messageId||
+            providerData?.data?.id||providerData?.id);
+          tentativeAck={provider_ack_received:true,provider_message_id:messageId||null,
+            prospect_uuid:address.prospect_uuid||null};
+          const attemptedAt=new Date().toISOString();
+          const evidence={...(action.evidence||{}),salesrobot_execution:{
+            contract:'powerhouse-capability-routing-v1',provider:'salesrobot',tool:'SALESROBOT_SEND_MESSAGE',
+            ...tentativeAck,provider_ack_verified:false,provider_readback_verified:false,
+            needs_readback:true,republish_forbidden:true,attempted_at:attemptedAt,
+            provider_response:providerData
+          }};
+          // HTTP acknowledgement is not proof of a sent inbox message. Preserve original claim.
+          const {data:pending,error:pendingError}=await db.from('powerhouse_sales_actions')
+            .update({status:'waiting',evidence,updated_at:attemptedAt})
+            .eq('action_id',action.action_id).eq('status','waiting').select('action_id').maybeSingle();
+          if(pendingError||!pending)throw new Error('SALESROBOT_RECEIPT_CHECKPOINT_FAILED:'+clean(pendingError?.message||'missing claim'));
+          dmResults.push({action_id:action.action_id,status:'awaiting_provider_readback',
+            provider_ack_received:true,provider_readback_verified:false,republish_forbidden:true});
         }catch(dmError:any){
-          const evidence={...(action.evidence||{}),capability_routing:{contract:'powerhouse-capability-routing-v1',preferred:'linkedin_dm',provider:'salesrobot',status:'PROVIDER_FAILED',fallback_required:true,error:clean(dmError?.message||dmError).slice(0,240),checked_at:new Date().toISOString()}};
-          await db.from('powerhouse_sales_actions').update({status:'suggested',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','waiting');
-          dmResults.push({action_id:action.action_id,status:'fallback',reason:'SALESROBOT_PROVIDER_FAILED'});
+          // A network/adapter exception may happen AFTER provider delivery: never unlock for a second send.
+          const attemptedAt=new Date().toISOString();
+          const evidence={...(action.evidence||{}),
+            salesrobot_execution:{
+              contract:'powerhouse-capability-routing-v1',provider:'salesrobot',tool:'SALESROBOT_SEND_MESSAGE',
+              ...(tentativeAck||{}),provider_ack_verified:false,provider_readback_verified:false,needs_readback:true,
+              republish_forbidden:true,attempted_at:attemptedAt,uncertainty_code:'SALESROBOT_SEND_OUTCOME_AMBIGUOUS'
+            },
+            capability_routing:{
+              contract:'powerhouse-capability-routing-v1',preferred:'linkedin_dm',provider:'salesrobot',
+              status:'PROVIDER_OUTCOME_UNCERTAIN',fallback_required:false,checked_at:attemptedAt,
+              reason:'INDEPENDENT_PROVIDER_READBACK_REQUIRED'
+            }
+          };
+          // Claim already has status waiting. A failed checkpoint still leaves the original claim locked.
+          const {data:checkpoint,error:checkpointError}=await db.from('powerhouse_sales_actions')
+            .update({status:'waiting',evidence,updated_at:attemptedAt})
+            .eq('action_id',action.action_id).eq('status','waiting').select('action_id').maybeSingle();
+          dmResults.push({
+            action_id:action.action_id,status:'unverified',reason:'SALESROBOT_SEND_OUTCOME_AMBIGUOUS',
+            checkpoint_written:!checkpointError&&!!checkpoint,requires_provider_readback:true,
+            republish_forbidden:true
+          });
         }
       }
     }catch(srError:any){
       const reason=clean(srError?.message||srError).slice(0,240);
-      const configRequired=/^SALESROBOT_(BILLING_INACTIVE|EXECUTION_DAYS_EXHAUSTED|CAMPAIGN_REQUIRED|ACTIVE_CAMPAIGN_REQUIRED)$/.test(reason);
-      dmCapability=configRequired?'CONFIG_REQUIRED':'UNAVAILABLE';
-      await recordCapability(db,'salesrobot.linkedin_dm',dmCapability,{error:reason,checked_at:now,send_proof:false});
-      dmResults.push({status:'held',reason:configRequired?reason:'SALESROBOT_CAPABILITY_UNAVAILABLE'});
+      // A failed API preflight (e.g. 400 from an adapter) cannot prove an account is disconnected.
+      // Keep it non-sendable while preserving the last known provider-health distinction.
+      const confirmedDisconnected=/^SALESROBOT_(CONNECTION_UNAVAILABLE|LINKEDIN_ACCOUNT_NOT_HEALTHY)$/.test(reason);
+      dmCapability=confirmedDisconnected?'UNAVAILABLE':'CONFIG_REQUIRED';
+      // Preflight is authoritative for capability. Do not downgrade a verified healthy
+      // account because a later unrelated action/composer/database operation failed.
+      if(!srPreflight)await recordCapability(db,'salesrobot.linkedin_dm',dmCapability,{error:reason,checked_at:now,send_proof:false,account_health_unverified:true,provider_probe_failed:true,retryable:!confirmedDisconnected,requires_exact_provider_readback:true,proof_boundary:'probe_error_is_not_verified_disconnection'});
+      dmResults.push({status:'held',reason:confirmedDisconnected?'SALESROBOT_PROVIDER_DISCONNECTED':'SALESROBOT_PROBE_OR_ELIGIBILITY_UNVERIFIED'});
     }
-    return json({ok:true,contract:CONTRACT,prepared:prep,generated,autopilot,dm_capability:dmCapability,dm_provider:'salesrobot',dm_results:dmResults,dm_fallback:'REQUIRES_SEPARATE_EXECUTION_PROOF'});
+    return json({ok:true,contract:CONTRACT,prepared:prep,generated,autopilot,
+      verified_receipts_reconciled:reconciledDms.length,
+      dm_capability:dmCapability,dm_provider:'salesrobot',dm_results:dmResults,
+      dm_fallback:'REQUIRES_SEPARATE_EXECUTION_PROOF'});
   }catch(err:any){
     return json({ok:false,contract:CONTRACT,error:clean(err?.message||err).slice(0,500)},503);
   }
