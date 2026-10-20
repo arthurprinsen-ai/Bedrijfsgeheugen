@@ -1,12 +1,12 @@
-# P0 #4215 — veilig onderscheid tussen echte upstream-502-oorzaken
+# P0 #4215 — veilige upstream-foutclassificatie in bestaande portal-gateway
 
 Datum: 20 oktober 2026. Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215
 
-## Productieverificatie
-Supabase portal-state-eu ACTIVE v219, beide portal-sortindexen live. PostgreSQL had nul statement/startup-time-outs in de 13:30 en 13:35 UTC intervallen. Maar Production Release Readback run #39430198530 poging 3 was FAILED: 30 opeenvolgende geauthenticeerde portaalproeven eindigden met AUTHENTICATED_PORTAL_API_HTTP_502. Netlify production-config wijst naar het juiste Supabase-project en bevat een geconfigureerd service-token. Deze waarden worden niet opgenomen in bewijsbestanden.
+## Bewezen fout en juiste telling
+De immutable Netlify deploy hook voerde **één** echte Identity-geauthenticeerde GET naar `/api/portal-ondernemersdata` uit, die 502 gaf. De 30 meldingregels in GitHub release-readback run #39430198530 zijn daaropvolgende polls van **dezelfde opgeslagen FAILED proof** in Netlify Blobs, géén 30 onafhankelijke HTTP-fouten. Edge-productionsqlindexen zijn hersteld. Het gateway-HTTP-502 bewijs is oud en blijft open tot een nieuwe immutable live proof slaagt. De Supabase Edge v221 bevat nu credential-hashparity uit gemergede PR #4559, maar dat is nog geen geauthenticeerde klantreadback.
 
-## Afgebakende reparatie
-Alleen de bestaande _portal-supabase-store.mjs en portal-ondernemersdata.mjs zijn aangepast. Scope.authenticatedTenant moet aanwezig zijn, anders fail closed. De route logt alleen de beperkte categorie CONFIG_MISSING, UPSTREAM_DEADLINE, UPSTREAM_HTTP_401/403/429/500/502/503/504, TENANT_SCOPE_MISMATCH, UPSTREAM_RESPONSE_SHAPE, UPSTREAM_NETWORK_FETCH of UPSTREAM_UNKNOWN_FAILURE. Ruwe foutmeldingen, tenant IDs, tokens en payloads worden nooit gelogd. HTTP-status en error no-store blijven hetzelfde. Geen extra retries, queue, provider of brondata.
+## Gerichte oplossing
+De bestaande Netlify gateway handhaaft Identity tenantresolutie, service-auth, fail-closed tenant shape, 23s deadline, no-store op fouten en de bestaande statuscodes. Een mislukte Edge-oproep wordt **uitsluitend server-side** als een vaste code geclassificeerd: config, deadline, expliciete upstream HTTP-status, verwachte read-stage SOURCES/PUBLICATIONS/EXTERNAL_SIGNALS/DOMAIN_REGISTRY/SOURCE_CATALOG/SIGNAL_PROJECTION/COMPANY_IMPACT/CANONICAL_ACTIONS/TENANT_ACTIONS/INTELLIGENCE_SNAPSHOT, response shape, tenant scope of network. Onbekende waarde wordt nooit gelogd. Er worden geen nieuwe retries, schedulers, RLS-uitzonderingen, credentials of sociale verzendingen toegevoegd.
 
 ## Acceptatie
-Required CI/CodeQL, toepasselijke Netlify preview, protected merge, exacte productiebron, geauthenticeerde HTTP200 van twee afzonderlijke tenants met bronrevision en Brain/Heartbeat ACK. Status: SOURCE_CANDIDATE, NIET LIVE, lost de HTTP502 zelf nog niet aantoonbaar op.
+Exact-head Required CI + CodeQL, Netlify preview en protected merge, exact Netlify production readback na Edge v221, authentieke HTTP 200 met correcte tenant scope en payload vorm. De deploy hook gebruikt tijdelijk één synthetische tenant en moet bovendien worden aangevuld door onafhankelijke **twee-tenant write→revision→Brain/Heartbeat ACK→readback** met juiste broninformatie. Alleen bewijs verleent LIVE_PROVEN.
