@@ -29,11 +29,21 @@ BEGIN
       CONTINUE;
     END IF;
 
-    IF v_schedule NOT IN (r.old_schedule,r.new_schedule) THEN
-      RAISE EXCEPTION 'P0_4215_CRON_SCHEDULE_DRIFT:%:%',r.jobname,v_schedule;
-    END IF;
     IF strpos(v_command,r.command_anchor)=0 OR strpos(v_command,r.second_anchor)=0 THEN
       RAISE EXCEPTION 'P0_4215_CRON_COMMAND_DRIFT:%',r.jobname;
+    END IF;
+    -- Older no-data schema previews still install the pre-production 15-minute
+    -- snapshot. It is not the observed hourly production owner. Preserve that
+    -- distinct frequency/configuration rather than silently converting four
+    -- runs/hour into one or changing unprofiled preview slots. The production
+    -- owner is admitted ONLY on its independently verified hourly schedule.
+    IF r.jobname='powerhouse-revenue-intelligence-snapshot-15m'
+       AND v_schedule='7,22,37,52 * * * *' THEN
+      RAISE NOTICE 'P0_4215_LEGACY_PREVIEW_15M_OWNER_PRESERVED';
+      CONTINUE;
+    END IF;
+    IF v_schedule NOT IN (r.old_schedule,r.new_schedule) THEN
+      RAISE EXCEPTION 'P0_4215_CRON_SCHEDULE_DRIFT:%:%',r.jobname,v_schedule;
     END IF;
     IF v_schedule = r.old_schedule THEN
       PERFORM cron.alter_job(job_id=>v_id,schedule=>r.new_schedule);
