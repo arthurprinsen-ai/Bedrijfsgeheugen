@@ -1,3 +1,4 @@
+import { tenantAiAuthorizationHeaders } from './tenant-ai-request-auth.js';
 /*
  * POWERHOUSE customer model shortlist. ALL 110 catalogue records can be requested,
  * but this module cannot grant API access, change live inference routes or waive governance.
@@ -156,7 +157,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   try{
    const response=await fetchImpl('/api/tenant-ai-inference',{
     method:'POST',credentials:'same-origin',cache:'no-store',
-    headers:{'content-type':'application/json','accept':'application/json'},
+    headers:await tenantAiAuthorizationHeaders(stateClient,{'content-type':'application/json','accept':'application/json'}),
     body:JSON.stringify({question})
    });
    const result=await response.json().catch(()=>null);
@@ -173,7 +174,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   refreshButton.disabled=true;activationSummary.textContent='Geauthenticeerde servercontrole ophalen…';
   try{
    const response=await fetchImpl('/api/tenant-ai-activation-status',{
-    method:'GET',credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}
+    method:'GET',credentials:'same-origin',cache:'no-store',headers:await tenantAiAuthorizationHeaders(stateClient,{accept:'application/json'})
    });
    const data=await response.json().catch(()=>null);
    if(!response.ok||!Array.isArray(data?.checks)){
