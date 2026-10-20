@@ -256,7 +256,16 @@ const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalSt
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
 configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
+// Close tenant-bound visual detail whenever the authenticated subject changes.
+// Do not expose user identifiers through the DOM event payload.
+let portalVisualAuthSubject=null;
 portalStateClient.subscribe(snap=>{
+ const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
+   ? String(snap.user.id||'') : '';
+ if(nextVisualSubject!==portalVisualAuthSubject){
+   portalVisualAuthSubject=nextVisualSubject;
+   document.dispatchEvent(new Event('bg:portal-identity-boundary'));
+ }
  applyCustomerBranding({state:snap.state||{},user:snap.user});
  const authenticated=(snap.mode==='authenticated'||snap.mode==='empty')&&!!snap.user&&!portalStateClient.isDemo();
  document.documentElement.classList.toggle('portal-customer-authenticated',authenticated);
