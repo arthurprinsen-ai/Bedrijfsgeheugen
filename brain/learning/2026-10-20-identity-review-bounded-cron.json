@@ -1,0 +1,48 @@
+{
+  "contract": "powerhouse-identity-contact-peak-control-v1",
+  "date": "2026-10-20",
+  "fingerprint": "commercial|contacts|bounded-review-cron|20261020",
+  "parent_issue": 4198,
+  "compiler": {
+    "failure_class": "CANONICAL_CRON_CONTACT_BATCH_RESOURCE_SATURATION",
+    "scope": "MIGRATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-identity-review-bounded-cron-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Existing active identity graph job 138 processed 2x500 connection pulses and 4x500 contact authority reviews on 4 quarter-hour slots while commercial scheduler, database mux, CRM and social workloads contended for PostgreSQL resources; repeated connection timeout, statement timeout, cron startup timeout prevented actual daily delivery even as schedule health appeared ok.",
+  "evidence": {
+    "provider_logs": "2026-10-20 commercial contact authority review, heartbeat, email, like, comment, DM statement/lock timeouts and Cron startup timeouts",
+    "prior_cron": "job 138 active: 2,17,32,47 with 2 pulse(500) and 4 authority(500)",
+    "intermediate_production": "job 138 active: 2,17,32,42,52,57 with 1 pulse(200) + 1 authority(200); independent SQL readback; BUSY advisory lock returned on overlapping verification attempt",
+    "today_instagram": "MEDIA_ASSET_REQUIRED",
+    "today_personal": "GLOBAL_POST_DUPLICATE_BLOCKED",
+    "today_company": "LIVE_PROVEN",
+    "today_email": "0 eligible and 0 sent",
+    "not_claimed": "all actual 23,295 contacts processed or any outbound sent"
+  },
+  "change": "Source-control durable fail-closed idempotent migration for the previously verified bounded canonical job, dephase minute 52 to 47 to prevent hourly assurance contention; keep original identity graph and contact consent policy.",
+  "prevention": [
+    "One pre-existing canonical job, no second executor; bound SQL work per slot, keep every-day throughput theoretically above current 23k contacts.",
+    "Do not report commercial delivered on cron success, use provider receipts, daily review and consent readbacks.",
+    "No unauthorized re-send or Gmail mail authority inference.",
+    "Read back cron job ID, owner, schedule, bounded statements, pipeline and provider receipts before claiming production proof."
+  ],
+  "tests": [
+    "tests/brain-identity-review-bounded-cron-v1.test.mjs"
+  ],
+  "verification_required": [
+    "CI and CodeQL",
+    "Supabase Preview migration",
+    "protected merge",
+    "production cron and migration ledger readback",
+    "daily review completion",
+    "end-to-end provider receipt and Brain learning"
+  ],
+  "state": "SOURCE_CANDIDATE_NOT_YET_VERIFIED"
+}
