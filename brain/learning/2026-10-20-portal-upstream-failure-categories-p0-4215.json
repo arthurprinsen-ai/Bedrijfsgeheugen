@@ -1,20 +1,40 @@
 {
+  "fingerprint": "p0-4215-portal-upstream-failure-categories-20261020",
   "date": "2026-10-20",
-  "fingerprint": "portal|authenticated-api-repeated-502|upstream-classification-v1",
-  "type": "POWERHOUSE_LEARNING",
-  "status": "CANDIDATE",
-  "parentIssue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
-  "obligation_id": "portal|upstream-failure-classification|20261020",
-  "root_cause": "Official release readback run #39430198530 attempt 3 executed 30 authenticated portal checks returning AUTHENTICATED_PORTAL_API_HTTP_502, even after protected portal sort indices applied. Existing tenant-bound Netlify route collapses upstream cases into generic 502 and logs no safe reason category.",
-  "repair": "Existing Netlify route and service-token transport preserved; operator-only enumerated failure categories distinguish upstream HTTP status, deadline, malformed shape, tenant scope, network fetch and config. Preserve fail-closed HTTP, no-store, per-tenant auth, and no PII logging.",
-  "prevention_rule": "Generic HTTP502 without bounded safe operator classification is not terminal root-cause evidence. Require tests, protected preview/merge, production readback, signed two-tenant verification. Never log tenant identifiers, tokens or raw upstream bodies.",
-  "test_evidence": {
-    "Required_CI": "PENDING",
-    "CodeQL": "PENDING",
-    "Netlify_preview": "PENDING",
-    "provider_runtime": "PENDING",
-    "authenticated_tenant1": "NOT_PROVEN",
-    "authenticated_tenant2": "NOT_PROVEN"
+  "obligation": "portal|upstream-failure-classification|20261020",
+  "root_cause": "Authenticated immutable Netlify deploy hook recorded one real 502. GitHub later polled the same persisted failed proof thirty times; this was not thirty independent failed tenant API calls. Gateway error handling collapsed HTTP/network/shape/tenant failures into generic 502 and discarded the pre-existing finite Edge stage source.",
+  "intervention": "Reuse existing tenant-bound gateway and classify only finite HTTP status and known Edge read-stage labels in server-only logs. Neither customer identity nor upstream body, credentials or query text appear in logs; preserve auth, response codes, cache and scheduler.",
+  "prevention": "Require server-only allowlisted failures, tenant-shape fail-closed, signed immutable production evidence and two distinct tenant end-to-end acceptance. Do not equate post-deploy repeated status polling with independent HTTP requests.",
+  "compiler": {
+    "failure_class": "P0_PORTAL_UPSTREAM_CAUSE_OBSCURED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
   },
-  "production_verified": false
+  "prevention_rule": "PORTAL_AUTHENTICATED_GATEWAY_SAFE_STAGE_DIAGNOSIS",
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-supabase-store.test.mjs",
+      "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
+    ],
+    "shadow": [
+      "tests/portal-supabase-store.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "required_ci": "pending",
+    "codeql": "pending",
+    "netlify_preview": "pending",
+    "production_readback": "not_proven",
+    "two_tenant_e2e": "not_proven"
+  },
+  "status": "CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39430198530"
+  ]
 }
