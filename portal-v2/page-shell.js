@@ -24,6 +24,7 @@ import { mountCustomerAgentActivity } from './modules/customer-agent-activity.js
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 import { mountContextualForesight } from './foresight-context-ui.js';
+import {mountWinstnavigator} from './winstnavigator.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
 import { mountSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
 import { mountAiModelChoice } from './modules/ai-model-choice.js';
@@ -385,6 +386,8 @@ function ensureStylesheetLast(href){
 export function enhancePortalShell(){
   ensureShell();
   ensureStylesheet('./interaction.css');
+  ensureStylesheet('./winstnavigator.css');
+  mountWinstnavigator({domainState:portalContext.domainState,stateClient:portalContext.stateClient});
   ensureStylesheet('./workspace.css');
   ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
