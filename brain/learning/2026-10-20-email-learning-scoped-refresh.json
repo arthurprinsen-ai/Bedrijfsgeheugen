@@ -16,7 +16,8 @@
   "prevention": [
     "No unqualified deletion or WHERE TRUE workaround",
     "Temporary-clone fixture verifies foreign-owner preservation, aggregation, repeated refresh, expiration and source retention",
-    "No send or revenue claims inferred from learning refresh"
+    "No send or revenue claims inferred from learning refresh",
+    "Keep SQL regression fixtures under classified supabase/tests paths and validate actual material-closure metadata before candidate publication."
   ],
   "acceptance": {
     "native_preview": "REQUIRED",
@@ -25,5 +26,16 @@
     "protected_merge": "REQUIRED",
     "production_reply_loop": "REQUIRED"
   },
-  "truth_boundary": "Code validation does not prove provider delivery, approved recipient eligibility, Instagram media or forecast outcomes."
+  "truth_boundary": "Code validation does not prove provider delivery, approved recipient eligibility, Instagram media or forecast outcomes.",
+  "compiler": {
+    "failure_class": "DERIVED_LEARNING_REFRESH_UNQUALIFIED_DELETE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/revenue-content-cockpit-outcome-loop-contract.test.mjs",
+      "supabase/tests/email_learning_scoped_refresh_v1.sql"
+    ],
+    "baseline": "PostgreSQL fixture fails EMAIL_LEARNING_FOREIGN_OWNER_LOSS",
+    "candidate": "PostgreSQL fixture passes aggregation, preservation, repeat, expiry and foreign-key-collision checks"
+  }
 }

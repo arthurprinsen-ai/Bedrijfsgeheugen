@@ -2379,6 +2379,6 @@ export const EMAIL_LEARNING_SCOPED_REFRESH_20261020=Object.freeze({
  preservesOtherOwners:true,preservesSourceEvidence:true,preservesInvokerAndPrivateGrants:true,
  noNewScheduler:true,noOutboundSend:true,
  migration:'supabase/migrations/20261020174501_email_learning_stats_scoped_refresh_v1.sql',
- regression:'tests/fixtures/email-learning-scoped-refresh-v1.sql',
+ regression:'supabase/tests/email_learning_scoped_refresh_v1.sql',
  learning:'brain/learning/2026-10-20-email-learning-scoped-refresh.json'
 });

@@ -51,4 +51,4 @@ Fingerprint: `powerhouse|email-learning-scoped-refresh|20261020`.
 - Serialize refreshes; upsert current 180-day source-backed email aggregates and retire only missing keys owned by the exact email learning contract.
 - Other channels/contracts and source actions, replies and outcomes must survive refresh, repeat and expiration tests.
 - A passing statistics refresh is neither an outbound send nor a reply/order/revenue observation. Provider receipts and contact eligibility remain mandatory.
-- Regression fixture: `tests/fixtures/email-learning-scoped-refresh-v1.sql`; runs against temporary clones and rolls back.
+- Regression fixture: `supabase/tests/email_learning_scoped_refresh_v1.sql`; runs against temporary clones and rolls back.
