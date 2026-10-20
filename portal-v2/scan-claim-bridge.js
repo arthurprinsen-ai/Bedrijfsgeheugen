@@ -106,6 +106,13 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
       if(!response.ok||data?.ok!==true||data?.claimed!==true||data?.scan?.tenant_identity_status!=='verified'){status.textContent='Koppelen is niet gelukt; de scan blijft ongewijzigd. Probeer het opnieuw.';return}
       try{storage?.removeItem(RECEIPT_KEY);session?.removeItem(KEY)}catch{}
       await refresh();
+      // Only after the provider confirms claim + exact verified tenant identity
+      // may the existing portal Brain projection be revalidated. No duplicate
+      // scan submission or fabricated customer impact is created here.
+      if(current===revision&&authenticated){
+        try{await onClaimed();}
+        catch{status.textContent='De nulmeting is gekoppeld; overige portaalinzichten worden bij de volgende verversing bijgewerkt.';}
+      }
     }catch(error){if(current===revision&&authenticated)status.textContent=error?.message==='AUTH_TOKEN_UNAVAILABLE'?'Je sessie is verlopen. Log opnieuw in om te koppelen.':'Koppelen is niet gelukt. De scan is niet als gekoppeld gemarkeerd.'}
     finally{claim.disabled=false}
   });
