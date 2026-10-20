@@ -75,4 +75,10 @@ REVOKE ALL ON FUNCTION public.powerhouse_backfill_internal_research_economics_v1
   FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_backfill_internal_research_economics_v1(timestamp with time zone)
   TO service_role;
+-- Keep the production function's server-only execution contract after replacement.
+-- No anon/authenticated/PUBLIC EXECUTE access to this SECURITY DEFINER function.
+REVOKE EXECUTE ON FUNCTION public.powerhouse_backfill_internal_research_economics_v1(timestamptz)
+  FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_backfill_internal_research_economics_v1(timestamptz)
+  TO postgres, service_role;
 COMMIT;
