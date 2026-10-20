@@ -16,20 +16,20 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
-      "portal-v2/tests/portal-impact-engine.test.mjs",
-      "portal-v2/tests/all-field-brain-delivery-lossless.test.mjs"
+      "tests/brain-portal-model-connector-impact-20261020.test.mjs"
     ],
     "shadow": [
-      "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs"
+      "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
+      "tests/brain-portal-model-connector-impact-20261020.test.mjs"
     ],
     "canary": [
-      "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs"
+      "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
+      "tests/brain-portal-model-connector-impact-20261020.test.mjs"
     ]
   },
   "tests": [
     "tests/brain-portal-model-connector-tenant-auth-20261020.test.mjs",
-    "portal-v2/tests/portal-impact-engine.test.mjs",
-    "portal-v2/tests/all-field-brain-delivery-lossless.test.mjs"
+    "tests/brain-portal-model-connector-impact-20261020.test.mjs"
   ],
   "production_readback": "NOT_PERFORMED; pending protected merge, exact deployment SHA and separate customer A/B verified sessions",
   "provider_activation": "NOT_PROVEN",
