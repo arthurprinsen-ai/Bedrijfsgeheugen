@@ -125,8 +125,10 @@ function buildEntrepreneurSnapshot(base:any,domains:any[],catalog:any[],signals:
 }
 function readRows(label:string,query:any){
   // Lazy: database requests are issued only when boundedReads schedules a job.
-  return async()=>{
-    const {data,error}=await query;
+  return async(signal:AbortSignal)=>{
+    // PostgREST supports AbortSignal; abort the underlying HTTP/database read
+    // on its deadline rather than keeping an abandoned 150s+ request alive.
+    const {data,error}=await query.abortSignal(signal);
     if(error)throw new Error(label);
     return Array.isArray(data)?data:[];
   };
