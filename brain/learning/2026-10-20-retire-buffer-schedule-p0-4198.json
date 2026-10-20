@@ -16,5 +16,30 @@
     "netlify_deploy": "PENDING",
     "provider_native_delivery": "NOT_PROVEN"
   },
-  "production_verified": false
+  "production_verified": false,
+  "obligation_id": "commercial|legacy-buffer-cron-retirement|20261020",
+  "compiler": {
+    "failure_class": "LEGACY_SCHEDULED_BUFFER_HTTP_401",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4198-retire-buffer-collect-schedule.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4198-retire-buffer-collect-schedule.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4198-retire-buffer-collect-schedule.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed_netlify_http_503": "VERIFIED_2026-10-20",
+    "required_ci": "PENDING",
+    "netlify_deploy": "PENDING",
+    "provider_native_delivery": "PENDING"
+  }
 }
