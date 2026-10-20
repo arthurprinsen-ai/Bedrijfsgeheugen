@@ -41,21 +41,58 @@ function writePath(source,path,value,{merge=false}={}){
 
 function publicSnapshot(state,status,error){return Object.freeze({state:clone(state),status,error:error||null});}
 
-export function createDomainState({load,save}={}){
+export function createDomainState({load,save,refreshLoad=load}={}){
  if(typeof load!=='function')throw new TypeError('DOMAIN_STATE_LOAD_REQUIRED');
  if(typeof save!=='function')throw new TypeError('DOMAIN_STATE_SAVE_REQUIRED');
  let state={};let currentStatus='idle';let currentError=null;let revision=0;let initialized=false;const listeners=new Set();let activeFlush=null;
- const publish=()=>{const snap=publicSnapshot(state,currentStatus,currentError);for(const listener of listeners){try{listener(snap)}catch{}}return snap;};
+ // Server-derived operating-loop evidence is view-only and MUST NOT enter durable customer edits.
+ // Restrict the overlay to the one existing read-only runtime projection.
+ const derived=new Map();
+ const visibleState=()=>{
+  const view=clone(state);
+  // Historical payloads may contain stale runtime snapshots: do not surface them as current.
+  if(isObject(view.portal))delete view.portal.runtime;
+  for(const [key,value] of derived)viewPath(view,key,value);
+  return view;
+ };
+ const viewPath=(root,path,value)=>{const partsList=parts(path);let cursor=root;for(let i=0;i<partsList.length-1;i++){const k=partsList[i];cursor[k]=isObject(cursor[k])?cursor[k]:{};cursor=cursor[k];}cursor[partsList.at(-1)]=clone(value);};
+
+ const publish=()=>{const snap=publicSnapshot(visibleState(),currentStatus,currentError);for(const listener of listeners){try{listener(snap)}catch{}}return snap;};
  const asError=(error,fallback)=>error instanceof Error?error:new Error(String(error||fallback));
  const markDirty=()=>{revision+=1;currentStatus='dirty';currentError=null;publish();};
- async function init(){try{const loaded=normalizeState(await load());const needsMigration=hasLegacyPortalData(loaded);state=upgradeLegacyPortalState(loaded);if(needsMigration){currentStatus='saving';publish();state=upgradeLegacyPortalState(normalizeState(await save(clone(state))));currentStatus='saved';}else currentStatus='idle';currentError=null;revision=0;initialized=true;return publish();}catch(error){state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');publish();throw currentError;}}
- function get(path=''){return path?readPath(state,path):clone(state);}
+ async function init(){derived.clear();try{const loaded=normalizeState(await load());const needsMigration=hasLegacyPortalData(loaded);state=upgradeLegacyPortalState(loaded);if(needsMigration){currentStatus='saving';publish();state=upgradeLegacyPortalState(normalizeState(await save(clone(state))));currentStatus='saved';}else currentStatus='idle';currentError=null;revision=0;initialized=true;return publish();}catch(error){state={};initialized=false;currentStatus='error';currentError=asError(error,'DOMAIN_STATE_LOAD_FAILED');publish();throw currentError;}}
+ // Revalidate server truth without overwriting unsaved changes or an in-flight ACK.
+ // Refresh is not an init/migration, and never persists derived/runtime data.
+ async function refresh({canApply=()=>true}={}){
+  if(!initialized)return Object.freeze({applied:false,reason:'NOT_INITIALIZED'});
+  if(!['idle','saved'].includes(currentStatus)||!canApply())return Object.freeze({applied:false,reason:'UNSAVED_OR_UNAUTHORIZED'});
+  const startedRevision=revision;
+  const received=upgradeLegacyPortalState(normalizeState(await refreshLoad()));
+  if(revision!==startedRevision||!['idle','saved'].includes(currentStatus)||!canApply()){
+   return Object.freeze({applied:false,reason:'CHANGED_DURING_READBACK'});
+  }
+  // A provider with unchanged state must not rerender open customer forms.
+  if(JSON.stringify(received)===JSON.stringify(state))return Object.freeze({applied:true,changed:false});
+  state=received;currentStatus='idle';currentError=null;publish();
+  return Object.freeze({applied:true,changed:true});
+ }
+ function get(path=''){const view=visibleState();return path?readPath(view,path):view;}
  function set(path,value){state=writePath(state,path,value);markDirty();return get(path);}
  function project(path,value){state=writePath(state,path,value);currentError=null;publish();return get(path);}
+ function setDerived(path,value){
+  if(path!=='portal.runtime')throw new TypeError('DOMAIN_DERIVED_PATH_NOT_ALLOWED');
+  if(value!==null&&!isObject(value))throw new TypeError('DOMAIN_DERIVED_RUNTIME_OBJECT_REQUIRED');
+  if(value===null)derived.delete(path);else derived.set(path,clone(value));
+  publish();
+  return get(path);
+ }
  function patch(path,value){if(!isObject(value))throw new TypeError('DOMAIN_STATE_PATCH_OBJECT_REQUIRED');state=writePath(state,path,value,{merge:true});markDirty();return get(path);}
- async function performFlush(){if(currentStatus!=='dirty'&&currentStatus!=='error')return publicSnapshot(state,currentStatus,currentError);const saveRevision=revision;const candidate=clone(state);currentStatus='saving';currentError=null;publish();try{const confirmed=normalizeState(await save(candidate));if(revision===saveRevision){state=upgradeLegacyPortalState(confirmed);currentStatus='saved';}else currentStatus='dirty';currentError=null;return publish();}catch(error){currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');currentStatus='error';publish();throw currentError;}}
+ async function performFlush(){if(currentStatus!=='dirty'&&currentStatus!=='error')return publicSnapshot(state,currentStatus,currentError);const saveRevision=revision;const candidate=clone(state);
+ // Never upload transient or historically persisted operating-loop projections.
+ if(isObject(candidate.portal))delete candidate.portal.runtime;
+ currentStatus='saving';currentError=null;publish();try{const confirmed=normalizeState(await save(candidate));if(revision===saveRevision){state=upgradeLegacyPortalState(confirmed);currentStatus='saved';}else currentStatus='dirty';currentError=null;return publish();}catch(error){currentError=asError(error,'DOMAIN_STATE_SAVE_FAILED');currentStatus='error';publish();throw currentError;}}
  function flush(){if(activeFlush)return activeFlush;activeFlush=performFlush().finally(()=>{activeFlush=null});return activeFlush;}
- return Object.freeze({init,initialized:()=>initialized,get,set,project,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(state,currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
+ return Object.freeze({init,refresh,initialized:()=>initialized,get,set,project,setDerived,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(visibleState(),currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
 }
 
 const SECTION_BINDINGS=Object.freeze({
@@ -80,6 +117,9 @@ function businessInputBinding(path){
  const keys=parts(path);
  if(keys[0]!=='portal'||!keys[1])return null;
  const section=keys[1],detail=keys[2];
+ // Native page-scoped inputs keep distinct Brain model lineage instead of being
+ // combined into one generic `portal.pages` business input.
+ if(section==='pages'&&detail)return Object.freeze({key:`page:${detail}`,inputType:'PortalPageModel',modelId:`page-${slug(detail)}`,statePath:`portal.pages.${detail}`});
  if(section==='canvases'&&detail)return Object.freeze({key:`canvas:${detail}`,inputType:'StrategyCanvas',modelId:`canvas-${slug(detail)}`,statePath:`portal.canvases.${detail}`});
  if(section==='strategy'){
   if(detail==='dna')return Object.freeze({key:'strategy:dna',inputType:'StrategyModel',modelId:'strategy-dna',statePath:'portal.strategy.dna'});
@@ -99,10 +139,10 @@ function asAnswers(value){
  return {value:clone(value)};
 }
 
-function hasLegacyBusinessInputStorage(storage){
- if(!storage||typeof storage.length!=='number')return false;
- for(let index=0;index<storage.length;index+=1){const key=storage.key(index);if(key?.startsWith('bg_portaal_')&&!['bg_portaal_open','bg_portaal_lead'].includes(key))return true;}
- return false;
+function hasLegacyBusinessInputStorage(storage,user){
+ // Check only the caller's exact legacy key; never use another cached
+ // customer's data to trigger migration or Brain submission.
+ return Boolean(readLegacyPortalStateForUser(storage,user));
 }
 
 export function createPortalDomainState(stateClient,{businessInputSaver=null,businessInputStoreLoader=defaultBusinessInputStoreLoader,legacyStorage=globalThis.localStorage}={}){
@@ -120,9 +160,15 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    browserLegacyLiftPending=true;
    return mergeLegacyPortalStateIntoCanonical(canonical,legacy);
   },
+  // Refresh reads only authenticated canonical state, never repeats browser legacy migration.
+  refreshLoad:async()=>{
+   const snap=await stateClient.load();
+   if(snap?.mode!=='authenticated'||!snap?.state)throw new Error('PORTAL_REFRESH_AUTHENTICATED_READBACK_REQUIRED');
+   return snap.state;
+  },
   save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
  });
- const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
+ const pendingBusinessInputs=new Map();const pendingImpacts=[];let businessRevision=0;let impactRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
  const loadBusinessInputStore=()=>businessInputStorePromise||(businessInputStorePromise=Promise.resolve().then(()=>businessInputStoreLoader()));
  async function saveBusinessInput(input){
   const headers=typeof stateClient.authHeaders==='function'?await stateClient.authHeaders():{};
@@ -142,10 +188,10 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
    result=await domain.flush();
    browserLegacyLiftPending=false;
   }
-  if(stateClient.isDemo?.()||!hasLegacyBusinessInputStorage(legacyStorage))return result;
+  if(stateClient.isDemo?.()||!hasLegacyBusinessInputStorage(legacyStorage,stateClient.currentUser?.()))return result;
   const reader=(await loadBusinessInputStore())?.readLegacyPortalBusinessInputs;
   if(typeof reader!=='function')throw new TypeError('PORTAL_LEGACY_BUSINESS_INPUT_READER_REQUIRED');
-  for(const input of reader(legacyStorage))await saveBusinessInput(input);
+  for(const input of reader(legacyStorage,stateClient.currentUser?.()))await saveBusinessInput(input);
   return result;
  }
  function init(){if(activeInit)return activeInit;activeInit=performInit().finally(()=>{activeInit=null});return activeInit;}
@@ -166,52 +212,81 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   }
   const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
   if(impact.changed){
-   pendingImpacts.push({path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
-   // Keep all unacknowledged causal changes; never silently truncate large forms.
+   pendingImpacts.push({generation:++impactRevision,path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]},mappingStatus:impact.mappingStatus,reviewDomains:[...impact.reviewDomains],externalExecutionAuthorized:false,evidenceStatus:impact.evidenceStatus,impactContractVersion:'2026-10-08-v4-one-brain-all-pages'});
   }
   if(typeof globalThis!=='undefined'){
    globalThis.__BG_LAST_PORTAL_IMPACT__=enriched;
    if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
     globalThis.dispatchEvent(new CustomEvent('bg:portal-impact',{detail:enriched}));
     globalThis.dispatchEvent(new CustomEvent('bg:portal-pages-invalidated',{detail:{path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],effectDetails:[...enriched.effectDetails]}}));
-    if(impact.changed)globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
+    if(impact.changed){
+      globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
+      globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-pending',{detail:{impact:enriched,pendingChanges:pendingImpacts.length,pendingInputs:pendingBusinessInputs.size}}));
+     }
    }
   }
   return enriched;
  }
  function set(path,value){const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
- function setDerived(path,value){if(typeof domain.project!=='function')throw new TypeError('DOMAIN_DERIVED_PROJECTION_REQUIRED');return domain.project(path,value);}
+ function setDerived(path,value){return domain.setDerived(path,value);}
  function patch(path,value){const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  async function performPortalFlush(){
-  // Snapshot the causal cut before async persistence: later edits require a later readback.
-  const impactSnapshot=pendingImpacts.slice();
+  // Snapshot causal lineage before any await: edits made during the state or
+  // Brain write must remain pending and cannot be reported as synchronized.
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
+  const cutoff=impactRevision;
+  const submittedImpacts=pendingImpacts.filter(impact=>impact.generation<=cutoff);
   const stateResult=await domain.flush();
-  const stored=[];
+  // If a field changed during state persistence, its data is not yet server-
+  // confirmed. Defer Brain submission until the next flush.
+  if(stateResult.status==='dirty')return stateResult;
+  if(!['saved','idle'].includes(stateResult.status))throw new Error('PORTAL_STATE_PERSISTENCE_ACK_REQUIRED');
+  const stored=[];const acknowledged=new Set();
   for(const item of pending){
-   const causalImpacts=impactSnapshot.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
+   const causalImpacts=submittedImpacts.filter(impact=>impact.path===item.statePath||impact.path.startsWith(item.statePath+'.'));
    const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1',causalImpacts}});
-   // Demo mode deliberately has no durable BusinessInput authority. Only an explicit
-   // demo skip may be treated as non-durable success; authenticated writes still
-   // require a provider-confirmed stored:true readback.
    if(saved?.skipped===true&&saved.reason==='DEMO_NON_DURABLE'&&stateClient.isDemo?.()){
     if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
     continue;
    }
    if(!saved||saved.stored!==true)throw new Error('CANONICAL_BUSINESS_INPUT_ACK_REQUIRED');
    stored.push(saved);
+   for(const impact of causalImpacts)acknowledged.add(impact.generation);
    if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
   }
-  // Remove only confirmed impacts from this snapshot; keep edits that arrived during save.
-  pendingImpacts.splice(0,impactSnapshot.length);
-  const fullySynced=domain.status()!=='dirty'&&domain.status()!=='error'&&pendingBusinessInputs.size===0&&pendingImpacts.length===0;
-  if(typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
-   globalThis.dispatchEvent(new CustomEvent(fullySynced?'bg:portal-brain-synced':'bg:portal-brain-pending',{detail:{stored,fullySynced,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:impactSnapshot,pendingChanges:pendingImpacts.length,pendingInputs:pendingBusinessInputs.size}}));
+  // Prune only impacts acknowledged by the canonical Brain. Never drop newer
+  // edits, even when a user changes a field during the Brain write.
+  const confirmedImpacts=submittedImpacts.filter(impact=>acknowledged.has(impact.generation));
+  for(let index=pendingImpacts.length-1;index>=0;index--){
+   if(acknowledged.has(pendingImpacts[index].generation))pendingImpacts.splice(index,1);
+  }
+  if(stored.length&&typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+   globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null,impacts:confirmedImpacts}}));
   }
   return stateResult;
  }
  function flush(){if(activePortalFlush)return activePortalFlush;activePortalFlush=performPortalFlush().finally(()=>{activePortalFlush=null});return activePortalFlush;}
- const portalDomain=Object.freeze({...domain,init,set,setDerived,patch,flush,saveBusinessInput});
+ let activeRefresh=null;
+ function refresh(){
+  if(activeRefresh)return activeRefresh;
+  const principal=stateClient.currentUser?.();
+  const principalKey=String(principal?.id||principal?.email||'').trim();
+  const samePrincipal=()=>{
+   const current=stateClient.currentUser?.();
+   return Boolean(principalKey)&&String(current?.id||current?.email||'').trim()===principalKey
+     &&!stateClient.isDemo?.()&&!activeInit&&!activePortalFlush
+     &&pendingBusinessInputs.size===0&&pendingImpacts.length===0&&!browserLegacyLiftPending;
+  };
+  if(!samePrincipal())return Promise.resolve(Object.freeze({applied:false,reason:'UNVERIFIED_OR_UNSAVED_TENANT'}));
+  activeRefresh=domain.refresh({canApply:samePrincipal}).then(result=>{
+   if(result.applied&&result.changed&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-server-refreshed',{detail:{source:'authenticated_canonical_readback',customerScoped:true}}));
+   }
+   return result;
+  }).finally(()=>{activeRefresh=null});
+  return activeRefresh;
+ }
+ const portalDomain=Object.freeze({...domain,init,refresh,set,setDerived,patch,flush,saveBusinessInput});
  if(typeof globalThis!=='undefined')globalThis.__BG_PORTAL_DOMAIN_STATE__=portalDomain;
  return portalDomain;
 }
