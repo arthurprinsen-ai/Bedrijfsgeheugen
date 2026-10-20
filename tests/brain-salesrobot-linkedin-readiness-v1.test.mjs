@@ -26,14 +26,27 @@ test('draft, campaign-less and unlicensed states cannot claim provider delivery 
  assert.equal(check(healthy()),null);
 });
 
-test('readiness gate runs before AVAILABLE capability and any SalesRobot dispatch',()=>{
+test('provider preflight stays fail-closed before SalesRobot dispatch',()=>{
  const readiness=source.indexOf('const blocked=salesRobotExecutionBlock(healthy)');
- const available=source.indexOf("dmCapability='AVAILABLE'");
  const send=source.indexOf("'SALESROBOT_SEND_MESSAGE',args");
- assert.ok(readiness>0&&available>readiness&&send>available);
- assert.match(source,/SALESROBOT_(?:EXECUTION_DAYS_EXHAUSTED|ACTIVE_CAMPAIGN_REQUIRED)/);
- assert.match(source,/status:'held',reason:configRequired/);
+ assert.ok(readiness>0&&send>readiness);
+ assert.match(source,/SALESROBOT_LINKEDIN_ACCOUNT_NOT_HEALTHY/);
+ assert.match(source,/dmCapability='CONFIG_REQUIRED'/);
  assert.match(source,/send_proof:false/);
+});
+
+test('ambiguous provider write cannot be automatically requeued or resent',()=>{
+ const begin=source.indexOf('}catch(dmError:any){');
+ const end=source.indexOf('}catch(srError:any){',begin);
+ assert.ok(begin>0&&end>begin);
+ const catchBlock=source.slice(begin,end);
+ assert.match(catchBlock,/status:'waiting'/);
+ assert.doesNotMatch(catchBlock,/status:'suggested'/);
+ assert.match(catchBlock,/needs_readback:true/);
+ assert.match(catchBlock,/republish_forbidden:true/);
+ assert.match(catchBlock,/requires_provider_readback:true/);
+ assert.match(catchBlock,/fallback_required:false/);
+ assert.match(catchBlock,/SALESROBOT_SEND_OUTCOME_AMBIGUOUS/);
 });
 
 test('existing human approval, message quality, and exact send acknowledgment are retained',()=>{

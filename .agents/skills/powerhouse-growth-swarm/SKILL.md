@@ -281,3 +281,8 @@ Verplicht:
 - geen commerciële traffic-bridge via het persoonlijke LinkedIn-profiel;
 - views/followers zijn tussenmetingen; paid order en realized revenue blijven terminale north star;
 - dezelfde bestaande commerciële scheduler blijft owner; een parallelle LinkedIn-growth scheduler is verboden.
+
+## SalesRobot unknown-send result — 20 oktober 2026
+
+Fingerprint: `commercial|linkedin-salesrobot|ambiguous-provider-send-no-resend|20261020`.
+Een SalesRobot-fout na het versturen kan betekenen dat de provider de DM al heeft geplaatst. De canonieke `powerhouse-linkedin-sales-machine` moet de oorspronkelijke action-ID op `waiting` houden en `needs_readback=true`, `republish_forbidden=true` registreren. Geen fallback-kanaal, automatisch opnieuw verzenden of status `done` zonder onafhankelijke ontvangst-/inbox-ID. Pas bij echte providerreadback mag de bestaande outcome-reconciler afronden. Als de providerlicentie/cookie/campagne ontbreekt: `UNAVAILABLE/CONFIG_REQUIRED`, nooit groen. Bestaande consent, human approval, suppressions, cooldown, berichtkwaliteit en één scheduler blijven bindend. P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
