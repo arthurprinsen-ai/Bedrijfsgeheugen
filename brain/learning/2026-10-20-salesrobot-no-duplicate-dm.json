@@ -38,5 +38,17 @@
     "Supabase Edge production readback",
     "SalesRobot license/reactivation and authentic independent provider receipt"
   ],
-  "truth_boundary": "No provider message sent as part of this code change; no paid subscription, connection repair or end-to-end green asserted."
+  "truth_boundary": "No provider message sent as part of this code change; no paid subscription, connection repair or end-to-end green asserted.",
+  "compiler": {
+    "failure_class": "AMBIGUOUS_PROVIDER_SEND_DUPLICATE_RISK",
+    "scope": "CODE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ]
+  }
 }
