@@ -132,3 +132,35 @@ test('verified inbox event is the only allowed SalesRobot done transition',()=>{
  assert.match(readback,/needs_readback:false/);
  assert.match(source,/verified_receipts_reconciled:reconciledDms.length/);
 });
+
+test('SalesRobot exact provider root causes survive disconnected adapter and do not produce fake GREEN',()=>{
+ assert.match(source,/class SalesRobotProviderBlock extends Error/);
+ assert.match(source,/payment_status:payment/);
+ assert.match(source,/cookie_expired:observed\?\.cookieExpired===true/);
+ assert.match(source,/SALESROBOT_EXECUTION_DAYS_EXHAUSTED/);
+ assert.match(source,/SALESROBOT_BILLING_INACTIVE/);
+ assert.match(source,/blockers:problems/);
+ assert.match(source,/srPreflightDetails=err\?\.evidence\|\|\{\}/);
+ assert.match(source,/\.\.\.srPreflightDetails/);
+});
+
+test('preflight-only mode reuses existing provider probe and records status before composer without sending',()=>{
+ const a=source.indexOf("if(input?.mode==='provider_preflight'){");
+ const b=source.indexOf("const composerResponse=await fetch(");
+ const c=source.indexOf("await recordCapability(db,'salesrobot.linkedin_dm',providerStatus");
+ assert.ok(a>0&&b>a&&c<a);
+ assert.match(source.slice(a,b),/external_side_effects:false,commercial_outbound_sent:false,composer_called:false/);
+ assert.match(source.slice(a,b),/existing_canonical_scheduler:true/);
+ assert.doesNotMatch(source.slice(a,b),/SALESROBOT_SEND_MESSAGE/);
+});
+
+test('DM dry-run distinguishes suggested actions from recipient approved and provider addressable',()=>{
+ const start=source.indexOf('if(dryRun){'),end=source.indexOf("await recordCapability(db,'salesrobot.linkedin_dm',providerStatus",start);
+ const segment=source.slice(start,end);
+ assert.match(segment,/dm_action_approved/);
+ assert.match(segment,/dm_provider_addressable/);
+ assert.match(segment,/dm_crm_recipient_approved/);
+ assert.match(segment,/dm_ready_for_send/);
+ assert.match(segment,/await approvedLinkedinRecipient\(db,action\)/);
+ assert.match(segment,/canonical_mutations:false/);
+});
