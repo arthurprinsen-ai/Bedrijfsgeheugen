@@ -21,6 +21,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Verify portal explanation source freshness
+        run: |
+          node scripts/brain/portal-explanation-inventory.mjs --check
+          node --test tests/brain-portal-explanation-autosync-v1.test.mjs tests/brain-powerhouse-live-system-map-v1.test.mjs tests/brain-powerhouse-system-map-governance-v1.test.mjs
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
       - name: Verify self-evolution contract

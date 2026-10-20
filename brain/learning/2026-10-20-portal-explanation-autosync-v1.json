@@ -1,0 +1,14 @@
+{
+  "fingerprint": "portal-explanation-autosync-20261020-v1",
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Hand-maintained System Map inventories and explanation-source changes were not checked by current Required/daily paths.",
+  "fix": "Source-derived idempotent refresh/check integrated into existing build/release/daily owners; source counts explicitly distinguished from provider proof.",
+  "prevention": [
+    "Refresh source inventories in the same protected candidate.",
+    "Review semantics separately from fingerprints.",
+    "Never infer production from source registration or documentation recency.",
+    "Keep existing assurance schedule and owner; no parallel scheduler."
+  ],
+  "regression": "tests/brain-portal-explanation-autosync-v1.test.mjs",
+  "production_status": "CANDIDATE_NOT_YET_VERIFIED"
+}

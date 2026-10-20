@@ -1,0 +1,11 @@
+# Portal explanation source synchronization
+
+
+## Portal explanation freshness — 20 October 2026
+Fingerprint: `portal-explanation-autosync-20261020-v1`.
+The actual Portal V2 explanation surfaces are Powerhouse Control Center / Systeemkaart, Lagen & systemen, Documentatie & learning, Brain-verwerking, and Hoe dit portaal rekent. Their source dependencies include page-shell, page-metrics, page-visuals, runtime-evidence and doorwerking / legacy-parity-engine.
+Run `node scripts/brain/portal-explanation-inventory.mjs --write` in the current protected candidate whenever inventories or these sources change, then `--check`. The existing Netlify build regenerates the inventory; Required test and the existing daily self-evolution workflow check it. The existing Growth & Revenue OS assurance (08:00/11:00/14:00/17:00 Europe/Amsterdam) is extended in place to review and safely repair semantic drift in this same lineage. No new scheduler, database, publisher or deployment authority.
+Inventory entries are repository source modules, including helper directories/files: they are not deployed-function or successful-run counts. A source fingerprint detects changed dependencies; it does not prove that every explanation is semantically correct. The delivery owner must review changed formulas, ownership, providers and dataflow explanations. Preserve original provider observations; no regenerated timestamp, Notion update, code merge or empty runtime screen proves live execution. Runtime/client acceptance remains under existing #4215.
+Prevention: source additions/deletions/changes must fail the check until refreshed; refresh must be idempotent. Protected release and exact production/readback remain required. Unknown evidence stays unknown.
+
+Baseline: eight missing skills, eighteen missing Netlify source modules, seventeen missing Supabase source directories, ten added and three removed workflow files. The existing default-tab assertion was obsolete after Live uitvoering became the default; Systeemkaart remains accessible. Live JS hash matched repository source during audit. This source change does not claim authenticated end-to-end production acceptance.
