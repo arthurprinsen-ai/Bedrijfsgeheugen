@@ -23,5 +23,23 @@
       "tests/brain-powerhouse-live-system-map-v1.test.mjs",
       "tests/brain-powerhouse-system-map-governance-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "source_baseline": "08a6af19da00972857fd76ff96a290f059ad5617",
+    "portal_suite": {
+      "passed": 586,
+      "failed": 0
+    },
+    "targeted_suite": {
+      "passed": 16,
+      "failed": 0
+    },
+    "canonicalization": "Historical replay evaluation passed on three real test files",
+    "live_baseline": "Six public Portal V2 source modules HTTP200 with matching baseline SHA256; new release still requires protected promotion and readback",
+    "pre_existing_test_failures": [
+      "brain-powerhouse-observability-command-center-v1: 2 baseline failures",
+      "brain-powerhouse-observability-outcome-contract: 5 baseline failures",
+      "brain-netlify-production-build-parity-v1: 1 obsolete baseline workflow assertion"
+    ]
   }
 }
