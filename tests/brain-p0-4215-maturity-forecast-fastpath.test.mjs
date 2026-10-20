@@ -44,5 +44,7 @@ test('forward-only branch readback enforces unchanged internal view security',()
  assert.match(readback,/REVOKE ALL ON public\.powerhouse_action_evidence_maturity_v1 FROM PUBLIC, anon, authenticated/);
  assert.match(readback,/MATURITY_VIEW_SECURITY_READBACK_FAILED/);
  assert.match(readback,/lock_timeout = '2s'/);
- assert.doesNotMatch(readback,/GRANT\s+|cron\.(?:schedule|alter_job|unschedule)|DROP\s+TABLE/i);
+ // SQL line comments may describe the absence of grants; validate executable statements only.
+ const executableSql=readback.replace(/^[ \t]*--[^\r\n]*/gm,'');
+ assert.doesNotMatch(executableSql,/\bGRANT\s+|cron\.(?:schedule|alter_job|unschedule)|\bDROP\s+TABLE/i);
 });
