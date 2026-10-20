@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { createDomainState, createPortalDomainState } from '../domain-state.js';
 
 const clone = value => structuredClone(value);
