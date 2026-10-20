@@ -17,7 +17,7 @@ export function selectBlocked(runtime = {}) {
 }
 
 export function selectValueLeakage(runtime = {}) {
-  const measured = value => value !== null && value !== undefined && value !== '' && Number.isFinite(Number(value));
+  const measured = value => (typeof value === 'number' && Number.isFinite(value)) || (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value)));
   const expected = runtime?.economics?.expectedValue;
   const realized = runtime?.economics?.realizedValue;
   // Missing or unverified measurements must not become a fabricated €0 gap.
