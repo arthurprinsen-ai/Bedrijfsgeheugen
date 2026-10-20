@@ -14,3 +14,6 @@ Een idempotente productie-migratie behoudt alle predicates, human_approved/evide
 
 ## Risico en acceptatie
 Een korte lock_timeout 2s en statement_timeout 20s voorkomt een onbeperkte DDL-wacht. Nog niet toegepast terwijl de database aantoonbaar verzadigd is. Test replay op exacte predicates, idempotentie, truth en geen deletions. Preview Required + CodeQL en SQL-contract; daarna alleen beschermde merge en veilige productiemigratie via canonieke Supabase route. Voor/na: `pg_indexes`, `pg_get_functiondef`, batchgrootte, backlog, query-timing, cron 171 en 116, pool-/startup-time-outs. Functionele portal HTTP 200, twee tenants en financiële outcome blijven afzonderlijk bewijs vereist. Deze PR is geen LIVE_PROVEN verklaring.
+
+## Security-contract gate
+De bestaande functie is SECURITY DEFINER en draait uitsluitend in de server-side canonical mux. Required CI wees een nieuwe DDL-definitie zonder expliciete EXECUTE-revocation terecht af. De migratie sluit daarom directe EXECUTE via PUBLIC/anon/authenticated expliciet, verleent service_role server-side toegang en laat owner-autoriteit van de bestaande cron bestaan. De wijziging wordt niet als ongewijzigde grants geclaimd; verifieer de privileges na beschermde preview en productie-uitrol.
