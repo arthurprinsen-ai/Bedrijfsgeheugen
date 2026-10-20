@@ -29,3 +29,9 @@ test('fail closed on schedule/command drift and support idempotent readback', ()
   assert.match(sql, /IF v_schedule = r\.old_schedule THEN/);
   assert.match(sql, /P0_4215_OWNER_ABSENT_PREVIEW/);
 });
+
+test('legacy 15-minute preview snapshot is explicitly preserved rather than silently changing its frequency', () => {
+  assert.match(sql, /v_schedule='7,22,37,52 \* \* \* \*'/);
+  assert.match(sql, /P0_4215_LEGACY_PREVIEW_15M_OWNER_PRESERVED/);
+  assert.match(sql, /CONTINUE;/);
+});
