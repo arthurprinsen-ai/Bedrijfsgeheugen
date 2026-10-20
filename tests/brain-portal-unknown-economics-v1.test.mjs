@@ -20,6 +20,14 @@ test('missing Brain monetary source remains unknown throughout portal and HTML',
  assert.doesNotMatch(html,/€\s*0/);
 });
 
+test('false, whitespace and arrays cannot be mistaken for measured financial zero',()=>{
+ for(const value of [false,true,'   ',[],{},'not a number']){
+  const runtime=mapRuntimeProjection({decisionEconomics:{expectedValue:value,realizedValue:0}});
+  assert.equal(runtime.economics.expectedValue,null);
+  assert.equal(selectValueLeakage(runtime),null);
+ }
+});
+
 test('explicit 0 is measurable but invalid and missing source data stay null',()=>{
  const runtime=mapRuntimeProjection({
   decisionEconomics:{expectedValue:'0',realizedValue:0,actualCost:'',realizedProfit:null},
