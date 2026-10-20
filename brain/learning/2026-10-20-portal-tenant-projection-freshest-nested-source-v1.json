@@ -24,5 +24,12 @@
   ],
   "production_verified": false,
   "learned_at": "2026-10-20",
-  "live_state": "CANDIDATE_NOT_VERIFIED"
+  "live_state": "CANDIDATE_NOT_VERIFIED",
+  "compiler": {
+    "failure_class": "STALE_PORTAL_SOURCE_OVERWRITE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
