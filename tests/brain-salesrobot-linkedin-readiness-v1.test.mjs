@@ -91,3 +91,44 @@ test('Composio v3.1 transport includes exact user_id on read-only probe and any 
  assert.match(source,/signal:AbortSignal.timeout\(18000\)/);
  assert.doesNotMatch(source,/composioExecuteArgs\(apiKey,connectedAccountId,'SALESROBOT_/);
 });
+
+test('direct LinkedIn DM requires independently authorized CRM identity',()=>{
+ assert.match(source,/async function approvedLinkedinRecipient\(db:any,action:any\)/);
+ assert.match(source,/authority\.human_approved===true/);
+ assert.match(source,/authority\.do_not_contact!==true/);
+ assert.match(source,/LINKEDIN_RECIPIENT_CRM_APPROVAL_NOT_PROVEN/);
+ assert.ok(source.indexOf("if(!await approvedLinkedinRecipient(db,action))")<
+   source.indexOf("'SALESROBOT_SEND_MESSAGE',args"));
+});
+
+test('provider acknowledgement is not a delivered DM; awaiting inbox receipt is fail-closed',()=>{
+ const start=source.indexOf('let tentativeAck:any=null;');
+ const end=source.indexOf('}catch(dmError:any){',start);
+ const sending=source.slice(start,end);
+ assert.ok(start>0&&end>start);
+ assert.match(sending,/provider_ack_received:true/);
+ assert.match(sending,/provider_ack_verified:false/);
+ assert.match(sending,/provider_readback_verified:false/);
+ assert.match(sending,/needs_readback:true/);
+ assert.match(sending,/republish_forbidden:true/);
+ assert.match(sending,/status:'waiting'/);
+ assert.doesNotMatch(sending,/status:'done'/);
+ assert.doesNotMatch(sending,/status:'executed'/);
+});
+
+test('verified inbox event is the only allowed SalesRobot done transition',()=>{
+ const start=source.indexOf('async function reconcileVerifiedSalesRobotReceipts(db:any)');
+ const end=source.indexOf('async function generateComment(',start);
+ const readback=source.slice(start,end);
+ assert.ok(start>0&&end>start);
+ assert.match(readback,/salesrobot_linkedin_dm_sent/);
+ assert.match(readback,/provider_inbox_readback!==true/);
+ assert.match(readback,/inbox_message_sent_by_me!==true/);
+ assert.match(readback,/provider_prospect_uuid/);
+ assert.match(readback,/inbox_message_id/);
+ assert.match(readback,/powerhouse_sales_outcomes/);
+ assert.match(readback,/provider_readback_verified:true/);
+ assert.match(readback,/status:'done'/);
+ assert.match(readback,/needs_readback:false/);
+ assert.match(source,/verified_receipts_reconciled:reconciledDms.length/);
+});
