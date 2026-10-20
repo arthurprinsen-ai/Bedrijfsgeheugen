@@ -1,0 +1,37 @@
+{
+  "fingerprint": "p0-4215-commercial-maturity-duplicate-v4-expansion-20261020",
+  "date": "2026-10-20",
+  "obligation": "p0-4215-revenue-evidence-forecast-join-20261020",
+  "root_cause": "Existing commercial NBA v5 snapshot plan expands commercial-next-best-action v4 twice, including inside maturity v1 only to get forecast_id. Snapshot refresh 618 runs, mean 88124.8 ms. Nonexecuting EXPLAIN baseline ~153M cost/801 nodes, candidate direct forecast mapping ~97M cost/585 nodes.",
+  "intervention": "Replace only maturity-v1 forecast_id lookup through entire v4 with equivalent lateral forecast ranking from buying_window_v2 against keyed powerhouse_opportunities; preserve all columns, NULL gates, evidence counters, calibrated truth and time schedule. Guard source and unique key, bound DDL locks.",
+  "prevention": "No duplicate expensive full commercial NBA view expansion only to fetch one forecast_id. Never claim predicted financial value or true causality from incomplete evidence.",
+  "compiler": {
+    "failure_class": "P0_COMMERCIAL_NBA_NESTED_VIEW_EXPLOSION",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "MATURITY_FORECAST_NO_FULL_NBA_REEXPANSION",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "sql_plan": "nonexecuting optimized 96.97M vs 153.38M cost, 585 vs 801 nodes",
+    "requires": "provider-owned Supabase preview, pre/post row/value parity and two-tenant acceptance",
+    "required_ci": "pending",
+    "production": "not deployed"
+  },
+  "status": "CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+  ]
+}
