@@ -1,6 +1,6 @@
 const jsonRequest=async(url,{method='GET',body,fetchFn=globalThis.fetch,authHeaders=null}={})=>{
   const identity=typeof authHeaders==='function'?await authHeaders():{};
-  if(authHeaders&&(typeof identity?.authorization!=='string'||!/^Bearer\\s+\\S+$/i.test(identity.authorization))){
+  if(authHeaders&&(typeof identity?.authorization!=='string'||!/^Bearer\s+\S+$/i.test(identity.authorization))){
     const error=new Error('AUTH_TOKEN_UNAVAILABLE');error.code='AUTH_TOKEN_UNAVAILABLE';throw error;
   }
   const headers={...(identity||{}),...(body===undefined?{}:{'content-type':'application/json'})};
