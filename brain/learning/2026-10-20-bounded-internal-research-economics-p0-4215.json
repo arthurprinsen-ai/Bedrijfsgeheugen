@@ -1,0 +1,39 @@
+{
+  "fingerprint": "portal|economics-internal-research|bounded-reconciliation|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|bounded-internal-research-economics|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "UNBOUNDED_ECONOMICS_ANTI_JOIN_BACKFILL_TIMEOUT",
+    "scope": "CANONICAL_BRAIN_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Live pg_cron 57014 statement timeout context identified the unbounded FOR over SELECT in powerhouse_backfill_internal_research_economics_v1; the current predicate scans done internal research actions with an anti-join on economics each canonical scheduler pass. Catalog readback showed roughly 7003 estimated sales actions and no exact partial candidate index. This is a specific contributor, not a confirmed complete root cause of portal HTTP 504.",
+  "prevention_rule": "Bound each existing canonical scheduler economics backfill invocation to 50 eligible rows, preserve all original predicates/unique economics idempotency, retain unobserved costs as UNKNOWN, add a protected partial candidate index, never drop unprocessed historical rows or run a parallel cron. Alert on backlog/timeout recurrence and maintain provider/tenant evidence gates.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-internal-research-economics-bounded.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-internal-research-economics-bounded.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-internal-research-economics-bounded.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "source_function_pg_get_functiondef": "VERIFIED_2026-10-20",
+    "postgres_timeout_context": "VERIFIED_2026-10-20",
+    "index_schema_inventory": "VERIFIED_2026-10-20",
+    "ci": "PENDING",
+    "production_migration": "PENDING",
+    "runtime_backlog": "PENDING",
+    "signed_portal_http_200": "PENDING",
+    "two_tenant": "PENDING"
+  },
+  "production_verified": false
+}
