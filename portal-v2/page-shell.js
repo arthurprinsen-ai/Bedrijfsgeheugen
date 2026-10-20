@@ -3,6 +3,7 @@ import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 import { nativePageContent } from './native-pages.js';
 import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
+import { mountOwnerOperatingSystem } from './owner-operating-system.js';
 import { mountChangeWizard } from './modules/change-wizard.js';
 import { loadRuntimeEvidence } from './runtime-evidence.js';
 import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
@@ -23,13 +24,17 @@ import { mountCustomerAgentActivity } from './modules/customer-agent-activity.js
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 import { mountContextualForesight } from './foresight-context-ui.js';
+import {mountWinstnavigator} from './winstnavigator.js';
 import { mountNeedDiscovery } from './modules/need-discovery.js';
 import { mountSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
+import { mountAiModelChoice } from './modules/ai-model-choice.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
+  ondernemerscockpit:['Mijn bedrijfsbesturing','Jouw bedrijf, kansen, acties, adviseur en instellingen in één omgeving — met bronbewijs en heldere bevoegdheden.'],
   profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
   'sales-intelligence':['Sales Intelligence & behoefte','Zie wat de klant aantoonbaar wil bereiken, welk probleem en effect zijn bevestigd, welke vraag nu volgt en wanneer een aanbod past.'],
+  'ai-modelkeuze':['Kies jouw AI-modellen','Alle 110 modellen vergelijken en als gewenste AI-route vastleggen, met data-soevereiniteit, leveranciersbewijs en EU AI Act-toepassingscontrole.'],
   'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
   'trust-center':['Security Trust Center','Bekijk aantoonbaar hoe data, toegang, leveranciers, securitycontrols en relevante normen zijn ingericht.'],
   'data-ai-passport':['Data & AI Sovereignty','Zie waar data wordt opgeslagen en verwerkt, welke AI-routes actief zijn en welke soevereiniteitsbeperkingen gelden.'],
@@ -94,7 +99,7 @@ const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gege
 const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','omgevingsradar','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek','compliance-governance']);
-export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','compliance-governance','compliance-command-center','eu-ai-act-audit']);
+export const PROTECTED_TRUST_PAGES=Object.freeze(['data-ai-passport','trust-center','ai-modelkeuze','compliance-governance','compliance-command-center','eu-ai-act-audit']);
 const protectedTrustSet=new Set(PROTECTED_TRUST_PAGES);
 const portalContext={domainState:null,stateClient:null};
 
@@ -141,7 +146,9 @@ export function pagePresentation(pageId, state) {
     kind:'native-v2',
     evidenceLabel: pageId==='csrd-impact'
       ? 'Impactdata + evidence in één traceerbare cockpit'
-      : BRAIN_PAGES.has(pageId)
+      : pageId==='ai-modelkeuze'
+         ? 'Klantvoorkeuren · geen provideractivatie of compliance-certificering'
+         : BRAIN_PAGES.has(pageId)
         ? 'Native Portal V2 · status alleen met runtime-evidence'
         : content.derived
           ? 'Native Portal V2 · cijfers berekend op je eigen gegevens'
@@ -310,7 +317,10 @@ export function openPortalPage(pageId){
   const native=root.querySelector('#pvNative');
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
-    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot());
+    const snapshot=impactSnapshotFromPortalState(portalStateSnapshot(),{
+      // A signed-in customer with empty/failed readback must never inherit demo scores.
+      demo:portalContext.stateClient?.isDemo?.()===true||!portalContext.stateClient?.currentUser?.()
+    });
     const renderer=renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
     // Same tenant-scoped Identity route as the canonical sovereignty panel.
     // Never use a global/canonical admin scope on customer pages.
@@ -332,11 +342,13 @@ export function openPortalPage(pageId){
       }).catch(()=>{}); // Never claim that a missing provider/readback proves compliance.
     }
   }
+  else if(pageId==='ondernemerscockpit'){native.innerHTML='';mountOwnerOperatingSystem(native,{state:portalStateSnapshot(),stateClient:portalContext.stateClient});}
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
-  else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
+  else if(pageId==='ai-modelkeuze'){native.innerHTML='';void mountAiModelChoice(native,{domainState:portalContext.domainState,stateClient:portalContext.stateClient,openPage:openPortalPage});}
+   else if(pageId==='agentstatus'){native.innerHTML='';mountCustomerAgentActivity(native,{stateClient:portalContext.stateClient});}
   else if(pageId==='trust-center'||pageId==='data-ai-passport'){native.innerHTML='';mountSecurityTrustWorkspace(native,{pageId,stateClient:portalContext.stateClient,openPage:openPortalPage});}
   else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
@@ -387,6 +399,8 @@ function ensureStylesheetLast(href){
 export function enhancePortalShell(){
   ensureShell();
   ensureStylesheet('./interaction.css');
+  ensureStylesheet('./winstnavigator.css');
+  mountWinstnavigator({domainState:portalContext.domainState,stateClient:portalContext.stateClient});
   ensureStylesheet('./workspace.css');
   ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
@@ -426,6 +440,20 @@ export function enhancePortalShell(){
       // Tijdens typen blijft het bronformulier stabiel. Andere open afgeleide
       // pagina's mogen direct opnieuw renderen, net als teken() in het oude portaal.
       if(current!==impact.sourcePage)requestAnimationFrame(()=>openPortalPage(current));
+    });
+    // A fresh authenticated server projection invalidates open derived pages.
+    // Do not replace active form controls while the customer is editing them.
+    globalThis.addEventListener?.('bg:portal-server-refreshed',()=>{
+      const root=document.getElementById('portalView');
+      if(!root?.classList.contains('open'))return;
+      if(portalContext.domainState?.status?.()==='dirty'||portalContext.domainState?.status?.()==='saving')return;
+      const active=document.activeElement;
+      if(active&&root.contains(active)&&active.matches?.('input, textarea, select, [contenteditable="true"]'))return;
+      const page=root.dataset.pageId;
+      if(page)requestAnimationFrame(()=>{
+        if(root.classList.contains('open')&&root.dataset.pageId===page
+           &&!['dirty','saving'].includes(portalContext.domainState?.status?.()))openPortalPage(page);
+      });
     });
     globalThis.addEventListener?.('bg:portal-brain-synced',event=>{
       const impact=event.detail?.impacts?.at?.(-1)||event.detail?.impact;
