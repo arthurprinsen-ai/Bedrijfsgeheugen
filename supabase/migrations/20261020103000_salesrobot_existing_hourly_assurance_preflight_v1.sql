@@ -38,7 +38,7 @@ declare
 begin
   select jobid,command into v_job,v_command from cron.job
   where jobname='powerhouse-autonomous-outreach-assurance-hourly-v1' and active=true
-  for update;
+  ;
   if v_job is null then
     raise exception 'CANONICAL_OUTREACH_ASSURANCE_CRON_MISSING';
   end if;
