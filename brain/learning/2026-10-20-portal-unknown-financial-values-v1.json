@@ -17,14 +17,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/company-decisions.test.mjs",
-      "portal-v2/tests/company-cockpit-ui.test.mjs"
+      "tests/brain-portal-unknown-economics-v1.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/company-decisions.test.mjs"
+      "tests/brain-portal-unknown-economics-v1.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/company-cockpit-ui.test.mjs"
+      "tests/brain-portal-unknown-economics-v1.test.mjs"
     ]
   },
   "test_evidence": {
@@ -34,6 +33,7 @@
       "portal-v2/company-decisions.js"
     ],
     "regression": [
+      "tests/brain-portal-unknown-economics-v1.test.mjs",
       "portal-v2/tests/company-decisions.test.mjs",
       "portal-v2/tests/company-cockpit-ui.test.mjs"
     ],
