@@ -136,3 +136,11 @@ entrypoint = "./functions/powerhouse-instagram-temporal-verifier/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-social-metrics-sync/index.ts"
+
+# Existing revenue learning store: preserve its current non-JWT invocation
+# because its entrypoint requires a validated x-bg-service-token SHA-256 hash.
+# Register it in canonical preview and release deployment for source parity.
+[functions.revenue-learning-store]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/revenue-learning-store/index.ts"
