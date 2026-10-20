@@ -8,7 +8,7 @@ const PREBUILT_MANIFEST = '.bg-prebuilt-manifest.json';
 const HEX40 = /^[0-9a-f]{40}$/i;
 
 const phases = Object.freeze([
-  ['portal-explanation-inventory','scripts/brain/portal-explanation-inventory.mjs','--write'],
+  ['portal-explanation-inventory','scripts/brain/portal-explanation-inventory.mjs','--write','--stamp-assets'],
   ['pricing-capture','tools/site-shell/pricing-build-integrity.mjs','capture'],
   ['bedrijfslek-capture','tools/site-shell/bedrijfslek-build-integrity.mjs','capture'],
   ['powerhouse-auth','tools/bouw-powerhouse-auth.mjs'],
