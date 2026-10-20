@@ -80,3 +80,14 @@ test('provider readiness is recorded before AI/composer failures; errors propaga
  assert.match(source,/const sr=srPreflight/);
  assert.doesNotMatch(source,/const sr=await salesRobotContext\(db\)/);
 });
+
+test('Composio v3.1 transport includes exact user_id on read-only probe and any approved DM',()=>{
+ assert.match(source,/async function composioExecuteArgs\(apiKey:string,connectedAccountId:string,userId:string/);
+ assert.match(source,/if\(!clean\(userId\)\|\|!clean\(connectedAccountId\)\)throw new Error\('SALESROBOT_COMPOSIO_IDENTITY_MISSING'\)/);
+ assert.match(source,/connected_account_id:connectedAccountId,user_id:userId,version:'latest',arguments:args/);
+ assert.match(source,/const userId=clean\(connected\?\.user_id\)/);
+ assert.match(source,/const probe=await composioExecuteArgs\(apiKey,connectedAccountId,userId,'SALESROBOT_LIST_LINKEDIN_ACCOUNTS'/);
+ assert.match(source,/const sent=await composioExecuteArgs\(sr.apiKey,sr.connectedAccountId,sr.userId,'SALESROBOT_SEND_MESSAGE'/);
+ assert.match(source,/signal:AbortSignal.timeout\(18000\)/);
+ assert.doesNotMatch(source,/composioExecuteArgs\(apiKey,connectedAccountId,'SALESROBOT_/);
+});
