@@ -36,6 +36,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-tenant-source-freshness-v1',
+      fingerprint:'portal|tenant-projection|nested-freshest-source-readback|v1',
+      label:'Portal V2 merges nested tenant inputs by verified source revision without losing unrelated fields',
+      owner:'ONE BRAIN / existing Supabase EU portal-state projection',
+      authority:'authenticated tenant-scoped BusinessInput ACK, original canonical projection timestamps',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['legacy-migration sourceUpdatedAt','canonical-brain sourceUpdatedAt','same-tenant portal fields']),
+      outputs:Object.freeze(['lossless tenant portal read model','cross-page field consistency','tenant-mismatch rejection']),
+      evidence:'tests/brain-portal-source-truth-20261019.test.mjs',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215',
+      learning:'brain/learning/2026-10-20-portal-tenant-projection-freshest-nested-source-v1.json'
+    }),
+    Object.freeze({
       id:'portal-future-lens-source-truth-v1',
       fingerprint:'portal|foresight|no-dom-derived-confidence-or-forecast|v1',
       label:'Portal Future Lens uses evidence-backed tenant forecasts only',
