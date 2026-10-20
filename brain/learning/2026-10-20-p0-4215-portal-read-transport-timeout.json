@@ -17,6 +17,12 @@
     "historical_replay": [
       "tests/brain-portal-eu-bounded-reads.test.mjs",
       "tests/brain-p0-4215-portal-timeboxed-transport.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-portal-timeboxed-transport.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-portal-timeboxed-transport.test.mjs"
     ]
   },
   "test_evidence": {
