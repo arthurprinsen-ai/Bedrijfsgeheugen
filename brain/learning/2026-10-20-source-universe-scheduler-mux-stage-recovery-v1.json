@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|source-universe|scheduler-v3-dropped-refresh-stage|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "source-universe-existing-mux-recovery-20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "DROPPED_CANONICAL_SCHEDULER_STAGE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original 20261007212000_source_universe_impact_engine_v1 migration wired external Source Universe refresh to UTC minute 54 of the existing v3 runtime scheduler mux. A later CREATE OR REPLACE of mux_v3 kept Infinity but dropped that stage. Existing pg_cron job 171 kept running and reporting healthy while the canonical snapshot remained frozen on 2026-10-19 and external source observations were fresh on 2026-10-20.",
+  "prevention_rule": "Do not introduce a second scheduler. Existing mux v3 must delegate v2, run Source Universe at minute 54 through bounded powerhouse_runtime_mux_task_v1, append source-stage task result to canonical task receipts, and conjunct its ok flag with aggregate healthy. Every replacement of the mux must preserve all pre-existing stages; automated regressions verify both Source Universe and Infinity stage contracts.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-source-universe-operational-truth-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "production_reproduction": {
+      "snapshot_refreshed_at": "2026-10-19T13:10:52.918714Z",
+      "external_signal_last_seen": "2026-10-20T06:11:22.689Z",
+      "active_mux_job_id": 171,
+      "missing_from_live_mux_v3": true
+    },
+    "bounded_manual_replay": {
+      "ran_at": "2026-10-20T06:44:39.818484Z",
+      "result": "SUCCESS",
+      "observed_signals": 169,
+      "action_candidates": 104,
+      "known_monetary_claims": "NULL_WHEN_NO_EVIDENCE"
+    },
+    "production_scheduler_post_merge_readback": "PENDING",
+    "authoritative_learning": "CANDIDATE_UNTIL_POSTMERGE_CRON_AND_PRODUCTION_CHECKS"
+  },
+  "production_verified": false
+}
