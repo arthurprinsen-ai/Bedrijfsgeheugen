@@ -14,3 +14,9 @@ test('original protected migration identity is retained byte-for-byte', () => {
   const sql = readFileSync(new URL('../supabase/migrations/20261020124500_p0_4215_canonical_cron_pressure_dephase.sql', import.meta.url));
   assert.equal(createHash('sha256').update(sql).digest('hex'), expected);
 });
+test('newly observed contact function version and protected original preserve exact provider bytes', () => {
+  for (const version of ['20261020112219','20261020140000']) {
+    const sql = readFileSync(new URL(`../supabase/migrations/${version}_contact_authority_preselect_function_only_p0_4198.sql`, import.meta.url));
+    assert.equal(createHash('sha256').update(sql).digest('hex'), '467ef79cfbea084fcdc5954d3a6d9b2c8682d9f9cdbc6e79abc3e2ff06ab1346');
+  }
+});
