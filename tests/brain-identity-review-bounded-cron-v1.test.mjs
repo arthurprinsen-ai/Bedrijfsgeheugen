@@ -39,3 +39,10 @@ test('authority review size, not only connection pulse, is actually bounded to 2
  assert.match(migration,/or strpos\(v_new,'::date,200\);'\)=0/);
  assert.match(migration,/v_bound_pulse/);
 });
+
+test('preview without runtime-provisioned cron owner is safe no-op, not duplicate scheduling',()=>{
+ assert.match(migration,/CANONICAL_IDENTITY_GRAPH_JOB_MISSING_NO_NEW_JOB/);
+ assert.match(migration,/if v_id is null then[\s\S]*?return;/);
+ assert.match(migration,/if v_schedule not in/);
+ assert.doesNotMatch(migration,/cron\.schedule\(/);
+});

@@ -4,3 +4,5 @@ Independent production evidence: 2026-10-20 postgres cron startup/statement/lock
 Source version: migration 20261020114500_identity_review_bounded_cron_v1.sql, deterministic regression, Brain learning, system map and skill. Full external sends remain P0 pending true provider+consent+receipt.
 
 - Correction from independent SQL readback: pre-migration authority call was **500**, not 200, although connection pulse was 200 and loop count was 1; therefore previous claimed 400 total was incorrect. The migration and static regression now replace/verify `::date,500);` -> `::date,200);` and `v_date,500);` -> `v_date,200);`. Actual 400 ceiling is a target pending new production readback.
+
+- Native preview branch lacks the separately provisioned production Cron job 138; first preview failed before DB migration. Source updated to no-op with NOTICE *only* if owner absent, never create scheduler; production existing-owner exact readback remains mandatory.

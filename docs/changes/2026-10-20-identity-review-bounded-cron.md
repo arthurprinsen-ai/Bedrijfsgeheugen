@@ -16,3 +16,6 @@ Protected CI/CodeQL and Supabase Preview; apply migration only once, independent
 
 ## Follow-up direct production observation
 The initial live hotfix decreased the connection-pulse argument to 200 and authority loops to one, **but did not decrease the actual authority function argument**: the live command still contained `::date,500);`. A fresh targeted SQL readback proved this. Before this migration, the actual maximum was therefore 200+500=700 operations per run, not the previously stated 400. The final migration explicitly rewrites and asserts `::date,200);` and `v_date,200);` independently. Never claim that the bound is live until those two separate production readbacks pass.
+
+## Native Supabase Preview absent runtime job
+The first preview failed with `CANONICAL_IDENTITY_GRAPH_JOB_MISSING` because the ephemeral preview has migrations but **does not provision production-only cron job 138**. The migration intentionally no-ops if no owner exists, instead of creating a duplicate scheduler. On production, the owner exists and its exact command/schedule must be independently verified; drift on an existing owner still raises and aborts. This is not a waived production test.
