@@ -226,6 +226,21 @@ fetchPortalPlan().then(subscription=>{
 const portalStateClient=createPortalStateClient();
 const scanClaimBridge=createScanClaimBridge({authHeaders:()=>portalStateClient.authHeaders()});
 const portalDomainState=createPortalDomainState(portalStateClient);
+// The authenticated portal uses the same canonical read API for periodic
+// revalidation. No new scheduler, browser store or duplicate source of truth.
+const PORTAL_REVALIDATION_INTERVAL_MS=15*60*1000;
+let revalidationRequestedAt=0;
+let pendingRevalidation=null;
+function revalidateVisibleCustomer(){
+ if(document.visibilityState==='hidden'||portalStateClient.isDemo()
+    ||!portalDomainState.initialized?.()||!portalStateClient.currentUser?.())return;
+ if(pendingRevalidation)return pendingRevalidation;
+ if(Date.now()-revalidationRequestedAt<60*1000)return;
+ revalidationRequestedAt=Date.now();
+ pendingRevalidation=portalDomainState.refresh().catch(()=>null).finally(()=>{pendingRevalidation=null});
+ return pendingRevalidation;
+}
+
 const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
 configurePortalShell({domainState:portalDomainState});
