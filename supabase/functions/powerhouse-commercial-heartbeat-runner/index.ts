@@ -223,17 +223,44 @@ async function materializeCommercialIntent(){
 }
 // Assess existing contact facts on every canonical Heartbeat tick. This never sends.
 // Independent transaction: an authority-review error cannot block other channels.
+// The original identity/contact owner (#138) remains active and is responsible
+// for the large daily queue. This supplemental Heartbeat review is bounded,
+// idempotent by 15-minute UTC slot, and never sends external messages.
+// Persist a slot claim BEFORE the expensive query so a timeout cannot cause a
+// retry storm on every subsequent Heartbeat tick in the same slot.
 async function reviewContactAuthority(){
+  let slotKey="";
   try{
+    const claim=await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '3000ms'");
+      await tx.unsafe("set local lock_timeout = '1000ms'");
+      const clock=await tx.unsafe(
+        "select to_char(date_trunc('hour',now() at time zone 'UTC') + floor(extract(minute from now())/15)::int * interval '15 minutes','YYYYMMDDHH24MI') as slot"
+      );
+      const key="contact-authority-heartbeat:"+String(clock[0]?.slot||"");
+      if(!clock[0]?.slot)throw new Error("CONTACT_AUTHORITY_SLOT_CLOCK_UNAVAILABLE");
+      const rows=await tx.unsafe(
+        "insert into public.powerhouse_runtime_events(dedupe_key,event_type,source,subject_key,occurred_at,state,data_quality,evidence,context) "+
+        "values($1,'contact_authority_heartbeat_review','powerhouse-commercial-heartbeat-runner','growth-revenue-os',now(),'observed','OBSERVED',"+
+        "jsonb_build_object('batch_cap',200,'external_messages_sent',0,'authority','existing_identity_graph'),"+
+        "jsonb_build_object('canonical_cron_owner','powerhouse-identity-graph-v1','independent_sender',false)) "+
+        "on conflict(dedupe_key) do nothing returning event_id",[key]
+      );
+      return {key,acquired:rows.length>0};
+    });
+    slotKey=claim.key;
+    if(!claim.acquired)return {state:"REVIEW_SLOT_ALREADY_CLAIMED",external_messages_sent:0};
     return await db().begin(async tx=>{
-      await tx.unsafe("set local statement_timeout = '16000ms'");
+      await tx.unsafe("set local statement_timeout = '12000ms'");
       await tx.unsafe("set local lock_timeout = '2000ms'");
-      const rows=await tx.unsafe("select public.powerhouse_contact_authority_review_batch_v1((now() at time zone 'Europe/Amsterdam')::date,500) as result");
-      return rows[0]?.result||{state:"NO_REVIEW_RECEIPT"};
+      const rows=await tx.unsafe(
+        "select public.powerhouse_contact_authority_review_batch_v1((now() at time zone 'Europe/Amsterdam')::date,200) as result"
+      );
+      return rows[0]?.result||{state:"NO_REVIEW_RECEIPT",external_messages_sent:0};
     });
   }catch(error){
     console.error("COMMERCIAL_CONTACT_AUTHORITY_REVIEW_FAILED",error instanceof Error?error.message:String(error));
-    return {state:"AUTHORITY_REVIEW_RETRYABLE_ERROR",external_messages_sent:0};
+    return {state:"AUTHORITY_REVIEW_RETRYABLE_ERROR",slot_reserved:Boolean(slotKey),external_messages_sent:0};
   }
 }
 
