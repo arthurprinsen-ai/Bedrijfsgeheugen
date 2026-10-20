@@ -1,15 +1,15 @@
-# 2026-10-20 — authenticated portal 502 operator-only classification
+# Development ledger — portal authenticated gateway diagnosis
 
+Date: 2026-10-20
 Parent-P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215
 Obligation-ID: portal|upstream-failure-classification|20261020
 Delivery-Lane: portal
 Candidate-Type: recovery
 Scope-Budget: 7
-Base-SHA: 7664ef5251ad7974574a1097e93dd747588f38f7
-Status: SOURCE_CANDIDATE / NOT_LIVE
+Terminal-State: CANDIDATE / NOT_LIVE
 
-Production evidence: authenticated checks in run #39430198530 attempt 3 returned 502 for 30 trials, even after both portal indexes and a healthy short DB window. Generic error handling hides whether failure is provider response, network fetch or tenant shape. Netlify target project URL and service-token presence were checked without exposing the token.
+Production incident: the official immutable Netlify deployment generated one synthetic Identity user's authenticated portal request and persisted a failed HTTP 502 proof. GitHub then read that *same* proof 30 times; do not misreport 30 separate failing customer calls. The existing Supabase Edge v221 service-token parity fix is deployed but is not on its own a successful authenticated Netlify portal proof.
 
-Change: bounded operator-only category, fail-closed response-shape; preserve status codes, tenant auth, cache no-store, scheduler and original route. Existing tests extended; no new database schema, second source, social sender or preview provisioned.
+Scoped change: only existing portal gateway/store code, two targeted tests, Brain learning, human change note and this ledger. Preserve tenant scope, service token, error-cache policy and latency limit. Propagate only known Edge read-stage enum identifiers to server-only logging; no raw message, token or tenant value. No new SQL, privileged clients, provider recipients or job disablement.
 
-Next: Required CI, CodeQL and authorized preview, protected merge, exact Netlify production verification, authenticated tenant1/tenant2 true source data and outcome. No fabricated green.
+Required before terminal: protected Required/CodeQL, build preview, immutable production deploy evidence, authenticated HTTP 200 with payload/tenant verifications and two distinct customer tenant input→Brain/Heartbeat→dashboard readbacks. No synthetic green.
