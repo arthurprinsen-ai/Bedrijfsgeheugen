@@ -6,9 +6,11 @@ test('materialized bounded SKIP LOCKED queue runs before CRM join',()=>{
  const picked=source.indexOf('with picked as materialized (');
  const limit=source.indexOf('limit greatest(1,least(coalesce(p_limit,500),500))',picked);
  const locked=source.indexOf('for update of s skip locked',picked);
- const joined=source.indexOf('join public.bg_connecties c',picked);
- assert.ok(picked>=0&&limit>picked&&locked>limit&&joined>locked);
- assert.match(source,/from picked s/);
+ const join=source.indexOf('from picked s');
+ const joined=source.indexOf('join public.bg_connecties c',join);
+ assert.ok(picked>=0&&limit>picked&&locked>limit);
+ assert.ok(join>=0&&joined>join);
+ assert.match(source,/v_new:=replace\(v_new,v_before,v_after\)/);
 });
 test('canonical recipient authorization and suppression guards survive',()=>{
  assert.match(source,/AUTHORITY_REVIEW_REQUIRED/);
