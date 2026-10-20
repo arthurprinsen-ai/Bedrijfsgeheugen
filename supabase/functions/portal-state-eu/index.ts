@@ -6,6 +6,9 @@ import { boundedReads } from './bounded-reads.js';
 import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
+// Accept the approved production Netlify gateway token by hash, never by plaintext.
+// Preserve the original hash until all dependent internal callers are proven migrated.
+const NETLIFY_PORTAL_TOKEN_HASH='95827ae5b67419121961a7e1e144bb0702b8568997c531df00b8505e8338b63e';
 const ALLOWED_LAYERS=new Set(['legacy-migration','canonical-brain']);
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const AI_PROFILE_OPTIONS:Record<string,string[]>={
@@ -137,7 +140,8 @@ function readRows(label:string,query:any){
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
   const token=req.headers.get('x-bg-service-token')||'';
-  if(await sha256(token)!==TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
+  const serviceTokenHash=await sha256(token);
+  if(serviceTokenHash!==TOKEN_HASH&&serviceTokenHash!==NETLIFY_PORTAL_TOKEN_HASH)return json({error:'UNAUTHORIZED'},401);
   let body:any; try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||'');
   const tenantId=String(body?.tenantId||'').trim();

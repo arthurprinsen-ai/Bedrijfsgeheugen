@@ -20,3 +20,19 @@ test('upstream 401, 403, 502 and 503 response bodies cannot be cached as success
  assert.match(route,/if\(!user\?\.id\)/);
  assert.match(route,/resolveIdentityTenant/);
 });
+
+test('operator gateway failure category is safe, finite and does not expose customer identity or upstream bodies',()=>{
+ const route=get('netlify/functions/portal-ondernemersdata.mjs');
+ const store=get('netlify/functions/_portal-supabase-store.mjs');
+ for(const code of ['CONFIG_MISSING','UPSTREAM_DEADLINE','TENANT_SCOPE_MISMATCH','UPSTREAM_RESPONSE_SHAPE','UPSTREAM_NETWORK_FETCH','UPSTREAM_UNKNOWN_FAILURE','UPSTREAM_HTTP_'])assert.ok(route.includes(code),code);
+ assert.match(route,/PORTAL_ENTREPRENEUR_GATEWAY_FAILED category=/);
+ assert.doesNotMatch(route,/console\.error\([^\n]*(?:tenantId|token|message|JSON\.stringify)/);
+ assert.match(store,/response shape invalid/);
+ assert.match(store,/safeStages=new Set/);
+ assert.match(store,/ENTREPRENEUR_INTELLIGENCE_READ_FAILED/);
+ assert.match(route,/const upstreamStage=upstreamMatch/);
+ assert.match(route,/_STAGE_/);
+ assert.doesNotMatch(route,/console\.error\([^\n]*(?:tenantId|token|message|JSON\.stringify)/);
+ assert.match(route,/ENTREPRENEUR_INTELLIGENCE_GATEWAY_FAILED/);
+ assert.match(route,/status>=400\?'no-store'/);
+});

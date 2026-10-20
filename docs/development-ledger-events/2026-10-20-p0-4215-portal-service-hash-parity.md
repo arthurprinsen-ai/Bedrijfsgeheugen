@@ -1,0 +1,2 @@
+# Recovery ledger 2026-10-20 — portal service auth
+P0 #4215. Verified that Netlify production EU project URL matches and service token has the right context/scope, but its SHA-256 does not match the only Edge v220 service token hash. GitHub candidate pins the approved existing credential by SHA-256, preserves previously authorized clients and never writes plaintext. No production publication or source/tenant proof until GitHub checks and deployed readback succeed.
