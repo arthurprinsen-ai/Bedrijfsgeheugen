@@ -137,3 +137,6 @@ test('activation center shows a real tenant-scoped server checklist and never re
  assert.match(api,/evaluateTenantAiActivation|handleTenantAiActivationStatus/);
  assert.doesNotMatch(api,/signVerifiedRuntimeProof/);
 });
+
+// Keep the coupled private passport contract in the existing model-choice CI lane.
+await import('./portal-ai-passport-model-binding.test.mjs');
