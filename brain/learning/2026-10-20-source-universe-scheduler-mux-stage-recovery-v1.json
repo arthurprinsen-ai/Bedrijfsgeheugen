@@ -60,7 +60,8 @@
     "scheduled_cron_job": 171,
     "scheduled_next_slot_verified": false
   },
-  "production_verified": true,
+  "production_verified": false,
   "production_scope": "CANONICAL_SOURCE_REFRESH_CANARY_VERIFIED; SCHEDULED_NEXT_SLOT_PENDING; FULL_TENANT_LOOP_NOT_VERIFIED",
-  "incident_prevention": "Never start a manual Supabase migration while the exact GitHub integration's production migration status is still converging. Read applied migration versions and live pg_get_functiondef after convergence first; if both transports have already applied the idempotent SQL, mirror actual provider version identities in GitHub without deleting history."
+  "incident_prevention": "Never start a manual Supabase migration while the exact GitHub integration's production migration status is still converging. Read applied migration versions and live pg_get_functiondef after convergence first; if both transports have already applied the idempotent SQL, mirror actual provider version identities in GitHub without deleting history.",
+  "manual_production_canary_verified": true
 }
