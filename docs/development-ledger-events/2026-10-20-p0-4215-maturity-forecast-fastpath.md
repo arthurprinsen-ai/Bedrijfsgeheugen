@@ -1,3 +1,5 @@
 # Development ledger: revenue evidence projection P0 #4215
 
 Candidate only: direct forecast_id mapping removes duplicated v4 expansion from maturity evidence. Observed historical revenue refresh mean 88.1s, v5 planner cost 153M baseline to 97M candidate, no runtime performance claim. No direct production SQL change. Keep existing 14-stage commercial scheduler and canonical 36-slot runtime mux, consent and all evidence policy. Regressions in tests/brain-p0-4215-maturity-forecast-fastpath.test.mjs; protected preview / parity / release readback mandatory.
+
+Acceptance update (2026-10-20): live and preview schema fingerprints match across all 51 fields. Preview has zero opportunities, forecasts and business-value records: no outcome/tenant parity is established. Added fail-closed full-row, financial and tenant aggregate comparer in tests/brain-p0-4215-maturity-full-parity.mjs, plus static test discovery. This remains DRAFT/NOT DEPLOYED until populated isolated pre-migration preview and two authenticated customer readbacks both pass; no empty-preview waiver.
