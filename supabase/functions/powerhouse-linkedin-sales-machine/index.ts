@@ -10,13 +10,21 @@ async function secret(db:any,name:string){
   return clean(data);
 }
 const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
-async function composioExecuteArgs(apiKey:string,connectedAccountId:string,toolSlug:string,args:Record<string,unknown>){
+async function composioExecuteArgs(apiKey:string,connectedAccountId:string,userId:string,toolSlug:string,args:Record<string,unknown>){
+  // Composio v3.1 must bind both connected_account_id and its exact user_id.
+  // Without user_id the live SalesRobot read-only tool returned HTTP 400 even for ACTIVE connections.
+  if(!clean(userId)||!clean(connectedAccountId))throw new Error('SALESROBOT_COMPOSIO_IDENTITY_MISSING');
   const response=await fetch(COMPOSIO_BASE+'/tools/execute/'+toolSlug,{
     method:'POST',headers:{'content-type':'application/json','x-api-key':apiKey},
-    body:JSON.stringify({connected_account_id:connectedAccountId,version:'latest',arguments:args})
+    body:JSON.stringify({connected_account_id:connectedAccountId,user_id:userId,version:'latest',arguments:args}),
+    signal:AbortSignal.timeout(18000)
   });
   const body:any=await response.json().catch(()=>({}));
-  if(!response.ok||body?.successful!==true)throw new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+clean(body?.error||body?.message||body?.data?.message||JSON.stringify(body)).slice(0,240));
+  if(!response.ok||body?.successful!==true){
+    const err=body?.error||body?.message||body?.data?.message||body;
+    const detail=typeof err==='string'?err:JSON.stringify(err);
+    throw new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+clean(detail).slice(0,240));
+  }
   return body;
 }
 function salesRobotExecutionBlock(account:any):string|null{
@@ -39,14 +47,16 @@ async function salesRobotContext(db:any){
   active.sort((a:any,b:any)=>Number(clean(b?.alias)==='powerhouse-linkedin-dm-direct')-Number(clean(a?.alias)==='powerhouse-linkedin-dm-direct'));
   const connected=active[0]; if(!connected)throw new Error('SALESROBOT_CONNECTION_UNAVAILABLE');
   const connectedAccountId=clean(connected?.id||connected?.connected_account_id);
-  const probe=await composioExecuteArgs(apiKey,connectedAccountId,'SALESROBOT_LIST_LINKEDIN_ACCOUNTS',{limit:25});
+  const userId=clean(connected?.user_id);
+  if(!userId)throw new Error('SALESROBOT_COMPOSIO_USER_ID_MISSING');
+  const probe=await composioExecuteArgs(apiKey,connectedAccountId,userId,'SALESROBOT_LIST_LINKEDIN_ACCOUNTS',{limit:25});
   const data:any=probe?.data||probe;
   const accounts=Array.isArray(data?.items)?data.items:Array.isArray(data?.data?.items)?data.data.items:Array.isArray(data?.data?.data)?data.data.data:[];
   const healthy=accounts.find((x:any)=>clean(x?.healthStatus).toUpperCase()==='HEALTHY'&&x?.cookieExpired!==true&&x?.connectionTempPaused!==true&&x?.connectionLimitReached!==true);
   if(!healthy)throw new Error('SALESROBOT_LINKEDIN_ACCOUNT_NOT_HEALTHY');
   const blocked=salesRobotExecutionBlock(healthy);
   if(blocked)throw new Error(blocked);
-  return {apiKey,connectedAccountId,linkedinAccountUuid:clean(healthy.linkedinAccountUuid),healthStatus:clean(healthy.healthStatus),subscription:clean(healthy.subscription||healthy.paymentStatus)};
+  return {apiKey,connectedAccountId,userId,linkedinAccountUuid:clean(healthy.linkedinAccountUuid),healthStatus:clean(healthy.healthStatus),subscription:clean(healthy.subscription||healthy.paymentStatus)};
 }
 async function recordCapability(db:any,capability:string,status:string,evidence:any){
   const {error}=await db.from('powerhouse_channel_capabilities_v1').upsert({
@@ -233,7 +243,7 @@ Deno.serve(async(req:Request)=>{
         try{
           const args:any={linkedin_account_uuid:sr.linkedinAccountUuid,message};
           for(const [k,v] of Object.entries(address))if(v)args[k]=v;
-          const sent=await composioExecuteArgs(sr.apiKey,sr.connectedAccountId,'SALESROBOT_SEND_MESSAGE',args);
+          const sent=await composioExecuteArgs(sr.apiKey,sr.connectedAccountId,sr.userId,'SALESROBOT_SEND_MESSAGE',args);
           const providerData:any=sent?.data||sent;
           const evidence={...(action.evidence||{}),salesrobot_execution:{contract:'powerhouse-capability-routing-v1',provider:'salesrobot',tool:'SALESROBOT_SEND_MESSAGE',provider_ack_verified:true,executed_at:new Date().toISOString(),provider_response:providerData}};
           await db.from('powerhouse_sales_actions').update({status:'done',executed_at:new Date().toISOString(),evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','waiting');

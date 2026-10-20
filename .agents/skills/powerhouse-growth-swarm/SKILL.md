@@ -291,3 +291,8 @@ Een SalesRobot-fout na het versturen kan betekenen dat de provider de DM al heef
 ## Provider readiness onafhankelijk van content en AI — 20 oktober 2026
 Fingerprint: `commercial|salesrobot|early-truth-readonly-canary|20261020`.
 De bestaande `powerhouse-linkedin-sales-machine` moet de werkelijke SalesRobot-licentie, cookie, actieve campagne en uitvoeringsdagen vóór voorbereidende AI-/composer-acties controleren en de bestaande `powerhouse_channel_capabilities_v1` registraties voor DM én campagnes bijwerken. Een upstream AI-storing mag de providerstatus niet bevriezen. Een `dry_run` is alleen lezen: geen SQL-materialisatie, composer, send of evidence-mutatie. Geen tweede scheduler, sender of CRM. Echte verzending blijft afhankelijk van individuele toestemming, human approval, kwaliteit, suppressions, cooldown, providerbevestiging en onafhankelijke readback. Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
+## Composio v3.1 SalesRobot user-identity gate — 20 oktober 2026
+Fingerprint: `commercial|salesrobot|composio-user-id-required|20261020`.
+Het Composio-v3.1-executecontract van de bestaande Powerhouse LinkedIn-salesmachine vereist zowel de echte `connected_account_id` als de bijbehorende `user_id` uit dezelfde actieve Composio-accountregistratie. Zonder `user_id` gaf de echte productieruntime bij `SALESROBOT_LIST_LINKEDIN_ACCOUNTS` HTTP 400, terwijl beide gecontroleerde accountregistraties met die `user_id` HTTP 200 gaven. Behoud de bestaande licentie/cookie/campagne- en ontvangersautorisatievoorwaarden; de API-fix is geen toestemming om DM's te versturen. Geen secret- of account-ID hardcoding; één bestaand transport en één scheduler.
