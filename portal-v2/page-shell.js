@@ -456,7 +456,8 @@ export function enhancePortalShell(){
       });
     });
     globalThis.addEventListener?.('bg:portal-brain-synced',event=>{
-      const impact=event.detail?.impacts?.at?.(-1)||event.detail?.impact;
+      // Only an impact explicitly listed among the canonical ACKs may render as confirmed.
+      const impact=event.detail?.impacts?.at?.(-1)||null;
       globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact||{}}));
       const root=document.getElementById('portalView');
       if(!root?.classList.contains('open'))return;
