@@ -1,0 +1,39 @@
+{
+  "fingerprint": "blog|daily-20261020-stale-main-candidate",
+  "date": "2026-10-20",
+  "obligation": "content-publication:2026-10-20:blog",
+  "root_cause": "Canonical daily blog PR #4518 is based on an older main (35 commits behind) and has no approved protected merge or live publication receipt; the content is already stored as content_ready and must not be regenerated or duplicated.",
+  "intervention": "Copy exact canonical article HTML and static English dictionary from the existing PR, then insert one link in each current-main blog index, RSS and sitemap. Preserve all other posts and ensure exactly-one URL evidence.",
+  "prevention": "On stale-base writer PRs, derive a current-main successor from the same canonical per-day artifact and close the obsolete candidate; always enforce one article per date plus exact published-SHA and public readback.",
+  "compiler": {
+    "failure_class": "BLOG_STALE_PR_BASE_PREVENTS_DELIVERY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "DAILY_CANONICAL_BLOG_UNIQUE_CURRENT_MAIN_DELIVERY",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-blog-recovery-20261020.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-canonical-blog-recovery-20261020.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-canonical-blog-recovery-20261020.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "required_ci": "pending",
+    "codeql": "pending",
+    "netlify_preview": "pending",
+    "production_readback": "not_proven",
+    "public_url": "not_proven"
+  },
+  "status": "CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4518",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+  ]
+}
