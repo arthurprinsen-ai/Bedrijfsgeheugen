@@ -1,0 +1,37 @@
+{
+  "date": "2026-10-20",
+  "obligation": "p0-4215-portal-gateway-hard-deadline-20261020",
+  "fingerprint": "portal-netlify-intelligence-upstream-timeout-noncache-p0",
+  "root_cause": "Netlify entrepreneur intelligence proxy waited without a fetch deadline while EU Edge/PostgREST were overloaded, yielding downstream HTTP 504. Shared JSON helper gave error responses 60s private cache and 240s stale-while-revalidate.",
+  "intervention": "Bound only entrepreneur_intelligence upstream fetch to 23s with AbortController plus hard deadline; fail closed with 503 and Retry-After 20. Cache-Control no-store for all auth/error responses. Preserve success cache, tenant validation, service token and other gateway actions.",
+  "prevention": "Do not cache 4xx/5xx as tenant truth or leave Netlify running upstream until platform timeout. Never synthesize success from incomplete data.",
+  "compiler": {
+    "failure_class": "PORTAL_EDGE_PROXY_UNBOUNDED_TIMEOUT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "PORTAL_INTELLIGENCE_GATEWAY_ABORT_AND_NO_ERROR_CACHE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-supabase-store.test.mjs",
+      "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-portal-proxy-deadline.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "node_unit_tests": "created",
+    "required_ci": "pending",
+    "authenticated_live_http_200": "not yet proven"
+  },
+  "status": "CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+  ]
+}

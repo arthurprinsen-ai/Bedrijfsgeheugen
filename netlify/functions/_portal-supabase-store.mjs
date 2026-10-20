@@ -5,16 +5,40 @@ const required=(value,label)=>{if(!value)throw new Error(`EU portal store config
 export function createSupabasePortalProjectionStore({
   fetchFn=globalThis.fetch,
   baseUrl=process.env.BG_PORTAL_EU_SUPABASE_URL,
-  serviceToken=process.env.BG_PORTAL_EU_SERVICE_TOKEN
+  serviceToken=process.env.BG_PORTAL_EU_SERVICE_TOKEN,
+  entrepreneurTimeoutMs=23000
 }={}){
   required(fetchFn,'fetch');required(baseUrl,'baseUrl');required(serviceToken,'serviceToken');
   const endpoint=`${String(baseUrl).replace(/\/$/,'')}/functions/v1/portal-state-eu`;
   const headers={'content-type':'application/json','x-bg-service-token':serviceToken,'x-region':'eu-central-1'};
-  async function gateway(body){
-    const response=await fetchFn(endpoint,{method:'POST',headers,body:JSON.stringify(body)});
-    const data=await response.json().catch(()=>null);
-    if(!response.ok)throw new Error(`EU portal store gateway failed (${response.status})`);
-    return data||{};
+  if(!Number.isInteger(entrepreneurTimeoutMs)||entrepreneurTimeoutMs<20||entrepreneurTimeoutMs>25000)
+    throw new RangeError('PORTAL_INTELLIGENCE_TIMEOUT_INVALID');
+  async function gateway(body,{timeoutMs=0}={}){
+    const controller=timeoutMs>0?new AbortController():null;
+    let deadlineTimer;
+    const run=async()=>{
+      const response=await fetchFn(endpoint,{
+        method:'POST',headers,body:JSON.stringify(body),
+        ...(controller?{signal:controller.signal}:{})
+      });
+      const data=await response.json().catch(()=>null);
+      if(!response.ok)throw new Error(`EU portal store gateway failed (${response.status})`);
+      return data||{};
+    };
+    if(!controller)return run();
+    // Abort the native fetch and enforce the response deadline even if the
+    // transport's promise does not settle after receiving an abort signal.
+    const deadline=new Promise((_,reject)=>{
+      deadlineTimer=setTimeout(()=>{
+        controller.abort();
+        reject(new Error('PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT'));
+      },timeoutMs);
+    });
+    try{return await Promise.race([run(),deadline])}
+    catch(error){
+      if(controller.signal.aborted)throw new Error('PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT');
+      throw error;
+    }finally{clearTimeout(deadlineTimer)}
   }
   async function getLayer(tenantId,layer){
     const data=await gateway({action:'get',tenantId:String(tenantId),layer});
@@ -30,7 +54,7 @@ export function createSupabasePortalProjectionStore({
   }
   async function getEntrepreneurIntelligence(tenantId){
     const expectedTenant=String(tenantId);
-    const data=await gateway({action:'entrepreneur_intelligence',tenantId:expectedTenant});
+    const data=await gateway({action:'entrepreneur_intelligence',tenantId:expectedTenant},{timeoutMs:entrepreneurTimeoutMs});
     if(data?.scope?.authenticatedTenant!==expectedTenant)throw new Error('EU portal intelligence tenant scope mismatch');
     return data;
   }
