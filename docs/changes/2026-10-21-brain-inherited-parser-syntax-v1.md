@@ -7,10 +7,13 @@ Obligation: `ci-inherited-brain-parser-syntax-20261021`. Parent: [#3742](https:/
 1. `tests/brain-external-commercial-heartbeat-v1.test.mjs` eindigde met drie ongeldige uitvoerbare Markdown-regels van 7 oktober (een verouderde resultaatnotitie); de Node-loader gaf `Unexpected number` voordat de bestaande Heartbeat-tests konden draaien. Die notities staan hieronder als historische bronnotitie, niet als nieuw bewijs.
 2. `tests/supabase-migration-history-terminal-closure-v1.test.mjs` bevatte regex-literals met verkeerd ontsnapte slashtekens en kon daardoor niet worden geladen. De inhoudelijke source-contractregex verwees bovendien naar een verouderde, engere terminatorcategorie. Het actuele uitvoerbare workflowcontract accepteert `supabase-(migration-history-(parity|canonical)|(current-)?production-ledger-parity)-` met hetzelfde beschermde productie-baselinepatroon.
 
+3. `tests/brain-content-blocked-channel-fairness-v1.test.mjs` compileerde de oude drieparameterhandtekening van de bronhelper met `Function`; de huidige vijfparameter-TypeScript-handtekening bleef daardoor ongeldige JavaScript-syntax (`Unexpected token ':'`). De test voert nu dezelfde functionele body uit met een genormaliseerde declaratie, test-only stubs voor de afzonderlijke deduplicatieroutines en behoud van de controle op reeds gebruikte kanaalbevoegdheid.
+
 ## Begrensde reparatie
 
 - Verwijder uitsluitend de historische losse Markdownregels uit het Heartbeat-testbestand; behoud de zes bestaande autorisatie-, scheduler-, retry-, databaseverbinding- en durable-readbacktests.
 - Vervang de twee misvormde migratiebron-regexen door exacte, parseerbare checks op de bestaande canonieke workflowbron. Behoud beide eerdere 568-record ledgerchecks, de drie testgevallen, de productie- en exact-HEAD-voorwaarden, en alle andere assertions ongewijzigd.
+- Voer de huidige vijf-argument BRAIN-fairness-helper uit met hetzelfde gedragscontract, inclusief consumptie van providerbevoegdheid, blokkering van onbewezen persoonlijke claims en behoud van zelfstandige bedrijfskanalen.
 - Geen workflow, productiefunction, Supabase-DDL, bestaande scheduler, toegangsniveau, live connector, releasepoort of echte klantdata gewijzigd.
 
 ### Historische notities uit het ongeldige testbestand (niet nieuw geverifieerd)
@@ -21,4 +24,4 @@ Obligation: `ci-inherited-brain-parser-syntax-20261021`. Parent: [#3742](https:/
 
 ## Acceptatie en grens
 
-Beide Node-tests moeten daadwerkelijk uitgevoerd worden op exact HEAD en het volledige bestaande BRAIN-backendtestpakket moet terminal slagen voor release. Het herstellen van twee laadfouten bewijst niet dat alle 355 geërfde fouten verdwenen zijn. Issue #3742 blijft beschermd: historische SQL mag niet als lege placeholders worden toegevoegd en remote/local parity vergt een ondersteunde Supabase-migratie-replay. Portal #4573 mag niet worden gemerged of uitgerold op basis van dit deelresultaat; voor #4215 blijven twee echte ingelogde tenantcontroles vereist.
+Alle drie de betreffende Node-tests moeten daadwerkelijk uitgevoerd worden op exact HEAD en het volledige bestaande BRAIN-backendtestpakket moet terminal slagen voor release. Het herstellen van twee laadfouten bewijst niet dat alle 355 geërfde fouten verdwenen zijn. Issue #3742 blijft beschermd: historische SQL mag niet als lege placeholders worden toegevoegd en remote/local parity vergt een ondersteunde Supabase-migratie-replay. Portal #4573 mag niet worden gemerged of uitgerold op basis van dit deelresultaat; voor #4215 blijven twee echte ingelogde tenantcontroles vereist.
