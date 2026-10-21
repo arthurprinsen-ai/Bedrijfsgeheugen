@@ -1,0 +1,45 @@
+{
+  "fingerprint": "portal|scan-claim|cross-generation-most-recent-valid-receipt|20261021-v2",
+  "date": "2026-10-21",
+  "type": "RECOVERY",
+  "status": "CANDIDATE_PROTECTED_NOT_RELEASED",
+  "problem": "A valid but older V3 receipt could be selected before a newer V2 receipt, or the first V3 item was selected regardless of timestamp.",
+  "root_cause": "Client receipt selection prioritized storage generation and array order instead of the most recent valid proof.",
+  "change": {
+    "source": "portal-v2/scan-claim-bridge.js",
+    "tests": "portal-v2/tests/scan-claim-receipt-order.test.mjs"
+  },
+  "prevention": [
+    "Compare all timestamped valid receipts from every supported storage generation before choosing.",
+    "Preserve same-tenant authorization and explicit customer click through the existing /api/portal-scans handler.",
+    "Do not treat a locally saved receipt as real-tenant claim/readback evidence."
+  ],
+  "evidence": {
+    "localTests": "8 scoped tests; no production or full CI proof",
+    "gateway": "portal-v2/tests/*.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "PORTAL_STALE_SCAN_RECEIPT_SELECTED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/scan-claim-receipt-order.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/scan-claim-receipt-order.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/scan-claim-receipt-order.test.mjs"
+    ]
+  },
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "sourceCommitBase": "d18ef16edac0e62058a51afee21cfe0b52a91e20",
+  "customerAcceptance": {
+    "status": "PENDING_TWO_REAL_AUTHENTICATED_CUSTOMERS",
+    "verified": false
+  }
+}

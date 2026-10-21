@@ -159,3 +159,7 @@ Regressies: `tests/brain-portal-entrepreneur-goal-home-v1.test.mjs` (importeert 
 
 ### Nulmeting-scores: ontbrekend is nooit nul
 Elke overzichtskaart, inclusief de historische Bedrijfslek-weergave, moet ontbrekende, `null`, lege of witruimte-scores als **onbekend** behandelen. Alleen expliciet aangeleverde `0` mag als gemeten 0/100 verschijnen, mits de eigen tenant-claim en herkomst bevestigd zijn. Bron: `portal-v2/modules/overview.js` en `portal-v2/tests/entrepreneur-journey.test.mjs`. Dit is een regressieregel op de bestaande acht-onderdelen-lineage #4585, geen nieuwe dataautoriteit.
+
+## Frisse Blik receipt-volgorde: v3 én v2 strikt selecteren
+
+Fingerprint `portal|scan-claim|cross-generation-most-recent-valid-receipt|20261021-v2`. Een opgeslagen browserreceipt is nog geen geverifieerde tenantclaim. Als `bg_scan_receipts_v3` en `bg_last_scan_receipt_v2` tegelijkertijd bestaan, vergelijk alle geldige getimestampelde bewijzen en kies de nieuwste, niet het eerste array-item of automatisch v3. Pas voor beide vormrestricties, zeven dagen TTL en future-guard toe. Untimed sessiereferentie blijft uitsluitend fallback; de bestaande geautoriseerde `/api/portal-scans` en expliciete gebruikersactie blijven verplicht. Regressie `portal-v2/tests/scan-claim-receipt-order.test.mjs`. Dit is een correctie aan de bestaande tenant-claim en géén nieuwe bron-/schrijfautoriteit.

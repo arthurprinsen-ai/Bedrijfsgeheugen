@@ -37,6 +37,18 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-scan-receipt-cross-generation-latest-v2',
+      fingerprint:'portal|scan-claim|cross-generation-most-recent-valid-receipt|20261021-v2',
+      label:'Newest valid V3/V2 Frisse Blik receipt selection before authorized tenant claim',
+      owner:'Existing Portal V2 scan claim / Brain and Supabase authoritative claim endpoint',
+      status:'CANDIDATE_PROTECTED_NOT_RELEASED',
+      authority:'Only existing authenticated /api/portal-scans validates tenant ownership',
+      evidence:'portal-v2/tests/scan-claim-receipt-order.test.mjs',
+      learning:'brain/learning/2026-10-21-portal-scan-receipt-order-v2.json',
+      noNewScheduler:true,autoClaimForbidden:true,realCustomerAcceptance:false,
+      releaseNote:'Pending protected merge, inventory hash reconciliation, provider readback and genuine two-customer acceptance'
+    }),
+    Object.freeze({
       id:'portal-eight-outcomes-connected-journey-v1',
       fingerprint:'portal|eight-outcomes|connected-entrepreneur-journey|v1',
       label:'Connected goal-first Frisse Blik, cockpit, source-backed Winstnavigator and page impact journey',
