@@ -19,7 +19,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   host.setAttribute('aria-label','Jouw ondernemersroute');
   const anchor=main.querySelector('.daily-steering')||main.querySelector('.dashboard');
   main.insertBefore(host,anchor||null);
-  let notice='',saving=false,subject='',generation=0;
+  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null;
   const auth=()=>{
     const snapshot=stateClient.getSnapshot();
     return Boolean(snapshot?.user?.id&&['authenticated','empty'].includes(snapshot.mode)&&!stateClient.isDemo?.());
@@ -32,7 +32,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(!host.isConnected)return;
     const loggedIn=auth();
     const snapshot=domainState.getSnapshot?.();
-    const model=buildEntrepreneurHomeModel(loggedIn?(domainState.get()||{}):{},{authenticated:loggedIn});
+    const model=buildEntrepreneurHomeModel(loggedIn?(domainState.get()||{}):{},{authenticated:loggedIn,verifiedScanCount:loggedIn?verifiedScanCount:null});
     host.replaceChildren();
     const lead=add(host,'div','eh-lead');
     const copy=add(lead,'div','eh-lead-copy');
@@ -64,7 +64,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     const columns=add(host,'div','eh-cards');
     const scan=add(columns,'article','eh-info-card');
     add(scan,'span','eh-card-label','Wat weten we uit jouw scan?');
-    add(scan,'h3','',model.scan.verified?(model.scan.score===null?'Nulmeting gekoppeld':'Nulmeting '+model.scan.score+'/100'):'Scanstatus nog niet bevestigd');
+    add(scan,'h3','',model.scan.verified?(model.scan.score===null?(model.scan.count?'Nulmetingen gekoppeld: '+model.scan.count:'Nulmeting gekoppeld'):'Nulmeting '+model.scan.score+'/100'):'Scanstatus nog niet bevestigd');
     add(scan,'p','',model.scan.description);
     const scanButton=add(scan,'button','eh-text-action',model.scan.verified?'Bekijk je scan →':'Bekijk of koppel je scan →');
     scanButton.type='button';scanButton.dataset.entrepreneurScan='true';
@@ -128,11 +128,13 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       if(request===generation&&owner===principal()){saving=false;draw();}
     }
   });
-  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';}draw();};
+  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;}draw();};
+  const onVerifiedScans=event=>{if(!auth())return;const count=event?.detail?.count;verifiedScanCount=Number.isInteger(count)&&count>=0?count:null;draw();};
+  documentRef.defaultView?.addEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);
   const unsubscribeIdentity=stateClient.subscribe(onIdentity);
   const unsubscribeDomain=domainState.subscribe(draw);
   const unsubscribeRoute=subscribePortalRoute(({target})=>{host.hidden=target!=='overzicht';});
   host.hidden=currentPortalRoute().target!=='overzicht';
   onIdentity();
-  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();host.remove();}});
+  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();documentRef.defaultView?.removeEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);host.remove();}});
 }
