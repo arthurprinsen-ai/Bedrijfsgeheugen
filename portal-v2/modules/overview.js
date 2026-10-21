@@ -102,8 +102,12 @@ function renderBedrijfslekIntelligence(root,state){
  const main=root?.querySelector?.('.main');if(!main)return false;
  const scan=state?.portal?.assessments?.bedrijfslekScan;
  let section=main.querySelector('[data-bedrijfslek-intelligence]');
- const score=Number(scan?.score);
- if(scan?.verifiedIdentity!==true||!Number.isFinite(score)||score<0||score>100){
+ // A verified scan with an absent score is NOT a measured zero. Preserve
+ // unknown status on every owner overview surface, not just the new entry.
+ const rawScore=scan?.score;
+ const hasExplicitScore=rawScore!==null&&rawScore!==undefined&&(typeof rawScore!=='string'||rawScore.trim().length>0);
+ const score=hasExplicitScore?Number(rawScore):NaN;
+ if(scan?.verifiedIdentity!==true||!hasExplicitScore||!Number.isFinite(score)||score<0||score>100){
   section?.remove?.();return false;
  }
  const doc=root.ownerDocument||document;
