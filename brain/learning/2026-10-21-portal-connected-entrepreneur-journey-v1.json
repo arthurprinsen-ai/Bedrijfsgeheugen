@@ -76,7 +76,7 @@
   "followUpFixes": [
     {
       "fingerprint": "portal|eight-outcomes|principal-bound-live-runtime|v1",
-      "status": "CANDIDATE_PROTECTED_DELIVERY",
+      "status": "LIVE_PROVEN_PROVIDER_TRUTH",
       "problem": "Fresh tenant Brain runtime was setDerived into domainState, but the owner journey rendered only the stateClient server snapshot, so valid observability could remain invisible until another page reload.",
       "rootCause": "Missing explicit principal-bound bridge of transient runtime into the overview journey model. DomainState transient overlays were intentionally not promoted to persistent canonical state.",
       "repair": "Use existing authenticated onRuntime callback to bind runtime to exact current user; clear envelope on principal switch; publish no customer data in UI update event; inject only current principal runtime in journey and page guidance; protect guest/demo/stale/other-provider cases.",
@@ -85,7 +85,18 @@
         "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
       ],
       "customerE2EVerified": false,
-      "providerLiveVerified": false
+      "providerLiveVerified": true,
+      "providerReleaseEvidence": {
+        "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4599",
+        "mainSha": "dafece9841bcc248f455f0b9beb2520ac13b18fa",
+        "netlifyDeployId": "6ad910c695b04087a1c90a26",
+        "siteId": "fd527056-493a-4d8a-8125-d00370104fa3",
+        "branch": "main",
+        "context": "production",
+        "state": "ready",
+        "publishedAt": "2026-10-21T19:23:50.367Z",
+        "verification": "Netlify get current site + get deploy, PR terminal metadata readback, exact source SHA"
+      }
     }
   ]
 }
