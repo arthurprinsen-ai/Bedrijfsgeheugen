@@ -42,7 +42,7 @@ const provenance=`  explanationInventory:Object.freeze({contract:'portal-explana
 if(/^  explanationInventory:.*$/m.test(next))next=next.replace(/^  explanationInventory:.*$/m,provenance);
 else next=next.replace(/^(  observedAt:.*)$/m,'$1\n'+provenance);
 if(next!==original){
-  if(!write){console.error('SYSTEM_MAP_WRITEBACK_INCOMPLETE: portal explanation source/inventory drift; refresh in the existing protected candidate with --write, then review semantic changes.');process.exitCode=1;}
+  if(!write){console.error('SYSTEM_MAP_WRITEBACK_INCOMPLETE: portal explanation source/inventory drift; refresh in the existing protected candidate with --write, then review semantic changes.');console.error('EXPECTED_PORTAL_EXPLANATION_CONTENT_HASH:'+contentHash);process.exitCode=1;}
   else{
     next=next.replace(/^  observedAt:.*$/m,`  observedAt:'${new Date().toISOString()}',`);
     await fs.writeFile(path.join(root,source),next);

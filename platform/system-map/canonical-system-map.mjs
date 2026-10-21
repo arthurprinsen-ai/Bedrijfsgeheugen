@@ -1,8 +1,8 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-10-21T05:32:18.113Z',
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'ac5bceedc2a6e23edb0bd1fe5590525fc69a7aa05d854b77e61924755521ae83',authority:'repository-source',providerRuntimeVerified:false}),
+  observedAt:'2026-10-21T08:38:13.048Z',
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'89f764a3a96e8ae480346f2431f766142d2071bcfe26dce22624de3ba3b57f42',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -36,6 +36,24 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'portal-one-organism-connected-journey-v1',
+      fingerprint:'portal|contextual-business-journey|one-organism|v1',
+      label:'Every registered Portal V2 page shares the goal-first tenant context and canonical mutation/Brain ACK review path',
+      owner:'Portal V2 / ONE BRAIN / existing Powerhouse Heartbeat',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'existing authenticated portal state, canonical BusinessInput/Brain ACK and tenant-scoped runtime sources',
+      inputs:Object.freeze(['current signed-in tenant projection','registered page route','entrepreneur goal','canonical mutation events and verified provider source receipts when present']),
+      outputs:Object.freeze(['contextual next step for every V2 page','read-only relevant provider connections with fail-closed evidence status','pending versus acknowledged impact routes','existing interactive Winstnavigator boot and goal-home entry']),
+      providerRoles:Object.freeze(['Supabase','GitHub','Notion','Netlify','Composio','Brain','Powerhouse','Heartbeat']),
+      externalProviderActions:false,noNewScheduler:true,noParallelSourceOfTruth:true,
+      evidence:'portal-v2/tests/connected-journey.test.mjs',
+      learning:'brain/learning/2026-10-21-portal-one-organism-context-v1.json',
+      documentation:'docs/changes/portal-one-organism-context-20261021-v1.md',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547',
+      customerAcceptance:'PENDING_INDEPENDENT_TWO_TENANT_END_TO_END',
+      productionEvidenceVerified:false
+    }),
     Object.freeze({
       id:'portal-entrepreneur-goal-home-v1',
       fingerprint:'portal|frisse-blik|goal-first-entrepreneur-home|v1',

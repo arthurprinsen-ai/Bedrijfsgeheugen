@@ -13,6 +13,7 @@ import { applyOverviewDashboard } from './modules/overview.js?bg_explain=80ad881
 import { renderProjectOverview } from './project-overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage } from './plan-access.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountEntrepreneurHome } from './entrepreneur-home.js';
+import {mountWinstnavigator} from './winstnavigator.js';
 import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const SOURCES=[
@@ -279,6 +280,9 @@ configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
 // One guided entry over the existing authenticated tenant state and Brain authority.
 mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClient});
+// One read-only Winstnavigator over the same authenticated business context.
+// No duplicate forecasts, browser storage, global tenant reads or provider writes.
+mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
 // Close tenant-bound visual detail whenever the authenticated subject changes.
 // Do not expose user identifiers through the DOM event payload.
 let portalVisualAuthSubject=null;

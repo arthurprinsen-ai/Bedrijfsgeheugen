@@ -146,3 +146,13 @@ De **bestaande V2** toont na inloggen eerst: (1) door de klant gekozen ambitie, 
 Canonieke opslag: `portal.business_context.goals` + `primary_goal` via bestaande `portalDomainState.patch/flush`, met tenant state plus Brain BusinessInput ACK. Geen tweede onboarding-state, lokale browser data of nieuw portaal. Bij ontbrekende target: eerst doel meetbaar maken. Alleen onderbouwde Powerhouse-voorstellen met gezonde bronstatus en bronreferenties mogen als zodanig verschijnen; nooit uitvoerings- of ROI-bewijs verzinnen.
 
 Elke toekomstige herbouw van het portaal moet `portal-v2/tests/entrepreneur-home.test.mjs` en de twee-tenant productiecontrole blijven behouden. Source: `docs/changes/portal-entrepreneur-goal-home-20261021-v1.md`. Obligation: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578.
+
+## Eén samenhangend portaal — contextgraph en Winstnavigator
+
+Fingerprint: `portal|contextual-business-journey|one-organism|v1`. De bestaande V2-pagina's lezen hun huidige ondernemersdoel, eventuele canonieke impactreview en actuele klantbronregistraties uitsluitend uit de bestaande geauthenticeerde portal-/Brain-state. De `portal-v2/connected-journey-model.js` geeft **elke route** begrijpelijke context en de relevante bestaande vervolgbestemming. `portal-v2/entrepreneur-home.js` toont dit via de bestaande detailgids en bevestigt een wijziging pas nadat `bg:portal-brain-synced` een passende ACK bevat. Een impactevent is slechts een reviewindicatie, geen bewezen besparing.
+
+De bestaande `portal-v2/winstnavigator.js/css` wordt op de enige `app.js`-opstartketen gekoppeld aan `portalDomainState` en `portalStateClient` en vanaf dezelfde ondernemershomepage geopend. Hergebruik de originele Foresight-scenariostudio; geen tweede forecast-model of browseropslag.
+
+Supabase, GitHub, Netlify, Notion, Composio, Brein, Powerhouse en Heartbeat vormen **rollen in een canoniek landschap**, geen stilzwijgend geautoriseerde klantconnecties. Pas na tenantgebonden timestamp én bronverwijzing én gezondheidsbewijs mag een specifieke bron als recent gecontroleerd worden weergegeven. Geheimen, globale adminstatus, previewcijfers en provideracties mogen niet als klantresultaat verschijnen. Extra connectorautorisatie loopt alleen via de bestaande beveiligde koppelingenroutes. Houd twee-tenant acceptatie en productieproviderreadback afzonderlijk open onder #4215 en #4547 totdat bewijs aanwezig is.
+
+Regressietest: `portal-v2/tests/connected-journey.test.mjs` en `tests/brain-portal-connected-journey-v1.test.mjs`. Source: `docs/changes/portal-one-organism-context-20261021-v1.md`.
