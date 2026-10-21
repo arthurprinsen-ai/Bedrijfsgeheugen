@@ -56,6 +56,12 @@ test('the existing authorized scan history can confirm a generic Frisse Blik wit
  assert.equal(anonymous.scan.verified,false);
 });
 
+test('verified scan history displays unknown score as unknown, not synthetic 0/100',async()=>{
+ const source=await readFile(new URL('../scan-claim-bridge.js',import.meta.url),'utf8');
+ assert.match(source,/row\.score===null\|\|row\.score===undefined/);
+ assert.match(source,/score!==null&&Number\.isFinite\(score\)/);
+});
+
 test('scan score is never treated as audited financial return',()=>{
  const state={portal:{assessments:{bedrijfslekScan:{verifiedIdentity:true,score:70}}}};
  const model=buildEntrepreneurHomeModel(state,{authenticated:true});
