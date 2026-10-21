@@ -1,5 +1,6 @@
 import {buildEntrepreneurHomeModel,saveEntrepreneurGoal} from './entrepreneur-home-model.js';
 import {navigatePortal,currentPortalRoute,subscribePortalRoute} from './router.js';
+import {findPage} from './page-registry.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -20,6 +21,36 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   const anchor=main.querySelector('.daily-steering')||main.querySelector('.dashboard');
   main.insertBefore(host,anchor||null);
   let notice='',saving=false,subject='',generation=0,verifiedScanCount=null;
+  const updatePageGuide=()=>{
+    const root=documentRef.getElementById('portalView');
+    if(!root)return;
+    const previous=root.querySelector('[data-entrepreneur-guide]');
+    if(!auth()||!root.classList.contains('open')){previous?.remove();return;}
+    const target=root.dataset.pageId||currentPortalRoute().target;
+    if(!findPage(target)){previous?.remove();return;}
+    const state=domainState.get()||{};
+    const model=buildEntrepreneurHomeModel(state,{authenticated:true,verifiedScanCount});
+    const body=root.querySelector('.pvbody');
+    if(!body)return;
+    const guide=previous||documentRef.createElement('aside');
+    guide.className='eh-page-guide';guide.dataset.entrepreneurGuide='true';
+    guide.setAttribute('aria-label','Hulp bij jouw ondernemersdoel');
+    guide.replaceChildren();
+    add(guide,'strong','','Waarom ben je hier?');
+    const chosen=model.goals.find(goal=>goal.id===model.selectedGoal);
+    const page=findPage(target);
+    const directlyRelevant=model.next.page===target;
+    add(guide,'p','',chosen
+      ?(directlyRelevant?'Dit helpt jouw doel '+chosen.label.toLowerCase()+': '+model.next.explanation
+        :'Je werkt aan '+chosen.label.toLowerCase()+'. Je bekijkt nu '+page.label+'. Gebruik hier alleen gegevens die je kunt controleren en ga daarna verder met je persoonlijke route.')
+      :'Je bekijkt '+page.label+'. Kies eerst jouw bedrijfsdoel om gerichte vervolgstappen te krijgen.');
+    const back=add(guide,'button','eh-text-action',model.selectedGoal?'Terug naar mijn route →':'Kies mijn ondernemersdoel →');
+    back.type='button';back.addEventListener('click',()=>navigate('overzicht'));
+    if(!previous){
+      const status=body.querySelector('.pvstatus');
+      if(status)status.after(guide);else body.prepend(guide);
+    }
+  };
   const auth=()=>{
     const snapshot=stateClient.getSnapshot();
     return Boolean(snapshot?.user?.id&&['authenticated','empty'].includes(snapshot.mode)&&!stateClient.isDemo?.());
@@ -30,6 +61,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   };
   const draw=()=>{
     if(!host.isConnected)return;
+    updatePageGuide();
     const loggedIn=auth();
     const snapshot=domainState.getSnapshot?.();
     const model=buildEntrepreneurHomeModel(loggedIn?(domainState.get()||{}):{},{authenticated:loggedIn,verifiedScanCount:loggedIn?verifiedScanCount:null});
@@ -133,8 +165,8 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   documentRef.defaultView?.addEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);
   const unsubscribeIdentity=stateClient.subscribe(onIdentity);
   const unsubscribeDomain=domainState.subscribe(draw);
-  const unsubscribeRoute=subscribePortalRoute(({target})=>{host.hidden=target!=='overzicht';});
+  const unsubscribeRoute=subscribePortalRoute(({target})=>{host.hidden=target!=='overzicht';updatePageGuide();});
   host.hidden=currentPortalRoute().target!=='overzicht';
   onIdentity();
-  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();documentRef.defaultView?.removeEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);host.remove();}});
+  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();documentRef.defaultView?.removeEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);documentRef.getElementById('portalView')?.querySelector('[data-entrepreneur-guide]')?.remove();host.remove();}});
 }
