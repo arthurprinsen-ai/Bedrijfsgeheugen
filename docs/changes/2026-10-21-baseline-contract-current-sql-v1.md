@@ -12,3 +12,7 @@ The canonical SQL was read from the same protected main commit. All eight existi
 ## Verification and closure
 
 This is a source-backed **draft candidate**. CI and current-head execution are not asserted green; other inherited errors include missing historical paths and semantic mismatches. Do not delete tests, fabricate migrations, skip BRAIN, or merge on a partial pass. Exact-head full BRAIN, Required, CodeQL, protected merge, Netlify/Supabase readback and genuine authenticated customer A/B acceptance remain mandatory, owned by their original obligations.
+
+## Canonical learning gate
+
+The existing `learning-canonicalization-gate.mjs` requires failure classification plus executable historical, shadow and canary evidence for security-sensitive improvements. This repair declares CI/security-sensitive metadata and adds `tests/brain-baseline-contract-current-sql-v1.test.mjs` as the self-contained real-SQL regression in all three modes. Only successful exact-head execution can confer `canonical_eligible`; no bypass or static-only green claim.

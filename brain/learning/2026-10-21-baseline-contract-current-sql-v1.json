@@ -30,5 +30,34 @@
     "exact-head Required and CodeQL success",
     "protected merge and production readback only after all relevant gates"
   ],
-  "prevention": "When a migration filename is canonicalized, update historical source-contract test pointers only with verified semantically equivalent SQL and preserve negative security coverage."
+  "prevention": "When a migration filename is canonicalized, update historical source-contract test pointers only with verified semantically equivalent SQL and preserve negative security coverage.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Two historic SQL migration path literals no longer identify the tracked canonical SQL, making inherited full-BRAIN tests fail with ENOENT despite current source-backed security and CurrentState contracts.",
+  "prevention_rule": "Keep every migration SQL path asserted by active BRAIN tests aligned to its exact canonical migration identity; verify real SQL semantics, including RLS and negative access, before remapping. Never restore fake/duplicate migrations or narrow the full suite.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-baseline-contract-current-sql-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-baseline-contract-current-sql-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-baseline-contract-current-sql-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "BRAIN 39554866582 fails 355 on candidate and unchanged base; two tests fail ENOENT on legacy migration names.",
+    "source_validation": "Both existing canonical SQL files satisfy all 8 original predicates by read-only static validation. Negative RLS/security assertions remain unchanged.",
+    "after": "NOT_YET_RUN_EXACT_HEAD",
+    "customer_acceptance": "NOT_YET_PROVEN"
+  }
 }

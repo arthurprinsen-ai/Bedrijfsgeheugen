@@ -8,3 +8,5 @@
 - Changes: only two test-path strings; source-backed learning and change documentation. No version resurrection, SQL/production mutation, weakened assertion or workflow exclusion.
 - Current outcome: draft correction prepared; no exact-head CI, complete baseline resolution, merge, deploy or customer acceptance claimed.
 - Next proof: protected full BRAIN+Required+CodeQL and native portal tenant-isolation readback. Continue #3742 and #4215 independently to closure.
+
+- 2026-10-21 correction after first protected admission: Required failed `LEARNING_FAILURE_CLASS_REQUIRED` on the new learning record. Added canonical compiler/evaluation contract and executable two-source test, without downgrading security sensitivity. The initial failed workflow is retained as evidence. Pending new exact-head admission.
