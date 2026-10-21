@@ -37,3 +37,11 @@
 - **Test:** `portal-v2/tests/entrepreneur-journey.test.mjs` controleert verse Brain-observaties, oude observaties, gast/demo-privacy, andere providerbron en frontend-tenantboundary. Bestaande root replay loopt mee.
 - **Rollback:** draai uitsluitend de frontendprojectie terug; de oorspronkelijke geautoriseerde Brain-bridge en Supabase-write blijven intact. Geen nieuwe scheduler of providercredentials.
 - **Vervolgacceptatie:** alleen current exact-head Required+CodeQL en Netlify-deploy leveren releasebewijs; twee echte aparte klantaccounts, connector-uitvoeringen en financiële forecasts blijven onafhankelijk ONBEWEZEN.
+
+## 2026-10-21 — terminal provider-proof reconciliation voor principal-bound live runtime
+
+- **Fix lineage:** `portal|eight-outcomes|principal-bound-live-runtime|v1`; PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4599.
+- **Build en release:** protected candidate checks Required/Portal/Backend/Netlify/CodeQL SUCCESS; main `dafece9841bcc248f455f0b9beb2520ac13b18fa`.
+- **Netlify provider current deploy:** `6ad910c695b04087a1c90a26`, `state=ready`, `context=production`, `branch=main`, dezelfde exact commit, gepubliceerd `2026-10-21T19:23:50.367Z`.
+- **Borging:** System Map en bestaande Brain-learning worden geprojecteerd naar `LIVE_PROVEN_PROVIDER_TRUTH`; niet als echte klantuitvoeringsacceptatie of bewezen financiële voorspelling.
+- **Onafhankelijk open:** twee geauthenticeerde klanten, account A/B isolatie, oorspronkelijke scan→Brain ACK→gevalideerde forecast en echte provider-outcome. Geen onterechte groenstatus en geen scheduler/provider/OAuth-workaround.
