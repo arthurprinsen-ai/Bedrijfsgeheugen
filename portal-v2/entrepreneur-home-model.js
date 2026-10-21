@@ -59,10 +59,12 @@ export async function saveEntrepreneurGoal(domainState,goalId,{authenticated=fal
   if(!domainState?.get||!domainState?.patch||!domainState?.flush)throw new TypeError('ENTREPRENEUR_CANONICAL_DOMAIN_REQUIRED');
   const current=domainState.get('portal.business_context')||{};
   const patch=goalContextPatch(current,goalId,at);
-  if(current.primary_goal===goalId&&Array.isArray(current.goals)&&current.goals.includes(goalId))return Object.freeze({saved:true,unchanged:true});
-  domainState.patch('portal.business_context',patch);
+  const unchanged=current.primary_goal===goalId&&Array.isArray(current.goals)&&current.goals.includes(goalId);
+  // Even an unchanged choice can have a pending canonical Brain ACK from a prior failed write.
+  // Never claim success until the existing flush drains that pending obligation.
+  if(!unchanged)domainState.patch('portal.business_context',patch);
   const ack=await domainState.flush();
   if(ack?.status!=='saved'||domainState.get('portal.business_context.primary_goal')!==goalId)
     throw new Error('ENTREPRENEUR_GOAL_CANONICAL_ACK_REQUIRED');
-  return Object.freeze({saved:true,unchanged:false});
+  return Object.freeze({saved:true,unchanged});
 }
