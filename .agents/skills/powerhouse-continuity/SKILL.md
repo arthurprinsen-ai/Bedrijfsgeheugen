@@ -1572,3 +1572,6 @@ For SaaS changes preserve one plan → intent → verified provider subscription
 
 ## SaaS deployment scope recovery
 Root checkout pages and the V18 production generator are Netlify runtime, while the exact technical SEO checker is a verifier. Keep this in the canonical production-readback contract, retain unknown-path rejection, and replay the original merged PR with the current terminalizer after protected contract recovery. Never rewrite a terminal candidate or fabricate provider receipts.
+
+## Checkout source is not final-artifact proof
+Verify /afsluiten after the complete shell/localization pipeline. Capture and restore its canonical source around legacy builders, preserve only its explicit page-runtime marker, and require unique dynamic DOM targets plus provider-status verification in both NL/EN output. Checkout forms use POST even without JavaScript so customer fields never become a default GET query. A successful generic page build does not prove checkout execution.
