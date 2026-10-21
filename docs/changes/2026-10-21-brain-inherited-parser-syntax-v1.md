@@ -14,6 +14,7 @@ Obligation: `ci-inherited-brain-parser-syntax-20261021`. Parent: [#3742](https:/
 - Verwijder uitsluitend de historische losse Markdownregels uit het Heartbeat-testbestand; behoud de zes bestaande autorisatie-, scheduler-, retry-, databaseverbinding- en durable-readbacktests.
 - Vervang de twee misvormde migratiebron-regexen door exacte, parseerbare checks op de bestaande canonieke workflowbron. Behoud beide eerdere 568-record ledgerchecks, de drie testgevallen, de productie- en exact-HEAD-voorwaarden, en alle andere assertions ongewijzigd.
 - Voer de huidige vijf-argument BRAIN-fairness-helper uit met hetzelfde gedragscontract, inclusief consumptie van providerbevoegdheid, blokkering van onbewezen persoonlijke claims en behoud van zelfstandige bedrijfskanalen.
+- De gedateerde closure-bewijsregistratie bevat 568 migraties; de huidige repository-lock bevat 634. Alle vier destijds herstelde versie/naam-identiteiten zijn bevestigd. Eis daarom monotone groei, unieke versies en behoud van die vier identiteiten, maar verklaar **geen** nieuwe remote/local migratiepariteit op basis van historische gegevens.
 - Geen workflow, productiefunction, Supabase-DDL, bestaande scheduler, toegangsniveau, live connector, releasepoort of echte klantdata gewijzigd.
 
 ### Historische notities uit het ongeldige testbestand (niet nieuw geverifieerd)
