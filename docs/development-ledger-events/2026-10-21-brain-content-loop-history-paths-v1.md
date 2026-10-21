@@ -1,0 +1,11 @@
+# Development ledger — ci|brain-baseline|content-loop-repository-history-pointers|20261021-v1
+
+- Obligation-ID: `ci-inherited-content-closed-loop-history-pointers-20261021`; Parent P0 #3742; related P0 #4215; blocked Portal candidate #4573.
+- Main epoch: `d18ef16edac0e62058a51afee21cfe0b52a91e20`; test blob `dfdbd75919c72b2faf5d4d40fe3c3a930dca0345`; skill blob `3259c687138daa557bfec1988906dd6c9f7e3c3f`.
+- Observed baseline: Unified BRAIN run 39554866582 job 119072398429 reported 355 pre-existing failures on both unmodified main and portal candidate.
+- Root cause: three canonical source contract SQL paths were archived by the existing supported migration-history process but the BRAIN test still addressed the executable migration folder.
+- Immutable source evidence: three exact archived file SHA identities, 23/23 original source markers present.
+- Recovery: replace three literal test input paths only. Preserve all test expectations and executable runtime; append durable learning, existing skill projection and human documentation in this candidate.
+- Negative guard: do not restore duplicate SQL into executable `supabase/migrations/`; do not disable/skip/rewrite assertions; do not declare baseline or production green from source checks.
+- Expected acceptance: exact-head focused test + Required + CodeQL + Unified BRAIN terminal success, protected merge and, where applicable, production provider readback. No two-tenant or customer financial claim.
+- Candidate-state: `SOURCE_VERIFIED_RELEASE_GATES_PENDING`. Historical replay/shadow/canary evaluation still awaits actual run receipts.
