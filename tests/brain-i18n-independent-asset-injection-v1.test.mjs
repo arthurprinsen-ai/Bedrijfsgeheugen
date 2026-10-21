@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyI18nFixture } from './helpers/i18n-runtime-fixture.mjs';
+import { applyI18nFixture } from './brain-i18n-runtime-fixture-helper.mjs';
 
 test('apply-i18n independently ensures CSS, runtime JS and mobile control', () => {
   const html = '<!doctype html><html><head><link rel="stylesheet" href="/assets/i18n.css" data-bg-i18n-asset></head><body><aside class="v18-mobile-drawer"></aside><main></main></body></html>';

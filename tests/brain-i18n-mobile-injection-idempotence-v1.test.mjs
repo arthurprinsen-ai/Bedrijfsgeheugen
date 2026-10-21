@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyI18nFixture } from './helpers/i18n-runtime-fixture.mjs';
+import { applyI18nFixture } from './brain-i18n-runtime-fixture-helper.mjs';
 
 test('apply-i18n replaces stale mobile control with route-aware links when assets already exist', () => {
   const html = '<!doctype html><html lang="en"><head><link rel="stylesheet" href="/assets/i18n.css"><script src="/assets/js/i18n.js"></script></head><body><aside class="v18-mobile-drawer"><nav data-bg-language-switcher=\'mobile\'>STALE</nav></aside><main></main></body></html>';

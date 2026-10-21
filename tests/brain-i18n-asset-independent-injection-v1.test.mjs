@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { applyI18nFixture } from './helpers/i18n-runtime-fixture.mjs';
+import { applyI18nFixture } from './brain-i18n-runtime-fixture-helper.mjs';
 
 test('apply-i18n injects runtime script independently from existing CSS', () => {
   const html = '<!doctype html><html><head><link rel="stylesheet" href="/assets/i18n.css"></head><body><aside class="v18-mobile-drawer"></aside><main></main></body></html>';

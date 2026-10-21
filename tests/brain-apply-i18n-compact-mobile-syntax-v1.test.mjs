@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { applyI18nFixture } from './helpers/i18n-runtime-fixture.mjs';
+import { applyI18nFixture } from './brain-i18n-runtime-fixture-helper.mjs';
 
 test('apply-i18n parses and preserves compact mobile CTA while injecting language control', () => {
   execFileSync(process.execPath, ['--check', 'tools/site-shell/apply-i18n.mjs'], { stdio: 'pipe' });

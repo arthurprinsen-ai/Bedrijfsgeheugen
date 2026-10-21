@@ -10,7 +10,7 @@
   "fix": "Replace brittle token assertions with actual isolated transformer executions and source-to-built pricing assertions, including repeatability and route-aware semantics.",
   "source_transformer": "tools/site-shell/apply-i18n.mjs",
   "test_files": [
-    "tests/helpers/i18n-runtime-fixture.mjs",
+    "tests/brain-i18n-runtime-fixture-helper.mjs",
     "tests/brain-apply-i18n-compact-mobile-syntax-v1.test.mjs",
     "tests/brain-i18n-independent-asset-injection-v1.test.mjs",
     "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs",
