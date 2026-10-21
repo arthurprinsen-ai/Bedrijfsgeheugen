@@ -1,0 +1,65 @@
+{
+  "fingerprint": "ci|brain-baseline|parser-errors|20261021",
+  "obligation_id": "ci-inherited-brain-parser-syntax-20261021",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "blocked_pr": 4573,
+  "source_main_sha": "d18ef16edac0e62058a51afee21cfe0b52a91e20",
+  "evidence": {
+    "run_id": 39554866582,
+    "backend_job_id": 119072398429,
+    "original_failed_tests": 355,
+    "baseline_equivalent": true,
+    "root_causes": [
+      {
+        "test": "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+        "failure": "SyntaxError: Unexpected number",
+        "cause": "Three executable-line Markdown receipt notes after the last test are not JavaScript."
+      },
+      {
+        "test": "tests/supabase-migration-history-terminal-closure-v1.test.mjs",
+        "failure": "SyntaxError: Invalid regular expression flags",
+        "cause": "Overescaped regular-expression literals and stale pattern for current canonical Supabase recovery policy."
+      }
+    ]
+  },
+  "fix": "Remove unparsed historical notes from executable heartbeat test (retain in human change log). Match canonical Supabase parity recovery ownership and production-baseline paths against current exact source using literal checks. Retain all seven heartbeat behavioral assertions and all three migration-history closure tests, ledger-count assertions and mandatory release gates.",
+  "prevention_rule": "Keep dated incident receipts in append-only docs, never as bare Markdown inside Node tests; source-contract assertions must be JavaScript-parseable and grounded in the current executable authority, without relaxing migration/readback policy.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+      "tests/supabase-migration-history-terminal-closure-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+      "tests/supabase-migration-history-terminal-closure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-external-commercial-heartbeat-v1.test.mjs",
+      "tests/supabase-migration-history-terminal-closure-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "test_evidence": {
+    "before": "BRAIN run 39554866582: both test files fail before executing assertions; total 355 inherited failures.",
+    "after": "NOT_YET_RUN_EXACT_HEAD",
+    "full_brain": "NOT_GREEN",
+    "production": "UNCHANGED"
+  },
+  "acceptance": [
+    "All original source-contract assertions remain active and parse in Node 22",
+    "Exact-head Required and Powerhouse CodeQL and full BRAIN gates succeed before protected merge",
+    "No duplicate/placeholder migration, policy bypass or production change",
+    "Full portal #4215 requires separately authenticated two real-customer tests after release"
+  ]
+}
