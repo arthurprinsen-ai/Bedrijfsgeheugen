@@ -73,10 +73,11 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
     const list=element(doc,'ul');
     list.style.cssText='padding-left:20px;margin:10px 0';
     for(const row of rows){
-      const score=Number(row.score);
+      // null and an omitted score must not become the invented numeric value 0.
+      const score=row.score===null||row.score===undefined||row.score===''?null:Number(row.score);
       const label=String(row.soort||'scan').replace(/_/g,' ');
       const day=String(row.scan_datum||row.aangemaakt||'').slice(0,10);
-      const li=element(doc,'li','',label+' · '+(Number.isFinite(score)?Math.round(score)+'/100':'geen score')+(day?' · '+day:''));
+      const li=element(doc,'li','',label+' · '+(score!==null&&Number.isFinite(score)&&score>=0&&score<=100?Math.round(score)+'/100':'geen score')+(day?' · '+day:''));
       li.style.cssText='margin-bottom:5px;font-size:.9rem';
       list.appendChild(li);
     }
