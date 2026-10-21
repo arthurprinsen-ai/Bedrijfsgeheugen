@@ -15,5 +15,26 @@
   "source_checks_verified": 11,
   "node_test_receipt": "NOT_RUN",
   "full_brain_receipt": "NOT_RUN",
-  "production_verified": false
+  "production_verified": false,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-critical-path-acceleration-v2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md"
+  ]
 }
