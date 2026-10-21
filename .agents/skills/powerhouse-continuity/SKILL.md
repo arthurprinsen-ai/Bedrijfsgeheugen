@@ -1569,3 +1569,6 @@ Count/report uncertainty only after an OPEN and same-revision write is acknowled
 ## SaaS customer persistence and ownership
 
 For SaaS changes preserve one plan → intent → verified provider subscription → confirmed identity → organisation → tenant scan/Brain lineage. Store before redirecting to payment, retry with the same provider key and resume every provisioning stage. A success URL, empty subscription table, browser cache or green deploy is never end-to-end evidence. Refuse cross-tenant reassignment and existing workspace overwrite. Subscription provisioning is not revenue verification. Canonical learning: `brain/learning/2026-10-21-saas-customer-loop.json`.
+
+## SaaS deployment scope recovery
+Root checkout pages and the V18 production generator are Netlify runtime, while the exact technical SEO checker is a verifier. Keep this in the canonical production-readback contract, retain unknown-path rejection, and replay the original merged PR with the current terminalizer after protected contract recovery. Never rewrite a terminal candidate or fabricate provider receipts.

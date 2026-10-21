@@ -18,7 +18,8 @@
     "netlify/functions/stripe-webhook.mjs",
     "netlify/functions/checkout-create.mjs",
     "tests/saas-pricing-entitlements.test.mjs",
-    "tests/brain-canonical-scan.test.mjs"
+    "tests/brain-canonical-scan.test.mjs",
+    "tests/brain-saas-readback-runtime-scope-v1.test.mjs"
   ],
   "prevention": [
     "Persist intent before provider side effect and reuse the same provider idempotency key.",
@@ -26,20 +27,24 @@
     "Resolve paid account ownership only from confirmed provider identity and server-managed invitation truth.",
     "Success URL and HTTP 200 are not storage/payment proof. Require exact server IDs and readback.",
     "Keep existing personal workspace and tenant conflicts fail-closed; never silently reassign or erase.",
-    "Subscription provisioned is not verified revenue."
+    "Subscription provisioned is not verified revenue.",
+    "Root checkout HTML and the V18 generator require Netlify runtime evidence; classify only the exact SEO validator as verifier-only and keep unknown paths fail-closed."
   ],
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md"
   ],
   "production_readback": {
     "verified": false,
-    "billing_ready": false
+    "billing_ready": false,
+    "scan_storage_smoke": "passed in canonical workflow 39553537218",
+    "native_edge_attestation": "passed in canonical workflow 39553537168"
   },
   "documentation": "docs/changes/2026-10-21-saas-customer-loop.md",
   "evaluation": {
     "historical_replay": [
       "tests/brain-saas-customer-loop-v1.test.mjs",
-      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
+      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs",
+      "tests/brain-saas-readback-runtime-scope-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-canonical-scan.test.mjs"
