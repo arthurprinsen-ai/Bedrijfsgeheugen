@@ -1,7 +1,7 @@
 import {buildOwnerOperatingModel} from './owner-operating-model.js';
 
 export const ENTREPRENEUR_GOALS=Object.freeze([
-  Object.freeze({id:'profit',label:'Meer winst',headline:'Meer verdienen aan het werk dat je al doet',reason:'Meet eerst je huidige winst en bepaal welke kosten en marges invloed hebben.',categories:['finance'],page:'cijfers-maatstaven'}),
+  Object.freeze({id:'profit',label:'Meer winst / minder kosten',headline:'Meer verdienen aan het werk dat je al doet',reason:'Meet eerst je huidige winst en bepaal welke kosten en marges invloed hebben.',categories:['finance'],page:'cijfers-maatstaven'}),
   Object.freeze({id:'revenue_growth',label:'Meer omzet',headline:'Nieuwe omzet met gezonde marges',reason:'Breng je klanten, verkoopkansen en beschikbare capaciteit in beeld.',categories:['groei','klanten'],page:'sales-intelligence'}),
   Object.freeze({id:'automate',label:'Schalen met grip',headline:'Groeien zonder dat je organisatie vastloopt',reason:'Bekijk waar processen, mensen en capaciteit je groei beperken.',categories:['operatie'],page:'bedrijfssituatie'}),
   Object.freeze({id:'exit',label:'Verkopen of overdragen',headline:'Een onderneming die klaar is voor overdracht',reason:'Onderzoek kritieke afhankelijkheden, klanten, processen en overdraagbaarheid.',categories:['risico','strategie'],page:'exit'}),
@@ -16,7 +16,7 @@ const hasValue=value=>value!==undefined&&value!==null&&value!==''&&Number.isFini
 
 export function goalContextPatch(current={},goalId,at=new Date().toISOString()){
   if(!BY_ID[goalId])throw new RangeError('ENTREPRENEUR_GOAL_INVALID');
-  const goals=unique([...(Array.isArray(current.goals)?current.goals:[]),goalId]);
+  const goals=[...new Set([...(Array.isArray(current.goals)?current.goals.filter(id=>typeof id==='string'&&id.length>0):[]),goalId])];
   return Object.freeze({goals,primary_goal:goalId,goal_confirmed_at:at,goal_confirmation_source:'entrepreneur-home'});
 }
 
