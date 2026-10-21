@@ -119,5 +119,8 @@ test('guided homepage is mounted once in original V2 with auth boundaries and na
  assert.match(html,/entrepreneur-home\.css/);
  assert.match(css,/:focus-visible/);
  assert.match(css,/prefers-reduced-motion/);
+ assert.match(css,/\.eh-page-guide/);
+ assert.match(ui,/data-entrepreneur-guide/);
+ assert.match(ui,/findPage\(target\)/);
  assert.doesNotMatch(ui,/localStorage|sessionStorage|Math\.random|fetch\(/);
 });
