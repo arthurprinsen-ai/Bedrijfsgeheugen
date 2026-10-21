@@ -23,7 +23,7 @@
       }
     ]
   },
-  "fix": "Remove unparsed historical notes from executable heartbeat test (retain in human change log). Match canonical Supabase parity recovery ownership and production-baseline paths against current exact source using literal checks. Retain all seven heartbeat behavioral assertions and all three migration-history closure tests, ledger-count assertions and mandatory release gates.",
+  "fix": "Remove unparsed historical notes from executable heartbeat test (retain in human change log). Match canonical Supabase parity recovery ownership and production-baseline paths against current exact source using literal checks. Retain all six heartbeat behavioral assertions and all three migration-history closure tests, ledger-count assertions and mandatory release gates.",
   "prevention_rule": "Keep dated incident receipts in append-only docs, never as bare Markdown inside Node tests; source-contract assertions must be JavaScript-parseable and grounded in the current executable authority, without relaxing migration/readback policy.",
   "compiler": {
     "failure_class": "CI",
