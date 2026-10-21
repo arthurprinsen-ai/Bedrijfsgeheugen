@@ -23,6 +23,8 @@ test('tenants, demo and guests cannot expose a previous company goal, impact or 
  const impact={affectedPages:['waarde-financiering','due-diligence'],effectRules:[{reason:'Financial sensitivity requires separate review.'}]};
  const anon=buildConnectedJourneyModel({pageId:'overzicht',state,authenticated:false,impact,phase:'confirmed',now:Date.parse('2026-10-21T09:10:00Z')});
  assert.equal(anon.goalLabel,null);
+ assert.equal(anon.impact.phase,'unknown');
+ assert.match(anon.impact.status,/Geen recente wijziging/);
  assert.equal(anon.related.length,0);
  assert.ok(anon.sources.every(source=>source.verified===false));
  const signed=buildConnectedJourneyModel({pageId:'overzicht',state,authenticated:true,impact,phase:'pending',now:Date.parse('2026-10-21T09:10:00Z')});
