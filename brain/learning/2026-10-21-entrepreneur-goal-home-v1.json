@@ -1,0 +1,58 @@
+{
+  "fingerprint": "portal|frisse-blik|goal-first-entrepreneur-home|v1",
+  "date": "2026-10-21",
+  "type": "IMPROVEMENT",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "The first Portal V2 experience exposed system architecture before the entrepreneur's desired business outcome.",
+  "rootCause": "Navigation and executive summaries were organised by platform functions instead of the user's primary business goal.",
+  "change": {
+    "surface": "portal-v2/entrepreneur-home.js",
+    "model": "portal-v2/entrepreneur-home-model.js",
+    "authority": "portal.business_context via existing portalDomainState + canonical Brain BusinessInput",
+    "nextBest": "tenant-scoped buildOwnerOperatingModel evidenced proposals, not automatic execution",
+    "scan": "verified same-tenant scan-claim and self-reported status only",
+    "guest": "fail closed, no tenant metrics and no local storage"
+  },
+  "prevention": [
+    "Never add a parallel onboarding store, score source, scheduler or action list",
+    "Do not interpret goal preference as confirmation of the whole company diagnosis",
+    "Unknown profitability/forecast/scan state must remain unknown",
+    "Only action proposals backed by healthy evidence and source refs may be shown",
+    "Only label a write successful after canonical state+Brain ACK",
+    "Check logged-in tenant A/B, protected CI and exact production readback before claiming live",
+    "When a persisted goal is selected again, drain any pending canonical Brain ACK before reporting saved state.",
+    "Missing scan scores remain unknown and cannot be coerced to 0/100."
+  ],
+  "tests": [
+    "portal-v2/tests/entrepreneur-home.test.mjs",
+    "portal-v2/tests/domain-state.test.mjs",
+    "portal-v2/tests/winstnavigator.test.mjs",
+    "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+  ],
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578",
+  "productionEvidence": null,
+  "verifiedLive": false,
+  "failure_class": "PORTAL_ONBOARDING_GUIDANCE_GAP",
+  "compiler": {
+    "failure_class": "PORTAL_GOAL_FIRST_ONBOARDING_AND_TENANT_EVIDENCE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-claim-propagation-v1.test.mjs",
+      "tests/brain-portal-live-revalidation-v1.test.mjs",
+      "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs",
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-claim-propagation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Navigation and executive summaries were organised by platform functions instead of the user's primary business goal."
+}

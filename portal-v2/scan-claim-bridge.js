@@ -56,19 +56,28 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
   const pendingKey=()=>pendingBedrijfslekReceipt(storage,session);
   const requestHeaders=async()=>authorizedScanHeaders(await authHeaders());
   const json=async response=>response.json().catch(()=>null);
-  function clearHistory(){history.replaceChildren()}
+  function publishScanHistory(count=null){
+    // Derived only from the existing authenticated /api/portal-scans readback;
+    // no scan receipts, names or identifiers leak to the public DOM event.
+    const view=doc.defaultView;
+    if(typeof view?.CustomEvent==='function'&&typeof view.dispatchEvent==='function')
+      view.dispatchEvent(new view.CustomEvent('bg:portal-verified-scan-count',{detail:{count}}));
+  }
+  function clearHistory(){history.replaceChildren();publishScanHistory(null);}
   function showHistory(scans){
     clearHistory();
     const rows=Array.isArray(scans)?scans.filter(row=>row?.tenant_identity_status==='verified').slice(0,5):[];
+    publishScanHistory(rows.length);
     if(!rows.length){status.textContent='Nog geen geverifieerde nulmeting gekoppeld.';return}
     status.textContent=rows.length+' geverifieerde nulmeting'+(rows.length===1?'':'en')+' beschikbaar.';
     const list=element(doc,'ul');
     list.style.cssText='padding-left:20px;margin:10px 0';
     for(const row of rows){
-      const score=Number(row.score);
+      // null and an omitted score must not become the invented numeric value 0.
+      const score=row.score===null||row.score===undefined||row.score===''?null:Number(row.score);
       const label=String(row.soort||'scan').replace(/_/g,' ');
       const day=String(row.scan_datum||row.aangemaakt||'').slice(0,10);
-      const li=element(doc,'li','',label+' · '+(Number.isFinite(score)?Math.round(score)+'/100':'geen score')+(day?' · '+day:''));
+      const li=element(doc,'li','',label+' · '+(score!==null&&Number.isFinite(score)&&score>=0&&score<=100?Math.round(score)+'/100':'geen score')+(day?' · '+day:''));
       li.style.cssText='margin-bottom:5px;font-size:.9rem';
       list.appendChild(li);
     }

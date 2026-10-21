@@ -2,7 +2,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
   observedAt:'2026-10-21T05:32:18.113Z',
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'ac5bceedc2a6e23edb0bd1fe5590525fc69a7aa05d854b77e61924755521ae83',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -36,6 +36,21 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'portal-entrepreneur-goal-home-v1',
+      fingerprint:'portal|frisse-blik|goal-first-entrepreneur-home|v1',
+      label:'One tenant-scoped entrepreneur goal, scan evidence and actionable next best step on the original Portal V2 home',
+      owner:'ONE BRAIN / existing Portal V2 and Powerhouse',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'existing authenticated portal.business_context canonical store, scan-claim readback and evidenced tenant Powerhouse model',
+      inputs:Object.freeze(['verified same-tenant scan assessment if present','customer-selected primary business goal','measurable goal target','healthy and sourced next best proposal']),
+      outputs:Object.freeze(['goal-first personalized portal home','single contextual next-step route','write confirmation only after tenant-state and Brain ACK','no invented business result']),
+      evidence:'portal-v2/tests/entrepreneur-home.test.mjs',
+      documentation:'docs/changes/portal-entrepreneur-goal-home-20261021-v1.md',
+      learning:'brain/learning/2026-10-21-entrepreneur-goal-home-v1.json',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578',
+      noNewScheduler:true, noParallelSourceOfTruth:true, productionEvidenceVerified:false
+    }),
     Object.freeze({id:'saas-customer-loop-v1',label:'Persisted SaaS checkout and scan-to-account continuity',owner:'existing Stripe / Netlify Identity / Supabase authorities',status:'CHECKOUT_ARTIFACT_RECOVERY_BILLING_BLOCKED',authority:'canonical plans, verified webhook, server-side paid invitation, canonical scan receipts, final NL/EN checkout artifact contract',inputs:Object.freeze(['plan and billing choice','confirmed account','completed scan']),outputs:Object.freeze(['durable intent and subscription receipt','same-organisation portal entitlements','tenant-bound self-reported assessment history']),evidence:'tests/saas-pricing-entitlements.test.mjs',learning:'brain/learning/2026-10-21-saas-customer-loop.json'}),
     Object.freeze({id:'portal-ai-passport-model-binding-v1',fingerprint:'portal|ai-passport|tenant-model-choice-live-projection|v1',label:'Tenant AI choice and data passport share canonical state and evidence',owner:'ONE BRAIN / existing Portal tenant state and sovereignty Heartbeat',status:'CANDIDATE_PROTECTED_DELIVERY',authority:'authenticated tenant domainState + sovereignty/security registry + AI activation readiness',inputs:Object.freeze(['portal.aiModelPreferences','data-sovereignty.aiRoutes','tenant-ai-activation-status','portal.runtime.observability.updatedAt']),outputs:Object.freeze(['requested default and workload models','model-specific data-processing facts','readiness separate from execution','identity-safe coalesced readback']),evidence:'tests/brain-portal-ai-passport-model-binding-v1.test.mjs',obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4152',learning:'brain/learning/2026-10-20-ai-passport-model-binding-v1.json'}),
     Object.freeze({
