@@ -33,8 +33,8 @@ test('3742 closure is a fresh exact-head candidate and never self-declares termi
 
 test('current terminalizer recognizes canonical Supabase migration-history closure', async () => {
   const workflow = await readFile('.github/workflows/powerhouse-obligation-terminalizer.yml', 'utf8');
-  assert.match(workflow, /Obligation-ID: supabase-migration-history-\\(parity\\|canonical\\)-/);
-  assert.match(workflow, /supabase\\/production-baseline\\/\\*/);
+  assert.ok(workflow.includes('Obligation-ID: supabase-(migration-history-(parity|canonical)|(current-)?production-ledger-parity)-'), 'canonical Supabase recovery classes must retain exact gate ownership');
+  assert.ok(workflow.includes('supabase/production-baseline/*'), 'production baseline sources remain classified for parity readback');
   assert.match(workflow, /readback_mode=supabase_history_parity_recovery/);
   assert.equal((workflow.match(/- name: Verify production promotion and runtime readback/g) || []).length, 1);
 });
