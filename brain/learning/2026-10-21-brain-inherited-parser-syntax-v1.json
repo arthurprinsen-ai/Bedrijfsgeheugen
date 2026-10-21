@@ -26,9 +26,15 @@
         "failure": "SyntaxError: Unexpected token ':'",
         "cause": "The test dynamically compiled an outdated three-argument signature while the actual helper takes five typed arguments including a consumed-capability Set and obligation."
       }
-    ]
+    ],
+    "historical_ledger_drift": {
+      "closure_row_count": 568,
+      "current_ledger_row_count_observed": 634,
+      "checked_repaired_version_names": 4,
+      "checked_all_present": true
+    }
   },
-  "fix": "Remove unparsed historical notes from executable heartbeat test (retain in human change log). Match canonical Supabase parity recovery ownership and production-baseline paths against current exact source using literal checks. Retain all six heartbeat behavioral assertions and all three migration-history closure tests, ledger-count assertions and mandatory release gates. Execute the current five-parameter fairness helper in its existing behavioral tests after normalizing only the TypeScript parameter declaration, injecting test-only no-op uniqueness collaborators, and verify consumed capability prevents blind republishing.",
+  "fix": "Remove unparsed historical notes from executable heartbeat test (retain in human change log). Match canonical Supabase parity recovery ownership and production-baseline paths against current exact source using literal checks. Retain all six heartbeat behavioral assertions and all three migration-history closure tests, ledger-count assertions and mandatory release gates. Execute the current five-parameter fairness helper in its existing behavioral tests after normalizing only the TypeScript parameter declaration, injecting test-only no-op uniqueness collaborators, and verify consumed capability prevents blind republishing. The historical 568-row closure receipt is immutable while the current 634-row ledger has legitimately grown; require monotonic count, unique versions and all four exact repaired identities instead of asserting the current ledger never grows.",
   "prevention_rule": "Keep dated incident receipts in append-only docs, never as bare Markdown inside Node tests; source-contract assertions must be JavaScript-parseable and grounded in the current executable authority, without relaxing migration/readback policy.",
   "compiler": {
     "failure_class": "CI",
