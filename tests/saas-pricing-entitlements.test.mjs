@@ -61,7 +61,7 @@ test('a failed intent write never opens a payment session',async()=>{
 });
 
 test('account activation accepts only a confirmed identity and one paid organisation',async()=>{
-  const {createAccountActivationHandler}=await import('../netlify/functions/checkout-activate.mjs');
+  const {createAccountActivationHandler}=await import('../platform/saas/account-activation.mjs');
   let writes=0;
   const user={id:'user-1',email:'owner@example.test',confirmedAt:'2026-10-21T00:00:00Z',appMetadata:{roles:['customer']}};
   const handler=createAccountActivationHandler({getUserFn:async()=>user,verifyOrigin:()=>{},
