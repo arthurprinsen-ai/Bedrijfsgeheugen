@@ -274,12 +274,30 @@ function revalidateVisibleCustomer(){
  return pendingRevalidation;
 }
 
-const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
+// Runtime evidence is transient and belongs to the exact current principal.
+// Keep the bearer-bound readback out of canonical stored customer answers.
+let latestOwnerRuntime=null;
+const currentOwnerRuntime=()=>{
+ const snap=portalStateClient.getSnapshot?.();
+ const identity=snap?.mode==='authenticated'&&snap.user&&!portalStateClient.isDemo?.()?String(snap.user.id||''):'';
+ return identity&&identity===latestOwnerRuntime?.subject?latestOwnerRuntime.value:null;
+};
+const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({
+ stateClient:portalStateClient,domainState:portalDomainState,
+ onRuntime:next=>{
+  const snap=portalStateClient.getSnapshot?.();
+  if(snap?.mode!=='authenticated'||!snap.user?.id||portalStateClient.isDemo?.())return;
+  latestOwnerRuntime={subject:String(snap.user.id),value:next};
+  runtime=next;previewMode=false;render();
+  // No customer IDs, token or provider payload is broadcast in the event.
+  globalThis.dispatchEvent?.(new Event('bg:portal-owner-runtime-updated'));
+ }
+});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
 configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
 // One guided entry over the existing authenticated tenant state and Brain authority.
-mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClient});
+mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClient,getTenantRuntime:currentOwnerRuntime});
 // Make the existing scenario/relationship experience available to the same
 // logged-in tenant rather than leaving its independent module unmounted.
 mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
@@ -291,7 +309,11 @@ portalStateClient.subscribe(snap=>{
    ? String(snap.user.id||'') : '';
  if(nextVisualSubject!==portalVisualAuthSubject){
    portalVisualAuthSubject=nextVisualSubject;
+   latestOwnerRuntime=null;
+   runtime=null;
+   previewMode=true;
    document.dispatchEvent(new Event('bg:portal-identity-boundary'));
+   globalThis.dispatchEvent?.(new Event('bg:portal-owner-runtime-updated'));
  }
  applyCustomerBranding({state:snap.state||{},user:snap.user});
  const authenticated=(snap.mode==='authenticated'||snap.mode==='empty')&&!!snap.user&&!portalStateClient.isDemo();
