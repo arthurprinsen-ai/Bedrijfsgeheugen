@@ -1,7 +1,7 @@
 import {buildEntrepreneurHomeModel,saveEntrepreneurGoal} from './entrepreneur-home-model.js';
 import {navigatePortal,currentPortalRoute,subscribePortalRoute} from './router.js';
 import {findPage} from './page-registry.js';
-import {buildEntrepreneurJourneyModel,journeyGuidance} from './entrepreneur-journey-model.js';
+import {buildEntrepreneurJourneyModel,journeyGuidance,isBrainAckForImpact} from './entrepreneur-journey-model.js';
 import {renderEntrepreneurJourney} from './entrepreneur-journey-view.js';
 
 const add=(parent,tag,className,text)=>{
@@ -189,14 +189,14 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     // A dependency is a recalculation obligation, not a proven changed KPI.
     const next=event?.detail;
     if(!Array.isArray(next?.affectedPages))return;
-    impact={affectedPages:[...next.affectedPages]};
+    if(!next.changed||!Number.isInteger(next.generation)||typeof next.path!=='string')return;
+    impact={affectedPages:[...next.affectedPages],path:next.path,generation:next.generation};
     brainReceipt=null;
     draw();
   };
   const onBrainSynced=event=>{
     if(!auth()||!impact||principal()!==subject)return;
-    const saved=Array.isArray(event?.detail?.stored)?event.detail.stored:[];
-    if(!saved.length)return;
+    if(!isBrainAckForImpact(impact,event?.detail))return;
     brainReceipt={acknowledged:true};
     draw();
   };
