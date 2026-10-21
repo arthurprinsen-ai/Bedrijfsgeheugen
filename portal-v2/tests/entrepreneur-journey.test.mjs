@@ -106,3 +106,20 @@ test('canonical Brain acknowledgement belongs to the exact path and causal mutat
  assert.equal(isBrainAckForImpact(impact,{stored,impacts:[{path:'portal.business_context',generation:17}]}),true);
  assert.equal(isBrainAckForImpact({path:'portal.business_context'}, {stored,impacts:[{path:'portal.business_context',generation:17}]}),false);
 });
+
+test('verified scan without an explicit score stays unknown across the existing overview and new home',async()=>{
+ const [overview,home]=await Promise.all([
+  readFile(new URL('../modules/overview.js',import.meta.url),'utf8'),
+  readFile(new URL('../entrepreneur-home-model.js',import.meta.url),'utf8')
+ ]);
+ assert.match(overview,/rawScore!==null&&rawScore!==undefined/);
+ assert.match(overview,/rawScore\.trim\(\)\.length>0/);
+ assert.match(overview,/hasExplicitScore\?Number\(rawScore\):NaN/);
+ assert.match(home,/hasValue\(scan\.score\)/);
+ for(const score of [undefined,null,'','  ']){
+   const state={portal:{assessments:{bedrijfslekScan:{verifiedIdentity:true,score}}}};
+   assert.equal(buildEntrepreneurHomeModel(state,{authenticated:true}).scan.score,null);
+ }
+ const knownZero={portal:{assessments:{bedrijfslekScan:{verifiedIdentity:true,score:0}}}};
+ assert.equal(buildEntrepreneurHomeModel(knownZero,{authenticated:true}).scan.score,0);
+});
