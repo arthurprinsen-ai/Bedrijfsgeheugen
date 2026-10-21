@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {buildEntrepreneurHomeModel} from '../entrepreneur-home-model.js';
-import {buildEntrepreneurJourneyModel,journeyGuidance} from '../entrepreneur-journey-model.js';
+import {buildEntrepreneurJourneyModel,journeyGuidance,isBrainAckForImpact} from '../entrepreneur-journey-model.js';
 import {allPageIds} from '../page-registry.js';
 
 test('guest and demo never inherit tenant data or connector claims',()=>{
@@ -95,4 +95,14 @@ test('one original V2 mounts Winstnavigator, scope-safe model and cleans up even
  assert.match(ui,/removeEventListener\?\.\('bg:portal-impact'/);
  assert.match(css,/\.eh-journey-stages/);
  assert.match(css,/:focus-visible/);
+});
+
+test('canonical Brain acknowledgement belongs to the exact path and causal mutation generation',()=>{
+ const impact={path:'portal.business_context',generation:17,affectedPages:['overzicht']};
+ const stored=[{stored:true,sourceRevision:'r-17'}];
+ assert.equal(isBrainAckForImpact(impact,{stored,impacts:[{path:'portal.profile',generation:17}]}),false);
+ assert.equal(isBrainAckForImpact(impact,{stored,impacts:[{path:'portal.business_context',generation:16}]}),false);
+ assert.equal(isBrainAckForImpact(impact,{stored:[],impacts:[{path:'portal.business_context',generation:17}]}),false);
+ assert.equal(isBrainAckForImpact(impact,{stored,impacts:[{path:'portal.business_context',generation:17}]}),true);
+ assert.equal(isBrainAckForImpact({path:'portal.business_context'}, {stored,impacts:[{path:'portal.business_context',generation:17}]}),false);
 });
