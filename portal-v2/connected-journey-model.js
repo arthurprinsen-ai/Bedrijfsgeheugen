@@ -77,12 +77,13 @@ export function buildConnectedJourneyModel({pageId='overzicht',state={},authenti
   const message=goal
     ?`Je werkt aan ${goal.label.toLowerCase()}. ${page.label} hoort bij jouw bedrijfscontext. Gegevens veranderen niet automatisch in bewezen winst of een goedgekeurde actie.`
     :`Dit is ${page.label}. Kies eerst jouw ondernemersdoel om dit onderdeel in jouw bedrijfsroute te plaatsen.`;
-  const impactStatus=phase==='confirmed'?'Opgeslagen in de bestaande bedrijfs- en Brain-keten':phase==='pending'?'Gewijzigd; opslag en Brain-bevestiging nog afwachten':'Geen recente wijziging met verwerkingsbewijs';
+  const trustedPhase=authenticated?phase:'unknown';
+  const impactStatus=trustedPhase==='confirmed'?'Opgeslagen in de bestaande bedrijfs- en Brain-keten':trustedPhase==='pending'?'Gewijzigd; opslag en Brain-bevestiging nog afwachten':'Geen recente wijziging met verwerkingsbewijs';
   return Object.freeze({pageId,pageLabel:page.label,goalLabel:goal?.label||null,
     message,action:Object.freeze({title:next.title||'Kies jouw ondernemersdoel',page:targetRoute}),
     sources:Object.freeze(sources),
     related:Object.freeze(related.map(id=>Object.freeze({id,label:PORTAL_PAGE_INDEX[id].label}))),
-    impact:Object.freeze({phase:authenticated?phase:'unknown',status:impactStatus,
+    impact:Object.freeze({phase:trustedPhase,status:impactStatus,
       reason:related.length?str(rule?.reason)||'Deze wijziging kan meerdere bedrijfsonderdelen raken; gevolgen vragen afzonderlijke verificatie.':null}),
     authenticated:Boolean(authenticated)});
 }
