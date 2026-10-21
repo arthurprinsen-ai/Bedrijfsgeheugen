@@ -1,0 +1,19 @@
+{
+  "fingerprint": "brain|historical-codeql-source-contract|20261021-v1",
+  "date": "2026-10-21",
+  "type": "BRAIN_LEARNING",
+  "status": "CANDIDATE",
+  "parent_issue": 3742,
+  "blocked_pr": 4573,
+  "baseline_run_id": 39554866582,
+  "baseline_backend_job_id": 119072398429,
+  "baseline_failed_tests": 355,
+  "distinct_failure_files_observed": 254,
+  "root_cause": "Historical BRAIN contract test reads retired .github/workflows/powerhouse-codeql.yml and expects an obsolete scoped CodeQL workflow. Protected current main instead runs .github/workflows/codeql.yml with unconditional analyze matrix on PR, merge_group, and main pushes.",
+  "prevention_rule": "Bind release security source contracts to the authoritative current workflow filename and assert actual required CodeQL scan languages, protected triggers, analysis, and error-on-missing SARIF; do not create alias/shadow workflows or relax CodeQL.",
+  "regression_test": "tests/brain-ci-critical-path-acceleration-v2.test.mjs",
+  "source_checks_verified": 11,
+  "node_test_receipt": "NOT_RUN",
+  "full_brain_receipt": "NOT_RUN",
+  "production_verified": false
+}
