@@ -61,6 +61,15 @@ export function buildEntrepreneurJourneyModel(state={},{
   });
 }
 
+// Correlate a Brain ACK to the exact mutation generation and state path.
+// A successful write for another form, older revision or tenant is not proof.
+export function isBrainAckForImpact(impact,detail={}){
+  if(!impact||!Number.isInteger(impact.generation)||!impact.path)return false;
+  return Array.isArray(detail.stored)&&detail.stored.length>0
+    &&Array.isArray(detail.impacts)
+    &&detail.impacts.some(item=>item?.generation===impact.generation&&item?.path===impact.path);
+}
+
 export function journeyGuidance(pageId,home,journey){
   const page=findPage(pageId);
   if(!page)return null;
