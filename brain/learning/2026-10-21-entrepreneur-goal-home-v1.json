@@ -2,7 +2,7 @@
   "fingerprint": "portal|frisse-blik|goal-first-entrepreneur-home|v1",
   "date": "2026-10-21",
   "type": "IMPROVEMENT",
-  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "status": "LIVE_PROVEN_PROVIDER_TRUTH",
   "problem": "The first Portal V2 experience exposed system architecture before the entrepreneur's desired business outcome.",
   "rootCause": "Navigation and executive summaries were organised by platform functions instead of the user's primary business goal.",
   "change": {
@@ -30,8 +30,20 @@
     "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
   ],
   "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578",
-  "productionEvidence": null,
-  "verifiedLive": false,
+  "productionEvidence": {
+    "proofType": "GITHUB_PROTECTED_MAIN_AND_NETLIFY_CURRENT_DEPLOY",
+    "pullRequest": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4579",
+    "exactMainSha": "a57b7c93e731b95aaf90fdf77276d10fe5f9f48b",
+    "deployId": "6ad86f363d80b09aaceebcfc",
+    "site": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+    "branch": "main",
+    "context": "production",
+    "state": "ready",
+    "publishedAt": "2026-10-21T07:54:26.530Z",
+    "terminalClosureRun": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39565061056",
+    "skillProjectionRun": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39565060790"
+  },
+  "verifiedLive": true,
   "failure_class": "PORTAL_ONBOARDING_GUIDANCE_GAP",
   "compiler": {
     "failure_class": "PORTAL_GOAL_FIRST_ONBOARDING_AND_TENANT_EVIDENCE",
@@ -54,5 +66,17 @@
       "tests/brain-portal-live-revalidation-v1.test.mjs"
     ]
   },
-  "root_cause": "Navigation and executive summaries were organised by platform functions instead of the user's primary business goal."
+  "root_cause": "Navigation and executive summaries were organised by platform functions instead of the user's primary business goal.",
+  "customerEndToEndAcceptance": {
+    "verified": false,
+    "status": "TWO_AUTHENTICATED_CUSTOMER_JOURNEYS_PENDING",
+    "required": [
+      "actual same-tenant Frisse Blik claim and Brain readback",
+      "goal save and canonical ACK then re-login persistence",
+      "independent tenant B no leakage of tenant A state",
+      "separate provider action and verified outcome where applicable"
+    ],
+    "doNotConflate": "deployment state != authenticated customer acceptance"
+  },
+  "prevention_rule": "Keep provider-proven production status and authenticated tenant journey acceptance separate in System Map, Brain learning, and incident lineage. Never demote immutable provider proof due to observer unavailability; never claim tenant E2E from deployment metadata."
 }

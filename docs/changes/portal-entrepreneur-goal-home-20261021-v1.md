@@ -32,3 +32,9 @@ Productie-acceptatie vóór terminal groen:
 7. Exact HEAD Required, CodeQL, protected merge, Netlify current/main exact SHA, echte DOM readback.
 
 **Status:** kandidaatcode; bovenstaande productie- en geauthenticeerde acceptatie worden niet door een codecommit bewezen. Geen gates omzeilen.
+
+## Gecontroleerde releasewaarheid — 21 oktober 2026
+
+De oorspronkelijke protected PR [#4579](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4579) is gemerged in exacte `main`-SHA `a57b7c93e731b95aaf90fdf77276d10fe5f9f48b`. Required CI, Portal, Backend, Netlify build parity en CodeQL JavaScript/Python zijn succesvol; Netlify `bedrijfsgeheugen` rapporteert huidige productie-deploy `6ad86f363d80b09aaceebcfc`, `state=ready`, `context=production`, `branch=main`, dezelfde exacte `commit_ref`, gepubliceerd `2026-10-21T07:54:26.530Z`. De terminal-closure en skillprojectie zijn succesvol (runs [39565061056](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39565061056) en [39565060790](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39565060790)).
+
+Status: **`LIVE_PROVEN_PROVIDER_TRUTH` voor de release**. De geïsoleerde, ingelogde acceptatie van twee echte klanten — Frisse Blik claim → Brain-readback → doel opslaan → herlogin → tenantisolatie — is nog **niet bewezen**. GitHub [#4578](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578) blijft alleen voor dat acceptatiebewijs open. Ontbrekende meetgegevens en gerealiseerde waarde mogen niet uit tests of uit de provider-deployment worden afgeleid.
