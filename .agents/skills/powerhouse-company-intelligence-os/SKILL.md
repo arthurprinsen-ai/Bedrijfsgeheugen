@@ -159,3 +159,7 @@ Regressies: `tests/brain-portal-entrepreneur-goal-home-v1.test.mjs` (importeert 
 
 ### Nulmeting-scores: ontbrekend is nooit nul
 Elke overzichtskaart, inclusief de historische Bedrijfslek-weergave, moet ontbrekende, `null`, lege of witruimte-scores als **onbekend** behandelen. Alleen expliciet aangeleverde `0` mag als gemeten 0/100 verschijnen, mits de eigen tenant-claim en herkomst bevestigd zijn. Bron: `portal-v2/modules/overview.js` en `portal-v2/tests/entrepreneur-journey.test.mjs`. Dit is een regressieregel op de bestaande acht-onderdelen-lineage #4585, geen nieuwe dataautoriteit.
+
+### Veilige vluchtige Brain-runtime in de ondernemersreis
+
+Fingerprint `portal|eight-outcomes|principal-bound-live-runtime|v1`. De geautoriseerde `/api/brain-operating-loop`-projectie is géén duurzaam `portal.business_context`-antwoord. Bied live runtime uitsluitend aan de **huidige** geauthenticeerde principal aan; bij accountwisseling of logout direct wissen en de frontend opnieuw projecteren zonder identiteit of payload in browser-events. Nooit via `domainState`-data van een vorige gebruiker hergebruiken. Brain-runtime-observatie mag niet als bewijs voor connector-provideracties, Heartbeat-SLA, financiële forecast of gerealiseerde winst gelden. Houd de oorspronkelijke Supabase/Brain-writeautoriteit en tenant/RLS intact. Regressie via `portal-v2/tests/entrepreneur-journey.test.mjs` en root-learning-replay.
