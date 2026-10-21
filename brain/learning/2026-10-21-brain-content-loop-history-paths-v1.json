@@ -44,15 +44,16 @@
       {
         "path": "supabase/migration-history/repository-only/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
         "blob_sha": "ec95d7199b06974bb0e3cbe31c1c74407024e292",
-        "retained_source_assertions": 39,
+        "retained_source_assertions": 37,
         "retained_negative_guards": 1,
         "canonical_tests": [
           "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
           "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
-        ]
+        ],
+        "runtime_source_assertions": 2
       }
     ],
-    "source_marker_assertions_verified": 91,
+    "source_marker_assertions_verified": 88,
     "negative_source_guards_verified": 3,
     "latest_full_brain": {
       "run_id": 39629449830,
@@ -71,9 +72,10 @@
       "previous_failures": 7,
       "source_run_id": 39629449830,
       "cause": "Two suites read a Rocket revenue SQL file from executable migrations though the original is only in canonical repository-only history.",
-      "positive_or_runtime_source_checks_verified": 39,
       "negative_source_guards_verified": 1,
-      "status": "SOURCE_PROVEN_PENDING_EXACT_HEAD_CI"
+      "status": "SOURCE_PROVEN_PENDING_EXACT_HEAD_CI",
+      "sql_positive_source_checks_verified": 37,
+      "runtime_source_checks_verified": 2
     }
   },
   "fix": "Preserve earlier three archived SQL path repairs and five-argument content preservation guards; also replace one further commercial closed-loop SQL test path with exact immutable repository-only archive, with every original source assertion untouched.",
