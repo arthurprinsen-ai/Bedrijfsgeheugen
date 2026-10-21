@@ -12,7 +12,8 @@ export const ENTREPRENEUR_GOALS=Object.freeze([
 
 const BY_ID=Object.freeze(Object.fromEntries(ENTREPRENEUR_GOALS.map(goal=>[goal.id,goal])));
 const unique=items=>[...new Set((Array.isArray(items)?items:[]).filter(id=>Boolean(BY_ID[id])))];
-const hasValue=value=>value!==undefined&&value!==null&&value!==''&&Number.isFinite(Number(value));
+const hasValue=value=>value!==undefined&&value!==null&&(typeof value!=='string'||value.trim().length>0)&&Number.isFinite(Number(value));
+const validIsoDate=value=>typeof value==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&Number.isFinite(Date.parse(value+'T00:00:00Z'))&&new Date(value+'T00:00:00Z').toISOString().slice(0,10)===value;
 
 export function goalContextPatch(current={},goalId,at=new Date().toISOString()){
   if(!BY_ID[goalId])throw new RangeError('ENTREPRENEUR_GOAL_INVALID');
@@ -32,7 +33,7 @@ export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Da
   const scanVerified=scan?.verifiedIdentity===true||verifiedHistory>0;
   const score=scan?.verifiedIdentity===true&&hasValue(scan.score)&&Number(scan.score)>=0&&Number(scan.score)<=100?Math.round(Number(scan.score)):null;
   const target=primary?context?.goal_targets?.[primary]||{}:{};
-  const hasTarget=hasValue(target.target_value)&&typeof target.target_date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(target.target_date);
+  const hasTarget=hasValue(target.target_value)&&validIsoDate(target.target_date);
   const intelligence=authenticated?buildOwnerOperatingModel(safe,{now}):null;
   const recommended=chosen&&intelligence?.ready?intelligence.actions.find(item=>chosen.categories.includes(item.ownerCategory)&&item?.evidence_health?.status==='healthy'&&Array.isArray(item?.source_refs)&&item.source_refs.length>0):null;
   const next=!chosen
