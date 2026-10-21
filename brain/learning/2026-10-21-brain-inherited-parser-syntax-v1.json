@@ -40,17 +40,14 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-external-commercial-heartbeat-v1.test.mjs",
-      "tests/supabase-migration-history-terminal-closure-v1.test.mjs",
       "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-external-commercial-heartbeat-v1.test.mjs",
-      "tests/supabase-migration-history-terminal-closure-v1.test.mjs",
       "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
     ],
     "canary": [
       "tests/brain-external-commercial-heartbeat-v1.test.mjs",
-      "tests/supabase-migration-history-terminal-closure-v1.test.mjs",
       "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
     ]
   },
@@ -62,7 +59,8 @@
     "before": "BRAIN run 39554866582: both test files fail before executing assertions; total 355 inherited failures.",
     "after": "NOT_YET_RUN_EXACT_HEAD",
     "full_brain": "NOT_GREEN",
-    "production": "UNCHANGED"
+    "production": "UNCHANGED",
+    "learning_eval_note": "Learning canonicalizer only accepts tests/brain-*.test.mjs; the supabase migration closure test stays in the existing full backend/BRAIN and direct test coverage, not omitted from the repository."
   },
   "acceptance": [
     "All three prior Node module loading errors disappear while all original behavioral and source-contract checks remain active",
