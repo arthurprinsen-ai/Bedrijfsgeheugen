@@ -44,5 +44,10 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "test_evidence": {
+    "before": "PR #4573 BRAIN 39554866582: 355 inherited failures on unchanged base main; several i18n assertions reference obsolete internal tokens and pre-transform HTML.",
+    "after": "Protected Required test exact-head runner not yet terminal green; canonical learning replay passed on a289eaca86740d49061ccbd31b8c39b83c709170, but semantic evidence closure required.",
+    "production": "No production mutation or live acceptance claim"
   }
 }
