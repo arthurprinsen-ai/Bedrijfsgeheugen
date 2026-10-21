@@ -1,0 +1,49 @@
+{
+  "fingerprint": "ci|brain-baseline|tenant-identity-archived-sql-source-contract|v1",
+  "obligation_id": "ci-3742-tenant-identity-archive-contract-v1",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "blocked_pr": 4573,
+  "main_epoch": "d18ef16edac0e62058a51afee21cfe0b52a91e20",
+  "source_run": 39554866582,
+  "root_cause": "Active five-case tenant identity source-contract test reads the former executable migration path even though the exact historical source is retained under the repository-only archive.",
+  "source_evidence": {
+    "archived_path": "supabase/migration-history/repository-only/20260915170000_powerhouse_tenant_identity_hardening_v1.sql",
+    "archived_blob_sha": "50d899bfa0569cf17661804b8a142cb4aa42d808",
+    "outdated_path": "supabase/migrations/20260915170000_powerhouse_tenant_identity_hardening_v1.sql",
+    "positive_assertions_verified": 17,
+    "negative_assertions_verified": 2,
+    "original_test_cases": 5
+  },
+  "change": "Modify only the migration read path in the existing five-test suite, retain all its assertions, and add an independent self-check using the real archived source.",
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "prevention_rule": "An active source-contract test must read the canonical immutable history location after repository-only archive migration; never resurrect applied SQL migrations as new executable files solely to make CI pass.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-identity-archive-source-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-tenant-identity-archive-source-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-tenant-identity-archive-source-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-tenant-identity-archive-contract/SKILL.md"
+  ],
+  "test_evidence": {
+    "before": "PR #4573 BRAIN backend 355 inherited failures; these five test cases read missing file",
+    "source": "17/17 original positive SQL patterns + 2/2 forbidden SQL patterns verified against archived real SQL blob",
+    "after": "NOT_YET_RUN_EXACT_HEAD",
+    "production": "UNCHANGED",
+    "authenticated_customer_ab": "NOT_PROVEN"
+  }
+}
