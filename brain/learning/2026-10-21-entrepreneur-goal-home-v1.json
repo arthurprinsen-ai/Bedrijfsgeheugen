@@ -24,9 +24,24 @@
   "tests": [
     "portal-v2/tests/entrepreneur-home.test.mjs",
     "portal-v2/tests/domain-state.test.mjs",
-    "portal-v2/tests/winstnavigator.test.mjs"
+    "portal-v2/tests/winstnavigator.test.mjs",
+    "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
   ],
   "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578",
   "productionEvidence": null,
-  "verifiedLive": false
+  "verifiedLive": false,
+  "failure_class": "PORTAL_ONBOARDING_GUIDANCE_GAP",
+  "compiler": {
+    "failure_class": "PORTAL_ONBOARDING_GUIDANCE_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+    ],
+    "scope": "Exact local regression, no production canary assertion"
+  }
 }
