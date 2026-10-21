@@ -9,7 +9,7 @@ Obligation: `ci-inherited-brain-parser-syntax-20261021`. Parent: [#3742](https:/
 
 ## Begrensde reparatie
 
-- Verwijder uitsluitend de historische losse Markdownregels uit het Heartbeat-testbestand; behoud de zeven bestaande autorisatie-, scheduler-, retry-, databaseverbinding- en durable-readbacktests.
+- Verwijder uitsluitend de historische losse Markdownregels uit het Heartbeat-testbestand; behoud de zes bestaande autorisatie-, scheduler-, retry-, databaseverbinding- en durable-readbacktests.
 - Vervang de twee misvormde migratiebron-regexen door exacte, parseerbare checks op de bestaande canonieke workflowbron. Behoud beide eerdere 568-record ledgerchecks, de drie testgevallen, de productie- en exact-HEAD-voorwaarden, en alle andere assertions ongewijzigd.
 - Geen workflow, productiefunction, Supabase-DDL, bestaande scheduler, toegangsniveau, live connector, releasepoort of echte klantdata gewijzigd.
 
