@@ -2,7 +2,7 @@
   "fingerprint": "portal|eight-outcomes|connected-entrepreneur-journey|v1",
   "date": "2026-10-21",
   "type": "IMPROVEMENT",
-  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "status": "LIVE_PROVEN_PROVIDER_TRUTH",
   "problem": "The goal-first homepage, cockpit, Winstnavigator, authenticated scan, Brain impact events and contextual portal pages were independently implemented but were not one clearly guided, source-aware entrepreneur experience.",
   "root_cause": "The existing Winstnavigator was not mounted in the current Portal V2 app and the homepage did not project the dependency/ACK lineage, source limits and consistent contextual guidance from the canonical tenant state.",
   "prevention": [
@@ -57,5 +57,18 @@
     "status": "PENDING_TWO_REAL_AUTHENTICATED_TENANT_JOURNEYS",
     "verified": false
   },
-  "productionEvidenceVerified": false
+  "productionEvidenceVerified": true,
+  "productionEvidence": {
+    "proofType": "GITHUB_PROTECTED_MAIN_AND_NETLIFY_CURRENT_DEPLOY",
+    "pullRequest": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4588",
+    "exactMainSha": "20abd485e7956bf8f1aa541a52076533269e4569",
+    "deployId": "6ad88550dd76a312a37b77fc",
+    "siteId": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "state": "ready",
+    "branch": "main",
+    "context": "production",
+    "publishedAt": "2026-10-21T09:28:54.780Z",
+    "candidateChecks": "Required, Portal, Backend, website browser 265 routes x 3 viewports, build parity, CodeQL Python+JavaScript success"
+  },
+  "prevention_rule": "Do not conflate a verified GitHub/Netlify exact-main product deployment with verified real tenant scans, connector executions, customer forecasts or end-to-end outcomes. Keep separate statuses in Brain, System Map and Notion."
 }

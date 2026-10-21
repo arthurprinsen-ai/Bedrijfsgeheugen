@@ -38,3 +38,11 @@ Frisse Blik → eigen geauthenticeerde scan/profiel → ondernemersdoel → bron
 Canonical System Map `portal-eight-outcomes-connected-journey-v1`, bijbehorende `brain/learning/2026-10-21-portal-connected-entrepreneur-journey-v1.json`, `.agents/skills/powerhouse-company-intelligence-os/SKILL.md` en append-only event. Geen extra scheduler, DB-migratie, marketingmail, Composio-side effect of Notion-replicatietabel.
 
 **Huidige leverstatus:** beschermd kandidaat, geen productieclaim tot provider-readback.
+
+## Productierelease-readback — 21 oktober 2026
+
+De beschermde [PR #4588](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4588) is 2026-10-21T09:26:38Z gemerged in exacte main-SHA `20abd485e7956bf8f1aa541a52076533269e4569`. Verplichte kandidaatcontroles inclusief Required, Portal, Backend, CodeQL, Netlify-buildpariteit en 265 pagina's × drie formaten browseracceptatie waren terminal groen.
+
+Rechtstreeks bevestigde huidige Netlify-productieversie: site `fd527056-493a-4d8a-8125-d00370104fa3`, deploy `6ad88550dd76a312a37b77fc`, branch `main`, context `production`, `state=ready`, dezelfde `commit_ref=20abd485e7956bf8f1aa541a52076533269e4569`, gepubliceerd `2026-10-21T09:28:54.780Z`. Daarmee is de **release provider-live bewezen**; de eerdere kandidaatstatus in dit document beschrijft alleen de ontwikkelfase.
+
+De **volledige bedrijfsketen is NIET geaccepteerd** zonder echte aparte geauthenticeerde tenant A/B, originele scans, mutatiegeneration + Brain ACK, financieel modelresultaat, gerealiseerde outcome en connectorproviderbewijs. Rechtstreekse Supabase-aggregaten op 21 oktober: één portaltenant, nul connector-definities, nul connector-uitvoeringen en nul financiële forecastrecords. Issues [#4585](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585), [#4215](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215) en [#4547](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547) blijven open voor de niet bewezen klantkant; geen fake green en geen veiligheidsbypass.

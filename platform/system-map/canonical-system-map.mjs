@@ -41,7 +41,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       fingerprint:'portal|eight-outcomes|connected-entrepreneur-journey|v1',
       label:'Connected goal-first Frisse Blik, cockpit, source-backed Winstnavigator and page impact journey',
       owner:'ONE BRAIN / existing Portal V2, Powerhouse and Heartbeat read authorities',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'LIVE_PROVEN_PROVIDER_TRUTH',
       authority:'existing authenticated /api/portal-state, /api/portal-scans and canonical BusinessInput / Brain ACK',
       inputs:Object.freeze(['tenant-verified scan claim','selected business goal','source-backed Powerhouse actions','tenant historical observations','canonical mutation impact and Brain ACK','heartbeat runtime when observed']),
       outputs:Object.freeze(['one guided next step','single contextual dashboard and navigator','unknown-safe forecasts','affected page links without invented calculations','verified outcome only with original evidence']),
@@ -50,7 +50,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       documentation:'docs/changes/portal-connected-entrepreneur-journey-20261021-v1.md',
       learning:'brain/learning/2026-10-21-portal-connected-entrepreneur-journey-v1.json',
       obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585',
-      noSecondPortal:true,noNewScheduler:true,authenticatedTwoTenantAcceptance:false,providerProductionEvidenceVerified:false
+      noSecondPortal:true,noNewScheduler:true,authenticatedTwoTenantAcceptance:false,providerProductionEvidenceVerified:true,
+      productionMainSha:'20abd485e7956bf8f1aa541a52076533269e4569',
+      productionDeployId:'6ad88550dd76a312a37b77fc',
+      productionPublishedAt:'2026-10-21T09:28:54.780Z',
+      verifiedBoundary:'Protected release and Netlify main/current exact SHA proven; independent 2-real-customer E2E/connector/forecast acceptance still pending'
     }),
     Object.freeze({
       id:'portal-entrepreneur-goal-home-v1',
