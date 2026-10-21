@@ -86,7 +86,7 @@ test('one original V2 mounts Winstnavigator, scope-safe model and cleans up even
    readFile(new URL('../entrepreneur-home.css',import.meta.url),'utf8')
  ]);
  assert.match(app,/mountWinstnavigator\(\{domainState:portalDomainState,stateClient:portalStateClient\}\)/);
- assert.match(app,/mountEntrepreneurHome\(\{domainState:portalDomainState,stateClient:portalStateClient\}\)/);
+ assert.match(app,/mountEntrepreneurHome\(\{domainState:portalDomainState,stateClient:portalStateClient,getTenantRuntime:currentOwnerRuntime\}\)/);
  assert.match(html,/winstnavigator\.css/);
  assert.match(navigator,/stateClient\.getSnapshot\(\)\?\.state\|\|\{\}/);
  assert.match(ui,/renderEntrepreneurJourney\(host,journey\)/);
@@ -122,4 +122,34 @@ test('verified scan without an explicit score stays unknown across the existing 
  }
  const knownZero={portal:{assessments:{bedrijfslekScan:{verifiedIdentity:true,score:0}}}};
  assert.equal(buildEntrepreneurHomeModel(knownZero,{authenticated:true}).scan.score,0);
+});
+
+test('fresh authenticated Brain runtime is visible on owner journey, without upgrading unknown connector results',()=>{
+ const at=Date.parse('2026-10-21T19:00:00Z');
+ const home=buildEntrepreneurHomeModel({},{authenticated:true});
+ const live={observability:{source:'brain-operating-loop',updatedAt:'2026-10-21T18:50:00Z'},sources:{items:[]}};
+ const fresh=buildEntrepreneurJourneyModel({},{authenticated:true,home,now:at,tenantRuntime:live});
+ assert.equal(fresh.heartbeat,'TENANT_RUNTIME_OBSERVED');
+ assert.equal(fresh.steps.find(item=>item.id==='evidence').confirmed,false);
+ assert.equal(fresh.scenario.available,false);
+ const stale=buildEntrepreneurJourneyModel({},{authenticated:true,home,now:at+2*86400000,tenantRuntime:live});
+ assert.equal(stale.heartbeat,'UNKNOWN');
+ const anonymous=buildEntrepreneurJourneyModel({},{authenticated:false,home,now:at,tenantRuntime:live});
+ assert.equal(anonymous.heartbeat,'UNKNOWN');
+ assert.equal(anonymous.authenticated,false);
+ const noProviderProof=buildEntrepreneurJourneyModel({},{authenticated:true,home,now:at,tenantRuntime:{observability:{source:'github',updatedAt:'2026-10-21T18:50:00Z'}}});
+ assert.equal(noProviderProof.heartbeat,'UNKNOWN');
+});
+test('live runtime integration is principal-bound and clears when the account changes',async()=>{
+ const [app,ui]=await Promise.all([
+  readFile(new URL('../app.js',import.meta.url),'utf8'),
+  readFile(new URL('../entrepreneur-home.js',import.meta.url),'utf8')
+ ]);
+ assert.match(app,/identity===latestOwnerRuntime\?\.subject/);
+ assert.match(app,/latestOwnerRuntime=null;/);
+ assert.match(app,/snap\?\.mode==='authenticated'/);
+ assert.match(app,/new Event\('bg:portal-owner-runtime-updated'\)/);
+ assert.match(ui,/tenantRuntime:loggedIn&&customerState\?getTenantRuntime\(\):null/);
+ assert.match(ui,/removeEventListener\?\.\('bg:portal-owner-runtime-updated'/);
+ assert.doesNotMatch(app,/new CustomEvent\('bg:portal-owner-runtime-updated',\{detail:/);
 });
