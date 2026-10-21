@@ -136,3 +136,13 @@ Powerhouse projecteert de publieke categorie `Company Brain` als acquisitiesigna
 `Company Brain / knowledge-context → signals → impact → decision → action → observed outcome → learning`.
 
 De publieke hoofdclaim **Een Company Brain is waar Bedrijfsgeheugen begint** beschrijft dus de productarchitectuur: context is een inputlaag, niet de terminale capability. Company-Brain-intentie, CTA-progressie, scanuitkomst, lead/proposal/order en gerealiseerde omzet moeten als één lineage terugstromen naar bestaande evidence, outcome memory en compound learning. Verkeer zonder downstream outcome mag nooit als bewezen commerciële waarde worden opgeslagen.
+
+## Ondernemershomepage na Frisse Blik — verplichte doelgestuurde entry
+
+Fingerprint: `portal|frisse-blik|goal-first-entrepreneur-home|v1`.
+
+De **bestaande V2** toont na inloggen eerst: (1) door de klant gekozen ambitie, (2) alleen daadwerkelijk gekoppelde scan/bedrijfsgegevens, (3) één volgende stap met begrijpelijke reden en (4) link naar het bestaande besluit- of invulscherm. Status van een doelkeuze is niet gelijk aan een bevestigd bedrijfsprofiel.
+
+Canonieke opslag: `portal.business_context.goals` + `primary_goal` via bestaande `portalDomainState.patch/flush`, met tenant state plus Brain BusinessInput ACK. Geen tweede onboarding-state, lokale browser data of nieuw portaal. Bij ontbrekende target: eerst doel meetbaar maken. Alleen onderbouwde Powerhouse-voorstellen met gezonde bronstatus en bronreferenties mogen als zodanig verschijnen; nooit uitvoerings- of ROI-bewijs verzinnen.
+
+Elke toekomstige herbouw van het portaal moet `portal-v2/tests/entrepreneur-home.test.mjs` en de twee-tenant productiecontrole blijven behouden. Source: `docs/changes/portal-entrepreneur-goal-home-20261021-v1.md`. Obligation: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578.
