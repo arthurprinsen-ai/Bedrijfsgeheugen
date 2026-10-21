@@ -19,7 +19,9 @@
     "Unknown profitability/forecast/scan state must remain unknown",
     "Only action proposals backed by healthy evidence and source refs may be shown",
     "Only label a write successful after canonical state+Brain ACK",
-    "Check logged-in tenant A/B, protected CI and exact production readback before claiming live"
+    "Check logged-in tenant A/B, protected CI and exact production readback before claiming live",
+    "When a persisted goal is selected again, drain any pending canonical Brain ACK before reporting saved state.",
+    "Missing scan scores remain unknown and cannot be coerced to 0/100."
   ],
   "tests": [
     "portal-v2/tests/entrepreneur-home.test.mjs",
@@ -32,16 +34,23 @@
   "verifiedLive": false,
   "failure_class": "PORTAL_ONBOARDING_GUIDANCE_GAP",
   "compiler": {
-    "failure_class": "PORTAL_ONBOARDING_GUIDANCE_GAP",
+    "failure_class": "PORTAL_GOAL_FIRST_ONBOARDING_AND_TENANT_EVIDENCE",
     "scope": "PORTAL",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": false
+    "security_sensitive": true
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+      "tests/brain-portal-claim-propagation-v1.test.mjs",
+      "tests/brain-portal-live-revalidation-v1.test.mjs",
+      "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs"
     ],
-    "scope": "Exact local regression, no production canary assertion"
+    "shadow": [
+      "tests/brain-portal-claim-propagation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ]
   }
 }
