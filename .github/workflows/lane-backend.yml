@@ -34,6 +34,7 @@ jobs:
       - name: Verify backend Brain runtime and Quality Intelligence contracts
         run: >-
           node --test
+          tests/brain-portal-input-taxonomy-v1.test.mjs
           tests/brain-adapter-conformance.test.mjs
           tests/brain-platform-adapters.test.mjs
           tests/brain-error-learning-contract.test.mjs

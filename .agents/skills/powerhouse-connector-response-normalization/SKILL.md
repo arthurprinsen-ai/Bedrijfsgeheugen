@@ -100,3 +100,11 @@ This incident class is prevented only when:
 - the delivery lineage reaches protected merge and the applicable production/provider or protected-main readback contract.
 
 Reference closure: PR #3100 merged to protected `main` as `bc47d636675f9fea41044667797dade0962b03ef` on 2026-09-25.
+
+## Native browser request and database admission
+
+Fingerprint: `portal|business-input|postgres-taxonomy-and-native-request|v1`.
+
+When a handler accepts both native Fetch Request and pre-parsed transport objects, read native JSON through `request.json()`; `Request.body` is a stream, never the decoded customer configuration. Validate create → edit → reopen through the actual browser API adapter and tenant-scoped server handler. Legacy object-only tests are insufficient.
+
+Before claiming Portal BusinessInput persistence, replay the actual source, BusinessInput, CurrentState and impact writer records against the versioned Postgres type/kind checks. HTTP mocks cannot detect database admission drift. Preserve all prior admitted values, fail on unknown schema drift, bound locks/time, and retain RLS/ACL/idempotency. Fixture tenants prove isolated behavior, never genuine customer acceptance.

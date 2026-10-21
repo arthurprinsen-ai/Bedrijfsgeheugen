@@ -5,7 +5,7 @@ const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?sec
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 function tenantFromUser(user){return user?.tenantId||user?.app_metadata?.tenantId||user?.app_metadata?.tenant_id||null;}
 function clean(value){if(Array.isArray(value))return value.map(clean);if(!value||typeof value!=='object')return value;return Object.fromEntries(Object.entries(value).filter(([key])=>!SECRET_KEY.test(key)).map(([key,val])=>[key,clean(val)]));}
-function normalizedRequest(request){const rawPath=request?.path||request?.url||'/api/connectors';let path=rawPath;try{path=new URL(rawPath,'https://portal.local').pathname;}catch{}return {method:String(request?.method||'GET').toUpperCase(),path,body:request?.body};}
+function normalizedRequest(request){const rawPath=request?.path||request?.url||'/api/connectors';let path=rawPath;try{path=new URL(rawPath,'https://portal.local').pathname;}catch{}return {method:String(request?.method||'GET').toUpperCase(),path,body:typeof request?.json==='function'?undefined:request?.body};}
 async function requestBody(request,normalized){if(normalized.body!==undefined){if(typeof normalized.body==='string'){try{return JSON.parse(normalized.body);}catch{return {};}}return normalized.body||{};}if(typeof request?.json==='function'){try{return await request.json();}catch{return {};}}return {};}
 function executionVersion(row){return Number(row?.connector_versie??row?.connectorVersion??0);}
 function executionEvidence(row){return row?.evidence&&typeof row.evidence==='object'?row.evidence:{};}

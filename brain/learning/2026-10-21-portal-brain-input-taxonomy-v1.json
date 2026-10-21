@@ -1,0 +1,37 @@
+{
+  "fingerprint": "portal|business-input|postgres-taxonomy-and-native-request|v1",
+  "date": "2026-10-21",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "p0-4215-portal-brain-taxonomy-20261021",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "PORTAL_PERSISTENCE_CONTRACT_DRIFT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The production brain_records taxonomy rejects SourceObservation/raw_source, BusinessInput/SourceTruth and ImpactAssessment/organism_impact emitted by V2. The connector handler additionally treated native Request.body ReadableStream as parsed JSON, silently discarding draft configuration.",
+  "prevention_rule": "Replay actual writer output against versioned Postgres constraints and test the active browser API with native Request objects, not only pre-parsed request doubles. Preserve RLS, ACL, immutable lineage, idempotency and provider activation proof.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-input-taxonomy-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-input-taxonomy-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-input-taxonomy-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-connector-response-normalization/SKILL.md"
+  ],
+  "test_evidence": {
+    "red": "Original writer reproduced RAW_SOURCE_WRITE_FAILED/502; native connector adapter lost source.config.",
+    "green": "45 targeted checks passed; isolated PostgreSQL migration replay twice, actual writer four records per each of two fixture tenants, replay dedupe and invalid taxonomy rejection.",
+    "production": "NOT_YET_APPLIED_OR_CUSTOMER_VERIFIED"
+  },
+  "production_verified": false
+}
