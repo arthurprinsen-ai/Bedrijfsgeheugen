@@ -29,6 +29,12 @@ Deno.serve(async(req)=>{
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published','measured','learned'].includes(clean(d.state))) return json({ok:false,error:'NO_APPROVED_BLOG_ARTIFACT',runDate},404);
 
   const generation=evidenceObject(a.generation_evidence);
+  // Reader-ready means the draft passes editorial checks; it is not approval.
+  // Keep the canonical export fail-closed until the existing owner explicitly
+  // approves the exact final copy. Do not infer approval from publish intent.
+  if (generation.final_copy_approved !== true) {
+    return json({ok:false,error:'BLOG_FINAL_COPY_NOT_APPROVED',runDate},409);
+  }
   const slug=clean(generation.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   // Never export a stale obligation's URL when the artifact was regenerated.
   // A proven provider side effect is immutable: reconcile it, do not replace it.
