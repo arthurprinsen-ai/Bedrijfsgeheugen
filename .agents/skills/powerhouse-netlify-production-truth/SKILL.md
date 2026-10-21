@@ -44,6 +44,12 @@ Required pattern:
 - provider access failures remain provider evidence and cannot be converted into page-regression evidence;
 - regression test: `tests/delivery-website-browser-runtime-single-install.test.mjs`.
 
+## Runtime fixture regression for inherited BRAIN i18n contracts
+
+Fingerprint: `ci|inherited-brain|i18n-transform-runtime-fixtures|v1`.
+
+A source-token assertion that relies on a retired local variable name does not establish build behavior. Execute the canonical `tools/site-shell/apply-i18n.mjs` on isolated fixture HTML and assert CSS+JS independently, existing and partially present assets, NL/EN route-aware mobile controls, preserved compact CTA, and byte-identical second execution. Keep the separate actual pricing source-to-build check. Never run this regression transformer on checked-in site pages. Existing BRAIN gates, accepted site baseline, external production readback and security remain mandatory. Canonical test helper: `tests/brain-i18n-runtime-fixture-helper.mjs`.
+
 ## Executable build-transformer gate
 
 Fingerprint: `delivery-terminal-release-marker-mobile-i18n-v1` revision 2.

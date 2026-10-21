@@ -1,0 +1,53 @@
+{
+  "fingerprint": "ci|inherited-brain|i18n-transform-runtime-fixtures|v1",
+  "obligation_id": "ci-inherited-brain-i18n-runtime-fixture-20261021",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "affected_pr": 4573,
+  "source_main_sha": "43a6c1e5cb5381963f83076bccf9e79ac53603d5",
+  "origin_run": 39554866582,
+  "root_cause": "Inherited i18n Brain source-contract tests depend on exact pre-refactor variable names while the current transform uses file-scoped route-aware DOM injection. One pricing test incorrectly requires build outputs in the pre-build source.",
+  "fix": "Replace brittle token assertions with actual isolated transformer executions and source-to-built pricing assertions, including repeatability and route-aware semantics.",
+  "source_transformer": "tools/site-shell/apply-i18n.mjs",
+  "test_files": [
+    "tests/brain-i18n-runtime-fixture-helper.mjs",
+    "tests/brain-apply-i18n-compact-mobile-syntax-v1.test.mjs",
+    "tests/brain-i18n-independent-asset-injection-v1.test.mjs",
+    "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs",
+    "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs",
+    "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
+  ],
+  "security": "No test removed; no mandatory workflow, migration, production or RLS change; all runtime assertions must pass.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-apply-i18n-compact-mobile-syntax-v1.test.mjs",
+      "tests/brain-i18n-independent-asset-injection-v1.test.mjs",
+      "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs",
+      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
+    ],
+    "targeted_node": "NOT_YET_CONFIRMED_BY_GITHUB",
+    "full_brain": "NOT_YET_GREEN",
+    "required": "NOT_YET_CONFIRMED",
+    "codeql": "NOT_YET_CONFIRMED",
+    "production": "UNCHANGED"
+  },
+  "prevention_rule": "Release-contract tests of build transformers must run the actual transformer in fresh disposable fixture roots; avoid matching a fixed spelling for internal variable names, while asserting the original invariant and exact-head gates.",
+  "skill_targets": [
+    ".agents/skills/powerhouse-netlify-production-truth/SKILL.md"
+  ],
+  "system_map": "platform/system-map/canonical-system-map.mjs",
+  "status": "CANDIDATE_UNVERIFIED_PROTECTED_GATES",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "test_evidence": {
+    "before": "PR #4573 BRAIN 39554866582: 355 inherited failures on unchanged base main; several i18n assertions reference obsolete internal tokens and pre-transform HTML.",
+    "after": "Protected Required test exact-head runner not yet terminal green; canonical learning replay passed on a289eaca86740d49061ccbd31b8c39b83c709170, but semantic evidence closure required.",
+    "production": "No production mutation or live acceptance claim"
+  }
+}

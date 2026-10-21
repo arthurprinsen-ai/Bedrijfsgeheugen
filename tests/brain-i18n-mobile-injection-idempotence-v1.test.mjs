@@ -1,18 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { applyI18nFixture } from './brain-i18n-runtime-fixture-helper.mjs';
 
-test('apply-i18n injects mobile language control even when i18n assets already exist', () => {
-  const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
-  assert.match(source,/const hasI18nCss =/);
-  assert.match(source,/const hasI18nScript =/);
-  assert.match(source,/html = injectMobileLanguage\(html,file\);/);
+test('apply-i18n replaces stale mobile control with route-aware links when assets already exist', () => {
+  const html = '<!doctype html><html lang="en"><head><link rel="stylesheet" href="/assets/i18n.css"><script src="/assets/js/i18n.js"></script></head><body><aside class="v18-mobile-drawer"><nav data-bg-language-switcher=\'mobile\'>STALE</nav></aside><main></main></body></html>';
+  const { once, twice } = applyI18nFixture(html, 'en/prijzen.html');
+  assert.doesNotMatch(once, /STALE/);
+  assert.match(once, /href="\/prijzen"[^>]*hreflang="nl"/);
+  assert.match(once, /href="\/en\/prijzen"[^>]*hreflang="en"[^>]*aria-current="page"/);
+  assert.equal((once.match(/data-bg-language-switcher="mobile"/g) || []).length, 1);
+  assert.equal(twice, once);
 });
 
 test('compact mobile host keeps route-aware switcher injection idempotent', () => {
-  const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
-  assert.match(source,/function mobileLanguageFor\(file\)/);
-  assert.match(source,/data-bg-language-switcher=/);
-  assert.match(source,/html\.replace\(existing,mobileLanguage\)/);
-  assert.match(source,/mobileLanguage \+ '\$&'/);
+  const html = '<!doctype html><html><head></head><body><header id="bgkopMob"><a class="bgkop-mcta" href="https://www.bedrijfsgeheugen.nl/frisse-blik">Scan</a></header><main></main></body></html>';
+  const { once, twice } = applyI18nFixture(html, 'strategie.html');
+  assert.match(once, /href="\/strategie"[^>]*hreflang="nl"/);
+  assert.match(once, /href="\/en\/strategie"[^>]*hreflang="en"/);
+  assert.match(once, /<\/nav><a class="bgkop-mcta"/);
+  assert.equal((once.match(/data-bg-language-switcher="mobile"/g) || []).length, 1);
+  assert.equal(twice, once);
 });

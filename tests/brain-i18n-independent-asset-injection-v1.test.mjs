@@ -1,13 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { applyI18nFixture } from './brain-i18n-runtime-fixture-helper.mjs';
 
 test('apply-i18n independently ensures CSS, runtime JS and mobile control', () => {
-  const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
-  assert.match(source,/const hasI18nCss =/);
-  assert.match(source,/const hasI18nScript =/);
-  assert.match(source,/!hasI18nCss \? LINK/);
-  assert.match(source,/!hasI18nScript \? SCRIPT/);
-  assert.match(source,/html = injectMobileLanguage\(html\);/);
-  assert.doesNotMatch(source,/if \(!\/<html\\b\/i\.test\(html\) \|\| \/data-bg-i18n-asset\/\.test\(html\)\) return;/);
+  const html = '<!doctype html><html><head><link rel="stylesheet" href="/assets/i18n.css" data-bg-i18n-asset></head><body><aside class="v18-mobile-drawer"></aside><main></main></body></html>';
+  const { once, twice } = applyI18nFixture(html);
+  assert.equal((once.match(/href="\/assets\/i18n\.css\?/g) || []).length, 1);
+  assert.equal((once.match(/src="\/assets\/js\/i18n\.js\?/g) || []).length, 1);
+  assert.equal((once.match(/data-bg-language-switcher="mobile"/g) || []).length, 1);
+  assert.equal(twice, once, 'partial existing assets must not create duplicate elements');
 });
