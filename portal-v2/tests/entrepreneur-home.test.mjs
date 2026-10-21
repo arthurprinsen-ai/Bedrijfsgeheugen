@@ -38,9 +38,12 @@ test('goal progress is displayed only for explicitly entered target and valid IS
  const data={portal:{business_context:{goals:['profit'],primary_goal:'profit',goal_targets:{profit:{target_value:1000,target_date:'2027-10-21'}}}}};
  assert.equal(buildEntrepreneurHomeModel(data,{authenticated:true}).target.value,1000);
  assert.equal(buildEntrepreneurHomeModel(data,{authenticated:true}).next.kind,'explore');
- data.portal.business_context.goal_targets.profit.target_date='tomorrow';
+ data.portal.business_context.goal_targets.profit.target_date='2027-02-29';
  assert.equal(buildEntrepreneurHomeModel(data,{authenticated:true}).target,null);
  assert.equal(buildEntrepreneurHomeModel(data,{authenticated:true}).next.kind,'measure');
+ data.portal.business_context.goal_targets.profit.target_date='2027-10-21';
+ data.portal.business_context.goal_targets.profit.target_value='  ';
+ assert.equal(buildEntrepreneurHomeModel(data,{authenticated:true}).target,null);
 });
 
 test('the existing authorized scan history can confirm a generic Frisse Blik without inventing a score',()=>{
