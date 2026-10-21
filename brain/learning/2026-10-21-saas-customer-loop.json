@@ -1,0 +1,52 @@
+{
+  "fingerprint": "saas|customer-loop|intent-receipt-identity-claim|v1",
+  "date": "2026-10-21",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "saas-customer-loop-20261021-v1",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Commercial catalogue drift, missing checkout persistence, incomplete provisioning replay, pre-auth-only plan read and unacknowledged scan writes severed the same customer lineage.",
+  "failure_class": "SAAS_CUSTOMER_LINEAGE_DISCONNECTED",
+  "compiler": {
+    "failure_class": "SAAS_CUSTOMER_LINEAGE_DISCONNECTED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": [
+    "netlify/functions/stripe-webhook.mjs",
+    "netlify/functions/checkout-create.mjs",
+    "tests/saas-pricing-entitlements.test.mjs",
+    "tests/brain-canonical-scan.test.mjs"
+  ],
+  "prevention": [
+    "Persist intent before provider side effect and reuse the same provider idempotency key.",
+    "Resume partial provisioning; do not return early just because a subscription exists.",
+    "Resolve paid account ownership only from confirmed provider identity and server-managed invitation truth.",
+    "Success URL and HTTP 200 are not storage/payment proof. Require exact server IDs and readback.",
+    "Keep existing personal workspace and tenant conflicts fail-closed; never silently reassign or erase.",
+    "Subscription provisioned is not verified revenue."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "production_readback": {
+    "verified": false,
+    "billing_ready": false
+  },
+  "documentation": "docs/changes/2026-10-21-saas-customer-loop.md",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-customer-loop-v1.test.mjs",
+      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-canonical-scan.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-saas-customer-loop-v1.test.mjs"
+    ],
+    "scope": "local regression/negative security tests only; no production customer canary is claimed"
+  }
+}

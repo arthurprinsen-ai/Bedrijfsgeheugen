@@ -1565,3 +1565,7 @@ When native deployment rejects a remote version absent locally, restore its exac
 ## Acknowledged predictive assessment persistence
 
 Count/report uncertainty only after an OPEN and same-revision write is acknowledged with its actual marker and due date. A transientSQL retry reuses the computed assessment and never repeats model inference. Skip unchanged canonical rows before row-locking upsert; require per-result durable readback, not just aggregate/model success. Learning: `brain/learning/2026-10-19-predictive-uncertainty-write-ack.json`.
+
+## SaaS customer persistence and ownership
+
+For SaaS changes preserve one plan → intent → verified provider subscription → confirmed identity → organisation → tenant scan/Brain lineage. Store before redirecting to payment, retry with the same provider key and resume every provisioning stage. A success URL, empty subscription table, browser cache or green deploy is never end-to-end evidence. Refuse cross-tenant reassignment and existing workspace overwrite. Subscription provisioning is not revenue verification. Canonical learning: `brain/learning/2026-10-21-saas-customer-loop.json`.

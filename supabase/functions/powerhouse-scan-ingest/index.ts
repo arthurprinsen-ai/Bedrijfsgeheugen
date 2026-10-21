@@ -19,6 +19,7 @@ function portalIntake(v:unknown){
   if(!consent||!company||!contact||!/^\S+@\S+\.\S+$/.test(email))return null;
   return {
     company_name:company,contact_name:contact,email,
+    phone:clean(x.phone,80)||null,
     website:clean(x.website,1000)||null,
     employees:clean(x.employees,120)||null,
     sector:clean(x.sector,160)||null,
@@ -172,13 +173,22 @@ Deno.serve(async(req:Request)=>{
     if(claimError)return json({error:'SCAN_CLAIM_FAILED',detail:claimError.message.slice(0,200)},500);
 
     const preTenant=`scan:${submissionKey}`;
-    const {data:pre}=await client.rpc('bg_portal_state_get_internal',{p_tenant_id:preTenant,p_layer:'canonical-brain'});
+    const {data:pre,error:preReadError}=await client.rpc('bg_portal_state_get_internal',{p_tenant_id:preTenant,p_layer:'canonical-brain'});
+    if(preReadError)return json({error:'PORTAL_PROJECTION_READ_FAILED'},500);
     const prePayload=Array.isArray(pre)&&pre[0]?.payload?pre[0].payload:null;
-    if(prePayload){
-      const next={...prePayload,tenantId,updatedBy:'portal-claim',updatedAt:new Date().toISOString(),sourceUpdatedAt:new Date().toISOString(),
-        data:{...(prePayload.data||{}),sourceMeta:{...(prePayload.data?.sourceMeta||{}),live:true,label:'Workshopscan · gekoppeld aan klantportaal',updatedAt:new Date().toISOString()}}};
-      const {error:portalError}=await client.rpc('bg_portal_state_put_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain',p_payload:next});
-      if(portalError)return json({error:'PORTAL_CLAIM_FAILED',detail:portalError.message.slice(0,200)},500);
+    const {data:currentClaimState,error:currentClaimError}=await client.rpc('bg_portal_state_get_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain'});
+    if(currentClaimError)return json({error:'PORTAL_PROJECTION_READ_FAILED'},500);
+    const currentClaimPayload=Array.isArray(currentClaimState)&&currentClaimState[0]?.payload?currentClaimState[0].payload:null;
+    if(scan.soort!=='bedrijfslek_scan'){
+      // Every claimed assessment is available to the same Brain without
+      // replacing customer edits with anonymous preprovisioning defaults.
+      const previous=safeObj(currentClaimPayload?.data),portal=safeObj(previous.portal),assessments=safeObj(portal.assessments);
+      const snapshot={scanId:scan.id,submissionKey:scan.submission_key,kind:scan.soort,score:scan.score,dimensions:scan.niveaus,scanDate:scan.scan_datum,truthClass:'SELF_REPORTED',verifiedIdentity:true,source:`scan_inzendingen:${scan.id}`};
+      const projection={...(prePayload||{}),...(currentClaimPayload||{}),schemaVersion:2,tenantId,origin:'canonical-brain',updatedBy:'verified-scan-claim',updatedAt:new Date().toISOString(),sourceUpdatedAt:new Date().toISOString(),
+        data:{...safeObj(prePayload?.data),...previous,portal:{...portal,assessments:{...assessments,scanHistory:mergeProjectionItems(assessments.scanHistory,[{id:scan.id,...snapshot}])}}}};
+      const {data:stored,error:storeError}=await client.rpc('bg_portal_state_put_internal',{p_tenant_id:tenantId,p_layer:'canonical-brain',p_payload:projection});
+      if(storeError)return json({error:'PORTAL_CLAIM_FAILED'},500);
+      if(!Array.isArray(stored)||stored[0]?.stored!==true)return json({error:'PORTAL_PROJECTION_NOT_STORED'},409);
     }
     let bedrijfslekProjected=false;
     if(scan.soort==='bedrijfslek_scan'){
