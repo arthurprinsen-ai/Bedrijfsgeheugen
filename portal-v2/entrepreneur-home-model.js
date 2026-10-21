@@ -64,7 +64,7 @@ export async function saveEntrepreneurGoal(domainState,goalId,{authenticated=fal
   // Never claim success until the existing flush drains that pending obligation.
   if(!unchanged)domainState.patch('portal.business_context',patch);
   const ack=await domainState.flush();
-  if(ack?.status!=='saved'||domainState.get('portal.business_context.primary_goal')!==goalId)
+  if(!(['saved','idle'].includes(ack?.status)&&unchanged||ack?.status==='saved'&&!unchanged)||domainState.get('portal.business_context.primary_goal')!==goalId)
     throw new Error('ENTREPRENEUR_GOAL_CANONICAL_ACK_REQUIRED');
   return Object.freeze({saved:true,unchanged});
 }
