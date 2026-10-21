@@ -73,9 +73,13 @@
       "source_run_id": 39629449830,
       "cause": "Two suites read a Rocket revenue SQL file from executable migrations though the original is only in canonical repository-only history.",
       "negative_source_guards_verified": 1,
-      "status": "SOURCE_PROVEN_PENDING_EXACT_HEAD_CI",
+      "status": "CANONICAL_LEARNING_WRAPPER_COMMITTED_EXACT_HEAD_CHECKS_PENDING",
       "sql_positive_source_checks_verified": 37,
-      "runtime_source_checks_verified": 2
+      "runtime_source_checks_verified": 2,
+      "canonical_learning_test_wrapper": "tests/brain-rocket-revenue-supabase-learning-replay-v1.test.mjs",
+      "original_supabase_tests_preserved": 6,
+      "admission_failure": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "admission_solution": "Use prefixed BRAIN wrapper that imports the full unchanged original six-case Supabase suite in historical replay, shadow and canary; canonical prefix validator and every original test remain enforced."
     }
   },
   "fix": "Preserve earlier three archived SQL path repairs and five-argument content preservation guards; also replace one further commercial closed-loop SQL test path with exact immutable repository-only archive, with every original source assertion untouched.",
@@ -84,17 +88,17 @@
     "historical_replay": [
       "tests/brain-content-closed-loop-contract.test.mjs",
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
-      "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
+      "tests/brain-rocket-revenue-supabase-learning-replay-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-content-closed-loop-contract.test.mjs",
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
-      "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
+      "tests/brain-rocket-revenue-supabase-learning-replay-v1.test.mjs"
     ],
     "canary": [
       "tests/brain-content-closed-loop-contract.test.mjs",
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
-      "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
+      "tests/brain-rocket-revenue-supabase-learning-replay-v1.test.mjs"
     ]
   },
   "skill_targets": [
@@ -103,7 +107,7 @@
   "status": "CANDIDATE_SOURCE_PROVEN_CI_PENDING",
   "test_evidence": {
     "before": "Original BRAIN backend: 355 inherited failures. 3 historical files absent under executable migrations.",
-    "after": "Original 3 content-loop source path replacements + current five-argument orchestrator authority guards + archived commercial and Rocket revenue source path rewires; source regex checks of Rocket archive 40/40 (39 positive/runtime and 1 negative). Exact-head Required+CodeQL and full Unified BRAIN required; no rollout inferred.",
+    "after": "Original 3 content-loop source path replacements + current five-argument orchestrator authority guards + archived commercial and Rocket revenue source path rewires; source regex checks of Rocket archive 40/40 (39 positive/runtime and 1 negative). Exact-head Required+CodeQL and full Unified BRAIN required; no rollout inferred. The canonical learning gate accepts brain-prefixed wrappers only; dedicated BRAIN wrapper imports six existing Supabase checks unchanged for all three evaluation modes. Exact-head CI/BRAIN re-run pending.",
     "full_brain": "NOT_GREEN",
     "production": "UNCHANGED"
   },
