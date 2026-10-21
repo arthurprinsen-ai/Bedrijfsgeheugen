@@ -28,7 +28,9 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(!auth()||!root.classList.contains('open')){previous?.remove();return;}
     const target=root.dataset.pageId||currentPortalRoute().target;
     if(!findPage(target)){previous?.remove();return;}
-    const state=domainState.get()||{};
+    // Use one authenticated server snapshot for the page guide as well as the homepage.
+    // Mutable domain state may still belong to a previous user during hydration.
+    const state=stateClient.getSnapshot()?.state||{};
     const model=buildEntrepreneurHomeModel(state,{authenticated:true,verifiedScanCount});
     const body=root.querySelector('.pvbody');
     if(!body)return;
