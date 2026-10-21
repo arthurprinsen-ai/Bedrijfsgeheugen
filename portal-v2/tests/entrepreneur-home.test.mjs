@@ -77,10 +77,33 @@ test('writes use one canonical domain flush and require positive readback acknow
  assert.equal(saved.saved,true);assert.equal(calls,1);assert.equal(flushes,1);
  assert.deepEqual(value.goals,['exit','profit']);
  await saveEntrepreneurGoal(store,'profit',{authenticated:true});
- assert.equal(flushes,1);
+ assert.equal(flushes,2,'an unchanged goal still flushes any pending canonical Brain acknowledgement');
  await assert.rejects(saveEntrepreneurGoal(store,'exit',{authenticated:false}),/AUTH_REQUIRED/);
  store.flush=async()=>({status:'dirty'});
  await assert.rejects(saveEntrepreneurGoal(store,'cash',{authenticated:true}),/CANONICAL_ACK_REQUIRED/);
+});
+
+test('failed Brain ACK is retried for the same goal rather than reported as already saved',async()=>{
+ let value={goals:['exit'],primary_goal:'exit'};
+ let attempts=0;
+ const store={
+  get(path){return path==='portal.business_context'?value:path==='portal.business_context.primary_goal'?value.primary_goal:null;},
+  patch(path,patch){value={...value,...patch};},
+  async flush(){attempts++;if(attempts===1)throw new Error('CANONICAL_BRAIN_ACK_MISSING');return {status:'saved'};}
+ };
+ await assert.rejects(saveEntrepreneurGoal(store,'profit',{authenticated:true}),/CANONICAL_BRAIN_ACK_MISSING/);
+ const retried=await saveEntrepreneurGoal(store,'profit',{authenticated:true});
+ assert.equal(retried.saved,true);
+ assert.equal(retried.unchanged,true);
+ assert.equal(attempts,2);
+});
+
+test('homepage render reads current authenticated server state and not mutable previous tenant state',async()=>{
+ const ui=await readFile(new URL('../entrepreneur-home.js',import.meta.url),'utf8');
+ assert.match(ui,/stateClient\.getSnapshot\(\)\?\.state/);
+ assert.match(ui,/domainState\.snapshot\?\.\(\)/);
+ assert.match(ui,/domainState\.initialized\?\.\(\)/);
+ assert.doesNotMatch(ui,/buildEntrepreneurHomeModel\(loggedIn\?\(domainState\.get\(\)/);
 });
 
 test('guided homepage is mounted once in original V2 with auth boundaries and native page routing',async()=>{
