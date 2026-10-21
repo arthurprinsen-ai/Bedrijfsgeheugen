@@ -20,3 +20,10 @@
 - **Regression/control:** preserve old Required, CodeQL, material writeback and explanation-inventory gates; postrelease evidence-only PR does not silently update production code or affect DB/RLS/scheduler.
 - **Explicit unverified:** independent tenant A/B isolation and re-login, connector execution provider receipts, Heartbeat end-to-end, causal realized finance and #4215/#4547 all-pages acceptance. The release alone cannot close these obligations.
 - **Recovery rule:** terminal delivery truth != post-action customer outcome. Never demote externally verified deploy evidence due to missing browser access, and never upgrade customer E2E from provider deployment success.
+
+## 2026-10-21 — GERichte inhoudswaarheidsreparatie
+- **Signaal:** bestaande Bedrijfslek-overzichtkaart kon ontbrekende scan-score als `0/100` tonen, ondanks geverifieerde identiteit; de nieuwe homepage markeerde diezelfde input terecht onbekend.
+- **Oorzaak:** JavaScript `Number(null)===0` en `Number('')===0` in de oude renderfunctie.
+- **Herstel:** expliciete aanwezigheidstoets vóór numerieke conversie in `portal-v2/modules/overview.js`, behoud echte score 0; regressie voor `undefined`, `null`, lege/gestripte tekst en expliciete nul.
+- **Geen alternatief:** geen fictieve bronwaarde in Supabase schrijven, geen scanclaim ongevraagd autoriseren, geen versoepeling van RLS of CI; behoud oorspronkelijke acht-resultaten-lineage en eind-to-end acceptatie onder #4215/#4547/#4585.
+- **Releasevereisten:** semantic learning, exact-head Required/CodeQL en exacte Netlify-productie-readback; broninventory-contenthash synchroniseren met gewijzigde V2.
