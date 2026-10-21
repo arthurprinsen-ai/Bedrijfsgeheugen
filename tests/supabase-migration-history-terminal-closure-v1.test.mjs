@@ -12,7 +12,10 @@ test('3742 terminal closure binds trusted repair to the 568-entry production led
   assert.equal(closure.supported_repair.workflow_run, 37426469433);
   assert.equal(closure.supported_repair.conclusion, 'SUCCESS');
   assert.equal(closure.supported_repair.post_repair_drift, 0);
-  assert.equal(lock.applied.length, 568);
+  assert.ok(lock.applied.length >= closure.supported_repair.production_ledger_count,
+    'later production ledgers must retain at least the historical repair baseline');
+  assert.equal(new Set(lock.applied.map(row => String(row.version))).size, lock.applied.length,
+    'migration identities must remain unique in the complete later ledger');
   assert.equal(closure.supported_repair.production_ledger_count, 568);
 
   const byVersion = new Map(lock.applied.map(row => [String(row.version), String(row.name)]));
