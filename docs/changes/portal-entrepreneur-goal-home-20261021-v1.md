@@ -13,7 +13,7 @@ Een ondernemer komt na de Frisse Blik voor een zakelijke uitkomst, niet voor uit
 - `portal-v2/app.js` en `portal-v2/index.html`: één mount op bestaande `portalDomainState` en `portalStateClient`.
 - Een expliciet gekozen primair doel wordt onder `portal.business_context.primary_goal` en `portal.business_context.goals` opgeslagen. Bestaande doelen blijven bewaard. `goal_confirmed_at` bevestigt alleen de voorkeur; de bedrijfsfase of cijfers worden niet stil als geverifieerd gemarkeerd.
 - `createPortalDomainState.patch/flush` blijft de **enige** write-route. Success vereist de bestaande server/persisted-state-ACK plus canonieke BusinessInput/Brain-ACK. Geen tweede read-model of browser storage.
-- De Frisse Blik/Bedrijfslek-claim wordt uitsluitend via de bestaande geauthenticeerde tenant-claimroute getoond en uitgevoerd; de homepage geeft nooit de indruk dat een ongeclaimde scan verwerkt is.
+- De Frisse Blik/Bedrijfslek-claim wordt uitsluitend via de bestaande geauthenticeerde tenant-claimroute getoond en uitgevoerd; de homepage geeft nooit de indruk dat een ongeclaimde scan verwerkt is. De reeds aanwezige `/api/portal-scans`-readback publiceert een kortstondig clientevent met uitsluitend het **aantal** geverifieerde scans. De homepage reset dit op principalwissel en logoff; geen scanwaarden of receipts in het event.
 - Mogelijke acties komen uitsluitend uit de bestaande `buildOwnerOperatingModel`, en alleen wanneer `evidence_health.status==='healthy'` en `source_refs` aanwezig zijn. Een voorstel is geen uitvoering; de eigenaar beslist via de bestaande actiespagina.
 - Een doel zonder meetbare target leidt naar `bedrijfssituatie`; een doel met target maar zonder passend bronbewijs leidt naar een toepasselijke bestaande specialistische pagina.
 
