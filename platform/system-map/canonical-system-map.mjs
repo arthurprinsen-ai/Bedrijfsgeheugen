@@ -2,7 +2,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
   observedAt:'2026-10-21T09:19:55.315Z',
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'617df2bb7f527bb6f5e91be83ea6b673e63de969371b18a5141ce7b7c4af2bab',authority:'repository-source',providerRuntimeVerified:false}),
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'d4a163f674738fb19109758b1ec45253db97d113b5215c31ed7ae85b8d186b4a',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
