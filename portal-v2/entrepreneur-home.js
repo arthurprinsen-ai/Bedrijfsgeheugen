@@ -148,6 +148,9 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       const action=add(next,'button','eh-main-action',model.next.kind==='verified-proposal'?'Bekijk voorstel en onderbouwing →':'Ga verder met deze stap →');
       action.type='button';action.dataset.entrepreneurPage=model.next.page;
     }else add(next,'p','eh-small','Begin door hierboven een doel te kiezen.');
+    const future=add(host,'button','eh-main-action','Verken de Winstnavigator en toekomstscenario’s →');
+    future.type='button';future.dataset.entrepreneurWinstnavigator='true';
+    future.setAttribute('aria-label','Open de Winstnavigator over de bestaande klantgegevens');
     const footer=add(host,'div','eh-foot');
     add(footer,'span','','1 · Kies je doel');
     add(footer,'span','','2 · Maak het meetbaar');
@@ -165,6 +168,11 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(!button||!host.contains(button))return;
     if(button.dataset.entrepreneurLogin==='true'){globalThis.netlifyIdentity?.open?.('login');return;}
     if(!auth())return;
+    if(button.dataset.entrepreneurWinstnavigator==='true'){
+      const launcher=documentRef.querySelector('.bg-w-nav-launch');
+      if(launcher&&!launcher.hidden)launcher.click();
+      return;
+    }
     if(button.dataset.entrepreneurScan==='true'){
       const scans=documentRef.getElementById('portalCanonicalScans');
       if(scans&&!scans.hidden){scans.scrollIntoView?.({behavior:'smooth',block:'center'});return;}
