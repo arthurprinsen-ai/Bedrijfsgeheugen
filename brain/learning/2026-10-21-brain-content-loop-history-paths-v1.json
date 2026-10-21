@@ -73,27 +73,35 @@
         "retained_negative_guards": 3,
         "canonical_test": "tests/supabase-execution-learning-closure-v1.test.mjs",
         "cases": 5
+      },
+      {
+        "path": "supabase/migration-history/repository-only/20260915124000_powerhouse_full_cycle_health_status_fix_v1.sql",
+        "blob_sha": "e9ab64e8f5592d69b7205a2834c87d9798d222d0",
+        "retained_source_assertions": 11,
+        "retained_negative_guards": 1,
+        "canonical_test": "tests/supabase-powerhouse-full-cycle-health-status-fix.test.mjs",
+        "cases": 3
       }
     ],
-    "source_marker_assertions_verified": 172,
-    "negative_source_guards_verified": 9,
+    "source_marker_assertions_verified": 183,
+    "negative_source_guards_verified": 10,
     "latest_full_brain": {
-      "run_id": 39660607012,
-      "job_id": 119432847782,
-      "tests": 3500,
-      "pass": 3171,
-      "fail": 329
+      "run_id": 39669956039,
+      "job_id": 119465290990,
+      "tests": 3508,
+      "pass": 3184,
+      "fail": 324
     },
     "next_group": {
       "test_files": [
-        "tests/supabase-execution-learning-closure-v1.test.mjs"
+        "tests/supabase-powerhouse-full-cycle-health-status-fix.test.mjs"
       ],
-      "previous_failures": 5,
-      "source_run_id": 39660607012,
-      "cause": "Five original source checks read a historical SQL file from removed executable migration path. Immutable repository archive is authoritative; all original assertions retained.",
+      "previous_failures": 3,
+      "source_run_id": 39669956039,
+      "cause": "Three health status source-contract tests read the removed executable migration path; immutable archived SQL retains all original assertions.",
       "status": "SOURCE_PROVEN_EXACT_HEAD_CI_PENDING",
-      "sql_positive_source_checks_verified": 31,
-      "sql_negative_source_guards_verified": 3
+      "sql_positive_source_checks_verified": 11,
+      "sql_negative_source_guards_verified": 1
     },
     "safe_floor_source_contract": {
       "original_archive_path": "supabase/migration-history/repository-only/20260920095700_autonomous_improvement_floor_terminal_v1.sql",
@@ -105,7 +113,7 @@
       "competing_writer_currentstate_pr": 4582
     }
   },
-  "fix": "Preserve earlier three archived SQL path repairs and five-argument content preservation guards; also replace one further commercial closed-loop SQL test path with exact immutable repository-only archive, with every original source assertion untouched. Recovered five inherited Execution & Learning Closure SQL source tests by pointing only their historical source path to the immutable archive, retaining all original assertions.",
+  "fix": "Preserve earlier three archived SQL path repairs and five-argument content preservation guards; also replace one further commercial closed-loop SQL test path with exact immutable repository-only archive, with every original source assertion untouched. Recovered five inherited Execution & Learning Closure SQL source tests by pointing only their historical source path to the immutable archive, retaining all original assertions. A further three inherited Full Cycle Health Status regression tests now read the immutable archived SQL source without changing their positive or negative guards.",
   "prevention_rule": "Use the repository-only historical SQL for source-contract tests after supported migration canonicalization; preserve every positive and negative invariant and never restore duplicate executable migrations.",
   "evaluation": {
     "historical_replay": [
@@ -113,6 +121,7 @@
       "tests/brain-content-closed-loop-contract.test.mjs",
       "tests/brain-control-plane-monotonic-terminal-v1.test.mjs",
       "tests/brain-execution-learning-closure-archive-replay-v1.test.mjs",
+      "tests/brain-full-cycle-health-status-archive-replay-v1.test.mjs",
       "tests/brain-powerhouse-observability-outcome-contract.test.mjs",
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
       "tests/brain-rocket-revenue-supabase-learning-replay-v1.test.mjs"
@@ -122,6 +131,7 @@
       "tests/brain-content-closed-loop-contract.test.mjs",
       "tests/brain-control-plane-monotonic-terminal-v1.test.mjs",
       "tests/brain-execution-learning-closure-archive-replay-v1.test.mjs",
+      "tests/brain-full-cycle-health-status-archive-replay-v1.test.mjs",
       "tests/brain-powerhouse-observability-outcome-contract.test.mjs",
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
       "tests/brain-rocket-revenue-supabase-learning-replay-v1.test.mjs"
@@ -131,6 +141,7 @@
       "tests/brain-content-closed-loop-contract.test.mjs",
       "tests/brain-control-plane-monotonic-terminal-v1.test.mjs",
       "tests/brain-execution-learning-closure-archive-replay-v1.test.mjs",
+      "tests/brain-full-cycle-health-status-archive-replay-v1.test.mjs",
       "tests/brain-powerhouse-observability-outcome-contract.test.mjs",
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
       "tests/brain-rocket-revenue-supabase-learning-replay-v1.test.mjs"
@@ -142,8 +153,8 @@
   "status": "CANDIDATE_SOURCE_PROVEN_CI_PENDING",
   "test_evidence": {
     "before": "Original BRAIN backend: 355 inherited failures. 3 historical files absent under executable migrations.",
-    "after": "Original 3 content-loop source path replacements + current five-argument orchestrator authority guards + archived commercial and Rocket revenue source path rewires; source regex checks of Rocket archive 40/40 (39 positive/runtime and 1 negative). Exact-head Required+CodeQL and full Unified BRAIN required; no rollout inferred. The canonical learning gate accepts brain-prefixed wrappers only; dedicated BRAIN wrapper imports six existing Supabase checks unchanged for all three evaluation modes. Exact-head CI/BRAIN re-run pending. Current autonomous-improvement terminal 12h safe-floor original SQL source is re-pointed to repository-only archive with 5 positive and 1 negative safety assertions; learning historical/shadow/canary execute the existing original test. CurrentState source is owned by separate #4582 and intentionally not changed here. Added original four-case monotonic terminal suite to all three canonical learning modes, with one immutable SQL source-path replacement; archive matches all 17 original patterns. New exact-head focused, Required, CodeQL and full BRAIN proofs required. Observability/outcome calibration original source tests 36/36 positive and 3/3 negative checks match immutable archive; one obsolete source path corrected and original five tests added to all three learning modes. Exact-head CI/full BRAIN must prove effect. New successor source-verified Execution & Learning Closure archive has 31 positive and 3 negative checks; original six-case suite imported unchanged by BRAIN-prefixed wrapper for all modes. Exact-head CI and full BRAIN runner evidence pending.",
-    "full_brain": "NOT_GREEN_329_LAST_VERIFIED",
+    "after": "Original 3 content-loop source path replacements + current five-argument orchestrator authority guards + archived commercial and Rocket revenue source path rewires; source regex checks of Rocket archive 40/40 (39 positive/runtime and 1 negative). Exact-head Required+CodeQL and full Unified BRAIN required; no rollout inferred. The canonical learning gate accepts brain-prefixed wrappers only; dedicated BRAIN wrapper imports six existing Supabase checks unchanged for all three evaluation modes. Exact-head CI/BRAIN re-run pending. Current autonomous-improvement terminal 12h safe-floor original SQL source is re-pointed to repository-only archive with 5 positive and 1 negative safety assertions; learning historical/shadow/canary execute the existing original test. CurrentState source is owned by separate #4582 and intentionally not changed here. Added original four-case monotonic terminal suite to all three canonical learning modes, with one immutable SQL source-path replacement; archive matches all 17 original patterns. New exact-head focused, Required, CodeQL and full BRAIN proofs required. Observability/outcome calibration original source tests 36/36 positive and 3/3 negative checks match immutable archive; one obsolete source path corrected and original five tests added to all three learning modes. Exact-head CI/full BRAIN must prove effect. New successor source-verified Execution & Learning Closure archive has 31 positive and 3 negative checks; original six-case suite imported unchanged by BRAIN-prefixed wrapper for all modes. Exact-head CI and full BRAIN runner evidence pending. Subsequent Full Cycle Health Status original SQL source matched 11 positive and one forbidden-pattern exclusion; original three tests replayed unchanged through BRAIN-prefixed historical/shadow/canary wrapper. Exact-head runner verification pending.",
+    "full_brain": "NOT_GREEN_324_LAST_VERIFIED",
     "production": "UNCHANGED"
   },
   "acceptance": [
