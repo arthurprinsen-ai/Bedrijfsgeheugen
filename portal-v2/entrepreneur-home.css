@@ -38,3 +38,10 @@
 @media(max-width:760px){.eh-lead{flex-direction:column}.eh-status{align-self:flex-start}.eh-cards{grid-template-columns:1fr}.eh-goal-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.eh-goal{min-height:46px;text-align:left;padding:10px}.eh-foot{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.eh-foot span+span:before{display:none}}
 @media(max-width:400px){.eh-goal-grid,.eh-foot{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.eh-goal{transition:none}.eh-goal:hover:not(:disabled){transform:none}}
+
+/* Small contextual guide inserted beside the original page form without replacing it. */
+.eh-page-guide{background:#f2faf8;border:1px solid #c8e5df;border-left:4px solid #268c87;border-radius:13px;padding:14px 17px;margin:12px 0 20px;color:#1c4650}
+.eh-page-guide strong{font-size:.92rem;color:#15384a}
+.eh-page-guide p{margin:7px 0 11px;line-height:1.55;font-size:.87rem;color:#395968}
+.eh-page-guide .eh-text-action{color:#135e73;padding:4px 0}
+@media(max-width:760px){.eh-page-guide{padding:13px;margin:10px 0 16px}}
