@@ -1,5 +1,5 @@
 import {buildEntrepreneurHomeModel,saveEntrepreneurGoal} from './entrepreneur-home-model.js';
-import {navigatePortal} from './router.js';
+import {navigatePortal,currentPortalRoute,subscribePortalRoute} from './router.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -131,6 +131,8 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';}draw();};
   const unsubscribeIdentity=stateClient.subscribe(onIdentity);
   const unsubscribeDomain=domainState.subscribe(draw);
+  const unsubscribeRoute=subscribePortalRoute(({target})=>{host.hidden=target!=='overzicht';});
+  host.hidden=currentPortalRoute().target!=='overzicht';
   onIdentity();
-  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();host.remove();}});
+  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();host.remove();}});
 }
