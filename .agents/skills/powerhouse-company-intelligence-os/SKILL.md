@@ -156,3 +156,6 @@ De homepage projecteert scan → doel → bedrijfsgegevens → eerstvolgende bes
 Notion en GitHub bevatten beheerde documentatie, broncode en leer-/releaseregistraties; Netlify bewijst welke versie draait; Supabase geeft de canonieke geautoriseerde tenantstaat; Composio en externe bronnen geven alleen klantresultaten via bestaande goedgekeurde connectors en provider-readback. Gebruik hun inhoud nooit als onbewezen directe live klantmetric. Geen parallelle opslag, schaduwkoppelingen, nieuwe scheduler of bypass van tenant/RLS. Live release en twee onafhankelijke echte klantacceptaties zijn afzonderlijke statusvelden.
 
 Regressies: `tests/brain-portal-entrepreneur-goal-home-v1.test.mjs` (importeert de geïntegreerde `portal-v2/tests/entrepreneur-journey.test.mjs`), protected Required, CodeQL, exacte Netlify-SHA, en de bestaande #4215/#4547 acceptatie.
+
+### Nulmeting-scores: ontbrekend is nooit nul
+Elke overzichtskaart, inclusief de historische Bedrijfslek-weergave, moet ontbrekende, `null`, lege of witruimte-scores als **onbekend** behandelen. Alleen expliciet aangeleverde `0` mag als gemeten 0/100 verschijnen, mits de eigen tenant-claim en herkomst bevestigd zijn. Bron: `portal-v2/modules/overview.js` en `portal-v2/tests/entrepreneur-journey.test.mjs`. Dit is een regressieregel op de bestaande acht-onderdelen-lineage #4585, geen nieuwe dataautoriteit.
