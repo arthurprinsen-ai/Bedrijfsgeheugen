@@ -50,7 +50,7 @@ test('connector readiness route isolation and bounded fail-closed retry remain e
     read('.github/workflows/production-release-readback.yml'),
   ]);
 
-  assert.match(portalConnectors, /path:\s*['"]\/api\/connectors\/\*['"]/);
+  assert.match(portalConnectors, /path:\s*\[[^\]]*['"]\/api\/connectors\/\*['"]/);
   assert.match(portalConnectors, /excludedPath:\s*['"]\/api\/connectors\/readiness['"]/);
   assert.match(readiness, /path:\s*['"]\/api\/connectors\/readiness['"]/);
   assert.match(workflow, /for attempt in \$\(seq 1 8\)/);

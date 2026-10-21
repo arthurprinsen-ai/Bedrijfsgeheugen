@@ -68,3 +68,13 @@ test('the active V2 connector API saves and reopens edits with tenant isolation'
  await assert.rejects(api('fixture-b').saveDraft(saved.id,changed),error=>error.status===404);
  assert.throws(()=>first.activate(saved.id),/TEST_EVIDENCE_REQUIRED/);
 });
+
+test('connector collection create/list and child routes all reach the authenticated function',async()=>{
+ const {runInNewContext}=await import('node:vm');
+ const source=readFileSync('netlify/functions/portal-connectors.mjs','utf8');
+ const config=runInNewContext('('+source.match(/export const config=([^;]+);/)[1]+')');
+ const paths=Array.isArray(config.path)?config.path:[config.path];
+ assert.ok(paths.includes('/api/connectors'),'collection endpoint must not fall through to HTML 404');
+ assert.ok(paths.includes('/api/connectors/*'));
+ assert.equal(config.excludedPath,'/api/connectors/readiness');
+});

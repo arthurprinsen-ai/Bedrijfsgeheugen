@@ -2406,6 +2406,8 @@ export const PORTAL_BRAIN_INPUT_ADMISSION_20261021=Object.freeze({
  writer:'platform/api/portal-business-input-handler.mjs',
  connectorEditor:'assets/js/koppelingen/view.js',
  connectorBoundary:'platform/api/portal-connectors-handler.mjs',
+ connectorRoutes:Object.freeze(['/api/connectors','/api/connectors/*']),
+ connectorPublicExclusion:'/api/connectors/readiness',
  migration:'supabase/migrations/20261021060606_portal_brain_input_taxonomy_v1.sql',
  regression:'tests/brain-portal-input-taxonomy-v1.test.mjs',
  isolatedPostgresReplay:'tests/brain-portal-input-taxonomy-postgres.mjs',
