@@ -31,7 +31,7 @@ export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Da
   const scanVerified=scan?.verifiedIdentity===true;
   const score=scanVerified&&hasValue(scan.score)&&Number(scan.score)>=0&&Number(scan.score)<=100?Math.round(Number(scan.score)):null;
   const target=primary?context?.goal_targets?.[primary]||{}:{};
-  const hasTarget=hasValue(target.target_value)&&typeof target.target_date==='string'&&/^\\d{4}-\\d{2}-\\d{2}$/.test(target.target_date);
+  const hasTarget=hasValue(target.target_value)&&typeof target.target_date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(target.target_date);
   const intelligence=authenticated?buildOwnerOperatingModel(safe,{now}):null;
   const recommended=chosen&&intelligence?.ready?intelligence.actions.find(item=>chosen.categories.includes(item.ownerCategory)&&item?.evidence_health?.status==='healthy'&&Array.isArray(item?.source_refs)&&item.source_refs.length>0):null;
   const next=!chosen
