@@ -40,10 +40,20 @@
         "retained_source_assertions": 28,
         "retained_negative_guards": 2,
         "canonical_test": "tests/supabase-powerhouse-commercial-closed-loop.test.mjs"
+      },
+      {
+        "path": "supabase/migration-history/repository-only/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+        "blob_sha": "ec95d7199b06974bb0e3cbe31c1c74407024e292",
+        "retained_source_assertions": 39,
+        "retained_negative_guards": 1,
+        "canonical_tests": [
+          "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
+          "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
+        ]
       }
     ],
-    "source_marker_assertions_verified": 51,
-    "negative_source_guards_verified": 2,
+    "source_marker_assertions_verified": 91,
+    "negative_source_guards_verified": 3,
     "latest_full_brain": {
       "run_id": 39629449830,
       "job_id": 119323815052,
@@ -54,25 +64,35 @@
       "new_failure_titles": 0
     },
     "next_group": {
-      "test": "tests/supabase-powerhouse-commercial-closed-loop.test.mjs",
-      "previous_failures": 5,
-      "cause": "Old executable migration path used in historical source contract.",
-      "positive_checks_source_verified": 28,
-      "negative_checks_source_verified": 2,
-      "status": "SOURCE_PROVEN_PENDING_NEW_EXACT_HEAD_CI"
+      "test_files": [
+        "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
+        "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
+      ],
+      "previous_failures": 7,
+      "source_run_id": 39629449830,
+      "cause": "Two suites read a Rocket revenue SQL file from executable migrations though the original is only in canonical repository-only history.",
+      "positive_or_runtime_source_checks_verified": 39,
+      "negative_source_guards_verified": 1,
+      "status": "SOURCE_PROVEN_PENDING_EXACT_HEAD_CI"
     }
   },
   "fix": "Preserve earlier three archived SQL path repairs and five-argument content preservation guards; also replace one further commercial closed-loop SQL test path with exact immutable repository-only archive, with every original source assertion untouched.",
   "prevention_rule": "Use the repository-only historical SQL for source-contract tests after supported migration canonicalization; preserve every positive and negative invariant and never restore duplicate executable migrations.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-content-closed-loop-contract.test.mjs"
+      "tests/brain-content-closed-loop-contract.test.mjs",
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
+      "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-content-closed-loop-contract.test.mjs"
+      "tests/brain-content-closed-loop-contract.test.mjs",
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
+      "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-content-closed-loop-contract.test.mjs"
+      "tests/brain-content-closed-loop-contract.test.mjs",
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs",
+      "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs"
     ]
   },
   "skill_targets": [
@@ -81,7 +101,7 @@
   "status": "CANDIDATE_SOURCE_PROVEN_CI_PENDING",
   "test_evidence": {
     "before": "Original BRAIN backend: 355 inherited failures. 3 historical files absent under executable migrations.",
-    "after": "Full exact-head BRAIN 39629449830 proved four previously failing test identities corrected: 351/3494 failures, 0 new failure identities. One extra historical commercial closed-loop path source verified (28 required plus 2 forbidden pattern checks); new candidate tests pending.",
+    "after": "Original 3 content-loop source path replacements + current five-argument orchestrator authority guards + archived commercial and Rocket revenue source path rewires; source regex checks of Rocket archive 40/40 (39 positive/runtime and 1 negative). Exact-head Required+CodeQL and full Unified BRAIN required; no rollout inferred.",
     "full_brain": "NOT_GREEN",
     "production": "UNCHANGED"
   },
