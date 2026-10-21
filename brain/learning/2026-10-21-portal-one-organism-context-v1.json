@@ -1,0 +1,37 @@
+{
+  "fingerprint": "portal|contextual-business-journey|one-organism|v1",
+  "date": "2026-10-21",
+  "type": "IMPROVEMENT",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "obligation_id": "portal-4547-one-organism-context-20261021",
+  "compiler": {
+    "failure_class": "PORTAL_CONTEXT_DISCONNECTED_FROM_CANONICAL_RUNTIME",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The goal-first homepage and existing Winstnavigator were separate visual entrypoints, and page guidance did not consistently show canonical causal review or provider evidence. The navigator was not mounted from the checked V2 application boot.",
+  "prevention_rule": "Keep all registered pages connected to the same authenticated tenant model; do not show platform integration presence as customer provider health; prevent stale impact crossing an auth boundary; require positive canonical ACK before marking changed dependencies persisted; always mount Winstnavigator against existing portalDomainState/portalStateClient and no second datastore.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-connected-journey-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-connected-journey-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-connected-journey-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "source": "portal-v2/connected-journey-model.js",
+    "runtime": "portal-v2/entrepreneur-home.js",
+    "winstnavigator": "portal-v2/winstnavigator.js",
+    "regression": "portal-v2/tests/connected-journey.test.mjs",
+    "actual_two_tenant_browser_readback": "PENDING",
+    "actual_provider_connection_proof": "PENDING",
+    "verified_live": false
+  },
+  "production_verified": false
+}
