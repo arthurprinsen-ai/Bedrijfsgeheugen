@@ -1,0 +1,40 @@
+# Portal V2 — acht gewenste resultaten als één ondernemersreis
+
+**Fingerprint:** `portal|eight-outcomes|connected-entrepreneur-journey|v1` · **Parent:** [#4547](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547) · **Implementatie:** [#4585](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585) · **Afhankelijke E2E-audit:** [#4215](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215).
+
+## Gebruikersreis
+Frisse Blik → eigen geauthenticeerde scan/profiel → ondernemersdoel → bronbetrouwbaarheid → precies één eerstvolgende stap → bestaande cockpit en Winstnavigator → relevante afgeleide pagina's → Brain-ACK → afzonderlijk bewezen uitvoering en financiële/operationele uitkomst. Een gemarkeerde afhankelijke pagina is géén doorgerekend resultaat. Een trend/sensitiviteit is géén gerealiseerde winst. Wanneer data ontbreken, blijft de waarde onbekend.
+
+## Wat de huidige kandidaat daadwerkelijk toevoegt
+1. **Frisse Blik:** de reeds bestaande beveiligde /api/portal-scans-claimroute plus historie wordt hergebruikt zonder opnieuw antwoorden in te typen. Claim van een anonieme scan blijft een expliciete geautoriseerde actie: geen onveilige auto-claim naar een willekeurig tenantaccount.
+2. **Doel:** bestaande `portal.business_context` en canonical BusinessInput/Brain ACK. Alle eerdere doelen blijven bewaard.
+3. **Echt versus demo:** uitsluitend authenticated stateClient-snapshot; private journey en grafieken verdwijnen bij logout/tenantwissel; geen klantwaarde uit demo- of managementbestanden.
+4. **Next best:** bestaande `buildEntrepreneurHomeModel` kiest één vervolgstap; voorstellen vereisen healthy evidence en bronreferenties.
+5. **Cockpit + Winstnavigator:** bestaande `buildOwnerOperatingModel` en `buildWinstnavigatorModel` komen uit dezelfde tenantcontext; de voorheen niet gemounte Winstnavigator is in het originele V2-portaal gemount met CSS en een homepage-CTA. De navigator start op het primaire ondernemersdoel.
+6. **Pagina's:** `journeyGuidance` biedt betekenisvolle context op elke route in `PORTAL_PAGE_INDEX`, zonder elk specialistisch formulier te vervangen.
+7. **Doorwerking:** bestaande `bg:portal-impact`, `bg:portal-brain-synced`, `domainState.flush` en `/api/portal-business-input` maken betrokken pagina's en ACK zichtbaar. De canvas belooft nooit een financieel effect of actuele externe koppeling zonder apart bronbewijs.
+8. **Scenario en voortgang:** bestaande trendberekening met minimaal drie recente observaties over minimaal 14 dagen, gevoeligheid en horizon, echte tijdreeks in Winstnavigator; bij onvoldoende historie is er géén voorspelling.
+
+## Bronnen en bevoegdheden
+| Provider | Canonieke rol | Wat de UI nooit mag afleiden |
+| --- | --- | --- |
+| Supabase | RLS-gecontroleerde klantstate, bronregis­tratie, Brain/Powerhouse-uitkomsten | Een geslaagde deploy is geen twee-tenant klantacceptatie |
+| Brain / Powerhouse / Heartbeat | Ontvangen, contextualiseren, beslissen, effect- en bronstatus terugleveren binnen bestaande klantautorisatie | Een bronstatus is niet automatisch een resultaat of gegarandeerde Heartbeat-SLA |
+| GitHub | Beveiligde implementatie, regressies, obligations, CodeQL, release-evidence | Repositorykennis is geen actuele privébedrijfs-KPI |
+| Netlify | Exacte productieversie, function endpoints en build/readback | HTTP200 bewijst niet dat elke tenantverwerking slaagt |
+| Notion | Menselijke documentatie, architectuur en leerregistraties | Documenttekst is niet de live tenantfeed |
+| Composio / andere externe connectors | Bestaande, bevoegd gecontroleerde source/side-effect providers met eigen receipts | Geen verborgen tokengebruik of ongeautoriseerde cross-tenant synchronisatie |
+
+## Complete operationele acceptatie — niet fictief sluiten
+- Exact-head Required, BRAIN/CodeQL, protected merge, Netlify current-ready exact commit.
+- Echte ingelogde tenant A: bewaarde Frisse Blik claim, bronreadback en oorspronkelijke antwoorden zonder herinvoer; doelwijziging → canonical state + Brain ACK → herlogin → dezelfde waarde op afhankelijke pagina.
+- Echte ingelogde tenant B met andere invoer: geen data, doelen, scenario's of event-feedback van A.
+- Representatieve veelveldmutaties volgen veld → bronrevision → Brain/Powerhouse/Heartbeat → pagina-invalidation → echte forecast/bronreadback; verificatie geldt per bron en veld, niet automatisch platformbreed.
+- Scenario's met voldoende historie tonen onzekerheid en bronkwaliteit; zonder historie onbekend. Onafhankelijke geverifieerde outcome verschilt van planning, aannames of provideractiviteit.
+- Reële touch/keyboard/mobiele weergaven 320/390/1024/1440 px, WCAG 2.2 AA-audit, lage databelasting en 504/time-out negatieve testen.
+- Nog open onder #4215/#4547: volledige paginavelddekking, alle externe connector- en AI-modelbeschikbaarheid, echte 2-klantvalidatie. Geen claim dat deze frontend-PR al die backendafhankelijkheden voltooit.
+
+## Architecturale borging
+Canonical System Map `portal-eight-outcomes-connected-journey-v1`, bijbehorende `brain/learning/2026-10-21-portal-connected-entrepreneur-journey-v1.json`, `.agents/skills/powerhouse-company-intelligence-os/SKILL.md` en append-only event. Geen extra scheduler, DB-migratie, marketingmail, Composio-side effect of Notion-replicatietabel.
+
+**Huidige leverstatus:** beschermd kandidaat, geen productieclaim tot provider-readback.
