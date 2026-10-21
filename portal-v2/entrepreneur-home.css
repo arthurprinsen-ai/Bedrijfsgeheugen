@@ -45,3 +45,28 @@
 .eh-page-guide p{margin:7px 0 11px;line-height:1.55;font-size:.87rem;color:#395968}
 .eh-page-guide .eh-text-action{color:#135e73;padding:4px 0}
 @media(max-width:760px){.eh-page-guide{padding:13px;margin:10px 0 16px}}
+
+/* Canonical journey: all statuses are proof-aware, never synthetic KPIs. */
+.eh-journey{margin-top:18px;padding:19px;border:1px solid #d8e9e6;border-radius:18px;background:#fff}
+.eh-journey>h3{font-size:1.1rem;line-height:1.25;margin:9px 0 6px;color:#163448}
+.eh-journey-stages{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:15px 0}
+.eh-journey-stage{border:1px solid #dbe7e9;border-radius:13px;padding:12px;min-width:0;background:#f8fafb}
+.eh-journey-stage[data-evidence-status="confirmed"]{border-color:#a8d6c8;background:#f2faf6}
+.eh-journey-stage strong{display:block;font-size:.83rem;margin:7px 0;line-height:1.32;color:#17384a}
+.eh-journey-stage p{font-size:.75rem;color:#526979;line-height:1.45;margin:0}
+.eh-journey-signal{font-size:.67rem;font-weight:800;color:#4c6470;text-transform:uppercase;letter-spacing:.02em}
+.eh-journey-stage[data-evidence-status="confirmed"] .eh-journey-signal{color:#176b59}
+.eh-journey-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.eh-journey-panel{min-width:0;padding:15px;border:1px solid #dce8e8;border-radius:13px;background:#f8fbfc}
+.eh-journey-panel strong{font-size:.91rem;color:#19384a}
+.eh-journey-panel p{font-size:.82rem;line-height:1.5;color:#4a6070;margin:7px 0}
+.eh-journey-panel .eh-muted{display:block;font-size:.75rem;margin-bottom:8px}
+.eh-journey-impact{margin-top:13px;border:1px solid #bfdcd5;border-radius:13px;padding:14px;background:#f2faf7}
+.eh-journey-impact strong{color:#175e59}
+.eh-journey-impact p{font-size:.84rem;line-height:1.5;color:#4b6270;margin:6px 0 8px}
+.eh-journey-affected{display:flex;flex-wrap:wrap;gap:8px 14px}
+.eh-journey-facts{margin:13px 0 0;font-size:.77rem;line-height:1.55;color:#526a78}
+.eh-journey button:focus-visible{outline:3px solid #2e729b;outline-offset:3px}
+@media(max-width:1050px){.eh-journey-stages{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:640px){.eh-journey{padding:14px}.eh-journey-stages{grid-template-columns:repeat(2,minmax(0,1fr))}.eh-journey-links{grid-template-columns:1fr}}
+@media(max-width:400px){.eh-journey-stages{grid-template-columns:1fr}}

@@ -1,0 +1,61 @@
+{
+  "fingerprint": "portal|eight-outcomes|connected-entrepreneur-journey|v1",
+  "date": "2026-10-21",
+  "type": "IMPROVEMENT",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "problem": "The goal-first homepage, cockpit, Winstnavigator, authenticated scan, Brain impact events and contextual portal pages were independently implemented but were not one clearly guided, source-aware entrepreneur experience.",
+  "root_cause": "The existing Winstnavigator was not mounted in the current Portal V2 app and the homepage did not project the dependency/ACK lineage, source limits and consistent contextual guidance from the canonical tenant state.",
+  "prevention": [
+    "Re-use /api/portal-state, signed scan claims and Brain BusinessInput ACK; never invent another tenant store, scheduler or connector fallback.",
+    "Preview real tenant metrics only after current authenticated snapshot; reset UI impact evidence on principal change.",
+    "Use the existing source-backed Winstnavigator on the owner's selected goal and never project hypothetical what-if values as realized margin or cash.",
+    "Mark affected pages as recalculation dependencies, not as computed financial outcomes.",
+    "Use GitHub, Notion and Netlify only as code, documentation and release authorities; Composio outputs require existing approved connector runtime/provider receipts.",
+    "Do not close the two-real-customer E2E acceptance until scan, goal, sourceRevision/Brain ACK, refresh/relogin and tenant isolation are proven."
+  ],
+  "change": {
+    "entry": "portal-v2/entrepreneur-home.js",
+    "journeyModel": "portal-v2/entrepreneur-journey-model.js",
+    "journeyView": "portal-v2/entrepreneur-journey-view.js",
+    "navigator": "portal-v2/winstnavigator.js",
+    "originalMount": "portal-v2/app.js",
+    "sourceAuthority": "existing authenticated tenant state + Brain ACK; source-backed Powerhouse actions and Foresight trend"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs",
+      "portal-v2/tests/entrepreneur-journey.test.mjs"
+    ],
+    "source": "new registered System Map capability, existing reusable model and page registry, protected CI"
+  },
+  "tests": [
+    "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs",
+    "portal-v2/tests/entrepreneur-journey.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_EIGHT_OUTCOME_UNIFIED_TENANT_JOURNEY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs",
+      "tests/brain-portal-claim-propagation-v1.test.mjs",
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-live-revalidation-v1.test.mjs"
+    ]
+  },
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585",
+  "customerAcceptance": {
+    "status": "PENDING_TWO_REAL_AUTHENTICATED_TENANT_JOURNEYS",
+    "verified": false
+  },
+  "productionEvidenceVerified": false
+}

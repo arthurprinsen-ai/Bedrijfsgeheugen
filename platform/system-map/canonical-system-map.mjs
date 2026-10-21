@@ -1,8 +1,8 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-10-21T05:32:18.113Z',
-  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'ac5bceedc2a6e23edb0bd1fe5590525fc69a7aa05d854b77e61924755521ae83',authority:'repository-source',providerRuntimeVerified:false}),
+  observedAt:'2026-10-21T09:19:55.315Z',
+  explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'4fb7548dfa75843ca93aadafcb78ccb15cecee8f3f1554b8053bbb5cf38552bb',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -36,6 +36,22 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'portal-eight-outcomes-connected-journey-v1',
+      fingerprint:'portal|eight-outcomes|connected-entrepreneur-journey|v1',
+      label:'Connected goal-first Frisse Blik, cockpit, source-backed Winstnavigator and page impact journey',
+      owner:'ONE BRAIN / existing Portal V2, Powerhouse and Heartbeat read authorities',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'existing authenticated /api/portal-state, /api/portal-scans and canonical BusinessInput / Brain ACK',
+      inputs:Object.freeze(['tenant-verified scan claim','selected business goal','source-backed Powerhouse actions','tenant historical observations','canonical mutation impact and Brain ACK','heartbeat runtime when observed']),
+      outputs:Object.freeze(['one guided next step','single contextual dashboard and navigator','unknown-safe forecasts','affected page links without invented calculations','verified outcome only with original evidence']),
+      managementSources:Object.freeze({github:'protected code, CI and immutable deploy evidence, not customer finance',netlify:'production artifact/readback, not direct company data',notion:'governed architecture and learning, not an unapproved tenant runtime feed',supabase:'only authorized tenant-owned canonical data and RLS-protected records',composio:'connector side effects only through existing authorized Brain/Powerhouse capability and provider receipts'}),
+      evidence:'tests/brain-portal-entrepreneur-goal-home-v1.test.mjs',
+      documentation:'docs/changes/portal-connected-entrepreneur-journey-20261021-v1.md',
+      learning:'brain/learning/2026-10-21-portal-connected-entrepreneur-journey-v1.json',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585',
+      noSecondPortal:true,noNewScheduler:true,authenticatedTwoTenantAcceptance:false,providerProductionEvidenceVerified:false
+    }),
     Object.freeze({
       id:'portal-entrepreneur-goal-home-v1',
       fingerprint:'portal|frisse-blik|goal-first-entrepreneur-home|v1',
