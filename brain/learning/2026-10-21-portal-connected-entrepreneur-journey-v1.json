@@ -12,7 +12,8 @@
     "Mark affected pages as recalculation dependencies, not as computed financial outcomes.",
     "Use GitHub, Notion and Netlify only as code, documentation and release authorities; Composio outputs require existing approved connector runtime/provider receipts.",
     "Do not close the two-real-customer E2E acceptance until scan, goal, sourceRevision/Brain ACK, refresh/relogin and tenant isolation are proven.",
-    "Across every verified Bedrijfslek/Frisse Blik overview and goal-first page, missing or blank score remains UNKNOWN: Number(null), Number(undefined) or Number('') must never fabricate 0/100. Only explicitly supplied numeric zero is a valid zero."
+    "Across every verified Bedrijfslek/Frisse Blik overview and goal-first page, missing or blank score remains UNKNOWN: Number(null), Number(undefined) or Number('') must never fabricate 0/100. Only explicitly supplied numeric zero is a valid zero.",
+    "Owner-facing fresh Brain/Heartbeat readbacks are transient: always bind runtime to current authenticated principal, invalidate on principal changes and never use them as proof of connector execution or financial outcomes."
   ],
   "change": {
     "entry": "portal-v2/entrepreneur-home.js",
@@ -71,5 +72,20 @@
     "publishedAt": "2026-10-21T09:28:54.780Z",
     "candidateChecks": "Required, Portal, Backend, website browser 265 routes x 3 viewports, build parity, CodeQL Python+JavaScript success"
   },
-  "prevention_rule": "Do not conflate a verified GitHub/Netlify exact-main product deployment with verified real tenant scans, connector executions, customer forecasts or end-to-end outcomes. Keep separate statuses in Brain, System Map and Notion."
+  "prevention_rule": "Do not conflate a verified GitHub/Netlify exact-main product deployment with verified real tenant scans, connector executions, customer forecasts or end-to-end outcomes. Keep separate statuses in Brain, System Map and Notion.",
+  "followUpFixes": [
+    {
+      "fingerprint": "portal|eight-outcomes|principal-bound-live-runtime|v1",
+      "status": "CANDIDATE_PROTECTED_DELIVERY",
+      "problem": "Fresh tenant Brain runtime was setDerived into domainState, but the owner journey rendered only the stateClient server snapshot, so valid observability could remain invisible until another page reload.",
+      "rootCause": "Missing explicit principal-bound bridge of transient runtime into the overview journey model. DomainState transient overlays were intentionally not promoted to persistent canonical state.",
+      "repair": "Use existing authenticated onRuntime callback to bind runtime to exact current user; clear envelope on principal switch; publish no customer data in UI update event; inject only current principal runtime in journey and page guidance; protect guest/demo/stale/other-provider cases.",
+      "tests": [
+        "portal-v2/tests/entrepreneur-journey.test.mjs",
+        "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
+      ],
+      "customerE2EVerified": false,
+      "providerLiveVerified": false
+    }
+  ]
 }

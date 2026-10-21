@@ -27,3 +27,13 @@
 - **Herstel:** expliciete aanwezigheidstoets vóór numerieke conversie in `portal-v2/modules/overview.js`, behoud echte score 0; regressie voor `undefined`, `null`, lege/gestripte tekst en expliciete nul.
 - **Geen alternatief:** geen fictieve bronwaarde in Supabase schrijven, geen scanclaim ongevraagd autoriseren, geen versoepeling van RLS of CI; behoud oorspronkelijke acht-resultaten-lineage en eind-to-end acceptatie onder #4215/#4547/#4585.
 - **Releasevereisten:** semantic learning, exact-head Required/CodeQL en exacte Netlify-productie-readback; broninventory-contenthash synchroniseren met gewijzigde V2.
+
+## 2026-10-21 — aanvullende RECOVERY: principal-bound Brain runtime
+
+- **Fingerprint:** `portal|eight-outcomes|principal-bound-live-runtime|v1`.
+- **Signal:** uit `/api/brain-operating-loop` succesvol geladen actuele runtime is afgeleid (niet opgeslagen) in `domainState`, maar het geïntegreerde ondernemersjourney-model leest alleen de server-state-client snapshot; een geldige observatie werd daardoor niet in de homepage gebruikt.
+- **Root cause:** geen principal-bound projectiebrug van vluchtige geauthenticeerde Brain-runtime naar de nieuwe owner UI.
+- **Herstel:** `app.js` leest huidige sessie vóór runtime binding, bewaart uitsluitend tijdelijke projectie onder principal, verwijdert die bij accountwissel, triggert een payload-vrij re-render event, en geeft deze alleen via beveiligde `getTenantRuntime` callback door aan homepage en paginagids.
+- **Test:** `portal-v2/tests/entrepreneur-journey.test.mjs` controleert verse Brain-observaties, oude observaties, gast/demo-privacy, andere providerbron en frontend-tenantboundary. Bestaande root replay loopt mee.
+- **Rollback:** draai uitsluitend de frontendprojectie terug; de oorspronkelijke geautoriseerde Brain-bridge en Supabase-write blijven intact. Geen nieuwe scheduler of providercredentials.
+- **Vervolgacceptatie:** alleen current exact-head Required+CodeQL en Netlify-deploy leveren releasebewijs; twee echte aparte klantaccounts, connector-uitvoeringen en financiële forecasts blijven onafhankelijk ONBEWEZEN.

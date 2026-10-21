@@ -11,7 +11,7 @@ const add=(parent,tag,className,text)=>{
   parent.appendChild(node);return node;
 };
 
-export function mountEntrepreneurHome({documentRef=globalThis.document,domainState,stateClient,navigate=navigatePortal}={}){
+export function mountEntrepreneurHome({documentRef=globalThis.document,domainState,stateClient,navigate=navigatePortal,getTenantRuntime=()=>null}={}){
   const main=documentRef?.querySelector?.('.main');
   if(!main||!domainState?.get||!stateClient?.getSnapshot)return null;
   const existing=main.querySelector('[data-entrepreneur-home]');
@@ -41,7 +41,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     guide.setAttribute('aria-label','Hulp bij jouw ondernemersdoel');
     guide.replaceChildren();
     add(guide,'strong','','Waarom ben je hier?');
-    const journey=buildEntrepreneurJourneyModel(state,{authenticated:true,home:model,impact,brainReceipt});
+    const journey=buildEntrepreneurJourneyModel(state,{authenticated:true,home:model,impact,brainReceipt,tenantRuntime:getTenantRuntime()});
     const guidance=journeyGuidance(target,model,journey);
     add(guide,'p','',guidance.why);
     add(guide,'p','',guidance.check);
@@ -128,7 +128,8 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     // Existing Brain/Powerhouse cockpit and scenario navigator are projections of
     // this same authenticated snapshot, not separate onboarding databases.
     const journey=buildEntrepreneurJourneyModel(customerState||{},{
-      authenticated:loggedIn&&Boolean(customerState),home:model,impact,brainReceipt
+      authenticated:loggedIn&&Boolean(customerState),home:model,impact,brainReceipt,
+      tenantRuntime:loggedIn&&customerState?getTenantRuntime():null
     });
     renderEntrepreneurJourney(host,journey);
     const footer=add(host,'div','eh-foot');
@@ -201,6 +202,8 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     draw();
   };
   const events=documentRef.defaultView;
+  const onTenantRuntime=()=>{if(auth())draw();};
+  events?.addEventListener?.('bg:portal-owner-runtime-updated',onTenantRuntime);
   events?.addEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);
   events?.addEventListener?.('bg:portal-impact',onImpact);
   events?.addEventListener?.('bg:portal-brain-synced',onBrainSynced);
@@ -209,5 +212,5 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   const unsubscribeRoute=subscribePortalRoute(({target})=>{host.hidden=target!=='overzicht';updatePageGuide();});
   host.hidden=currentPortalRoute().target!=='overzicht';
   onIdentity();
-  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();events?.removeEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);events?.removeEventListener?.('bg:portal-impact',onImpact);events?.removeEventListener?.('bg:portal-brain-synced',onBrainSynced);documentRef.getElementById('portalView')?.querySelector('[data-entrepreneur-guide]')?.remove();host.remove();}});
+  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();events?.removeEventListener?.('bg:portal-owner-runtime-updated',onTenantRuntime);events?.removeEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);events?.removeEventListener?.('bg:portal-impact',onImpact);events?.removeEventListener?.('bg:portal-brain-synced',onBrainSynced);documentRef.getElementById('portalView')?.querySelector('[data-entrepreneur-guide]')?.remove();host.remove();}});
 }
