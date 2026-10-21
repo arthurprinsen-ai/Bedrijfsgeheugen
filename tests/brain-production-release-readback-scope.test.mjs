@@ -183,7 +183,7 @@ test('public connector readiness is excluded from the authenticated connector wi
     readFile('netlify/functions/portal-connectors.mjs', 'utf8'),
     readFile('netlify/functions/connector-readiness.mjs', 'utf8'),
   ]);
-  assert.match(portalConnectors, /path:\s*['"]\/api\/connectors\/\*['"]/);
+  assert.match(portalConnectors, /path:\s*\[[^\]]*['"]\/api\/connectors\/\*['"]/);
   assert.match(portalConnectors, /excludedPath:\s*['"]\/api\/connectors\/readiness['"]/);
   assert.match(readiness, /path:\s*['"]\/api\/connectors\/readiness['"]/);
   assert.doesNotMatch(portalConnectors, /excludedPath:\s*['"]\/api\/connectors\/\*['"]/);

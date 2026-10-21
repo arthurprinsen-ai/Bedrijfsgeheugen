@@ -2441,3 +2441,19 @@ export const EMAIL_LEARNING_SCOPED_REFRESH_20261020=Object.freeze({
  regression:'supabase/tests/email_learning_scoped_refresh_v1.sql',
  learning:'brain/learning/2026-10-20-email-learning-scoped-refresh.json'
 });
+
+
+export const PORTAL_BRAIN_INPUT_ADMISSION_20261021=Object.freeze({
+ fingerprint:'portal|business-input|postgres-taxonomy-and-native-request|v1',
+ authority:'supabase:brain_records',
+ writer:'platform/api/portal-business-input-handler.mjs',
+ connectorEditor:'assets/js/koppelingen/view.js',
+ connectorBoundary:'platform/api/portal-connectors-handler.mjs',
+ connectorRoutes:Object.freeze(['/api/connectors','/api/connectors/*']),
+ connectorPublicExclusion:'/api/connectors/readiness',
+ migration:'supabase/migrations/20261021060606_portal_brain_input_taxonomy_v1.sql',
+ regression:'tests/brain-portal-input-taxonomy-v1.test.mjs',
+ isolatedPostgresReplay:'tests/brain-portal-input-taxonomy-postgres.mjs',
+ productionVerified:false,
+ tenantAcceptance:'AUTHENTICATED_CUSTOMER_AB_READBACK_REQUIRED'
+});
