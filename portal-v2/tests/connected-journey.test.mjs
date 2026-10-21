@@ -26,7 +26,7 @@ test('tenants, demo and guests cannot expose a previous company goal, impact or 
  assert.equal(anon.related.length,0);
  assert.ok(anon.sources.every(source=>source.verified===false));
  const signed=buildConnectedJourneyModel({pageId:'overzicht',state,authenticated:true,impact,phase:'pending',now:Date.parse('2026-10-21T09:10:00Z')});
- assert.equal(signed.goalLabel,'Meer winst');
+ assert.equal(signed.goalLabel,'Meer winst / minder kosten');
  assert.equal(signed.related.length,2);
  assert.match(signed.impact.status,/nog afwachten/);
  const saved=buildConnectedJourneyModel({pageId:'overzicht',state,authenticated:true,impact,phase:'confirmed',now:Date.parse('2026-10-21T09:10:00Z')});
