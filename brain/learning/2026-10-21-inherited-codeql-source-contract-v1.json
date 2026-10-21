@@ -36,5 +36,12 @@
   },
   "skill_targets": [
     ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md"
-  ]
+  ],
+  "test_evidence": {
+    "original_red": "BRAIN run 39554866582 job 119072398429: ENOENT while reading removed .github/workflows/powerhouse-codeql.yml from tests/brain-ci-critical-path-acceleration-v2.test.mjs",
+    "source_green": "11/11 CodeQL properties checked against current exact-base .github/workflows/codeql.yml; no production/workflow mutation",
+    "canonical_learning_evaluation": "Historical replay, shadow and canary passed on candidate HEAD aae0d90f807caacc7d1c0e9f27ee8d51fa2ac734 in Required run 39658440167",
+    "full_brain": "NOT_GREEN",
+    "production": "UNCHANGED"
+  }
 }
