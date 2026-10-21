@@ -41,7 +41,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       fingerprint:'portal|frisse-blik|goal-first-entrepreneur-home|v1',
       label:'One tenant-scoped entrepreneur goal, scan evidence and actionable next best step on the original Portal V2 home',
       owner:'ONE BRAIN / existing Portal V2 and Powerhouse',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'LIVE_PROVEN_PROVIDER_TRUTH',
       authority:'existing authenticated portal.business_context canonical store, scan-claim readback and evidenced tenant Powerhouse model',
       inputs:Object.freeze(['verified same-tenant scan assessment if present','customer-selected primary business goal','measurable goal target','healthy and sourced next best proposal']),
       outputs:Object.freeze(['goal-first personalized portal home','single contextual next-step route','write confirmation only after tenant-state and Brain ACK','no invented business result']),
@@ -49,7 +49,12 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       documentation:'docs/changes/portal-entrepreneur-goal-home-20261021-v1.md',
       learning:'brain/learning/2026-10-21-entrepreneur-goal-home-v1.json',
       obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578',
-      noNewScheduler:true, noParallelSourceOfTruth:true, productionEvidenceVerified:false
+      noNewScheduler:true, noParallelSourceOfTruth:true, productionEvidenceVerified:true,
+      productionDeployId:'6ad86f363d80b09aaceebcfc',
+      productionMainSha:'a57b7c93e731b95aaf90fdf77276d10fe5f9f48b',
+      publishedAt:'2026-10-21T07:54:26.530Z',
+      customerAcceptance:'PENDING_TWO_AUTHENTICATED_CUSTOMER_JOURNEYS',
+      proofScope:'Protected merge + Netlify exact commit and ready production deploy; not a two-tenant customer-data acceptance'
     }),
     Object.freeze({id:'saas-customer-loop-v1',label:'Persisted SaaS checkout and scan-to-account continuity',owner:'existing Stripe / Netlify Identity / Supabase authorities',status:'CHECKOUT_ARTIFACT_RECOVERY_BILLING_BLOCKED',authority:'canonical plans, verified webhook, server-side paid invitation, canonical scan receipts, final NL/EN checkout artifact contract',inputs:Object.freeze(['plan and billing choice','confirmed account','completed scan']),outputs:Object.freeze(['durable intent and subscription receipt','same-organisation portal entitlements','tenant-bound self-reported assessment history']),evidence:'tests/saas-pricing-entitlements.test.mjs',learning:'brain/learning/2026-10-21-saas-customer-loop.json'}),
     Object.freeze({id:'portal-ai-passport-model-binding-v1',fingerprint:'portal|ai-passport|tenant-model-choice-live-projection|v1',label:'Tenant AI choice and data passport share canonical state and evidence',owner:'ONE BRAIN / existing Portal tenant state and sovereignty Heartbeat',status:'CANDIDATE_PROTECTED_DELIVERY',authority:'authenticated tenant domainState + sovereignty/security registry + AI activation readiness',inputs:Object.freeze(['portal.aiModelPreferences','data-sovereignty.aiRoutes','tenant-ai-activation-status','portal.runtime.observability.updatedAt']),outputs:Object.freeze(['requested default and workload models','model-specific data-processing facts','readiness separate from execution','identity-safe coalesced readback']),evidence:'tests/brain-portal-ai-passport-model-binding-v1.test.mjs',obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4152',learning:'brain/learning/2026-10-20-ai-passport-model-binding-v1.json'}),
