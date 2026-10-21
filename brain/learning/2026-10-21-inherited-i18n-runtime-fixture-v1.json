@@ -19,6 +19,13 @@
   ],
   "security": "No test removed; no mandatory workflow, migration, production or RLS change; all runtime assertions must pass.",
   "evaluation": {
+    "historical_replay": [
+      "tests/brain-apply-i18n-compact-mobile-syntax-v1.test.mjs",
+      "tests/brain-i18n-independent-asset-injection-v1.test.mjs",
+      "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs",
+      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
+    ],
     "targeted_node": "NOT_YET_CONFIRMED_BY_GITHUB",
     "full_brain": "NOT_YET_GREEN",
     "required": "NOT_YET_CONFIRMED",
@@ -30,5 +37,12 @@
     ".agents/skills/powerhouse-netlify-production-truth/SKILL.md"
   ],
   "system_map": "platform/system-map/canonical-system-map.mjs",
-  "status": "CANDIDATE_UNVERIFIED_PROTECTED_GATES"
+  "status": "CANDIDATE_UNVERIFIED_PROTECTED_GATES",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
