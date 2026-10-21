@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 test('Instagram daily winner is persisted ex ante and immutable per date', async () => {
-  const sql=await readFile('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
+  const sql=await readFile('supabase/migration-history/repository-only/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
   assert.match(sql,/powerhouse_instagram_daily_winners_v1/);
   assert.match(sql,/run_date date primary key/);
   assert.match(sql,/EX_ANTE_BEFORE_MEDIA_AND_PUBLICATION/);
@@ -13,7 +13,7 @@ test('Instagram daily winner is persisted ex ante and immutable per date', async
 });
 
 test('Instagram provider readback normalizes winner format and keeps learning lineage', async () => {
-  const sql=await readFile('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
+  const sql=await readFile('supabase/migration-history/repository-only/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
   assert.match(sql,/winner_recommendation_id/);
   assert.match(sql,/winner_score_version/);
   assert.match(sql,/new\.format:='reel'/);
@@ -37,7 +37,7 @@ test('content loop, orchestrator and media router reuse the same winner authorit
 
 test('winner flow stays server-only and reuses canonical reconciliation/secret RPCs', async () => {
   const loop=await readFile('supabase/functions/powerhouse-content-loop/index.ts','utf8');
-  const sql=await readFile('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
+  const sql=await readFile('supabase/migration-history/repository-only/20260920110000_instagram_daily_winner_lineage_v1.sql','utf8');
   assert.match(loop,/bg_geheim/);
   assert.match(loop,/powerhouse_reconcile_content_outcomes_v1/);
   assert.match(sql,/revoke all on public\.powerhouse_instagram_daily_winners_v1 from public, anon, authenticated/i);
