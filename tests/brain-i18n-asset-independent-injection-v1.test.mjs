@@ -1,19 +1,23 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import { readFileSync } from 'node:fs';
+import { applyI18nFixture } from './helpers/i18n-runtime-fixture.mjs';
 
 test('apply-i18n injects runtime script independently from existing CSS', () => {
-  const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
-  assert.match(source,/const hasI18nCss =/);
-  assert.match(source,/const hasI18nScript =/);
-  assert.match(source,/!hasI18nCss \? LINK/);
-  assert.match(source,/!hasI18nScript \? SCRIPT/);
-  assert.doesNotMatch(source,/\|\| \/data-bg-i18n-asset\/\.test\(html\)\) return/);
-  assert.match(source,/html = injectMobileLanguage\(html\)/);
+  const html = '<!doctype html><html><head><link rel="stylesheet" href="/assets/i18n.css"></head><body><aside class="v18-mobile-drawer"></aside><main></main></body></html>';
+  const { once, twice } = applyI18nFixture(html);
+  assert.match(once, /src="\/assets\/js\/i18n\.js\?/);
+  assert.equal((once.match(/\/assets\/i18n\.css\?/g) || []).length, 1);
+  assert.equal((once.match(/\/assets\/js\/i18n\.js\?/g) || []).length, 1);
+  assert.equal(twice, once);
 });
 
-test('canonical pricing source contains both i18n assets after build contract repair', () => {
-  const html = fs.readFileSync('prijzen.html','utf8');
-  assert.match(html,/assets\/i18n\.css/);
-  assert.match(html,/assets\/js\/i18n\.js/);
+test('canonical pricing source acquires both i18n assets through the real build transformer', () => {
+  const source = readFileSync('prijzen.html', 'utf8');
+  const { once, twice } = applyI18nFixture(source, 'prijzen.html');
+  assert.match(once, /href="\/assets\/i18n\.css\?/);
+  assert.match(once, /src="\/assets\/js\/i18n\.js\?/);
+  assert.equal((once.match(/\/assets\/i18n\.css\?/g) || []).length, 1);
+  assert.equal((once.match(/\/assets\/js\/i18n\.js\?/g) || []).length, 1);
+  assert.equal(twice, once);
 });

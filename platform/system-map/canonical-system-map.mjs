@@ -2,6 +2,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
   observedAt:'2026-10-21T09:19:55.315Z',
+  qualityRegressionContracts:Object.freeze([Object.freeze({id:'i18n-build-runtime-fixture-v1',fingerprint:'ci|inherited-brain|i18n-transform-runtime-fixtures|v1',authority:'real isolated build-time transformer',evidence:'tests/helpers/i18n-runtime-fixture.mjs',scope:'i18n CSS+JS, route-aware mobile CTA/drawer, existing assets and idempotence',status:'CANDIDATE_UNVERIFIED_PROTECTED_GATES',relatedIssue:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742'})]),
   explanationInventory:Object.freeze({contract:'portal-explanation-autosync-v1',contentHash:'4fb7548dfa75843ca93aadafcb78ccb15cecee8f3f1554b8053bbb5cf38552bb',authority:'repository-source',providerRuntimeVerified:false}),
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
