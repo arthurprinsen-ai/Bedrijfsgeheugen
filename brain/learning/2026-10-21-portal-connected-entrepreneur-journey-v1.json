@@ -11,7 +11,8 @@
     "Use the existing source-backed Winstnavigator on the owner's selected goal and never project hypothetical what-if values as realized margin or cash.",
     "Mark affected pages as recalculation dependencies, not as computed financial outcomes.",
     "Use GitHub, Notion and Netlify only as code, documentation and release authorities; Composio outputs require existing approved connector runtime/provider receipts.",
-    "Do not close the two-real-customer E2E acceptance until scan, goal, sourceRevision/Brain ACK, refresh/relogin and tenant isolation are proven."
+    "Do not close the two-real-customer E2E acceptance until scan, goal, sourceRevision/Brain ACK, refresh/relogin and tenant isolation are proven.",
+    "Across every verified Bedrijfslek/Frisse Blik overview and goal-first page, missing or blank score remains UNKNOWN: Number(null), Number(undefined) or Number('') must never fabricate 0/100. Only explicitly supplied numeric zero is a valid zero."
   ],
   "change": {
     "entry": "portal-v2/entrepreneur-home.js",
