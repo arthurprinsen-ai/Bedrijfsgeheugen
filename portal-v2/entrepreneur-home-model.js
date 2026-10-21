@@ -17,7 +17,7 @@ const hasValue=value=>value!==undefined&&value!==null&&value!==''&&Number.isFini
 export function goalContextPatch(current={},goalId,at=new Date().toISOString()){
   if(!BY_ID[goalId])throw new RangeError('ENTREPRENEUR_GOAL_INVALID');
   const goals=unique([...(Array.isArray(current.goals)?current.goals:[]),goalId]);
-  return Object.freeze({goals,primary_goal:goalId,confirmed:true,confirmed_at:at,confirmation_source:'entrepreneur-home'});
+  return Object.freeze({goals,primary_goal:goalId,goal_confirmed_at:at,goal_confirmation_source:'entrepreneur-home'});
 }
 
 export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Date.now()}={}){
