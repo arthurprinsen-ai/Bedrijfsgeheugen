@@ -56,10 +56,18 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
   const pendingKey=()=>pendingBedrijfslekReceipt(storage,session);
   const requestHeaders=async()=>authorizedScanHeaders(await authHeaders());
   const json=async response=>response.json().catch(()=>null);
-  function clearHistory(){history.replaceChildren()}
+  function publishScanHistory(count=null){
+    // Derived only from the existing authenticated /api/portal-scans readback;
+    // no scan receipts, names or identifiers leak to the public DOM event.
+    const view=doc.defaultView;
+    if(typeof view?.CustomEvent==='function'&&typeof view.dispatchEvent==='function')
+      view.dispatchEvent(new view.CustomEvent('bg:portal-verified-scan-count',{detail:{count}}));
+  }
+  function clearHistory(){history.replaceChildren();publishScanHistory(null);}
   function showHistory(scans){
     clearHistory();
     const rows=Array.isArray(scans)?scans.filter(row=>row?.tenant_identity_status==='verified').slice(0,5):[];
+    publishScanHistory(rows.length);
     if(!rows.length){status.textContent='Nog geen geverifieerde nulmeting gekoppeld.';return}
     status.textContent=rows.length+' geverifieerde nulmeting'+(rows.length===1?'':'en')+' beschikbaar.';
     const list=element(doc,'ul');
