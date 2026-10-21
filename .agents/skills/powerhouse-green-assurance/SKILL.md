@@ -200,3 +200,12 @@ For public i18n:
 - every behavioral change to `assets/js/i18n.js` requires a matching `I18N_ASSET_VERSION` rotation in `tools/site-shell/apply-i18n.mjs`;
 - production readback must prove the HTML references the rotated asset and the NL→EN→NL interaction works;
 - do not classify repeated old behavior as a new runtime defect until cache identity has been disproven.
+
+
+## Historical SQL archive and active BRAIN source-contracts
+
+Fingerprint: `ci|brain-baseline|tenant-identity-archived-sql-source-contract|v1`.
+
+An active BRAIN test that verifies historic SQL must read the exact canonical source from `supabase/migration-history/repository-only/` when the applied version has been archived. Never create a fresh executable duplicate in `supabase/migrations/`, empty SQL placeholder, or waive a security assertion to satisfy CI. Specifically, `tests/supabase-tenant-identity-hardening-contract.test.mjs` uses the immutable `20260915170000_powerhouse_tenant_identity_hardening_v1.sql` archive and preserves all five tenant identity tests; `tests/brain-tenant-identity-archive-source-v1.test.mjs` checks the pointer, 17 positive security patterns and both negative forbidden-pattern checks.
+
+The source test correction is not proof of Supabase migration parity or actual tenant isolation. Full exact-head BRAIN, Required, CodeQL, clean-room parity and authenticated customer A/B readback remain binding under existing #3742 and #4215. No parallel test waiver, scheduler or status authority is allowed.

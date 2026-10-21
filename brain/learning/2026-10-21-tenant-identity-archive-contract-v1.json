@@ -37,7 +37,7 @@
     ]
   },
   "skill_targets": [
-    ".agents/skills/powerhouse-tenant-identity-archive-contract/SKILL.md"
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
   ],
   "test_evidence": {
     "before": "PR #4573 BRAIN backend 355 inherited failures; these five test cases read missing file",
