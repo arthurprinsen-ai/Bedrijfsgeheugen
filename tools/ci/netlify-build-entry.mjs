@@ -10,6 +10,7 @@ const HEX40 = /^[0-9a-f]{40}$/i;
 const phases = Object.freeze([
   ['portal-explanation-inventory','scripts/brain/portal-explanation-inventory.mjs','--write','--stamp-assets'],
   ['pricing-capture','tools/site-shell/pricing-build-integrity.mjs','capture'],
+  ['checkout-capture','tools/site-shell/checkout-build-integrity.mjs','capture'],
   ['bedrijfslek-capture','tools/site-shell/bedrijfslek-build-integrity.mjs','capture'],
   ['powerhouse-auth','tools/bouw-powerhouse-auth.mjs'],
   ['kennisindex','tools/bouw-kennisindex.mjs'],
@@ -22,6 +23,7 @@ const phases = Object.freeze([
   ['site-ui','tools/normaliseer-site-ui.mjs'],
   ['pricing-restore','tools/site-shell/pricing-build-integrity.mjs','restore'],
   ['bedrijfslek-restore','tools/site-shell/bedrijfslek-build-integrity.mjs','restore'],
+  ['checkout-restore','tools/site-shell/checkout-build-integrity.mjs','restore'],
   ['seo-apply','tools/seo-order-engine/apply.mjs'],
   ['seo-validate','tools/seo-order-engine/validate.mjs'],
   ['i18n-assets','tools/site-shell/apply-i18n.mjs'],
@@ -33,6 +35,7 @@ const phases = Object.freeze([
   ['cms-runtime','tools/site-shell/apply-cms-runtime.mjs'],
   ['sitemap','tools/genereer-sitemap.mjs'],
   ['locale-validation','tools/seo-order-engine/validate-locales.mjs'],
+  ['checkout-final-contract','tools/site-shell/checkout-build-integrity.mjs','verify'],
   ['release-evidence','tools/bouw-release-evidence.mjs'],
 ]);
 
