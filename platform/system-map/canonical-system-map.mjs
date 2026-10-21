@@ -37,6 +37,24 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-one-organism-connected-journey-v1',
+      fingerprint:'portal|contextual-business-journey|one-organism|v1',
+      label:'Every registered Portal V2 page shares the goal-first tenant context and canonical mutation/Brain ACK review path',
+      owner:'Portal V2 / ONE BRAIN / existing Powerhouse Heartbeat',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'existing authenticated portal state, canonical BusinessInput/Brain ACK and tenant-scoped runtime sources',
+      inputs:Object.freeze(['current signed-in tenant projection','registered page route','entrepreneur goal','canonical mutation events and verified provider source receipts when present']),
+      outputs:Object.freeze(['contextual next step for every V2 page','read-only relevant provider connections with fail-closed evidence status','pending versus acknowledged impact routes','existing interactive Winstnavigator boot and goal-home entry']),
+      providerRoles:Object.freeze(['Supabase','GitHub','Notion','Netlify','Composio','Brain','Powerhouse','Heartbeat']),
+      externalProviderActions:false,noNewScheduler:true,noParallelSourceOfTruth:true,
+      evidence:'portal-v2/tests/connected-journey.test.mjs',
+      learning:'brain/learning/2026-10-21-portal-one-organism-context-v1.json',
+      documentation:'docs/changes/portal-one-organism-context-20261021-v1.md',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547',
+      customerAcceptance:'PENDING_INDEPENDENT_TWO_TENANT_END_TO_END',
+      productionEvidenceVerified:false
+    }),
+    Object.freeze({
       id:'portal-entrepreneur-goal-home-v1',
       fingerprint:'portal|frisse-blik|goal-first-entrepreneur-home|v1',
       label:'One tenant-scoped entrepreneur goal, scan evidence and actionable next best step on the original Portal V2 home',
