@@ -28,7 +28,7 @@ export function buildEntrepreneurJourneyModel(state={},{
   const safe=state&&typeof state==='object'?state:{};
   const owner=buildOwnerOperatingModel(safe,{now});
   const metric=home.selectedGoal||'profit';
-  const twin=buildWinstnavigatorModel(safe,{metric,days:90});
+  const twin=buildWinstnavigatorModel(safe,{metric,days:90,asOf:new Date(now).toISOString()});
   const chosen=twin.selected;
   const stateConfirmed=Boolean(safe?.portal?.business_context?.goal_confirmed_at&&home.selectedGoal);
   const verifiedSeries=chosen?.history?.filter(item=>item.evidenceRef).length||0;
