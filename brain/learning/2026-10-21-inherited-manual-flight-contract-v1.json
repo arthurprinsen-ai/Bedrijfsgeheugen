@@ -1,0 +1,56 @@
+{
+  "fingerprint": "ci|inherited-baseline|manual-workflow-single-flight-contract|v1",
+  "obligation_id": "ci-inherited-manual-flight-contract-v1",
+  "parent_issue": 3742,
+  "related_issue": 4215,
+  "source_main_sha": "8f322681ba46045e5d65746c2b2f0fd5b40ffac1",
+  "source_evidence": {
+    "brain_run": 39554866582,
+    "affected_pr": 4573,
+    "failed_test": "tests/brain-actions-pr-single-flight-v1.test.mjs",
+    "failing_expectation": "old job name 'test' and mandatory pull_request.number for diagnostic workflows",
+    "current_sources": [
+      ".github/workflows/canonical-brand-shell-test.yml",
+      ".github/workflows/canonical-brand-shell-full-build.yml",
+      ".github/workflows/live-preview-smoke.yml",
+      ".github/workflows/prijzen-hero-seo-regression.yml"
+    ]
+  },
+  "root_cause": "The inherited BRAIN test required a retired job name and unconditional pull-request concurrency semantics even though all four diagnostic workflows are manually dispatchable; manual-only full-build uses ref-scoped concurrency.",
+  "change": "Align source contract test to current actual job names and require manual dispatch, no push/PR fanout, ref-scoped single-flight, cancellation of superseded runs, and bounded timeout for every workflow.",
+  "prevention_rule": "After moving heavy workflows to workflow_dispatch or renaming jobs, update exact source-contract assertions to verify the new execution constraints, never drop single-flight/timeout/security checks or skip failed BRAIN tests.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "status": "CANDIDATE_UNVERIFIED_CI",
+  "test_evidence": {
+    "before": "BRAIN 39554866582 failed 355 candidate and base-main tests; exact failure from obsolete job/trigger expectations.",
+    "after": "NOT_YET_RUN_EXACT_HEAD",
+    "full_brain": "NOT_YET_GREEN",
+    "authenticated_customer_acceptance": "NOT_YET_PROVEN"
+  },
+  "acceptance": [
+    "Updated diagnostic workflow test succeeds against current source without changing workflow runtime",
+    "Exact-head Required, BRAIN and CodeQL succeed for release",
+    "No suppression of inherited failures, no release of blocked PR 4573 based on partial fix",
+    "Protected merge, production readback and two genuine authenticated customer sessions before full portal green"
+  ]
+}
