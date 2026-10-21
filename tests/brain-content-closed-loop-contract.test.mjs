@@ -54,7 +54,10 @@ test('orchestrator exposes unsupported channel obligations as machine-readable h
 test('orchestrator preserves content_ready until executor consumes artifact', () => {
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.match(orchestrator, /COVERED_STATES\s*=\s*new Set\(\[[^\]]*'content_ready'/);
-  assert.match(orchestrator, /if \(shouldPreserveExisting\(previous\)\) continue;/);
+  assert.match(orchestrator, /if\s*\(\s*shouldPreserveExisting\(\s*previous,\s*channel,\s*personalSource,\s*consumedCapabilityChannels,\s*currentObligation\s*\)\s*\)\s*continue;/);
+  assert.match(orchestrator, /if\s*\(\s*consumedCapabilityChannels\.has\(channel\)\s*&&\s*!clean\(row\.delivery_ref\)\s*\)\s*return true;/);
+  assert.match(orchestrator, /evidence\.republish_forbidden\s*===\s*true/);
+  assert.match(orchestrator, /evidence\.possible_provider_side_effect\s*===\s*true/);
 });
 
 test('database has one canonical reconciliation loop and guards invoke it before recovery', () => {
