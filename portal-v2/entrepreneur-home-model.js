@@ -20,7 +20,7 @@ export function goalContextPatch(current={},goalId,at=new Date().toISOString()){
   return Object.freeze({goals,primary_goal:goalId,goal_confirmed_at:at,goal_confirmation_source:'entrepreneur-home'});
 }
 
-export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Date.now()}={}){
+export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Date.now(),verifiedScanCount=null}={}){
   // Guest/demo snapshots are never considered tenant evidence.
   const safe=authenticated&&state&&typeof state==='object'?state:{};
   const context=safe?.portal?.business_context||{};
@@ -28,8 +28,9 @@ export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Da
   const primary=BY_ID[context.primary_goal]&&goals.includes(context.primary_goal)?context.primary_goal:goals[0]||null;
   const chosen=primary?BY_ID[primary]:null;
   const scan=safe?.portal?.assessments?.bedrijfslekScan;
-  const scanVerified=scan?.verifiedIdentity===true;
-  const score=scanVerified&&hasValue(scan.score)&&Number(scan.score)>=0&&Number(scan.score)<=100?Math.round(Number(scan.score)):null;
+  const verifiedHistory=authenticated&&Number.isInteger(verifiedScanCount)&&verifiedScanCount>0?verifiedScanCount:0;
+  const scanVerified=scan?.verifiedIdentity===true||verifiedHistory>0;
+  const score=scan?.verifiedIdentity===true&&hasValue(scan.score)&&Number(scan.score)>=0&&Number(scan.score)<=100?Math.round(Number(scan.score)):null;
   const target=primary?context?.goal_targets?.[primary]||{}:{};
   const hasTarget=hasValue(target.target_value)&&typeof target.target_date==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(target.target_date);
   const intelligence=authenticated?buildOwnerOperatingModel(safe,{now}):null;
@@ -46,7 +47,7 @@ export function buildEntrepreneurHomeModel(state={}, {authenticated=false,now=Da
     goals:ENTREPRENEUR_GOALS,
     selectedGoal:primary,headline:chosen?.headline||'Jouw ambitie bepaalt wat je als eerste ziet',
     target:hasTarget?Object.freeze({value:Number(target.target_value),date:target.target_date}):null,
-    scan:Object.freeze({verified:scanVerified,score,description:scanVerified?'Zelfgerapporteerde nulmeting, gekoppeld aan dit bedrijf. Geen geauditeerde financiële KPI.':'Nog geen gekoppelde, geverifieerde nulmeting zichtbaar. Je kunt een bewaarde scan koppelen via Mijn nulmetingen.'}),
+    scan:Object.freeze({verified:scanVerified,count:verifiedHistory,score,description:scanVerified?(verifiedHistory?'Minstens '+verifiedHistory+' geverifieerde nulmeting(en) in je eigen scanhistorie. De uitkomsten zijn zelfgerapporteerd, geen geauditeerde financiële KPI.':'Zelfgerapporteerde nulmeting, gekoppeld aan dit bedrijf. Geen geauditeerde financiële KPI.'):'Nog geen gekoppelde, geverifieerde nulmeting zichtbaar. Je kunt een bewaarde scan koppelen via Mijn nulmetingen.'}),
     intelligence:Object.freeze({ready:Boolean(intelligence?.ready),verifiedSignals:intelligence?.ready?intelligence.proof.verified:0}),
     next:Object.freeze(next)
   });
