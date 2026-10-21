@@ -16,7 +16,8 @@
   ],
   "evidence": {
     "localTests": "8 scoped tests; no production or full CI proof",
-    "gateway": "portal-v2/tests/*.test.mjs"
+    "gateway": "portal-v2/tests/*.test.mjs",
+    "brainEntrypoint": "tests/brain-portal-scan-receipt-order-v2.test.mjs"
   },
   "compiler": {
     "failure_class": "PORTAL_STALE_SCAN_RECEIPT_SELECTED",
@@ -27,13 +28,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/scan-claim-receipt-order.test.mjs"
+      "tests/brain-portal-scan-receipt-order-v2.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/scan-claim-receipt-order.test.mjs"
+      "tests/brain-portal-scan-receipt-order-v2.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/scan-claim-receipt-order.test.mjs"
+      "tests/brain-portal-scan-receipt-order-v2.test.mjs"
     ]
   },
   "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
