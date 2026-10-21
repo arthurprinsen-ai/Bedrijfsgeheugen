@@ -37,6 +37,22 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'portal-eight-outcomes-connected-journey-v1',
+      fingerprint:'portal|eight-outcomes|connected-entrepreneur-journey|v1',
+      label:'Connected goal-first Frisse Blik, cockpit, source-backed Winstnavigator and page impact journey',
+      owner:'ONE BRAIN / existing Portal V2, Powerhouse and Heartbeat read authorities',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      authority:'existing authenticated /api/portal-state, /api/portal-scans and canonical BusinessInput / Brain ACK',
+      inputs:Object.freeze(['tenant-verified scan claim','selected business goal','source-backed Powerhouse actions','tenant historical observations','canonical mutation impact and Brain ACK','heartbeat runtime when observed']),
+      outputs:Object.freeze(['one guided next step','single contextual dashboard and navigator','unknown-safe forecasts','affected page links without invented calculations','verified outcome only with original evidence']),
+      managementSources:Object.freeze({github:'protected code, CI and immutable deploy evidence, not customer finance',netlify:'production artifact/readback, not direct company data',notion:'governed architecture and learning, not an unapproved tenant runtime feed',supabase:'only authorized tenant-owned canonical data and RLS-protected records',composio:'connector side effects only through existing authorized Brain/Powerhouse capability and provider receipts'}),
+      evidence:'tests/brain-portal-entrepreneur-goal-home-v1.test.mjs',
+      documentation:'docs/changes/portal-connected-entrepreneur-journey-20261021-v1.md',
+      learning:'brain/learning/2026-10-21-portal-connected-entrepreneur-journey-v1.json',
+      obligation:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585',
+      noSecondPortal:true,noNewScheduler:true,authenticatedTwoTenantAcceptance:false,providerProductionEvidenceVerified:false
+    }),
+    Object.freeze({
       id:'portal-entrepreneur-goal-home-v1',
       fingerprint:'portal|frisse-blik|goal-first-entrepreneur-home|v1',
       label:'One tenant-scoped entrepreneur goal, scan evidence and actionable next best step on the original Portal V2 home',
