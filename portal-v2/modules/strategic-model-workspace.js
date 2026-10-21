@@ -1,9 +1,9 @@
 import {
   buildStrategicModels, STRATEGIC_MODEL_IDS, buildStrategicRoadmapAction, mergeStrategicRoadmapAction,
   buildBcgModel, buildBcgRoadmapAction, mergeBcgRoadmapAction
-} from '../strategic-models.js';
-import { calculateLegacyEquivalent } from '../legacy-parity-engine.js';
-import { calculateLegacyFinanceModels } from '../legacy-finance-models.js';
+} from '../strategic-models.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { calculateLegacyEquivalent } from '../legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { calculateLegacyFinanceModels } from '../legacy-finance-models.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c]));
 
 function modelMarkup(model,editable=false){

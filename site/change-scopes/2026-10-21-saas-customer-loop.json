@@ -1,0 +1,21 @@
+{
+  "routes": [
+    "/afsluiten",
+    "/zelfscan",
+    "/scan",
+    "/frisse-blik",
+    "/portal-v2/"
+  ],
+  "change_class": "technical-only",
+  "preserve": [
+    "seo",
+    "navigation",
+    "required-anchors",
+    "assets",
+    "analytics",
+    "security",
+    "portal",
+    "brain"
+  ],
+  "reason": "User-authorized SaaS loop: acknowledged persistence, retry recovery and verified account/subscription binding."
+}

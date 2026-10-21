@@ -1,4 +1,4 @@
-import { PROFILE_DIMENSIONS } from './company-input.js';
+import { PROFILE_DIMENSIONS } from './company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
 export const STANDARD_EXECUTION_SHARES=Object.freeze([.10,.25,.35,.20,.10]);

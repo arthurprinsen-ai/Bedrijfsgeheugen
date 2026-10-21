@@ -1,4 +1,4 @@
-import {valueKind} from './contracts.js';
+import {valueKind} from './contracts.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 export const IMPACT_FORMULA_VERSION='impact-v1';
 const VALUE_FIELDS=['revenue_upside','gross_margin_effect','cost_capacity_reduction','fte_capacity_released','risk_exposure_reduced','compliance_impact','cash_flow_effect','required_investment','recurring_cost'];

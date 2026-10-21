@@ -1,33 +1,33 @@
-import { findPage, listPortalGroups } from './page-registry.js';
-import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
-import { nativePageContent } from './native-pages.js';
-import { pageVisual } from './page-visuals.js';
-import { mountAskPortal } from './ask-portal.js';
-import { mountOwnerOperatingSystem } from './owner-operating-system.js';
-import { mountChangeWizard } from './modules/change-wizard.js';
-import { loadRuntimeEvidence } from './runtime-evidence.js';
-import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js';
-import { renderStrategyDna } from './strategy-dna.js';
-import { mountConnectorWizard } from '../assets/js/koppelingen/view.js';
-import { getCapabilityContract } from './capability-contracts.js';
-import { mountWorkspace } from './workspace-shell.js';
-import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js';
-import { mountDeliveryWorkspace } from './modules/delivery-workspace.js';
-import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/functional-suite.js';
-import { mountAiCapabilityWorkspace } from './modules/ai-capability-workspace.js';
-import { mountExecutionLadderWorkspace } from './modules/execution-ladder-workspace.js';
-import { mountRoadmapWorkspace } from './modules/roadmap-workspace.js';
-import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
-import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
-import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
-import { mountCustomerAgentActivity } from './modules/customer-agent-activity.js';
-import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
-import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
-import { mountContextualForesight } from './foresight-context-ui.js';
-import {mountWinstnavigator} from './winstnavigator.js';
-import { mountNeedDiscovery } from './modules/need-discovery.js';
-import { mountSecurityTrustWorkspace, disposeSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
-import { mountAiModelChoice } from './modules/ai-model-choice.js';
+import { findPage, listPortalGroups } from './page-registry.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { nativePageContent } from './native-pages.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { pageVisual } from './page-visuals.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountAskPortal } from './ask-portal.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountOwnerOperatingSystem } from './owner-operating-system.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountChangeWizard } from './modules/change-wizard.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { loadRuntimeEvidence } from './runtime-evidence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { renderCsrdImpact, impactSnapshotFromPortalState, withSovereigntyChangeReview } from './csrd-impact.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { renderStrategyDna } from './strategy-dna.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountConnectorWizard } from '../assets/js/koppelingen/view.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { getCapabilityContract } from './capability-contracts.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountWorkspace } from './workspace-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountCompanyInput, renderProfileAnalysis } from './modules/company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountDeliveryWorkspace } from './modules/delivery-workspace.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/functional-suite.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountAiCapabilityWorkspace } from './modules/ai-capability-workspace.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountExecutionLadderWorkspace } from './modules/execution-ladder-workspace.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountRoadmapWorkspace } from './modules/roadmap-workspace.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountPowerhouseObservability } from './modules/powerhouse-observability.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountCustomerAgentActivity } from './modules/customer-agent-activity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountContextualForesight } from './foresight-context-ui.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {mountWinstnavigator} from './winstnavigator.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountNeedDiscovery } from './modules/need-discovery.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountSecurityTrustWorkspace, disposeSecurityTrustWorkspace } from './modules/security-trust-workspace.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountAiModelChoice } from './modules/ai-model-choice.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -401,21 +401,21 @@ function ensureStylesheetLast(href){
 
 export function enhancePortalShell(){
   ensureShell();
-  ensureStylesheet('./interaction.css');
-  ensureStylesheet('./winstnavigator.css');
+  ensureStylesheet('./interaction.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./winstnavigator.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
   mountWinstnavigator({domainState:portalContext.domainState,stateClient:portalContext.stateClient});
-  ensureStylesheet('./workspace.css');
-  ensureStylesheet('./company-input.css');
-  ensureStylesheet('./csrd-impact.css');
+  ensureStylesheet('./workspace.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./company-input.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./csrd-impact.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
   // Compact SaaS overrides must win after the dynamically loaded CSRD base styles.
-  ensureStylesheetLast('./csrd-mobile-saas.css');
-  ensureStylesheet('./entrepreneur-intelligence.css');
-  ensureStylesheet('./legacy-external-placements.css');
-  ensureStylesheet('./powerhouse-observability.css');
-  ensureStylesheet('./trusted-advisor-assurance.css');
-  ensureStylesheet('./business-context.css');
-  ensureStylesheet('./company-intelligence-context.css');
-  ensureStylesheet('./security-trust-workspace.css');
+  ensureStylesheetLast('./csrd-mobile-saas.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./entrepreneur-intelligence.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./legacy-external-placements.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./powerhouse-observability.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./trusted-advisor-assurance.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./business-context.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./company-intelligence-context.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+  ensureStylesheet('./security-trust-workspace.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.quick button','koppelingen','koppelingen');

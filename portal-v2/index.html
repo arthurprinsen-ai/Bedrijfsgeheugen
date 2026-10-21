@@ -8,17 +8,17 @@
 <title>Bedrijfsgeheugen · Klantenportaal V2</title>
 <base href="/portal-v2/">
 <style id="portalBoot">html.v2-hydrating body>*{visibility:hidden!important}html.v2-hydrating body::before{content:"Portaal laden…";position:fixed;inset:0;display:grid;place-items:center;background:#f7f9fc;color:#526076;font:600 15px system-ui;z-index:2147483647}</style>
-<link rel="stylesheet" href="./app.css">
-<link rel="stylesheet" href="./saas-theme.css">
-<link rel="stylesheet" href="./navigation.css">
-<link rel="stylesheet" href="./legacy-parity.css" data-v2-parity-style>
-<link rel="stylesheet" href="./company-cockpit.css" data-company-cockpit>
-<link rel="stylesheet" href="./csrd-mobile-saas.css">
-<link rel="stylesheet" href="./mobile-responsive.css">
-<link rel="stylesheet" href="./topbar-actions.css">
-<link rel="stylesheet" href="./site-parity-v1.css?v=20261001">
-<link rel="stylesheet" href="./portal-polish.css?v=20261001-3">\n<link rel="stylesheet" href="./experience.css?v=20261004-4">\n<link rel="stylesheet" href="./nextgen-intelligence.css?v=20261004-1">
-<link rel="stylesheet" href="./chart-stages.css?v=20261019" media="screen">
+<link rel="stylesheet" href="./app.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./saas-theme.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./navigation.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./legacy-parity.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a" data-v2-parity-style>
+<link rel="stylesheet" href="./company-cockpit.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a" data-company-cockpit>
+<link rel="stylesheet" href="./csrd-mobile-saas.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./mobile-responsive.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./topbar-actions.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./site-parity-v1.css?v=20261001&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./portal-polish.css?v=20261001-3&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">\n<link rel="stylesheet" href="./experience.css?v=20261004-4&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">\n<link rel="stylesheet" href="./nextgen-intelligence.css?v=20261004-1&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a">
+<link rel="stylesheet" href="./chart-stages.css?v=20261019&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a" media="screen">
 <style>@import url("./insight-lens.css?v=20261020-1");</style>
 </head>
 <body>
@@ -134,15 +134,15 @@
 <section class="portal-popover" id="portalAccountPanel" role="dialog" aria-label="Account en beheer" hidden><div class="portal-popover-head"><h2>Account & beheer</h2><button class="portal-popover-close" type="button" data-popover-close aria-label="Sluiten">×</button></div><div class="portal-popover-meta"><span class="avatar">AP</span><div><strong>Arthur Prinsen</strong><small>Beheerder</small></div></div><div class="portal-popover-links"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=instellingen">Instellingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=gebruikers">Gebruikers <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=koppelingen">Data & koppelingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=rapportages">Rapportages & beheer <span>→</span></a></div></section>
 
 <div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Alle onderdelen van je ondernemingssturing</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
-<script type="module" src="./app.js"></script>
-<script type="module" src="./topbar-actions.js"></script>
+<script type="module" src="./app.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a"></script>
+<script type="module" src="./topbar-actions.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a"></script>
 <dialog id="portalAskAiDialog" class="portal-ai-dialog" aria-labelledby="portalAskAiTitle">
  <form method="dialog" class="portal-ai-dialog-head"><div><span>BEDRIJFSGEHEUGEN · JOUW BEDRIJFSCONTEXT</span><h2 id="portalAskAiTitle">Wat wil je weten of beslissen?</h2></div><button value="cancel" aria-label="Sluiten">×</button></form>
  <p>Vraag direct naar je bedrijf, acties, risico’s, kennis, processen of data. Het antwoord gebruikt alleen beschikbare portaalcontext.</p>
  <div class="portal-ai-compose"><input id="portalAskAiInput" maxlength="500" placeholder="Bijv. wat moet ik vandaag als eerste verbeteren?"><button id="portalAskAiSend" type="button">Stel je vraag →</button></div>
  <div id="portalAskAiAnswer" class="portal-ai-answer" aria-live="polite"></div>
 </dialog>
-<script type="module" src="./portal-polish.js?v=20261001-3"></script>\n<script type="module" src="./experience.js?v=20261004-2"></script>\n<script type="module" src="./nextgen-intelligence.js?v=20261004-1"></script>
-<script type="module" src="./insight-lens.js?v=20261020-1"></script>
+<script type="module" src="./portal-polish.js?v=20261001-3&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a"></script>\n<script type="module" src="./experience.js?v=20261004-2&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a"></script>\n<script type="module" src="./nextgen-intelligence.js?v=20261004-1&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a"></script>
+<script type="module" src="./insight-lens.js?v=20261020-1&bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-import { AI_CAPABILITY_CATALOG, AI_CAPABILITY_COUNT } from '../ai-capability-catalog.js';
+import { AI_CAPABILITY_CATALOG, AI_CAPABILITY_COUNT } from '../ai-capability-catalog.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const score=(state,id)=>Number(state?.portal?.aiCapabilities?.[id])||0;

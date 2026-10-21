@@ -1,4 +1,4 @@
-import { herkenBackup, vertaalOudePortaalBackup, voorbeeldVanImport } from './legacy-import.js';
+import { herkenBackup, vertaalOudePortaalBackup, voorbeeldVanImport } from './legacy-import.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
 const nowIso=()=>new Date().toISOString();

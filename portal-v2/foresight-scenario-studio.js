@@ -1,6 +1,6 @@
 import { buildGoalForecast, GOAL_METRICS } from '../brain/context/goal-forecast-engine.mjs';
-import {buildTenantForesightEvidence,renderTenantForesightEvidence} from './foresight-tenant-evidence.js';
-import {buildDecisionTwinReceipt,renderDecisionTwinReceipt,buildScenarioRoadmapProposal} from './decision-twin-receipt.js';
+import {buildTenantForesightEvidence,renderTenantForesightEvidence} from './foresight-tenant-evidence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {buildDecisionTwinReceipt,renderDecisionTwinReceipt,buildScenarioRoadmapProposal} from './decision-twin-receipt.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const valueOf=x=>x!==null&&x!==undefined&&x!==''&&Number.isFinite(Number(x))?Number(x):null;
@@ -190,7 +190,7 @@ export function mountForesightScenarioStudio(host,{state={},pageId='overzicht',o
     const generation=++sourceGeneration;
     sourceStatus='loading';draw();
     try{
-      const mod=await import('./modules/entrepreneur-intelligence.js');
+      const mod=await import('./modules/entrepreneur-intelligence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
       const packet=await mod.loadEntrepreneurData();
       if(generation!==sourceGeneration||!section.isConnected)return;
       intelligence=packet;sourceStatus='ready';draw();

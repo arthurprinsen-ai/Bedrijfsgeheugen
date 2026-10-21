@@ -1,7 +1,7 @@
 
 import {buildBusinessContext} from '../brain/context/business-context-engine.mjs';
-import {mountForesightScenarioStudio} from './foresight-scenario-studio.js';
-import {contextualCardsForPage,toRoadmapProposal,inventoryPortalCustomerFields,CONTEXTUAL_ACTION_PAGES} from './contextual-action-cards.js';
+import {mountForesightScenarioStudio} from './foresight-scenario-studio.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {contextualCardsForPage,toRoadmapProposal,inventoryPortalCustomerFields,CONTEXTUAL_ACTION_PAGES} from './contextual-action-cards.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const CONTEXT_PAGES=new Set(['bedrijfssituatie','cijfers-maatstaven','businesscase','waarde-financiering','branche-markt','roadmap','actieve-acties','due-diligence','exit','outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center',...CONTEXTUAL_ACTION_PAGES]);
 const QUALITY_PAGES=new Set(['outcomes-evidence','learning-writeback','brain-verwerking','trust-center','powerhouse-control-center']);
@@ -81,8 +81,8 @@ function selfImprovementPanel(s={}){
 }
 function ensureStyles(doc=document){
   if(!doc||doc.querySelector('link[data-foresight-context-ui]'))return;
-  const link=doc.createElement('link');link.rel='stylesheet';link.href='./foresight-context.css';link.dataset.foresightContextUi='true';doc.head.appendChild(link);
-  const studio=doc.createElement('link');studio.rel='stylesheet';studio.href='./foresight-scenario-studio.css';studio.dataset.powerhouseForesightStudio='true';doc.head.appendChild(studio);
+  const link=doc.createElement('link');link.rel='stylesheet';link.href='./foresight-context.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';link.dataset.foresightContextUi='true';doc.head.appendChild(link);
+  const studio=doc.createElement('link');studio.rel='stylesheet';studio.href='./foresight-scenario-studio.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';studio.dataset.powerhouseForesightStudio='true';doc.head.appendChild(studio);
 }
 function contextModel(state={}){try{return buildBusinessContext(state||{});}catch{return null;}}
 export function buildContextualForesightModel(pageId,state={},quality=null,{overview=false}={}){

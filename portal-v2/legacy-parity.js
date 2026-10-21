@@ -22,7 +22,7 @@ export const GLOBAL_CAPABILITIES = Object.freeze([
   'identity-login-logout','export','import','print-permission','feedback','customer-branding','mobile-navigation'
 ]);
 
-function ensureStyles(){if(document.querySelector('link[data-v2-parity-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='./legacy-parity.css';l.dataset.v2ParityStyle='true';document.head.appendChild(l)}
+function ensureStyles(){if(document.querySelector('link[data-v2-parity-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='./legacy-parity.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';l.dataset.v2ParityStyle='true';document.head.appendChild(l)}
 
 /*
  * Het overzicht heeft één business-truth authority: de canonieke Powerhouse

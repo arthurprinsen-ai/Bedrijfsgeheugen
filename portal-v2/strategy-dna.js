@@ -1,7 +1,7 @@
-import { mountStrategyBoard } from './modules/strategy-board.js';
-import { mountStrategyExecution } from './modules/strategy-dna-execution.js';
-import { mountDnaLibrary } from './modules/dna-library.js';
-import { CAPABILITIES } from './capability-catalog.js';
+import { mountStrategyBoard } from './modules/strategy-board.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountStrategyExecution } from './modules/strategy-dna-execution.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountDnaLibrary } from './modules/dna-library.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { CAPABILITIES } from './capability-catalog.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 export function renderStrategyDna(container,{openPage,domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__}={}){
  const state=domainState?.get?.()||{};const strategy=state?.portal?.strategy||{};const dna=strategy?.dna||{};const findings=Array.isArray(strategy?.findings)?strategy.findings:[];const executionState=strategy?.execution||{};const filled=Object.entries(dna).filter(([key,value])=>key!=='updatedAt'&&String(value||'').trim()).length;const themeIds=Array.isArray(executionState?.themeIds)?executionState.themeIds:[];

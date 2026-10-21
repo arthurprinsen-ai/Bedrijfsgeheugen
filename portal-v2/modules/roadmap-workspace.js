@@ -1,6 +1,6 @@
-import { mountRoadmapBoard } from './roadmap-board.js';
+import { mountRoadmapBoard } from './roadmap-board.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { buildManagementAccountingRoadmap } from '../../brain/economics/management-accounting-intelligence.mjs';
-import { renderCompanyIntelligenceContext } from '../operating-system/company-intelligence-context.js';
+import { renderCompanyIntelligenceContext } from '../operating-system/company-intelligence-context.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 async function syncManagementAccountingRoadmap(domainState,onSaveStatus){
  if(!domainState?.get||!domainState?.set)return 0;
@@ -15,7 +15,7 @@ async function syncManagementAccountingRoadmap(domainState,onSaveStatus){
  catch{onSaveStatus?.('error');}
  return additions.length;
 }
-function ensureStyles(){if(typeof document==='undefined'||document.querySelector('link[data-roadmap-board-style]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='./roadmap-board.css';link.dataset.roadmapBoardStyle='true';document.head.appendChild(link)}
+function ensureStyles(){if(typeof document==='undefined'||document.querySelector('link[data-roadmap-board-style]'))return;const link=document.createElement('link');link.rel='stylesheet';link.href='./roadmap-board.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';link.dataset.roadmapBoardStyle='true';document.head.appendChild(link)}
 function euro(value){return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)||0)}
 function candidateMarkup(items){return items.length?`<section class="v2inputgroup"><header><h3>Powerhouse-hefbomen uit management accounting</h3><span>${items.length} kandidaat(en)</span></header><p>Automatisch afgeleid uit klantdata + expliciete benchmarks. Potentiële waarde is scenario-intelligentie, geen gerealiseerde besparing.</p><div class="v2reviewlist">${items.slice(0,8).map(item=>`<article><div><small>${item.dimension} · sprint ${item.sprint} · effort ${item.effort_score}/100</small><b>${item.title}</b></div><strong>${item.expected_value==null?'Nog te kwantificeren':euro(item.expected_value)}</strong></article>`).join('')}</div></section>`:`<section class="v2tabempty"><h4>Nog geen benchmarkgedreven roadmapkandidaten</h4><p>Vul branchebenchmarks en bedrijfsdata in; Powerhouse projecteert afwijkingen daarna automatisch als hefbomen met impact en effort.</p></section>`}
 function analysis(content,domainState){const state=domainState?.get?.()||{};const items=state?.portal?.roadmap?.items||[];const candidates=buildManagementAccountingRoadmap(state);const done=items.filter(item=>item.done===true).length;const progress=items.length?Math.round(items.reduce((sum,item)=>sum+(Number(item.progress)||0),0)/items.length):0;const owners=new Set(items.map(item=>String(item.owner||'').trim()).filter(Boolean)).size;content.innerHTML=renderCompanyIntelligenceContext(state,'roadmap')+`<div class="v2profilemetrics"><article><small>Items</small><strong>${items.length}</strong></article><article><small>Afgerond</small><strong>${done}</strong></article><article><small>Gem. voortgang</small><strong>${progress}%</strong></article><article><small>Powerhouse-kandidaten</small><strong>${candidates.length}</strong></article></div>`+candidateMarkup(candidates)}

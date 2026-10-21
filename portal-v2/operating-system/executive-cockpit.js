@@ -1,7 +1,7 @@
-import {buildExecutiveProjection} from './executive-projection.js';
-import {mountOperatingSystemPage,OPERATING_SYSTEM_PAGES} from './operating-system-ui.js';
-import {ensureOperatingSystemStyles} from './styles.js';
-import {renderCompanyIntelligenceContext} from './company-intelligence-context.js';
+import {buildExecutiveProjection} from './executive-projection.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {mountOperatingSystemPage,OPERATING_SYSTEM_PAGES} from './operating-system-ui.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {ensureOperatingSystemStyles} from './styles.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {renderCompanyIntelligenceContext} from './company-intelligence-context.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const pct=value=>value==null?'—':`${Math.round(value)}%`;

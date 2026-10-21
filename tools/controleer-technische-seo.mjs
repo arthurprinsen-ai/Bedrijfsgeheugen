@@ -8,6 +8,7 @@ const CANONICAL_OVERRIDES = new Map([
 ]);
 const FUNCTIONELE_ROUTES = new Set([
   `${ORIGIN}/klantportaal`,
+  `${ORIGIN}/portal-v2/`,
 ]);
 const UTILITY_ROUTES = new Set([...PUBLIC_UTILITY_ROUTES].map(route => `${ORIGIN}${route}`));
 

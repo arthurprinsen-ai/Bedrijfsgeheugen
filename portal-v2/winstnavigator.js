@@ -1,5 +1,5 @@
-import {buildForesightStudioModel} from './foresight-scenario-studio.js';
-import {navigatePortal} from './router.js';
+import {buildForesightStudioModel} from './foresight-scenario-studio.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {navigatePortal} from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 export const NAVIGATOR_VERSION='winstnavigator-20261020-v1';
 const IDS=['revenue_growth','profit','cash','automate','valuation','exit','resilience'];
 const DESCRIPTION={

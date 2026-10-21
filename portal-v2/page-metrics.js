@@ -1,11 +1,11 @@
-import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
-import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from './external-data.js';
-import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js';
-import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
-import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
-import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
-import { doorwerkingOverzicht, rekenwijze, rekenwijzeDekking } from './doorwerking.js';
-import { beoordeelPortefeuille, rangschikRisicos, auditMomentopname, STATUS_LABEL as CONTROL_LABEL } from './compliance-engine.js';
+import { calculateLegacyEquivalent } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from './external-data.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen, verlopenHerzieningen } from './regelgeving.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bevindingen, bevindingenSamenvatting } from './bevindingen.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { doorwerkingOverzicht, rekenwijze, rekenwijzeDekking } from './doorwerking.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { beoordeelPortefeuille, rangschikRisicos, auditMomentopname, STATUS_LABEL as CONTROL_LABEL } from './compliance-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const EMPTY='—';
 const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:digits,maximumFractionDigits:digits}).format(Number(value)||0);

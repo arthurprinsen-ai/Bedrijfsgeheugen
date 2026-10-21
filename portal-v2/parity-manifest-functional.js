@@ -1,5 +1,5 @@
-import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
-import { getCapabilityContract } from './capability-contracts.js';
+import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { getCapabilityContract } from './capability-contracts.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const COMPANY_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
 const SPECIALISTS=new Map([['overzicht','modules/overview.js'],['strategy-dna','strategy-dna.js'],['uitvoeringsladder','native-pages.js + page-metrics.js']]);

@@ -264,7 +264,7 @@ const navigationStateContract = `<script id="v18-navigation-state-contract">
 })();
 <\/script>`;
 
-html = html.replace('</head>', `${canonicalChromeGeometryContract}\n</head>`);
+html = html.replace('</head>', `${canonicalChromeGeometryContract}\n<script src="https://www.bedrijfsgeheugen.nl/assets/scan-persistence.js?v=20261021" data-bg-scan-persistence></script>\n</head>`);
 html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n${navigationStateContract}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');

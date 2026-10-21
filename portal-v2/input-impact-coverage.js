@@ -1,6 +1,6 @@
-import { PORTAL_PAGE_INDEX } from './page-registry.js';
-import { STRATEGIC_MODEL_IDS } from './strategic-models-core.js';
-import { AI_CAPABILITY_CATALOG } from './ai-capability-catalog.js';
+import { PORTAL_PAGE_INDEX } from './page-registry.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { STRATEGIC_MODEL_IDS } from './strategic-models-core.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { AI_CAPABILITY_CATALOG } from './ai-capability-catalog.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const AI_CAPABILITY_FIELD_IDS=Object.freeze(AI_CAPABILITY_CATALOG.lagen.flatMap(layer=>layer.caps.map(cap=>cap.id)));
 

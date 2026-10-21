@@ -1,11 +1,11 @@
-import { PORTAL_PAGE_INDEX } from './page-registry.js';
-import { companyInputSchema } from './modules/company-input.js';
-import { functionalSchema } from './modules/functional-suite.js';
-import { fullCompanyInputSchema } from './modules/full-company-input.js';
-import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from './input-impact-coverage.js';
-import {appendBroaderContextualActions} from './contextual-action-rules-extended.js';
-import {appendComplementaryDomainActions,DOMAIN_GAP_PAGES} from './contextual-domain-gaps.js';
-import {regulatoryContextTrace} from './regulatory-context-trace.js';
+import { PORTAL_PAGE_INDEX } from './page-registry.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { companyInputSchema } from './modules/company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { functionalSchema } from './modules/functional-suite.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { fullCompanyInputSchema } from './modules/full-company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {classifyPortalInputPath,SUPPLEMENTAL_PORTAL_INPUT_SURFACES} from './input-impact-coverage.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {appendBroaderContextualActions} from './contextual-action-rules-extended.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {appendComplementaryDomainActions,DOMAIN_GAP_PAGES} from './contextual-domain-gaps.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {regulatoryContextTrace} from './regulatory-context-trace.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 // One read-only projection on the existing tenant-scoped Portal V2 state.
 // A proposal is NOT a measured risk, legal applicability ruling, executed action or euro saving.

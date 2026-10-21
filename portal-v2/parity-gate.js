@@ -1,6 +1,6 @@
-import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
-import { listFunctionalContracts } from './capability-contracts.js';
-import { listFunctionalSuitePages } from './modules/functional-suite.js';
+import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { listFunctionalContracts } from './capability-contracts.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { listFunctionalSuitePages } from './modules/functional-suite.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const functionalPages=new Set(listFunctionalSuitePages());
 const contractsByLegacy=new Map(listFunctionalContracts().map(contract=>[contract.legacyCapability,contract]));

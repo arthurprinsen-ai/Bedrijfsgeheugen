@@ -5,7 +5,13 @@ const KEY='bg_last_scan_ref';
 const RECEIPT_KEY='bg_last_scan_receipt_v2';
 const RECEIPT_TTL_MS=7*24*60*60*1000;
 const KEY_PATTERN=/^bedrijfslek-[A-Za-z0-9-]{12,170}$/;
+const ALL_SCAN_KEYS=/^(?:bedrijfslek|workshop|frisse-blik)-[A-Za-z0-9._:-]{12,160}$/;
 export function pendingBedrijfslekReceipt(storage,session,now=Date.now()){
+  try{
+    const rows=JSON.parse(storage?.getItem('bg_scan_receipts_v3')||'[]');
+    const receipt=Array.isArray(rows)?rows.find(row=>ALL_SCAN_KEYS.test(String(row?.submission_key||''))&&Number.isFinite(row.at)&&row.at<=now&&now-row.at<=RECEIPT_TTL_MS):null;
+    if(receipt)return receipt.submission_key;
+  }catch{}
   try {
     const receipt=JSON.parse(storage?.getItem(RECEIPT_KEY)||'null');
     if(receipt && KEY_PATTERN.test(String(receipt.submission_key||'')) &&
@@ -41,7 +47,7 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
   intro.style.cssText='margin:0 0 10px;color:#64748b;font-size:.88rem';
   const status=element(doc,'p','');
   status.setAttribute('role','status');status.style.cssText='font-size:.84rem;color:#475569;margin:5px 0';
-  const claim=element(doc,'button','','Koppel mijn gratis Bedrijfslek-scan aan dit bedrijf');
+  const claim=element(doc,'button','','Koppel mijn bewaarde scan aan dit bedrijf');
   claim.type='button';claim.style.cssText='cursor:pointer;padding:9px 13px;border:1px solid #2742d6;border-radius:9px;background:#2742d6;color:#fff;font-weight:650;margin:7px 0';
   const history=element(doc,'div','portal-canonical-scan-history');
   section.append(header,intro,claim,status,history);
@@ -104,7 +110,15 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
       const data=await json(response);
       if(current!==revision||!authenticated)return;
       if(!response.ok||data?.ok!==true||data?.claimed!==true||data?.scan?.tenant_identity_status!=='verified'){status.textContent='Koppelen is niet gelukt; de scan blijft ongewijzigd. Probeer het opnieuw.';return}
-      try{storage?.removeItem(RECEIPT_KEY);session?.removeItem(KEY)}catch{}
+      try{
+        const previous=JSON.parse(storage?.getItem(RECEIPT_KEY)||'null');
+        if(previous?.submission_key===submissionKey)storage?.removeItem(RECEIPT_KEY);
+        if(session?.getItem(KEY)===submissionKey)session?.removeItem(KEY);
+      }catch{}
+      try{
+        const receipts=JSON.parse(storage?.getItem('bg_scan_receipts_v3')||'[]');
+        storage?.setItem('bg_scan_receipts_v3',JSON.stringify(receipts.filter(row=>row.submission_key!==submissionKey)));
+      }catch{}
       await refresh();
       // The Supabase claim endpoint has already stored the verified, tenant-
       // scoped canonical Brain projection. It is now safe to revalidate all

@@ -1,6 +1,6 @@
-import { DEMO_PORTAL_STATE, DEMO_USER } from './demo-state.js';
-import { createPortalProjectClient, mergeProjectState } from './project-state.js';
-import { savePortalBusinessInput } from './business-input-store.js';
+import { DEMO_PORTAL_STATE, DEMO_USER } from './demo-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { createPortalProjectClient, mergeProjectState } from './project-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { savePortalBusinessInput } from './business-input-store.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 
 const API_URL='/api/portal-state';
 export const PORTAL_STATE_MODES=Object.freeze(['authenticated','preview','empty','error']);
@@ -56,7 +56,7 @@ function installDemoAiDesign(){
  document.documentElement.classList.add('portal-demo-ai');
  if(document.getElementById('portalDemoAiTheme'))return;
  const link=document.createElement('link');
- link.id='portalDemoAiTheme';link.rel='stylesheet';link.href='./demoai-dashboard.css';
+ link.id='portalDemoAiTheme';link.rel='stylesheet';link.href='./demoai-dashboard.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
  document.head.appendChild(link);
 }
 installDemoAiDesign();
