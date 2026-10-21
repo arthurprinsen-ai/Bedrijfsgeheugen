@@ -1,6 +1,7 @@
 import {buildEntrepreneurHomeModel,saveEntrepreneurGoal} from './entrepreneur-home-model.js';
 import {navigatePortal,currentPortalRoute,subscribePortalRoute} from './router.js';
 import {findPage} from './page-registry.js';
+import {buildConnectedJourneyModel} from './connected-journey-model.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -21,34 +22,56 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   const anchor=main.querySelector('.daily-steering')||main.querySelector('.dashboard');
   main.insertBefore(host,anchor||null);
   let notice='',saving=false,subject='',generation=0,verifiedScanCount=null;
+  let recentImpact=null,impactPhase='unknown';
   const updatePageGuide=()=>{
     const root=documentRef.getElementById('portalView');
     if(!root)return;
-    const previous=root.querySelector('[data-entrepreneur-guide]');
-    if(!auth()||!root.classList.contains('open')){previous?.remove();return;}
+    const prior=root.querySelector('[data-entrepreneur-guide]');
+    if(!auth()||!root.classList.contains('open')){prior?.remove();return;}
     const target=root.dataset.pageId||currentPortalRoute().target;
-    if(!findPage(target)){previous?.remove();return;}
-    // Use one authenticated server snapshot for the page guide as well as the homepage.
-    // Mutable domain state may still belong to a previous user during hydration.
-    const state=stateClient.getSnapshot()?.state||{};
-    const model=buildEntrepreneurHomeModel(state,{authenticated:true,verifiedScanCount});
+    if(!findPage(target)){prior?.remove();return;}
     const body=root.querySelector('.pvbody');
     if(!body)return;
-    const guide=previous||documentRef.createElement('aside');
+    const customerState=stateClient.getSnapshot()?.state;
+    // Only the current authenticated tenant's server snapshot is a source.
+    // The domain mutation event is merely a review plan, never a financial result.
+    const model=buildConnectedJourneyModel({pageId:target,state:customerState||{},
+      authenticated:Boolean(customerState&&stateClient.getSnapshot()?.mode==='authenticated'),
+      impact:recentImpact,phase:impactPhase});
+    if(!model)return;
+    const guide=prior?.parentNode===body?prior:documentRef.createElement('aside');
     guide.className='eh-page-guide';guide.dataset.entrepreneurGuide='true';
-    guide.setAttribute('aria-label','Hulp bij jouw ondernemersdoel');
+    guide.setAttribute('aria-label','Hoe deze pagina samenwerkt met jouw bedrijf');
     guide.replaceChildren();
-    add(guide,'strong','','Waarom ben je hier?');
-    const chosen=model.goals.find(goal=>goal.id===model.selectedGoal);
-    const page=findPage(target);
-    const directlyRelevant=model.next.page===target;
-    add(guide,'p','',chosen
-      ?(directlyRelevant?'Dit helpt jouw doel '+chosen.label.toLowerCase()+': '+model.next.explanation
-        :'Je werkt aan '+chosen.label.toLowerCase()+'. Je bekijkt nu '+page.label+'. Gebruik hier alleen gegevens die je kunt controleren en ga daarna verder met je persoonlijke route.')
-      :'Je bekijkt '+page.label+'. Kies eerst jouw bedrijfsdoel om gerichte vervolgstappen te krijgen.');
-    const back=add(guide,'button','eh-text-action',model.selectedGoal?'Terug naar mijn route →':'Kies mijn ondernemersdoel →');
-    back.type='button';back.addEventListener('click',()=>navigate('overzicht'));
-    if(!previous){
+    add(guide,'strong','','Dit onderdeel in jouw bedrijfsroute');
+    add(guide,'p','',model.message);
+    const info=add(guide,'p','eh-muted',model.impact.status);
+    info.setAttribute('role','status');
+    if(model.impact.reason)add(guide,'p','',model.impact.reason);
+    if(model.related.length){
+      const related=add(guide,'div','eh-context-related');
+      add(related,'strong','','Deze wijziging raakt mogelijk ook:');
+      for(const page of model.related){
+        const button=add(related,'button','eh-text-action',page.label+' →');
+        button.type='button';button.addEventListener('click',()=>navigate(page.id));
+      }
+    }
+    const proof=add(guide,'details','eh-context-sources');
+    const summary=add(proof,'summary','','Welke systemen helpen bij dit onderdeel?');
+    summary.setAttribute('aria-label','Bronnen, verbindingen en status controleren');
+    add(proof,'p','eh-muted','Beschikbaarheid in het platform bewijst geen klantkoppeling. Er wordt nooit rechtstreeks met jouw GitHub, Notion, Netlify, Supabase of Composio-account verbonden zonder de bestaande beveiligde autorisatie.');
+    const list=add(proof,'ul','');
+    for(const source of model.sources){
+      const li=add(list,'li','');
+      add(li,'strong','',source.label+' · ');
+      add(li,'span','',source.role+' — '+source.labelStatus);
+      const link=add(li,'button','eh-text-action','Controleer →');
+      link.type='button';link.addEventListener('click',()=>navigate(source.page));
+    }
+    const next=add(guide,'button','eh-text-action',model.goalLabel?'Terug naar mijn doel en volgende stap →':'Kies mijn ondernemersdoel →');
+    next.type='button';next.addEventListener('click',()=>navigate('overzicht'));
+    if(prior&&prior!==guide)prior.remove();
+    if(!guide.isConnected){
       const status=body.querySelector('.pvstatus');
       if(status)status.after(guide);else body.prepend(guide);
     }
@@ -170,13 +193,34 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       if(request===generation&&owner===principal()){saving=false;draw();}
     }
   });
-  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;}draw();};
+  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;recentImpact=null;impactPhase='unknown';}draw();};
   const onVerifiedScans=event=>{if(!auth())return;const count=event?.detail?.count;verifiedScanCount=Number.isInteger(count)&&count>=0?count:null;draw();};
   documentRef.defaultView?.addEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);
+  const onImpact=event=>{
+    const snap=stateClient.getSnapshot();
+    if(!auth()||snap?.mode!=='authenticated'||!snap.state||!domainState.initialized?.())return;
+    const currentTenant=String(snap.state.tenant_id||snap.state.powerhouse?.tenant_id||'');
+    const domainTenant=String(domainState.get()?.tenant_id||domainState.get()?.powerhouse?.tenant_id||'');
+    // Never display a stale, previous-tenant impact on the current customer's page.
+    if(!currentTenant||currentTenant!==domainTenant)return;
+    const impact=event?.detail;
+    if(!impact||!Array.isArray(impact.affectedPages))return;
+    recentImpact=impact;impactPhase='pending';updatePageGuide();
+  };
+  const onBrainSynced=event=>{
+    if(!auth()||!recentImpact||impactPhase!=='pending')return;
+    const acknowledged=Array.isArray(event?.detail?.impacts)?event.detail.impacts:[];
+    if(acknowledged.some(item=>item.path===recentImpact.path)){
+      impactPhase='confirmed';updatePageGuide();
+    }
+  };
+  const onServerRefreshed=()=>{recentImpact=null;impactPhase='unknown';updatePageGuide();};
+  const listeners=[['bg:portal-impact',onImpact],['bg:portal-brain-synced',onBrainSynced],['bg:portal-server-refreshed',onServerRefreshed]];
+  for(const [name,listener] of listeners)documentRef.defaultView?.addEventListener?.(name,listener);
   const unsubscribeIdentity=stateClient.subscribe(onIdentity);
   const unsubscribeDomain=domainState.subscribe(draw);
   const unsubscribeRoute=subscribePortalRoute(({target})=>{host.hidden=target!=='overzicht';updatePageGuide();});
   host.hidden=currentPortalRoute().target!=='overzicht';
   onIdentity();
-  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();documentRef.defaultView?.removeEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);documentRef.getElementById('portalView')?.querySelector('[data-entrepreneur-guide]')?.remove();host.remove();}});
+  return Object.freeze({element:host,refresh:draw,destroy(){generation++;unsubscribeIdentity?.();unsubscribeDomain?.();unsubscribeRoute?.();documentRef.defaultView?.removeEventListener?.('bg:portal-verified-scan-count',onVerifiedScans);for(const [name,listener] of listeners)documentRef.defaultView?.removeEventListener?.(name,listener);documentRef.getElementById('portalView')?.querySelector('[data-entrepreneur-guide]')?.remove();host.remove();}});
 }
