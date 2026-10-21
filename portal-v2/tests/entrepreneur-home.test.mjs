@@ -26,6 +26,8 @@ test('unauthenticated visitor cannot see stale tenant ambition, scan score or ac
 test('existing goal list is preserved; picking a goal does not confirm other business facts',()=>{
  const patch=goalContextPatch({goals:['exit','profit'],stage:'grow'},'valuation','2026-10-21T08:00:00Z');
  assert.deepEqual(patch.goals,['exit','profit','valuation']);
+ const newer=goalContextPatch({goals:['custom-approved','exit']},'valuation');
+ assert.deepEqual(newer.goals,['custom-approved','exit','valuation']);
  assert.equal(patch.primary_goal,'valuation');
  assert.equal(patch.goal_confirmed_at,'2026-10-21T08:00:00Z');
  assert.equal(Object.hasOwn(patch,'confirmed'),false);
@@ -39,6 +41,16 @@ test('goal progress is displayed only for explicitly entered target and valid IS
  data.portal.business_context.goal_targets.profit.target_date='tomorrow';
  assert.equal(buildEntrepreneurHomeModel(data,{authenticated:true}).target,null);
  assert.equal(buildEntrepreneurHomeModel(data,{authenticated:true}).next.kind,'measure');
+});
+
+test('the existing authorized scan history can confirm a generic Frisse Blik without inventing a score',()=>{
+ const model=buildEntrepreneurHomeModel({},{authenticated:true,verifiedScanCount:2});
+ assert.equal(model.scan.verified,true);
+ assert.equal(model.scan.count,2);
+ assert.equal(model.scan.score,null);
+ assert.match(model.scan.description,/gecontroleerde|geverifieerde/);
+ const anonymous=buildEntrepreneurHomeModel({},{authenticated:false,verifiedScanCount:2});
+ assert.equal(anonymous.scan.verified,false);
 });
 
 test('scan score is never treated as audited financial return',()=>{
