@@ -10,3 +10,13 @@
 - **Status:** wijzigingen uitsluitend op een beschermde branch; Required/CodeQL, exact-HEAD release, twee echte ingelogde klanten, 51-veldpariteit en provider outcomereadback nog verifiëren. Laat #4215/#4547 open zolang dat ontbreekt.
 - **Rollback:** revert uitsluitend deze frontendintegratie; oorspronkelijke scanclaim, domainState, cockpit, Brain, scheduler, jobs, Supabase schema en overige portalmodules blijven behouden.
 - **Next-step/no-repeat:** herstel foutieve regressies in dezelfde lineage; geen tweede portaal of ongeautoriseerde provideractie maken om een test rood te verbergen.
+
+## 2026-10-21 — TERMINAL RELEASE TRUTH RECONCILIATION
+
+- **Obligation:** [#4585](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585). **Fingerprint:** `portal|eight-outcomes|connected-entrepreneur-journey|provider-truth-reconciliation|v1`.
+- **Provider evidence:** protected [PR #4588](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4588) merged 09:26:38Z; exact main `20abd485e7956bf8f1aa541a52076533269e4569`; Netlify `6ad88550dd76a312a37b77fc` ready/current/production/main exact commit, 09:28:54.780Z.
+- **Cause:** immutable provider readback occurred after the original protected PR merged. Existing System Map and Brain learning still carried `CANDIDATE_PROTECTED_DELIVERY`.
+- **Repair:** project `LIVE_PROVEN_PROVIDER_TRUTH` to System Map and Brain-learning with exact SHA, Netlify deployment and publication instant while keeping `PENDING_TWO_REAL_AUTHENTICATED_TENANT_JOURNEYS` independent.
+- **Regression/control:** preserve old Required, CodeQL, material writeback and explanation-inventory gates; postrelease evidence-only PR does not silently update production code or affect DB/RLS/scheduler.
+- **Explicit unverified:** independent tenant A/B isolation and re-login, connector execution provider receipts, Heartbeat end-to-end, causal realized finance and #4215/#4547 all-pages acceptance. The release alone cannot close these obligations.
+- **Recovery rule:** terminal delivery truth != post-action customer outcome. Never demote externally verified deploy evidence due to missing browser access, and never upgrade customer E2E from provider deployment success.
