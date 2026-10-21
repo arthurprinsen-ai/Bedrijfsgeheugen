@@ -1,5 +1,5 @@
-import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from '../external-data.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { REGELGEVING, komendeMijlpalen, CATEGORIEEN } from '../regelgeving.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { brancheProfiel, brancheVergelijking, onderzoekVoor, regelgevingVoor, BRONNEN } from '../external-data.js';
+import { REGELGEVING, komendeMijlpalen, CATEGORIEEN } from '../regelgeving.js';
 
 const arr=v=>Array.isArray(v)?v:[];
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));

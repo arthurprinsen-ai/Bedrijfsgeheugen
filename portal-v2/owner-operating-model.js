@@ -2,8 +2,8 @@
  * Powerhouse · één ondernemerservaring boven de bestaande tenantgebonden OS-projectie.
  * Geen eigen database, geen tweede actieketen en geen sample-cijfers in klantweergaven.
  */
-import {buildExecutiveProjection} from './operating-system/executive-projection.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {classifyActionRisk,evaluateActionEligibility} from './operating-system/action-policy.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {buildExecutiveProjection} from './operating-system/executive-projection.js';
+import {classifyActionRisk,evaluateActionEligibility} from './operating-system/action-policy.js';
 
 export const OWNER_AREAS=Object.freeze([
  Object.freeze({id:'bedrijf',label:'Mijn bedrijf',description:'Gezondheid, cash, marge, voortgang en risico'}),

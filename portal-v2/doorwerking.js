@@ -1,6 +1,6 @@
-import { CAPABILITIES } from './capability-catalog.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { PROFILE_DIMENSIONS } from './modules/company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { CAPABILITIES } from './capability-catalog.js';
+import { PROFILE_DIMENSIONS } from './modules/company-input.js';
+import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
 
 /**
  * Doorwerking en rekenwijze.

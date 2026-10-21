@@ -1,5 +1,5 @@
-import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { LEGACY_CAPABILITY_MAP } from './legacy-parity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
+import { LEGACY_CAPABILITY_MAP } from './legacy-parity.js';
 
 const invert=Object.freeze(Object.fromEntries(Object.entries(LEGACY_CAPABILITY_MAP).map(([legacy,v2])=>[v2,legacy])));
 

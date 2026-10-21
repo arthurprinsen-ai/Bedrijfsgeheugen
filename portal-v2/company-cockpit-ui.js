@@ -1,6 +1,6 @@
-import {mapRuntimeProjection} from './runtime-evidence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {buildCompanyCockpit} from './company-cockpit.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {renderCompanyIntelligenceContext} from './operating-system/company-intelligence-context.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {mapRuntimeProjection} from './runtime-evidence.js';
+import {buildCompanyCockpit} from './company-cockpit.js';
+import {renderCompanyIntelligenceContext} from './operating-system/company-intelligence-context.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const known=value=>value!==null&&value!==undefined&&value!==''&&Number.isFinite(Number(value));

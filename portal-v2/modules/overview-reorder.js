@@ -1,4 +1,4 @@
-import { ensureInteractionParityStyles } from './interaction-parity-style.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { ensureInteractionParityStyles } from './interaction-parity-style.js';
 
 export const OVERVIEW_BLOCKS=Object.freeze([
   Object.freeze({id:'legacy-complete',selector:'[data-legacy-complete]',label:'Prioriteit, waarde & capaciteit',defaultSize:'full'}),

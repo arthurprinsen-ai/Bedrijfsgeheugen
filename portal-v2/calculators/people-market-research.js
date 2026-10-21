@@ -1,4 +1,4 @@
-import { profileOverviewMetrics } from '../modules/company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { profileOverviewMetrics } from '../modules/company-input.js';
 
 const num=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
 const present=value=>value!==undefined&&value!==null&&value!=='';

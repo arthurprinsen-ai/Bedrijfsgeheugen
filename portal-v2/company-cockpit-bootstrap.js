@@ -1,12 +1,12 @@
-import {ensureIdentityWidget} from './portal-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {mountCompanyCockpit} from './company-cockpit-ui.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {ensureIdentityWidget} from './portal-state.js';
+import {mountCompanyCockpit} from './company-cockpit-ui.js';
 
 let controller=null;
 let mounting=null;
 
 function ensureStyles(documentRef){
  if(!documentRef||documentRef.querySelector('link[data-company-cockpit]'))return;
- const link=documentRef.createElement('link');link.rel='stylesheet';link.href='./company-cockpit.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';link.dataset.companyCockpit='true';documentRef.head.appendChild(link);
+ const link=documentRef.createElement('link');link.rel='stylesheet';link.href='./company-cockpit.css';link.dataset.companyCockpit='true';documentRef.head.appendChild(link);
 }
 
 async function authHeaders(identity){

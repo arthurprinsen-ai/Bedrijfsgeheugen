@@ -1,10 +1,10 @@
-import { fieldMarkup, bindFields, normalizeFieldValue } from '../form-primitives.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateCompletion } from '../completion.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { mountWorkspace } from '../workspace-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { profileOverviewMetrics, PROFILE_DIMENSIONS } from './company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { AI_CAPABILITY_CATALOG } from '../ai-capability-catalog.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { buildLegacyPageSurfaces } from './legacy-page-surfaces.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { strategyFindingToRoadmap, adviceItemToRoadmap, changeToTasks, appendUnique, moveRoadmapItem, toggleRoadmapDone, removeRoadmapItem } from './legacy-action-parity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { fieldMarkup, bindFields, normalizeFieldValue } from '../form-primitives.js';
+import { calculateCompletion } from '../completion.js';
+import { mountWorkspace } from '../workspace-shell.js';
+import { profileOverviewMetrics, PROFILE_DIMENSIONS } from './company-input.js';
+import { AI_CAPABILITY_CATALOG } from '../ai-capability-catalog.js';
+import { buildLegacyPageSurfaces } from './legacy-page-surfaces.js';
+import { strategyFindingToRoadmap, adviceItemToRoadmap, changeToTasks, appendUnique, moveRoadmapItem, toggleRoadmapDone, removeRoadmapItem } from './legacy-action-parity.js';
 
 const f=(id,legacyFieldId,label,type,path,extra={})=>Object.freeze({id,legacyFieldId,label,type,path,required:true,...extra});
 const repeat=(id,legacyFieldId,label,path,columns)=>Object.freeze({id,legacyFieldId,label,type:'repeatable',path,required:false,columns:Object.freeze(columns)});

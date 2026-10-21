@@ -1,10 +1,10 @@
-import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { komendeMijlpalen } from './regelgeving.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { beoordeelPortefeuille, rangschikRisicos, STATUS } from './compliance-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bouwPassport } from './passport.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { PROFILE_DIMENSIONS } from './modules/company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { doorwerking } from './doorwerking.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
+import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
+import { komendeMijlpalen } from './regelgeving.js';
+import { beoordeelPortefeuille, rangschikRisicos, STATUS } from './compliance-engine.js';
+import { bouwPassport } from './passport.js';
+import { PROFILE_DIMENSIONS } from './modules/company-input.js';
+import { doorwerking } from './doorwerking.js';
 
 /**
  * Wat moet dit bedrijf aanpakken, en in welke volgorde?

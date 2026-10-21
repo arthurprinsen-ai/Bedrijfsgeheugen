@@ -1,5 +1,5 @@
-import { mapRuntimeProjection } from '../runtime-evidence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { ensureIdentityWidget } from '../portal-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mapRuntimeProjection } from '../runtime-evidence.js';
+import { ensureIdentityWidget } from '../portal-state.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const lower=value=>String(value??'').toLowerCase();

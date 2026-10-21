@@ -1,6 +1,6 @@
-import { PROFILE_DIMENSIONS } from './modules/company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateLegacyEquivalent } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { EXECUTION_LADDER_CATALOG, EXECUTION_LADDER_STANDARD, EXECUTION_LADDER_REALIZABILITY, EXECUTION_LADDER_STEPS } from './execution-ladder-catalog.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { PROFILE_DIMENSIONS } from './modules/company-input.js';
+import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
+import { EXECUTION_LADDER_CATALOG, EXECUTION_LADDER_STANDARD, EXECUTION_LADDER_REALIZABILITY, EXECUTION_LADDER_STEPS } from './execution-ladder-catalog.js';
 
 const n=v=>Number.isFinite(Number(v))?Number(v):0;
 const clone=v=>structuredClone(v);

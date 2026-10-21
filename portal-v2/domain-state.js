@@ -1,5 +1,5 @@
-import { upgradeLegacyPortalState, hasLegacyPortalData, readLegacyPortalStateForUser, mergeLegacyPortalStateIntoCanonical } from './legacy-state-migration.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { impactForMutation } from './portal-impact-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { upgradeLegacyPortalState, hasLegacyPortalData, readLegacyPortalStateForUser, mergeLegacyPortalStateIntoCanonical } from './legacy-state-migration.js';
+import { impactForMutation } from './portal-impact-engine.js';
 import { deriveOrganismEffects, affectedPortalPages } from '../platform/organism/organism-graph.mjs';
 
 const clone=value=>value==null?value:structuredClone(value);
@@ -7,7 +7,7 @@ const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(val
 const normalizeState=value=>isObject(value)?clone(value):{};
 const parts=path=>String(path||'').split('.').map(part=>part.trim()).filter(Boolean);
 const slug=value=>String(value??'').trim().replace(/([a-z0-9])([A-Z])/g,'$1-$2').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'unknown';
-const defaultBusinessInputStoreLoader=()=>import('./business-input-store.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a');
+const defaultBusinessInputStoreLoader=()=>import('./business-input-store.js');
 
 function readPath(source,path){
  let current=source;

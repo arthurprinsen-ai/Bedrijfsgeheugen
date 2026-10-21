@@ -1,4 +1,4 @@
-import { listPortalGroups } from './page-registry.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { listPortalGroups } from './page-registry.js';
 
 const freezePages=pages=>Object.freeze(pages.map(page=>Object.freeze(page)));
 const GROUP_ICONS=Object.freeze({

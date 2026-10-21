@@ -1,4 +1,4 @@
-import {ACTION_RISK_CLASS,ACTION_STATES,canAutoExecute} from './contracts.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {ACTION_RISK_CLASS,ACTION_STATES,canAutoExecute} from './contracts.js';
 
 export function classifyActionRisk(action={}){
  if(action.external||action.customer_facing||action.financial||action.identity_sensitive||action.channel)return ACTION_RISK_CLASS.EXTERNAL;

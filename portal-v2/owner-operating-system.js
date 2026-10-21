@@ -1,11 +1,11 @@
-import {buildOwnerOperatingModel,OWNER_AREAS} from './owner-operating-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {askPortal} from './ask-portal.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {renderAnswerAssurance} from './trusted-advisor-assurance.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {navigatePortal} from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {createOwnerFinancialClient} from './owner-financial-truth.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {createDecisionCommandClient} from './company-cockpit-ui.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {mapRuntimeProjection} from './runtime-evidence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {buildOwnerVerifiedValueReport,renderOwnerValueReport} from './owner-verified-value.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {buildOwnerOperatingModel,OWNER_AREAS} from './owner-operating-model.js';
+import {askPortal} from './ask-portal.js';
+import {renderAnswerAssurance} from './trusted-advisor-assurance.js';
+import {navigatePortal} from './router.js';
+import {createOwnerFinancialClient} from './owner-financial-truth.js';
+import {createDecisionCommandClient} from './company-cockpit-ui.js';
+import {mapRuntimeProjection} from './runtime-evidence.js';
+import {buildOwnerVerifiedValueReport,renderOwnerValueReport} from './owner-verified-value.js';
 
 let pendingOwnerArea='bedrijf';
 // One logical decision in one status transition gets one stable request identity.
@@ -104,7 +104,7 @@ export function renderOwnerOperatingHtml(state={}, {compact=false,selected='bedr
 }
 function ensureCss(doc){
  if(!doc?.head||doc.querySelector('link[data-owner-os-css]'))return;
- const l=doc.createElement('link');l.rel='stylesheet';l.href='./owner-operating-system.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';l.dataset.ownerOsCss='true';doc.head.appendChild(l);
+ const l=doc.createElement('link');l.rel='stylesheet';l.href='./owner-operating-system.css';l.dataset.ownerOsCss='true';doc.head.appendChild(l);
 }
 export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClient=null,fetchImpl=globalThis.fetch}={}){
  if(!root?.querySelector)return null;

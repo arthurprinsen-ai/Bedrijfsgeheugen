@@ -1,5 +1,5 @@
-import {exportPortalState,stagePortalImport,applyStagedPortalImport,printPortalReport,submitPortalFeedback,updateCustomerBrand,loginPortalUser,logoutPortalUser} from './portal-actions.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {applyCustomerBranding,deriveCustomerBrand} from './customer-branding.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {exportPortalState,stagePortalImport,applyStagedPortalImport,printPortalReport,submitPortalFeedback,updateCustomerBrand,loginPortalUser,logoutPortalUser} from './portal-actions.js';
+import {applyCustomerBranding,deriveCustomerBrand} from './customer-branding.js';
 
 const esc=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 // The full portal drawer is the canonical host for global actions on mobile and compact layouts. Base 927d175.

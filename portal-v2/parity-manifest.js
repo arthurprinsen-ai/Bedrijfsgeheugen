@@ -1,5 +1,5 @@
-import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { FUNCTIONAL_PARITY_MANIFEST } from './parity-manifest-functional.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
+import { FUNCTIONAL_PARITY_MANIFEST } from './parity-manifest-functional.js';
 
 const VERIFIED_BY='production-dom-readback';
 const FUNCTIONAL_STATUS_BY_LEGACY=new Map(FUNCTIONAL_PARITY_MANIFEST.map(record=>[record.legacyCapability,record.status]));

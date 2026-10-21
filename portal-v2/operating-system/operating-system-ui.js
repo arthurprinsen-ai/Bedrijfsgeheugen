@@ -1,12 +1,12 @@
-import {CAPABILITIES} from '../capability-catalog.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {normalizeImpact,rankImpact} from './impact-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {createScenario,simulateScenario} from './scenario-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {classifyActionRisk,evaluateActionEligibility} from './action-policy.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {recordDecision,DECISIONS} from './decision-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {dedupeSignals} from './monitoring.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {calibrateOutcome,learningExplanation} from './learning.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {buildCapabilityGraph,neighbors} from './capability-graph.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import {renderCompanyIntelligenceContext} from './company-intelligence-context.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {CAPABILITIES} from '../capability-catalog.js';
+import {normalizeImpact,rankImpact} from './impact-engine.js';
+import {createScenario,simulateScenario} from './scenario-engine.js';
+import {classifyActionRisk,evaluateActionEligibility} from './action-policy.js';
+import {recordDecision,DECISIONS} from './decision-model.js';
+import {dedupeSignals} from './monitoring.js';
+import {calibrateOutcome,learningExplanation} from './learning.js';
+import {buildCapabilityGraph,neighbors} from './capability-graph.js';
+import {renderCompanyIntelligenceContext} from './company-intelligence-context.js';
 
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const euro=v=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(v)||0);

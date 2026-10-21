@@ -1,5 +1,5 @@
-import { PORTAL_PAGE_INDEX } from './page-registry.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { screenCsrdEsrsScope } from './csrd-legal-source-gate.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { PORTAL_PAGE_INDEX } from './page-registry.js';
+import { screenCsrdEsrsScope } from './csrd-legal-source-gate.js';
 
 // Read-only, source-aware explanation of where a reported regulatory change
 // may affect a tenant. These are review dependencies, not legal determinations.

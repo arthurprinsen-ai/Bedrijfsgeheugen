@@ -93,6 +93,15 @@ test('checkout status needs persisted matching subscription proof, never only a 
   assert.deepEqual(await checkoutStatus('cs_123',{fetchFn,env:{},store:{findSubscription:async()=>({status:'active',metadata:{checkout_session_id:'cs_123'}})}}),{ready:true,state:'ready'});
 });
 
+test('subscription synchronisation preserves the durable checkout receipt',async()=>{
+  const module=await import('../netlify/functions/stripe-webhook.mjs');
+  assert.equal(typeof module.syncSubscription,'function');
+  let saved={organisation_id:'org-1',plan_code:'pro',status:'active',metadata:{checkout_session_id:'cs_receipt',billing_cycle:'yearly'}};
+  const store={findSubscription:async()=>saved,patchSubscription:async(_,patch)=>{saved={...saved,...patch}}};
+  await module.syncSubscription(store,{id:'sub_1'},async()=>({id:'sub_1',status:'active',metadata:{plan_code:'pro'}}));
+  assert.equal(saved.metadata.checkout_session_id,'cs_receipt');assert.equal(saved.metadata.billing_cycle,'yearly');
+});
+
 test('pricing exposes canonical Starter Pro Groei and Enterprise tiers',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
   for(const token of ['Starter','€ 99','Pro','€ 299','Groei','€ 749','Enterprise','Op maat']) assert.ok(html.includes(token),token);

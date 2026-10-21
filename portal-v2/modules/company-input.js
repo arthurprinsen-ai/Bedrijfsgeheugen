@@ -1,5 +1,5 @@
-import { fieldMarkup, bindFields } from '../form-primitives.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateCompletion } from '../completion.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { fieldMarkup, bindFields } from '../form-primitives.js';
+import { calculateCompletion } from '../completion.js';
 
 export const PROFILE_DIMENSIONS=Object.freeze([
  {id:'sturing',label:'Strategie en sturing',weeklyHours:1.6,top:4},
@@ -109,7 +109,7 @@ export function mountCompanyInput(root,{pageId='profiel',domainState,onSaveStatu
  if(pageId==='gegevens-invullen'||pageId==='ingevulde-gegevens'){
   root.innerHTML='<section class="v2tabempty"><h4>Volledige bedrijfsgegevens laden</h4><p>De canonieke Powerhouse-velden worden samengebracht.</p></section>';
   let active=true;
-  import('./full-company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a').then(({mountFullCompanyInput})=>{
+  import('./full-company-input.js').then(({mountFullCompanyInput})=>{
    if(active)mountFullCompanyInput(root,{domainState,reviewOnly:pageId==='ingevulde-gegevens',onSaveStatus});
   }).catch(()=>{if(active)root.innerHTML='<section class="v2tabempty"><h4>Gegevens konden niet worden geladen</h4><p>Er is geen alternatieve of lokale fallback gebruikt.</p></section>';});
   return Object.freeze({schema:[],destroy:()=>{active=false;},refresh:()=>{}});

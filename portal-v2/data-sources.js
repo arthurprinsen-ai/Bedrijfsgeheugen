@@ -1,8 +1,8 @@
 import { HERKOMST, BRANCHENAMEN, ONDERZOEK, BRONNEN,
-         onderzoekGeverifieerd, onderzoekTeVerifieren } from './external-data.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { REGELGEVING, verlopenHerzieningen, achterhaaldeStatus, komendeMijlpalen } from './regelgeving.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { parityCoverage } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { BREIN_STAPPEN } from './runtime-evidence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+         onderzoekGeverifieerd, onderzoekTeVerifieren } from './external-data.js';
+import { REGELGEVING, verlopenHerzieningen, achterhaaldeStatus, komendeMijlpalen } from './regelgeving.js';
+import { parityCoverage } from './legacy-parity-engine.js';
+import { BREIN_STAPPEN } from './runtime-evidence.js';
 
 /**
  * Alle databronnen van het portaal op één plek.

@@ -60,6 +60,8 @@ export async function completeCheckout(store,session,provider=stripe){
   const params=new URLSearchParams();
   params.set('metadata[organisation_id]',org.id);
   params.set('metadata[plan_code]',planCode);
+  params.set('metadata[checkout_session_id]',session.id);
+  params.set('metadata[billing_cycle]',session.metadata?.billing_cycle||'monthly');
   await provider('subscriptions/'+encodeURIComponent(sub.id),'POST',params);
   const receipt={plan_code:planCode,email,company_name:company,state:'completed',provider:'stripe',provider_session_id:session.id,organisation_id:org.id,updated_at:new Date().toISOString()};
   // Reuse the intent primary key, including a webhook racing the create response.
@@ -70,19 +72,19 @@ export async function completeCheckout(store,session,provider=stripe){
     evidence:{checkout_session_id:session.id,subscription_id:sub.id,organisation_id:org.id},
     context:{plan_code:planCode,status:sub.status,billing_cycle:session.metadata?.billing_cycle||'monthly',privacy_scope:'no_pii',revenue_verified:false},state:'observed',data_quality:'OBSERVED',confidence:1});
 }
-async function syncSubscription(store,sub){
+export async function syncSubscription(store,sub,provider=stripe){
   const existing=await store.findSubscription(sub.id);
   if(!existing)return;
   // Stripe retries can arrive out of order. Re-read provider truth instead of
   // letting an old active event resurrect a cancelled subscription.
-  const latest=await stripe('subscriptions/'+encodeURIComponent(sub.id));
+  const latest=await provider('subscriptions/'+encodeURIComponent(sub.id));
   sub=latest;
   await store.patchSubscription(sub.id,{
     status:sub.status||existing.status,
     provider_customer_id:typeof sub.customer==='string'?sub.customer:sub.customer?.id||existing.provider_customer_id,
     current_period_end:iso(sub.current_period_end),
     cancel_at_period_end:Boolean(sub.cancel_at_period_end),
-    metadata:sub.metadata||existing.metadata||{}
+    metadata:{...(existing.metadata||{}),...(sub.metadata||{}),checkout_session_id:existing.metadata?.checkout_session_id||sub.metadata?.checkout_session_id}
   });
 }
 

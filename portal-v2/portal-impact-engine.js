@@ -1,8 +1,8 @@
-import { dependencyTargets } from './legacy-dependency-contract.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bevindingen, bevindingenSamenvatting } from './bevindingen.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { PORTAL_PAGE_INDEX } from './page-registry.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { dependencyTargets } from './legacy-dependency-contract.js';
+import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
+import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
+import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
+import { PORTAL_PAGE_INDEX } from './page-registry.js';
 
 // A page remains a first-class causal node even if no legacy calculator consumes it.
 const REGISTERED_PAGES=Object.freeze(new Set(Object.keys(PORTAL_PAGE_INDEX)));

@@ -1,4 +1,4 @@
-import { calculateCapability } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { calculateCapability } from './legacy-parity-engine.js';
 
 const format=value=>{
  if(typeof value==='number')return new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2}).format(value);

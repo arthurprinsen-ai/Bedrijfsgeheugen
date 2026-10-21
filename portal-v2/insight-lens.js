@@ -1,5 +1,5 @@
 /** Read-only context explorer for canonical Portal V2. No fabricated provenance or projections. */
-import {navigatePortal} from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import {navigatePortal} from './router.js';
 export const INSIGHT_LENS_VERSION='2026-10-20-v1';
 const SELECTOR='figure.v2visual,.pvvisual,.pfs-chart,[data-chart],.pvtablewrap,.table-wrap,#portalView table,.main table,[data-canvas],.canvas-summary,.canvas-card,[data-strategy-board],[data-roadmap-board],.v2roadmapintel,.v2-stage-chart,.roadmap-board,.strategy-board';
 const state={host:null,selected:null,pins:[],returnFocus:null};

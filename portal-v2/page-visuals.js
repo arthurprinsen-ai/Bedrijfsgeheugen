@@ -1,14 +1,14 @@
-import { radar, gantt, curve, quadrant, benchmarkBars, ring, leakage, ladder, dupont, gauge, adoptionBell, companyStateRail } from './visuals.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateLegacyEquivalent } from './legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { hasPageData } from './page-metrics.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { BREIN_STAPPEN } from './runtime-evidence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { routeOverzicht } from './flow-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bevindingen, bevindingenSamenvatting } from './bevindingen.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen } from './regelgeving.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { radar, gantt, curve, quadrant, benchmarkBars, ring, leakage, ladder, dupont, gauge, adoptionBell, companyStateRail } from './visuals.js';
+import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
+import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-input.js';
+import { hasPageData } from './page-metrics.js';
+import { BREIN_STAPPEN } from './runtime-evidence.js';
+import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
+import { dataBronnen, bronnenSamenvatting, SOORTEN } from './data-sources.js';
+import { bouwPassport, bouwAuditRapport, STATUS_LABEL } from './passport.js';
+import { routeOverzicht } from './flow-state.js';
+import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
+import { REGELGEVING, komendeMijlpalen, lopendeVerplichtingen } from './regelgeving.js';
 
 const arr=value=>Array.isArray(value)?value:[];
 const n=value=>Number.isFinite(Number(value))?Number(value):0;

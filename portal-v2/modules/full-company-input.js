@@ -1,7 +1,7 @@
-import { fieldMarkup, bindFields } from '../form-primitives.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateCompletion } from '../completion.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { companyInputSchema } from './company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { functionalSchema } from './functional-suite.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { fieldMarkup, bindFields } from '../form-primitives.js';
+import { calculateCompletion } from '../completion.js';
+import { companyInputSchema } from './company-input.js';
+import { functionalSchema } from './functional-suite.js';
 
 const scalar=fields=>fields.filter(field=>field.type!=='repeatable');
 const legacyPrefix=(fields,prefix)=>fields.filter(field=>String(field.legacyFieldId||'').startsWith(prefix));

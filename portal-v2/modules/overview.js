@@ -1,15 +1,15 @@
-import { profileOverviewMetrics } from './company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { mountOverviewReorder } from './overview-reorder.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { mountAuthenticatedCompanyCockpit } from '../company-cockpit-bootstrap.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { isDemoCustomer, renderDemoOverview } from './overview-demo.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { directievragenMarkup, DIRECTIEVRAGEN_STIJL } from './directievragen.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { openPortalPage } from '../page-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { renderLegacyOverviewComplete } from './legacy-overview-complete.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { mountControlPlaneCockpit } from '../control-plane-cockpit.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { profileOverviewMetrics } from './company-input.js';
+import { mountOverviewReorder } from './overview-reorder.js';
+import { mountAuthenticatedCompanyCockpit } from '../company-cockpit-bootstrap.js';
+import { isDemoCustomer, renderDemoOverview } from './overview-demo.js';
+import { directievragenMarkup, DIRECTIEVRAGEN_STIJL } from './directievragen.js';
+import { openPortalPage } from '../page-shell.js';
+import { renderLegacyOverviewComplete } from './legacy-overview-complete.js';
+import { mountControlPlaneCockpit } from '../control-plane-cockpit.js';
 import { buildBusinessContext, BUSINESS_STAGES } from '../../brain/context/business-context-engine.mjs';
-import { renderManagementAccountingIntelligence } from './management-accounting-intelligence.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { mountOverviewForesight } from '../foresight-context-ui.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { mountOwnerOperatingSystem } from '../owner-operating-system.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { renderManagementAccountingIntelligence } from './management-accounting-intelligence.js';
+import { mountOverviewForesight } from '../foresight-context-ui.js';
+import { mountOwnerOperatingSystem } from '../owner-operating-system.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);

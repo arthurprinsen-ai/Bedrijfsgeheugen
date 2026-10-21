@@ -1,6 +1,6 @@
-import { bevindingen } from '../bevindingen.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { allPageIds } from '../page-registry.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { PROFILE_DIMENSIONS } from './company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bevindingen } from '../bevindingen.js';
+import { allPageIds } from '../page-registry.js';
+import { PROFILE_DIMENSIONS } from './company-input.js';
 
 /**
  * De zes vragen die een directie stelt.

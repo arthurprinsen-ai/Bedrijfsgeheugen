@@ -1,6 +1,6 @@
-import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './company-input.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { calculateLegacyEquivalent } from '../legacy-parity-engine.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bevindingen } from '../bevindingen.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './company-input.js';
+import { calculateLegacyEquivalent } from '../legacy-parity-engine.js';
+import { bevindingen } from '../bevindingen.js';
 
 const FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
 const LEVEL_LABELS=Object.freeze(['','in hoofden','in lijstjes','in systemen','verbonden','zelfsturend']);
