@@ -146,3 +146,13 @@ De **bestaande V2** toont na inloggen eerst: (1) door de klant gekozen ambitie, 
 Canonieke opslag: `portal.business_context.goals` + `primary_goal` via bestaande `portalDomainState.patch/flush`, met tenant state plus Brain BusinessInput ACK. Geen tweede onboarding-state, lokale browser data of nieuw portaal. Bij ontbrekende target: eerst doel meetbaar maken. Alleen onderbouwde Powerhouse-voorstellen met gezonde bronstatus en bronreferenties mogen als zodanig verschijnen; nooit uitvoerings- of ROI-bewijs verzinnen.
 
 Elke toekomstige herbouw van het portaal moet `portal-v2/tests/entrepreneur-home.test.mjs` en de twee-tenant productiecontrole blijven behouden. Source: `docs/changes/portal-entrepreneur-goal-home-20261021-v1.md`. Obligation: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4578.
+
+## Eén samenhangende ondernemersreis — acht uitkomsten en bronbewijs
+
+Fingerprint: `portal|eight-outcomes|connected-entrepreneur-journey|v1`. Verplichte source-authority: alleen de ingelogde tenantstate, gecontroleerde scanclaims, Brain BusinessInput ACK, brononderbouwde Powerhouse-voorstellen en bestaande Foresight-historie leveren bedrijfswaarheid. Frisse Blik koppelen mag geen herinvoer van bewaarde antwoorden afdwingen; een onbekend of anoniem claimbewijs vereist een geautoriseerde één-klik koppelbevestiging.
+
+De homepage projecteert scan → doel → bedrijfsgegevens → eerstvolgende besluit/actie → gemeten uitkomst in één ervaring. De bestaande ondernemerscockpit en Winstnavigator zijn bereikbaar vanuit diezelfde ervaring. Alle in de page registry geregistreerde pagina's moeten contextuele uitleg bij het gekozen ondernemersdoel tonen. Mutatie-events en aangedane pagina's zijn *afhankelijkheidskennis*, geen doorberekende euro's; uitsluitend bevestigde Brain-write en onafhankelijke outcomes leveren uitvoerings- of waardeclaims.
+
+Notion en GitHub bevatten beheerde documentatie, broncode en leer-/releaseregistraties; Netlify bewijst welke versie draait; Supabase geeft de canonieke geautoriseerde tenantstaat; Composio en externe bronnen geven alleen klantresultaten via bestaande goedgekeurde connectors en provider-readback. Gebruik hun inhoud nooit als onbewezen directe live klantmetric. Geen parallelle opslag, schaduwkoppelingen, nieuwe scheduler of bypass van tenant/RLS. Live release en twee onafhankelijke echte klantacceptaties zijn afzonderlijke statusvelden.
+
+Regressies: `tests/brain-portal-entrepreneur-goal-home-v1.test.mjs` (importeert de geïntegreerde `portal-v2/tests/entrepreneur-journey.test.mjs`), protected Required, CodeQL, exacte Netlify-SHA, en de bestaande #4215/#4547 acceptatie.
