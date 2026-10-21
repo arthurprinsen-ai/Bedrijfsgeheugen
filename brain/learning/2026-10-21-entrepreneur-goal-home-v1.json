@@ -44,7 +44,8 @@
     "historical_replay": [
       "tests/brain-portal-claim-propagation-v1.test.mjs",
       "tests/brain-portal-live-revalidation-v1.test.mjs",
-      "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs"
+      "tests/brain-portal-profile-no-synthetic-kpis-v1.test.mjs",
+      "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-portal-claim-propagation-v1.test.mjs"
@@ -52,5 +53,6 @@
     "canary": [
       "tests/brain-portal-live-revalidation-v1.test.mjs"
     ]
-  }
+  },
+  "root_cause": "Navigation and executive summaries were organised by platform functions instead of the user's primary business goal."
 }
