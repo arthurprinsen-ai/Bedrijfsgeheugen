@@ -69,7 +69,9 @@ export function mountWinstnavigator({domainState,stateClient}={}){
  const ui={metric:'profit',days:90,sensitivity:0,subject:'',idx:null,model:null};
  const subjectOf=s=>(s&&(s.mode==='authenticated'||s.mode==='empty')&&s.user&&!stateClient.isDemo?.())?String(s.user.id||''):'';
  const isAllowed=()=>!!subjectOf(stateClient.getSnapshot());
- const model=()=>buildWinstnavigatorModel(domainState.get()||{},{metric:ui.metric,days:ui.days,sensitivity:ui.sensitivity});
+ // Never read the mutable previous principal's local domain state during
+ // a login switch. Only the current authenticated server snapshot has authority.
+ const model=()=>buildWinstnavigatorModel(isAllowed()?stateClient.getSnapshot()?.state||{}:{},{metric:ui.metric,days:ui.days,sensitivity:ui.sensitivity});
  function close(){if(dialog.open)dialog.close();document.body.classList.remove('bg-w-nav-open')}
  function reset(){ui.metric='profit';ui.days=90;ui.sensitivity=0;ui.idx=null;ui.model=null;close();detail.replaceChildren();orbit.replaceChildren(hub)}
  stateClient.subscribe(s=>{const subject=subjectOf(s);if(subject!==ui.subject){reset();ui.subject=subject}launch.hidden=!subject;if(!subject)close()});
@@ -143,7 +145,7 @@ export function mountWinstnavigator({domainState,stateClient}={}){
   }detail.append(actions);
   detail.append(el('p',history.length+' meetmomenten; '+m.evidenceCount+' bronverwijzingen. '+m.note,'bg-w-nav-proof'));
  }
- launch.addEventListener('click',()=>{if(!isAllowed())return;ui.model=model();paintOrbit();paintDetail();dialog.showModal();document.body.classList.add('bg-w-nav-open');orbit.focus({preventScroll:true})});
+ launch.addEventListener('click',()=>{if(!isAllowed())return;const primary=stateClient.getSnapshot()?.state?.portal?.business_context?.primary_goal;if(IDS.includes(primary))ui.metric=primary;ui.model=model();paintOrbit();paintDetail();dialog.showModal();document.body.classList.add('bg-w-nav-open');orbit.focus({preventScroll:true})});
  closeButton.addEventListener('click',close);dialog.addEventListener('cancel',e=>{e.preventDefault();close()});
  dialog.addEventListener('click',e=>{if(e.target===dialog)close()});
  document.addEventListener('keydown',e=>{if(dialog.open&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close()}},true);
