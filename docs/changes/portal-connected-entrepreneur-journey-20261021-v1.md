@@ -59,3 +59,9 @@ Oudere `renderBedrijfslekIntelligence`-kaarten gebruikten `Number(scan?.score)`.
 **Grenzen:** Brain-runtime-aanwezigheid ≠ Heartbeat-SLA, connector-authorisatie, Composio-provideruitvoering, Notion-live klantdata, financieel forecastbewijs of een bewezen uitkomst. De backend, Supabase RLS, cron, API en toegangsregels blijven ongemoeid. Twee echte klantcontroles en de ontbrekende connector-/forecastreadbacks blijven open in #4585, #4215 en #4547.
 
 **Regressie:** `portal-v2/tests/entrepreneur-journey.test.mjs`, ook in `tests/brain-portal-entrepreneur-goal-home-v1.test.mjs`. De live-status van de *vorige* releases blijft behouden; deze herstelkandidaat mag pas na protected Required/CodeQL en exacte Netlify-acceptatie op live worden gezet.
+
+### Exacte provider-live status runtime-koppeling — 21 oktober 2026
+
+De extra principal-bound live Brain-runtime-koppeling [PR #4599](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4599) is beschermd gemerged met geslaagde admission, System Map-preflight, Root Required, Portal, Backend, Netlify build parity en CodeQL JavaScript/Python, exact main `dafece9841bcc248f455f0b9beb2520ac13b18fa`. Netlify actuele site `fd527056-493a-4d8a-8125-d00370104fa3` rapporteert production deploy `6ad910c695b04087a1c90a26`, `ready`, branch `main`, exact dezelfde commit, gepubliceerd `2026-10-21T19:23:50.367Z`. Dit bewijst de software-uitrol, niet dat een echte tweeklant-route of Composio-provideruitvoering heeft plaatsgevonden.
+
+Supabase read-only aggregaten (21 okt): één tenantlaag, nul connector-definities, nul connector-uitvoeringen en nul financiële forecastregels. Daarom blijven #4585, #4215 en #4547 open voor echte klant, bron- en financiële acceptatie. Een Heartbeat-runtime-observatie is geen gegarandeerde SLA of aantoonbaar gerealiseerde winst.
