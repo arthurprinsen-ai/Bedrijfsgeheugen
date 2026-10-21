@@ -63,8 +63,11 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(!host.isConnected)return;
     updatePageGuide();
     const loggedIn=auth();
-    const snapshot=domainState.getSnapshot?.();
-    const model=buildEntrepreneurHomeModel(loggedIn?(domainState.get()||{}):{},{authenticated:loggedIn,verifiedScanCount:loggedIn?verifiedScanCount:null});
+    const snapshot=domainState.snapshot?.();
+    // Render only the authenticated principal's returned server snapshot. The mutable
+    // domainState can still contain the preceding tenant while a login is hydrating.
+    const customerState=loggedIn?stateClient.getSnapshot()?.state:null;
+    const model=buildEntrepreneurHomeModel(customerState||{},{authenticated:loggedIn&&Boolean(customerState),verifiedScanCount:loggedIn&&customerState?verifiedScanCount:null});
     host.replaceChildren();
     const lead=add(host,'div','eh-lead');
     const copy=add(lead,'div','eh-lead-copy');
@@ -145,6 +148,11 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(button.dataset.entrepreneurPage){navigate(button.dataset.entrepreneurPage);return;}
     const goalId=button.dataset.entrepreneurGoal;
     if(!goalId||saving)return;
+    // A freshly authenticated but not-yet-hydrated principal cannot write an old
+    // tenant's mutable state. Require a real server snapshot and canonical init.
+    if(stateClient.getSnapshot()?.mode!=='authenticated'||!stateClient.getSnapshot()?.state||!domainState.initialized?.()){
+      notice='Je eigen bedrijfsgegevens worden nog geladen. Probeer het opnieuw wanneer ze beschikbaar zijn.';draw();return;
+    }
     const owner=principal();
     if(!owner)return;
     const request=++generation;
