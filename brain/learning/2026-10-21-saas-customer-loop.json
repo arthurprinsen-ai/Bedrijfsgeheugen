@@ -35,5 +35,18 @@
     "verified": false,
     "billing_ready": false
   },
-  "documentation": "docs/changes/2026-10-21-saas-customer-loop.md"
+  "documentation": "docs/changes/2026-10-21-saas-customer-loop.md",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-customer-loop-v1.test.mjs",
+      "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-canonical-scan.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-saas-customer-loop-v1.test.mjs"
+    ],
+    "scope": "local regression/negative security tests only; no production customer canary is claimed"
+  }
 }
